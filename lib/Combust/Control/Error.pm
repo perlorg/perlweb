@@ -39,6 +39,7 @@ sub handler ($$) {
 
   my $output;
   $class->evaluate_template($r, output => \$output, template => $template, params => $params);
+  $r->update_mtime(time);
   $class->send_output($r, \$output);
 }
 
