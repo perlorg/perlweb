@@ -44,8 +44,6 @@ my $combust_provider = Template::Provider->new
 		    sub {
 		      &get_include_path()
 		    },
-		    "$ENV{CBROOT}/docs/live/shared/",
-		    "$ENV{CBROOT}/docs/live/",
 		    #'http://svn.develooper.com/perl.org/docs/www/live',
 		   ],
   );
@@ -80,28 +78,45 @@ sub get_include_path {
   $r = Apache::Request->instance($r);
 
   my $site = $r->dir_config("site");
-  my $default_root = "$ENV{CBROOT}/docs/live/$site";
-  #return [$default_root];
-  my $root = $default_root;
 
   #warn Data::Dumper->Dump([\$r], [qw(r)]);
 
-  warn "param:root: ", $r->param('root');
+  my $cookies = $r->pnotes('combust_notes')->{cookies};
 
-  # MAGIC LINE!
-  if (my ($user, $dir) = ($r->param('root') =~ m!^([a-zA-Z]+)/([^\.]+)$!)) {
-    warn "martched: USER:$user DIR:$dir";
+  #warn "param:root: ", $r->param('root');
+  #warn "root coookie : ", $cookies->cookie('root');
+
+  my ($user, $dir);
+  if (($user, $dir) = ($r->param('root') =~ m!^/?([a-zA-Z]+)/([^\.]+)$!)) {
     # FIXME|TODO: should expand on ~ instead of using /home
-    $root = "/home/$user/docs/$dir/$site";
-    warn "XOOT: $root";
+    #$root = "/home/$user/docs/$dir/$site";
+    $cookies->cookie('root', "$user/$dir");
   } 
+  elsif ($r->param('root') eq "/") {
+    # don't set user and dir, reset the cookie
+    $cookies->cookie('root', "/");
+  }
+  elsif (($user, $dir) = ($cookies->cookie('root') =~ m!^([a-zA-Z]+)/([^\.]+)$!)) {
+    #warn "got root cookie";
+    #$root = "/home/$user/docs/$dir/$site";
+  }
 
-  warn "ROOT: [$root]";
-  warn "DOOT: [$default_root]";
+  $r->pnotes('combust_notes')->{include_root} = ($user and $dir) ? "/$user/$dir" : '/';
 
-  # return [ $root || $default_root ];
-  #$return [$root];
-  return [$default_root];
+  if ($user and $dir) {
+    $user = "/home/$user";
+  }
+  else {
+    $user = "$ENV{CBROOT}";
+    $dir = 'live';
+  }
+
+  return [
+	  "$user/docs/$dir/$site/",
+	  "$user/docs/$dir/shared/",
+	  "$user/docs/$dir/",
+	 ];
+
 }
 
 sub evaluate_template {
