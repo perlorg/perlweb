@@ -1,0 +1,348 @@
+=head1 Perl 6 Summary for the week ending 20030810
+
+Another week, another summary. How predictable is that?
+
+In keeping with the predictability, we'll start with the internals list. 
+
+=head2 Set vs. Assign
+
+"T.O.G of Spookware" has an issue with the way IMCC treats C<=>;
+sometimes an C<=> means C<set> and sometimes it means C<assign>,
+which TOGoS finds confusing. What he(?) finds even more confusing is
+that sometimes C<set> has C<assign> semantics.
+
+Dan agreed that this was somewhat confusing, and pointed out that
+there was a third possible semantic, C<clone>. 
+
+Luke Palmer agreed with TOGoS and suggested that it would be useful
+if the C<assign> like behaviours of of C<set> were moved over to
+becoming C<assign> like behaviours of C<assign>. 
+
+Benjamin Goldberg wasn't even sure that C<set> and C<assign> were good
+names for those behaviours in the first place. He proposed three
+behaviour classes; C<mutate>, C<alias> and C<create>. The general
+feeling seemed to be that Ben's approach was a good way forward, but I
+don't think anything has actually been implemented along these lines
+yet.
+
+L<http://groups.google.com/groups?threadm=20030801184516.98304.qmail%40web41406.mail.yahoo.com>
+
+=head2 Generic code generator?
+
+Not content with his efforts in porting Python to Parrot, Michal
+Wallace floated the idea of a generic code generator for parrot that
+everyone could use. Stephen Thorne liked the concept, but worried
+that it wouldn't necessarily play well with languages that allowed
+C<eval $aString>. He proposed that, whatever the code generator got
+written in should be a language that would be self-hosting.
+
+Joseph Ryan argued that, instead of coming up with a new meta-language
+for the GCG (Generic Code Generator), we should use something like XML
+or YAML as a way of dumping the AST (Abstract Syntax Tree) with
+standardized node names. Dan (who has a 'deep personal loathing for
+XML') was all for just building a standard datastructure and passing
+that into the code generator. (ASTnode.pmc anyone?). He also
+suggested that having some way of doing AST transforms would be
+handy, as many languages would want to get hold of the AST and munge
+it in some way before it went any further (Lisp macros are the
+canonical example of this sort of thing).
+
+Following the discussion, Michal and Klaas-Jan Stol apparently spiked
+out a prototype that used s-expressions.
+
+Your summarizer wonders if there's any overlap between this and
+treecc. Maybe I've just misunderstood what treecc was all about.
+
+L<http://groups.google.com/groups?threadm=Pine.LNX.4.44.0308030506570.1050-100000%40hydrogen.sabren.com>
+
+=head2 Calling convention questions
+
+Vladimir Lipskiy had a couple of questions about how the calling
+conventions worked. Dan and Leo supplied the answers, Vladimir
+pointed to the section of F<pdd03_calling_conventions.pod> that had
+caused the confusion, and Dan went and fixed the docs.
+
+L<http://groups.google.com/groups?threadm=000d01c35a27%2440403540%24999d943e%4087w5ovc8gmxcahy>
+
+=head2 Infant Mortality
+
+Every so often, perl6-internals ends up talking about the Infant
+Mortality Problem -- the possibility of an object being marked as
+dead by the GC system before it's even been fully
+initialized. Benjamin Goldberg addressed himself to the problem this
+week by proposing a generational Garbage Collector. I'm not sure
+anyone was convinced that his proposed use of a generational
+collector to avoid having to walk the C stack was the Right Thing,
+but nor do I think anyone's averse to trying a generational
+collection scheme to see how performance stacks up.
+
+L<http://groups.google.com/groups?threadm=3F2DCD7B.27044224%40hotpop.com>
+
+=head2 Packfile stuff
+
+Dan outlined some things we need to add to the packfile format and the
+sub header in order to get things ready for more language
+work. He, Leo and the usual suspects thrashed out the implications
+(F<assemble.pl> and F<disassemble.pl> will finally get removed from
+the distribution for example), but I don't think a final bytecode and
+sub header format have been decided upon yet.
+
+L<http://groups.google.com/groups?threadm=a0521060bbb543866b01b%40%5B63.120.19.221%5D>
+
+=head2 Parrot on Win32?
+
+Valery A.Khamenya wondered if there was any news on getting a ready
+to run win32 Parrot distribution. Jonathan Worthington has
+volunteered to start work on producing regular build snapshots. Yay
+Jonathan! 
+
+L<http://groups.google.com/groups?threadm=1032203558.20030804204823%40mail.ru>
+
+=head2 Bitwise string ops
+
+Leo TE<ouml>tsch checked in the beginnings of bitwise operators for
+strings and dropped a huge hint that it'd be good if someone could
+finish things up. Vladimir Lipskiy took the hint, but felt a good
+deal of pain trying to produce appropriately formatted diffs until he
+worked out how to do the equivalent of C<cvs diff -c> in WinCVS
+(hopefully the same trick can be used to do C<cvs diff -u>, which is
+the preferred diff format of perl6-internals). 
+
+L<http://groups.google.com/groups?threadm=3F2FB556.7050705%40nextra.at>
+
+=head2 Dynamic PMC classes
+
+Discussion of the appropriate interfaces for the dynamic loading of
+PMCs continued apace. Leo committed his current implementation,
+stressing that it wasn't final, but it is at least something to work
+on. 
+
+L<http://groups.google.com/groups?threadm=200308051559.h75Fxao03410%40thu8.leo.home>
+
+=head2 extproc_parrot
+
+Sometimes I worry about Parrot hackers... Jeff Horwitz announced that
+he's successfully built a library that lets you embed parrot in
+Oracle. The theory is that, if you want to eventually have an
+extproc_perl6 in oracle you'd need to embed parrot anyway. Jeff
+commented that "what makes this even cooler" is that, right now, you
+can theoretically write oracle extensions in, um, Parrot BASIC. 
+
+Personally, I think Oracle and Brainfuck is a match made in heaven.
+
+L<http://groups.google.com/groups?threadm=Pine.LNX.4.44.0308051346180.22768-100000%40booger.sixgeeks.org>
+
+=head2 Pirate guide
+
+Michal Wallace has now got Py-Pirate (The new name for Python on
+Parrot; Pirate has been promoted to being the name of the new Generic
+Code Generator) up and running using the Parrot calling
+conventions. He's also written a guide which explains how the code is
+laid out for those who don't know Python.
+
+L<http://groups.google.com/groups?threadm=Pine.LNX.4.44.0308062136400.24346-100000%40hydrogen.sabren.com>
+
+L<http://pirate.versionhost.com/viewcvs.cgi/pirate/GUIDE?rev=1.1>
+
+=head2 TWEAKS
+
+Leo TE<ouml>tsch is a man of many admirable qualities: Official
+Patchmonster to the Parrot process; far, far easier to mention every
+week than Leon Brocard; and damn fine company when sat in a Parisian
+cafE<eacute>. He does, however, have a Dark Side and he showed it
+this week when he came up with the acronym TWEAKS (Takers Wanted --
+Effort And Knowledge Sought). 
+
+TWEAKS is Leo's list of things that need doing for which he's
+soliciting volunteers. If you want to help with the Parrot effort
+without necessarily having to dive into some of the deeper, scary
+areas, you could do lots worse than take on one or another of the
+requirements on this list. If nothing else you'd earn the gratitude
+of our friendly neighbourhood patchmonster.
+
+L<http://groups.google.com/groups?threadm=3F322129.7010503%40nextra.at>
+
+=head2 Parrot gets a vital op
+
+Jos Visser sent in a vitally important patch to Parrot which added a
+new C<fortytwo> op to Parrot. Nicholas Clark asked if it shouldn't
+really be the C<what_do_you_get_if_you_multiply_six_by_nine> op. The
+thread went downhill from there. 
+
+Parrot hackers are definitely worrying.
+
+L<http://groups.google.com/groups?threadm=20030807152111.GB662%40jadzia.josvisser.nl>
+
+=head2 QUERIES
+
+Leo's Dark Side was on display again as he expanded QUERIES to
+"Questions about Unanswered Elderly/Recent Issues Eventually Solvable"
+and popped up a list of more or less Warnocked design issues. Dan came
+through with answers.
+
+L<http://groups.google.com/groups?threadm=3F33681C.5030509%40nextra.at>
+
+=head2 Resumable ops and exceptions
+
+Jos Visser asked if it would be possible to control what happened when
+certain operators failed; whether they threw exceptions or just
+returned undef for instance. Leo thought this could be done by
+installing suitable exception handlers. Leo noted that internal
+exceptions should only really be thrown from within opcode
+implementations rather than from the functions they call.
+
+L<http://groups.google.com/groups?threadm=20030808093217.GB21495%40jadzia.josvisser.nl>
+
+=head2 C<assign> opcodes
+
+Following the earlier discussion of C<set> and C<assign> Leo has been
+working on making the C<assign> op do the right thing. This sparked a
+little more discussion along the lines of 'what do C<set> and C<assign>
+imply in English anyway?'
+
+L<http://groups.google.com/groups?threadm=3F33B0AD.6000909%40nextra.at>
+
+=head2 Exec
+
+Daniel Grunblatt checked in the latest version of Exec, his tool for
+using the JIT at compile time to generate native executables, which
+now passes all the tests. As Nicholas Clark said, "Woohoo!". This
+means that Daniel has delivered all the deliverables for his Perl
+Foundation grant. 
+
+L<http://groups.google.com/groups?threadm=200308081348.17227.daniel%40grunblatt.com.ar>
+
+=head2 Calling conventions for variable-length parameter lists
+
+TOGoS asked for some clarification on dealing with variable length
+parameter lists, especially when calling functions in an unprototyped
+fashion. Frankly, I'm not quite sure what the issue is, but Leo and
+Luke Palmer seemed to get it. 
+
+It's my gut feeling that Perl 6 function implementations are going to
+end up with two different entry points, one for prototyped invocation
+and one for an unprototyped invocation which will take a single array
+argument, extract parameters from it as appropriate to the function's
+prototype, do any runtime argument checking and then make a tail call
+to the prototyped entry point.
+
+L<http://groups.google.com/groups?threadm=20030808182947.8624.qmail%40web41410.mail.yahoo.com>
+
+=head2 Why C<new_pad *INT*>?
+
+Michal Wallace asked for some clarification about C<new_pad>, the
+opcode that creates a new lexical scratchpad. He thought that, 9
+times out of 10 you would want to create a new pad at the next lower
+depth from the current pad, but there's no way to automagically do
+that. Sean O'Rourke explained that, generally the compiler should
+keep track of the lexical depth of the current thing being compiled,
+so it shouldn't be a problem to use the right depth anyway. 
+
+Those of us writing pure interpreters would still like to be able to
+do C<new_pad -1>, but I think we'll have to implement it ourselves. 
+
+L<http://groups.google.com/groups?threadm=Pine.LNX.4.44.0308090437140.26046-100000%40hydrogen.sabren.com>
+
+=head2 struct Parrot_Lexicals; ArrayHash
+
+Leo commented that the current implementation of F<find_lex(by_name)>
+does a linear scan over the list of lexical names. He thought that a
+better way would be to provide a list of lexicals plus a name hash
+where the hash values are indices into the list. He thought that such
+functionality might be handy as a general PMC, and proposed
+implementing a new PMC called ArrayHash, or SortedHash. Matt Fowles
+wondered what was wrong with simply using a hash, and Leo pointed out
+that some HLL compilers might well keep their own map of
+names->indices where known at compile time and use the numeric index
+directly.
+
+L<http://groups.google.com/groups?threadm=3F34B374.9060309%40nextra.at>
+
+=head1 Meanwhile in perl6-language
+
+Things were surprisingly quiet. Maybe everyone's taking time to
+digest the Exegesis. Or maybe the Exegesis was such a model of
+clarity that everyone understood it perfectly.
+
+=head2 Macros and is parsed
+
+Brent Dax showed off an implementation of the C<??::> operator (which
+actually turns out to be the C<macro infix:?? (...) is parsed(...)>
+operator). Larry pointed out that it wasn't I<quite> as simple as
+Brent had thought because of issues of precedence and making sure
+that any lexicals got declared in the appropriate scope. 
+
+L<http://groups.google.com/groups?threadm=000001c35a10%248d66b180%24ac010a0a%40laptop>
+
+=head2 Implicit parameter aliases
+
+Dave Whipp asked whether parameter names were taken into account
+during multiple dispatch, and whether the parameter names in a
+forward declaration had to agree with the names used when the sub was
+fully declared. Dan answered that parameter names aren't looked at
+during multidispatch, but there's been no answer on whether names
+have to agree between forward declarations and the implementation
+(but I'm guessing that they do).
+
+L<http://groups.google.com/groups?threadm=20030805200222.21484.qmail%40onion.perl.org>
+
+=head2 C<printf>-like formatting in interpolated strings
+
+Larry resurrected this old thread (from mid-June when he was
+indisposed) and then laid it to rest again with his usual style and
+grace. It's worth reading the whole thing I think, because it's a
+very succinct description of the kind of expressiveness and power
+that's inherent in what we already know about Perl 6. 
+
+L<http://groups.google.com/groups?threadm=20030809183029.GA24796%40wall.org>
+
+=head1 I want a Ponie!
+
+I promise that, as development of Ponie (the port of Perl 5 to Parrot)
+accelerates you'll see a summary of Ponie activity in this summary as
+well. However, almost all the traffic on the L<ponie-dev@perl.org>
+mailing list has been about fighting Subversion. However, Arthur did
+post a mini status update at the end of July
+
+L<http://groups.google.com/groups?threadm=3B4329F1-BDF1-11D7-8E43-000A95A2734C%40fotango.com> -- Status report
+
+=head1 Acknowledgements, Announcements and Apologies
+
+So, the countdown to moving to the North East is under way. We've just
+had an offer accepted in principle on a house in Gateshead so we have
+got to get this one on the market (and sold) sharpish. What giddy fun!
+
+Meanwhile, is it just me, or do we know enough about Perl 6 now that
+we could actually start implementing stuff? Admittedly, it'll be lots
+easier when Damian finishes Perl6::Rules, but Parrot's looking mature
+enough to host most of the behaviour we've seen described. I'd start
+hacking myself but... well, see above.
+
+Check out L<http://pc1.bofhadsl.ftech.co.uk:8080/> for more of my
+writing.
+
+As ever, if you've appreciated this summary, please consider one or
+more of the following options:
+
+=over 
+
+=item *
+
+Send money to the Perl Foundation at
+L<http://donate.perl-foundation.org/> and help support the ongoing
+development of Perl.
+
+=item *
+
+Get involved in the Perl 6 process. The mailing lists are open  to
+all. L<http://dev.perl.org/perl6/> and L<http://www.parrotcode.org/>
+are good starting points with links to the appropriate mailing lists.
+
+=item *
+
+Send feedback, flames, money, requests for consultancy, photographic
+and writing commissions, or offers on a four bedroomed, 400 year old
+house in Newark on Trent to L<p6summarizer@bofh.org.uk>
+
+=back
+

@@ -1,0 +1,237 @@
+=head1 Perl 6 Summary for the week ending 20030727
+
+Welcome to another in the ongoing series of Perl 6 summaries in which
+your faintly frazzled summarizer attempts to find a native speaker of
+Esperanto to translate this opening paragraph in honour of the huge
+amount of money (1371 Euros) raised for TPF during the YAPC::Europe
+auction, when the official language of both London.pm and Paris.pm's
+websites were auctioned off as one lot. Somewhat to the surprise of
+everyone, the winning bid was for Esperanto. As Jouke Visser just
+commented on IRC, the price was well worth paying just to see the
+looks of panic on the faces of Mark Fowler, Leon Brocard and other
+London.pm worthies as the price of keeping the website English (and
+changing Paris.pm's website to English in the process) shot up
+beyond the reach of their collective pocket.
+
+Meanwhile, we'll return to English and start with the internals list
+as usual.
+
+=head2 Events
+
+Junior reporter: "Mr Macmillan, what caused your greatest
+difficulties in your time as UK Prime Minister?"
+
+Macmillan: "Events dear boy, events."
+
+Whilst I'm not sure Dan would fully agree with Macmillan, there was a
+certain amount of concern about Events (well, event handling). Damien
+Neil is still convinced that asynchronous IO is the Wrong Thing, but
+he hasn't convinced Dan, and (in this at least) it's Dan's opinion
+that counts. 
+
+L<http://groups.google.com/groups?threadm=a05210600bb405b78ecdc%40%5B63.120.19.221%5D> 
+
+L<http://groups.google.com/groups?threadm=a05210605bb4394cbca65%40%5B192.168.0.78%5D> -- Dan ditches the cranky
+reply
+
+=head2 Memory system issues
+
+JE<uuml>rgen BE<ouml>mmels' work on the aforementioned Asynchronous
+IO system means that he's been getting rather more involved with the
+internals of Parrot's memory allocation and Garbage Collection system
+than he intended. He had a few questions, which Dan answered.
+
+L<http://groups.google.com/groups?threadm=m2adb7n558.fsf%40helium.physik.uni-kl.de>
+
+=head2 Splitting F<core.ops>
+
+Brent Dax announced that the patch splitting F<core.ops> into a
+slightly more logical set of smaller files has been committed. This
+occasioned a small flurry of discussion and a smaller flurry of
+patches to ensure that all the new .ops files had their associated
+documentation files built.
+
+L<http://groups.google.com/groups?threadm=001e01c3506d%2435bb71c0%242a01a8c0%40brent>
+
+=head2 Parrot docs translated to Japanese
+
+Koichi Sasada, a Japanese university student has translated the
+Parrot Primer into Japanese and put it on his website. He wanted to
+know if he could publicise the translation. This summary is (at least
+in part) his answer.
+
+L<http://groups.google.com/groups?threadm=m3u19drgrb.wl_rspier%40pobox.com>
+
+L<http://www.parrotcode.org/docs/intro.pod.html> -- In English
+
+L<http://www.namikilab.tuat.ac.jp/~sasada/prog/parrot-intro.html> --
+In Japanese
+
+=head2 PMC methods
+
+Luke Palmer can't stop thinking of other ideas as he works on
+implementing lazy PMCs. His latest idea relates to accessing methods
+on PMCs without having to generate scads of new opcodes (Personally,
+I don't see what's wrong with using the object stuff for getting both
+PMC vtable (C) methods and methods that are implemented in Parrot
+itself.) Luke proposed a few ops which he reckons will solve the
+problem. 
+
+L<http://groups.google.com/groups?threadm=ygc7k695lzz.fsf%40babylonia.flatirons.org>
+
+=head2 F<objects.t> Failures
+
+Simon Glover tracked down a problem with the F<objects.t> test file
+that had been failing on some, but not all platforms. It turns out
+that the class_hash wasn't included as part of the root set, which
+meant that the garbage collector could try to reclaim it before it
+got used. Which is bad. He supplied a two line patch to fix the
+problem. Which is good.
+
+Dan made with the "D'oh!", commenting that he'd known he'd forgotten
+something.
+
+L<http://groups.google.com/groups?threadm=Pine.GSO.4.43.0307231340210.15278-100000%40egg.amnh.org>
+
+=head2 RFC: Cleaning up the ParrotIOLayer API
+
+JE<uuml>rgen BE<ouml>emmels has reached a point in his redoing of the
+Parrot IO subsystem that he wanted to remove and/or rename several of
+the old methods so he posted an RFC explaining what he intended to
+do and asked for comments. Gregor N. Purdy had some comments, mostly
+to do with the data structures involved (with particular reference to
+strings) but other than that there has been no further comment.
+
+L<http://groups.google.com/groups?threadm=m2znj5f629.fsf%40helium.physik.uni-kl.de>
+
+=head2 Parrot Emits an Executable
+
+Daniel Grunblatt checked in a patch to make parrot generate native
+executables. There are caveats about what must be done in order to get
+a working executable and the original patch needed to have a few
+wrinkles ironed out, but this looks like a fantastic start to me.
+
+L<http://groups.google.com/groups?threadm=200307241357.52340.daniel%40grunblatt.com.ar>
+
+=head2 Approaching Python
+
+Michael Wallace wondered about the issue of compiling python to
+parrot. He wondered if it would be possible to make use of the
+existing Python compiler module which generates python bytecode from
+a parse tree. He wondered if it'd be worthwhile modifying it to
+generate parrot bytecode. The discussion which followed covered
+various options for handling Python code, ranging from bytecode
+transformation to translating the source code into Perl 6 (which is
+probably the least likely to save Dan from pie). 
+
+I'm not sure if a particular approach was chosen, but Michael seems
+keen to try a spike based on his initial suggestion.
+
+L<http://groups.google.com/groups?threadm=Pine.LNX.4.44.0307231929500.25353-100000%40hydrogen.sabren.com>
+
+=head2 Doc Patches
+
+Jonathan Worthington sent in a patch to F<intro.pod> and wondered if
+that would count as a 'real' patch. The answer being "Yes, of course
+they do. Patch applied."
+
+L<http://groups.google.com/groups?threadm=rt-23136-61820.17.0328765314021%40rt.perl.org>
+
+=head1 Meanwhile in Perl 6 Language
+
+Things were again relatively quiet on the language list...
+
+=head2 Preprocessors and Patterns
+
+David Whipp explained what he meant when he talked about overriding
+the C<< <ws> >> pattern as a way of doing preprocessing. His insight
+being that a C Preprocessor style directive is generally legal
+anywhere that whitespace is legal, so by implementing a grammar along
+the lines of:
+
+    grammar Perl6::WithCPPStyleDirectives {
+        rule ws { <CPPDirective> | <SUPER::ws> }
+        rule CPPDirective { ... }
+        ...
+    }
+
+one could avoid having to add a whole bunch of C<< <CPPDirective> >>
+subclauses to the various rules in the grammar. 
+
+Austin Hastings popped up to say that he thought that this was just
+another aspect of the issue of being able to run grammars/patterns
+against arbitrary objects, and proposed the idea of chaining
+grammars (a la SAX pipelines I think). Dave came up with a possible
+syntax:
+
+    $fh ~~ / < <Grammar.Lang.C.Preprocessor ==> <Grammar.Lang.C> > /;
+
+For the life of me I couldn't tell you whether I think that looks like
+a brilliant or a disgusting idea.
+
+L<http://groups.google.com/groups?threadm=20030721165625.9247.qmail%40onion.perl.org>
+
+=head2 Protocols
+
+Discussion of the idea of borrowing Objective-C's Protocols for Perl
+6 continued with a discussion of what that means precisely, and why
+Java's interfaces are a sub optimal way of doing the Right Thing. In
+general, people seemed to be in violent agreement. 
+
+L<http://groups.google.com/groups?threadm=C85B5EA0-BD71-11D7-B9BA-000393DBC8FE%40wgz.org>
+
+=head1 Acknowledgements, Announcements and Apologies
+
+Okay, okay, PONIE really stands for 'Perl On New Internal Engine'. I
+think. Or maybe it doesn't. Maybe PONIE can stand for itself. 
+
+Many, many thanks to my kind hosts in Paris, Sebastien Huart and
+Paul-Christophe Varoutas (and to Paul-Christophe's sister whose
+apartment I borrowed for a couple of nights). Thanks also to Earle
+Martin and Sam Vilain for Eurostar tickets, even if a communication
+breakdown caused chaos on Sunday. No thanks at all to whoever pocketed
+my iPod rather than handing it in to lost property.
+
+Paris is a fabulous city and YAPC::Europe was both great fun and
+enlightening. Quote of the week came at the Parrot BOF:
+
+Dan: I'm really bad at reading my mails
+Leo: You should at least read I<my> mails
+Everyone: Hear! Hear! (or words to that effect)
+
+After which we went on to draw a bunch of boxes and arrows along the
+way to fixing up the GC system.
+
+Thanks are also due to my stepdaughter who's been looking after the
+kittens for the past six weeks. Well, I say kittens, but now they're
+back they are I<huge>, gorgeous, and easily driven to distraction by
+my shiny new laser pointer.
+
+Thanks too to all of you who popped by at
+L<http://pc1.bofhadsl.ftech.co.uk:8080/>, I promise more new content
+this week. 
+
+As ever, if you've appreciated this summary, please consider one or
+more of the following options:
+
+=over 
+
+=item *
+
+Send money to the Perl Foundation at
+L<http://donate.perl-foundation.org/> and help support the ongoing
+development of Perl.
+
+=item *
+
+Get involved in the Perl 6 process. The mailing lists are open  to
+all. L<http://dev.perl.org/perl6/> and L<http://www.parrotcode.org/>
+are good starting points with links to the appropriate mailing lists.
+
+=item *
+
+Send feedback, flames, money, requests for consultancy, photographic
+and writing commissions, or anything really cool that isn't Nigerian
+spam to L<p6summarizer@bofh.org.uk>
+
+=back
