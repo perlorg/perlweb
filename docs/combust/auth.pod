@@ -1,0 +1,68 @@
+=head1 Combust Authentication v2.0 Notes
+
+
+=head3 merge accounts
+
+  - move email address
+  - if there _are no more addresses_ in the old account
+    - merge groups
+    - mark old account inactive (?)
+
+
+=head3 nested groups?
+
+=head2 Table definition
+
+  create table auth_users (
+    user_id mediumint(8) unsigned NOT NULL primary key auto_increment,
+    login varchar(128) NOT NULL default '',
+    name varchar(128) NOT NULL default '',
+    password varchar(20) NOT NULL default '',
+    active   ...
+    disabled ...
+    last_access datetime not null,
+    country char(2) default NULL,
+    primary_email_id email_id mediumint(8) unsigned not null, 
+  ) type=INNODB;
+
+  create table auth_emails (
+    user_id mediumint(8) unsigned not null, 
+    email_id mediumint(8) unsigned not null primary key auto_increment, 
+    email varchar(255) not null default ''
+    confirmed enum ('no','yes') not null,
+    KEY user_idx (user_id),
+    UNIQUE KEY email_idx (email)
+  ) type=INNODB;
+
+  create table auth_sites (
+    site_id mediumint(8) unsigned NOT NULL primary key auto_increment,
+    site_name   varchar(255) not null,
+    site_domain  varchar(255) not null,    # several domains?  needed at all?  (only allow this site to login users to this domain)
+    site_logout_url varchar(255) not null, # where to send the user to logout 
+    site_key varchar(255) not null,        # shared encryption key
+  ) type=INNODB;
+ 
+  # Allow each site to set basic options etc through the API. Only very
+  # basic things for now, I think.  maybe support "site_id 0" for global
+  # options.  Is this needed?  Could groups alone do instead?
+  create table auth_site_user_options/authz ( 
+    user_id mediumint(8) unsigned not null, 
+    site_id mediumint(8) unsigned NOT NULL, 
+    key     varchar(100) not null,
+    value   varchar(255) not null, 
+    unique key (user_id, site_id, key)
+  ) type=INNODB;
+
+  create table auth_groups (
+    group_id mediumint(8) unsigned NOT NULL primary key auto_increment,
+    site_id mediumint(8) unsigned not null,
+    group_name varchar(255) not null,
+    ... ?
+  ) type=INNODB;
+
+  create table auth_user_group (
+    user_id mediumint(8) unsigned not null,
+    group_id mediumint(8) unsigned not null,
+    UNIQUE KEY (user_id, group_id),
+    KEY (group_id)
+  ) type=INNODB;
