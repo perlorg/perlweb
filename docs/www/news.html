@@ -24,7 +24,7 @@
 [% MACRO newsentry(shortname,longname,limit,url) BLOCK %]
 <A NAME="[% shortname %]"></A>
 <h3><A HREF="[% url %] ">[% longname %]</A></H3>
-    [% USE news = XML.RSS("/home/newweb/var/rss/${shortname}.rss") %]
+    [% USE news = XML.RSS("${root}/var/rss/${shortname}.rss") %]
     <UL>
     [% FOREACH item = news.items %]
        [%- LAST IF loop.count() > limit %]

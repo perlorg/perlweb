@@ -138,7 +138,7 @@
     </div>
 
 <!--
-    [% USE news = XML.RSS('/home/newweb/var/rss/useperl.rss') %]
+    [% USE news = XML.RSS("${root}/var/rss/useperl.rss") %]
     <a href="news.html" CLASS="TOPIC">News</a>
     <DIV CLASS="ITEMS">
     [% FOREACH item = news.items %]
@@ -157,7 +157,7 @@
  </tr>
 
 [% MACRO quicknews(shortname) BLOCK %]
-    [%- USE news = XML.RSS("/home/newweb/var/rss/${shortname}.rss") %]
+    [%- USE news = XML.RSS("${root}/var/rss/${shortname}.rss") %]
     [%- item = news.items.first %]
     <A HREF="[% item.link %]">[%- item.title %]</A>
 [% END %]
