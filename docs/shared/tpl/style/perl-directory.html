@@ -92,17 +92,7 @@
 <TABLE border="0" WIDTH="730" CELLSPACING="0" CELLPADDING="0">
 <TR ALIGN="RIGHT">
 
-<TD WIDTH="110" ALIGN="left" VALIGN="TOP">
-<BR>
- 
-<DIV CLASS="FOOTER">
-[% UNLESS notes.include_root == "/" %]
-[% PROCESS tpl/root_info.html %]
-[% END %]
-</DIV>
-</TD>
-
-<TD WIDTH="480">
+<TD WIDTH="590" VALIGN="MIDDLE">
 <BR>
 
 <DIV CLASS="FOOTER">
@@ -117,8 +107,15 @@
      | <A href="http://lists.perl.org/">lists</a>
      | <A href="http://use.perl.org/">use</a>
     </DIV>
+
+<DIV ALIGN="LEFT">
+[% UNLESS notes.include_root == "/" %]
+[% PROCESS tpl/root_info.html %]
+[% END %]
+</DIV>
+
 </TD>
-<TD>
+<TD align="middle">
 <img align="right" src="/images/lcamel.gif"  alt="a camel">
 </TD>
 </TR>
