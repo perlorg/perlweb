@@ -1,0 +1,253 @@
+
+=head1 TITLE
+
+Synopsis 3: Summary of Perl 6 Operators
+
+=head1 AUTHOR
+
+Luke Palmer <luke@luqui.org>
+
+=head1 VERSION
+
+  Maintainer: Luke Palmer <luke@luqui.org>
+  Date: 8 Mar 2004
+  Last Modified: 8 Mar 2004
+  Number: 3
+  Version: 1
+
+=head1 Operator renaming
+
+Several operators have been given new names to increase clarity and better
+Huffman-code the language:
+
+=over
+
+=item * C<< -> >> becomes C<.>, like the rest of the world uses.
+
+=item * The string concatenation C<.> becomes C<~>.  Think of it as
+"stitching" the two ends of its arguments together.
+
+=item * Unary C<~> now imposes a string context on its argument, and
+C<+> imposes a numeric context (as opposed to being a no-op in Perl 5).
+Along the same lines, C<?> imposes a boolean context.
+
+=item * Bitwise operators get a data type prefix: C<+>, C<~>, or C<?>.
+For example, C<|> becomes either C<+|> or C<~|> or C<?|>, depending on
+whether the operands are to be treated as numbers, strings, or boolean
+values.  Left shift C< << > becomes C< +< >, and correspondingly with
+right shift. Unary C<~> becomes either C<+^> or C<~^> or C<?^>, since a
+bitwise NOT is like an exclusive-or against solid ones.  Note that C<?^>
+is functionally identical to C<!>.  C<?|> differs from C<||> in that
+C<?|> always returns a standard boolean value (either 1 or 0), whereas
+C<||> return the actual value of the first of its arguments that is
+true.
+
+=item * C<x> splits into two operators: C<x> (which concatenates repetitions 
+of a string to produce a single string), and C<xx> (which creates a list of 
+repetitions of a list or scalar).
+
+=item * Trinary C<? :> becomes C<?? ::>.
+
+=item * C<qw{ ... }> gets a synonym: C< E<laquo> ... E<raquo> >.
+For those still living without the blessings of Unicode, that can also be
+written: C<<< << ... >> >>>.
+
+=item * The scalar comma C<,> now constructs a list reference of its
+operands.  You have to use a [-1] subscript to get the last one.
+
+=back
+
+=head1 New operators
+
+=over
+
+=item * Binary C<//> is just like C<||>, except that it tests its left
+side for definedness instead of truth. There is a low-precedence form,
+too: C<err>.
+
+=item * Binary C<< => >> is no longer just a "fancy comma."  It now
+constructs a C<Pair> object that can, among other things, be used to
+pass named arguments to functions.  
+
+=item * C<^^> is the high-precedence version of C<xor>.
+
+=item * Unary C<.> calls its single argument (which must be a method, or an
+dereferencer for a hash or array) on $_.
+
+=item * C<...> is a unary postfix operator that constructs a semi-infinite
+(and lazily evaluated) list, starting at the value of its single argument.
+
+=item * However, C<...> as a term is the "yada, yada, yada" operator,
+which is used as the body in function prototypes.  It dies if it is ever
+executed.
+
+=item * C<$(...)> imposes a scalar context on whatever it encloses.
+Similarly, C<@(...)> and C<%(...)> impose a list and hash context,
+respectively.  These can be interpolated into strings.
+
+=back
+
+=head1 Vector operators
+
+The Unicode characters C<E<raquo>> (C<\x[BB]>) and C<E<laquo>>
+(C<\x[BB]>) and their ASCII digraphs C<<< >> >>> and C<<< << >>> are
+used to denote "list operations", which operate on each element of two
+lists (or arrays) and return a list (or array) of the results.  For
+example:
+
+     (1,1,2,3,5) E<raquo>+E<laquo> (1,2,3,5,8);  # (2,3,5,8,13)
+
+If one argument is insufficiently dimensioned, Perl "upgrades" it:
+
+     (3,8,2,9,3,8) >>-<< 1;          # (2,7,1,8,2,7)
+
+This can even be done with method calls:
+
+     ("f","oo","bar")E<raquo>.E<laquo>length;   # (1,2,3)
+
+When using a unary operator, only put it on the operand's side:
+
+     @negatives = -E<laquo> @positives;
+     
+     @positionsZ<>E<raquo>++;            # Increment all positions
+     
+     @objectsZ<>E<raquo>.run();
+
+=head1 Junctive operators
+
+C<|>, C<&>, and C<^> are no longer bitwise operators (see L</Operator
+Renaming>) but now serve a much higher cause: they are now the
+junction constructors.
+
+A junction is a single value that is equivalent to multiple values. They
+thread through operations, returning another junction representing the
+result:
+
+     1|2|3 + 4;                              # 5|6|7
+     1|2 + 3&4;                              # (4|5) & (5|6)
+
+Note how when two junctions are applied through an operator, the result
+is a junction representing the operator applied to each combination of
+values.
+
+Junctions come with the functional variants C<any>, C<all>, C<one>, and C<none>.
+
+This opens doors for constructions like:
+
+     unless $roll == any(1..6) { print "Invalid roll" }
+
+     if $roll == 1|2|3 { print "Low roll" }
+
+=head1 Chained comparisons
+
+Perl 6 supports the natural extension to the comparison operators,
+allowing multiple operands.
+
+     if 3 < $roll <= 6              { print "High roll" }
+     
+     if 1 <= $roll1 == $roll2 <= 6  { print "Doubles!" }
+
+=head1 Binding
+
+A new form of assignment is present in Perl 6, called "binding," used in
+place of typeglob assignment.  It is performed with the C<:=> operator.
+Instead of replacing the value in a container like normal assignment, it
+replaces the container itself.  For instance:
+
+    my $x = 'Just Another';
+    my $y := $x;
+    $y = 'Perl Hacker';
+
+After this, both C<$x> and C<$y> contain the string "Perl Hacker," since
+they are really just two different names for the same variable.
+
+There is another variant, spelled C<::=>, that does the same thing at
+compile time.
+
+There is also an identity test, C<=:=>, which tests whether two names
+are bound to the same underlying variable.  C<$x =:= $y> would return
+true in the above example.
+
+=head1 List flattening
+
+Since typeglobs are being removed, unary C<*> may now serve as a list
+flattening operator.  It is used to "flatten" an array into a list,
+usually to allow the array's contents to be used as the arguments of a
+subroutine call.  Note that those arguments still must comply with the
+subroutine's signature, but the presence of C<*> defers that test until
+run time.
+
+    my @args = (\@foo, @bar);
+    push *@args;
+
+Is equivalent to:
+
+    push @foo, @bar;
+
+=head1 Piping operators
+
+The new operators C<< ==> >> and C<< <== >> are akin to UNIX pipes, but
+work with functions that accept and return lists.  For example,
+
+     @result = map { floor($^x / 2) }
+                 grep { /^ \d+ $/ }
+                   @data;
+
+Can also now be written:
+
+     @data ==> grep { /^ \d+ $/ }
+           ==> map { floor($^x / 2) }
+           ==> @result;
+
+or:
+
+     @result <== map { floor($^x / 2) }
+             <== grep { /^ \d+ $/ }
+             <== @data;
+
+Either form more clearly indicates the flow of data.  See L<Synopsis 6> for 
+more of the (less-than-obvious) details on these two operators.
+
+=head1 Invocant marker
+
+An appended C<:> marks the invocant when using the indirect-object
+syntax for Perl 6 method calls.  The following two statements are
+equivalent:
+
+    $hacker.feed('Pizza and cola');
+    feed $hacker: 'Pizza and cola';
+
+=head1 C<zip>
+
+In order to support parallel iteration over multiple arrays, Perl 6 has
+a C<zip> function that interleaves the elements of two or more arrays.
+
+    for zip(@names, @codes) -> $name, $zip {
+        print "Name: $name;   Zip code: $zip\n";
+    }
+
+C<zip> has an infix synonym, the Unicode operator C<E<brvbar>>.
+
+=head1 Minimal whitespace DWIMmery
+
+Whitespace is no longer allowed before the opening bracket of an array
+or hash accessor.  That is:
+
+    %monsters{'cookie'} = Monster.new;  # Valid Perl 6
+    %people  {'john'}   = Person.new;   # Not valid Perl 6
+
+One of the several useful side-effects of this restriction is that
+parentheses are no longer required around the condition of control
+constructs:
+
+    if $value eq $target {
+        print "Bullseye!";
+    }
+    while 0 < $i { $i++ }
+
+It is, however, still possible to align accessors by explicitly using the C<.>
+operator:
+
+     %monsters.{'cookie'} = Monster.new;
+     %people  .{'john'}   = Person .new;
+     %cats    .{'fluffy'} = Cat    .new;
