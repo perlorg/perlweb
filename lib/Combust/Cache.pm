@@ -1,101 +1,52 @@
 package Combust::Cache;
 use strict;
-use Develooper::DB qw(db_open);
 use Carp qw(carp);
-use Storable qw(nfreeze thaw);
+use Combust::Cache::DBI;
+eval { require Combust::Cache::Memcached };
+
 
 # TODO:
 #   - support passing a scalar ref to store() ?
 #
+
+my $default_backend = 'dbi';
 
 sub new {
   my ($proto, %args) = (shift, @_);
   my $class = ref $proto || $proto;
   my $type  = $args{type}|| '';
   my $self = { type => $type };
-  bless( $self, $class);
+  # bless( $self, $class);
+  bless_backend($self, $class);
 }
 
-sub fetch {
-  my ($self, %args) = @_;
-
-  my $id = $args{id} or carp "No id specified" and return;
-  my $type = $self->{type};
-
-  $self->{fetched_id} = $id;
-
-  my $dbh = db_open;
-
-  my $row = $dbh->selectrow_hashref
-    (
-     q[SELECT created, data, metadata, serialized,
-              UNIX_TIMESTAMP(created) as created_timestamp
-       FROM combust_cache
-       WHERE 
-       id = ?
-       AND type = ?
-       AND expire > NOW()
-      ],
-     {},
-     $id,
-     $type
-    );
-
-  return undef unless $row;
-
-  if ($row->{serialized}) {
-    $row->{data} = thaw $row->{data};
-  }
-  
-  $row->{meta_data} = delete $row->{metadata};
-  $row->{meta_data} = $row->{meta_data}
-                        ? thaw $row->{meta_data}
-			: {};  
-     
-  $row;
-  
+sub bless_backend {
+  my ($self, $class, $backend) = @_;
+  $backend ||= $class->backend;
+  my $_class;
+  $_class = 'Combust::Cache::DBI' if $backend eq "dbi";
+  $_class = 'Combust::Cache::Memcached' if $backend eq "memcached";
+  bless $self, $_class if $_class;
 }
 
-sub store {
-  my ($self, %args) = @_;
-  my $id        = ($args{id} || $self->{fetched_id}) 
-    or carp "No id specified" and return;
-  my $purge_key = $args{purge_key} || undef;
-  my $data      = defined $args{data}
-                    ? $args{data}
-                    : (carp "No data passed to cache" and return);
+sub backend {
+  my ($self, $backend) = @_;
 
-  my $type = $self->{type};
+  carp "$backend is not a valid Combust::Cache storage backend"
+      and $backend = undef 
+	if $backend and $backend !~ m/^(dbi|memcached)$/;
 
-  my $metadata  = ($args{meta_data} and ref $args{meta_data} eq "HASH"
-  		     ? $args{meta_data}
-		     : undef);
-
-  my $expire    = time + ($args{expire} || 7200);
-
-  my $serialized = 0;
-
-  if (ref $data) {
-    $data = nfreeze($data);
-    $serialized = 1;
+  if ($backend) {
+    if (ref $self) {
+      bless_backend($self, $self, $backend);
+    }
+    else {
+      $default_backend = $backend;
+    }
   }
 
-  $metadata = nfreeze($metadata)
-    if (defined $metadata);
-
-  my $dbh = db_open;
-  $dbh->do(q[replace into combust_cache
-	     (id, type, purge_key, data, metadata, serialized, expire)
-	     VALUES (?,?,?,?,?,?,FROM_UNIXTIME(?))],
-	   {},
-	   $id,
-           $type,
-           $purge_key,
-           $data, 
-           $metadata,
-           $serialized, 
-           $expire,
-	  );
+  # return $self->{_backend} if ref $self and $self->{_backend};
+  return $default_backend;
 }
 
 1;
