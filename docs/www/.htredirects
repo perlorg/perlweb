@@ -15,6 +15,8 @@
 /about/(.*)     /about.html  perm
 /press/?(.*)     /about.html  perm
 
+# temporary fix for evil leading //, like http://www.perl.org//about.html
+//(.*)  /$1
 
 # Personal coolness
 /~?ask(/.*)?     http://www.askbjoernhansen.com/
@@ -25,6 +27,8 @@
 /books/?          http://books.perl.org/ perm
 /CPAN/?           http://www.cpan.org/   perm
 /cpan/?           http://www.cpan.org/   perm
+/CPAN/(.*)        http://www.cpan.org/$1 perm
+/cpan/(.*)        http://www.cpan.org/$1 perm
 /friends.shtml   /siteinfo.html         intern
 /headlines.shtml /news.html             perm
 /index.shtml     /                      perm
@@ -36,6 +40,7 @@
 /phbs/y2k.html          /about/y2k.html                 perm
 /support/?.*            /docs.html                      perm
 /Images/download_perl.gif /images/buttons/download_perl.gif  intern
+/Images/my_portal.gif     /images/buttons/my_portal.gif  intern
 
 # Redirect BDF things to his CVS on sf
 /CGI_MetaFAQ.html  http://xrl.us/CGIMetaFAQ  perm 
@@ -43,3 +48,7 @@
 
 # Freak people out
 /index\.(php|py|jsp|cgi)  /  internal
+
+# stupid idiots
+
+/cgi-bin/formmail/.*  http://www.army.mil/
