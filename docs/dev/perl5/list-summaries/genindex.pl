@@ -15,7 +15,7 @@ for my $pod (sort {$b cmp $a} <*/*.pod>) {
     open my $fh, '<', $pod or die "Can't read $pod: $!\n";
     my $head = <$fh>;
     close $fh;
-    if ($head !~ /^=head1 This Week on perl5-porters \((.*)\)/i) {
+    if ($head !~ /^=head1 Th[ie]se? Weeks? on perl5-porters \((.*)\)/i) {
 	warn "$pod malformed\n";
 	next;
     }
