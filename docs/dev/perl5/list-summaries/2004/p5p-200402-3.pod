@@ -1,0 +1,121 @@
+=head1 This Week on perl5-porters (16-22 February 2004)
+
+This week is to be filed in the categpry "busy" for the Perl 5 porters.
+Read about new optimisations, new ideas, new warnings, bugs, fixes, and
+other future plans for the next major version of Per 5.
+
+=head2 A couple of optimisations
+
+Paul Johnson revamped the internal OP structure so that optrees now take
+less memory (while the speed impact is not mesureable.) This is going only
+in bleadperl, because, obviously, it breaks binary compatibility.
+
+    http://groups.google.com/groups?selm=20040221174213.5c39a8b5.rgarciasuarez%40free.fr
+
+Dave Mitchell continues his series of impressive patches by extending the
+AELEMFAST optimisation to lexical arrays. This optimisation was already in
+place for global arrays, to access an element where the index is an
+integer constant between 0 and 255. As a result, access to fixed elements
+of lexical arrays seems to be faster by a factor of 50%.
+
+    http://groups.google.com/groups?selm=20040222160435.GA20408%40fdisolutions.com
+
+=head2 read() return value and EOF
+
+Michael Bell reports (as bug #26787) that read() can return 0 on Linux
+even when not at end-of-file, when under a high system load. It is a bug
+in perl, or a misfeature, or a bug in Linux? Should read() return C<undef>
+on EOF?
+
+    http://groups.google.com/groups?selm=rt-3.0.8-26787-78336.2.2498005290219%40perl.org
+
+=head2 Reopening a STD filehandle
+
+Stas Bekman reports (bug #26670) that perl (with the PerlIO
+implementation, default since 5.8.0) seems to handle dup(2) badly when
+some STD streams are closed, emitting an obscure warning I<Filehandle
+STDOUT reopened only for input> (or the inverse). Nick Ing-Simmons points
+out that this is in fact expected behaviour: since STDOUT was closed, the
+next open() reuses filehandle number 1, which is, by definition, STDOUT
+(in perl and in C); so perl, here, warns about a potential bogus
+situation. Nick's advice is to reopen a closed STD handle to F</dev/null>.
+
+    http://groups.google.com/groups?selm=rt-3.0.8-26670-78082.19.4315995467592%40perl.org
+
+=head2 Autovivification of an assignment
+
+Ton Hospel notices (bug #26866) that the autovivification of hash and
+array references does not seem to happen consistently. For example, this
+is valid:
+
+    $u = undef; $x = $u->{foo}
+
+but this dies with a fatal error:
+
+    $x = ($u=undef)->{foo}
+
+Nicholas Clark points out that this is probably the same problem that was
+reported as bug #18635.
+
+    http://groups.google.com/groups?selm=c101e9$jf8$1%40post.home.lunix
+
+=head2 A prototype for defaulting to C<$_>
+
+Continuing a thread from last week, a proposal to extend the prototype
+syntax was discussed: a new prototype character, C<_>, could stand for
+I<optional value that defaults to $_>. For example, a function that takes
+a list as a parameter, but that uses C<$_> if passed the empty list, could
+have the prototype C<sub mychomp(_@)>. However, this implies that the
+prototypes of built-ins would change.
+
+The complete thread:
+
+    http://groups.google.com/groups?selm=20040206164438.GK19932%40c3.convolution.nl
+
+=head2 New warning
+
+The dubious construct
+
+    my $foo = $bar if $condition;
+
+(and other equivalent ones) now produces a deprecation warning, thanks to
+Dave Mitchell. (See our previous episodes for details).
+
+=head2 Miscellaneous Bugs
+
+Jamie Lokier reports (bug #26909) that in a C<(?{...})> regular expression
+block, lexical variables are captured, just like in closures, but without
+warning the user as of 5.8.0. This lack of warning is fixed in recent
+perls.
+
+He also reported (as bug #26910) that C<use strict 'vars'> doesn't seem to
+be active in C<(?{...})> blocks.
+
+Sean O'Rourke reported that calling a subroutine f() recursively with
+C<goto &f> leaks memory, and suggests that it may come from lexicals not
+being freed. (Bug #26959.)
+
+=head2 In Brief
+
+Rafael announced that he plans to make a new developement release of perl,
+5.9.1, in March.
+
+Meanwhile, Leon Brocard released perl 5.005_04 RC2.
+
+    http://groups.google.com/groups?selm=20040219142651.GA31294%40kanga.astray.com
+
+Brendan O'Dea sent a batch of patches that he applied to the Debian
+5.8.3-2 release of perl.
+
+    http://groups.google.com/groups?selm=20040215122717.GA26812%40londo.c47.org
+
+Russ Allbery released Term::ANSIColor 1.08. MIME::Base64 3.00, which was
+released a while ago, was also integrated into the perl distribution.
+
+=head2 About this summary
+
+This summary was written by Rafael Garcia-Suarez.  Weekly summaries are
+published on F<http://use.perl.org/> and posted on a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. (I've been
+trying to use gmane (F<http://news.gmane.org/>) as a message archive, but
+it's horribly slow.) Corrections and comments are welcome.
