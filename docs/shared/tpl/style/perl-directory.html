@@ -36,6 +36,10 @@
         href="[%- page.css -%]"
         title="Default CSS2" media="screen">
   <link rel="shortcut icon" href="[% page.favicon || "/favicon.ico" %]">
+  [% IF page.description;
+     '<META name="description" content="' _ page.description _ '">';
+     END
+  %]
 </head>
 <body>
 
