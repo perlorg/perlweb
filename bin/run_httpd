@@ -6,6 +6,9 @@ if test -z $CBROOT
   exit 
 fi
 
-$CBROOT/bin/template_filler < $CBROOT/apache/conf/httpd.tmpl > $CBROOT/apache/conf/httpd.conf && \
+# $CBROOT/bin/template_filler < $CBROOT/apache/conf/httpd.tmpl > $CBROOT/apache/conf/httpd.conf && \
+
+mkdir -p tmp/htdocs && mkdir -p tmp/ctpl && \
+$CBROOT/bin/make_configs && \
 $CBROOT/apache/bin/apachectl configtest && \
 $CBROOT/apache/bin/apachectl stop && sleep 3 && $CBROOT/apache/bin/apachectl start

@@ -3,6 +3,7 @@ use strict;
 BEGIN { die "CBROOT required" unless $ENV{CBROOT}; }
 use lib "$ENV{CBROOT}/lib";
 use Getopt::Long;
+use Combust::Config;
 use Develooper::TemplateFiller;
 my %opts = ();
 GetOptions (\%opts,
@@ -30,8 +31,11 @@ if ($filename) {
   $text_template_options{SOURCE} = $filename;
 }
 
+$T::config = '' if 0;
+$T::config = Combust::Config->new(); 
+
 template_filler(new => { %text_template_options,
-                         @delimiters }
+                         @delimiters },
                )
     or die "Could not do the template filling.\n$Text::Template::ERROR";
 
