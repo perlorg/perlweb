@@ -11,10 +11,11 @@
 <br>
 
 <font size="+4">
-<b><A HREF="news/2003/perl-5.8.1.html">Perl 5.8.1 Released!</A></B>
+<b><A HREF="news/2003/perl-5.8.2.html">Perl 5.8.2 Released!</A></B>
 </font><br>
 A maintenance release of <A HREF="news/2002/07/18/580ann/"
->Perl 5.8.0</A>.<BR>
+>Perl 5.8.0</A><BR>
+And the follow-on to <A HREF="news/2003/perl-5.8.1.html">Perl 5.8.1</A><BR>
 
 
 [% words = ["diamond inheritance now works!",
@@ -24,15 +25,19 @@ A maintenance release of <A HREF="news/2002/07/18/580ann/"
 	    "now supports local \${\$x}",
 	    "still not perl 6",
 	    "tastes great, less filling",
-	    "perl 5 8 1 / it has been released for us / now it's time for fall",
 	    "mo better perl mojo",
 	    "features added, some work!",
 	    "you will like it!",
-	    "perl five eight one",
+	    "perl five eight two",
 	    "new better random hashes",
 	    "too damn many features",
 	    "Doing the same but better",
-	    "slicker than ever before!"] %]
+	    "slicker than ever before!",
+            "not enough new quotes",
+            "fixes binary compatibility",
+            "different random hashes",
+            "makes mod perl 2 happy",
+          ] %]
 [% pick = words.size().rand() %]
 <b><i>[% words.$pick %]</i></b><br>
 
