@@ -6,9 +6,9 @@ echo
 
 if [ -z $CBROOT ]
 then
-  echo No CBROOT specified.  Defaulting to /home/newweb
+  echo No CBROOT specified.  
   echo
-  CBROOT=/home/newweb
+  exit
 fi
 
 
@@ -20,6 +20,5 @@ AUTO_UPDATE="live"
 
 for branch in $AUTO_UPDATE
 do
-  cd $CBROOT/docs/$branch
-  /usr/local/bin/svn update
+  cd $CBROOT/docs/$branch && /usr/local/bin/svn update
 done
