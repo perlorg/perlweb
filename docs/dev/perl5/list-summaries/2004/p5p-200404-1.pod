@@ -1,0 +1,120 @@
+=head1 This Week on perl5-porters (5-11 April 2004)
+
+Spring is here, at least in the northern hemisphere, and perl 5.8.4 is
+approaching. This doesn't stop the Perl 5 porters from pursuing their
+usual job: proposing exciting new ideas, and fixing bugs. Read on for the
+details.
+
+=head2 Towards 5.8.4
+
+Nicholas Clark posted a draft of the perldelta for perl 5.8.4, and then
+released a first release candidate, which triggered some last-minute
+adjustments. Randal L. Schwartz also commented on the modules that were
+still newer on CPAN than in the RC1 tarball; which is not to be considered
+absolutely evil, as Nicholas explained, given that the primary goal of a
+maintenance release is stability.
+
+    http://groups.google.com/groups?selm=20040404224109.GJ701%40plum.flirble.org
+    http://groups.google.com/groups?selm=20040405215642.GG676%40plum.flirble.org
+
+=head2 More pack templates
+
+Marcus Holland-Moritz proposed an extension to the pack() template syntax,
+to handle signed integers in big- and in little-endian order. H. Merijn
+Brand suggested that, instead of using new letters, one could use a C<!>
+suffix to denote signedness, proposition which was unanimously approved.
+
+    http://groups.google.com/groups?selm=20040405182634.7dc02687%40r2d2
+
+But then, Marcus took his initial idea further, and proposed a more
+general extension. This second one, among other things, uses the C<< < >>
+and C<< > >> suffixes to denote respectively little- and big-endianness.
+Patches are to be expected.
+
+    http://groups.google.com/groups?selm=20040408180559.470c4a47%40r2d2
+
+=head2 Unicode exercise
+
+Jarkko Hietaniemi proposed a small Unicode task for the interested:
+automate the generation of Unicode properties in perl's Unicode character
+tables (the files in F<lib/unicore>); they are currently hardcoded.
+The details can be found at:
+
+    http://groups.google.com/groups?selm=40750F8A.7020006%40iki.fi
+
+=head2 Optree black magic
+
+Jim Cromie, who recently worked on the C<B::Concise> (a core module to
+dump optrees), got an idea: using a C<B::Concise> style to generate code
+to be executed by C<B::Generate> to generate an optree equivalent to the
+one which was dumped.
+
+Scott Walters commented that he is, on his own, working on a Perl 6 to
+Perl 5 bytecode compiler, in sight of using B::Generate to have executable
+code; and some of the efforts converge here. Something interesting might
+be produced by this (maybe I<psooie> --	I<Perl Six On Old Internals
+Engine>.)
+
+    http://groups.google.com/groups?selm=40745889.6090208%40divsol.com
+
+=head2 An improved warning
+
+Dave Mitchell proposed a patch to improve the famous warning I<Use of
+uninitialized value...> by adding the name of the undefined variable or
+array/hash subscript that triggered the warning in the potentially faulty
+expression. I'm sure this additional verbosity will make lots of coders
+happy.
+
+=head2 Caching tied hash elements
+
+Jamie Lokier submitted an extensive bug report (bug #28233) concerning the
+aggressive caching of references to elements of tied hashes. Those
+references are magical, since reading from them calls FETCH() and writing
+to them calls STORE(), but the read or written value is cached by perl,
+and sometimes this cache isn't invalidated whereas it should be. Jamie
+proposed a solution but nobody commented yet.
+
+    http://groups.google.com/groups?selm=rt-3.0.8-28233-83777.13.7804390706522%40perl.org
+
+=head2 Some other bugs
+
+Rafael fixed a compiler bug, which was indefinitively looping when
+parsing (not executing) the following construct:
+
+    map { while (1) {} } ()
+
+David Dyck noticed a glitch in F<find2perl>, now that it defaults to
+C<-print> if no other action is specified: it shouldn't default to
+C<-print>, however, when one of the actions is an C<-eval>. This was
+fixed.
+
+Andrew Alakozow reported (as bug #28364) that perl segfaults on Win32 when
+some XS code changes values in the program's environment, and when
+the destruct level is greater than 0 (for example in spawned threads, or
+when the environment variable PERL_DESTRUCT_LEVEL is set at an appropriate
+value).
+
+Leah reported (bug #28294) that the module C<File::Basename> is plagued
+with deficiencies. Rafael suggests either to rewrite it (eventually with a
+backport to CPAN), or to deprecate it.
+
+=head2 Upgraded modules
+
+Dave Rolsky released Time::Local 1.08, then 1.09, which contain mostly
+documentation and test fixes.
+
+Jarkko Hietaniemi released Time::HiRes 1.57, 1.58, and 1.59. It fixes a
+problem on Windows and Cygwin platforms: I<if the performance counter
+drifts by more than two seconds from the system clock (due to ntp
+adjustments, for example), recalibrate our internal counter>.
+
+=head2 About this summary
+
+This summary was written by Rafael Garcia-Suarez, from Paris, France.
+Thanks to Elizabeth Mattijsen for having taken the role of interim
+summarizer during two weeks. (And now for a highly personal advertisement:
+I'm still looking for a flat in Paris. Offers welcome!)
+
+Weekly summaries are published on F<http://use.perl.org/> and posted on a
+mailing list, which subscription address is
+F<perl5-summary-subscribe@perl.org>. Comments and corrections are welcome.

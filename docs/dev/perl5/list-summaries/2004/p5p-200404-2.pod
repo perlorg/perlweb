@@ -1,0 +1,121 @@
+=head1 This Week on perl5-porters (12-18 April 2004)
+
+This was an RC-2 week, rich in events and discussions. Read about the
+little-known dualvars, the always popular version strings, the set UID
+perl, Unicode classes, and various other bugs.
+
+=head2 Release Candidate 2
+
+Nicholas Clark released a second RC of perl 5.8.4. The first RC was
+backwards-incompatible with regard to the F<sperl> and F<suidperl>
+executables, which must not be called directly anymore. It has been
+decided that now, F<sperl> and F<suidperl> will be regular copies of
+F<perl> (that is, with regular permissions), while a new executable,
+F<setuidperl>, will be installed set-uid. This way, scripts that invoke
+F</usr/bin/s{,uid}perl> won't break. (This is not a definitive plan;
+moreover, the plan for bleadperl is still a bit unclear at this point.)
+
+    http://groups.google.com/groups?selm=20040414145128.GI676%40plum.flirble.org
+
+=head2 Zero, but true
+
+Zefram reports (as bug #28538) that a Math::BigInt object constructed from
+the string literal C<"O but true"> is not-a-number (C<NaN>), instead of
+being 0. It turns out that C<"O but true"> is a string special-cased in
+the perl internals: it doesn't trigger any warning about non-numerical
+arguments. Similarly, Math::BigInt doesn't seem to have a very consistent
+behaviour with dualvars -- scalar variables that have a different
+numerical and string value.
+
+    http://groups.google.com/groups?selm=rt-3.0.8-28538-84956.7.86182961869045%40perl.org
+
+=head2 A plea for an error variable
+
+Stas Bekman wants to introduce a new convention about a standard error
+variables, to be used by perl modules (logically equivalent to what $!
+does for system errors.) Several names come up: $E::err, ${^ERROR}. This
+variable would be used as a dualvar (numerical error code and error
+message), as $! already is.
+
+    http://groups.google.com/groups?selm=407E4D97.6030702%40stason.org
+
+=head2 Dual data dumping
+
+While we're at dualvars, Zefram noticed (bug #28839) that Data::Dumper
+doesn't output them correctly, and proposed a patch, which emits, in the
+Data::Dumper output, code that uses Scalar::Util to reconstruct the
+dualvar. Yves Orton replied that, given the high number of oddities one
+can come up with in perl, dealing with dualvars was probably beyond the
+scope of Data::Dumper, which is aimed, mostly, as dumping data.
+
+    http://groups.google.com/groups?selm=rt-3.0.8-28839-85361.16.3440539442637%40perl.org
+
+=head2 More on version strings
+
+David Dyck notices that the current version of ExtUtils::MakeMaker in
+bleadperl is 6.21_02, which is parsed as 6.021002; and this causes
+problems with modules that require a version of ExtUtils::MakeMaker
+greater than or equal to 6.03. John Peacock explains that the underbar is
+treated, for version parsing purposes, as a dot; although people
+apparently expect it to be parsed more like a floating point version
+number.
+
+    http://groups.google.com/groups?selm=Pine.LNX.4.51.0404120919230.16344%40dd.tc.fluke.com
+
+=head2 Test diagnostics
+
+Gisle Aas proposed a patch to the Test module, firstly to quote the
+got/expected values when they contain weird characters, and secondly to
+run diff(1) on those values when the environment variable PERL_TEST_DIFF
+contains the path to a diff program.
+
+Barrie Slaymaker points out that he wrote a module, Test::Differences, to
+provide this diff functionality. Fergal Daly adds that one could use
+Text::Diff if available instead of relying on an external program. Sean M.
+Burke (who maintains Test) is pleased with this last idea.
+
+    http://groups.google.com/groups?selm=lrbrlwfdid.fsf%40caliper.activestate.com
+
+=head2 Current package name weirdness
+
+Michael G. Schwern reports a strange case where the __PACKAGE__ token
+doesn't seem to have the value it should (across several files and
+compilation units.) Further analysis is proposed, but no definitive
+explanation: there may be a bug lurking in there.
+
+    http://groups.google.com/groups?selm=4933BB14-8D7B-11D8-AD86-0050E4A09F6A%40grantstreet.com
+
+=head2 Unicode class names
+
+Jeff Pinyan proposed a patch to extend the possibilities for the user to
+define new Unicode classes; notably, to allow to reuse user-defined
+Unicode classes in other ones, and to combine Unicode classes with the
+logical operand C<&> (in addition to the already supported C<->, C<+>,
+C<!>).
+
+=head2 In Brief
+
+Zefram remarked that a C</...(\z/)?/> match doesn't populate $1 (bug
+#28532). Hugo van der Sanden proposed a patch.
+
+Dave Rolsky says that getting the source code of perl is too hard for the
+novice porter, and proposes to send patches for F<http://dev.perl.org/> to
+fix this.
+
+    http://groups.google.com/groups?selm=Pine.LNX.4.58.0404150902340.17218%40urth.org
+
+Jan Dubois fixed a buffer overflow in the Win32 build of perl (bug
+#28525.)
+
+Elizabeth Mattijsen found a bug in List::Util 1.08 (bug #28438): returning
+from a C<first> block segfaults. This used to produce a neat error
+message.
+
+    http://groups.google.com/groups?selm=rt-3.0.8-28438-84380.11.3552556593606%40perl.org
+
+=head2 About this summary
+
+This summary was written by Rafael Garcia-Suarez. Weekly summaries are
+published on F<http://use.perl.org/> and posted on a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. Comments and
+corrections welcome.
