@@ -3,7 +3,7 @@
     ServerName [% config.site.parrotcode.servername %]
     [% expandServerAliases( config.site.parrotcode.aliases ) %]
     PerlSetVar site parrotcode
-    PerlTransHandler Combust::Redirect
+    PerlTransHandler Combust::Redirect->super
 
     <Location /redirect/>
        SetHandler   perl-script

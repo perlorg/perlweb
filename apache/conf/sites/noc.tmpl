@@ -3,7 +3,7 @@
     ServerName [% config.site.noc.servername %]
     [% expandServerAliases( config.site.noc.aliases ) %]
     PerlSetVar site noc
-    PerlTransHandler Combust::Redirect
+    PerlTransHandler Combust::Redirect->super
 
     <Location />
        SetHandler perl-script

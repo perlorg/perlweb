@@ -2,7 +2,7 @@
     ServerName [% config.site.www.servername %]
     [% expandServerAliases( config.site.www.aliases ) %]
     PerlSetVar site www
-    PerlTransHandler Combust::Redirect
+    PerlTransHandler Combust::Redirect->super
 
     <Location />
        SetHandler perl-script

@@ -54,8 +54,7 @@ sub reload {
 #
 
 sub handler($$) {
-  my ($class, $r) = @_;
-  my $self = $class->_init($r); # we need an actual instance
+  my ($self, $r) = @_;
 
   # this avoids some weirdness I can't otherwise figure out right now.
   return DECLINED if $r->uri =~ m!^/images!;

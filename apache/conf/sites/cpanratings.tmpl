@@ -4,6 +4,8 @@
   <VirtualHost *:[% config.port %]>
     ServerName [% config.site.$site.servername %]
     [% expandServerAliases( config.site.$site.aliases ) %]
+    PerlTransHandler Combust::Redirect->super
+
     PerlSetVar site [% site %]
     <Location />
        SetHandler perl-script
