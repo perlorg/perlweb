@@ -1,0 +1,32 @@
+
+  PerlRequire [% root %]/apache/conf/sites/cpanratings.pl
+
+  <VirtualHost *:[% config.port %]>
+    ServerName [% config.site.$site.servername %]
+
+    PerlSetVar site [% site %]
+    <Location />
+       SetHandler perl-script
+       PerlHandler CPANRatings::Control::Basic->super
+    </Location>
+
+    <Location /rate>
+       SetHandler perl-script
+       PerlHandler CPANRatings::Control::Rate->super
+    </Location>
+
+    <Location /search>
+       SetHandler perl-script
+       PerlHandler CPANRatings::Control::Search->super
+    </Location>
+
+    <LocationMatch ^/[da]/>
+       SetHandler perl-script
+       PerlHandler CPANRatings::Control::Show->super
+    </LocationMatch>
+
+    <Location /error/>
+       SetHandler   perl-script
+       PerlHandler Combust::Control::Error->super
+    </Location>
+  </VirtualHost>
