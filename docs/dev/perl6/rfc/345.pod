@@ -1,0 +1,138 @@
+=head1 TITLE
+
+Putting an Event Loop in the Core
+
+=head1 VERSION
+
+  Maintainer: Uri Guttman <uri@sysarch.com>
+  Date: 29 Sept 2000
+  Mailing List: perl6-language-flow@perl.org
+  Number: 345
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+This RFC describes a pragma and an API for an event loop and some
+ramifications of its implementation. We all agree that Perl needs a
+single event loop that can be used to multiplex I/O, signals and timers.
+
+=head1 DESCRIPTION
+
+Many applications need to multiplex I/O from multiple sources. The low
+level mechanisms (select, poll, asynchronous I/O) to support this are
+tricky to use. Some modules exist which help (Event.pm, IO::Select, POE,
+etc.) but they are not comprehensive, efficient or well integrated with
+Perl. There are several event loops around but the consensus is to have
+a single one supported in the core and used by all programs which need
+it.
+
+=head1 IMPLEMENTATION
+
+Several of us have implemented event loops in C (Nick Ing-Simmons,
+Joshua Pritikin, Uri Guttman) so we have plenty of experience in what
+need to be supported and how to code it.  Since another consensus is to
+write the Perl I/O subsystem from scratch, then integrating a high
+quality event loop into it will be relatively easy.
+
+A bigger problem is the Perl level API and semantics. First off here
+are the fundamental features an event loop has to support:
+
+	Asynchronous I/O on socket, pipes, ttys and files
+
+	Asynchronous connect/accept of sockets
+
+	Timers and timeouts
+
+	Safe Signals
+
+	Plain events (executed at some future time but not timer
+	delayed)
+
+Secondly, the issue of event delivery must be addressed. I propose that
+events be queued using the common callback API (RFC 321) and the program
+has 3 choices for how to deliver them. A critical point in all dispatch
+methods is that they occur between Perl op codes or statements. This
+must happen to guarantee no collisions with memory allocations and other
+areas which could cause crashes and deadlocks.
+
+	Manual Dispatch
+
+	With manual dispatch, the code calls a function get_event which
+	returns the next pending event object or undef if there are
+	none. This object can then be processed by user code which may
+	(Damian) switch on its type or handle it as it desires.
+	This allows fine control of when events are handled, e.g. in a
+	long crunching loop, you could check for events and handle them
+	and then continue with the crunching. This style is meant to be
+	used only be programs which need total control over their events
+	dispatching.
+
+	Event Loop
+
+	The event loop is the traditional way to dispatch events. After
+	the program intializes itself and queues up some events, it
+	calls event_loop and that function takes over. Normally it never
+	returns from that function unless some event cause the event
+	loop to end. There can be multiple event loops active at once
+	(even in a single thread) which has its (IMO) rare uses. The
+	event loop code is basically a wrapper around the get_next_event
+	function which gets pending events and calls their associated
+	callbacks.
+
+	Inline Dispatch
+
+	Some programs (or coders) don't want to handle dispatching nor
+	do they want to lose control to an event loop. Also some OS's
+	don't support the system calls needed to do that kind of
+	dispatching. Inline dispatching is for those situations. At
+	designated points in the compiled program, a call is made to get
+	the next event and dispatch it. The point can be every N op
+	codes or between statements or some combination of that.
+
+The coder can select the style of dispatch via a pragma. This is needed
+since inline dispatch affects the compiled code. I have two ideas for
+this praga. First it can be like this:
+
+	use event inline => 10 ;
+
+which will create inline dispatching every 10 opcodes. The second one is:
+
+	use event ;
+
+will allow use of the event loop or manual dispatch according to which
+call is made in the code. Either pragma must be used to enable the event
+subsystem otherwise all of the normal I/O will not support callbacks.
+
+=head1 IMPACT
+
+Current applications using the different event loops will need to be
+rewritten to use the Perl6 event loop.
+
+Event dispatching has to be well integrated with how events are
+queued. RFC's 14 and 174 propose extended I/O functionality but they
+don't cover events and callbacks. My proposed Advanced I/O (AIO) will
+cover similar territory but encompass callbacks (RFC 321) as well. The
+two set of ideas need to be reconciled.
+
+=head1 UNKNOWNS
+
+Support for asynchronous file I/O is not universal so it will need to be
+faked on some systems. 
+
+I have not had enough time to cover all issues here due to the deadline
+but I wanted to get something on this subject in before then.
+
+=head1 REFERENCES
+
+Event.pm - XS based event loop module.
+
+RFC 14: Modify open() to support FileObjects and Extensibility
+
+RFC 47: Universal Asynchronous I/O
+
+RFC 60: Safe Signals
+
+RFC 174: Improved parsing and flexibility of indirect object syntax
+
+RFC 321: Common Callback API for all AIO calls.

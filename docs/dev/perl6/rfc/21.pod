@@ -1,0 +1,370 @@
+=head1 TITLE
+
+Subroutines: Replace C<wantarray> with a generic C<want> function
+
+=head1 VERSION
+
+  Maintainer: Damian Conway <damian@conway.org>
+  Date: 6 Aug 2000
+  Last Modified: 18 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 21
+  Version: 2
+  Status: Frozen
+
+=head1 ABSTRACT
+
+This RFC proposes extending the number of detectable calling contexts
+and replacing the limited (and misnamed) context detection of C<wantarray>
+with a more precise and general mechanism.
+
+=head1 DESCRIPTION
+
+C<want I<LIST>>
+C<want>
+
+C<want> returns a value or list of values indicating the calling context
+of the current subroutine (i.e. the subroutine in which C<want> is called).
+
+C<want> may also be passed a list of values that describe aspects of
+the context in which the current subroutine has been called. In that
+case, its return value also indicates whether the specified contexts
+are currently valid.
+
+When C<want> is called without arguments in a scalar context:
+
+	$primary_context = want;
+
+it returns a string indicating the (primary) context in which the
+current subroutine was called: one of "VOID", "SCALAR", or "LIST.
+
+When C<want> is called without arguments in a list context:
+
+        ($primary, $count, @secondary) = want;
+
+it returns a list of at least two values, indicating the contexts
+in which the current subroutine was called. The first two values in
+the list are the primary context (i.e the scalar return value) and the
+expectation count (see L<Expectation counts> below). Any extra contexts
+that C<want> may detect (see L<Valid contexts> below) are appended to
+these two items.
+
+When C<want> is called without arguments in a hashref context (see L<Valid
+contexts> below):
+
+        if (want->{LVALUE}) { ... }
+
+        unless (want->{COUNT} < 2) { ... }
+
+it returns a reference to a hash whose keys are the valid contexts plus the
+special key "COUNT". The values for the context keys are always 1; the value
+for the "COUNT" key is always the expectation count.
+
+When C<want> is called with arguments in a scalar context:
+
+	$primary_context = want 'LIST', 2, 'LVALUE';
+
+it checks whether all the specified contexts are valid for the current
+subroutine. If any is not currently valid, C<want> returns C<undef>.
+Otherwise it returns the primary context string (just as scalar C<want> with
+no arguments does).
+
+When C<want> is called with arguments in a list context:
+
+        ($primary, $count, @secondary) = want 'SCALAR', 'RVALUE', 'HASHREF';
+
+it again checks whether all the specified contexts are valid for the current
+subroutine. If any is not currently valid, C<want> returns an empty list.
+Otherwise it returns the same list of context values as it would have
+if called without arguments.
+
+To summarize these five alternatives:
+
+=over 4
+
+=item *
+
+If C<want> is itself called in a scalar context, it returns only the primary
+context string.
+
+=item *
+
+If C<want> is itself called in a list context, it returns all known context
+information via a list.
+
+=item *
+
+If C<want> is itself called in a hashref context, it returns all known context
+information via a reference to a hash.
+
+=item *
+
+If C<want> is called with arguments, the contexts specified by those arguments
+must be valid for the current subroutine, or else C<want> returns false (either
+C<undef> or C<()>).
+
+=back
+
+
+=head2 Expectation counts
+
+The second value returned by C<want> in a list context is the current
+subroutine's "expectation count". This is an integer indicating the number
+of return values expected by the subroutine's caller. For void contexts,
+the expectation count is always zero; for scalar contexts, it is always zero
+or one; for array contexts it may be any non-negative number.
+
+If the context is expecting an unspecified number of return values
+(typically because the result is being assigned to an array variable),
+the expectation count is the largest representable integer (C<~0>).
+
+When C<want> is called with a numeric value as an argument, it returns true
+only if the current subroutine's calling context requires at least that many
+values. For example:
+
+	if (want 2) { return ($x, $y) }		# context wants >= 2 values
+	else        { return ($x); }		# context wants < 2 values
+
+
+=head2 Valid contexts
+
+The various contexts that may be specified as arguments to C<want> and
+may be returned by it (as list values or hashref keys) are:
+
+=over 8
+
+=item 'LIST'
+
+The subroutine was called in a list context:
+
+        @vals = func();
+        print func();
+
+
+=item 'SCALAR'
+
+The subroutine was called in a scalar context:
+
+        $val = func();
+	print scalar func();
+
+
+=item 'VOID'
+
+The subroutine was called in a void context:
+
+        func();
+
+
+=item 'COUNT'
+
+Only returned as a literal string when used as a hashref key. Normally
+passed to C<want> -- and returned by it -- as an integer. 
+
+	func();                   # COUNT == 0
+	scalar func();            # COUNT == 0
+	() = func();              # COUNT == 0
+
+	$x = func();              # COUNT == 1
+	if (func()) { ... }       # COUNT == 1
+	($x) = func();            # COUNT == 1
+
+	($x, $y) = func();        # COUNT == 2
+	($x, $y, $z) = func();    # COUNT == 3
+
+	@a = func();              # COUNT == ~0
+	($x,@a) = func();         # COUNT == ~0
+
+
+=item 'HASH'
+
+The subroutine was called in a context where its return value is
+assigned to a hash:
+
+        %hash = func();
+
+
+=item 'STRING'
+
+The subroutine was called in a stringifying context:
+
+        $val = $hash{func()};
+        print func();
+
+
+=item 'NUMBER'
+
+The subroutine was called in a numerifying context:
+
+        $val = func() * 2;
+        $val = sin(func());
+        $val = $array[func()];
+
+
+=item 'INTEGER'
+
+The subroutine was called in a numerifying context that
+requires an integer:
+
+        $val = $array[func()];
+        $val = "str" x func();
+
+
+=item 'BOOLEAN'
+
+The subroutine was called in a boolean context:
+
+        if ( func() ) {}
+        $val = func() || 0;
+
+
+=item 'SCALARREF'
+
+The subroutine was called in a context that expects a scalar reference:
+
+        $val = ${func()};
+        \$val = func();                 # possible typeglob replacement?
+
+
+=item 'ARRAYREF'
+
+The subroutine was called in a context that requires an array reference
+be returned:
+
+        func()->[$index];
+        push @{func()}, $val;
+        \@array = func();               # possible typeglob replacement?
+
+
+=item 'HASHREF'
+
+The subroutine was called in a context that requires a hash reference
+be returned:
+
+        func()->{key};
+        @keys = keys %{func()};
+        \%hash = func();                # possible typeglob replacement?
+
+
+=item 'OBJREF'
+
+The subroutine was called in a context that requires an object reference
+be returned:
+
+        func()->method();
+
+
+=item 'CODEREF'
+
+The subroutine was called in a context that requires a code reference
+be returned:
+
+        func()->();
+        &{func()}();
+        \&hash = func();                # possible typeglob replacement
+
+
+=item 'IOREF'
+
+The subroutine was called in a context that requires a filehandle
+reference be returned:
+
+        print {func()} @data;
+
+
+=item 'LVALUE'
+
+The subroutine call is being used as an lvalue:
+
+        func() = 0;
+
+
+=item 'RVALUE'
+
+The subroutine call is being used as an rvalue:
+
+        $val  = func();
+        @vals = func();
+
+
+=item I<Classname>
+
+The subroutine was called in a context that expects to see an object
+of the named class returned:
+
+        my Dog $spot = func();          # want('Dog') returns true
+
+=back
+
+
+=head2 Example
+
+        our ($data, @data) ;
+
+        sub lastdata : lvalue {
+
+                if ($DEBUG)
+                {
+                        my ($primary, $expcnt, @secondaries) = want;
+                        print "lastdata called in $primary context\n;
+			print "Also in contexts: @secondaries\n";
+                        print "expected $expcnt return values\n";
+                }
+
+                return                  if want->{VOID};
+                return $data            if want qw(LVALUE SCALAR);
+                return "$data"          if want 'SCALAR', 'STRING
+                return eval{$data+0}||0 if want 'SCALAR', 'NUMBER';
+                return !!$data          if want 'SCALAR', 'BOOLEAN';
+
+                if ((undef,$count) = want 'LIST')
+                {
+                        return @data if $count > @data;
+                        return @data[0..$count-1];
+                }
+        }
+
+
+=head2 Listing of possible context combinations:
+
+
+        within &func, &want returns:                    when:
+        ============================                    =====
+
+        (VOID,   0,  RVALUE)                            ;func();
+
+        (SCALAR, 1,  LVALUE)                            func() = $x;
+        (SCALAR, 0,  RVALUE)                            ; scalar func();
+        (SCALAR, 1,  RVALUE)                            $x = func();
+        (SCALAR, 1,  RVALUE, STRING )                   $x .= func();
+        (SCALAR, 1,  RVALUE, BOOLEAN)                   die if func();
+        (SCALAR, 1,  RVALUE, NUMBER )                   $x + func();
+        (SCALAR, 1,  RVALUE, NUMBER, INTEGER)           ~func(); $array[func()];
+        (SCALAR, 1,  RVALUE, SCALARREF)                 ${func()};
+        (SCALAR, 1,  RVALUE, ARRAYREF)                  func()->[$index];
+        (SCALAR, 1,  RVALUE, HASHREF)                   func()->{key};
+        (SCALAR, 1,  RVALUE, CODEREF)                   func()->(@args);
+        (SCALAR, 1,  RVALUE, OBJREF)                    func()->method();
+        (SCALAR, 1,  RVALUE, IOREF)                     print {func()} @data;
+        (SCALAR, 1,  RVALUE, Dog)                       my Dog $spot = func();
+
+        (LIST,   0,  RVALUE)                            () = func();
+        (LIST,   1,  RVALUE)                            ($x) = func();
+        (LIST,   ~0, RVALUE)                            ($x, @array) = func();
+        (LIST,   ~0, RVALUE)                            @array = func();
+        (LIST,   ~0, RVALUE)                            print func();
+        (LIST,   ~0, RVALUE, HASH)                      %hash = func();
+
+
+
+=head1 IMPLEMENTATION
+
+Dammit, Jim, I'm a doctor, not an engineer!
+
+
+=head1 REFERENCES
+
+perlfunc (C<wantarray>)
+
+RFC 259: Builtins : Make use of hashref context for garrulous builtins
+

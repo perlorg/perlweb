@@ -1,0 +1,149 @@
+=head1 TITLE
+
+C<my Dog $spot> is just an assertion
+
+=head1 VERSION
+
+  Maintainer: Piers Cawley <pdcawley@bofh.org.uk>
+  Date: 13 Sep 2000
+  Last Modified: 25 Sep 2000
+  Mailing List: perl6-language-objects@perl.org
+  Number: 218
+  Version: 2
+  Status: Frozen
+
+=head1 ABSTRACT
+
+The behaviour of the <my Dog $spot> syntax should simply be an
+assertion of the invariant: 
+
+   (!defined($spot) || (ref($spot) && $spot->isa('Dog)))
+
+=head1 NOTES ON THE FREEZE
+
+The original version of this attracted very little comment and what
+there was was positive. Therefore I've frozen it as it stands.
+
+
+=head1 DESCRIPTION
+
+The syntax 
+
+    my Dog $spot = Dog->new();
+
+currently carries little weight with Perl, often failing to do what
+one expects:
+
+    $ perl -wle 'my Dog::$spot; print "ok"' 
+    No such class Dog at -e line 1, near "my Dog"
+    Execution of -e aborted due to compilation errors.
+    $ perl -wle 'sub Dog::new; my Dog $spot; print "ok"'
+    ok
+    $ perl -wle 'sub Dog::new; my Dog $spot = 1'
+    ok
+
+The first example is obvious, as is the second. The third one is
+I<weird>.  
+
+I therefore propose that C<my Dog $spot> comes to mean that C<$spot>
+is restricted to being either undefined or a reference to a C<Dog>
+object (or any subclasses of Dog). Simply having this implicit
+assertion can be useful to the programmer, but I would argue that its
+main advantage is that the compiler knows the object's interface at
+compile time and can potentially use this fact to speed up method
+dispatch. 
+
+=head2 Examples
+
+In class methods:
+
+    package Dog;
+    sub speak {
+        my Dog $self = shift; # Sadly 'my __PACKAGE__ $self' doesn't work
+        print $self->name, " barks!\n";
+    }
+
+Admittedly, this makes little sense unless there is some optimization
+available, but it can still be useful as a notational convenience.
+
+Or, consider the case where you have an C<AnimalShelter> object and
+you're looking to get a Dog from there.
+
+    my AnimalShelter $shelter = RSPCA->find_nearest_shelter;
+    my Dog $stray;
+
+    try {
+        PET: while (!defined($stray)) {
+            $stray = $shelter->next_animal;
+        }
+    }
+    catch Exception::WrongClass {
+        next PET;
+    }
+    $stray->bark;
+
+Admittedly this makes some assumptions about the possibility of loops
+within try blocks, but I think the point is still valid.
+
+My main concern with this proposal is to make it possible to use the
+C<my Dog $spot> syntax along with it's associated (posited)
+optimizations and assertions wherever it's appropriate in user code. 
+
+=head1 IMPLEMENTATION
+
+I've not really looked into using source filters, but if 
+C<my Dog $spot> can be mapped to
+C<tie my $spot, Tie::Invariant, 'Dog'> then Tie::Invariant can look
+something like:
+
+    package Tie::Invariant;
+    use carp;
+    
+    sub TIESCALAR {
+        my $self = bless {value => undef}, shift;
+        $self->{class} = shift;
+        return $self;
+    }
+    
+    sub FETCH {
+        my $self = shift;
+        return $self->value;
+    }
+    
+    sub STORE {
+        my($self,$newval) = @_;
+    
+        if (!defined($newval) || (ref($newval)                         &&
+                                  UNIVERSAL::isa($newval, "UNIVERSAL") &&
+                                  $newval->isa($self->{class}))) {
+            croak "Value must be 'undef' or be a $self->{class}"
+        }
+        $self->{value} = $newval;
+    }
+
+Note that the above is merely a sample implementation written in
+Perl5. I would hope that the 'real' code would be within the perl5
+interpreter and compiler. And all the faster for that.
+
+=head1 MIGRATION
+
+Migration issues should be minor, the only problem arising when people
+have assigned things that aren't objects of the appropriate type to
+typed variables, but they deserve to lose anyway.
+
+=head1 REFERENCES
+
+RFC 171: my Dog $spot should call a constructor implicitly
+
+This RFC is a counter RFC to RFC 171. See my forthcoming
+'new pragma: use package' RFC for something that addresses one of the
+concerns of RFC 171.
+
+RFC 137: Overview: Perl OO should I<not> be fundamentally changed
+
+My guiding principle.
+
+
+
+
+

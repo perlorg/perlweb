@@ -1,0 +1,90 @@
+=head1 TITLE
+
+One Should Not Get Away With Ignoring System Call Errors
+
+=head1 VERSION
+
+  Maintainer: Jarkko Hietaniemi <jhi@iki.fi>
+  Date: 22 Aug 2000
+  Mailing List: perl6-language@perl.org
+  Number: 140
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+=head1 EXECUTIVE SUMMARY
+
+If something fails, you should care.
+
+=head1 TERMINOLOGY
+
+In the following 'system calls' mean anything not in the core language
+calling an external service, be it a 'real' system call (such as
+accept(), fork(), mkdir()) or a 'library' call (such as print(),
+syswrite() getpwent()).
+
+The difference is often arbitrary and depends on the implementation
+details of the operating system and the libraries.  This difference is
+irrelevant for the purposes of this RFC (though relevant for the
+low-level implementation of this proposal).
+
+=head1 DESCRIPTION
+
+The 'strict' pragma (or whatever form it takes in perl6) should
+include in its 'default set of strictness' a new subpragma, 'system'.
+This subpragma has the following semantics:
+
+=over 4
+
+=item *
+
+For many system calls it is possible to say during B<compile time>
+that ignoring their return value is foolish and should be punished
+(by aborting during compilation).  Examples of such system calls:
+open(), mkdir(), chdir().  There simply isn't an excuse for ignoring
+their return values.
+
+=item *
+
+For other system calls aborting during compile time may be too harsh:
+print() is an obvious example.  But print() can fail, too: out of disk
+space, out of quota, closed socket.  Such softer failures are
+indicated (at C level) by e.g. return of -1 and/or turning on errno.
+Such failures are detectable during B<runtime>, and if, running under
+'use strict', should croak.  Lexical warnings could warn about such
+system calls: "print() can fail during runtime".
+
+=back
+
+=head2 Cheating Is Still Possible
+
+Not ignoring the return value is of course no guarantee of doing
+anything useful with the return value:
+
+	$so_what++ unless defined fork();
+
+But detecting whether 'something useful' is done is squarely in
+the realm of heavy AI.
+
+=head2 Is That An Object In Your Pocket Or Are You Just Oriented To See Me?
+
+This proposal does not deal with any object oriented issues, whether
+the detected errors 'throw' any 'exceptions' and how the user can
+'catch' them.  The proposed strict handling of system call failures
+should be independent of any higher level concepts such as object
+oriented 'exception handling'.  Exception handling is welcome to
+provide ways to muster these low-level error conditions, though.
+
+=head1 MIGRATION ISSUES
+
+By having this new level of bondage-and-discpiline tucked away under
+'use strict' the quick hack one liner nature of Perl is still available.
+
+=head1 REFERENCES
+
+perl6-language-errors
+
+perl6-language-strict
+
+perl6-language-io

@@ -1,0 +1,103 @@
+=head1 TITLE
+
+Data: overloading via the SECOND operand if needed
+
+=head1 VERSION
+
+  Maintainer: Ilya Zakharevich <ilya@math.ohio-state.edu>
+  Date: 15 Sep 2000
+  Mailing List: perl6-language-data@perl.org
+  Number: 234
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+This RFC proposes a support of a situation when a more-knowledgable module may
+steal overloading from a less-knowledgable module or visa versa;
+
+=head1 DESCRIPTION
+
+The problem: if both arguments to a binary operation are overloaded objects,
+then with the current implementation the overloaded method registered for
+the I<first> argument is loaded.
+
+Sometimes it leads to problems: for example, C<Math::BigFloat> objects support
+C<Math::BigInt> objects as the other arguments for binary operations, but
+not visa versa, so
+
+   print $bigfloat + $bigint;		# Works
+   print $bigint   + $bigfloat;		# Does not
+
+Solution: provide a pragma to inform the overloading mechanism that
+C<Math::BigFloat> is more versatile than C<Math::BigInt>
+
+   use overload ':override', 'Math::BigFloat', 'Math::BigInt';
+
+This would make
+
+    $bigint * $bigfloat
+
+call 
+
+    $bigfloat->MULTIPLY($bigint, 1)
+
+instead of
+
+    $bigint->MULTIPLY($bigfloat, 0)
+
+(assuming that the MULTIPLY methods are registered for C<'*'> key).
+
+This requires additional costly checks from the overloading engine.
+However, it is not hard to implement this with the following features:
+
+=over
+
+=item
+
+no cost if not used in the script;
+
+=item
+
+almost no cost if the first and the second argument are in the same package;
+
+=item
+
+almost no cost if the second argument is does not override anything;
+
+=item
+
+almost no cost if the first argument is not overriden by anything;
+
+=item
+
+in the worst case: costs a hash lookup in a hash.
+
+=back
+
+Given this, the additional overhead of the hash lookup incurs only if needed,
+this may be ignored.
+
+Overriding does not chain automatically, but if C<:override_chain> is used
+instead of C<:override>, the overrider will also override packages overriden
+by the package it overrides.
+
+A method to query overriding info should be provided.
+
+If C<A> I<isa> C<B>, and C<B> overrides C<C>, then C<A> overrides C<C>.
+Similarly, if C<C> I<isa> C<D>, then C<A> overrides C<D>.
+
+=head1 MIGRATION ISSUES
+
+None.
+
+=head1 IMPLEMENTATION
+
+Keep a global flag whether override was ever requested.  Keep a flag in
+each package whether it is overrided by anything.  Keep a hash of packages
+which the given package overrides.  Keep these data in the overloading
+table of the package.
+
+=head1 REFERENCES
+
+None.

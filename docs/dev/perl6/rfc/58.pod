@@ -1,0 +1,80 @@
+=head1 TITLE 
+
+C<chomp()> changes.
+
+=head1 VERSION
+
+  Maintainer: Ted Ashton <ashted@southern.edu>
+  Date: 7 Aug 2000
+  Mailing List: perl6-language@perl.org
+  Number: 58
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT 
+
+The current return value of C<chomp()> is little-used and tends to confuse
+those learning perl.  Here is presented a change to C<chomp()>'s return value
+and to the C<while(E<lt>FILEHANDLEE<gt>)> construction.
+
+=head1 DESCRIPTION 
+
+This RFC contains two proposed changes.  First, as it is common to want to 
+removed newlines upon reading a file, 
+
+  while (chomp(<FILEHANDLE>)) {
+    . . .
+  }
+
+should become the equivalent of
+
+  while (<FILEHANDLE>) {
+    chomp;
+    . . .
+  }
+
+or, to put it more explicitly,
+
+  while (defined($_ = <FILEHANDLE>)) {
+    chomp $_;
+    . . .
+  }
+
+where the various equivalent constructions would, of course, work as expected.  
+
+Second, as it seems common for someone learning perl to expect
+
+  $without_newline = chomp($previous_form);
+
+to put a copy of the text in C<$previous_form>, sans newline, into
+C<$without_newline> while not modifying C<$previous_form>, Perl should
+do just that.
+
+C<chomp()> called in void context would remove the newline
+from the variable (or members of the list) upon which it was called.
+C<chomp()> called in a scalar context would leave its argument variable
+untouched and instead return a C<chomp()>ed version of that variable's
+contents.  Likewise and furthermore for other contexts.
+
+=head1 IMPLEMENTATION 
+
+As I know little about perl5 internals and even less about perl6, I shall 
+simply present the following notes:
+
+=over 4
+
+=item *
+
+This proposal does not speak to what should happen with C<chop()>.
+
+=item *
+
+The proposed demise of C<$/> and stated determination that there will be no
+default filehandle will have an effect on C<chomp()>.  After all, that's how
+it determines which character to seek at the end of the line.
+
+=back 4
+
+=head1 REFERENCES
+
+  The Camel II, pp 53 and 149.

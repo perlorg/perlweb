@@ -1,0 +1,75 @@
+=head1 This Week on perl5-porters (31 March / 6 April 2003)
+
+Patches, crashes, hashes and stash caches, these are a few of my favorite
+things. If you like them, too, this week's P5P summary is for you !
+
+=head2 Stash Cache
+
+Arthur Bergman has the idea to use a cache to store symbol tables
+(a.k.a. stashes) for class method calls, to avoid looking them up from the
+package name each time they're invoked. He proposes a patch, with which
+he observes an average 180% speed increase (on his system).
+
+    http://xrl.us/fm9
+
+=head2 Patches
+
+Ilya Zakharevich submitted a load of patches to maintperl, some of them
+related to the Perl port to OS/2, some of them more generic, to MakeMaker,
+Net::Ping, Time::HiRes. He also posted some comments about the ithread
+implementation in 5.8.0, and tried to have microperl working. (Look in
+the perldelta manpage for perl 5.8.0 if you haven't heard about microperl
+before.)
+
+    http://xrl.us/fna : threads goofs
+    http://xrl.us/fnb : microperl
+
+And that's not all. He also proposed to add built-in support for the
+now-standard C<--help> and C<--version> switches to Getopt::Std. This is
+followed by a discussion with Johan Vromans about extending this feature
+to Getopt::Long.
+
+    http://xrl.us/fnd
+
+=head2 In brief
+
+Alberto Accomazzi reports that perl 5.8.0, compiled with the
+C<usemymalloc> configuration option, doesn't seem to be able to handle
+more than 1GB of RAM. This being most probably due to an inner limitation
+(although nobody commented on this).
+
+    http://xrl.us/fne
+
+Bug #21765 is about split() not returning the desired kind of false/empty
+value, when called in a specific assignment context. Yitzchak
+Scott-Thoennes sent a fix. Demonstration here :
+
+    http://xrl.us/fnf
+
+Bug #21787 reports a problem with the C<fields> pragma. Michael Schwern
+says that this looks like a bug which was just reported in Class:Fields,
+which includes its own version of fields.pm.
+
+Michael Schwern, busy on the MakeMaker front, asked how portable the
+redirection construct C<< 2&>1 >> was, when used from inside the C<qx//>
+operator. Apparently it's portable on platforms that provide a shell that
+understands it, on OS/2 (that provides an emulation), and on VMS, but only
+when the external command run by C<qx//> is perl.
+
+Steve Hay provided several fixes to the installhtml utility, that
+generates the perl standard documentation in HTML format, and that
+was severely messed up.
+
+Chip Salzenberg wonders, lonely, about the B<FIXME> comments that can be
+found here and there in the sources.
+
+Sadahiro Tomoyuki released new versions of Unicode::Normalize and
+Unicode::Collate.
+
+=head2 About this summary
+
+This summary was brought to you by Rafael Garcia-Suarez. Weekly summaries
+are available on L<http://use.perl.org/> and/or via a mailing list, which
+subscription address is L<perl5-summary-subscribe@perl.org>. Comments,
+corrections, additions, and suggestions are welcome. Apologies to Rodgers
+and Hammerstein.

@@ -1,0 +1,150 @@
+=head1 This Week on perl5-porters (6-12 January 2003)
+
+The porters were busy, and this week's report features a large number of
+different subjects, from portability and compilation to the proper
+semantics of method dispatch, not forgetting the usual amount of strange
+bugs. Read below about the latest potential evolutions of Perl 5.
+
+=head2 Warning on UTF8 locales ?
+
+In bug report #19743, Jarkko Hietaniemi summarized one of the main
+problems with UTF8 locales. Under an UTF8 locale, perl 5.8.0 implicitely
+turns on the UTF8-ness of input filehandles. Also, reading illegal
+UTF-8 data does not trigger any warnings; but later, trying to use the
+resulting data does. This is annoying.
+
+The proposed solutions are a combination of the following points :
+
+=over
+
+=item *
+
+Don't turn on I<silently> UTF8-ness of all filehandles; issue a mandatory
+message (when the developer hasn't made clear he accepts UTF8);
+
+=item *
+
+Don't turn on automagically UTF8-ness of all filehandles; require the
+script to have use()'d the locale pragma (or even a possible C<use locale
+qw(utf8)>) to do so; (Ton Hospel later questions whether the lexical
+scoping behavior of this pragma is well-suited to solving this problem);
+
+=item *
+
+Reading illegal UTF8 data from a filehandle marked as UTF8 should issue a
+warning (but this is hard to achieve without slowing down all input).
+
+=back
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg90565.html
+
+=head2 Pathnames and Portability
+
+There was quite a long thread, crossposted to perl5-porters and to the
+Cygwin developers list, about the proper way to handle path names on
+Cygwin (how it should deal with Windows-style and Unix-style pathnames,
+and how the conversions should be done). This is related to definiting the
+proper behavior of File::Spec::Cygwin. Among the points are : what to do
+with pathologic cases (files names legal on Windows but not on Cygwin),
+what exactly is an absolute path (it turns out that UNC paths and paths
+that start with a single backslash are considered absolute on Windows),
+etc. Then, the thread becomes verbose and off-topic.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg90511.html
+
+=head2 share() empties hashes
+
+Barrie Slaymaker noticed (last month) that marking a hash reference as
+C<shared> clears the hash silently. Nick Ing-Simmons explains that it was
+implemented that way by laziness and for speed : copying the hash contents
+when sharing it means writing a internal routine to do this, and that
+should be safe regarding potential reference loops and already-shared
+internal data structures. Benjamin Goldberg suggests to introduce a
+separate rshare() function which does this recursive copying.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg90536.html
+
+=head2 is-a basic type
+
+Piers Cawley asked why method dispatch doesn't work with basic types; more
+precisely, while a blessed hashref is-a C<HASH> (according to
+C<UNIVERSAL::isa()>), it's not possible to call methods from package
+C<HASH> on this blessed hashref. The discussion following this difficult
+question spawns the territories of Perl 6.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg90539.html
+
+=head2 Profiler segfaults
+
+Blair Zajac continued to investigate cases of segmentation fault within
+the Perl profiler Devel::DProf. Apparently, increasing a fudge factor (a
+stack size) solves his problems. (Ilya Zakharevich called this I<voodoo
+programming> but Benjamin Goldberg provided a more logical explanation for
+it.)
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg90611.html
+
+=head2 Latest Berkeley DB
+
+Bug #19884, reported by Martin Mokrejs, is about building perl
+5.8.0 with Berkeley DB 4.1.25. This doesn't work, because (quoting Paul
+Marquess) I<Perl 5.8.0 was released before Berkeley DB 4.1 came out. There
+was a change in the Berkeley DB API that wasn't backward compatible.> The
+recommended solution is to build perl without DB_File (by giving the
+C<-Ui_db> command-line option to C<Configure>) and to install later the
+latest DB_File from the CPAN.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg90696.html
+
+=head2 Old bug reopened
+
+Six months ago bug #15479 was fixed (this was about the simple statement
+C<%::=""> leading to a core dump when warnings are enabled). John Peacock
+remarks that the fix isn't good enough, because it doesn't work when some
+operators are overloaded. John also makes a good job at trimming down the
+cause of this bug.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg90707.html
+
+=head2 Sun's upcoming compiler
+
+Alan Burlison (from Sun) told the Perl 5 porters about the upcoming
+version of the Sun C compiler. This future version is expected to break
+the hints file for Solaris in various ways (firstly, the detection of the
+compiler version, secondly, checking the presence of the libsunmath
+library). He volunteers to provide a patch.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg90725.html
+
+=head2 In brief
+
+Rafael Garcia-Suarez proposes to ship a simple RPM spec file with perl.
+Axel Thimm notes that this hides nasty portability pitfalls. He adds that
+it might be interesting to try an LSB (Linux Standard Base) packaged perl
+(see F<http://www.linuxbase.org/appbat/>).
+
+Rafael also changed the value of the internal variable C<${^TAINT}>, so
+it's now 0 without taint checks, 1 with B<-T>, and -1 with B<-t> or
+B<-TU>. Previously it was only 0 or 1.
+
+Ernest Lergon found bug #19767 pertaining to use of C<\p{}> escapes within
+character classes in precompiled regular expressions.
+
+Peter Scott reported bug #19815, about an amusing syntax error that
+confuses perl's lexer enough to make it unable to count lines properly.
+
+Mark-Jason Dominus notices that fsync(2) is missing from the POSIX module
+(bug #19860). However the functionality is provided by IO::Handle::sync().
+
+Brendan O'Dea sent a load of patches.
+
+There are some smoke escaping from the Cygwin builds. Apparently Merijn
+now installs bleading edge snapshots of Cygwin on the machine he runs the
+some tests on.
+
+=head2 About this summary
+
+This summary brought to you by Rafael Garcia-Suarez. Summaries are
+available on F<http://use.perl.org/> and/or via a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. Comments and
+corrections are welcome.

@@ -1,0 +1,104 @@
+
+<H2> What's Parrot </H2>
+<P>
+    Parrot is a virtual machine used to efficiently execute bytecode for 
+    interpreted languages - specifically, Perl 6, although we would like
+    to keep the door open for other languages in the future. As such,
+    Parrot will be the core of the Perl interpreter; it will be the
+    target platform to which Perl 6 code is compiled.
+</P>
+
+<H2>Where are we</H2>
+<P>
+    Parrot source code was released to the world on Monday 10th of September
+    2001; since then, an army of developers have furiously been hacking away
+    on it. Currently, we can assemble the Parrot assembly language to bytecode
+    and execute it with a test interpreter.
+</P>
+<P>
+    The Perl scalar type (string, integer and floating-point) has been
+    implemented, along with basic array and hash types. We have global symbol
+    tables, subroutines, a JIT, and a good intermediate language compiler.
+</P>
+<P>
+    Sean O'Rourke has contributed a working Perl 6 parser and compiler
+    for a significant subset of the perl 6 definition that currently exists.
+</P>
+
+<H2>How to get the code</H2>
+<P>
+    Periodic releases will appear on CPAN; the current release is
+    version 0.0.10, and can be found in the CPAN 
+
+    <A HREF="http://www.cpan.org/modules/by-authors/id/S/SF/SFINK/parrot-0.0.10.tar.gz">source directory</A>.
+
+</P>
+<P>
+    For the very latest version of Parrot, check out the source from <A
+    HREF="http://cvs.perl.org">CVS</A>. There is anonymous access to
+    all, and commit access to those who have taken responsibility for
+    various areas of the code or produced a large number of high-quality
+    patches.
+</P>
+<P>
+    Frequent automatic snapshots of the CVS tree are available <A
+    HREF="http://cvs.perl.org/snapshots/parrot/">here</A>.
+
+</p>
+
+<p>
+    For automatic <a href="http://qa.perl.org/">smoke testing</a> you can
+    use rsync to synchronize a directory with a checked-out copy of the
+    latest CVS tree.<br><br>
+
+    &nbsp;&nbsp;&nbsp;&nbsp;<tt>rsync -av --delete cvs.perl.org::parrot-HEAD parrot</tt>
+
+</P>
+
+<H2>How to get involved</H2>
+<P>
+
+    Parrot development takes place on the perl6-internals mailing list.
+    If you follow this list, you'll be able to get an idea
+    of what sort of things are needed.
+
+    Subscribe by sending mail to <A
+    HREF="mailto:perl6-internals-subscribe@perl.org">perl6-internals-subscribe@perl.org</A>
+    or read the <a
+    href="http://archive.develooper.com/perl6-internals@perl.org/">web
+    archive</a> or the <a
+    href="http://nntp.perl.org/group/perl.perl6.internals">nntp
+    archive</a>.
+
+
+    When development of the Perl6 language needs an internals list we
+    will move the parrot list to the parrotcode.org domain.
+
+
+</P>
+<P>
+    There is documentation in the <code>docs</code> subdirectory of the
+    Parrot source, and the design documents can be found <A
+    HREF="http://dev.perl.org/pdd/">here</A>.
+<P>
+    A TODO list is being developed, and can be found <A
+	HREF="http://www.parrotcode.org/todo">here</A>.
+<P>
+    Patches of all natures are welcome. See the <a
+    href="http://www.parrotcode.org/patchfaq">patch FAQ</a> for details.
+
+</p>
+
+<P>
+    Bugs and to-do items can be viewed and manipulated at the <A
+    HREF="http://bugs6.perl.org/">Parrot bugs page</A>. 
+</P>
+
+<CENTER>
+<P>
+<A HREF="http://www.cafeshops.com/cp/store.aspx?s=parrotstuff1">
+<IMG BORDER=0 SRC="http://images.cafepress.com/storetn/3125077_F_store.jpg"><BR>
+<SMALL>Buy Parrot Stuff!</SMALL>
+</A>
+</P>
+</CENTER>

@@ -1,0 +1,32 @@
+=head1 TITLE
+
+POD should tolerate white space.
+
+=head1 VERSION
+
+  Maintainer: Kenneth C. Rich <kenrich@mail.rochester.edu>
+  Date: 12 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 216
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+POD should tolerate white space where it now requires empty lines
+POD commands require that absolutely empty lines, or double newlines,
+surround them.  It should be sufficient that POD section delimiters
+themselves be delimited by blank lines containing zero or more other
+white-space characters.
+
+=head1 DESCRIPTION
+
+That's it.
+
+=head1 IMPLEMENTATION
+
+Seems like it should be just a regexp stuck in somewhere.
+
+=head1 REFERENCES
+
+None.

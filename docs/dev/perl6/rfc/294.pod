@@ -1,0 +1,63 @@
+=head1 TITLE
+
+Internally, data is stored as UTF8
+
+=head1 VERSION
+
+  Maintainer: Simon Cozens <simon@brecon.co.uk>
+  Date: 25 Sep 2000
+  Mailing List: perl6-internals@perl.org
+  Number: 294
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+We need to settle on an internal data format; this RFC proposes that
+UTF8 should be that format.
+
+=head1 DESCRIPTION
+
+Perl 5.6's Unicode support has been hampered by the fact that it was
+grafted onto the side of the old string support, and so it tried to
+handle both Unicode-encoded and non-Unicode data in the same structures;
+this made it an absolute swine to do any manipulation properly on these
+strings.
+
+This could all be made a lot easier if we stuck to one single data
+format for internal representation, just as most other languages out
+there do. If we're going to have decent Unicode support, it naturally
+needs to be a UTF. So which one?
+
+UTF32 is just not going to fly. It's too big and bulky. UTF16 is
+sensible, but there's probably a lot more legacy ASCII data out there
+than anything else, so it makes sense to propose UTF8 as a halfway
+house. 
+
+=head1 IMPLEMENTATION
+
+We'll need to get data into Unicode, and I have an RFC about that; we
+need to handle data internally, and I have an RFC about that. This RFC
+merely settles on the fact that we need a single internal data format
+for simplicity and that it should be UTF8.
+
+=head1 REFERENCES
+
+The Unicode FAQ on UTFs and BOMs: (An excellent introduction to what
+UTFs are, what they look like and how they work.)
+http://www.unicode.org/unicode/faq/utf_bom.html
+
+RFC 295: Normalisation and C<unicode::exact>
+
+RFC ??: When UTF8 leaks out
+
+RFC 300: C<use unicode::representation>
+
+RFC 312: Unicode Combinatorix
+
+RFC 296: Getting Data Into Unicode Is Not Our Problem
+
+RFC ??: Unicode Locales
+
+RFC ??: Abstract the Internal String Interaction
+

@@ -1,0 +1,211 @@
+=head1 TITLE
+
+Regex: Make /$/ equivalent to /\z/ under the '/s' modifier
+
+=head1 VERSION
+
+  Maintainer: Bart Lateur <bart.lateur@skynet.be>
+  Date: 28 Sep 2000
+  Last Modified: 1 Oct 2000
+  Mailing List: perl6-language-regex@perl.org
+  Number: 332
+  Version: 2
+  Status: Frozen
+
+=head1 ABSTRACT
+
+To most Perlers, /$/ in a regex simply means "end of string". This is
+only right, if you're absolutely sure your string doesn't end in a
+newline, as is commonly the case in a large part of all textual data:
+ordinary strings don't contain newlines. Lines coming from text files
+can generally only contain a newline as the very last character. The
+'/s' modifier is usually only used in combination with the former class
+of textual data.
+
+However, this situation is basically a bug hole.
+
+This RFC proposes to change the '/s' modifier so that under '/s', /$/
+will only match at the very end of a string, and not also before a
+newline at the end of the string.
+
+=head1 CHANGES
+
+=over 4
+
+=item *
+Added section about alternatives, such as the addition of the /$$/
+syntax
+
+=item *
+Added section about /z/ and /\Z/
+
+=item *
+Expanded section on '/ms'.
+
+=item *
+Complete rewrite of "MIGRATION" section
+
+=back
+
+=head1 NOTES ON FREEZING
+
+Since nobody had any more remarks on the draft, and the deadline is
+nigh, I'm freezing it as is.
+
+=head1 DESCRIPTION
+
+To most Perl programmers, /^foo$/ is a regex that can only match the
+string "foo". It's not, actually: it can match "foo\n", too. This
+assumption is usually safe, because people know the kind of data they're
+dealing with, and they "know" that it won't ever end in a newline.
+
+However, this basically is a chance for bugs to creep in, if for some
+reason this assumption about the data no longer holds.
+
+To make matters worse, Perl doesn't even have a mechanism to prevent the
+regex engine from matching /$/ at just before the last character if it's
+a newline.
+
+Originally, we had thought of adding Yet Another Regex Modifier; but to
+be honest, having 2 modifiers just for the newline is already confusing
+enough, for too many people. A third is definitely out.
+
+Therefore, the proposal is instead to modify the behaviour of the '/s'
+modifier.
+
+Under '/s':
+
+=over 2
+
+=item *
+
+/./ can match any character, including newline;
+
+=item *
+
+/$/ can match only at the very end of the string, not also in front of a
+last character, if it happens to be a newline.
+
+=back
+
+This seems simple enough.
+
+=head1 CONSIDERATIONS
+
+=head2 Mnemonic value of '/s'
+
+'/s' originally stood for "single line". This can no longer be true, the
+mnemonic value of the "s" is thereby reduced to zero.
+
+However, the mnemonic value wasn't that great to begin with, especially
+if you consider that combining '/s' and '/m' is not only possible, but a
+useful option, too. How can a string both be a single line and
+multiline, at the same time?
+
+So, to most Perl programmers, '/s' simply stands for
+
+=over 2
+
+=item
+let /./ match a newline too
+
+=back
+
+which now gets turned into:
+
+=over 2
+
+=item
+treat "\n" as an ordinary character
+
+=back
+
+The change isn't that big, so it is just as easy to remember. Or not.
+
+=head2 The $* variable
+
+'/s' and '/m' also have a lesser known side effect: they both override
+the setting of the $* special variable, which controls multiline related
+behaviour in regexes.
+
+Use of this special variable has already been deprecated at least since
+Perl5 first came out, more than 5 years ago. It is a very good candidate
+to be removed from Perl6 altogether, which would result in fewer
+gotcha's in the language. That is a Good Thing.
+
+Perlvar says:
+
+    Use of `$*' is deprecated in modern Perl, supplanted by the `/s'
+    and `/m' modifiers on pattern matching.
+
+
+Therefore, any changing behaviour of '/s', with regards to $*, can
+nowadays hardly be considered relevant, any more.
+
+See also L<RFC 347: Remove long-deprecated $*>
+
+=head2 '/ms': combined '/m' and '/s'
+
+The '/m' option makes /$/ match either at the end of the string, or
+before I<any> newline. Adding the '/s' modifier won't change that. As a
+result, '/ms' still works as before. Internally, '/m' has taken over the
+job of matching before a newline at the very end of the string, simply
+because /$/m can match before I<every> newline.
+
+=head2 /\z/ and /\Z/
+
+The behaviour of /\z/ and /<Z/ will remain unaltered, under all
+cicumstances.
+
+Currently, /$/ is a synonym for /\Z/, even under '/s'. With the modified
+'/s', /\Z/ will retain its old meaning, thereby these will no longer be
+synonyms under all circumstances.
+
+=head1 MIGRATION
+
+The Perl5 To Perl6 converter can replace every occurence of
+
+    /$/s
+
+with 
+
+    /\Z/s
+
+
+However, it's not unlikely that currently having /$/s in your regexes,
+is actually a bug in your script, but you don't care because the data
+won't ever make it visible. A warning if /$/ is found in combination
+with a bare '/s' modifier, not combined with '/m', in addition to
+replacing it with /\Z/, might be a nice idea.
+
+=head1 IMPLEMENTATION
+
+Under '/s', make '$' behave as /\z/ does now.
+
+=head1 ALTERNATIVES
+
+Some people, in particular Hugo, would rather add a special syntax for
+this special case, and leave /$/ under '/s' alone. This seems not to win
+the favour of too many other people (actually, the sample is too small
+to get reliable statistics), for these reasons:
+
+=over 2
+
+=item *
+C<$$> already has a meaning: it is the special variable containing the
+PID.
+
+=item *
+We already I<have> an alternative: /\z/. We don't want to just add Yet
+Another Alternative. We want /$/ to do the Right Thing.
+
+=back
+
+=head1 REFERENCES
+
+perlre, about '/s' and '/m'
+
+perlvar, section about $*
+
+RFC 347: Remove long-deprecated $* (aka $MULTILINE_MATCHING)
+

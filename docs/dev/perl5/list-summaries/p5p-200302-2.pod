@@ -1,0 +1,97 @@
+=head1 This Week on perl5-porters (10-16 February 2003)
+
+Here is the popular digest of the Perl 5 porters mailing list for the
+second week of February. Featuring new proposals, new command-line
+switches, new ideas, and fixes for all sorts of bugs.
+
+=head2 lvalue length
+
+Fergal Daly asked why C<length($a)> isn't a lvalue. This would allow to
+trim a string by changing directly its length. But there is a problem :
+defining the proper behavior when the length of $a has to grow. Should $a
+be kept unchanged, or should it be blank- (or null-) padded ? For this
+reason, Hugo decided that length() isn't going to return a lvalue yet.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg91851.html
+
+=head2 Unexpected scientific notation
+
+Abigail reports (bug #20827) that a large number (1597009560 ** 2) is
+sometimes print by perl as an integer, and sometimes in the scientific
+notation. When this square operation has been constant folded, the number
+is stored by perl as an integer, but when it occurs at run time, perl uses
+a floating point value, hence the difference in output.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg91899.html
+
+=head2 gzipped modules
+
+FranE<ccedil>ois Pons proposed a patch to allow to load gzipped modules,
+via the PerlIO-gzip layer. Slaven Rezic pointed out that this
+functionality was probably not worth being put in the core, because it can
+be implemented via the coderef-in-@INC feature.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg91999.html
+
+=head2 The -C Unicode switch
+
+Jarkko Hietaniemi implemented the C<-C> command-line switch he proposed
+some weeks ago. This switch (with additional option letters) can be used
+to control perl's Unicode behavior : for example, to turn on/off the
+utf-8-ness of the standard input or output, or of input files supplied on
+@ARGV. This new flag will be available in perl 5.8.1 as well.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg91815.html
+
+=head2 Namespace pollution
+
+To address a namespace pollution issue raised by John Lenz, Jarkko
+implemented a new C preprocessor symbol, PERL_NO_SHORT_NAMES, which
+prevents the #definition of the short form of any of the C<Perl_*>
+symbols.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg91954.html
+
+=head2 In brief
+
+Our pumpking, Hugo van der Sanden, who was quite busy those last weeks,
+caught up with the developments. Most notably, the patch that Salvador
+FandiE<ntilde>o sent in November to add assertion support to Perl is
+now in.
+
+Rafael Garcia-Suarez implemented a new function in Scalar::Util, that
+allows to change the prototype of a function.
+
+Jos Boumans proposed (with a patch) to advertise Test::More and
+Module::Build in the perlmodstyle man page.
+
+Fergal Daly imagined a new, more concise way to invoke Exporter, and sent
+a patch to implement his idea.
+
+Bug #20920 pertains to the new safe signal implementation in perl 5.8.0 :
+apparently, when a signal handler is running, the corresponding signals
+are not blocked, whereas they should be. This can lead to segfaults.
+Slaven Rezic provided a fix.
+
+Bug #20912, fixed by Enache Adrian, is about a split() on a utf-8 string
+that causes the unusual error message I<Split loop> to be thrown.
+
+Mark Mielke produced a strange case of core dump, involving ties and
+auto-references.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg91991.html
+
+Jarkko reminds us that someone has to make sure that the C<fields>
+pragma still works, now that pseudo-hashes have been removed. (The plan
+being to use read-only hashes.) That could be a bite-sized task for
+someone. (And while we're at it, there are still traces of the old 5005
+threads to be cleaned up.)
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg92000.html
+
+=head2 About this summary
+
+This summary brought to you once more by Rafael Garcia-Suarez. Summaries
+are available on F<http://use.perl.org/> and/or via a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. Comments and
+corrections are welcome.

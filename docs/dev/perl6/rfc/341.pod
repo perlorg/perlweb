@@ -1,0 +1,59 @@
+=head1 TITLE
+
+unified container theory
+
+=head1 VERSION
+
+  Maintainer: David Nicol <perl6rfc@davidnicol.com>
+  Date: 28 Sep 2000
+  Mailing List: perl6-language-data@perl.org
+  Number: 341
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+Viewing Hash and Array as instances of "Container" leads
+to easy implementation of "Sparse Array" and "Sorted Hash"
+and "Real Array" 
+
+=head1 DESCRIPTION
+
+There are two big differences between Hash and Array.  
+
+=over
+
+=item Hash keys are string, and Array keys are Integer
+
+Hash keys are string, and Array keys are Integer
+
+=item Array semantics include listing keys which have not been assigned to yet.
+
+Array semantics include listing keys which have not been assigned to yet.
+This is really an issue for the accessing functions, not the underlying data.
+
+=item Curly braces mean look up by string, and square brackets mean look up by integer.
+
+maybe square brackets as the C<qr> delimiter would be a good way to
+indicate RFC197 regex semantics.  Wouldn't that make for an easy way to take
+a slice from a collection of data points?
+
+=back
+
+
+=head1 IMPLEMENTATION
+
+With this in mind, it becomes possible to consider implementing both container
+types as sorted trees, possibly transparently switching to block offset arrays
+when Array is sufficiently dense.
+
+The one tree framework could be used for both types of trees, by switching
+the comparison function.
+
+Tree search may be faster than
+hash function calculation for easily compared data.
+
+=head1 REFERENCES
+
+The above is written from memory of conversation in August on perl6-internals.
+

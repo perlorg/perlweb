@@ -1,0 +1,56 @@
+=head1 TITLE
+
+Perl should allow specially attributed subs to be called as C functions
+
+=head1 VERSION
+
+  Maintainer: Dan Sugalski <dan@sidhe.org>
+  Date: 28 Sep 2000
+  Mailing List: perl6-internals@perl.org
+  Number: 334
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+One of the goals of the perl 6 port is to be able to call perl
+routines just as if they were routines in a compiled language. This
+makes callbacks into perl from embedded apps easier, and it makes it a
+lot easier on us when we have folks writing low-level bits of the perl
+system in perl.
+
+=head1 DESCRIPTION
+
+Any sub that has the appropriate attribute can be called from C (or some other
+compiled language). Perl will automagically convert the input
+parameters (which is what the attributes tells us) to things perl can
+use, and be off and running.
+
+Prototypes are insufficient to the task, as they don't get detailed
+enough, nor do they detail the return value (which does need to be a
+single thing)
+
+This means that a sub like this:
+
+   sub foo : C_visible("i", "iii") {#sub body}
+
+can be called from C code that looks like:
+
+   int ret;
+   a = foo(1, 2, 3);
+
+Assuming that foo is really the perl sub. (A method to get a pointer
+to the function will be needed)
+
+=head1 IMPLEMENTATION
+
+Perl will generate vararg functions on the fly for any sub with the
+appropriate attribute. This is very platform specific, unfortunately,
+but there's no real way around it. The generated function doesn't need
+to be all that funky--one that knows the address of the 'real' perl
+sub's coderef and that knows how to slurp in the passed in parameters
+is sufficient.
+
+=head1 REFERENCES
+
+None.

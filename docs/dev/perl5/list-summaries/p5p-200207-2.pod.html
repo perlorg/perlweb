@@ -1,0 +1,136 @@
+<HTML>
+<HEAD>
+<TITLE>This Week on perl5-porters</TITLE>
+<LINK REV="made" HREF="mailto:bhcompile@daffy.perf.redhat.com">
+</HEAD>
+
+<BODY>
+
+<A NAME="__index__"></A>
+<!-- INDEX BEGIN -->
+
+<UL>
+
+	<LI><A HREF="#this week on perl5porters (814 july 2002)">This Week on perl5-porters (8-14 July 2002)</A></LI>
+	<UL>
+
+		<LI><A HREF="#more on perlio::via">More on PerlIO::Via</A></LI>
+		<LI><A HREF="#case issues in perlio::*">Case issues in PerlIO::*</A></LI>
+		<LI><A HREF="#:pop pseudolayer">:pop pseudo-layer</A></LI>
+		<LI><A HREF="#backporting data::dumper to cpan">Backporting Data::Dumper to CPAN</A></LI>
+		<LI><A HREF="#destroying blessed code refs">DESTROYing blessed code refs</A></LI>
+		<LI><A HREF="#defined $$foo"><CODE>defined $$foo</CODE></A></LI>
+		<LI><A HREF="#a couple of bugs">A couple of bugs</A></LI>
+		<LI><A HREF="#more module case issues : root namespace for thread utility modules">More module case issues : root namespace for thread utility modules</A></LI>
+		<LI><A HREF="#finally, rc3">Finally, RC3</A></LI>
+	</UL>
+
+</UL>
+<!-- INDEX END -->
+
+<HR>
+<P>
+<H1><A NAME="this week on perl5porters (814 july 2002)">This Week on perl5-porters (8-14 July 2002)</A></H1>
+<P>This week, the P5P report features the Great Module Renaming ; the Second
+Great Module Renaming ; a Couple Of Bugs, old and new ; and, finally, Perl
+5.8.0 RC 3 released to the world.</P>
+<P>
+<H2><A NAME="more on perlio::via">More on PerlIO::Via</A></H2>
+<P>On monday morning, the version of <CODE>MIME::QuotedPrint</CODE> included with Perl
+still provided a few methods (namely PUSHED, FILL, WRITE and FLUSH) that
+added to it the ability to be used as a PerlIO layer. Elizabeth Mattijsen,
+hunting bloat, submitted a patch to remove these methods. Noticing that
+these were used in the test for <CODE>PerlIO::Via</CODE>, and in some documentation as
+code examples, Jarkko decided to borgify Elizabeth CPAN's module,
+<CODE>PerlIO::Via::QuotedPrint</CODE>, which is essentially the above PerlIO methods
+put in a separate namespace.</P>
+<P><A HREF="http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg00199.html">http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg00199.html</A></P>
+<P>On the path of doing this namespace migration, a PerlIO bug reappeared :
+<CODE>open($fh, &quot;&lt;:Via(foo)&quot;, &quot;file&quot;)</CODE> not returning false on failure. It
+turned out that this was a bug in the <CODE>:stdio</CODE> pseudo-layer. It was promptly
+corrected by Nick Ing-Simmons.</P>
+<P>
+<H2><A NAME="case issues in perlio::*">Case issues in PerlIO::*</A></H2>
+<P>Continuing on the <CODE>PerlIO::Via</CODE> topic, Elizabeth Mattijsen asked why the
+second part of <CODE>PerlIO::encoding</CODE> was lowercase, whereas <CODE>PerlIO::Via</CODE> and
+<CODE>PerlIO::Scalar</CODE> where uppercase.</P>
+<P>This was obviously a good question. A consensus was found quite rapidly :
+all core IO layers should have all-lowercase names. Thus, <CODE>PerlIO::Via</CODE> (and
+its submodules <CODE>PerlIO::Via::*</CODE>) moved to <CODE>PerlIO::via</CODE> (note the lowercase
+'v'), and <CODE>PerlIO::Scalar</CODE> to <CODE>PerlIO::scalar</CODE>.</P>
+<P><A HREF="http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg00201.html">http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg00201.html</A></P>
+<P>
+<H2><A NAME=":pop pseudolayer">:pop pseudo-layer</A></H2>
+<P>During the previous discussion, Nick Ing-Simmons noticed that is was
+impossible to pop an IO layer from within Perl. Thus he added a <CODE>:pop</CODE>
+experimental pseudo-layer, that does just that.</P>
+<P><A HREF="http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg00458.html">http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg00458.html</A></P>
+<P>
+<H2><A NAME="backporting data::dumper to cpan">Backporting Data::Dumper to CPAN</A></H2>
+<P>Ilya Martynov tried to backport RC1's <CODE>Data::Dumper</CODE> to perl 5.6.1. He
+found out that some tests were failing, because the internal hashing
+algorithm used by perl has changed, and thus hash keys were not returned
+in the same order. The trick should be to have version-specific tests, or
+to use some more clever way to verify the results. Anyway, Ilya is now
+with Gurusamy Sarathy co-maintainer of <CODE>Data::Dumper</CODE>, and will be able
+to upload new versions to CPAN.</P>
+<P><A HREF="http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg00317.html">http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg00317.html</A></P>
+<P>
+<H2><A NAME="destroying blessed code refs">DESTROYing blessed code refs</A></H2>
+<P>Simon Cozens found that the <CODE>DESTROY</CODE> method was not called when blessed
+code references go out of scope. Nobody replied, and it's still not clear
+whether this is a bug.</P>
+<P><A HREF="http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg00235.html">http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg00235.html</A></P>
+<P>
+<H2><A NAME="defined $$foo"><CODE>defined $$foo</CODE></A></H2>
+<P>Elizabeth Mattijsen noticed that</P>
+<PRE>
+    use strict 'refs';
+    our $foo = 'bar';
+    if (defined $$foo) { ... }</PRE>
+<P>was valid perl code, and wondered whether this was an undocumented
+feature. After some discussion, it was decided that this was actually a
+bug, but the kind of bug that can wait until after 5.8.0 -- it's
+non-critical, and it's present in 5.6.x.</P>
+<P><A HREF="http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg00359.html">http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg00359.html</A></P>
+<P>
+<H2><A NAME="a couple of bugs">A couple of bugs</A></H2>
+<P>Abigail reported a couple of bugs. The first was a complaint about
+<CODE>/(?{...})?/</CODE> not being allowed. This triggered a terse comment by Hugo
+about how he wants to enhance the regexp engine during the 5.9 development
+track.</P>
+<P>The second bug was about local()-izing an <CODE>$#array</CODE> variable not working
+correctly (for some value of ``correctly''). (I think that this bug was
+already reported in the past, but I didn't find it.) Anyway, if we want to
+make this work, the semantics of this construct should be precisely
+defined. This goes in the to-do list for 5.9.</P>
+<P>The first bug: <A HREF="http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg00482.html">http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg00482.html</A></P>
+<P>The second bug: <A HREF="http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg00484.html">http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg00484.html</A></P>
+<P>
+<H2><A NAME="more module case issues : root namespace for thread utility modules">More module case issues : root namespace for thread utility modules</A></H2>
+<P>Elizabeth Mattijsen was also busy on the ithreads front. She uploaded to
+CPAN a thread-pool module. The first version of it was called
+<CODE>threads::farm</CODE> (now it's <CODE>Thread::Pool</CODE>). Johan Vromans noted the
+all-lowercase name, quite inappropriate for a module. It's worth noting
+that this triggered the Second Great Renaming of the week : the thread
+utility modules now live in the <CODE>Thread::</CODE> namespace. The thread
+pragmatic modules (<CODE>threads</CODE> and <CODE>threads::shared</CODE>) keep their lowercase
+name, in conformance with the general naming conventions; but
+<CODE>threads::shared::queue</CODE> and <CODE>threads::shared::semaphore</CODE> now become
+respectively <CODE>Thread::Queue</CODE> and <CODE>Thread::Semaphore</CODE>.</P>
+<P><A HREF="http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg00570.html">http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg00570.html</A></P>
+<P>
+<H2><A NAME="finally, rc3">Finally, RC3</A></H2>
+<P>Jarkko released RC3 to the world, but you already know that. He said also :</P>
+<P><EM>The post-RC3-plan is no damn code patches (or additions), the possible
+exceptions being firefighting by me (Unicode), NI-S (perlio), Arthur
+(ithreads), or Hugo (regexen).</EM></P>
+<P>and :</P>
+<P><EM>Timeframe for the 5.8.0 final: Thursday.</EM></P>
+<P>(this last word being of course subject to Murphy's law.) (It also means
+that you have to quickly download and test RC3 on your favorite platforms
+before it's too late...)</P>
+
+</BODY>
+
+</HTML>

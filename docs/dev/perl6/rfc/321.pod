@@ -1,0 +1,126 @@
+=head1 TITLE
+
+Common Callback API for all AIO calls.
+
+=head1 VERSION
+
+  Maintainer: Uri Guttman <uri@sysarch.com>
+  Date: 25 Sep 2000
+  Mailing List: perl6-language-flow@perl.org
+  Number: 321
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+This RFC addresses the way callbacks are requested in the Advanced I/O
+(AIO) system and how they get called. The goal is to have a common
+callback style across the board.
+
+=head1 DESCRIPTION
+
+There are several places in Perl where callbacks are needed. These
+include socket I/O events, asynchonous file I/O, signals, timers, plain
+events, etc. This RFC proposes a common API for requesting those
+callbacks in order to keep this consistant in all those places.
+
+=head1 IMPLEMENTATION
+
+A callback currently can be registered in %SIG with a code ref as do Perl/Tk
+and Event.pm. But there are time you want to have an object oriented
+callback and that requires an object and a method. Event.pm handles this
+with a anon list instead of the code ref. Its first element is the
+object and the second is the method.
+
+A solution which simplifies this and make calback code more consistant
+is to allow either a code ref or an object as the single primary
+argument to the call back API. The method called with the object is
+defaulted to a name that is appropriate for the type of callback. That
+method can be overridden with an optional argument.
+
+For example, a read event would default to a method named 'readable',
+and a socket connect event would default to 'connected'.
+
+
+Here are two possible APIs, the first based on I/O handle objects
+from RFC 14 and the second on the AIO syntax:
+
+	$obj = bless {}, 'Foo' ;
+
+	# these are I/O handle object based calls
+
+	$fh->read_event( 'cb' => $obj ) ; 
+	$fh->write_event( 'cb' => $obj, 'method' => 'my_write_method' ) ; 
+
+	# this is an AIO class call
+	AIO::read_event( 'fh' => $fh, 'cb' => \&my_callback ) ; 
+
+	sub my_callback {
+
+		my ( $fh ) = @_ ;
+
+		print "i can read $fh from package main::\n" ;
+	}
+
+	package Foo ;
+
+	sub readable {
+
+		my ( $self, $fh ) = @_ ;
+
+		print "i can read $fh\n" ;
+	}
+
+	sub my_write_method {
+
+		my ( $self, $fh ) = @_ ;
+
+		print "i can write $fh\n" ;
+	}
+
+
+Most callbacks will also allow an optional timeout which would use the
+the 'timed_out' method by default. You can override that method name
+with the 'timeout_method' argument.
+
+	# 10 second timeout
+
+	AIO::read_event( 'fh' => $fh, 'cb' => $obj, 'timeout' => 10 ) ; 
+
+	package Foo ;
+
+	sub readable {
+
+		my ( $self, $fh ) = @_ ;
+
+		print "i can read $fh\n" ;
+	}
+
+	sub timed_out {
+
+		my ( $self, $fh ) = @_ ;
+
+		print "$fh has had no data in a while\n" ;
+	}
+
+=head1 IMPACT
+
+None.
+
+=head1 UNKNOWNS
+
+None.
+
+=head1 REFERENCES
+
+Event.pm:  XS based event loop module.
+
+RFC 14: Modify open() to support FileObjects and Extensibility
+
+RFC 47: Universal Asynchronous I/O
+
+RFC 60: Safe Signals
+
+RFC 86: IPC Mailboxes for Threads and Signals
+
+RFC 87: Timers and Timeouts

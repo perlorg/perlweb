@@ -1,0 +1,55 @@
+=head1 TITLE
+
+hashes should interpolate in double-quoted strings
+
+=head1 VERSION
+
+  Maintainer: Nathan Torkington <gnat@frii.com>
+  Date: 15 Sep 2000
+  Mailing List: perl6-language-data@perl.org
+  Number: 237
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+"%hash" should expand to:
+
+  join( $/, map { qq($_$"$hash{$_}) } keys %hash )
+
+=head1 DESCRIPTION
+
+Hashes do not interpolate in double-quote context in perl5.  They 
+should, because (a) scalars and arrays do, (b) it is a useful
+thing.
+
+The problem has always been: how to separate the keys and values?  I 
+say use $" (the value that gets put between array elements in 
+double-quote interpolation) between key and value, and $/ between each 
+hash record.
+
+A thorn is that $/ is the B<input> record separator.  It seems wrong 
+to use it for output.  But $\ is not set by default, and it seems 
+unreasonable to have to set $\ (which affects the end of every print) 
+just to interpolate hashes.  I didn't relish making yet another 
+special variable just for this, though.
+
+When global variables like $" and $/ go away, I imagine they'll be 
+replaced with lexically-scoped variations.  This will work then, too.
+
+The big problem is that % is heavily used in double-quoted strings 
+with printf.  I don't have a solution to this.  In the end, this may 
+be B<the> definitive reason why hashes do not interpolate.  And that's 
+fine by me.
+
+=head1 IMPLEMENTATION
+
+A simple change to the tokenizer.
+
+The perl526 translator could backslash every % in a double-quoted
+string.
+
+=head1 REFERENCES
+
+None.
+

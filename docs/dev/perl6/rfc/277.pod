@@ -1,0 +1,77 @@
+=head1 TITLE
+
+Method calls SHOULD suffer from ambiguity by default
+
+=head1 VERSION
+
+  Maintainer: Nathan Wiger <nate@wiger.org>
+  Date: 24 Sep 2000
+  Last Modified: 30 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 277
+  Version: 3
+  Status: Frozen
+
+=head1 ABSTRACT
+
+RFC 244 proposes special-casing -> to quote the left operand, and
+eliminating the bareword indirect object syntax entirely.
+
+These are both bad ideas, in the author's opinion, and will likely cause
+a large number of longtime Perl hackers to run away screaming.
+
+Many people, myself included, view the ability to type:
+
+   $q = new CGI;
+   $val = shift->{fullname};
+
+And have Perl DWIM is what makes Perl Perl, and fun. Forcing me to
+write:
+
+   $q = new {'CGI'};
+   $val = shift()->{fullname};
+
+Because this ambiguity upsets a few people is just plain silly. And
+very un-fun.
+
+Tightening this syntax by default makes no sense. Rather, this is
+something that can easily be added to C<use strict>. See B<RFC 278> for
+details on C<use strict 'words'> and C<use strict 'objects'>.
+
+=head1 DESCRIPTION
+
+In Perl 5, there are already plenty of ways in which people can
+B<voluntarily> disambiguate the above:
+
+   $q = new 'CGI';               # main::new('CGI');
+   $q = CGI::->new;              # or 'CGI'->new;
+
+   $val = shift::->{fullname};   # or 'shift'->{fullname}
+   $val = shift()->{fullname};   # main::shift()->{fullname}
+
+And if people want this to be enforced, then they can easily C<use
+strict 'words'> as specified in RFC 278. Or, those who despise indirect
+objects may be able to say C<no syntax 'indirect-objects'> using a
+mechanism like that in RFC 329.
+
+Perl 6 should be a value add to Perl 5. It should not take away
+established, widely-used syntax just because of a little ambiguity. This
+is hardly the only syntactic ambiguity in Perl.
+
+=head1 IMPLEMENTATION
+
+Perl 6 should tokenize the above just like Perl 5.
+
+=head1 MIGRATION
+
+None. Why would we want there to be?
+
+=head1 REFERENCES
+
+RFC 28:  Perl should stay Perl.
+
+RFC 278: Additions to 'use strict' to fix syntactic ambiguities
+
+RFC 244: Method calls should not suffer from the action on a distance
+
+RFC 329: C<use syntax>

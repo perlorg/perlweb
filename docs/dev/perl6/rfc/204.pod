@@ -1,0 +1,162 @@
+=head1 TITLE
+
+Arrays: Use list reference for multidimensional array access
+
+=head1 VERSION
+
+   Maintainer: Buddha Buck <bmbuck@14850.com>
+   Date: 8 Sep 2000
+   Last Modified: 19 Sep 2000
+   Mailing List: perl6-language-data@perl.org
+   Number: 204
+   Version: 2
+   Status: Frozen
+
+=head1 ABSTRACT
+
+This RFC proposes that array indexing syntax be extended to use references
+to integer lists as indices for multidimensional arrays.
+
+=head1 SUMMARY OF DISCUSSION
+
+Most of the discussion concerning this RFC accepted it as-is as a workable
+syntax.  It meets most of the requirements for multidimensional array access
+that have been discussed.
+
+Ilya Zakharevich brought up the issue of a potential problem with
+objects which use blessed list references as their internal structure,
+and their use as indices.  Given a Bignum class, which stores its
+(external) value internally as a list of integers, doing something
+like:
+
+my $bignum = Bignum->new(23) # stored internally as [ 2, 3 ]
+print $array[$bignum]; # should it print $array[23] or $array[[2,3]]?
+
+can be ambiguous.  I'm not so sure.  I think that $bignum is not
+legal, under Perl5, to be an array index, and that if it is going to
+be use so, it would need to be $array[$bugnum->value] anyway.
+
+=head1 DESCRIPTION
+
+Currently in Perl5, arrays can be indexed by a single integer, or sliced
+by a list of integers. This notation is sufficient and convenient for one
+dimensional arrays (like Perl5 has), but is problematic for
+multidimensional arrays.
+
+Because n-dimensional arrays have more than one dimension, their indices
+are not simple integers, but rather n-tuples of integers. While lists are
+natural Perl representations of n-tuples, they present problems when used
+as multidimensional array indices:
+
+=over 4
+
+=item *
+
+It is ambiguous if @a[@point1,@point2] is a 2-element slice of a
+multidimensional array, or if it is a multi-element slice of a single
+dimensional array.
+
+=item *
+
+Although $a[@point] is not as ambiguous (it is currently a syntax error),
+it still could be confusing, especially when seeing both $a[1,3,4] and
+@b[1,2,4].
+
+=item *
+
+It is inconvenient use a list of n-dimensional indices for a slice. By
+Perl syntax, such a list would have to be a list of lists, whereas
+currently Perl only allows lists of scalers.
+
+=back
+
+A solution to these problems is to encapsulate a list of integers into a
+scaler, such as using a list reference. By using list references for
+indices (and lists of list references for slices), the multidimensional
+case is similar to the unidimensional case: $a[$scaler] would access a
+single element, @a[@list] would access a slice.
+
+This would solve the problems above:
+
+=over 4
+
+=item *
+
+@a[$point1,$point2] is no longer ambiguous, but obviously a 2-element
+slice from the array @a. The dimensionality of @a is not an issue with
+this syntax.
+
+=item *
+
+Multidimensional and unidimensional array access both use $a[$point], so
+$a[1,3,4] will not be seen. Instead, any confusion would have to be
+between $a[[1,3,4]] and @b[1,2,4]. Since $a[[1,3,4]] is an array indexed
+by a single scaler value (the listref [1,3,4]), whereas @b[1,2,4] is an
+array indexed by a list of scaler values explains clearly (and possibly
+redundantly) the use of $ and @ as prefixes.
+
+=item *
+
+List of lists are naturally stored as list of scalar references to lists.
+As such, the natural representation of lists of lists ties in well with
+taking multidimensional array slices:
+
+for my $t (1..10) { push @points,[getx($t),gety($t),getz($t)]; } $point =
+$points[3];
+
+@array[@points] = 1 x @points; $array[$point] = 0;
+
+=back
+
+This proposed syntax extends to unidimensional arrays as well. $a[[$b]]
+being an alternative way of saying $a[$b], when $b is an integer. $a[[]]
+would return the (unique) value of the zero-dimensional array @a, not the
+value of the scaler $a.
+
+A listref used as an index must have the same or lower cardinality as the
+dimensionality of the array (if the array is declared with ':bounds'-- see
+RFC 203), and must have elements within the declared or implied bounds of
+the array indexed.
+
+my int @array :bounds(3,3,3); $array[[0,1,2]] = 5; # OK, within bounds.
+$array[[0,1,4]] = 5; # error, out of bounds $array[[1,2,1,2]] = 5; #
+error, out of bounds, too many dimensions
+
+If the cardinality (c) of the index is lower than the dimensions (d) of
+the array, then the innermost (n-d) dimensions of the array are returned:
+
+my int @array :bounds(3,3,3); $array[[1,2]] = (1,2,3,4); # Sets the line
+at (1,2) to (1,2,3,4)
+
+When a listref is used to index a list of lists, the returned list
+reference is automatically dereferenced:
+
+my @array( [0,1],
+            [1,2]);
+my @a = @array[[0]]; # Returns (0,1), _not_ [0,1]
+
+The ; operator (defined in RFC 205) is designed to return lists of
+list refs, to make for efficient indexing and slicing of
+multidimensional arrays.
+
+@points = ((1,2);(3,4);5); @points = ([1,3,5],[1,4,5],[2,3,5],[2,4,5])
+@array[@points]= 5 x @points;
+
+=head1 IMPLEMENTATION
+
+Implementation of this feature is dependent on the underlying
+implementation of multidimensional arrays. Other than that, it is a
+straightforward enhancement of the semantics of list indexing.
+
+=head1 REFERENCES
+
+RFC 202: Overview of multidimensional array RFCs
+
+RFC 203: Notation for declaring and creating arrays
+
+RFC 205: New operator ';' for creating array slices.
+
+=head1 ACKNOWLEDGEMENTS
+
+Jeremy Howard: Suggested listref indexing
+

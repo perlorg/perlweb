@@ -1,0 +1,102 @@
+=head1 This Week on perl5-porters (27 January / 2 February 2003)
+
+Hi all, here's your weekly dose of bug and fixes. Fold constants, send
+signals, leak memory and introspect layers through this week's summary.
+
+=head2 Constant folding in conditionals
+
+The C<?:> conditional operator is optimized away by perl when the
+condition is constant. This leads to a strange behavior, reported as bug
+#20444 by Ton Hospel : the following construct
+
+    $_ = "foo"; print "foo" =~ (1 ? /foo/ : /bar/);
+
+prints 1, because it's internally equivalent to :
+
+    $_ = "foo"; print "foo" =~ /foo/;
+
+But in fact it should print nothing, as it should be equivalent to
+
+    $_ = "foo"; print "foo" =~ 1;
+
+(this 1 being the value of C</foo/>, once evaluated.)
+
+(of course, the proper way to mix regexps and C<?:> is to use qr//.)
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg91125.html
+
+=head2 Signal handler configuration mess
+
+Shevek reports (bug #20491) that assigning to C<$SIG{RTMIN}> results in a
+segfault on his linux system. After having inspecting his configuration,
+it appears that Configure has assigned the signal number -1 to SIGRTMIN.
+Why, we don't know (yet).
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg91194.html
+
+=head2 Minor leak
+
+Bill Bennett spotted a minor memory leak in the freeing of subroutines.
+Dave Mitchell found that I<one in every 64K ops will not be freed>, due to
+a hack used by the B::C compiler backend, and Paul Johnson provided a
+patch.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg91265.html
+
+=head2 gcc locale-dependent messages
+
+The makedepend script (that calculates dependencies between source files)
+is fooled by gcc 3.2.1, when run under a french locale (and probably other
+non-english locales as well). That's because makedepend relies on the
+output of gcc to do its job. Nicholas Clark thinks I<that gcc generating
+programmatic output (not human output) that varies depending on locale is
+a bug in gcc, and should be reported as such.> H.Merijn Brand proposes to
+use weaker patterns to match gcc output. Rafael Garcia-Suarez proposes
+also to force the C locale in makedepend.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg91453.html
+
+=head2 Run-time access to C<${^OPEN}> values
+
+Autrijus Tang wanted a way to know what default PerlIO layers are used by
+a given block of Perl code. He proposed a patch to open.pm to store this
+information on a package per package basis. But as the open pragma is
+lexically scoped, this approach wasn't sufficient. Rafael pointed out that
+it's available from the op tree and provided a naive C implementation,
+which was quickly turned into a module, Devel::Hints, by Autrijus.
+
+Nick Ing-Simmons suggested that this runtime access to C<${^OPEN}> values
+could be implemented in XS in the core, to be available in the open::
+namespace.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg91423.html
+    http://search.cpan.org/author/AUTRIJUS/Devel-Hints/
+
+=head2 In brief
+
+John Peacock released version.pm v0.28, that I<now includes a subclass,
+version::AlphaBeta, which demonstrates using alphanumeric version strings,
+instead of strict numeric versions.>
+
+Jarkko Hietaniemi hopes someone will write the documents README.linux and
+README.macosx. (We have already 37 README documents, that provide notes
+and installation instructions specific to various platforms, but those two
+popular OSes lack documentation.) John Adams volunteered for OSX.
+
+Rafael suggests to remove the obsolescent B<-u> command-line switch. Ton
+Hospel says that it could be reused as "the Unicode switch", but Jarkko
+objects that this could create strange problems when different versions of
+perl are used.
+
+Stephane Payrard notices that IO::Handle can't be used together with
+Inline::Files, at least on perl 5.8.0. The origin of the problem is
+unknown (but patches are welcome).
+
+Jarkko released a snapshot of the maintenance branch of perl 5.8.
+
+=head2 About this summary
+
+This summary was brought to you, as usual, by Rafael Garcia-Suarez.
+Summaries are available on F<http://use.perl.org/> and/or via a mailing
+list, which subscription address is F<perl5-summary-subscribe@perl.org>.
+Comments, corrections and additions are welcome.

@@ -1,0 +1,83 @@
+=head1 TITLE
+
+Bring Documentation Closer To Whatever It Documents
+
+=head1 VERSION
+
+  Maintainer: Jarkko Hietaniemi <jhi@iki.fi>
+  Date: 5 Aug 2000
+  Mailing List: perl6-language@perl.org
+  Number: 44
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+The current pod has one serious problem: it is very weakly tied to the
+whatever it is documenting.  A human can make a good guess based on
+proximity and content but for more automatic document extraction the
+situation is hopeless.
+
+This RFC proposes some syntactical possibilities of binding the
+documentation to the things they try to document.
+
+=head1 DESCRIPTION
+
+Both ways of binding the documentation to its main thing and
+retrieving the documentation are needed.  Below I propose some
+possible syntaxes.  The proposals are by no means definitive or final,
+but the key issue is that the documentation really must be visually
+close to its documentee.  Any other way is terminally doomed to
+failure because then the document and the documentee B<will> drift out
+of sync.
+
+=head2 DOCUMENTING A FUNCTION
+
+	sub foo "Snarfle the bogogoozer.  The first argument is ..." { ... }
+
+=head2 DOCUMENTING THE ARGUMENTS OF A FUNCTION
+
+This example assumes a certain not-yet-existing-or-agreed upon syntax
+for "true" named parameters.  Pay no attention to details.
+
+	sub foo (my $bogogoozer "The victim.", my %options "How to snarfle.")
+	{ ... }
+
+=head2 DOCUMENTING A LEXICAL VARIABLE
+
+	my $literal "How seriously to take the proposal.";
+
+=head2 DOCUMENTING A PACKAGE VARIABLE
+
+	$debug_level = 0 "The initial debug level is no debugging, or zero.";
+
+=head2 RETRIEVING THE DOCUMENTATION OF A FUNCTION
+
+    print "This is how to snarfle a bogogoozer: ", documentation(\&foo), "\n";
+
+This would retrieve and output the string "Snarfle the bogogoozer.
+The first argument is ...".
+
+=head2 RETRIEVING THE DOCUMENTATION OF A VARIABLE
+
+    print "This is how literally to take this proposal: ",
+	  documentation(\$literal), "\n";
+
+=head1 IMPLEMENTATION
+
+During parsing the documentation needs to be attached to the thing it
+belongs to.
+
+=head2 FURTHER IDEAS
+
+If somebody wants to write documentation in several different
+languages (and encodings?)  a way to tag a piece of documentation with
+attributes would be desirable.
+
+Attributes on the documentation could also be used to differentiate
+the documentation to several different classes/types/levels.
+
+=head1 REFERENCES
+
+	
+	

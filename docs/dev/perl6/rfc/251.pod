@@ -1,0 +1,66 @@
+=head1 TITLE
+
+Interpolation of class method calls
+
+=head1 VERSION
+
+  Maintainer: Michael G Schwern <schwern@pobox.com>
+  Date: 17 Sep 2000
+  Mailing List: perl6-language-objects@perl.org
+  Number: 251
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+Class method calls should interpolate in double-quoted strings, and similar
+locations.
+
+    print "There are Dogs->num_dogs() species of dogs.";
+
+would interpolate as:
+
+    print 'There are '.Dogs->num_dogs().' species of dogs.';
+
+
+=head1 DESCRIPTION
+
+With the exception of the argument about accessor methods, all the
+same arguments for object methods apply to class methods.
+Additionally, if scalars, arrays, hashes, subroutines and object
+methods interpolate, users may expect class methods to do so.
+
+Class methods require the trailing parenthesis for clarity, same as variable
+object methods.  Otherwise, class methods interpolate same as object methods
+as RFC 222.
+
+
+=head1 IMPLEMENTATION
+
+The tokenizer will have to watch for /\s[a-z_]\w*->/i.  A following
+/[A-Z_]\w*\(\)/ indicates a class method call.
+
+Otherwise as RFC 222.
+
+
+=head1 CAVEATS
+
+This RFC is intended to generate discussion about the need and wisdom of
+allowing class method interpolation in strings.  Practical examples of code
+where this is useful as well as where this would be a hinderance are
+requested.  It is presented seperately because I expect much more discussion 
+than RFC 222 and wish to keep the consideration of the two seperate.
+
+
+=head1 MIGRATION
+
+As RFC 222.
+
+
+=head1 REFERENCES
+
+RFC 222 - Interpolation of object method calls
+
+RFC 237 - Hashes should interpolate in double-quoted strings
+
+Upcoming RFC on interpolation of subroutines

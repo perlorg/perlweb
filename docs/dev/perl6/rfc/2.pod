@@ -1,0 +1,119 @@
+=head1 TITLE
+
+Request For New Pragma: Implicit
+
+=head1 VERSION
+
+  Maintainer: Bryan C. Warnock <bwarnock@gtemail.net>
+  Date: 5 Aug 2000
+  Last Modified: 28 Aug 2000
+  Mailing List: perl6-language@perl.org
+  Number: 2
+  Version: 3
+  Status: Frozen
+
+=head1 ABSTRACT
+
+Perl 6 should add a new pragma called C<implicit>.
+
+=head1 DESCRIPTION
+
+I am lazy.  I am spoiled by the implicit $_.  I like the implicit
+$_.  Implicit $_ good.  Ugh.  (Conversely, some people abhor the 
+implicit $_ while in a strict programming environment, as it tends to
+add confusion.)
+
+I came to the sysadm / programming world in a long, circuitous
+route.  I never programmed with toggle switches.  I've never seen a 
+punch card.  My first programming was in Commodore 64 Basic.
+
+C64 Basic.  No safe-signals there, either.  ;)
+
+It did have one good thing, though.  One very useful thing, for lazy
+people like me.  C<print> could be written like C<?>.  It just
+rolled off the fingers.  C<10 ?"Port Perl for the 64!">.
+
+Of course, those days have gone.  I've seen the light.  I'm a *nix
+head and JAPH.  But how I still hate typing out print.  Particularly
+because I do it so much.  Oh, sure, I could play games with HERE docs 
+and the ilk, but I'm too lazy.  (Like I posted in a response, I wrangled
+an input filter to allow me to write C<? "Print me.!">.
+
+But I digress.  
+
+There should be an C<implicit> pragma that gives new life and meaning to
+void context constructs.  In my case, I want it to print to the default
+filehandle, (which is also implicit, I might add.)
+
+Scoping needs to be tightly controlled, of course.  Don't want someone 
+else's void context to show up on your display, now do you?  And, of course, 
+it would be defaulted to off.  It could continue to ignore constant 0s and 
+1s.  (But those pre-pod embedded comment strings just B<have> to go.)
+
+Ideally, I'd like to use it for printing, but I suppose some other lazy
+person may want to use it for something else.
+
+Or, from reading the traffic, to prevent laziness.  One of the suggestions
+was to disallow implicit $_ for functions.  That could fit right in with
+this pragma.  It would be on be default, but you could turn it off.
+
+=head1 MOTIVATORS
+
+Laziness, pure and simple.
+
+=head1 IMPLEMENTATION
+
+The front-end would have to detect void usage and either arrange to have
+the results passed to a callback, (in which case, would you know what
+wantarray() wants to know?) or inject the appropriate term in the optree.
+
+In the case of C<no implicit arg>, the front-end would have to not assume
+the implicit $_ as an argument.
+
+=head2 SUMMARY OF IMPLEMENTATION
+
+I've no real concrete ideas on this, sorry.
+
+=head2 IMPACT
+
+=over 4
+
+=item *
+
+Impact on Perl 5.  Mutual compatibility between Perl 5 and Perl 6, with the
+exception of C<use implicit> and the sematics it would add.  (Obviously, 
+other changes to the language notwithstanding.)
+
+=back
+
+=head2 UNKNOWNS
+
+=over 4
+
+=item *
+
+What about subs?  Backticks?  Things that return meaningless printable
+information, like system()? 
+
+C<no implicit> would put it on the user.  After all, he doesn't have to
+use it.
+
+=item *
+
+Would C<;> print the contents of $_ to the default filehandle?  ;-)
+
+=back
+
+=head1 REFERENCES
+
+RFC 40: Module Scope Control.
+
+=head1 STATUS
+
+Frozen as is.  Most people don't like it.  I<I> don't like it.
+Not really.  I hate to think that Perl will have more pragmas than
+functions at the current pace.
+
+But I like the idea behind it.  I think a smarter solution would be
+found in something akin to L<"RFC 40"|RFC40>.  In which case, I would
+gladly withdraw it.

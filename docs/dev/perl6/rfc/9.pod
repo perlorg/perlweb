@@ -1,0 +1,125 @@
+=head1 TITLE
+
+Highlander Variable Types
+
+=head1 VERSION
+
+  Maintainer: Andy Wardley <abw@kfs.org>
+  Date: 1 Aug 2000
+  Mailing List: perl6-language@perl.org
+  Number: 9
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+Perl5 supports three distinct variable types for any given variable
+name corresponding to a scalar (C<$var>), array (C<@var>) and hash
+(C<%var>).  This RFC proposes that only one type of variable should be
+defined for any given name.  Where an array or hash is defined
+(C<@var> or C<%var>), the equivalent scalar value (C<$var>) would be
+an implicit reference to that array or hash array.  This would permit
+the rationalisation and simplification of the syntax required to
+access individual elements or slices of arrays and hash arrays, while
+remaining backwardly compatible with Perl5 syntax.  The only
+semantic difference would be that scripts could no longer rely on
+C<$var>, C<%var> and C<@var> referencing different variables.
+
+=head1 DESCRIPTION
+
+Perl5 supports three distinct variable types for any given variable
+name corresponding to a scalar (C<$foo>), array (C<@foo>) and hash
+(C<%foo>).  Each of these may be defined and exists independantly of
+the others (NOTE: sub-routines, formats and I/O handles are outside
+the scope of this document).
+
+    $foo =   'Hello World';
+    @foo = ( 'Hello', 'World' );
+    %foo = ( 'Hello' => 'World' );
+
+When accessing variables, and in particular, elements or slices of
+lists or hash arrays, the I<funny character> prefix is used to denote
+the multiplicity of the returned value(s); C<$> = 'the', C<@> =
+'these'.  Although it can be argued that this is logical and
+consistent (it is), it can also cause confusion because the prefix is
+used to denote what is returned, rather than indicating the variable
+from which the value(s) are retrieved.  For example:
+
+    $foo[2];	           # third element of @foo, no relation to $foo
+    @foo{'bar', 'baz'};    # slice of %foo, no relation to @foo
+
+In effect, it is the brackets C<[]> that associate the variable name 
+with the list type C<@foo> and the braces C<{}> that imply the hash 
+type C<%foo>.
+
+This RFC proposes that only one type of variable should be defined for
+any given name.  Where an array or hash is defined, the scalar value
+of the same name would implicitly contain a reference to that array
+or hash.  Thus there can be no confusion as to which of the variables
+is being accessed because "there can be only one".
+
+    @bar = ( 3, 5, 7 );    # $bar is implicitly \@bar
+    $bar = [ 3, 5, 7 ];    # same as above
+    $bar[2];               # third element of @bar, value 7               
+    $bar->[2];		   # same as above
+
+    %baz = ( a => 11 );	   # $baz is implicitly \%baz
+    $baz = { a => 11 };    # identical to above
+    $baz{ a };		   # 'a' entry of %baz, value 11
+    $baz->{ a };	   # same as above
+
+The '->' would become redundant (but optional for backwards
+compatability), with an implicit dereference associated with every
+pair of braces or brackets.  In Perl 5, there is an implied '->'
+between every pair of adjacent braces or brackets but not the first,
+e.g.
+
+    $wiz->[$x][$y][$z]    ===   $wiz->[$x]->[$y]->[$z]
+    $waz->{$x}{$y}{$z}    ===   $waz->{$x}->{$y}->{$z}
+
+Under this proposal, the rule would apply to I<all> cases and the 
+above examples could be written as:
+
+    $wiz[$x][$y][$z]
+    $waz{$x}{$y}{$z}
+
+Array slices could be specified as either of the following:
+
+    $bar[0..2];
+    @bar[0..2];
+
+Similarly for hash slices:
+
+    $baz{'a'..'c'};
+    %baz{'a'..'c'};        # for consistency (not sure about this)
+    @baz{'a'..'c'};        # for backwards compatability
+
+In effect, all arrays and hashes are stored in C<$var> as references to
+the same, with C<@bar> and C<%baz> being synonymous for the existing 
+C<@$bar> and C<%$baz> constructs.  
+
+=head1 IMPLEMENTATION
+
+Everything depends on how the internals are reworked.
+
+=head1 ISSUES
+
+Sub-routines would not be affected by these changes, continuing to be 
+referenced as C<&foo()> or C<foo()>.
+
+Existing scripts can be automatically converted to preserve multiple 
+variable semantics, e.g. 
+
+    $foo -> $foo
+    %foo -> $foo__hash
+    @foo -> $foo__list
+
+Internal multi-type variables would need renaming, e.g. @INC/%INC
+
+This RFC could do with a better title.
+
+=head1 REFERENCES
+
+None yet.
+
+

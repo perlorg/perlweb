@@ -1,0 +1,128 @@
+=head1 TITLE
+
+Arrays: Overview of multidimensional array RFCs (RFC 203 through RFC 207)
+
+=head1 VERSION
+
+  Maintainer: Jeremy Howard <j@howard.fm>
+  Date: 8 Sep 2000
+  Last Modified: 21 Sep 2000
+  Mailing List: perl6-language-data@perl.org
+  Number: 202
+  Version: 2
+  Status: Frozen
+
+=head1 DISCUSSION
+
+All agreed that multidimensional arrays would be a useful addition to
+Perl. There was general consensus on this proposed overall approach to
+multidimensional arrays. RFC 231 is presented as an alternative to RFCs
+204 and 205, but since it provides suggested implementation of a subset of
+interfaces proposed in RFCs 204 and 205, they need not be mutually
+exclusive. This is discussed further in RFC 205.
+
+=head1 ABSTRACT
+
+Adding multidimensional array syntax to Perl 6 requires a large number of
+separate but highly connected language and internals changes. Each of
+these changes has its own RFC. This RFC describes how these changes fit
+together, and provides a 'reading guide' through the multidimensional
+array RFCs.
+
+=head1 DESCRIPTION
+
+Arrays are data structures that store a series of elements all of the same
+type in a contiguous area of memory. The elements of an array can most
+simply be indexed by the count of the number of elements into the array.
+This style of indexing results in a one dimensional array, also called a
+I<vector>. A more sophisticated approach allows indexing into a two
+dimensional plane of elements, where the plane is 'flattened' by laying
+the rows or columns end on end in order to find the correct offset into
+the area of memory. Two dimensional arrays are called I<matrices>. Arrays
+of more than two dimensions follow the same logic, but use coordinate
+systems of three or more coordinates for their indexing. These arrays
+mirror the mathematical structures known as I<tensors>.
+
+Perl 5 does not strictly provide a syntax for defining arrays, since
+the closest equivalent in Perl 5, the I<list>, can contain different
+types of element within one structure. Using a list in Perl 5 to mirror
+a one dimensional array leads to a loss of efficiency, because the
+elements of a list may be of different sizes, and can therefore not be
+jumped to directly.
+
+Perl 5 does not strictly provide a syntax for indexing arrays of greater
+than one dimension, however the use of a I<list of lists> (or I<LOL>)
+allows an approximation, as described in L<perllol> in the Perl 5
+documentation. The LOL structure does not guarantee that sub-lists are of
+equal size, which, with the lack of guarantee that list elements are of
+equal size, results in a loss of efficiency. Furthermore, the syntax for
+indexing LOLs:
+
+  $scalar = $lol[$i][$j][$k];
+  
+does not allow multiple elements to be accessed in a way that takes
+advantage of the coordinate system (such as taking all elements that are
+one plane of a three dimensional array).
+
+The multidimensional array RFCs describe a set of language and internals
+changes that together provide the two key foundations of arrays:
+
+=over 4
+
+=item *
+
+Declaration of a data structure that contains elements of the same type
+stored contiguously in memory
+
+=item *
+
+Ability to index arrays using a multidimensional coordinate syntax
+
+=back
+
+In addition, the RFCs describe syntax that allows the more rigid structure
+of an array to be utilised to create more efficient programs.
+
+The following RFCs describe the proposals:
+
+ RFC 203 - Arrays: Notation for declaring and creating arrays
+ RFC 204 - Arrays: Use list reference for multidimensional array access
+ RFC 205 - Arrays: New operator ';' for creating array slices
+ RFC 206 - Arrays: @#arr for getting the dimensions of an array
+ RFC 207 - Arrays: Efficient array loops
+
+RFC 203 describes the notation to create data structures that contain
+elements of the same type stored contiguously in memory. RFC 204 describes
+the notation to index arrays in multiple dimensions, and RFC 205 describes
+how to utilise the coordinate nature of indices to index multiple elements
+easily. These three RFCs provide the core foundation of arrays in Perl 6.
+
+RFC 206 provides the syntax to query arrays to find their structure
+at runtime.
+
+Finally, RFC 207 provides the means to operate efficiently on
+multidimensional arrays, bypassing Perl's more flexible but slower generic
+looping approaches.
+
+The multidimensional array RFCs rely on the lazily generated list
+generation syntax provided by RFC 81 for creating slices, and on the
+reduce() builtin provided by RFC 76 for reducing arrays.
+
+=head1 IMPLEMENTATION
+
+None necessary; this is a summary RFC
+
+=head1 REFERENCES
+
+<perllol> in the Perl 5 documentation
+
+Arrays in Numeric Python: http://starship.python.net/~da/numtut/array.html
+
+Arrays in Haskell:
+http://haskell.cs.yale.edu/haskell-report/newlib/Array.html
+
+Arrays in Perl Data Language: http://pdl.sourceforge.net/PDLdocs/Impatien-
+t.html#Perl_Datatypes_and_how_PDL_exten
+
+Arrays in Blitz++ (efficient C++ library):
+http://oonumerics.org/blitz/manual/blitz02.html#l26

@@ -1,0 +1,132 @@
+=head1 TITLE
+
+Built-in functions should be functions
+
+=head1 VERSION
+
+  Maintainer: Johan Vromans <jvromans@squirrel.nl>
+  Date: 27 Aug 2000
+  Last Modified: 20 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 168
+  Version: 3
+  Status: Frozen
+
+=head1 NOTE
+
+See CHANGES for warp-up info.
+
+=head1 ABSTRACT
+
+RFC 26 proposes to eliminate the distinction between functions and
+operators from a language perspective.
+
+This RFC proposes that all Perl built-in functions should be usable in
+all ways normal functions can be used. It is part of a big consipracy
+to remove the number of cases with exceptional behaviour in Perl.
+
+=head1 DESCRIPTION
+
+Named operators, like C<abs>, can be called like functions in which
+case they behave like functions. However, that's where the similarity
+ends. You cannot override most builtins, and cannot tack a reference
+to them. 
+
+There is no reason why the built-ins should be treated differently. A
+famous Perl saying reads "if it looks like a function, it B<is> a
+function." So be it.
+
+In particular, it is desired that every built-in
+
+=over 4
+
+=item *
+
+can be overridden by a user defined subroutine;
+
+=item *
+
+can have a reference taken;
+
+=item *
+
+has a useful prototype.
+
+=back
+
+=head2 Overriding
+
+The principle of least surprise dictates that
+
+    sub I<foo> { return 10 }
+    print I<foo>();
+
+should call I<foo>() and print "10" for all I<foo>.
+
+Currently, most built-ins are excluded from this. For example:
+
+    sub system { return 10 }
+    print system();
+
+Instead of calling the user defined system(), the built-in is used.
+
+The second line may give a warning, but only if warnings are enabled:
+
+    Ambiguous call resolved as CORE::system(), qualify as such or use &
+
+=head2 References
+
+You can call a built-in, but not take a reference.
+
+    $a = \&system;
+    print $a->(-1)
+
+This gives an error:
+
+    Undefined subroutine &main::system called
+
+This should return a reference to the built-in instead.
+
+Since C<&>I<foo> implicitly refers to the current package, it would be
+acceptible to require
+
+    $a = \&CORE::system;
+
+Note that this currently (5.7.0 DEVEL6806) results in the error:
+
+    Undefined subroutine &CORE::system called
+
+which is surprising, if not misleading.
+
+=head2 Prototypes
+
+Currently, several built-ins do not provide prototype information. 
+
+    prototype("CORE::abs")  ==>  ;$
+    prototype("CORE::shift")  ==>  undef
+
+This must be fixed. One might even call this a bug, although the
+current prototype mechanism is not powerful enough to cope with all
+built-ins. 
+
+=head1 CHANGES
+
+=head2 Version 3
+
+Added CHANGES.
+
+=head2 Version 3, 20 September
+
+Frozen after some discussions on the mailing list. People seem to like
+the idea, but worry about the prototypes. Other RFC will deal with that.
+
+=head2 Version 2, 28 Aug 2000
+
+Add Status indicator.
+
+=head1 REFERENCES
+
+RFC 26: Named operators versus functions
+
+Tom Christiansen in <12231.967154045@chthon> (perl6-internals, Aug 24, 2000).
+

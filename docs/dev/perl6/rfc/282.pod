@@ -1,0 +1,54 @@
+=head1 TITLE
+
+Open-ended slices
+
+=head1 VERSION
+
+  Maintainer: Simon Cozens <simon@brecon.co.uk>
+  Date: 24 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 282
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+The dreaded C<@array[$foo...]> rears its ugly head again.
+
+=head1 DESCRIPTION
+
+How many times have you wanted B<just> the last two return values from a
+function? And how many times have you got frustrated that you can't work
+out how many things there are in a list and you have to decant it to an
+array:
+
+    @thingy = function()
+    for (@thingy[3..$#thingy]) { ... }
+
+Horrible, isn't it? People want something better.
+
+I thought about it last year or so, and produced a couple of patches. It
+seemed then that the right syntax was not, for instance:
+
+    (function())[3...-1]
+
+because sometimes you want C<$x..$y> to return the empty list, but
+actually:
+
+    (function())[3...]
+
+(Or C<[3..]>. It doesn't matter.)
+
+Someone else on Perl5-Porters wanted this recently too, so it isn't just
+me.
+
+=head1 IMPLEMENTATION
+
+It's new syntax, so it isn't going to break anything, and I did produce
+patches against 5.6, so it is possible. It's a question of adding
+another rule to the grammar, which flags that the slice should be
+computed at run time.
+
+=head1 REFERENCES
+
+None.

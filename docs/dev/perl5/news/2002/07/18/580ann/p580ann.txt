@@ -1,0 +1,238 @@
+Perl 5.8.0 Has Been Released
+
+The Perl 5 developer team is proud to announce the Perl Release 5.8.0.
+This announcement is available online as
+
+    http://dev.perl.org/perl5/news/2002/07/18/580ann/
+
+and also in some Eastern Asian versions (see below).
+
+Perl 5.8.0 is a major new release of the Perl 5 language.
+It incorporates all development and maintenance changes since the last
+major release, 5.6.0, including all the changes of the maintenance
+release, 5.6.1.
+
+Perl 5.8.0 is available via the Comprehensive Perl Archive Network,
+please choose a mirror close to you, for the full list of mirrors see
+http://mirrors.cpan.org/
+
+    USA
+
+     ftp://ftp.cpan.org/pub/CPAN/src/perl-5.8.0.tar.gz        (CA)
+     http://www.cpan.org/src/perl-5.8.0.tar.gz                (CA)
+     http://mirrors.kernel.org/cpan/src/perl-5.8.0.tar.gz     (CA)
+     ftp://cpan.pair.com/pub/CPAN/src/perl-5.8.0.tar.gz       (PA)
+     ftp://cpan.teleglobe.net/pub/CPAN/src/perl-5.8.0.tar.gz  (NJ)
+
+    Europe
+
+     http://mirrors.sunsite.dk/cpan/src/perl-5.8.0.tar.gz        (Denmark)
+     ftp://ftp.funet.fi/pub/CPAN/src/perl-5.8.0.tar.gz           (Finland)
+     ftp://cpan.mirrors.easynet.fr/pub/ftp.cpan.org/src/perl-5.8.0.tar.gz
+                                                                 (France)
+     ftp://ftp.freenet.de/pub/CPAN/src/perl-5.8.0.tar.gz         (Germany)
+     http://cpan.cybercomm.nl/src/perl-5.8.0.tar.gz              (Netherlands) 
+     ftp://ftp.sunet.se/pub/lang/perl/CPAN/src/perl-5.8.0.tar.gz (Sweden)
+     ftp://ftp.flirble.org/pub/languages/perl/CPAN/src/perl-5.8.0.tar.gz (UK)
+
+    Asia
+
+     ftp://mirrors.hknet.com/CPAN/src/perl-5.8.0.tar.gz             (Hong Kong)
+     http://www2.linuxforum.net/mirror/CPAN/src/perl-5.8.0.tar.gz   (China) 
+     ftp://ftp.ayamura.org/pub/CPAN/src/perl-5.8.0.tar.gz           (Japan)
+     ftp://mirror.Mazic.org/pub/CPAN/src/perl-5.8.0.tar.gz          (Korea)
+     ftp://ftp.nctu.edu.tw/UNIX/perl/CPAN/src/perl-5.8.0.tar.gz     (Taiwan)
+
+Perl continues to be available on a bewildering array of platforms:
+all known UNIX/Linux and Microsoft platforms, and other platforms
+having enough POSIX support like BeOS, Cygwin, Netware, MPE/iX, OS/2,
+QNX, VMS, VOS, and z/OS.  For MacOS Classic, the port is maintained
+separately, follow http://dev.macperl.org/  The full list of platforms
+is in the pod/perlport.pod file.
+
+This is a source code release, not a binary release.  You will need a
+C development environment to build the sources.  Binary releases will
+be made available by various vendors.
+
+To build and install Perl, and to find out how to report problems,
+please read the INSTALL file, and any relevant README.platform file.
+
+Note that the build times can vary considerably.  Perl 5.8.0 is about
+twice the size of 5.6.1, and some source code files are quite large,
+so your compiler might have hard time processing them.  On a fast
+modern system with lots of CPU and memory the build can be a matter
+of ten minutes, but on slower/older/more heavily loaded systems it
+can take up to eight hours, while half an hour to an hour being common.
+
+Also testing times vary a lot.  Perl 5.8.0 has almost six times the
+the tests of Perl 5.6.1.  Fifteen minutes to half an hour is quite
+normal, but a slow system may easily take an hour or more.
+
+As specified in the licenses for Perl (see the files named Artistic
+or Copying), THIS PACKAGE IS PROVIDED WITH ABSOLUTELY NO WARRANTY.
+
+As always, you should conduct an appropriate level of testing before
+using any new product in your production environment.
+
+According to the release numbering scheme started in 5.6.0, Perl 5.8
+will now enter maintenance state, and a new development branch called
+Perl 5.9 will be started, herded by Hugo van der Sanden.  The first
+maintenance release of Perl 5.8 will be called 5.8.1, but before that
+5.9.0 will most likely take place.  The release of Perl 5.8.0 does not
+mean that Perl 5.6 is no longer maintained, but neither does it mean
+that a 5.6.2 will be released.  It largely depends on how stable 5.8.0
+turns out to be.
+
+Since this release has extensive support for non-Latin scripts,
+the announcement has also been translated to a few:
+
+    http://dev.perl.org/perl5/news/2002/07/18/580ann/p580ann.txt.big5-tw
+    http://dev.perl.org/perl5/news/2002/07/18/580ann/p580ann.txt.euc-cn
+    http://dev.perl.org/perl5/news/2002/07/18/580ann/p580ann.txt.euc-jp
+    http://dev.perl.org/perl5/news/2002/07/18/580ann/p580ann.txt.euc-kr
+
+An extremely abbreviated summary of the most significant changes and
+known problems is appended.  A more extensive list can be found in the
+file pod/perldelta.pod.  An overly detailed list of changes can be
+found in the Changes file.
+
+Share and Enjoy!
+
+-- Jarkko Hietaniemi, on behalf of the Perl5 Porters
+
+*** Technical Details Follow ***
+
+SUMMARY
+
+Highlights In 5.8.0
+
+- Better Unicode Support:
+  Unicode support has been much enhanced since 5.6, at all levels:
+  - now supports Unicode 3.2.0 (5.6.1 supports 3.0.1)
+  - at the language (and internals) level Unicode support is
+    now more ubiquitous and robust
+  - regular expressions now work with Unicode
+  - support for non-Latin encodings (such as the various
+    Chinese/Japanese/Korean encodings) through the Encode module
+
+- New Threads Implementation:
+  A new multithreading implementation called interpreter threads,
+  or "ithreads" for short, is available, their use instead of the
+  old "5.005 threads" is strongly encouraged.  The major difference
+  is that in ithreads any data sharing must be done explicitly.
+
+- New IO Implementation:
+  the new PerlIO implementation is both a portable stdio implementation
+  (at the source code level) and a flexible new framework for richer
+  I/O behaviours
+
+- Better Numeric Accuracy:
+  previous Perls relied on vendors' string-to-number and back
+  routines which in some cases proved to be too much trust
+  leading to nonportable and wrong behaviours
+
+- 64-bit support:
+  64-bit support is now considered to be mature -- if your platform
+  supports 64-bit integers or address space, you can compile Perl to
+  use those
+
+- Safe Signals:
+  in previous versions of Perl signals could corrupt Perl's internal state
+
+- Many New Modules:
+  Digest::MD5, File::Temp, Filter::Simple, libnet, List::Util,
+  Memoize, MIME::Base64, Scalar::Util, Storable, Switch,
+  Test::More, Test::Simple, Text::Balanced, Tie::File, ...
+
+- Extensive Regression Testing:
+  Perl has now almost six times as many tests as in 5.6,
+  and the code is test built daily on several platforms
+
+Incompatibilities
+
+- BINARY INCOMPATIBLE:
+  mainly because of the PerlIO introduction, Perl 5.8 is not
+  binary compatible with any earlier Perl release, XS MODULES
+  WILL HAVE TO BE RECOMPILED!
+
+- AIX Dynaloading:
+  Perl uses now AIX dynaloading, instead of the older emulated
+  version, to be more compatible with other applications on AIX
+
+- 64-bit Platforms No Longer Use Perl Malloc:
+  the Perl malloc seems to have various problems on platforms
+  with 64-bit addressing, therefore the default in these cases
+  is to use the native malloc
+
+- Hashing Order Changed Once Again:
+  the function used in the implementation of hashes was changed
+  to a better one once again, but your code shouldn't be expecting
+  any particular key ordering
+
+- Attributes For my Now Handled At Run-Time:
+  the attributes for my() are now run-time, as opposed to compile time
+
+- REF(...) instead of SCALAR(...):
+  to be consistent with ref()'s results, references to references
+  now stringify as "REF(...)"
+
+- Unicode Model Changed (no more "use utf8", almost)
+  In Perl 5.6 "Unicodeness" was lexically scoped to the operations;
+  in Perl 5.8 "Unicodeness" is bound to the data.  The only remaining
+  use of "use utf8" is when the Perl script itself is written in the
+  UTF-8 encoding of Unicode.
+
+- VMS: Socket Extension Dynamic, IEEE fp Default on Alpha
+  - the Socket extension is now dynamic rather than static, which may
+    cause problems in really old VMS installations
+  - the IEEE floating point is now the default format in OpenVMS Alpha,
+    see README.vms for reasons and other details
+
+Nomenclature Change
+
+- What the "Camel III" book called an "IO discipline"
+  is now called an "IO layer"
+
+Deprecations
+
+- dump():
+  the functionality of the dump command is now considered obsolete
+
+- 5.005 threads are now to be considered deprecated;
+  the new "interpreter threads" implementation should be used instead
+
+- Pseudohashes:
+  the user-visible implementation of pseudohashes is going to be removed
+  and replaced with something cleaner (also, the internal implementation
+  will have to go since it was found to slow down the overall hash access)
+
+- Use of tainted data in exec LIST and system LIST:
+  now gives a warning, but will become fatal error in a future release
+
+- tr///C, tr///U:
+  the interface was found to be a mistake, pack("C0", ...) and
+  pack("U0", ...) can be used instead
+
+Known Problems
+
+- AmigaOS cannot build Perl 5.8.0
+
+- The Compiler Suite: bytecompiling and compiling still do not work
+
+- Lvalue subroutines: still experimental
+
+- Interaction of local() and tie(): the exact semantics are still in flux
+
+- Tied/Magical Array/Hash Elements Do Not Autovivify
+
+- Self-tying arrays and hashes: currently explicitly disallowed
+
+--- 
+
+Again, read pod/perldelta.pod, INSTALL, and README.platform.  That's it.
+
+
+<%flags>
+inherit => undef
+</%flags>
+

@@ -1,0 +1,56 @@
+=head1 TITLE
+
+Simplify C<do BLOCK> Syntax
+
+=head1 VERSION
+
+  Maintainer: Mark Senn <mds@purdue.edu>
+  Date: 26 Aug 2000
+  Last Modified: 29 Aug 2000
+  Mailing List: perl6-language@perl.org
+  Number: 167
+  Version: 2
+  Status: Developing
+
+=head1 ABSTRACT
+
+Simpify syntax of C<do BLOCK> by deleting C<do> before the
+block and C<;> after it.
+
+=head1 DESCRIPTION
+
+One of the most common mistakes I make is forgetting a C<;> after
+C<do BLOCK>, probably because I'm thinking ``if'' and an if doesn't
+require a C<:> after it's closing C<}>.  I'll type, for example,
+
+    $cond  and  do  {
+        # statements
+    }
+
+instead of
+
+    $cond  and  do  {
+        # statements
+    };
+
+Can the syntax be simplified to drop the C<;>, and while you're at
+it, how about the C<do> also, so one can type
+
+    $cond  and  {
+        # statements
+    }
+
+If the C<do> and C<;> are redundant should they be eliminated
+to obey the rule:
+
+    Omit redundant punctuation as long as clarity doesn't suffer.
+
+on page 604 of Camel III?
+
+=head1 IMPLEMENTATION
+
+Unknown.
+
+=head1 REFERENCES
+
+Camel III, pages 123--125, 604

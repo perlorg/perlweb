@@ -1,0 +1,70 @@
+=head1 TITLE
+
+Selective interpolation in single quotish context.
+
+=head1 VERSION
+
+  Maintainer: Brad Hughes <brad@tgsmc.com>
+  Date: 14 Sep 2000
+  Last Modified: 14 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 226
+  Version: 2
+  Status: Developing
+
+=head1 ABSTRACT
+
+Perl6 should allow scalars and arrays to be tagged such that they are
+interpolated in single quotish context.
+
+=head1 DESCRIPTION
+
+Single quotish context, such as C<q{}>, C<''>, and specified here-docs,
+is especially useful for large blocks of text which may contain
+the C<$> and C<@> characters.  Frequently, however, interpolation within
+that large block of text is desired.  This RFC proposes that in single
+quotish context scalars and arrays may be tagged to be interpolated.
+
+As an example, on the VMS operating system the C<$> runs rampant
+through VMS namespaces, not to mention that each line of VMS' equivalent
+of a Unix shell script (called a .com file) starts with a C<$>, and execution
+of VMS .com files is invoked with a C<@>, resulting in backslashitis:
+
+        print F <<END;
+        \$!
+        \$! execute a.com, copy and purge
+        \$!
+        \$ \@sys\$login:a.com
+        \$ copy $filename sys\$login:*.*
+        \$ purge sys\$login:$filename
+        \$!
+        \$ exit
+        END
+
+With this proposal, the scalar C<$filename> can be tagged to be interpolated
+by the C<\I...\E> pair and the double quotish context replaced by single
+quotish context resulting in the following:
+
+        print F <<'END';
+        $!
+        $! execute a.com, copy and purge
+        $!
+        $ @sys$login:a.com
+        $ copy \I$filename\E sys$login:*.*
+        $ purge sys$login:\I$filename\E
+        $!
+        $ exit
+        END
+
+An array can be similarly tagged.  Would C<\I&subr\E> call subr?.
+
+=head1 IMPLEMENTATION
+
+This wouldn't seem a difficult change to make.
+  
+=head1 REFERENCES
+
+Originally suggested in a different form by Jarkko Hietaniemi <jhi@iki.fi> in
+<archive address to follow>, and seconded by Mark-Jason Dominus
+<mjd@plover.com> in <archive address to follow>.
+Version 2 tag pair suggested by Damian Conway in <...>.

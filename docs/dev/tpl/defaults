@@ -3,6 +3,23 @@
             style = template.style or 'default.html'
     };
 
+    IF r.uri.match("^/perl6/") ;
+     page.site = "perl6";
+     SET slashes = r.path_info.split("(/)");
+     IF slashes.size < 5;
+         page.style = "dev-perl6.html";
+     END ;
+    END;
+
+    IF r.uri.match("^/perl5/") ;
+     page.site = "perl5";
+     SET slashes = r.path_info.split("(/)");
+     IF slashes.size < 5;
+         page.style = "dev-perl5.html";
+     END ;
+    END;
+
+
     # don't include any whitespace from here...
  #   RETURN;
 -%]

@@ -1,0 +1,217 @@
+=head1 TITLE
+
+C<\v> for Vertical Tab
+
+=head1 VERSION
+
+  Maintainer: Nicholas Clark <nick@talking.bollo.cx>
+  Date: 26 Sep 2000
+  Last Modified: 30 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 327
+  Version: 3
+  Status: Frozen
+
+=head1 CHANGES
+
+Reissued on perl6-language@perl.org - I goofed the list.
+So far no comments on it.
+
+Summarised discussion and changed status to frozen
+
+=head1 DISCUSSION
+
+Very little comment was made. Russ Allbery notes
+
+	The last time I used a vertical tab intentionally and for some
+	productive purpose was about 1984.
+
+but states that this isn't an objection to the RFC.
+
+=head1 ABSTRACT
+
+perl5 includes all of C's escapes except C<\v> (vertical tab). Treating
+C<\v> the same as C<\a> C<\b> C<\e> C<\f> C<\h> C<\r> C<\t> would remove a
+special case.
+
+=head1 DESCRIPTION
+
+man perl says:
+
+       Perl combines (in the author's opinion, anyway) some of
+       the best features of C, sed, awk, and sh, so people
+       familiar with those languages should have little
+       difficulty with it. 
+
+However, lack of C<\v> represents a special case for a C programmer to
+learn.  C<\v> isn't used for anything else in double quoted strings, nor is
+it used in regular expressions, so it won't require removal of an existing
+feature to add it. Currently a C<\v> in a double quoted strings will be
+treated as C<v>, with a warning about unknown escape issued if warnings are
+in force.
+
+Vertical tab was also omitted from the range of characters considered
+whitespace by C<\s> in regular expressions.
+
+This RFC proposes
+
+=over 4
+
+=item 1
+
+C<\v> becomes a recognised escape for a vertical tab in interpolated
+contexts (double quoted strings and regular expressions)
+
+=item 2
+
+That vertical tab is moved from the C<\S> (non-whitespace) to C<\s>
+(whitespace) class in regular expressions.
+
+=back
+
+=head1 IMPLEMENTATION
+
+Shouldn't be hard. Here are patches for perl 5.7.0
+
+=over 4
+
+=item C<\v>
+
+    --- toke.c.orig	Fri Sep 15 04:14:57 2000
+    +++ toke.c	Tue Sep 26 12:54:30 2000
+    @@ -469,7 +469,7 @@
+     	for (t = s; !isSPACE(*t); t++) ;
+     	e = t;
+         }
+    -    while (SPACE_OR_TAB(*e) || *e == '\r' || *e == '\f')
+    +    while (SPACE_OR_TAB(*e) || *e == '\r' || *e == '\f' || *e == '\v')
+     	e++;
+         if (*e != '\n' && *e != '\0')
+     	return;		/* false alarm */
+    @@ -1196,7 +1196,7 @@
+     	: UTF;
+         const char *leaveit =	/* set of acceptably-backslashed characters */
+     	PL_lex_inpat
+    -	    ? "\\.^$@AGZdDwWsSbBpPXC+*?|()-nrtfeaxcz0123456789[{]} \t\n\r\f\v#"
+    +	    ? "\\.^$@AGZdDwWsSbBpPXC+*?|()-nrtfveaxcz0123456789[{]} \t\n\r\f\v#"
+     	    : "";
+     
+         while (s < send || dorange) {
+    @@ -1540,6 +1540,9 @@
+     	    case 'f':
+     		*d++ = '\f';
+     		break;
+    +	    case 'v':
+    +		*d++ = '\v';
+    +		break;
+     	    case 't':
+     		*d++ = '\t';
+     		break;
+    @@ -2700,7 +2703,7 @@
+     	Perl_croak(aTHX_ 
+           "\t(Maybe you didn't strip carriage returns after a network transfer?)\n");
+     #endif
+    -    case ' ': case '\t': case '\f': case 013:
+    +    case ' ': case '\t': case '\f': case '\v':
+     #ifdef MACOS_TRADITIONAL
+         case '\312':
+     #endif
+    --- t/op/pat.t.orig	Tue Aug 29 13:54:13 2000
+    +++ t/op/pat.t	Tue Sep 26 12:56:36 2000
+    @@ -469,27 +469,27 @@
+     print "ok $test\n";
+     $test++;
+     
+    -print "not " unless qr/\b\v$/i eq '(?i-xsm:\bv$)';
+    +print "not " unless qr/\b\y$/i eq '(?i-xsm:\by$)';
+     print "ok $test\n";
+     $test++;
+     
+    -print "not " unless qr/\b\v$/s eq '(?s-xim:\bv$)';
+    +print "not " unless qr/\b\y$/s eq '(?s-xim:\by$)';
+     print "ok $test\n";
+     $test++;
+     
+    -print "not " unless qr/\b\v$/m eq '(?m-xis:\bv$)';
+    +print "not " unless qr/\b\y$/m eq '(?m-xis:\by$)';
+     print "ok $test\n";
+     $test++;
+     
+    -print "not " unless qr/\b\v$/x eq '(?x-ism:\bv$)';
+    +print "not " unless qr/\b\y$/x eq '(?x-ism:\by$)';
+     print "ok $test\n";
+     $test++;
+     
+    -print "not " unless qr/\b\v$/xism eq '(?msix:\bv$)';
+    +print "not " unless qr/\b\y$/xism eq '(?msix:\by$)';
+     print "ok $test\n";
+     $test++;
+     
+    -print "not " unless qr/\b\v$/ eq '(?-xism:\bv$)';
+    +print "not " unless qr/\b\y$/ eq '(?-xism:\by$)';
+     print "ok $test\n";
+     $test++;
+     
+
+=item C<\S> to C<\s>
+
+    --- handy.h.orig	Thu Sep 14 15:44:20 2000
+    +++ handy.h	Tue Sep 26 13:04:30 2000
+    @@ -295,8 +295,9 @@
+     #define isIDFIRST(c)	(isALPHA(c) || (c) == '_')
+     #define isALPHA(c)	(isUPPER(c) || isLOWER(c))
+     #define isSPACE(c) \
+    -	((c) == ' ' || (c) == '\t' || (c) == '\n' || (c) =='\r' || (c) == '\f')
+    -#define isPSXSPC(c)	(isSPACE(c) || (c) == '\v')
+    +	((c) == ' ' || (c) == '\t' || (c) == '\n' || (c) =='\r' || (c) == '\f' \
+    +	 || (c) == '\v')
+    +#define isPSXSPC(c)	isSPACE(c)
+     #define isBLANK(c)	((c) == ' ' || (c) == '\t')
+     #define isDIGIT(c)	((c) >= '0' && (c) <= '9')
+     #ifdef EBCDIC
+    --- t/op/pat.t.orig	Tue Aug 29 13:54:13 2000
+    +++ t/op/pat.t	Tue Sep 26 14:27:14 2000
+    @@ -1064,15 +1064,14 @@
+     	      cr    => "\r",
+     	      lf    => "\n",
+     	      ff    => "\f",
+    -# The vertical tabulator seems miraculously be 12 both in ASCII and EBCDIC.
+    -	      vt    => chr(11),
+    +	      vt    => "\v",
+     	      false => "space" );
+     
+     my @space0 = sort grep { $space{$_} =~ /\s/ }          keys %space;
+     my @space1 = sort grep { $space{$_} =~ /[[:space:]]/ } keys %space;
+     my @space2 = sort grep { $space{$_} =~ /[[:blank:]]/ } keys %space;
+     
+    -print "not " unless "@space0" eq "cr ff lf spc tab";
+    +print "not " unless "@space0" eq "cr ff lf spc tab vt";
+     print "ok $test\n";
+     $test++;
+     
+
+=back
+
+To be strict the perl5 to perl6 converter would need to
+
+=over 4
+
+=item *
+
+replace C<\v> with C<v> in interpolated strings.
+
+=item *
+
+replace C<\s> with C<[\t\n\r\f ]> and C<\S> with C<[^\t\n\r\f ]> in regular
+expressions.
+
+=back
+
+It might be considered acceptable to omit either or both conversions if the
+number of programs that would break were negligible.
+
+=head1 REFERENCES
+
+perlop manpage for interpolation
+
+perlre manpage for \s and \S

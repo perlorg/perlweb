@@ -1,0 +1,165 @@
+<HTML>
+<HEAD>
+<TITLE>This Week on perl5-porters</TITLE>
+<LINK REV="made" HREF="mailto:bhcompile@daffy.perf.redhat.com">
+</HEAD>
+
+<BODY>
+
+<A NAME="__index__"></A>
+<!-- INDEX BEGIN -->
+
+<UL>
+
+	<LI><A HREF="#this week on perl5porters (26 august / 1st september 2002)">This Week on perl5-porters (26 August / 1st September 2002)</A></LI>
+	<UL>
+
+		<LI><A HREF="#more on the socket memory leak">More on the socket memory leak</A></LI>
+		<LI><A HREF="#share() returns a list"><CODE>share()</CODE> returns a list</A></LI>
+		<LI><A HREF="#an attempt at the perl6ish pragma">An attempt at the perl6ish pragma</A></LI>
+		<LI><A HREF="#perl 5 magic cookies">Perl 5 Magic Cookies</A></LI>
+		<LI><A HREF="#on core modules that live on cpan">On core modules that live on CPAN</A></LI>
+		<LI><A HREF="#version strings">Version strings</A></LI>
+		<LI><A HREF="#memoize bug">Memoize bug</A></LI>
+		<LI><A HREF="#in brief">In brief</A></LI>
+		<LI><A HREF="#about this summary">About this summary</A></LI>
+	</UL>
+
+</UL>
+<!-- INDEX END -->
+
+<HR>
+<P>
+<H1><A NAME="this week on perl5porters (26 august / 1st september 2002)">This Week on perl5-porters (26 August / 1st September 2002)</A></H1>
+<P>This week, we're back to our regularly scheduled p5p report, straight from
+my keyboard's mouth. Many thanks to Elizabeth Mattjisen who provided the
+two previous reports, while I was away from p5p and from whatever
+might evocate more or less a computer.</P>
+<P>
+<H2><A NAME="more on the socket memory leak">More on the socket memory leak</A></H2>
+<P>A workaround has been found for the PerlIO / socket memory leak reported
+last week (and that was reported again this week) : just define the PERLIO
+environment variable to be <CODE>perlio</CODE>. (This environment variable,
+documented in 5.8.0's <EM>perlrun</EM> manpage, controls the default layers for
+I/O operations.) (While I'm writing this, I think that the same result may
+be achieved by using the <CODE>open</CODE> pragma, but I haven't tested.)</P>
+<P>
+<H2><A NAME="share() returns a list"><CODE>share()</CODE> returns a list</A></H2>
+<P>Michael G Schwern complained about the <CODE>share</CODE> function of
+<CODE>threads::shared</CODE> : idioms like</P>
+<PRE>
+    $scalar = share(23);
+    $hash   = share({ foo =&gt; 23 });
+    $array  = share([1,2,3]);</PRE>
+<P>don't work, because <CODE>share</CODE> expects a scalar variable. In fact,
+this should be written</P>
+<PRE>
+    $scalar = &amp;share(23);
+    $hash   = &amp;share({ foo =&gt; 23 });
+    $array  = &amp;share([1,2,3]);</PRE>
+<P>to bypass the prototype, and the <CODE>threads</CODE> module should be loaded before
+<CODE>threads::shared</CODE>.</P>
+<PRE>
+    <A HREF="http://groups.google.com/groups?threadm=20020826114648.GK758%40ool-18b93024.dyn.optonline.net">http://groups.google.com/groups?threadm=20020826114648.GK758%40ool-18b93024.dyn.optonline.net</A></PRE>
+<P>Michael then provided a patch to fix <CODE>threads::shared</CODE>'s behavior when
+threads are not enabled.</P>
+<P>On a similar subject, Michael wondered why the return value of <CODE>lock()</CODE>
+is not documented anywhere. The definitive answer (which would be a patch)
+was not given.</P>
+<PRE>
+    <A HREF="http://groups.google.com/groups?threadm=20020828130525.GH773%40ool-18b93024.dyn.optonline.net">http://groups.google.com/groups?threadm=20020828130525.GH773%40ool-18b93024.dyn.optonline.net</A></PRE>
+<P>
+<H2><A NAME="an attempt at the perl6ish pragma">An attempt at the perl6ish pragma</A></H2>
+<P>Rafael (your summarizer) submitted a patch to implement a new pragma,
+<CODE>perl6ish</CODE>. This pragma (once alluded to by Hugo) is intended to
+optionally enable Perl 6-like constructs to come. In this first version,
+it can be used to enable the <CODE>//</CODE> and <CODE>//=</CODE> operators (that would be
+disabled by default).</P>
+<P>Hugo didn't decide yet whether the defined-or operators should be
+explicitly enabled. H.Merijn Brand advocated that it should be included
+by default, being <EM>99.9999 % backward compatible</EM>, except in cases
+weird enough to be suspect anyway.</P>
+<PRE>
+    <A HREF="http://groups.google.com/groups?threadm=20020827230527.04077a55.rgarciasuarez%40free.fr">http://groups.google.com/groups?threadm=20020827230527.04077a55.rgarciasuarez%40free.fr</A></PRE>
+<P>
+<H2><A NAME="perl 5 magic cookies">Perl 5 Magic Cookies</A></H2>
+<P>Arthur Bergman made a very interesting proposal for Perl 5.9 : use PMCs
+(like in Parrot) instead of the current system of typing and magic. If
+it's done, it'll surely need a large amount of work, so volunteers are
+welcome.</P>
+<PRE>
+    <A HREF="http://groups.google.com/groups?threadm=80B5B7B6-BB96-11D6-BE3E-003065D64CBE%40contiller.se">http://groups.google.com/groups?threadm=80B5B7B6-BB96-11D6-BE3E-003065D64CBE%40contiller.se</A></PRE>
+<P>
+<H2><A NAME="on core modules that live on cpan">On core modules that live on CPAN</A></H2>
+<P>Several core modules that have a dual life on CPAN were upgraded : Test,
+Test::Simple, ExtUtils::Constant, Encode (ExtUtils::MakeMaker and
+Time::Hires are waiting for their turns.)</P>
+<P>Nicholas Clark asked for a simple way to find out whether a file
+distributed with the core exists also in a CPAN module, and suggested a to
+make up a manifest for those files. Jos Boumans provided a first rough
+script to query the CPAN database, but I doubt it's sufficient for now.</P>
+<PRE>
+    <A HREF="http://groups.google.com/groups?threadm=20020831182845.GI302%40Bagpuss.unfortu.net">http://groups.google.com/groups?threadm=20020831182845.GI302%40Bagpuss.unfortu.net</A></PRE>
+<P>
+<H2><A NAME="version strings">Version strings</A></H2>
+<P>John Peacock proudly continued his work on v-strings. He provided some
+amount of patches to change the way that v-strings works in perl,
+basically turning them into objects.</P>
+<P>I must admit I haven't got all the details, and moreover the definitive
+syntax and semantics of the version strings doesn't appear to have been
+fully decided right now, so here are the links to the relevant threads :</P>
+<PRE>
+    <A HREF="http://groups.google.com/groups?threadm=3D6CF3EA.2060303%40rowman.com">http://groups.google.com/groups?threadm=3D6CF3EA.2060303%40rowman.com</A></PRE>
+<P>John's patch, with the details of the changes :</P>
+<PRE>
+    <A HREF="http://groups.google.com/groups?threadm=3D6D835C.50809%40rowman.com">http://groups.google.com/groups?threadm=3D6D835C.50809%40rowman.com</A></PRE>
+<P>John is now working on allowing operator overloading from within XS code.</P>
+<PRE>
+    <A HREF="http://groups.google.com/groups?threadm=3D7206B1.7040707%40rowman.com">http://groups.google.com/groups?threadm=3D7206B1.7040707%40rowman.com</A></PRE>
+<P>
+<H2><A NAME="memoize bug">Memoize bug</A></H2>
+<P>Tony Bowden found a nasty bug with Memoize, about which Mark-Jason Dominus
+says : <EM>This appears to be a bug with Perl's handling of @_ in
+conjunction with magic goto.</EM> Scary.</P>
+<P>The discussion then turned towards the fact that push and pop were more
+efficient than shift and unshift, and how to improve this.</P>
+<PRE>
+    <A HREF="http://groups.google.com/groups?threadm=20020829160934.GA12125%40soto.kasei.com">http://groups.google.com/groups?threadm=20020829160934.GA12125%40soto.kasei.com</A></PRE>
+<P>
+<H2><A NAME="in brief">In brief</A></H2>
+<P>Robert Spier writes : <EM>We've isolated and squashed the problem causing
+some messages from the perl.org mailing lists to not show up on
+groups.google.com.</EM> So I can continue to use those ultra-long google URLs
+in my summaries!</P>
+<P>Luke Palmer asked whether regular expressions on streams are planned for
+5.9.x. As Hugo is willing to work quite extensively on the regex engine,
+this is something that may or may not happen, depending on whether it's
+feasible without impacting the performance of regular regular
+expressions.</P>
+<P>Elizabeth Mattijsen made some memory benchmarks on the benefit of using
+<CODE>Autoloader</CODE> in threaded programs. Apparently it's possible to save
+memory in threads by postponing the loading of subroutines until the
+moment the threads are started.</P>
+<P>B::Deparse now handles CHECK blocks.</P>
+<P>Yitzchak Scott-Thoennes provided a patch so blessed <CODE>qr//</CODE> objects now
+stringify like their non-blessed counterparts.</P>
+<P>Hugo fixed really quickly a regexp bug on the non-greedy quantifier <CODE>??</CODE>,
+reported by Randal Schwartz. (Bug #16733.)</P>
+<P>Ed Santiago reported and corrected a bug on POSIX::isprint (and similar
+functions -- bug #16799.)</P>
+<P>Marc Lehmann reported that multibyte characters can't be used as
+separators for the various quotelike operators. Bug #16823.</P>
+<P>After a long outgoing discussion about Config.pm being slow and bloated,
+Michael G Schwern tried to make it faster and more lightweight, apparently
+without great success yet.</P>
+<P>Elizabeth Mattijsen wondered again about the proper way to overload
+<CODE>lock()</CODE>. This is not as easy as it looks.</P>
+<P>
+<H2><A NAME="about this summary">About this summary</A></H2>
+<P>This summary brought to you by Rafael Garcia-Suarez, back in front of his
+keyboard. It's also available via a mailing list, which subscription
+address is <EM><A HREF="mailto:perl5-summary-subscribe@perl.org">perl5-summary-subscribe@perl.org</A></EM>.</P>
+
+</BODY>
+
+</HTML>

@@ -1,0 +1,64 @@
+From: Larry Wall <larry@wall.org>
+To: gnat@frii.com (Nathan Torkington)
+Cc: perl6-language@perl.org, tchrist@perl.com, larry@wall.org
+Subject: Re: formats and localtime
+Date: Tue, 1 Aug 2000 09:28:17 -0700 (PDT)
+
+Nathan Torkington writes:
+: Damian Conway writes:
+: > My (limited) understanding of the aims of Perl 6 were to start again with a
+: > clean slate and fix the things that are broken, or that could be designed
+: > better with hindsight.  Backwards compatibily was to be fed to the lions.
+: 
+: Larry's the one who will decide what goes into perl6, and I'm speaking
+: here as Nat the Perl Hacker not Nat the Project Leader.  So understand
+: that what follows is not holy writ, but a mere mortal's understanding.
+: 
+: I would be surprised if perl5 programmers didn't feel at home in
+: perl6, so I'm not expecting lots of massive changes to the language.
+: I doubt int/string/etc typing will be mandatory.  I doubt dollar signs
+: will disappear.  "If you want Ada, you know where to find it" still
+: rings as true today as ever.  You'd need pretty convincing arguments
+: to get any of those changes through.
+: 
+: That said, if you can make a convincing argument for a feature's
+: inclusion then do so.  The types of arguments that are likely to win
+: over Larry (I'm guessing) are things that make easy things easier,
+: hard things easier, or previously impossible things possible.
+: 
+: So while backwards compatibility should not be an issue in the
+: brainstorming process we're in now, this doesn't mean that perl6 will
+: be unrecognizable.  Nor is this merely thinking of new things to bolt
+: onto perl5.  Some of the most important changes will be underlying
+: structural changes (e.g., internals, corners of language syntax) that
+: make some previously hard things easier (extending with C,
+: pretty-printing, run-time ability to optimize for memory or speed).
+: 
+: Larry, is this what you had in mind?
+
+That's pretty close.  Just because everything is negotiable doesn't
+mean that we plan to negotiate everything away.
+
+To say we're feeding backward compatibility to the lions is a bit
+misleading, in that it doesn't say what we're putting in its place.
+What we're putting in its place is the notion of a clear migration
+path--a land bridge from the old continent to the new one.  As long as
+people have an easy way to upgrade (most of) their Perl 5 programs to
+Perl 6, I think we've done our job.  Many syntactic constructs will be
+easy to translate.  Some kinds of semantic shifts would make translation
+next to impossible.  We're looking for some kind of 80/20 inflection
+point.
+
+Let me just add that I don't mind the brainstorming at all.  To be a
+good language designer, you have to stuff your brain with what you
+*could* do before you can reasonably choose what you *will* do.  At the
+moment, I'm not only trying to follow along here; I'm also reading all
+the books on computer languaes I can get my hands on--not just to look
+for ideas to steal, but also to remind myself of the mindset Perl was
+designed to escape.
+
+In fact, I'd go as far as to say that it's imperative that you
+overstuff your brain to the point where you no longer feel tempted to
+overstuff the language.  Hypotheticality is your friend.
+
+Larry

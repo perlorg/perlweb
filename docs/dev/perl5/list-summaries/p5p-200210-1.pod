@@ -1,0 +1,196 @@
+=head1 This Week on perl5-porters (30 September / 6 October 2002)
+
+It was a busy week indeed, with long threads, interesting bugs, clever
+fixes, miscellaneous optimizations, some new ideas, a few jokes,
+mysterious failures, and, finally, a security hole. Read on.
+
+=head2 Hash::Util::lock_keys inhibits bless
+
+Andreas Koenig reported that a restricted hash (that is, a hash that has
+been marked as readonly), can't be blessed. In fact, no readonly variable
+can't be blessed, and that's a feature. As Tim Bunce said, I<generally
+hashes are locked by constructors and a constructor can bless it prior to
+locking it.> This behavior was thus documented in the Hash::Util manpage.
+
+Nicholas Clark then proposed to mark restricted hashes with some other flag
+than SVf_READONLY. This implies to find a free slot in the SV flags
+bitvector. Tim Bunce pointed out that this property (to use a Perl 6 word)
+can also be implemented as a new type of magic.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg87205.html
+
+=head2 Just in time subroutine loading
+
+Elizabeth Mattijsen requested comments on her new creation, C<jit.pm>, a
+module that loads modules and subroutines `just in time' (using the same
+autoloading mechanism as AutoLoader and SelfLoader.)
+
+Several porters didn't like the name, for several reasons : it's too
+generic ; Parrot has already an unrelated JIT project, using the Java
+sense of the acronym, so the word may confuse people ; it doesn't begin
+with an uppercase letter.
+
+Elizabeth finally decided to go for the name C<load.pm>.
+
+In the background, Tim Bunce suggested that AutoLoader and SelfLoader
+could be patched so that the C<-c> command-line option to perl triggers
+loading and compilation of all subroutines.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg87273.html
+
+The new module's manpage from the CPAN :
+
+    http://search.cpan.org/author/ELIZABETH/load-0.03/lib/load.pm
+
+=head2 Collections
+
+The biggest thread of the week -- 65 messages -- began with a question by
+Christian Jaeger, about the possibility of having some sort of hash that
+accepts references as keys without stringifying them.
+
+Brian Ingerson came up with a comparison to Ruby, in which any object that
+provides a hash() method can be used as a hash key. Semantic problems
+arise when arrayrefs are used as hash keys, when they are modified, and
+when they're used again as a hash key. Do they still refer to the same
+hash entry ? Do another arrayref, equivalent to the first one, refer to
+the same hash entry ? How to compute an hash code, or to compare for
+equality two arbitrary complex objects ? And, as Brian wondered, I<isn't
+that Elvis parking next to my car?!?!>
+
+The hash code for a Perl data structure could be, as a first
+proof-of-concept implementation, the MD5 checksum of a Storable
+serialization. Brian proposed an implementation of this as a new pragma,
+C<keys>, that would I<turn on complex-key functionality for all hashing
+operations in that scope>.
+
+On the other hand, Tim Bunce suggested to rewrite C<Tie::RefHash> as an XS
+extension.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg87276.html
+
+=head2 Overriden built-in misparsing
+
+Bradley Baetz reported that an overriden built-in function isn't always
+parsed like the original built-in. He provided an example with die(),
+which breaks the use of C<CGI::Carp> with the Template Toolkit.
+
+The problem is on code that looks like this :
+
+    die MyModule->my_method();
+
+which is incorrectly parsed as C<< (die MyModule)->my_method() >> when
+die() is overriden. This comes from the indirect object notation, that
+makes perl believe that die() is a method from class MyModule. Rafael
+Garcia-Suarez provided a patch to the tokenizer to fix this behavior.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg87354.html
+
+Bradley reported also another bug on die() (bug #17763), occurring when
+die() throws an exception object, for which stringification has been
+overloaded : this exception gets incorrectly stringified before being
+passed to a C<$SIG{__DIE__}> handler. Nobody commented.
+
+=head2 The void context
+
+Yitzchak Scott-Thoennes proposed a patch for the C<our(%hash)> slowness
+bug reported last week. Tony Bowden also ran some benchmarks on the
+relative speeds of C<my @x> and C<my(@x)>. Stephen McCamant explained that
+the `padav' op (declaration of a lexical array) doesn't have a specific
+optimization for void context, and uses scalar context instead, and he
+provided a patch, and a list of other ops that may benefit from the same
+improvement.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg87539.html
+
+=head2 C<make> too slow
+
+Slaven Rezic noticed that make'ing a large module tree is much slower with
+5.8.0 than with previous versions of Perl. If I understand correctly,
+that's due to a limitation of command-line lengths in MakeMaker-generated
+Makefiles, currently hardwired at 200 chars. He proposed to add a new
+parameter MAX_SHELL_LENGTH to tune this, and also to look at the POSIX
+constant ARG_MAX on systems that define it.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg87342.html
+
+Later, he also thought about I<making `make test' faster by using parallel
+processes>, and provided a proof-of-concept test script.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg87700.html
+
+=head2 Safe.pm security hole
+
+Andreas Jurenda discovered a security hole in the C<Safe> module (bug
+#17744), and also suggested a fix. The C<Safe> module provides a way to
+construct restricted compartments, in which it's possible to eval some
+perl code, while some ops have been forbidden. An opmask describes the
+list of disabled ops. The problem is that it's possible to modify the
+opmask from within the eval'd perl code; thus, if the safe compartment is
+used again, it's possibly no longer safe.
+
+This bug has been fixed in the development version of Perl, and Arthur
+Bergman quickly uploaded Safe 2.08 (and then 2.09) to CPAN.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg87643.html
+
+=head2 Memory stats interface
+
+H.Merijn Brand proposed an interface to the sbrk(2) C function, to help
+tracing the memory used by a perl interpreter. This triggerred quite a bit
+of discussion, because sbrk(2) has peculiar semantics, is not in POSIX,
+and there's other equally unportable methods to stat the memory (for
+example reading this data from C</proc>). The ultimate goal is, of course,
+to help us producing a better perl, that consumes less memory resources
+while being faster.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg87502.html
+
+=head2 In brief
+
+Alain Barbet continued to work on his web-browseable smoke database.
+
+H.Merijn Brand reported that gdbm-1.8.1 breaks C<GDBM_File>, but
+with gdbm-1.8.2 the breakage is gone. So it's probably not a perl bug.
+
+Brian Ingerson proposed that the CPAN modules could install their
+regression tests somewhere in the lib directories. Then a C<perltest>
+command could be used to run them again. The changelogs could be installed
+as well, and accessible via another ad-hoc command, esp. if they're
+rearranged into YAML format.
+
+While hunting down a bug, Yitzchak Scott-Thoennes discovered another one
+(#17718) : C<if(%h){...}> (or other boolean constructs) fail to test
+correctly the emptiness of a hash if this hash is tied.
+
+Rafael Garcia-Suarez added a new warning, I<Possible precedence problem on
+bitwise %c operator>, to warn about constructs like C<($x & $y == $z)>,
+which is confusingly equivalent to C<($x & ($y == $z))>. This uncovered a
+bug in a regression test for Storable.
+
+H.Merijn Brand provided a first patch to remove 5.005-threads from Perl.
+(They were deprecated in perl 5.8 in favor of ithreads.)
+
+Chris Darroch noticed that using the C<English> module and the study()
+function together breaks C<s///g>. Slaven Rezic proposed a very
+simple patch -- that just disables study() when C<$&> is used in the
+code. As he says, I<whoever introduces a performance hit in his script by
+using $& does not need the performance improvement of study :-)>. Hugo
+disapproved.
+
+Dan Kogai released Encode v1.77.
+
+The regression test t/op/closure.t fails mysteriously on some
+configurations, apparently when using perl's malloc and without the
+debugging code (the one that implements the -D command-line option).
+Apparently this is caused by Dave Mitchell's pad.[ch] patch. Dave proposed
+a fix, the smoke tests have to be run again with it.
+
+=head2 About this summary
+
+This summary brought to you by Rafael Garcia-Suarez. It's also
+available via a mailing list, which subscription address is
+F<perl5-summary-subscribe@perl.org>. If you wonder why I switched to
+yet another mail archive, here's the reason : Google Groups breaks threads
+at subject changes, which is probably not the Right Thing, and the
+xray.mpe.mpg.de mail archive breaks threads at month boundaries, which is
+definitively not the Right Thing either.

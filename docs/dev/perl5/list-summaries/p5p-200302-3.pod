@@ -1,0 +1,123 @@
+=head1 This Week on perl5-porters (17-23 February 2003)
+
+In this week's p5p summary, some stories are continued, and new ones
+begin. Read about the safe signals, the recent support for assertions, and
+a load of fixes and of new bugs, waiting to be fixed.
+
+=head2 Unsafe signals
+
+My regular readers will remember that Jarkko Hietaniemi proposed two weeks
+ago to add a mechanism to optionally enable the pre-5.8 behavior of
+signals (known as I<unsafe signals> since the latest incarnation of the
+perldelta man page advertised I<safe signals>.) He proposed initially a
+new magic variable ${^SIGNAL_UNSAFE}. But this feature is intended to
+allow to write scripts portable across different perl versions, and the
+special variable syntax ${^FOO} produces a syntax error with perl 5.005xx
+and below. Several other proposals were suggested : $SIGNAL_UNSAFE,
+%SIGNAL_UNSAFE, $SIG{UNSAFEXXX} (that produces a warning with perl 5.6),
+$SIG::UNSAFE. Finally, Jarkko is going for an environment variable,
+$ENV{PERL_SIGNALS}.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg92113.html
+    http://archive.develooper.com/perl5-porters@perl.org/msg92443.html
+
+=head2 Assertions
+
+As I briefly wrote last week, Salvador FandiE<ntilde>o's patch to add
+assertions to perl is now in. Basically, assertions are defined as
+subroutines with an C<:assertion> attribute. In a perl program, a lexical
+block is defined as potentially containing assertions via the
+C<assertions> pragma. Then, by executing the program with the -A
+command-line switch, those assertion subroutines are activated (and thus
+executed). It's possible to define different assertion groups and to
+activate them separately. Note that assertions that are not activated are
+optimized out during the compilation phase, and have no run-time impact on
+performances.
+
+A few more docs are needed for this new feature. Feedback on the API
+would also be much appreciated.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg92123.html
+
+=head2 Smoke news
+
+H. Merijn Brand, who has received another HP-UX machine, has set up smoke
+tests to determine whether Nicholas Clark's copy-on-write patches actually
+enhance perl's performance.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg92412.html
+
+One of the thread tests was consistently failing of Johan Vromans' linux
+smoke tests, due to differences in ps(1) output. This has been corrected
+by making the test more liberal in what it accepts.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg92290.html
+
+Jos Boumans' employer, XS4all, donated an x86 box to run smoke tests. Jos
+asked for advice on the OS he should install on it. Several proposals were
+reviewed ; finally this will be Darwin.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg92319.html
+
+=head2 In brief
+
+Jarkko hopes to get perl 5.8.1 RC1 in a month or so (but doesn't want to
+stick to a fixed date).
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg92151.html
+
+Philip Newton reported some limitations of B::Terse regarding threaded
+perls (bug #21261). This was fixed by Stephen McCamant who replaced
+B::Terse with a wrapper around B::Concise.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg92169.html
+
+Chip Salzenberg modified the syntax of unpack() so that it defaults to
+unpacking $_ if given only a template parameter.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg92209.html
+
+Michael Schwern noticed that on Darwin, gcc is passed by default the
+C<-Os> optimization flag (optimize for size), which is set in
+the Darwin hints file for Darwin 6.X and up. This is due to Apple's policy
+for one part, and to the fact that the version of gcc bundled with earlier
+versions of the OS were sub-optimal regarding size optimizations.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg92214.html
+
+Andreas Koenig embedded a small perl script in the header file
+patchlevel.h, to allow people to add comments in it by doing simply
+
+    perl -x patchlevel.h 'comment'
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg92246.html
+
+Bug #21258, reported by Martin Ruderer, is about large lists causing
+core dumps when used in a for loop (for example, C<1 for ("") x 2147483516>),
+under some configurations.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg92168.html
+
+Alex Efros reports (bug #21273) that a recursive FETCH on a tied hash may
+lead to a segfault.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg92223.html
+
+Jarkko reports (bug #21321) that the construct C<local ${"FOO"}> is not
+allowed and produces the error message I<Can't localize through a
+reference>. But this construct is (or should be) equivalent to a simple
+C<local $FOO>. Rafael Garcia-Suarez provided a patch to allow to localize
+variables given by a symbolic reference. Adrian Enache asked why C<local
+$$ref> couldn't work in any case (i.e. when $ref is a true scalar
+reference).
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg92357.html
+
+Adrian Enache continues to fix loads of miscellaneous bugs.
+
+=head2 About this summary
+
+This summary brought to you by Rafael Garcia-Suarez. Summaries are
+available on F<http://use.perl.org/> and/or via a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. Comments and
+corrections are welcome.

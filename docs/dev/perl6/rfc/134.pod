@@ -1,0 +1,211 @@
+=head1 TITLE
+
+Alternative array and hash slicing
+
+=head1 VERSION
+
+  Maintainer: Mike Pastore <pastorem@mediaone.net>
+  Date: 20 Aug 2000
+  Mailing List: perl6-language@perl.org
+  Number: 134
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+This RFC attempts to address the confusion with regards to
+taking a slice of a list or a hash. While most experienced 
+Perl hackers are on friendly terms with the current slicing
+schema, ala:
+
+    $animals = [ 
+        'dog', 'cat',
+        'duck', 'cow',
+        'pig', 'lizard' 
+    ];
+    
+    $sounds  = { 
+        dog  => 'bark', 
+        cat  => 'meow', 
+        duck => 'quack' 
+    };
+    
+    @domestic = @{$sounds}{@{$animals}[0,1]};
+
+This is still difficult to look at, even for experienced
+Perl hackers. While it can be grokked, it takes a good 
+amount of effort. Novice programmers and programmers coming 
+in from other languages have enormous difficulty 
+understanding these constructs.
+
+=head1 DESCRIPTION
+
+Several alternatives (read: OPTIONAL) are being suggested
+here as a means of taking a slice of a list (or a hash).
+
+Ideally, one or more of these will be included in the 
+Perl 6 core as an alternative to the traditional deref-
+and-slice syntax.
+
+=head2 Built-in Function C<slice()>
+
+Like the current built-in list function C<splice()>,
+C<slice()> would take a list and slice parameters, and 
+return a slice.
+
+    @house_pets = slice(@$animals, [0..1]);
+
+Or, with a bit of Perl Magick, even dropping the redundant
+dereference operation.
+
+A major issue with C<slice()> is the probable spelling
+problem. Alternative function names would be lovely to
+hear. :-)
+
+=head2 Quote-like Operator C<sl//ah>
+
+This may or may not make sense, but definitely looks
+like a neat way to DWIM. The flags C<a> and C<h> indicate
+an array or hash slice, respectively. Furthermore, use
+of C<[]> or C<{}> containers also implies an array or hash
+slice and circumvents the use of flags. 
+
+    @livestock = (@$animals =~ sl/3..4/a);    # array slice
+    @sounds = (values %$sounds =~ sl[1,3]);   # this too
+
+Please see I<Slicing Extensions for Hashes> for more info
+regarding hash slicing using this syntax.
+
+=head2 Arrow Notation (the infix dereference operator)
+
+An extension to arrow notation has also been suggested by
+a number of people.
+
+    @domestic = $sounds->@{$animals->@[0,1]};
+
+Which is equivalent to the Perl 5 construct:
+
+    @domestic = @{$sounds}{@{$animals}[0,1]};
+
+As mentioned above. This syntax reads quite nicely from 
+left to right:
+
+    Dereference $sounds, taking the slice found by 
+    dereferencing $animals and taking the slice of the
+    first two elements.
+
+The biggest problem with this suggestion is the loss of
+context. We are not returning one thingy from the
+operation, but that is not obvious at first glance. The
+eye (and mind) catches the C<$> and moves on to the next
+line. The plural context C<@> is present but lost, 
+somewhere in the middle of the operation. This is a Bad
+Thing. Therefore, the following is suggested, as a
+parallel to the current arrow notation to get a single
+thingy:
+
+    $thingy   = $animals->[0];      # evaluates to:
+    $thingy   = ${$animals}[0];
+
+    @thingies = @$animals->[0..2];  # evaluates to:
+    @thingies = @{$animals}[0..2];
+
+Unfortunately, this opens up a whole new can of worms
+that has been covered before in p5p and should be covered
+again (see REFERENCES). But not in this RFC.
+
+One more alternative: context sensitivity.
+
+    $num_thingies = $animals->[1..3];
+    @thingies     = $animals->[1..3];
+
+=head2 Slicing Extensions for Hashes
+
+The ability to take an I<indexed> slice of a hash is 
+desired. This would allow the programmer to pare out 
+several keys and values from hash A into a new hash B, for 
+greatest flexibility. Currently, this is only available 
+through C<map()>:
+
+    %other = map { $_ => $sounds->{$_} } qw(lizard duck);
+
+Which could be simplified to:
+
+    %other = slice(%$sounds, { qw(lizard duck) }); # or,
+    %other = (%$sounds =~ sl/lizard duck/h);       # or,
+    %other = %$sounds->{'lizard', 'duck'};         # or,
+    %other = %{$sounds}{ qw(lizard duck) };        # trad'l
+
+Furthermore:
+
+    %hash = slice(%$sounds, ['dog']);  # dies (%+[] usage)
+    %hash = %$sounds =~ sl[dog];       # same as above
+    @list = slice(@$animals, {0..1});  # dies (@+{} usage)
+    @list = @$animals =~ sl{0..1};     # same as above
+
+Which will promote proper coordination between C<@> and 
+C<[]>, and between C<%> and C<{}>. This allows for an 
+easier transition from the built-in C<slice()> to the more 
+traditional approaches.
+
+Finally, flattened indexed slices and hash value slicing.
+
+    @foo = %{$sounds}{'dog', 'duck'};          # flatten
+    @foo = slice(%$sounds, {'dog', 'duck'});   # to list
+    
+    @bar = @{$sounds}{'dog', 'lizard'};        # retrieve
+    @bar = slice(@$sounds, {'dog', 'lizard'}); # values 
+    @bar = slice(values %$sounds, [0,2]);      # only
+
+=head1 SUMMARY
+
+To pull this together, the following should just DWIM:
+
+    $foo = 'thingy';
+    @bar = qw(atomic whutzits galore);
+    %zot = (tree=>'wood', rock=>'stone', pond=>'water');
+
+    $foo_ref = \$foo; $bar_ref = \@bar; $zot_ref = \%zot;
+    
+    # ($) singular context                   #
+    $thingy = $foo;                          #
+    $thingy = ${$foo_ref}                    # 
+    $thingy = $bar[0];                       # or,
+    $thingy = ${$bar_ref}[0];                # 
+    $thingy = $zot{'tree'};                  # or,
+    $thingy = ${$zot_ref}{'tree'};           #   
+
+    # (@) plural context                     #
+    @whutzits = @bar[1..2];                  # or, 
+    @whutzits = @{$bar_ref}[1..2];           #
+    @whutzits = @zot{'tree', 'rock'};        # or,
+    @whutzits = @{$zot_ref}{'tree', 'rock'}; #
+
+    # (%) indexed context                    #
+    %flimmers = %zot{'pond', 'rock'};        # or,
+    %flimmers = %{$zot_ref}{'pond', 'rock'}; #
+    
+Extending and allowing, of course, for all of the new
+syntaxes listed above:
+
+    $thingy   = $zot_ref->{'tree'};
+    @whutzits = @$bar_ref->[0..2];
+    @atomics  = @$zot_ref =~ sl{'tree', 'rock'};
+    %flimmers = slice(%$zot_ref, {'pond', 'rock'});
+
+=head1 IMPLEMENTATION
+
+Could get ugly.
+
+Ah ain't knowing no C, paw.
+
+=head1 REFERENCES
+
+RFC 109: Less line noise - let's get rid of @% 
+
+Forthcoming RFC from this author: Against RFC 109
+
+Forthcoming RFC from Nathan Wiger: Reference Variables
+
+Perl 5 Porters, May-June 1998
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/

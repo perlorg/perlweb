@@ -1,0 +1,60 @@
+=head1 TITLE
+
+smart container slicing
+
+=head1 VERSION
+
+  Maintainer: David Nicol <perl6rfc@davidnicol.com>
+  Date: 1 Sep 2000
+  Mailing List: perl6-language-data@perl.org
+  Number: 191
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+a more concise syntax for matching all the elements in a container that
+are stored under keys that meet a condition
+
+
+=head1 DESCRIPTION
+
+
+What if, instead of requiring
+
+	@onesIwant = @hash{grep /restriction on keys/ keys %hash};
+
+one could simply write
+
+	@onesIwant = @hash{/restriction on keys/};
+
+to obtain a list of all items stored in C<hash> under keys containing
+the string C<'restriction on keys'>
+
+=head1 IMPLEMENTATION
+
+When interpreting the appearance of a single regex (including an object
+resulting from a C<qr//>) inside braces indicating container lookup,
+in a "slicing" context, the regex is applied to the keys of the container
+and the matching elements are returned, as per the longer syntax involving
+an intermediate anonymous array.
+
+=head1 CONFLICTS
+
+In situations where one wants to pull a list of one item
+out of a hash in which that item is keyed with a regex, assuming such
+is possible, one will need to use
+
+	@listofoneitem = ( $hash{$regex} );
+
+instead of the syntax appropriated by this suggestion.
+
+=head1 BUT WAIT THERE'S MORE
+
+With the addition to the language of regular expression syntax to
+deal numbers by value rather than is done now, the syntax described
+in this document may provide a concise way to slice multidimensional
+containers.
+
+=head1 REFERENCES
+

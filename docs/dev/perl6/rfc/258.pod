@@ -1,0 +1,209 @@
+=head1 TITLE
+
+Distinguish packed data from printable strings
+
+=head1 VERSION
+
+  Maintainer: Tim Conrow <tim@ipac.caltech.edu>
+  Date: 18 Sept 2000
+  Last Modified: 28 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 258
+  Version: 2
+  Status: Frozen
+
+=head1 NOTES ON THE FREEZE
+
+As expected, there was very little interest in this RFC, so with a few
+minor tweaks intended to reduce misunderstanding, I'm going to freeze
+it and let it recede into the background of lesser RFCs.
+
+=head1 CHANGES
+
+Added some text for clarity. A few rewordings. One or two minor tweaks
+to my current idea of DWIMish behavior for packed data.
+
+=head1 ABSTRACT
+
+Perl6 should be able to DWIMishly distinguish between strings which
+are likely to be meant to be human readable (called printable strings
+here-after) and packed data structures stored as strings. This would
+permit greater specificity in programming and thus better error
+checking.
+
+=head1 DESCRIPTION
+
+Although there is no way for perl6 to be sure whether a user intends a
+particular string to be human readable or not, it could DWIMishly get
+it right a large fraction of the time, analogous to how perl now
+differentiates between a string and a numeric. Doing so would permit
+some useful error checking and help users, especially new users, avoid
+some common mistakes made in perl5, such as the confusion between the
+two meanings of C<&>. If the DWIMery is tuned correctly there would be
+very little interference with common (and correct) coding idioms.
+
+A new scalar flag, which I'll call PkOK (for "Packed OK"), would be
+set in a scalar's flags by any builtin function or operator that
+produces a string which is likely to be a packed data structure of
+some sort rather than a printable string or a numeric value. These
+include C<pack>, C<read>, C<sysread>, C<vec>, the multi-argument form
+of C<select>, the string-context form of operators C<<< >>, <<, |, &,
+^, ~ >>>, the addresses returned by the C<gethost*> routines, and,
+well, you get the idea.
+
+The generation of warnings or errors would only occur if the user
+invoked C<use warnings 'packed'> and/or C<use strict 'packed'>
+explicitly. Without these pragmas, Perl6's behavior regarding packed
+data would be like Perl5's.
+
+With packed strings recognizable to the compiler and interpreter
+through the PkOK bit, they would interact with functions, operators,
+and other relevant scalar types as follows. How DWIMish some of these
+are is debatable.
+
+  use warnings 'packed';
+  use strict   'packed';
+
+  # The notation "$a(PkOK) = X" means $a has its PkOK bit set to X and
+  # is thus regarded as packed data.
+
+  $a = pack("A*","abc");   # $a(PkOK) = 0; printable string
+  $a = pack("U*","abc");   # $a(PkOK) = 0; printable string
+  $a = pack("a*","123");   # $a(PkOK) = 1; packed thing
+  print $a;                # Implicitly stringify $a, no warning
+  print "$a";              # Explicitly stringify $a; no warning
+  $b = pack($tmpl8,@data); # $b(PkOK) = 1; packed things
+  $c = $a ^ $b;            # String context xor. $c(PkOK) = 1
+  $d = "255";
+  $e = "13";
+  $c = $d ^ $e;            # Numeric context xor via promotion to numeric.
+  $d = $a ^ 255;           # Error; mixing modes of ^.
+  $d = $a ^ "zzz";         # Promote via pack("a*","zzz"), but issue warning
+  $e = vec($a,12,4);       # OK; $e is numeric; $e(PkOK) = 0
+  $e = vec(1234,1,8);      # Error; won't auto-promote numerics
+  vec(1234,1,8) = 1;       # Error
+  $short = "\x04\x12";     $ $e(PkOK) = 0, even though it's "binary"
+  $e = vec($short,1,8);    # Promote $short, issue warning
+  vec($short,1,8) = 1;     # Promote $short, no warning
+  select(undef,$rin=0,undef,0.25);  # Error
+  select(undef,$rin="",undef,0.25); # Promote $rin, no warning
+  $a = pack("a*","123");
+  $b = pack("a*","456");
+  $c = $a + $b;            # Error
+  $c = "$a" + "$b";        # Weird, but OK
+  $c = <STDIN>;            # $c(PkOK) = 0; $c is a normal string
+  sysread FOO,$a,16;       # $a(PkOK) = 1; $a is a packed thing
+  syswrite BAR,123;        # Error
+  syswrite BAR,"123";      # Promote, issue warning
+  syswrite BAR,pack "a*","123";     # OK
+  if($a) ...               # Always true
+  if($a eq "xxx") ...      # Stringify, issue warning
+  if("$a" eq "xxx") ...    # Stringify, no warning
+  if($a == 123) ...        # Error
+
+The exceptions for C<print $a> (where $a is stringified with a
+warning), vec and select (where string arg.s auto-promoted with
+C<pack("a*",$str)> without warnings) are for backward compatibility
+with commonly employed idioms.
+
+I'm sure I haven't covered all the relevant cases, but I hope the
+intent is clear: to cut down on the room for accidental use of packed
+data in inappropriate circumstances and to increase the ability of the
+user to be specific regarding intent. In particular, accidentally
+using string context bit ops when meaning to use numeric, or vice
+versa, would raise a warning, and mixing numeric and packed arg.s
+would be an error.
+
+If anyone knows of common constructs/idioms which would break under
+this scheme and where it's too painful to add explicit
+C<pack("a*",...)> or C<"..."> as appropriate ... well I don't have to
+ask to have them pointed out, do I? :-) The only cases I've been able
+to think of are JAPHs or code samples.
+
+If RFCs 73 and/or 161 end up being adopted, the idea of packed things
+being distinct could be extended to allow additional functionality. E.g.
+
+  $a = pack("l*",12,34); # Save the template in the instance data
+  if(ref($a) eq "Packed") { ... }
+  @b = $a->unpack;            # Use saved template
+  $a->STRING = sub { join ",",$_[0]->unpack; };
+  print "$a\n"; # Readable through use of STRING
+
+If RFC 89 is adopted, a variable could be forced to hold only packed
+things. E.g.
+
+  my packed $thingie : (template=>"lll");
+  $thingie->pack 123,456,789;
+
+... or something like that.
+
+How this would interact with RFCs 142,246-250 is TBD, but I see no
+outright conflicts right off. This might dovetail well with RFC 159 to
+allow un/packing on the fly based on context, but I'm not sure.
+
+=head1 IMPLEMENTATION
+
+I know almost nothing about internals, so this is probably wrong, but
+see if I convey my meaning anyway.
+
+=item *
+
+With certain exceptions for C<vec> and C<select>, exemplified above,
+builtin operators and functions which expect to operate on packed data
+structures (including bitwise ops) would behave thusly if C<use
+warnings 'packed'> and C<use strict 'packed'> are in effect:
+
+  NOK  POK PkOK
+  -------------
+   0    0    1   not possible?
+   0    1    0   promote via C<pack("a*",...)>, issue warning
+   0    1    1   OK
+   1    0    0   error
+   1    0    1   not possible?
+   1    1    0   promote, issue warning
+   1    1    1   OK
+
+=item *
+
+With certain exceptions for C<print> and C<"">, exemplified above,
+builtins expecting a "printable string" would issue a warning if given
+a scalar with the PkOK bit set.
+
+=item *
+
+By way of an imperfect analogy, note the similarity between packed
+strings having a PkOK flag via C<pack> (and others) and regexs having
+an ROK flag via C<qr()>.
+
+=head1 MIGRATION
+
+When translating code with p526, put
+
+  no warnings 'packed';
+  no strict   'packed';
+
+at the start of each lexical structure.
+
+
+=head1 REFERENCES
+
+RFC 73: All Perl core functions should return objects
+
+RFC 89: Controllable Data Typing
+
+RFC 142: Enhanced Pack/Unpack
+
+RFC 159: True Polymorphic Objects
+
+RFC 161: Everything in Perl becomes an object.
+
+RFC 246: pack/unpack uncontrovercial enhancements
+
+RFC 247: pack/unpack C-like enhancements
+
+RFC 248: enhanced groups in pack/unpack
+
+RFC 249: Use pack/unpack for marshalling
+
+RFC 250: hooks in pack/unpack
+

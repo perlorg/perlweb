@@ -1,0 +1,166 @@
+=head1 TITLE
+
+Replace invocant in @_ with self() builtin
+
+=head1 VERSION
+
+  Maintainer: Nathan Wiger <nate@wiger.org>
+  Date: 24 Aug 2000
+  Last Modified: 24 Sep 2000
+  Mailing List: perl6-language-objects@perl.org
+  Number: 152
+  Version: 2
+  Status: Frozen
+
+=head1 ABSTRACT
+
+Currently, the invocant is passed into a sub as the first element of @_,
+leading to the familiar construct:
+
+   my $self = shift;
+
+However, this is a big PITA. In particular, if you support several
+different calling forms (like CGI.pm), you have to check whether $_[0]
+is a ref or class name, etc.
+
+This RFC, therefore, proposes a new builtin called C<self()> which will
+return the correct invocant information. This has the added advantage
+that it is consistent with C<caller()>, C<want()>, <ref()>, and other
+context functions.
+
+=head1 DESCRIPTION
+
+=head2 Syntax
+
+The new function C<self()> would be called in the following way:
+
+   sub fullname {
+       my $self = self;
+       @_ ? $self->{STATE}->{fullname} = $_[0]
+          : $self->{STATE}->{fullname};
+   }
+
+   sub my_junk {
+       my $this = self;
+       $this->fork_o_matic(@_);
+   }
+
+   # Or even...
+
+   sub error {
+       carp @_ if self->config('VerboseErrors');
+   }
+
+   sub uid {
+       @_ ? self->{uid} = $_[0]
+          : self->{uid};
+   }
+
+The return value of C<self()> would be similar to the current invocant
+in $_[0], with increased flexibility. In particular, it can be called
+anywhere and everywhere, not just within a method.
+
+Depending on the context it's called in, the return value of C<self()>
+will be:
+
+   1. A reference to the object, within an object method
+
+   2. The name of the package, within a package
+
+   3. Undef, if a sub is not called as a method
+
+These different return values give us the ability to call C<self()>
+anywhere within Perl 6 code:
+
+   package MyPackage;
+   # ... many other functions ...
+   sub do_stuff {
+       print "Hello, @_" if self->config('Yep');
+   }
+   self->do_stuff;           # MyPackage->do_stuff
+
+   package main;
+   my $mp = new MyPackage;
+   $mp->config('Yep') = 1;
+   $mp->do_stuff('Nate');    # prints "Hello, Nate"
+
+In addition, having a routine called C<self()> has the major advantage
+that it hides the internal magic and scoping from the user. Just like
+using C<want()> instead of a special variable called C<$WANT>, C<self()>
+makes using and comprehending contexts easy, simply changing the Perl
+5 rule:
+
+   "The invocant is passed into subs as $_[0] in OO contexts"
+
+To the simpler still:
+
+   "The invocant is always gotten by calling self()"
+
+This provides a consistent interface, since C<self()> can be called
+anywhere, just like C<caller()>, C<want()>, and other context functions.
+
+=head2 Arguments against C<use invocant>
+
+This RFC was released prior to, and remains in opposition to, RFC 233,
+which proposes a C<use invocant> pragma that provides the flexibility to
+name the invocant anything you want.
+
+As many have noted, Perl is already hard enough. C<use invocant> only
+gives us multiple ways to do something without adding value, only
+confusion, by promoting an inconsistent interface. Like providing a
+means to rename C<@ARGV> and C<STDIN> because a person prefers C<@args>
+and C<output>, C<use invocant> further complicates an issue which should
+only be made easier.
+
+The author of this RFC B<loves> Perl and loves its flexibility. However,
+just like choosing a name for C<caller>, C<want>, C<print>, C<@ARGV>,
+and so forth, we need to choose a name for C<self> as well to ease the
+burden on the programmer. "Choosing an interface" does not amount to
+"being un-Perlish" as some might purport to suggest. In fact, just the
+opposite: We're decreasing the amount of time a user has to spend
+decoding somebody else's invocant naming scheme by providing a very
+Perlishly-named function. B<This makes things easier>.
+
+If it is vital that the invocant must be named something specific, then
+a person can always use a sub wrapper, tie, or a typeglob to rename it
+appropriately. Actually, they don't even have to go to these extremes
+since they can still do this:
+
+   sub getdata {
+       my $this = self;
+       return $this->{DATA}->{$_[0]};
+   }
+
+(that is, assign to a custom variable) anywhere they want to.
+
+Finally, the author would be more than happy to settle for the selection
+of something different than C<self>, such as C<this()>, C<$SELF>, or
+even C<$ME>. The main point is that we need to choose something, because
+doing so makes the language more consistent and easier (combatting two
+widespread criticisms of Perl).
+
+=head1 IMPLEMENTATION
+
+Replace the invocant usually included in $_[0] with C<self()>. Stop
+passing the invocant in @_.
+
+=head1 MIGRATION
+
+Backwards compatibility is simple. Subs can simply have the expression:
+
+   unshift @_, self if self;
+
+Added as the first line of the sub, since C<self()> will return undef if
+not in an OO context.
+
+=head1 REFERENCES
+
+Critique of the C<use invocant> pragma:
+http://www.mail-archive.com/perl6-language@perl.org/msg03952.html
+
+Outline of the benefits of C<self>:
+http://www.mail-archive.com/perl6-language-objects@perl.org/msg00074.html
+
+RFC 21: Replace C<wantarray> with a generic C<want> function
+
+RFC 233: Objects: C<use invocant> pragma

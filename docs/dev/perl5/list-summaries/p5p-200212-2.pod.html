@@ -1,0 +1,133 @@
+<HTML>
+<HEAD>
+<TITLE>This Week on perl5-porters</TITLE>
+<LINK REV="made" HREF="mailto:bhcompile@daffy.perf.redhat.com">
+</HEAD>
+
+<BODY>
+
+<A NAME="__index__"></A>
+<!-- INDEX BEGIN -->
+
+<UL>
+
+	<LI><A HREF="#this week on perl5porters (915 december 2002)">This Week on perl5-porters (9-15 December 2002)</A></LI>
+	<UL>
+
+		<LI><A HREF="#deparse barewords with leading hyphens">Deparse barewords with leading hyphens</A></LI>
+		<LI><A HREF="#debugger regression">Debugger regression</A></LI>
+		<LI><A HREF="#%z in strftime()">%z in <CODE>strftime()</CODE></A></LI>
+		<LI><A HREF="#compiletime hints">Compile-time hints</A></LI>
+		<LI><A HREF="#goto and redo">goto and redo</A></LI>
+		<LI><A HREF="#in brief">In brief</A></LI>
+		<LI><A HREF="#about this summary">About this summary</A></LI>
+	</UL>
+
+</UL>
+<!-- INDEX END -->
+
+<HR>
+<P>
+<H1><A NAME="this week on perl5porters (915 december 2002)">This Week on perl5-porters (9-15 December 2002)</A></H1>
+<P>Busy week for the Perl 5 porters : lots of patches were sent. In the
+discussion, several curious behaviors of perl were also explained, for the
+enlightenment of all. Ain't it interesting ?</P>
+<P>
+<H2><A NAME="deparse barewords with leading hyphens">Deparse barewords with leading hyphens</A></H2>
+<P>Yves Orton remarked that the popular syntax</P>
+<PRE>
+    my $hashref = { -foo =&gt; &quot;bar&quot; };</PRE>
+<P>doesn't seem to be properly deparsed by B::Deparse, which turns the hash
+key into <CODE>-'foo'</CODE>. As Stephen McCamant points out, this is still correct
+however, because <EM>if you apply the unary minus operator to a string that
+starts with a letter or _, it prepends ``-'' to the string.</EM></P>
+<PRE>
+    <A HREF="http://archive.develooper.com/perl5-porters@perl.org/msg89762.html">http://archive.develooper.com/perl5-porters@perl.org/msg89762.html</A></PRE>
+<P>
+<H2><A NAME="debugger regression">Debugger regression</A></H2>
+<P>David Dyck noticed (bug #19017) that the x debugger command doesn't
+display lexical variables any longer in bleadperl (this works fine in
+5.8.0 and before). Dave Mitchell identified and fixed the bug, which was
+introduced by one of his patches, and explained how the debugger is
+actually able to do things like this.</P>
+<PRE>
+    <A HREF="http://archive.develooper.com/perl5-porters@perl.org/msg89794.html">http://archive.develooper.com/perl5-porters@perl.org/msg89794.html</A></PRE>
+<P>
+<H2><A NAME="%z in strftime()">%z in <CODE>strftime()</CODE></A></H2>
+<P>Jarkko Hietaniemi grumbled about the %z <CODE>strftime()</CODE> format, recently
+introduced. This format appears to be non-POSIX, for some values of the
+POSIX standard. Finally, as it can't be tested portably, Jarkko removed
+the tests for it from the POSIX test suite.</P>
+<PRE>
+    <A HREF="http://archive.develooper.com/perl5-porters@perl.org/msg89791.html">http://archive.develooper.com/perl5-porters@perl.org/msg89791.html</A></PRE>
+<P>
+<H2><A NAME="compiletime hints">Compile-time hints</A></H2>
+<P>Rafael Garcia-Suarez proposed a master plan to reconsider the way compiler
+hints are implemented. The compiler hints are the mechanism that make
+lexically scoped pragmas work. The need to make hints more extensible and
+more flexible has been discussed several times since last year, see for
+example an older summary :</P>
+<PRE>
+    <A HREF="http://dev.perl.org/perl5/list-summaries/p5p-200208-1.pod.html">http://dev.perl.org/perl5/list-summaries/p5p-200208-1.pod.html</A></PRE>
+<P>Rafael's detailed proposal and first patch, and the start of the relevant
+thread, are here :</P>
+<PRE>
+    <A HREF="http://archive.develooper.com/perl5-porters@perl.org/msg89822.html">http://archive.develooper.com/perl5-porters@perl.org/msg89822.html</A></PRE>
+<P>
+<H2><A NAME="goto and redo">goto and redo</A></H2>
+<P>Mark-Jason Dominus reported bug #19061, which can be summarised as
+follows : if <CODE>goto()</CODE> is used to jump in the middle of a block which has a
+label <CODE>FOO</CODE>, a <CODE>redo FOO</CODE> in this block won't be able to restart it.
+In other words :</P>
+<PRE>
+    goto FOO; BAR:{ FOO: print 1; redo BAR; }</PRE>
+<P>emits an error <EM>Label not found for ``redo BAR''</EM>.</P>
+<P>Stephen McCamant explained this specific behavior, which seems to be hard
+to change.</P>
+<PRE>
+    <A HREF="http://archive.develooper.com/perl5-porters@perl.org/msg89886.html">http://archive.develooper.com/perl5-porters@perl.org/msg89886.html</A></PRE>
+<P>
+<H2><A NAME="in brief">In brief</A></H2>
+<P>Nicholas Clark suggested a performance enhancement by reordering code in
+<CODE>pp_entersub()</CODE> (a C function which implements a Perl subroutine call).</P>
+<PRE>
+    <A HREF="http://archive.develooper.com/perl5-porters@perl.org/msg89810.html">http://archive.develooper.com/perl5-porters@perl.org/msg89810.html</A></PRE>
+<P>Nicholas Clark suggested also another potential improvement : replace the
+%s in the printf-like formats in the core by %_, when the argument is an
+SV*. %_ is an internal-only printf format hack, that doesn't seem to be
+widely used anymore in the core, I wonder why.</P>
+<PRE>
+    <A HREF="http://archive.develooper.com/perl5-porters@perl.org/msg89813.html">http://archive.develooper.com/perl5-porters@perl.org/msg89813.html</A></PRE>
+<P>Ton Hospel reported several obscure bugs on regular expressions (bugs
+#19048, #19049, #19050, #19078, and #19134, no less). Some of them were
+already known or corrected.</P>
+<P>John Peacock proposed a small change in the implementation of v-strings,
+consecutive to some earlier critics regarding the consistency of the
+current behavior.</P>
+<PRE>
+    <A HREF="http://archive.develooper.com/perl5-porters@perl.org/msg89649.html">http://archive.develooper.com/perl5-porters@perl.org/msg89649.html</A></PRE>
+<P>Various people reported that the tests for POSIX are quite noisy those
+days, spitting out strange error messages like <EM>Unbalanced string table
+refcount</EM>. Dave Mitchell and Nicholas Clark provided fixes and tests. (Bug
+#19022.)</P>
+<P>Craig Berry, back on the VMS port front, asks what the command-line flag
+<CODE>-IFoo::Bar</CODE> (found in a regression test) is supposed to do. The answer
+is simple : it should put a directory <CODE>Foo::Bar</CODE> in @INC (at least on
+platforms that accept a colon in file names).</P>
+<P>Ilya Zakharevich, back on the OS/2 port front, sent six various patches in
+a row (not all related to OS/2, several being related to MakeMaker).</P>
+<P>Tels noticed that the modulus (%) operator works only on integers.
+Non-integers arguments to % are truncated. If you want a modulus that
+works on floats, use <CODE>bignum</CODE>.</P>
+<PRE>
+    <A HREF="http://archive.develooper.com/perl5-porters@perl.org/msg89995.html">http://archive.develooper.com/perl5-porters@perl.org/msg89995.html</A></PRE>
+<P>
+<H2><A NAME="about this summary">About this summary</A></H2>
+<P>This summary brought to you in time by Rafael Garcia-Suarez, both on
+<EM><A HREF="http://use.perl.org/">http://use.perl.org/</A></EM> and via a mailing list, which subscription address
+is <EM><A HREF="mailto:perl5-summary-subscribe@perl.org">perl5-summary-subscribe@perl.org</A></EM>. Comments and corrections are, as
+always, welcome.</P>
+
+</BODY>
+
+</HTML>

@@ -1,0 +1,193 @@
+=head1 TITLE
+
+Arrays: merge() and unmerge()
+
+=head1 VERSION
+
+  Maintainer: Jeremy Howard <j@howard.fm>
+  Date: 10 Aug 2000
+  Last Modified: 21 Sep 2000
+  Mailing List: perl6-language-data@perl.org
+  Number: 90
+  Version: 4
+  Status: Frozen
+
+=head1 DISCUSSION
+
+Two major issues were discussed. One was that merge and unmerge were not
+deserving of being placed in the core. In the end this is a judgement
+call, but merge() in particular is fundamental to programming in a
+functional style, to manipulating multidimensional matrices, and for
+iterating through multiple arrays simultaneously. Furthermore,
+implementing optimised aliasing behaviour as proposed may not be possible
+in a module (depending on what extension mechanisms are in Perl 6).
+
+The other issue discussed was whether the aliasing behaviour is
+appropriate, and achievable. A section has been added to this RFC
+discussing this.
+
+=head1 ABSTRACT
+
+It is proposed that two new functions, C<merge>, and C<unmerge>, be added
+to Perl. C<merge(@list1, @list2, ...)> would return a list that
+interleaved its arguments. C<unmerge($num_lists, @list)> would reverse
+this operation. Both functions would return an alias into the original
+list, not a copy of the elements.
+
+=head1 CHANGES
+
+=head2 Since v3
+
+=over 4
+
+=item *
+
+Name change from C<demerge> to C<unmerge>
+
+=item *
+
+Added discussion of options for aliasing behaviour
+
+=back
+
+=head2 Since v2
+
+=over 4
+
+=item *
+
+Described aliasing behaviour of C<merge> and <unmerge>
+
+=back
+
+=head2 Since v1
+
+=over 4
+
+=item *
+
+Moved list to perl6-language-data@perl.org
+
+=item *
+
+Changed name from zip/unzip
+
+=item *
+
+Pass lists directly in examples, not references
+
+=item *
+
+Change 2nd argument from $list_size to $num_lists
+
+=back
+
+=head1 DESCRIPTION
+
+It is proposed that Perl implement a function called C<merge> that
+interleaves the arguments of arrays together, and is evaluated lazily.
+For instance:
+
+  @a = (1,3,5);
+  @b = (2,4,6);
+  @merged_list = merge(@a,@b);   # (1,2,3,4,5,6)
+
+This makes it easy to operate on multiple lists using flexible reduction
+functions:
+
+  $sum_xy = sub {reduce ^last+^x*^y, merge($_[0], $_[1])};
+  print $sum_xy->(@a, @b);   # Prints '44', i.e. 1*2+3*4+5*6
+
+In order to reverse this operation we need an C<unmerge> function:
+
+  @merged_list = merge(@a,@b);   # (1,2,3,4,5,6)
+  @unmerged_list = unmerge(2, @merged_list);   # ([1,3,5], [2,4,6])
+
+The second argument to C<unmerge> is the number of lists that are to be
+created (i.e. the number of lists that would have been C<merge>d for this
+to reverse the operation).
+
+If the list to be unmerged is not an exact multiple of the partition size,
+the final list references are not padded--their length is one less than
+the list size. For example:
+
+  @list = (1..7);
+  @unmerged_list2 = unmerge(3, @list);   # ([1,4,7], [2,5], [3,6])
+
+Both C<merge> and <unmerge> do not make a copy of the elements of their
+arguments; they simply create an alias to them:
+
+  @a = (1,3,5);
+  @b = (2,4,6);
+  @merged_list = merge(@a,@b);   # (1,2,3,4,5,6)
+  $merged_list[1] = 0;
+  @b == (0,4,6);                 # True
+    
+=head1 IMPLEMENTATION
+
+The C<merge> and C<unmerge> functions should be evaluated lazily.
+
+C<merge> and C<unmerge> return an alias into the original list, not a copy
+of the elements.
+
+Effectively, C<merge> creates an iterator over multiple lists. If used as
+part of a reduction, the actual interleaved list need never be created.
+For instance:
+
+  $sum_xy = sub {reduce ^last+^x*^y, merge($_[0], $_[1])};
+  $answer = $sum_xy->(@a, @b);
+  
+should be evaluated as if it read:
+
+  $answer = 0;
+  $answer += $a[$_] * $b[$_] for (0..$#a-1));
+  
+which does not need to create an intermediate list.
+
+=head2 Aliasing implementation
+
+The proposed aliasing behaviour is also proposed for part()/flatten() (see
+L<RFC 91>) and reshape() (see L<RFC 148>). This requires some more
+thought. Perl's current slicing operation C<@a[$x1, $x2]> only aliases
+when used in an lvalue context:
+
+  @a = (4,5,6);
+  @b = @a[1,2];
+  @b[0] = 9;       # @a == (4,5,6)
+  @a[1,2] = (8,9); # @a == (4,8,9)
+
+We could do the same for merge() and friends. The downside is that:
+
+  @transpose = part(
+    # Find the size of each column
+    scalar @list_of_lists,
+    # Interleave the rows
+    merge(@list_of_lists);
+  )
+
+and similar expressions would do an awful lot of copying. Ideally if
+merge() didn't alias in an rvalue context, Perl would still optimise
+away multiple merge()s, part()s, slices, and so forth so that only one
+copy occurred.
+
+If the aliasing behaviour is implemented, then assigning an aliased array
+to another array should result in a copy being created:
+
+  @a = (1,3,5);
+  @b = (2,4,6);
+  @merged_list = merge(@a,@b);   # Just an alias into @a and @b
+  @copied_list = @merged_list;   # Does an actual array copy
+
+Alternatively, a copy-on-write optimisation could allow some of the
+efficiency of full aliasing to be combined with the simplicity of Perl 5's
+alias-in-lvalue behaviour.
+
+=head1 REFERENCES
+
+RFC 23: Higher order functions
+
+RFC 76: Builtin: reduce
+
+RFC 91: Arrays: part() and flatten()
+
+RFC 148: Arrays: Add reshape() for multi-dimensional array reshaping

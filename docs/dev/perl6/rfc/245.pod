@@ -1,0 +1,96 @@
+=head1 TITLE
+
+Add new C<empty> keyword to DWIM for clearing values
+
+=head1 VERSION
+
+  Maintainer: Nathan Wiger <nate@wiger.org>
+  Date: 16 Sep 2000
+  Last-Modified: 29 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 245
+  Version: 2
+  Status: Retracted
+
+=head1 ABSTRACT
+
+Most beginners and even intermediate users expect this:
+
+   my @array = undef;
+   undef @array;
+
+To initialize an empty array. It doesn't, and shouldn't. This RFC
+proposes a new keyword, C<empty>, which does the "right thing", and can
+be used as both a noun and verb:
+
+   my @array = empty;
+   empty @array;
+
+The idea is to make this process more intuitive. It also makes a few
+things easier.
+
+=head1 NOTES ON RETRACTION
+
+Hey, they're not all gonna be winners, people! ;-)
+
+=head1 DESCRIPTION
+
+Currently, initializing values so that warnings are spewed out or
+confusion doesn't arise is not as easy as it could be. These:
+
+   my $name = undef;
+   my($a, $b, $c, $d, $e, $f) = undef;
+   my(@name, $age, %attrs) = undef;
+
+Don't do what many (most?) people expect them to. Getting the
+corresponding effects that most people want can be cumbersome and not
+always intuitive:
+
+   my $name = '';
+   my($a, $b, $c, $d, $e, $f) = ( '' x 6 );
+   my @name = (); my $age = ''; my %attrs = (); 
+
+With the new C<empty> keyword, this becomes easier and more readable,
+with a nice parallel to C<undef>:
+
+   my $name = empty;
+   my($a, $b, $c, $d, $e, $f) = empty;
+   my(@name, $age, %attrs) = empty;
+
+Like C<undef>, it also has the benefit of being usable on values
+themselves as a verb:
+
+   empty @array;          # @array = ();
+   empty %hash;           # %hash = ();
+   empty @array, $name;   # @array = (); $name = '';
+
+And its purpose is intuitive: It causes a value to become C<empty>,
+without being undefined. Note that it can also shorten code in some
+situations.
+
+=head1 NOTES
+
+I'm throwing this out there. It seems to me to make easy things easier,
+and seems to potentially make the teaching of undef easier as well,
+since the usage of C<undef> and C<empty> are parallel. The point of
+debate I'm sure will be whether or not it hides implicit contexts, but
+it doesn't seem that it would have to assuming that it was properly
+integrated into the undef/context part of a course.
+
+Nonetheless, feel free to point out why this is a bad idea and I'll
+gladly retract it.
+
+=head1 IMPLEMENTATION
+
+See here in v2, assuming this doesn't get ripped apart.
+
+=head1 MIGRATION
+
+None. New functionality.
+
+=head1 REFERENCES
+
+http://www.mail-archive.com/perl6-language@perl.org/msg03703.html
+
+And a previous, humorous yet poignant one from Tom C which appears to
+have vanished

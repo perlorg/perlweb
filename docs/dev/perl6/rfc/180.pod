@@ -1,0 +1,60 @@
+=head1 TITLE
+
+Object Class hooks into C<printf>
+
+=head1 VERSION
+
+  Maintainer: Mark Biggar <mark.biggar@TrustedSysLabs.com>
+  Date: 30 Aug 2000
+  Mailing List: perl6-language-io@perl.org
+  Number: 180
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+There needs to be a way for an object class to define C<printf> format
+specifiers for use in formatting objects into strings with C<printf> and
+C<sprintf>.
+
+=head1 DESCRIPTION
+
+It would be nice to be able to do things like:
+
+   use BigInt ':constant';
+    
+   printf "%53d",(3**34);
+
+and get a nicely formatted output.
+
+This could also simplify other proposals like RFC 48 where instead of
+cluttering up the proposed C<date> and C<gmtdate> operators with C<POSIX
+strftime()> functionality, it could be done using C<printf> instead.
+
+=head1 IMPLEMENTATION
+
+I have thought of two possible implementations:
+
+1) When ever a blessed object reference appears in a C<printf> argument list
+the internal C<printf> code invokes the objects C<STRING> method (see RFC 49)
+with an extra argument consisting of the printf format specifier (in the above
+example the extra argument would be "%53d".  The C<STRING> method would return
+either a properly formatted string scalar which would be incorporated in the
+output string being constructed by C<printf> or C<undef>, if the C<STRING>
+method does not understand the specifier, which should probably cause an
+exception to be thrown.
+
+2) When ever a blessed object reference appears in s C<printf> argument list
+the internal C<printf> code attempts to invoke the objects C<PRINTF_spec>
+method with an extra argument consisting of the inside of the C<printf>
+specifier (in the above example anon-ref->PRINTF_d("53") would be invoked.  If
+the method exists then it returns a properly formatted string scalar or
+C<undef> if it can not interpreted the specifier argument.  If either C<undef>
+is returned or there is no such method then a exception is thrown.
+
+=head1 REFERENCES
+
+RFC 49 Objects should have builtin stringifying STRING method
+
+RFC 48 Replace localtime() and gmtime() with date() and gmtdate()
+

@@ -1,0 +1,74 @@
+=head1 This Week on perl5-porters (30th December 2002 / 5th January 2003)
+
+What are the perl5-porters' new year resolutions ? You won't learn it by
+reading this week's highly technical summary. But that's not the point, is
+it ?
+
+=head2 Copy constructor contract
+
+Rick Delaney reports (bug #19582) that a copy constructor that doesn't
+return a blessed reference may produce segfaults when the resulting
+reference is used. As a solution, he proposes to forbid copy constructors to
+return non-objects. (Currently, copy constructors can't return
+non-references, but can return unblessed references.)
+
+  The bug : http://archive.develooper.com/perl5-porters@perl.org/msg90340.html
+  The fix : http://archive.develooper.com/perl5-porters@perl.org/msg90321.html
+
+=head2 Simple segfault
+
+Some good bug hunting was done for bug #19566, a simple case of segfault,
+caused by this simple snippet of code (there are many variants) :
+
+    for (\2) { $_ = <FH> }
+
+Oddly enough, this bug seems to exist since a long time (5.003_01), but
+haven't been fixed.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg90334.html
+
+=head2 Parens in pack()
+
+Wolfgang Laun asked a question about the semantics of parentheses in
+pack() templates. Nicholas Clark confessed that C<'('> in pack makes his
+head hurt, and frankly, I'm with him on this point. See for yourself :
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg90455.html
+
+=head2 Link black magic
+
+Chip Turner initiated a thread on shared libperl builds, which I don't
+(frankly) want to summarize here. If you're interested in the issues in
+packaging, distributing and upgrading binaries of perl, follow the link :
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg90384.html
+
+=head2 In brief
+
+Gisle Aas provided updates for his modules MIME::Base64 and Digest::MD5.
+
+Hugo released a snapshot of bleadperl (the 5.9.0-to be), shortly followed
+by Jarkko releasing a snapshot of maintperl (the 5.8.1-to be). Jarkko
+released another snapshot at the end of the week before his planned
+connectivity problems.
+
+Nicholas Clark proposed a patch to implement copy on write for the $& and
+$<DIGIT> variables. As with other copy on write implementations, it's
+available only if perl is configured with the -DPERL_COPY_ON_WRITE flag.
+However, this patch doesn't seem to be a significant speedup (or
+slowdown).
+
+On the performance chapter, Jarkko also sent a patch to speed up Unicode
+operations.
+
+Jarkko thrown at us an interesting link : I<Someone might want to try
+Splint at Perl 5 (or Parrot, for that matter) sources.>
+(see F<http://www.splint.org/>).
+
+=head2 About this summary
+
+This summary brought to you by Rafael Garcia-Suarez and his hurting brain.
+(OK, I was obviously tired this week, I blame this bad cold I got.)
+Summaries are available on F<http://use.perl.org/> and/or via a mailing
+list, which subscription address is F<perl5-summary-subscribe@perl.org>.
+Comments and corrections are welcome.

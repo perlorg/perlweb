@@ -1,0 +1,33 @@
+=head1 TITLE
+
+Delete C<dbmopen> and C<dbmclose> commands.
+
+=head1 VERSION
+
+  Maintainer: Stephen P. Potter <spp@ds.net>
+  Date: 24 Aug 2000
+  Mailing List: perl6-language@perl.org
+  Number: 157
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+The C<dbmopen> and C<dbmclose> commands are legacy commands which have been
+deprecated for at least 5 years.  They should be removed from the language.
+
+=head1 DESCRIPTION
+
+Perl6 is a chance to finally remove all the deprecated syntax and start
+fresh with only allowing the syntax we want.  The C<dbmopen> and C<dbmclose>
+commands are deprecated wrappers to C<tie> and C<untie> commands with a
+specific limited functionality C<AnyDBM> package.
+
+=head1 IMPLEMENTATION
+
+Remove the wrappers from the core.  The p52p6 script can replace any call
+to C<dbmopen> with C<tie ..., "AnyDBM" ...> and any call to C<dbmclose> with
+C<untie>.
+
+=head1 REFERENCES
+

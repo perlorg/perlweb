@@ -1,0 +1,1039 @@
+=head1 TITLE
+
+Synopsis 5: A Summary of Apocalypse 5
+
+=head1 AUTHOR
+
+Damian Conway <damian@conway.org> and
+Allison Randal <al@shadowed.net>
+
+=head1 VERSION
+
+  Maintainer: Allison Randal <al@shadowed.net>
+  Date: 24 Jun 2002
+  Last Modified: 7 Jul 2002
+  Number: 5
+  Version: 1
+
+
+=head1 Unchanged features
+
+=over
+
+=item *
+
+Capturing: (...) 
+
+=item *
+
+Repetition quantifiers: *, +, and ? 
+
+=item *
+
+Alternatives:  |
+
+=item *
+
+Backslash escape:  \ 
+
+=item *
+
+Minimal matching suffix:   ??,  *?,  +?
+
+=back
+
+=head1 Modifiers
+
+=over
+
+=item *
+
+The extended syntax (C</x>) is no longer required...it's the default.
+
+=item *
+
+There are no C</s> or C</m> modifiers (changes to the meta-characters replace them - see below).
+
+=item *
+
+There is no C</e> evaluation modifier on substitutions; 
+use C<s/pattern/$( code() )/> instead.
+
+=item *
+
+The C</g> modifier has been renamed to C<e> (for C<each>).
+
+=item *
+
+Modifiers are now placed as adverbs at the I<start> of a match/substitution:
+
+    @matches = m:ei/\s* (\w*) \s* ,?/;
+
+=item *
+
+The single-character modifiers also have longer versions:
+
+        :i        :ignorecase
+        :e        :each
+
+=item *
+
+The C<:c> (or C<:cont>) modifier causes the match to continue from the string's current C<.pos>:
+
+    m:c/ pattern /        # start at end of
+                          # previous match on $_
+
+=item *
+
+The new C<:o> (C<:once>) modifier replaces the Perl 5 C<?...?> syntax:
+
+    m:once/ pattern /    # only matches first time
+
+=item *
+
+The new C<:w> (C<:word>) modifier causes whitespace sequences to be replaced by C<\s*> or C<\s+> subpattern:
+
+    m:w/ next cmd =   <condition>/
+
+=item *
+
+Same as:
+
+    m/ \s* next \s+ cmd \s* = \s* <condition>/
+
+=item *
+
+The new C<:uN> modifier specifies Unicode level:
+
+    m:u0/ .<2> /        # match two bytes
+    m:u1/ .<2> /        # match two codepoints
+    m:u2/ .<2> /        # match two graphemes
+    m:u3/ .<2> /        # match language dependently
+
+=item *
+
+The new C<:p5> modifier allows Perl 5 regex syntax to be used instead:
+
+    m:p5/(?mi)^[a-z]{1,2}(?=\s)/
+
+=item *
+
+Any integer modifier specifies a count. What kind of count is determined by the character that follows.
+
+=item *
+
+If followed by an C<x>, it means repetition:
+
+    s:4x{ (<ident>) = (\N+) $$}{$1 => $2};
+
+    # same as: 
+
+    s{ (<ident>) = (\N+) $$}{$1 => $2} for 1..4;
+
+=item *
+
+If followed by an C<st>, C<nd>, C<rd>, or C<th>, it means find the I<N>th occurance:
+
+    s:3rd/(\d+)/@data[$1]/;
+
+    # same as: 
+
+    m/(\d+)/ && m:c/(\d+)/ && s:c/(\d+)/@data[$1]/;
+
+=item *
+
+With the new C<:any> modifier, the regex will match every possible way (including overlapping) and return all matches.
+
+    $str = "abracadabra";
+
+    @substrings = $str =~ m:any/ a (.*) a /;
+
+    # br brac bracad bracadabr c cad cadabr d dabr br
+
+=item *
+
+The C<:i>, C<:w>, C<:c>, C<:uI<N>>, and C<:p5> modifiers can be placed inside the regex (and are lexically scoped):
+
+    m/:c alignment = [:i left|right|cent[er|re]] / 
+
+=item *
+
+User-defined modifiers will be possible
+
+	m:fuzzy/pattern/;
+
+=item *
+
+Single letter flags can be "chained":
+
+	s:ewi/cat/feline/
+
+=item *
+
+User-defined modifiers can also take arguments:
+
+	m:fuzzy('bare')/pattern/;
+
+=item *
+
+Hence parentheses are no longer valid regex delimiters
+
+=back
+
+=head1 Changed metacharacters
+
+=over
+
+=item *
+
+A dot C<.> now matches I<any> character including newline. (The C</s> modifier is gone.)
+
+=item *
+
+C<^> and C<$> now always match the start/end of a string, like the old C<\A> and C<\z>. (The C</m> modifier is gone.)
+
+=item *
+
+A C<$> no longer matches an optional preceding C<\n> so it's necessary to say C<\n?$> if that's what you mean.
+
+=item *
+
+C<\n> now matches a logical (platform independent) newline not just C<\012>.
+
+=item *
+
+The C<\A>, C<\Z>, and C<\z> metacharacters are gone.
+
+=back
+
+=head1 New metacharacters
+
+=over
+
+=item *
+
+Because C</x> is default:
+
+=over
+
+=item *
+
+C<#> now always introduces a comment.
+
+=item *
+
+Whitespace is now always metasyntactic, i.e. used only for layout and not matched literally (but see the :w modifier described above).
+
+=back
+
+=item *
+
+C<^^> and C<$$> match line beginnings and endings. (The C</m> modifier is gone.)
+
+=item *
+
+C<.> matches an "anything", while C<\N> matches an "anything except newline". (The C</s> modifier is gone.)
+
+=back
+
+=head1 Bracket rationalization
+
+=over
+
+=item *
+
+C<(...)> still delimits a capturing group.
+
+=item *
+
+C<[...]> is no longer a character class.
+
+=item *
+
+It now delimits a non-capturing group.
+
+=item *
+
+C<{...}> is no longer a repetition quantifier.
+
+=item *
+
+It now delimits an embedded closure.
+
+=item *
+
+You can call Perl code as part of a regex match.
+
+=item *
+
+Embedded code does not usually affect the match - it is only used for side-effects:
+
+    / (\S+) { print "string not blank\n"; $text = $1; }
+       \s+  { print "but does contain whitespace\n" }
+    /
+
+=item *
+
+It can affect the match if it calls C<fail>:
+
+    / (\d+) {$1<256 or fail} /
+
+=item *
+
+C<< <...> >> are now extensible metasyntax delimiters or "assertions" (i.e. they replace C<(?...)>).
+
+=back
+
+=head1 Variable (non-)interpolation
+
+=over
+
+=item *
+
+In Perl 6 regexes, variables don't interpolate.
+
+=item *
+
+Instead they're passed "raw" to the regex engine, which can then decide how to handle them (more on that below).
+
+=item *
+
+The default way in which the engine handles a scalar is to match it as a \Q[...] literal (i.e.it does not treat the interpolated string as a subpattern).
+
+=item *
+
+In other words, a Perl 6:    / $var /
+
+is like a Perl 5:            / \Q$var\E /
+
+=item *
+
+(To get regex interpolation use an assertion - see below)
+
+=item *
+
+An interpolated array:
+
+    / @cmds /
+
+is matched as if it were an alternation of its elements:
+
+    / [ @cmds[0] | @cmds[1] | @cmds[2] | ... ] /
+
+
+=item *
+
+And, of course, each one is matched as a literal.
+
+=item *
+
+An interpolated hash matches a C</\w+/> and then requires that sequence to be a valid key of the hash.
+
+=item *
+
+So:
+
+    / %cmds /
+
+=item *
+
+is like:
+
+    / (\w+) { fail unless exists %cmds{$1} } /
+
+=back
+
+=head1 Extensible metasyntax (C<< <...> >>)
+
+=over
+
+=item *
+
+The first character after C<< < >> determines the behaviour of the assertion.
+
+=item *
+
+A leading alphabetic character means it's a grammatical assertion (i.e. a subpattern or a named character class - see below):
+
+    / <sign>? <mantissa> <exponent>? /
+
+=item *
+
+The special named assertions include:
+
+    / <before pattern> /    # was /(?=pattern)/
+    / <after pattern> /     # was /(?<pattern)/ 
+                            # but now a real pattern!    
+
+    / <ws> /                # match any whitespace
+
+    / <sp> /                # match a space char
+
+
+=item *
+
+A leading number, pair of numbers, or pair of scalars means it's a repetition specifier:
+
+    / value was (\d<1,6>) with (\w<$m,$n>) /
+
+=item *
+
+A leading C<$>, C<@>, C<%>, or C<&> interpolates a variable or subroutine return value as a regex rather than as a literal:
+
+    / <$key_pat> = <@value_alternatives> /
+
+=item *
+
+A leading C<(> indicates a code assertion:
+
+    / (\d<1,3>) <( $1 < 256 )> /
+
+=item *
+
+Same as:
+
+    / (\d<1,3>) {$1<256 or fail} /
+
+=item *
+
+A leading C<{> indicates code that produces a regex to be interpolated into the pattern at that point:
+
+    / (<ident>)  <{ cache{$1} //= get_body($1) }> /
+
+=item *
+
+A leading C<[> indicates an enumerated character class:
+
+    / <[a-z_]>* /
+
+=item *
+
+A leading C<-> indicates a complemented character class:
+
+    / <-[a-z_]> <-<alpha>> /
+
+=item *
+
+A leading C<'> indicates an interpolated literal match (including whitespace):
+
+    / <'match this exactly (whitespace matters)'> /
+
+=item *
+
+The special assertion C<< <.> >> matches any logical grapheme (including a Unicode combining character sequences):
+
+    / seekto = <.> /  # Maybe a combined char
+
+=item *
+
+A leading C<!> indicates a negated meaning (a zero-width assertion except for repetition specifiers):
+
+    / <!before _>    # We aren't before an _
+      \w<!1,3>       # We match 0 or >3 word chars
+    /
+
+=back
+
+=head1 Backslash reform
+
+=over
+
+=item *
+
+The C<\p> and C<\P> properties become intrinsic grammar rules (C<< <prop ...> >> and C<< <!prop ...> >>).
+
+=item *
+
+The C<\L...\E>, C<\U...\E>, and C<\Q...\E> sequences become C<\L[...]>, C<\U[...]>, and C<\Q[...]> (C<\E> is gone).
+
+=item *
+
+Note that C<\Q[...]> will rarely be needed since raw variables interpolate as C<eq> matches, rather than regexes.
+
+=item *
+
+Backreferences (e.g. C<\1>) are gone; C<$1> can be used instead, because it's no longer interpolated.
+
+=item *
+
+New backslash sequences, C<\h> and C<\v>, match horizontal and vertical whitespace respectively, including Unicode.
+
+=item *
+
+C<\s> now matches any Unicode whitespace character.
+
+=item *
+
+The new backslash sequence C<\N> matches anything except a logical newline; it is the negation of C<\n>.
+
+=item *
+
+A series of other new capital backslash sequences are also the negation of their lower-case counterparts:
+
+=over
+
+=item *
+
+C<\H> matches anything but horizontal whitespace.
+
+=item *
+
+C<\V> matches anything but vertical whitespace.
+
+=item *
+
+C<\T> matches anything but a tab.
+
+=item *
+
+C<\R> matches anything but a return.
+
+=item *
+
+C<\F> matches anything but a formfeed.
+
+=item *
+
+C<\E> matches anything but an escape.
+
+=item *
+
+C<\X...> matches anything but the specified hex character.
+
+=back
+
+=back
+
+=head1 Regexes are rules
+
+=over
+
+=item *
+
+The Perl 5  C<qr/pattern/> regex constructor is gone.
+
+=item *
+
+The Perl 6 equivalents are:
+
+    rule { pattern }    # always takes {...} as delimiters
+    rx/ pattern /       # can take (almost any) chars as delimiters
+
+=item *
+
+If either needs modifiers, they go before the opening delimiter:
+
+    $regex = rule :ewi { my name is (.*) };
+    $regex = rx:ewi/ my name is (.*) /;
+
+=item *
+
+The name of the constructor was changed from C<qr> because it's no longer an interpolating quote-like operator.
+
+=item *
+
+As the syntax indicates, it is now more closely analogous to a C<sub {...}> constructor.
+
+=item *
+
+In fact, that analogy will run I<very> deep in Perl 6.
+
+=item *
+
+Just as a raw C<{...}> is now always a closure (which may still execute immediately in certain contexts and be passed as a reference in others)...
+
+=item *
+
+...so too a raw C</.../> is now always a regex (which may still match immediately in certain contexts and be passed as a reference in others).
+
+=item *
+
+Specifically, a C</.../> matches immediately in a void or Boolean context, or when it is an explicit argument of a C<=~>.
+
+=item *
+
+Otherwise it's a regex constructor.
+
+=item *
+
+So this:
+
+    $var = /pattern/;
+
+no longer does the match and sets C<$var> to the result.
+
+=item *
+
+Instead it assigns a regex reference to C<$var>.
+
+=item *
+
+The two cases can always be distinguished using C<m{...}> or C<rx{...}>:
+
+    $var = m{pattern};    # Match regex, assign result
+    $var = rx{pattern};   # Assign regex itself
+
+=item *
+
+Note that this means that former magically lazy usages like:
+
+    @list = split /pattern/, $str;
+
+are now just consequences of the normal semantics.
+
+=item *
+
+It's now also possible to set up a user-defined subroutine that acts like grep:
+
+    sub my_grep($selector, *@list) {
+        given $selector {
+            when RULE  { ... }
+            when CODE  { ... }
+            when HASH  { ... }
+            # etc.
+        }
+    }
+
+=item *
+
+Using C<{...}> or C</.../> in the scalar context of the first argument causes it to produce a C<CODE> or C<RULE> reference, which the switch statement then selects upon.
+
+=back
+
+=head1 Backtracking control
+
+=over
+
+=item *
+
+Backtracking over a single colon causes the regex engine not to retry the preceding atom:
+
+    m:w/ \( <expr> [ , <expr> ]* : \) /
+
+(i.e. there's no point trying fewer C<< <expr> >> matches, if there's no closing parenthesis on the horizon)
+
+=item *
+
+Backtracking over a double colon causes the surrounding group to immediately fail:
+
+    m:w/ [ if :: <expr> <block>
+         | for :: <list> <block>
+         | loop :: <loop_controls>? <block>
+         ]
+    /
+
+(i.e. there's no point trying to match a different keyword if one was already found but failed)
+
+=item *
+
+Backtracking over a triple colon causes the current rule to fail outright (no matter where in the rule it occurs):
+
+    rule ident {
+          ( [<alpha>|_] \w* ) ::: { fail if %reserved{$1} }
+        | " [<alpha>|_] \w* "
+    }
+
+    m:w/ get <ident>? /
+
+(i.e. using an unquoted reserved word as an identifier is not permitted)
+
+=item *
+
+Backtracking over a C<< <commit> >> assertion causes the entire match to fail outright, no matter how many subrules down it happens:
+
+    rule subname {
+        ([<alpha>|_] \w*) <commit> { fail if %reserved{$1} }
+    }
+    m:w/ sub <subname>? <block> /
+
+(i.e. using a reserved word as a subroutine name is instantly fatal to the "surrounding" match as well)
+
+=item *
+
+A <cut> assertion always matches successfully, and has the side effect of deleting the parts of the string already matched.
+
+=item *
+
+Attempting to backtrack past a <cut> causes the complete match to fail (like backtracking past a <commit>. This is because there's now no preceding text to backtrack into.
+
+=item *
+
+This is useful for throwing away successfully processed input when matching from an input stream or an iterator of arbitrary length.
+
+=back
+
+=head1 Named Regexes
+
+=over
+
+=item *
+
+The analogy between C<sub> and C<rule> extends much further.
+
+=item *
+
+Just as you can have anonymous subs and named subs...
+
+=item *
+
+...so too you can have anonymous regexes and I<named> regexes:
+
+    rule ident { [<alpha>|_] \w* }
+
+    # and later...
+
+    @ids = grep /<ident>/, @strings;
+
+=item *
+
+As the above example indicates, it's possible to refer to named regexes, such as:
+
+    rule serial_number { <[A-Z]> \d<8> })
+    rule type { alpha | beta | production | deprecated | legacy }
+
+in other regexes as named assertions:
+
+    rule identification { [soft|hard]ware <type> <serial_number> }
+
+=back
+
+=head1 Nothing is illegal
+
+=over
+
+=item *
+
+The null pattern is now illegal.
+
+=item *
+
+To match whatever the prior successful regex matched, use:
+
+    /<prior>/
+
+=item *
+
+To match the zero-width string, use:
+
+    /<null>/
+
+=back
+
+=head1 Hypothetical variables
+
+=over
+
+=item *
+
+In embedded closures it's possible to bind a variable to a value that only "sticks" if the surrounding pattern successfully matches.
+
+=item *
+
+A variable is declared with the keyword C<let> and then bound to the desired value:
+
+    / (\d+) {let $num := $1} (<alpha>+)/
+
+=item *
+
+Now C<$num> will only be bound if the digits are actually found.
+
+=item *
+
+If the match ever backtracks past the closure (i.e. if there are no alphabetics following), the binding is "undone".
+
+=item *
+
+This is even more interesting in alternations:
+
+    / [ (\d+)      { let $num   := $1 }
+      | (<alpha>+) { let $alpha := $2 }
+      | (.)        { let $other := $3 }
+      ]
+    /
+
+=item *
+
+There is also a shorthand for assignment to hypothetical variables:
+
+    / [ $num  := (\d+)
+      | $alpha:= (<alpha>+)
+      | $other:=(.)
+      ]
+    /
+
+=item *
+
+The numeric variables (C<$1>, C<$2>, etc.) are also "hypothetical".
+
+=item *
+
+Numeric variables can be assigned to, and even re-ordered:
+
+    my ($key, $val) = m:w{ $1:=(\w+) =\> $2:=(.*?)
+                         | $2:=(.*?) \<= $1:=(\w+)
+                         };
+
+=item *
+
+Repeated captures can be bound to arrays:
+
+    / @values:=[ (.*?) , ]* /
+
+=item *
+
+Pairs of repeated captures can be bound to hashes:
+
+    / %options:=[ (<ident>) = (\N+) ]* /
+
+=item *
+
+Or just capture the keys (and leave the values undef):
+
+    / %options:=[ (<ident>) = \N+ ]* /
+
+=item *
+
+Subrules (e.g. C<< <rule> >>) also capture their result in a hypothetical variable of the same name as the rule:
+
+    / <key> =\> <value> { %hash{$key} = $value } /
+
+=back
+
+=head1 Return values from matches
+
+=over
+
+=item *
+
+A match always returns a "match object", which is also available as (lexical) C<$0>
+
+=item *
+
+The match object evaluates differently in different contexts:
+
+=over 
+
+=item *
+
+in boolean context it evaluates as true or false (i.e. did the match succeed?):
+
+    if /pattern/ {...}
+    # or:
+    /pattern/; if $0 {...}
+
+=item * 
+
+in numeric context it evaluates to the number of matches:
+
+    $match_count += m:e/pattern/;
+
+=item * 
+
+in string context it evaluates to the captured substring (if there was exactly one capture in the pattern) or to the entire text that was matched (if the pattern does not capture, or captures multiple elements):
+
+    print %hash{$text =~ /,? (<ident>)/};
+    # or: 
+    $text =~ /,? (<ident>)/  &&  print %hash{$0};
+
+
+=back
+
+=item *
+
+I<Within> a regex, C<$0> acts like a hypothetical variable.
+
+=item *
+
+It controls what a regex match returns (like C<$$> does in yacc)
+
+=item *
+
+Use C<$0:=> to override the default return behaviour described above:
+
+    rule string1 { (<["'`]>) ([ \\. | <-[\\]> ]*?) $1 }
+
+    $match = m/<string1>/;  # default: $match includes 
+                            # opening and closing quotes
+
+
+    rule string2 { (<["'`]>) $0:=([ \\. | <-[\\]> ]*?) $1 }
+
+    $match = m/<string2>/;  # $match now excludes quotes
+                            # because $0 explicitly bound 
+                            # to second capture only
+
+=back
+
+=head1 Matching against non-strings
+
+=over
+
+=item *
+
+Anything that can be tied to a string can be matched against a regex. This feature is particularly useful with input streams:
+
+    my @array := <$fh>;           # lazy when aliased
+    my $array is from(\@array);   # tie scalar
+
+    # and later...
+
+    $array =~ m/pattern/;         # match from stream
+
+=back
+
+=head1 Grammars
+
+=over
+
+=item *
+
+Potential "collision" problem with named regexes
+
+=item *
+
+Of course, a named C<ident> regex shouldn't clobber someone else's C<ident> regex.
+
+=item *
+
+So some mechanism is needed to confine regexes to a namespace.
+
+=item *
+
+If subs are the model for rules, then modules/classes are the obvious model for aggregating them.
+
+=item *
+
+Such collections of rules are generally known as "grammars". 
+
+=item *
+
+Just as a class can collect named actions together:
+
+    class Identity {
+        method name { "Name = $.name" }
+        method age  { "Age  = $.age"  }
+        method addr { "Addr = $.addr" }
+
+        method desc {
+            print .name(), "\n",
+                  .age(),  "\n",
+                  .addr(), "\n";
+        }
+
+        # etc.
+    }
+
+=item *
+
+So too a grammar can collect a set of named rules together:
+
+    grammar Identity {
+        rule name :w { Name = (\N+) }
+        rule age  :w { Age  = (\d+) }
+        rule addr :w { Addr = (\N+) }
+        rule desc {
+            <name> \n
+            <age>  \n
+            <addr> \n
+        }
+
+        # etc.
+    }
+
+=item *
+
+Like classes, grammars can inherit:
+
+    grammar Letter {
+        rule text     { <greet> <body> <close> }
+
+        rule greet :w { [Hi|Hey|Yo] $to:=(\S+?) , $$}
+
+        rule body     { <line>+ }
+
+        rule close :w { Later dude, $from:=(.+) }
+
+        # etc.
+    }
+
+    grammar FormalLetter is Letter {
+
+        rule greet :w { Dear $to:=(\S+?) , $$}
+
+        rule close :w { Yours sincerely, $from:=(.+) }
+
+    }
+
+=item *
+
+Inherit rule definitions (polymorphically!)
+
+=item *
+
+So there's no need to respecify body, line, etc.
+
+=item *
+
+Perl 6 will come with at least one grammar predefined:
+
+    grammar Perl {    # Perl's own grammar
+
+        rule prog { <line>* }
+
+        rule line { <decl>
+                  | <loop>
+                  | <label> [<cond>|<sideff>|;]
+        }
+
+        rule decl { <sub> | <class> | <use> }
+
+        # etc. etc.
+    }
+
+=item *
+
+Hence:
+
+    given $source_code {
+        $parsetree = m/<Perl::prog>/;
+    }
+
+=back
+
+=head1 Transliteration
+
+=over
+
+=item *
+
+The tr/// quote-like operator now also has a subroutine form.
+
+=item *
+
+It can be given either a single C<PAIR>:
+
+    $str =~ tr( 'A-C' => 'a-c' );
+
+=item *
+
+Or a hash (or hash ref):
+
+    $str =~ tr( {'A'=>'a', 'B'=>'b', 'C'=>'c'} );
+    $str =~ tr( {'A-Z'=>'a-z', '0-9'=>'A-F'} );
+    $str =~ tr( %mapping );
+
+=item *
+
+Or two arrays (or array refs):
+
+    $str =~ tr( ['A'..'C'], ['a'..'c'] );
+    $str =~ tr( @UPPER, @lower );
+
+=item *
+
+Note that the array version can map one-or-more characters to one-or-more characters:
+
+    $str =~ tr( [' ',      '<',    '>',    '&'    ],
+                ['&nbsp;', '&lt;', '&gt;', '&amp;' ]);
+
+=back

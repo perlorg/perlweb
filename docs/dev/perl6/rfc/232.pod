@@ -1,0 +1,69 @@
+=head1 TITLE
+
+Replace AUTOLOAD by a more flexible mechanism
+
+=head1 VERSION
+
+  Maintainer: Ilya Zakharevich <ilya@math.ohio-state.edu>
+  Date: 15 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 232
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+This RFC proposes two-stage autoloading: one stage may be registered
+to act when the symbol is encountered at compile time, the other
+when the subroutine is called.  Autoloading on the second stage does not
+I<call> the subroutine, only I<loads> it. 
+
+=head1 DESCRIPTION
+
+AUTOLOAD interface was created before closures were available.  Because of
+this, it combines two actions into one call: it loads the subroutine,
+and calls it.
+
+This two actions should be separated.  Additionally, some action may be needed
+during compile time.  For example, one may fetch the prototype of the function,
+or even call the function, so that its (constant) value may be used in this
+and other calls.
+
+[WIth the current implementation I<all> the prototypes should be loaded no
+matter what, with significant memory and time overheads.]
+
+When a symbol for an undefined subroutine is seen at compile time, the
+C<proto> action is invoked.  It should return C<undef> if no such symbol
+could be autoloaded (so that the symbol may be searched further in the @ISA
+tree).  It should return the prototype if the symbol could be found.  This
+call may have arbitrary side effects, such as defining the subroutine, or even
+calling it (useful for constant XSUBs).
+
+When an undefined subroutine is about to be called, the C<load> action is
+invoked.  It should return a reference to a subroutine, or C<undef> to signal
+that search should be continued further in the @ISA tree.
+
+In both cases, the argument for the action is the name of the subroutine.
+If the subroutine has two different names (it was created with one name, and
+was imported with a different name), both names are provided.
+
+The C<proto> and C<load> subroutines may be registered (both or any one) with
+the pragma
+
+  use autoload ':proto' => sub {}, ':load' => sub {};
+
+=head1 MIGRATION ISSUES
+
+None.
+
+[The current AUTOLOAD mechanism saves creation of a subroutine frame, since
+the actual call to the subroutine may be done via C<goto>.  If this is proved
+to provide some advantage, AUTOLOAD mechanism may be preserved as well.]
+
+=head1 IMPLEMENTATION
+
+Straightforward.
+
+=head1 REFERENCES
+
+None.

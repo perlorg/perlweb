@@ -1,0 +1,133 @@
+=head1 TITLE
+
+Make constants look like variables
+
+=head1 VERSION
+
+  Maintainer: Jeremy Howard <j@howard.fm>
+  Date: 10 Aug 2000
+  Last Modified: 21 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 83
+  Version: 3
+  Status: Frozen
+
+=head1 DISCUSSION
+
+The syntax was widely accepted. Some posters preferred to see constants
+expanded to work within complex data structures. Others preferred to keep
+things simple. This RFC keeps things simple. A counter-RFC has not been
+submitted.
+
+=head1 ABSTRACT
+
+This RFC proposes that the current constant.pm module removed, and
+replaced with a syntax allowing any variable to be marked as constant.
+
+=head1 CHANGES
+
+=head2 Since v1
+
+=over 4
+
+=item *
+
+Changed notation to be consistent with other value attributes
+
+=item *
+
+Specified behaviour of references, arrays, and lists
+
+=item *
+
+Added definition
+
+=back
+
+=head1 DESCRIPTION
+
+A constant is a value that can not be changed once it is declared.
+Once declared, it behaves just as if it was the actual literal value
+that it contains.
+
+Currently, constants are created in Perl using the constant.pm module:
+
+  use constant PI => 3.1415926;
+
+which creates an inlined subroutine:
+
+  sub PI () {3.1415926;}
+
+This method of creating constants has three serious drawbacks:
+ 
+=over 8
+
+=item Can not be interpolated in strings
+
+Whereas variables can be interpolated into strings (e.g. "PI is $Pi"),
+subroutines can not be. This makes using constants inconvenient, since
+string concatenation must be used.
+
+=item Inconsistant syntax
+
+The sudden appearance of barewords can be quite unsettling to new users.
+After becoming told that 'arrays are @name, scalars are $name, ...', the
+rule suddenly stops working just because the programmer wants the value to
+stay constant.
+
+=item Redundant warnings
+
+In persistant Perl environments such as mod_perl, inlined subroutines
+often created the redundant warning 'Constant subroutine PI redefined'.
+This has been a frequent source of confusion amongst new mod_perl users.
+
+=back
+
+It is proposed that a new syntax for declaring constants be introduced:
+
+  my $PI : constant = 3.1415926;
+  my @FIB : constant = (1,1,2,3,5,8,13,21);
+  my %ENG_ERRORS : constant = (E_UNDEF=>'undefined', E_FAILED=>'failed');
+  
+Constants can be lexically or globally scoped (or any other new scoping
+level yet to be defined).
+
+If an array or hash is marked constant, it cannot be assigned to, and its
+elements can not be assigned to:
+
+  @FIB = (1,2,3);   # Compile time error
+  @FIB[0] = 2;      # Compile time error
+  %ENG_ERRORS=();   # Compile time error
+  %ENG_ERRORS{E_UNDEF=>'No problem'} # Compile time error
+  
+To create a reference to a constant use the reference operator:
+
+  my $ref_pi = \$PI;
+  
+To create a constant reference use a reference operator in the
+declaration:
+
+  my $a = 'Nothing to declare';
+  my $const_ref : constant = \$a;
+
+Note that this does not make the scalar referenced become constant:
+
+  $$const_ref = 'Jewellery';   # No problems
+  $const_ref = \4;             # Compile time error
+
+=head1 IMPLEMENTATION
+
+Constants should have the same behaviour as the do now. They should be
+inlined, and constant expressions should be calculated at compile time.
+
+=head1 EXTENSIONS
+
+It may be desirable to have a way to remove constness from a value. This
+will not be covered in this RFC--if it is required a separate RFC should
+be written referencing this one.
+
+=head1 REFERENCES
+
+perldoc constant
+
+perldoc perlsub (for constant subroutines)

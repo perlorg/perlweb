@@ -1,0 +1,39 @@
+=head1 TITLE
+
+Built-ins: Merge and generalize C<index> and C<rindex>
+
+=head1 VERSION
+
+  Maintainer: Damian Conway <damian@conway.org>
+  Date: 7 Aug 2000
+  Mailing List: perl6-language@perl.org
+  Number: 53
+  Version: 10
+  Status: Developing
+
+=head1 ABSTRACT
+
+This RFC proposes that the C<index> and C<rindex> functions be merged
+and generalized, by adding a fourth parameter to C<index>.
+
+=head1 DESCRIPTION
+
+At present C<index> only returns the index of the first occurrence of a
+specified substring. It is proposed that C<index> take a fourth parameter
+telling it which occurrence of a specified substring to locate:
+
+        $first = index $string, $substring, 0, 1;	# first occurrence
+        $first = index $string, $substring, 0, 2;	# second occurrence
+        $first = index $string, $substring, 0, 3;	# third occurrence
+
+If omitted, this fourth parameter would default to 1, thus preversing
+the current behaviour.
+
+The C<rindex> function would be unnecessary, being replaced by:
+
+        $last = index $string, $substring, -1, -1;	# last occurence
+        
+
+=head1 IMPLEMENTATION
+
+Dammit, Jim, I'm a doctor, not an engineer!

@@ -1,0 +1,144 @@
+=head1 TITLE
+
+Builtin: reduce
+
+=head1 VERSION
+
+  Maintainer: Damian Conway <damian@conway.org>
+  Date: 10 August 2000
+  Last Modified: 20 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 76
+  Version: 4
+  Status: Frozen
+  Frozen since: v2
+  Note: Really Really Frozen this time
+
+=head1 ABSTRACT
+
+This RFC proposes a built-in C<reduce> function, modelled after Graham
+Barr's C<reduce> subroutine from the List::Utils module (a.k.a. The
+Module Formerly Known As builtin.pm).
+
+=head1 DESCRIPTION
+
+A new built-in -- C<reduce> -- is proposed. 
+
+This function would take an block, subroutine reference, or curried function 
+(hereafter referred to as I<the reduction subroutine>),
+and call it repeatedly to reduce the remaining arguments
+(hereafter, referred to as C<the list>).
+
+If the reduction subroutine has a prototype, that prototype
+determines how many items are reduced at a time. If the reduction subroutine
+is a block or has no prototype, two items are reduced each time.
+
+The first call to the reduction subroutine will be passed the first N
+elements of the list, and subsequent calls will be passed the result of
+the previous call and the next N-1 elements in the list, until no more
+elements remain in the list. All calls to the reduction subroutine are
+made in a scalar context.
+
+If fewer than N-1 elements would be available for the final reduction
+call, a exception is thrown, unless the reduction subroutine's parameter
+list specifies the missing data as being optional. For example:
+
+	sub reducer1 ($sum,$n,$k) { $sum + $n**$k }
+	sub reducer2 ($sum,$n;$k) { $sum + $n**($k||0) }
+
+	@data = (1..9);
+
+	$result = reduce \&reducer1, 0, @data;	# die (no $k for last reduction)
+	$result = reduce \&reducer2, 0, @data;	# okay (final $k is undef)
+
+Note that this exception could be thrown I<before> the reduction begins
+(assuming C<reduce> and the other list ops aren't made lazy in Perl 6),
+by determining the total number of elements to be reduced (I<E>), the
+maximal number of elements that may be procesed on each reduction step
+(I<R>), and the minimal number of elements that may be processed on each
+step (I<r>), and then testing whether:
+
+                            ___  ___
+                           | E+1-2R |
+        r  >  E - R - (R-1)| ------ |
+                           |   R-1  |
+
+is true (in which case an exception is required as there will be insufficient
+elements to pass to the final reduction step).
+
+If the original list has no elements, C<reduce> immediately throws an
+exception. If the original list has a single element, that element is
+immediately returned (without ever calling the reduction subroutine).
+Otherwise, in a scalar context, the result of the final reduction call
+is the result returned by C<reduce>. In a list context, a list of all
+the interim values, plus the final value, would be returned.
+
+
+=head1 EXAMPLES
+
+Summation:
+
+        $sum = reduce {$_[0]+$_[1]}     0, @numbers;
+        $sum = reduce sub{$_[0]+$_[1]}, 0, @numbers;
+        $sum = reduce ^_+^_,            0, @numbers;
+
+Note that the first element of the list -- zero in this case, 1 in the next
+example -- represents the default value if the list is empty.
+
+
+Production:
+
+        $prod = reduce {$_[0]*$_[1]}     1, @numbers;
+        $prod = reduce sub{$_[0]*$_[1]}, 1, @numbers;
+        $prod = reduce ^_*^_,            1, @numbers;
+
+
+Minimization:
+
+        $min = reduce ^x <= ^y ? ^x : ^y,  @numbers
+        $min = reduce ^x le ^y ? ^x : ^y,  @strings
+
+
+Minimization to zero:
+
+        $min = reduce any(^x,^y)<0 ? 0 : ^x<^y ? ^x : ^y,  @numbers
+
+
+Collection:
+
+        @triples = @{ reduce sub($;$$$){ [@{shift},[@_]] }, [], @singles };
+
+
+Separation:
+
+        $sorted = reduce { push @{$_[0][$_[1]%2]}, $_[1]; $_[0] }
+                         [[],[]],
+                         @numbers;
+
+        # or, more cleanly:
+
+        $sorted = reduce { push @{^0->[ ^1 % 2 ]},^1; ^0 }, [[],[]], @numbers;
+
+
+Accumulative sequence generation:
+
+        @increase = reduce ^value + ^delta, $original, @bonuses;
+
+        @growth = reduce ^value * ^rate, $principal, @annual_interest_rates;
+
+
+=head1 IMPLEMENTATION
+
+Extend Graham's List::Util, I'd imagine.
+
+
+=head1 REFERENCES
+
+The List::Util module
+
+RFC 23: Higher order functions
+
+RFC 128: Subroutines: Extend subroutine contexts to include
+                      named parameters and lazy arguments
+
+RFC 199: Short-circuiting built-in functions and user-defined subroutines

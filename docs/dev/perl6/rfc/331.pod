@@ -1,0 +1,244 @@
+=head1 TITLE
+
+Consolidate the $1 and C<\1> notations
+
+=head1 VERSION
+
+  Maintainer: David Storrs <dstorrs@dstorrs.com>
+  Date: 28 Sep 2000
+  Last Modified: 30 Sep 2000
+  Mailing List: perl6-language-regex@perl.org
+  Number: 331
+  Version: 2
+  Status: Frozen
+
+=head1 ABSTRACT
+
+Currently, C<\1> and $1 have only slightly different meanings within a
+regex.  It is possible to consolidate them without losing any
+functionality and, in the process, we gain intuitiveness.
+
+=head1 CHANGES
+
+v1->v2:  
+A major rewrite:
+
+=over 4
+
+=item *
+Reformatted the argument into "The Problem" and "The Solution" sections
+
+=item *
+Added "Some Examples" section
+
+=item *
+Added "Why do this?" section
+
+=item *
+Added "P526 migration" section
+
+=item *
+Proposed the @/ variable
+
+=item *
+Various trivial edits and typo-fixs
+
+=back
+
+
+=head1 DESCRIPTION
+
+Note:  For convenience, I am going to talk about C<\1> and $1 in this RFC.
+In actuality, these notations extend indefinitely:  C<\1..\n> and
+C<$1..$n>.  Take it as read that anything which applies to $1 also applies
+to C<$2, $3>, etc.
+
+
+=head2 The Problem
+
+In current versions of Perl, C<\1> and C<$1> mean different things.
+Specifically, C<\1> means "whatever was matched by the first set of
+grouping parens I<in this regex match>."  $1 means "whatever was matched
+by the first set of grouping parens I<in the previously-run regex match>."
+For example:
+
+=over 4
+
+=item *
+C</(foo)_$1_bar/>
+
+=item *
+C</(foo)_\1_bar/>
+
+=back
+
+the second will match 'foo_foo_bar', while the first will match
+'foo_[SOMETHING]_bar' where [SOMETHING] is whatever was captured in the
+B<previous> match...which could be a long, long way away, possibly even in
+some module that you didn't even realize you were including (because it
+was included by a module that was included by a module that was included
+by a...).
+
+The primary reason for this distinction is s///, in which the left hand
+side is a pattern while the right hand side is a string (assuming no 'e'
+modifier).  Therefore:
+
+=over 4
+
+=item *
+C<s/(foo)$1/$1bar/ # changes "foo???" to "foobar" where ??? is from the
+last match>
+
+=item *
+C<s/(foo)\1/$1bar/ # changes "foofoo" to "foobar">
+
+=back
+
+Note that, in the first example, the two $1s refer to different things,
+whereas in the second example, $1 and C<\1> refer to the same thing.  This
+is counterintuitive and non-Perlish; Perl should be intuitive and DWIMish.
+
+A separate, though less important, problem with the way backreferences are
+currently implemented is that it is difficult for a human to tell at a
+glance whether \10 means "escape character 10" or "backreference 10"...the
+only way to tell is to count the number of captured elements and see if
+there actually are ten of them, in which case \10 is a backreference and
+otherwise it is an escape character.  In general, this isn't a problem
+because most patterns don't have ten sets of capturing parens.
+
+
+=head2 The Solution
+
+Ok, so the problem is that $1 and C<\1> are counterintuitive.  How do we
+make them intuitive without losing any functionality?
+
+First, let's get rid of the C<\1> form for backreferences.
+
+Second, let's say that $n refers to the nth captured subelement of the
+pattern match which occured in this B<statement>--note that this is
+distinct from "in this pattern match."  That means that, in
+C<s/(foo)$1/$1bar/>, both $1s refer to the same thing (the string 'foo'),
+even though one of them occured inside a pattern and one occured inside a
+string.  (See note [1] in the IMPLEMENTATION section.)
+
+Third, let's create a new special variable, @/ (mnemonic: the / is the
+default delimiter for a pattern match; if the English module remains
+extant, then @/ could have the long name of @LAST_MATCH, but there are
+currently several threads concerning removal of the English module). Much
+like the current C<$1, $2...> variables, this array will only be created
+(and hence, the speed price will only be paid), if you access its members.
+The 0th element of @/ will contain the qr()d form of the last pattern
+match, while successive elements refer to the captured subelements.
+
+Fourth, let's change when we update the variables which store the captures
+(the current C<$1, $2>, etc).  @/ will only be updated when the entire
+statement which contains a pattern match has finished running (e.g., when
+the entire s/// is completed), rather than as soon as the pattern match is
+done (and therefore before the substitution happens).  
+
+
+=head2 Some Examples
+
+=over 4
+
+=item 1
+If you did the following:
+
+C<"Bilbo Baggins" =~ /((\w+)\s+(\w+))/>
+
+Then @/ would contain the following:
+
+C<$/[0]> the compiled equivalent of C</((\w+)\s+(\w+))/>, 
+
+C<$/[1]> the string "Bilbo Baggins"
+
+C<$/[2]> the string "Bilbo"
+
+C<$/[3]> the string "Baggins"
+
+Note that after the match, C<$/[1]>, C<$/[2]>, and C<$/[3]> contain
+exactly what C<$1, $2>, and C<$3> would contain with present-day syntax.
+Furthermore, the compiled form of the match is available so if you want to
+repeat the match later (or insert it into a larger regex), you can simply
+refer to it as $/[0].
+
+
+=item 2
+With references to the previous regex being handled by the @/ variable, we
+are free to use $1 for the current statement only.  Therefore:
+
+C<s/(\w+)\s+$1/$1/ # eliminate doubled words>
+C<print "Found doubled word: $/[1]\n";> 
+
+Note that in the substitution, both of the $1's refer to the same thing,
+eliminating confusion.  
+
+=item 3
+
+C<$pal = m/((\w+)(?{ reverse $2 }))/g # locate first palindrome>
+
+C<[@/ is effectively updated here]>
+
+C<print pos();>
+
+=item 4
+
+C<@pals = m/((\w+)(?{ reverse $2 }))/g # locate all palindromes>
+
+In this case, @/ would ideally only be updated for the last-matched
+palindrome.  I am not familiar with how the internals of /g work
+however--if it is implemented effectively as a loop, we might have to
+update @/ every time a match was found, which would be a tremendous speed
+penalty.  In this case, there should be a way to turn off storage to @/
+within the local block...perhaps a special value that it can be set to
+which serves as a "don't do this" flag.
+
+
+=head2 Why do this?
+
+This prime intent of this RFC is not to add, subtract, or change
+functionality.  Instead, the primary intent is to change the names of
+things which already exist inside Perl regexs.  Surely renaming things
+just for the sake of renaming them is a Bad Thing?
+
+Except that that isn't what's happening.  This RFC does B<not> propose
+renaming things for the sake of renaming them.  It proposes regularizing a
+confusing set of syntax, increasing the intuitiveness of how
+backreferences in general and s/// in particular work, and adding a
+convenient bit of functionality in the $/[0] element.  As things stand,
+both \1 and $1 in s/(foo)\1_bar/$1_bar/ refer to the same thing, but they
+look different.  Under this RFC, they would refer to the same thing, and
+they would look the same.
+
+
+=head1 IMPLEMENTATION
+
+[1] At the moment, perl does two passes when building a pattern match; the
+first pass interpolates in any variables that occur in the pattern, while
+the second compiles the pattern.  If this RFC is adopted, then perl must
+be smart enough not to interpolate any scalar variables whose names
+consist purely of digits.  This should not be difficult, nor should it
+break much existing user code, since the digit-only scalars are used by
+perl to store the results of pattern captures.
+
+=head2 P526 migration
+
+In general, whereever the P526 translator saw a $1 in a pattern or string,
+it would substitute it with $/[1]. The only exception to this would be
+when $1 was encountered on the RHS of an s///, in which case it would be
+left unchanged.
+
+
+=head1 REFERENCES
+
+RFC 112: "Assignment within a regex"
+
+RFC 276: "Localizing paren counts in qr()s"  (tangential interest only)
+
+perlre manpage
+
+
+
+
+
+

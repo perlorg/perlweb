@@ -1,0 +1,67 @@
+=head1 TITLE
+
+PRAYER - what gets said when you C<bless> something
+
+=head1 VERSION
+
+  Maintainer: Simon Cozens <simon@brecon.co.uk>
+  Date: 25 Sep 2000
+  Last Modified: 25 Sep 2000
+  Mailing List: perl6-language-objects@perl.org
+  Number: 307
+  Version: 2
+  Status: Withdrawn
+
+=head1 NOTES ON WITHDRAWL
+
+Damian Conway noted:
+
+	RFC 189 covers this.
+
+=head1 ABSTRACT
+
+This RFC proposes a special sub, C<PRAYER>, which is automatically called 
+on C<bless>ing.
+
+=head1 DESCRIPTION
+
+The abstract more or less says it all, but this is more than just a
+joke. Suppose, for instance, your class needs to do some initialisation
+whenever a new object is created; C<PRAYER> would be where the class
+initialisation takes place.
+
+There's also the more interesting and (IMHO) important issue of
+reblessing; that is, changing the class of an object. There are times
+when you want to do this, but it's hairy because you have to know the
+workings of both classes. However, if you have C<PRAYER> called
+automatically on C<bless>ing, you can automagically "cast" objects
+between classes. For instance, an object in class X would get changed to
+an object in class Y with
+
+    bless $obj, "Y";
+
+Perl would then perform the reblessing and call: 
+
+    package Y;
+    sub PRAYER ($object, $oldclass) {
+        if ($oldclass eq "X") {
+            ...
+        } else {
+            die "Can't cast an $oldclass to a Y";
+        }
+    }
+
+You may also use this method as a form of "pre-constructor", or even, on
+simple enough classes, a constructor proper.
+
+Maybe subs to cast between classes should somehow be shared between the
+two classes; the special sub C<INTERCESSION> would be the obvious place
+for that.
+
+=head1 IMPLEMENTATION
+
+Adding a method call to the end of C<bless> should not be tricky.
+
+=head1 REFERENCES
+
+None.

@@ -1,0 +1,226 @@
+=head1 TITLE
+
+Subroutine prototypes and parameters
+
+=head1 VERSION
+
+  Maintainer: Andy Wardley <abw@kfs.org>
+  Date: 7 Aug 2000
+  Mailing List: perl6-language-subs@perl.org
+  Number: 57
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+Perl 6 should provide support for named subroutine prototypes.  This
+should permit the use of positional and named parameters, default
+values and optionally, type checking.
+
+=head1 DESCRIPTION
+
+When defining a sub-routine in Perl 6 it should be possible to provide
+a prototype which names the variables passed and specifies their basic
+types.
+
+    sub foo ($x, $y) {
+        ...
+    }
+
+This would be equivalent to the Perl 5 construct:
+
+    sub foo ($$) {
+	my ($x, $y) = @_;
+    }
+
+Here are two more examples specifying a scalar followed by an
+array/hash array to gobble up all remaining arguments.
+
+    sub bar ($first, @rest) {
+	...			    # my ($first, @rest) = @_;
+    }
+
+    sub baz ($first, %rest) {
+	...			    # my ($first, %rest) = @_;
+    }
+
+The subroutine could be called with positional parameters, as in Perl 5:
+
+    foo(10, 20);
+    bar(30, 40, 50, ...);		# @rest = (40, 50, ...)
+    baz(60, one => 1, two => 2, ...);	# %rest = (one => 1, two => 2, ... )
+
+or instead with named parameters.  But how exactly?  One candidate for
+the calling convention would be:
+
+    # common Perl 5 form, '=>' implies LHS is quoted
+    foo(x => 10, y => 20);
+
+However, we should consider the fact that '=>' is (currently) synonymous
+for ',' and the above example would be analogous to a regular argument list 
+in Perl 5:
+
+    foo('x', 10, 'y', 20);
+
+This is then indistinct from calling with positional parameters (also
+see the earlier hash example) and any "hidden magic" we add to handle
+this case might serve only to confuse. A better alternative might be
+to make the parameters look properly like variable assignment, as they
+indeed are.
+
+    foo($x = 10, $y = 20);
+
+However, this would also be a major incompatability with Perl 5 which
+would interpret the above as something similar to:
+
+    $x = 10;
+    $y = 20;
+    foo($x, $y);
+
+This has a dangerous and unpredictable side-effect which we would rather 
+avoid.  So the third and preferred candidate is: 
+
+    foo(x = 10, y = 20);
+
+In Perl 5 this is a syntax error raising a 'Bareword "x" not
+allowed...'  error message.  This is a Good Thing because it implies
+there aren't (m)any existing scripts that are currently using this
+construct.  
+
+It should be possible to use a combination of positional and named
+parameters.  e.g.
+
+    sub connect ($dsn, $user, $pass) {
+	...
+    }
+
+    connect('dbi:MySQL...', 'abw', 'magik');
+    connect('dbi:MySQL...', user = 'abw', pass = 'magik');
+    connect(dsn = 'dbi:MySQL...', user = 'abw', pass = 'magik');
+
+Ordering should be insignificant.
+
+    connect(pass = 'magik', user = 'abw', dsn = 'dbi:MySQL...');
+
+Positional parameters would be mapped onto the first prototype parameter
+that isn't explicitly named elsewhere in the subroutine arguments.
+
+    connect(user = 'abw', 'dbi:MySQL...', 'magik');
+
+In this example, the first positional parameter ('dbi:MySQL...') is
+mapped to $dsn, the second ('magik') is mapped to $pass, and $user is
+named explicitly.  We would, of course, recommend that users keep
+positional parameters at the start and named parameters at the end of
+the argument list to reduce confusion.
+
+Array and hash values could also be passed by name, although this may
+be more difficult to parse (for perl and perl hackers alike).
+
+    sub bar ($x, @y) { ... }
+    sub baz ($x, %y) { ... }
+
+    bar(x = 10, y = (10, 20, 30));
+    baz(x = 10, y = (one => 1, two => 2));
+
+RFC 9 proposes "Highlander Variables" in which C<$y> is implicitly a reference
+to C<%y> or <@y>.  This would allow lists and hashes to be passed by reference
+as named parameters to the same effect.  This is preferable to the above, (in 
+the author's opinion) because the different types are more clearly 
+disambiguated.  
+
+    bar(x = 10, y = [ 10, 20, 30 ]);
+    baz(x = 10, y = { one => 1, two => 2 });
+
+Default values could also be provided in subroutine prototypes.
+
+    sub wiz ($first, $second, $third = 5, $fourth = 7) {
+	...
+    }
+
+This would remove the need for the existing ';' prototype character
+which delimits mandatory from optional arguments.  We might also 
+consider that this would remove the restriction that mandatory arguments
+must always be specified before optional ones.  Again, this might
+be something that's possible but not necessarily recommended.
+
+    sub daz ($foo = 99, $bar, $baz = 98) {
+	...
+    }
+
+Ideally, we would allow more complex Perl expressions to be used as
+defaults.  All prototype parameters should be visible to these
+expressions and they should be evaluated in order. 
+
+    sub waz ($one, $two, 
+             $three = add($one, $two), 
+             $four  = add($three, 1)) {
+	...
+    }
+
+We might like to consider a pragma (C<strict prototypes> for example) 
+which would perform sanity checks on all arguments passed, ensuring that
+all mandatory parameters (i.e. that have no defaults) have defined values
+and match their expected type.
+
+    sub woz ($mand, $opt = 123) {
+	...
+    }
+
+    woz(10);		# OK
+    woz(10, 20);	# OK
+    woz();		# NOT OK: 'no value specified for $mand'
+    woz(opt = 20);	# NOT OK: 'no value specified for $mand'
+
+Other prototype characters inherited from Perl 5:
+
+    mysub(&x);		# expect sub-routine ref, aliased to $x
+    mysub(*h);		# filehandle (see RFC 10)
+
+These would be automatically checked to ensure references of the
+correct type have been passed, as per Perl 5.
+
+We could extend this mechanism to give type checking against user-defined
+types for those that want it.
+
+    sub blah (User $user, Project $project) {
+	...
+    }
+
+    $u = User->new(...);
+    $p = Project->new(...);
+    
+    blah($u, $p);			# OK
+    blah($p, $u);			# NOT OK
+    blah(user = $u, project = $p);	# OK
+    blah(user = $p, project = $u);	# NOT OK
+    blah(project = $p, user = $u);	# OK
+    blah(project = $u, user = $p);	# NOT OK
+
+Finally, we could define Perl inbuilt functions to also accepting named 
+parameters.
+
+    split(/:/, limit=2);		# instead of split(/:/, $_, 2);
+    splice(@data, length=7);		# 'offset' defaults to 0
+
+None of the features proposed here would be mandatory.  Extended prototypes
+and associated features would be available for those that wanted to use them.
+Those that didn't would be free to continue happily without them (see
+RFC 10).
+
+=head1 IMPLEMENTATION
+
+We would need to special-case the interpretation of subroutine
+parameters to treat a bareword followed by '=' as a named parameter.
+Note that there may be a grammar conflict if lvalue subs are supported
+in Perl 6, allowing C<foo = 10> to be equivalent to C<foo(10)>.
+
+Nothing else concrete, yet.
+
+=head1 REFERENCES
+
+    RFC  9: Highlander variables
+    RFC 10: Filehandles should use C<*> as a type prefix if typeglobs 
+            are eliminated.
+    RFC 28: Perl should stay Perl. 
+
+

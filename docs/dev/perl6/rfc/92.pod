@@ -1,0 +1,164 @@
+=head1 TITLE
+
+Extensible Meta-Object Protocol
+
+=head1 VERSION
+
+  Maintainer: Tony Olekshy <olekshy@avrasoft.com>
+  Date: 11 Aug 2000
+  Last Modified: 1 Oct 2000
+  Mailing List: perl6-language-objects@perl.org
+  Number: 92
+  Version: 2
+  Status: Frozen
+
+=head1 ABSTRACT
+
+In the name of keeping Perl Perl and easy easy, Perl 6 should
+maintain the current syntax and semantics for blessed objects.
+
+Perl 6 should not I<require> the use of an alternative meta-object
+protocol, nor should it I<prevent> the development of other
+protocols (such as those which implement a stricter protocol).
+
+However, Perl 6 should provide hooks into object protocol mechanisms
+that would enhance the development of modules that implement other
+meta-object protocols.
+
+This RFC considers the matter of an extensible method search
+protocol, which allows things like limited visibility ivars and
+methods, and breadth-first multiple inheritance, to be efficiently
+implemented as modules rather than as core Perl behaviour that would
+be forced on all.
+
+=head1 DESCRIPTION
+
+Perl's current object-oriented stuff works well for certain classes
+of problems.  It doesn't interfere with Perl programs that don't
+want to be object-oriented at all.  It provides a foundation upon
+which more complex object protocols can be implemented.
+
+However, since all method names are visible in all contexts (they
+are effectively "public"), it is difficult to write frameworks
+containing abstract base classes that are designed to be heavily
+inherited from, because internal ("private") methods can't be added
+to the base classes without impacting all users of the framework.
+Similar problems arise with instance variables.
+
+At Avra we address these problems by using a module that allows us
+to write publically visible framework base classes like this:
+
+    package MyClass; use Prothos::Class ISA => ParentClass;
+
+    ivar Foo => Public,    Write   => Private;
+    ivar Bar => Private,   Default => "Hello, World";
+    ivar Baz => Protected, Default => {};
+
+    method HelloWorld => Public, sub
+    {
+	my ($I, %A) = @_;
+
+	$I->Baz(Name => $A{Name});
+
+	print $I->Baz("Name"), " says \"", $I->Bar, ",\" to $A{To}.\n";
+	};
+
+    method Cogitate => Private, sub
+    {
+	...
+	};
+
+    method OverrideMe => Protected, Bind => Virtual, sub
+    {
+	...
+	};
+
+These classes play well with canonical Perl classes.  Only the
+behaviour of the package is affected, Perl is not globally affected.
+
+Our module constructs objects as blessed references to an integer
+which is an index into a hidden generator-scoped array of all
+extant objects in the class, which means there is no way to get to
+an actual object's data unless one of the (generated) methods that
+can see the hidden array is used.
+
+The ivar declarations are converted into generated method subs that
+access the hidden ivar data.  Ivars are internally qualified by
+package name, so shadowed ivars are correctly handled.
+
+Methods' subs are I<saved> in a hidden internal hash, and generated
+subs are installed in the package namespace to fetch and invoke the
+correct method closure from the hidden internal hash, using rules
+that depend on the declared visiblity of the method.
+
+This works because all the generated subs of the same name are 
+I<the same>, independent of package, so no matter which one is
+found by Perl, the caller() context and visibility rules are used
+to determine the actual closure to invoke.  The generated methods
+basically look like this (where $_class and $method are the names
+of the class and method):
+
+    $_stash->{$method} = \&{"${_class}::$method"} = sub
+    {
+	$_ = $_cache->{$method}->{scalar caller} and goto $_;
+
+	goto \&{ &{$_stash->{_First_}}($method, @_) };
+	};
+
+The run-time cost of setting all this up and doing the cache
+initializations and lookups is acceptable to us.  However, our
+I<method invocations now take up to twice as long>, even with
+caching, because there are two "function calls", one for the
+C<sub> and one for the C<goto>.
+
+This problem can be solved by allowing Perl's method search
+mechanism to be overridden by an installed subroutine, on a
+per-package basis.
+
+=head1 IMPLEMENTATION
+
+When Perl performs a method lookup it starts in the package of
+the given object and searches up the tree of @ISA packages.
+
+Perl should be modified so that if C<$ISA::Search> (or equivalent)
+is defined for a package, then when a method is being looked up for
+an object in that package, the code ref given by that value is
+invoked instead of performing the default search.
+
+The code ref should be passed the class name, method name, and the
+value of C<scalar caller> (since method visibility algorithms
+typically depend on the name of the invoking context).  The code ref
+should be written to return the package-qualified sub name to be
+invoked.
+
+This return value should be memoized by Perl, that is, given the
+same class name, method name, and C<scalar caller>, the search code
+ref should not be invoked at all.  Asymptotically, this gets us back
+down to one "function call" per method invocation.
+
+In general, it should be possible to override the ISA search
+mechanism, the -> method invoker, and the C<bless> operator,
+on a per-class basis.
+
+=head1 TERMINOLOGY
+
+A "meta-object protocol" is the set of rules that determines the
+behaviour of objects.  For more information see section 1.6 in the
+OO FAQ at http://www.cyberdyne-object-sys.com/oofaq2 , from which:
+"In CLOS terminology, an introspective protocol provides a read
+only capability (e.g. what is this object's class, give info on
+this class, etc.) and an intercessory protocol provides a write
+capability which allows system modification (e.g. add the
+following method or instance to this class, perform inheritance
+this way, etc.).  Because inheritance can be used to perform
+differential changes, intercessory protocols allow users to not
+only define new frameworks but to specialize existing system
+frameworks differentially without affecting them and their
+extant objects. Thus, many frameworks can interoperate together
+simultaneously."
+
+=head1 REFERENCES
+
+RFC 28: Perl should stay Perl. 
+
+OO FAQ: http://www.cyberdyne-object-sys.com/oofaq2

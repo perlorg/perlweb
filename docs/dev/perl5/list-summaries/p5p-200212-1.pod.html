@@ -1,0 +1,115 @@
+<HTML>
+<HEAD>
+<TITLE>This Week on perl5-porters</TITLE>
+<LINK REV="made" HREF="mailto:bhcompile@daffy.perf.redhat.com">
+</HEAD>
+
+<BODY>
+
+<A NAME="__index__"></A>
+<!-- INDEX BEGIN -->
+
+<UL>
+
+	<LI><A HREF="#this week on perl5porters (28 december 2002)">This Week on perl5-porters (2-8 December 2002)</A></LI>
+	<UL>
+
+		<LI><A HREF="#alisiasing magic variables (in english.pm)">Alisiasing magic variables (in English.pm)</A></LI>
+		<LI><A HREF="#mathematics">Mathematics</A></LI>
+		<LI><A HREF="#getservbyport">getservbyport</A></LI>
+		<LI><A HREF="#$env{term} and taint checks">$ENV{TERM} and taint checks</A></LI>
+		<LI><A HREF="#more utf8 locale bugs">More UTF8 locale bugs</A></LI>
+		<LI><A HREF="#extutils::parsexs">ExtUtils::ParseXS</A></LI>
+		<LI><A HREF="#in brief">In brief</A></LI>
+		<LI><A HREF="#about this summary">About this summary</A></LI>
+	</UL>
+
+</UL>
+<!-- INDEX END -->
+
+<HR>
+<P>
+<H1><A NAME="this week on perl5porters (28 december 2002)">This Week on perl5-porters (2-8 December 2002)</A></H1>
+<P>This week, besides some bug reports involving UTF8 locales, the porters
+discussed a wide range of subjects, from Mathematics to English, not
+forgetting about some old Unix thingies, such as system calls and
+termcaps.</P>
+<P>
+<H2><A NAME="alisiasing magic variables (in english.pm)">Alisiasing magic variables (in English.pm)</A></H2>
+<P>Kevin Moore reported bug #18874 : sometimes, with perl 5.8.0, the $&amp;
+variable is not correctly aliased to $MATCH. Andreas Koenig's little
+gnomes quickly identified the patch that introduced this regression, and
+it was reverted, with a proper regression test added. The root cause of
+the bug is apparently that aliasing variables (via <CODE>*MATCH = \$&amp;</CODE>)
+doesn't work as well with magic than aliasing globs (<CODE>*MATCH = *&amp;</CODE>).
+In other words, it's a can of worms.</P>
+<P>
+<H2><A NAME="mathematics">Mathematics</A></H2>
+<P>Tels was busy this week on the Math::Big* modules. He fixed several
+bugs, and apparently his fixes led to performance improvements.
+I won't summarize Tels' eloquent missive, so here it is :</P>
+<PRE>
+    <A HREF="http://archive.develooper.com/perl5-porters@perl.org/msg89601.html">http://archive.develooper.com/perl5-porters@perl.org/msg89601.html</A></PRE>
+<P>He also worked on the square root and nth root functions. Nobody
+commented on his work, but I think that's because (1) these modules are
+scary, (2) mathematics are scary, (3) quoting Tels, <EM>the deeper you dig,
+the more sh*t you find.</EM></P>
+<PRE>
+    <A HREF="http://archive.develooper.com/perl5-porters@perl.org/msg89639.html">http://archive.develooper.com/perl5-porters@perl.org/msg89639.html</A></PRE>
+<P>
+<H2><A NAME="getservbyport">getservbyport</A></H2>
+<P>Alan Burlison found that getservbyport(), unlike getservbyname(), doesn't
+accept an empty string as its second argument (the protocol). This is not
+consistent (and not consistent with the <CODE>getservent(3)</CODE> manpage.) Slaven
+Rezic provided a fix.</P>
+<PRE>
+    <A HREF="http://archive.develooper.com/perl5-porters@perl.org/msg89644.html">http://archive.develooper.com/perl5-porters@perl.org/msg89644.html</A></PRE>
+<P>
+<H2><A NAME="$env{term} and taint checks">$ENV{TERM} and taint checks</A></H2>
+<P>After some discussion on the causes of bug #18717, Rafael Garcia-Suarez
+put in minor change in the set of characters that are considered to be
+safe in $ENV{TERM} regarding the tainting mechanism. Now, if you run perl
+with -T, and if your terminal name contains a character which is
+non-alphanumeric and not in <CODE>[-_.+]</CODE>, perl will consider $ENV{TERM}
+tainted.</P>
+<PRE>
+    <A HREF="http://archive.develooper.com/perl5-porters@perl.org/msg89431.html">http://archive.develooper.com/perl5-porters@perl.org/msg89431.html</A></PRE>
+<P>
+<H2><A NAME="more utf8 locale bugs">More UTF8 locale bugs</A></H2>
+<P>UTF8-locale-related bugs continue to flood the porters. Wilbur Goltermann
+reported bug #18857, about a <CODE>s///</CODE> substitution that fails with a
+coredump, under a UTF8 locale. Vilem Marsik reported a bug in the perl
+debugger (#18915) that appears to be related to a capturing regexp that
+doesn't like UTF8. Bug #18931, reported by Bhavesh Davda, is about a
+<CODE>\U...\E</CODE> expression not behaving correctly, also under an UFT8 locale.
+It seems to be related as well to regular expressions. Last but not least,
+warnings reported by perl are not UTF8-aware (bug-#5956-revival).</P>
+<P>
+<H2><A NAME="extutils::parsexs">ExtUtils::ParseXS</A></H2>
+<P>Ken Williams is working on converting xsubpp (the part of MakeMaker that
+preprocesses XS files to C code) into a module, for which he proposed the
+name ExtUtils::ParseXS. He explains : <EM>The reason I'm doing this is so
+that the functionality can be used in other contexts, other platforms, and
+other build environments like Module::Build.</EM> Brian Ingerson found the
+idea interesting for Inline::C.</P>
+<PRE>
+    <A HREF="http://archive.develooper.com/perl5-porters@perl.org/msg89698.html">http://archive.develooper.com/perl5-porters@perl.org/msg89698.html</A></PRE>
+<P>
+<H2><A NAME="in brief">In brief</A></H2>
+<P>Hugo van der Sanden integrated into the core the new version of perldoc
+(and the relevant Pod::Perldoc::* modules), by Sean M. Burke. (This new
+perldoc is also available from the CPAN.)</P>
+<P>Nicholas Clark fixed the bug (#18651) reported last week, pertaining to
+restricted hashes.</P>
+<P>Rafael fixed three obscure memory corruption bugs in the lexer, and
+apparently found some other ones.</P>
+<P>
+<H2><A NAME="about this summary">About this summary</A></H2>
+<P>This summary brought to you by Rafael Garcia-Suarez, both on
+<EM><A HREF="http://use.perl.org/">http://use.perl.org/</A></EM> and via a mailing list, which subscription address
+is <EM><A HREF="mailto:perl5-summary-subscribe@perl.org">perl5-summary-subscribe@perl.org</A></EM>. Comments and corrections are, as
+always, welcome.</P>
+
+</BODY>
+
+</HTML>

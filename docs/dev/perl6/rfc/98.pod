@@ -1,0 +1,147 @@
+=head1 TITLE
+
+context-based method overloading
+
+=head1 VERSION
+
+  Maintainer: David Nicol <perl6rfc@davidnicol.com>
+  Date: 15 Aug 2000
+  Last Modified: 29 Sep 2000
+  Mailing List: perl6-language-subs@perl.org
+  Number: 98
+  Version: 3
+  Status: Frozen
+
+=head1 freeze notes
+
+the suggested coercion system is admitedly ad hoc.
+
+=head1 ABSTRACT
+
+Another to overload a named function is
+by return type.  This document is a companion piece to
+a similarly named one about protoypes. 
+
+
+=head1 DESCRIPTION
+
+Defining multiple subroutines with both the same name and the same calling
+interface that explicitly return items of differing types is now
+allowed.
+
+=head2 methods are subroutines
+
+I use the words "method" and "subroutine" interchangably in this document.
+I do this because I find "subroutine" to invoke an aura of drawing flow charts and explicit program counter incrementation.  "subroutine" means, "a routine
+which is part of a larger routine" and focuses on the implementation. "Method"
+on the other hand means "a way of doing" and is a word more at home with
+the OO abstractions which this RFC promotes.
+
+=head2 what constitutes a context?
+
+We are familiar with "scalar context" and "array context" from perl5 and
+previous.  Perl6 gives us user-defined contexts as well as user defined
+types or all sorts.  Any unique string or "compiled interface object,"
+should such exist,  can be a context, for the purposes
+of context-based method overloading.
+
+
+=head2 interaction with prototype-based and traditional overloading
+
+
+A traditional perlsub may be considered the simultaneous
+definition of two routines
+C<$ sub(PROTO){body}> and
+C<@ sub(PROTO){body}>.
+
+It is now possible to differentiate between these two explicitly, as
+well as accessing the (now extended?) C<want> methods within a generic method.
+
+=head2 guaranteed sane values
+
+The return context is considered before considering the types of the
+arguments, and in the case of no exact match, the fallback is to a
+default method defined to work in the given context rather than to
+the default method for the name, should one exist.
+
+This provides a guarantee to a typed variable that it will not be
+loaded with a value that does not make sense to it.  Untyped variables
+are not affected.
+
+=head2 implicit contexts
+
+Assignment where the Lvalue is typed implies a context, which
+may change dynamicly as typed objects move around as scalars.
+
+=head2 acceptable coercions
+
+When resolving which method C<foo()> to call in a context CTXT, and there
+is no method  C<foo()> defined for the context CTXT, Perl will examine
+the types listed in C<@CTXT::ISA{OVERLOAD_CONTEXTS}> for a list
+of other contexts
+to see if C<foo()> can produce, before throwing an error.  This search
+is NOT recursive, unless defined so by the tying of the array to a
+dynamic iterator.
+
+=head2 ambiguity resolution
+
+In situations where multiple interpretations are possible, such
+as the f(g()) situation, the first possible method that will work
+is called.
+
+The search order is based on the preferences of the outer function,
+then the preferences of the inner function.
+
+Functions maintain their preference order in an array
+
+	@PACKNAME::methodname{OVERLOAD_PREFERENCES}
+
+and the first context specifier found in that array, which can be
+satisifed with a call to the named method, is used.
+
+If no such array exists,
+
+	@PACKNAME::OVERLOAD_PREFERENCES 
+
+is consulted.
+
+Perl6 maintains a global @CORE::OVERLOAD_PREFERENCES which begins
+with C<qw(ARRAY SCALAR)> and has all types declared in the program
+appended to it as they appear, which is used when neither a method 
+nor its class does not
+provide its own OVERLOAD_PREFERENCES array.
+
+=head2 specification incomplete
+
+Further points to discuss and agree on include the relation of this
+mechanism to inheritance, and multiple inheritance, and the meta-alteration
+of all aspects of the mechanism.
+
+
+
+
+
+=head1 IMPLEMENTATION
+
+At compile time, the keys in the big hash (be it global or per-package
+or per-class) that holds the mapping from the names of the classes
+to their coderefs are further extended to include, 
+as well as the prototype,
+the declared type of the return values, when specified,
+as part of the
+name of each method. 
+
+Method names store their own rules, if any, for resolving which
+method of the set with that name are to be called in a dispatch
+situation, in a specially prototyped method. 
+
+=head1 REFERENCES
+
+RFC 21: Subroutines: Replace C<wantarray> with a generic C<want> function
+
+RFC 57: Subroutine prototypes and parameters
+
+RFC 61: Interfaces for linking C objects into perlsubs
+
+RFC 75: structures and interface definitions
+

@@ -1,0 +1,286 @@
+=head1 TITLE
+
+Garbage Collection and Dead Object Detection
+
+=head1 VERSION
+
+=head2 CURRENT
+
+    Maintainer: Dan Sugalski
+    Class: Internals
+    PDD Number: 9
+    Version: 1.1
+    Status: Developing
+    Last Modified: 26 February, 2002
+    PDD Format: 1
+    Language: English
+
+=head2 HISTORY
+
+=over 4
+
+=item Version 1.1
+
+26 February 2002
+
+=item version 1
+
+None. First version
+
+=back
+
+=head1 CHANGES
+
+=over 4
+
+=item Version 1.1
+
+Started documenting the internal routines
+
+=item Version 1.0
+
+None. First version
+
+=back
+
+=head1 ABSTRACT
+
+This PDD describes how the GC and DOD systems work, and what's
+required of PMC classes.
+
+=head1 DESCRIPTION
+
+Doing GC takes a bit of work--we need to make sure that everything is
+findable from the root set, and that we don't go messing up data
+shared between interpreters. 
+
+=head2 DOD Steps
+
+=over 4
+
+=item All PMCs have their live bit unset
+
+=item All Buffers have their live bit unset
+
+=item All PMCs in the root set are put on the trace list
+
+=item Walk the trace list
+
+=item The Buffer root set (stack and S registers) is walked, and any referred to buffers are marked as live
+
+=back
+
+For each PMC on the trace list we:
+
+=over 4
+
+=item Check its live bit. If set, we skip it
+
+=item Set its live bit
+
+=item Check its flags. If it has a custom DOD routine, we call it
+
+=item If there's no custom DOD routine, we check the flags for one of the following:
+
+=over 4
+
+=item Points to a PMC. We put that PMC on the trace list
+
+=item Points to a Buffer. We mark the buffer as live
+
+=item Points to a Buffer of PMCs. We put all the PMCs on the trace list
+
+=item Points to a Buffer of Buffers. We mark those buffers as live
+
+=item Anything else we ignore
+
+=back
+
+=item We take the PMC off the trace list
+
+=back
+
+Once we're done, we scan the PMC list twice. In the first scan, dead
+PMCs (i.e no live bit and no free bit) with a destructor have that
+destructor called. In the second scan, dead PMCs are put on the free
+list for later reallocation.
+
+Then we scan the Buffer list. Any dead buffers (no live bit and no
+free bit) are put on the free buffer list.
+
+
+=head2 GC Steps
+
+These are the steps that the GC takes:
+
+=over 4
+
+=item Mark all PMCs with the needs_GC flag
+
+=item Mark all Buffers with the needs_GC flag
+
+=item Sweep through all the PMCs with the custom_GC flag set
+
+=item Sweep through all buffers
+
+=item Any Buffer with needs_GC and live flags set, but without immobile set, gets copied
+
+=item Any buffer with needs_GC set and sysmem set, but *not* with live set, gets the system free called on its contents
+
+=item needs_GC flag is unset after copying
+
+=back
+
+PMCs should only have a custom GC routine if there's really a need for
+the PMC to keep track of the location of the ultimate buffered data. 
+
+For PMCs that need to hand data back to a library when their objects
+are destroyed, a custom DOD routine is in order, *not* a custom GC routine.
+
+=head2 Important safety tips
+
+=over 4
+
+=item Never mark PMCs or Buffers owned by other interpreters as
+needing GC. Bad, very very bad.
+
+=back
+
+=head1 IMPLEMENTATION
+
+=head2 Blocking GC
+
+Being able to block GC and DOD is important--you'd hate to have the
+newly allocated Buffers or PMCs you've got yanked out from underneath
+you. That'd be no fun. Use the following routines to control GC:
+
+=over 4
+
+=item Parrot_block_DOD(struct Parrot_Interp *interpreter)
+
+Block DOD for the passed interpreter. (But B<not> GC)
+
+=item Parrot_block_GC(struct Parrot_Interp *interpreter)
+
+Block GC for the passed interpreter. (But B<not> DOD)
+
+=item Parrot_unblock_DOD(struct Parrot_Interp *interpreter)
+
+Unblock DOD for the passed interpreter. (But not GC)
+
+=item Parrot_unblock_GC(struct Parrot_Interp *interpreter)
+
+Unblock GC for the passed interpreter. (But not DOD)
+
+=back
+
+Note that the blocking is recursive--if you call Parrot_block_DOD()
+three times in succession, you need to call Parrot_unblock_DOD() three
+times to re-enable DOD.
+
+=head2 Important flags
+
+For PMCs and Buffers to be collected properly, you B<must> get the
+flags set on them properly. Otherwise Bad Things Will Happen.
+
+For PMCs:
+
+=over 4
+
+=item PMC_active_destroy_FLAG
+
+The PMC has some sort of active destructor, and will have that
+destructor called when the PMC is destroyed.
+
+=item PMC_is_buffer_ptr_FLAG
+
+Set if the data pointer points to a Buffer struct, or something like
+it. If you point to a buffer and don't set this flag, it'll end up
+getting collected.
+
+=item PMC_is_PMC_ptr_FLAG
+
+Set if the data pointer points to a PMC. Set this if it does, or
+you'll find your PMC collected.
+
+If both PMC_is_PMC_ptr_FLAG and PMC_is_buffer_ptr_FLAG are set, we
+assume the pointer is to a Buffer holding PMC pointers. (Like, say,
+the standard array, hash, and list PMC types do) We'll run through the
+Buffer and mark all the non-NULL pointers as live PMCs.
+
+=item PMC_private_GC_FLAG
+
+Set if you've got your own private GC, either for marking or
+collecting. The collector will call your vtable collection routine,
+and the DOD sweep will call your vtable mark routine.
+
+=item PMC_live_FLAG
+
+Set if the system considers the PMC alive.
+
+=item PMC_on_free_list_FLAG
+
+Set if the PMC is on the free list.
+
+=item PMC_constant_FLAG
+
+Set if this is a constant PMC. Constants never die.
+
+=back
+
+For Buffers (and STRINGs)
+
+=over 4
+
+=item BUFFER_constant_FLAG
+
+Set if the buffer is a constant. Constants never die.
+
+=item BUFFER_immobile_FLAG
+
+Set if the contents of the buffer can't move. Do not B<ever> set this
+on a buffer pointing to memory allocated with C<Parrot_allocate>. Your
+memory will be scrozzled all over.
+
+=item BUFFER_external_FLAG
+
+Set if the buffer points to memory that came from outside Parrot's
+memory system.
+
+=item BUFFER_sysmem_FLAG
+
+Set if the memory came from the system malloc. When the buffer is
+considered dead, the memory will be freed back to the system.
+
+=item BUFFER_COW_FLAG
+
+The buffer's memory is copy on write. Any changes to the buffer must
+first have the buffer's memory copied. The COW flag should then be
+removed.
+
+=item BUFFER_live_FLAG
+
+The system considers the buffer to be alive for collection purposes.
+
+=item BUFFER_on_free_list_FLAG
+
+The buffer is unused, and on the free list for later allocation. 
+
+=back
+
+=head2 Internal routines
+
+=over 4
+
+=item go_collect
+
+Scans the Buffer header pools and compacts the used memory. Doesn't
+check for string liveness or anything of the sort, just does a compaction.
+
+=back
+
+=head1 ATTACHMENTS
+
+=head1 FOOTNOTES
+
+=head1 REFERENCES

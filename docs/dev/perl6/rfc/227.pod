@@ -1,0 +1,107 @@
+=head1 TITLE
+
+Extend the window to turn on taint mode
+
+=head1 VERSION
+
+  Maintainer: Adam Turoff <ziggy@panix.com>
+  Date: 14 Sep 2000
+  Last Modified: 18 Sep 2000
+  Mailing List: perl6-internals@perl.org
+  Number: 227
+  Version: 2
+  Status: Frozen
+
+=head1 ABSTRACT
+
+Taint mode must be turned on when Perl is invoked.  This is frequently
+done using:
+
+	perl -T foo.pl
+
+or using a preamble like this:
+
+	#!/usr/bin/perl -T
+
+However, using the #! mechanism to turn on tainting causes
+problems with other perl idioms, such as:
+
+	perl -c foo.pl
+
+This dependency should be removed.
+
+=head1 DESCRIPTION
+
+According to the perlrun manpage description of the -T
+runtime flag:
+
+    [...] For security reasons, this option must be
+    seen by Perl quite early; usually this means it must
+    appear early on the command line or in the #! line
+    for systems which support that construct.
+
+Perl complains when the -T flag is used with the #! 
+mechanism, and perl is explicitly invoked on the 
+commandline without the -T flag:
+
+    $ cat foo.pl
+    #!/usr/bin/perl -T
+    print "Success!\n";
+
+    $ perl foo.pl 
+    Too late for "-T" option at foo.pl line 1.
+
+    $ perl -c foo.pl
+    Too late for "-T" option at foo.pl line 1.
+
+    $ perl -Tc foo.pl
+    foo.pl syntax OK
+
+    $ perl -T foo.pl
+    Success!
+
+This RFC proposes that when Perl is explicitly invoked
+on the commandline, and runs a script that contains the
+-T option on the #! line, Perl should just turn on 
+taint mode and not complain about it.
+
+=head1 NOTES ON FREEZE
+
+No objections were raised on fixing the issue of fixing the order
+in which parameters are scanned from the commandline invocation
+of perl and the runtime flags found on the #! line.
+
+Discussion quickly came up with a series of improvements to the 
+taint interface.  These issues could be generalized, and will wind
+up in a subsequent RFC.  None of these issues specifically impacts
+processing of the -T commandline option.
+
+=head1 MIGRATION ISSUES
+
+None.
+
+=head1 IMPLEMENTATION
+
+Dan Sugalski came up with some interesting ideas of setting explicit
+precedences for each commandline option.  In this manner, the options
+specified on the commandline and in the #! line can be unified and 
+processed in an intelligent, intuitive manner, regardless of how
+the internals are structured.
+
+A possible set of precedence rules might be:
+
+	-D 
+	-M -T -U (load-time flags)
+	-c
+	-n -p  (run-time flags)
+	-d
+
+=head1 REFERENCES
+
+perlsec manpage
+
+perlrun manpage
+
+Dan Sugalski's thoughts on commandline switch precedence:
+http://www.mail-archive.com/perl6-internals%40perl.org/msg01374.html
+

@@ -1,0 +1,168 @@
+=head1 This Week on perl5-porters (18-24 November 2002)
+
+Several longs threads will be summarized for your enjoyment and education
+in this week's P5P summary. Learn about how new features are added in
+perl! How to enhance a core module like Carp! How to change the
+implementation of a command-line switch! How to change the semantics of
+require()! How to introduce a new warning! And, last but not least, how to
+modify the perl parser itself! Ain't it exciting ?
+
+=head2 Carp patch, rejected
+
+Brent Dax proposed a patch to the Carp module, to allow
+
+    use Carp 'die';
+    use Carp 'warn';
+
+to install references to cluck() and confess() in the C<$SIG{__DIE__}> and
+C<$SIG{__WARN__}> handlers, respectively.
+
+Michael G Schwern commented that overriding warn() and die() in the
+package that uses Carp may be more useful, since signal handlers are
+global.
+
+Hugo van der Sanden made a similar remark : changing C<$SIG{__DIE|WARN__}>
+this way feels like pragmatic behaviour, expected to be reversible by a
+simple C<no Carp '...'>. Hence he rejected the proposed patch to avoid
+confusion.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg89074.html
+
+=head2 require $foo versus require Foo
+
+Matt Sergeant asked why the behavior of C<require> is different when it's
+followed by a string or by a bareword, as in :
+
+    require IO::Socket;
+    require 'IO/Socket.pm';
+
+Tim Bunce explained that the bareword argument is intended to provide a
+package name, while the string argument is intended to provide a file
+name. Jan Dubois helpfully added that this enables to distinguish
+between the two forms
+
+    require 'Foo'; # loads a file Foo
+    require Foo;   # loads a file Foo.pm
+
+Michael G Schwern then pointed out his UNIVERSAL::require module, that
+provides an equivalent syntax C<< Foo->require() >>.
+
+Jos Boumans then proposed to provide a new function, via a carefully named
+module, to load modules and files at runtime with an appropriate amount of
+DWIMmery.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg89111.html
+
+=head2 Atomic in-place edit
+
+Eduardo Pérez Ureta remarked that the C<-i> command-line switch, used in
+one-liners to edit files in place, first performs an unlink of the
+original file (after having opened it for reading), then reads it while it
+writes to a new file, just opened for writing under the same name.
+Potentially, this can cause some data to be lost, when some failure occurs.
+
+It was pointed out that doing the rename by hand, or using a backup file
+(as with C<-i.bak>) makes the operation more reliable ; however that
+doesn't necessarily mean that C<-i> by itself shouldn't be made more
+reliable if it's reasonably possible. Eduardo proposed that a temporary
+file should be used for output instead. This change also would make
+possible to use C<-i> without a backup extension on Windows systems, where
+it's not possible to unlink an opened file.
+
+During the discussion, I recalled a little-known feature of C<-i>,
+described in perlrun : its ability to create backup files in any
+directory, with the syntax C<-i/tmp/*.bak>.
+
+In any case, true atomicity for every possible failure mode can't be
+achieved. Mark Jason Dominus submitted a bug report for the universe.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg89057.html
+
+=head2 Called as a subroutine or as a method ?
+
+Yves Orton asked for I<a way to determine if a sub was called as a
+subroutine or as a method>.
+
+Apparently there is no way to get this information from perl : digging
+into the internals is necessary. Richard Clamp provided an update to his
+Devel::Caller module that adds a called_as_method() function, to answer
+this exact question.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg89183.html
+    http://search.cpan.org/author/RCLAMP/Devel-Caller-0.07/Caller.pm
+
+=head2 Parser patch for C<? :>
+
+Stephen McCamant provided a one-line patch to the perl parser that
+modifies the way the C<? :> ternary operator binds its second argument.
+
+In other words : currently the following are syntax errors :
+
+    $a = $b ? $c, $d : $e;
+    $a = $b ? $c and $d : $e;
+
+because the precedence of the comma-operator and of textual logical
+operators are very low. However it's possible to parse them unambiguously,
+and that's what Stephen's patch does, without introducing any backward
+incompatibility (if I'm not mistaken).
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg89206.html
+
+=head2 New warning proposal
+
+Rafael Garcia-Suarez proposed a new compile-time warning for Perl, to
+detect potential misleading uses of split(), namely when the first
+argument is written as a string (but interpreted, as always, as a
+pattern.) The canonical example is
+
+    my @array = split '|', $string;
+
+that doesn't probably do what was meant.
+
+It appears that running regression tests with this new warning reveals
+that eleven core modules use this syntax (sometimes unreasonably, as in
+C<split '\.', $string>). Brent Dax suggested that the warning should be
+triggered only on strings with metacharacters, the other cases not leading
+to confusion. Hugo liked this last idea, though being I<still dubious that
+the benefits outweigh the irritation.>
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg89209.html
+
+=head2 In brief
+
+Ronald Otto Valentin Fischer reported bug #18479, about C<use strict
+'subs'> not detecting barewords in an eval("")'d BEGIN block.
+
+H.Merijn Brand reported that the test F<t/io/openpid.t> began to hang on
+AIX 4.3.3. No workaround is known, so no smoke reports have been produced
+for this system.
+
+Bugs #18489, #18579 and #18571 are about small snippets of code that make
+perl dump core. (In fact, the first two are equivalent bugs.) They all
+involve modifying an array while a foreach loop iterates over it (or kind
+of). Dave Mitchell commented : I<in the longer term, Perl should be fixed
+so that it doesn't coredump in such situations (but this is hard to do
+efficiently)>.
+
+Bug #18573 demonstrates a strange memory allocation problem : C<eval
+q("\c")> produces an I<Out of memory> error.
+
+Joost van Baal and Slaven Rezic tried to work out a solution to a
+Sys::Syslog portability problem on Solaris (bug #18180).
+
+Dave Mitchell proposed a new version of his patch to allow eval("") to see
+the full enclosing lexical scope. This patch follows a discussion about
+lexicals in evals that occured two weeks ago.
+
+Rafael Garcia-Suarez fixed bug #17920, a case of parser coredump, and
+added a new test file F<t/comp/parser.t> aimed at testing that syntax
+errors are correctly reported. He moved also some tests there from the
+infamous F<t/run/fresh_perl.t> (aimed at testing things that used to
+dump core, a sloppy classification for tests indeed.)
+
+=head2 About this summary
+
+This summary brought to you by Rafael Garcia-Suarez, both on
+F<http://use.perl.org/> and via a mailing list, which subscription address
+is F<perl5-summary-subscribe@perl.org>. Comments and corrections are, as
+always, welcome.

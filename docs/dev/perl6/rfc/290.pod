@@ -1,0 +1,97 @@
+=head1 TITLE
+
+Better english names for -X
+
+=head1 VERSION
+
+  Maintainer: Adam Turoff <ziggy@panix.com>
+  Date: 24 Sep 2000
+  Last Modified: 30 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 290
+  Version: 3
+  Status: Frozen
+
+=head1 ABSTRACT
+
+Many programmers who have not used Perl's -X (or sh's -X) file tests
+find them to be bizarre, arcane and confusing.
+
+They deserve better 'use english;' names.
+
+=head1 NOTES
+
+The first version of this RFC proposed removing -X entirely, since
+it was a throwback to Perl's roots in sh.  That proposal was quite
+vigorously shot down.  The discussion centered around creating
+good descriptive names around the -X tests.  
+
+While discussing -X, the idea came about to stack multiple tests
+into a single tests, e.g. mutate -r && -w && -x into -rwx $file
+(or something).  See RFC 320 for details.
+
+=head1 DESCRIPTION
+
+Tom Christiansen proposed this in his perl6storm message:
+
+	=item perl6storm #0101
+
+	Just like the "use english" pragma (the modern not-yet-written
+	version of "use English" module), make something for legible
+	fileops.
+
+		is_readable(file) is really -r(file)
+
+	note that these are hard to write now due to -s(FH)/2 style
+	parsing bugs and prototype issues on handles vs paths.
+
+Here is a list of possible 'use english;' names for -X:
+
+    -r  freadable()
+    -w  fwriteable()
+    -x  fexecable()
+    -o  fowned()
+
+    -R  Freadable()
+    -W  Fwriteable()
+    -X  Fexecable()
+    -O  Fowned()
+
+    -e  fexists()
+    -z  fzero()
+    -s  fsize()
+
+    -f  ffile()
+    -d  fdir()
+    -l  flink()
+    -p  fpipe()
+    -S  fsocket()
+    -b  fblock()
+    -c  fchar()
+    -t  ftty()
+
+    -u  fsetuid()
+    -g  fsetgid()
+    -k  fsticky()
+
+    -T  ftext()
+    -B  fbinary()
+
+    -M  fage()
+    -A  faccessed()
+    -C  fchanged()
+
+=head1 MIGRATION ISSUES
+
+None.  New symbolic names for -X are being added.
+
+=head1 IMPLEMENTATION
+
+Add appropriate hooks into 'use english;', and possibly export
+them as 'use english "filetests";'
+
+=head1 REFERENCES
+
+RFC 320:
+
+perl6storm

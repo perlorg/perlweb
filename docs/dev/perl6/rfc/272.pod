@@ -1,0 +1,116 @@
+=head1 TITLE
+
+Arrays: transpose()
+
+=head1 VERSION
+
+  Maintainer: Jeremy Howard <j@howard.fm>
+  Date: 22 Sep 2000
+  Last Modified: 24 Sep 2000
+  Mailing List: perl6-language-data@perl.org
+  Number: 272
+  Version: 2
+  Status: Frozen
+
+=head1 DISCUSSION
+
+This RFC was modified to incorporate the functionality of PDL's xchg() and
+mv(), which are useful for acting on arbitrary dimensions of
+multidimensional arrays. Implementing aliasing was discussed in more
+detail than for RFCs 90, 91, and 148, including suggestions to learn from
+PDL's implementation (outlined in RFC 116), which are more sophisticated
+than simply keeping a list of mapped indices, instead actually storing
+information about the specific operations that have occured.
+
+=head1 ABSTRACT
+
+It is proposed that a new function C<transpose> be added to Perl.
+C<transpose($dim1, $dim2, @list)> would return @list with $dim1 and $dim2
+switched. C<transpose(\@order, @list)> would return @list with dimensions
+in the order specified by @order. C<transpose> would return an alias into
+the original list, not a copy of the elements.
+
+=head1 DESCRIPTION
+
+=head2 Swapping Dimensions
+
+It is proposed that Perl implement a function called C<transpose> that
+transposes two dimensions of an array, and is evaluated lazily. L<RFC 202>
+gives an overview of the proposed multidimensional arrays that
+C<transpose> works with. For instance:
+
+  @a = ([1,2],[3,4],[5,6]);
+  @transposed_list = transpose(0,1,@a);   # ([1,3,5],[2,4,6])
+
+This is different to C<reshape> (see L<RFC 148>) which does not reorder
+its elements:
+
+  @a = ([1,2],[3,4],[5,6]);
+  @reshaped_list = reshape([3,2],@a);   # ([1,2,3],[4,5,6])
+
+C<transpose> is its own inverse:
+
+  @transposed_list = transpose(0,1,@a);   # ([1,3,5],[2,4,6])
+  @orig_list = transpose(0,1,@transposed_list); # (([1,2],[3,4],[5,6])
+  @a == @orig_list;   # true
+
+If C<transpose> refers to a dimension that does not exist, empty
+dimensions autovivify as necessary:
+
+  @row_vector = (1,2,3,4);
+  @col_vector = transpose(0,1,@row_vector);   # ([1],[2],[3],[4])
+
+=head2 Reordering Dimensions
+
+An alternative form of C<transpose> uses the first argument as a list ref
+to specify a new order for the dimensions:
+
+  transpose [0,3,4,1,2], @arr;
+
+If some dimensions are not specified in the first argument, those
+dimensions are left in their current order:
+
+  # Where @arr is a rank 5 array...
+  transpose ([3], @arr) == transpose ([3,0,1,2,4], @arr);
+  transpose ([0,3], @arr) == transpose ([0,3,1,2,4], @arr);
+
+This syntax allows multidimensional arrays to be reduced along any
+dimension:
+
+  @sumover_1st_dim = reduce ^_ + ^_, @arr[ 0..; |i; * ];
+  @sumover_3rd_dim = reduce ^_ + ^_, transpose([3],@arr)[0..; |i; * ];
+
+Note that C<reduce> is from RFC 76, and C<|i> is from RFC 207.
+
+=head2 Aliasing
+
+C<transpose> does not make a copy of the elements of its arguments; it
+simply create an alias:
+
+  @row_vector = (1,2,3,4);
+  @col_vector = transpose(0,1,@row_vector);  # ([1],[2],[3],[4])
+  $col_vector[[0,1]] = 0;
+  @row_vector == (1,0,3,4);                  # True
+
+=head2 Optional Extra: Dimension Insert
+
+To move a dimension and insert it before some other dimension, the
+following syntax may be used:
+
+  transpose ({3=>2}, @arr) == transpose ([0,1,3,2,4], @arr);
+
+which inserts dimension 3 in front of dimension 2.
+    
+=head1 IMPLEMENTATION
+
+RFC 90 discusses possible approaches to implementing aliasing.
+
+=head1 REFERENCES
+
+RFC 76: Builtin: reduce
+
+RFC 90: Arrays: merge() and unmerge()
+
+RFC 148: Arrays: Add reshape() for multi-dimensional array reshaping
+
+RFC 207: Arrays: Efficient Array Loops

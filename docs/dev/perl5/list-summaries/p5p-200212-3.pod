@@ -1,0 +1,100 @@
+=head1 This Week on perl5-porters (16-22 December 2002)
+
+This week, in spite of the approaching holidays, the Perl 5 porters
+mailing list wasn't completely silent. Read about version objects, various
+warnings, operator precedence design, and a birthday.
+
+=head2 Version object updates
+
+The (apparently) never-tired John Peacock pulled another improvement of
+his version object patches, that should now, as he says, satisfy everyone.
+Basically we have now (in version.pm v0.25, found on CPAN)
+
+    version->new(1.10)   < version->new(1.2)   # 1.100 < 1.200
+    version->new("1.10") > version->new("1.2") # 1.010 > 1.002
+
+The integration of this into bleadperl will wait until next year, if a
+full consensus is reached -- see the thread for the porters' comments.
+
+    http://groups.google.com/groups?threadm=3DFF94D7.6020605%40rowman.com
+
+=head2 New warning discussed
+
+Benjamin Goldberg proposed to introduce a new warning, aimed at warning
+programmers against using a C<$DIGIT> variable when the previous regular
+expression didn't match, as in :
+
+    $str =~ /(something)/; print $1;
+
+In fact he proposes the warning to be triggerred whenever a regular
+expression match is used in void context. Among the points discussed were:
+should this be a run-time or a compile-time warning ? Should it be limited
+to failing matches ? Should it warn when the C<$DIGIT> variables aren't
+used ? What about regular expression with side-effects ?
+
+    http://groups.google.com/groups?threadm=3E001681.BC9B0946%40earthlink.net
+
+=head2 A bit of language design
+
+Larry Wall commented about the recently modified parsing of the C<? :>
+ternary operator, proposed by Stephen McCamant one month ago. Current
+perls reject C<$cond ? $a and $b : $c;> as a syntax error, and Stephen
+provided a patch to accept this. However, Larry notes that with this
+patch,
+
+    $cond ? $a and $b : $c and $d;
+
+would be equivalent to
+
+    ($cond ? $a and $b : $c) and $d;
+
+which doesn't look like the Right Thing.
+
+    http://groups.google.com/groups?threadm=200212200035.gBK0ZRm29309%40crypt.compulink.co.uk
+
+=head2 Perl birthday present
+
+Perl is 15 years old ! To commemorate this event, perl 1.0.15, the
+latest maintenance release of Perl 1, was released by Michael G Schwern.
+
+    http://groups.google.com/groups?threadm=20021218235532.GA852%40blackrider.schwern.org
+
+=head2 In brief
+
+Michael also released an alpha version (6.06_01) of MakeMaker, and asked
+for testers, notably on non-Unix platforms, and for complex modules.
+Some problems were reported on Windows.
+
+Jos Boumans remarks that on Windows, both C<'Foo/Bar.pm'> and
+C<'Foo\\Bar.pm'> could be set as keys in the %INC hash. This behavior
+could cause problems, notably with IPC::Run. (Bug #19213)
+
+Steve Noynaert reported a couple of strange build problems on AIX, one of
+them involving breakage of the glob() function. Nicholas Clark suggested
+that his system (libraries and/or compiler versions) could be blamed for
+this.
+
+H. Merijn Brand suggested that C<perl -v> should report the patchlevel on
+developement build (as C<perl -V> does).
+
+Dave Mitchell continues to patch the lexical engine, first by proposing to
+remove the useless SvPADBUSY flag, then by introducing a new flag
+SvPADSTALE, I<set on a lexical in a pad which has gone out of scope>.
+
+Paul Marquess asked for a good generic way to catch C++ exceptions in XSUB
+code and to pass them back to Perl code.
+
+Jeff Sumler notes that the infamous warning I<Use of uninitialized value>
+would be better written I<Use of undefined value>, as one could initialize
+a value to C<undef> on purpose.
+
+Clinton Pierce reported bug #18917, about system() executing external
+commands twice on Win32 in some cases, when its exit status is non null.
+
+=head2 About this summary
+
+This summary brought to you by Rafael Garcia-Suarez, from holidays on the
+French Riviera, where he insanely brought his new laptop. Read it on
+F<http://use.perl.org/> and/or via a mailing list, which subscription
+address is F<perl5-summary-subscribe@perl.org>. Comments and corrections
+are, as always, welcome.

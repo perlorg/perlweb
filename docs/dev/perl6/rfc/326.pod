@@ -1,0 +1,64 @@
+=head1 TITLE
+
+Symbols, symbols everywhere
+
+=head1 VERSION
+
+  Maintainer: Paolo Molaro <lupus@debian.org>
+  Date: 26 Sep 2000
+  Mailing List: perl6-internals@perl.org
+  Number: 326
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+Perl should adopt scheme-like symbols, both at the language level
+and at the internals level.
+
+=head1 DESCRIPTION
+
+Symbols can be useful in a variety of ways both at the language
+level and as an implementation detail for efficiency reasons.
+
+=head2 Symbols at the language level
+
+A possible operator to create a symbol could be qs// for B<q>uote B<s>ymbol.
+A one character operator could be useful as well, but since ^ is likely
+to be taken by curried expressions, an alternative could be C<:>.
+
+	$symbol = qs(methodname); # or ^methodname or :methodname
+	$object->$symbol;
+
+They can be also useful in XS modules to map constants more efficiently
+than today's constant() function.
+
+Characters following the one-char operator are limited to the usual
+identifier characters. Probably, the same character used as operator
+should be used in subroutines prototypes to allow for compile time
+optimizations.
+
+Only equal/non equal comparison operations should be allowed on symbols.
+
+=head2 Symbols in the inplementation
+
+Symbols are "interned" during compilation. From then on symbols are
+actually treated like numbers, so comparisons are faster. They should be
+used to hold package names, method names and so on. This way symbol tables
+can be implemented as optimized integer hash tables instead of string hash 
+tables (for packages with few methods a binary search could be also a win).
+A symbol should be used anywhere a package name or method name is used now
+at the API level (this applies to variable names, too).
+
+=head1 IMPLEMENTATION
+
+Should be trivial. A symbol scalar could be a read-only scalar with both
+the string and integer properties set. Note that additional memory should
+not be allocated for each copy of a symbol: once "interned" they are  never 
+free'd: the vtable stuff can make this very simple.
+
+=head1 REFERENCES
+
+Your preferred scheme book.
+
+GLib's GQuarks and Xlib's Atoms for implementations.

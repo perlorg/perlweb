@@ -1,0 +1,62 @@
+=head1 TITLE
+
+Regular Expression Special Variables
+
+=head1 VERSION
+
+  Maintainer: Uri Guttman <uri@sysarch.com>
+  Date: 25 Aug 2000
+  Last Modified: 22 Sep 2000
+  Mailing List: perl6-language-regex@perl.org
+  Number: 158
+  Version: 3
+  Status: Frozen
+  Frozen since: v2
+
+=head1 ABSTRACT
+
+This RFC addresses ways to make the regex special variables $`, $& and
+$' not be such pariahs like they are now.
+
+=head1 CHANGES
+
+I dropped the local scoping of $`, $& and $' as they are already
+localized now.
+
+=head1 DESCRIPTION
+
+$`, $& and $' are useful variables which are never used by any
+experienced Perl hacker since they have well known problems with
+efficiency. Since they are globals, any use of them anywhere in your
+code forces all regexes to copy their data for potential later
+referencing by one of them. I will describe some ideas to make this
+issue go away and return these variables back into the toolbox where
+they belong.
+
+=head1 IMPLEMENTATION
+
+The copy all regex data problem is solved by a new modifier k (for
+keep). This tells the regex to do the copy so the 3 vars will work
+properly. So you would use code like this:
+
+	$str = 'prefoopost' ;
+
+	if ( $str =~ /foo/k ) {
+
+		print "pre is [$`]\n" ;
+		print "match is [$&]\n" ;
+		print "post is [$']\n" ;
+	}
+
+=head1 IMPACT
+
+None
+
+=head1 UNKNOWNS
+
+None
+
+=head1 REFERENCES
+
+None.
+

@@ -1,0 +1,52 @@
+=head1 TITLE
+
+Make length(@array) work
+
+=head1 VERSION
+
+  Maintainer: Nathan Torkington <gnat@frii.com>
+  Date: 12 Sep 2000
+  Last Modified: 15 Sep 2000
+  Mailing List: perl6-language-subs@perl.org
+  Number: 212
+  Version: 2
+  Status: Retired
+
+=head1 ABSTRACT
+
+length(@foo) should return the number of elements in
+@foo.
+
+=head1 DESCRIPTION
+
+Presently length() has a prototype of ($) which means it coerces its
+argument into scalar context.  Many newbies think of the number of
+elements in an array as its "length", and try to use this function. 
+Instead of the size of the array, they get a rough base-10 logarityhm
+of the number of elements.
+
+I propose to make length() return the number of elements in the array
+it is passed, if its first argument begins with @.
+
+=head1 IMPLEMENTATION
+
+The optimizer could replace
+
+  length @array
+
+with
+
+  scalar(@array)
+
+The perl526 converter could replace
+
+  length @array
+
+with
+
+  length scalar(@array)
+
+=head1 REFERENCES
+
+perlfunc for documentation on length() function
+

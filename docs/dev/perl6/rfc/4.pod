@@ -1,0 +1,156 @@
+=head1 TITLE
+
+type inference
+
+=head1 VERSION
+
+  Maintainer: Steve Fink <steve@fink.com>
+  Date: 1 Aug 2000
+  Last Modified: 27 Aug 2000
+  Mailing List: perl6-language@perl.org
+  Number: 4
+  Version: 2
+  Status: Developing
+
+=head1 ABSTRACT
+
+Types should be inferred whenever possible
+
+=head1 CHANGES
+
+Removed static type declarations. That should be another RFC.
+
+=head1 DESCRIPTION
+
+For large systems, and often for small ones, type checking is
+extremely valuable for optimization and error detection. It is
+particularly useful when trying to make global changes without
+introducing major errors by forgetting to update code. I propose that
+we create a type hierarchy, such as
+
+   any
+      list
+         list(T)
+      hash
+         hash(T1 -> T2)
+      scalar
+         reference
+             object of class T
+             ref(T)
+         nonref
+             number
+                integer
+      void
+
+(This is just a sketch; there are many ways of skinning this cat.)
+Types will be inferred based on constants and operators. The inference
+process would assign a type or set of possible types to every node in
+the parse tree. Variables would not have a single type (unless
+explicitly constrained by a declaration); they would have a possibly
+different type after every assignment. So using the default rules
+
+   1 $x = 3;
+   2 $x .= "x";
+   3 $h{$x} = \$x;
+   4 $h{foo} = "bar";
+   5 $x = f();
+
+I<$x> would have type C<number> after line 1 and C<nonref> after line
+2. I<%h> would have type C<< hash(nonref -> ref(nonref)) >> after line
+3. The effects of line 4 depend on the implementation. Possible
+results include C<< hash(nonref -> scalar) >> and the union type C<<
+hash(nonref -> ref(nonref)) union hash(nonref -> nonref) >>. Line 5's
+effect depends on whether C<f()>'s type is known. If not, then I<$x>
+will have type C<any> after line 5.
+
+Note that so far, all existing programs will always typecheck
+successfully, so no burden has been placed on the programmer who does
+not want types. Also note that the linear, 1-pass process above is a
+dramatic oversimplification of a realistic type inference algorithm.
+
+=head1 MIGRATION
+
+None required. The output of p52p6 may be run through the inferencer,
+but not even native Perl6 code will be required to make it through the
+type inferencer without errors.
+
+=head1 IMPLEMENTATION
+
+Still being thought out. I'm hoping to use Ole Agesen's CPA (Cartesian
+Product Algorithm) to deal with functional polymorphism, and some
+variant of Plevyak and Chien's iterative algorithm to deal with the
+harder problem of data polymorphism.
+
+=head2 ISSUES
+
+There are several problematic constructs for type inferencing.
+
+=over 4
+
+=item eval""
+
+Eval"" by default forces the type inferencer to assume the worst for
+all subroutine, all global variables, and all lexical variables
+captured by a closure. Only very local inference will remain. This
+could be controlled by new pragmas, for example a non-overridable
+attribute for subroutines (so that its slot in the symbol table will
+remain constant), or a pragma to assume that eval"" is read-only with
+respect to the symbol table and all variables.
+
+=item symbolic dereferencing
+
+C<< $x->f() >> is a tricky case because $x may be either a reference
+or a package name, and determining which C<f()> is being called
+requires value inference on C<$x>. A pragma disallowing non-constant
+symbolic dereferencing with the arrow operator would help
+(C<< Package->f() >> is not problematic).
+
+=item AUTOLOAD
+
+Really just an example of the problems of symbol table manipulation
+with respect to type inference. AUTOLOAD means that any function whose
+name is not known at compile time (or I<may> not be known, as in
+C<< $x->$f() >>), must conservatively be assumed to be autoloaded and
+execute an eval"" that discards almost all type information.
+
+=item modularity (caching type information)
+
+The efficiency of powerful type inferencing algorithms isn't all that
+good, and my intuition says that Perl6 is going to need all the power
+it can get. Much efficiency can be gained by, for example, maintaining
+type information for a module along with its bytecode. (This type
+information is more than just the outcome of type inference. It needs
+to include templates describing how types propagate through each
+subroutine of the module, since modules will generally allow much more
+polymorphism than will actually be used in a particular program.)
+
+=back
+
+=head1 REFERENCES
+
+Ole Agesen. Concrete Type Inference : Delivering Object-Oriented
+Applications. PhD thesis, Department of Computer Science of Stanford
+University, Published by Sun Microsystem Laboratories (SMLI TR-96-52),
+1996.
+
+It's a long thesis, but it's by far the most clear description of type
+inferencing that I've found. He uses almost no formulas, and instead
+describes things in terms of graphs and pictures. He has a much
+shorter paper that summarizes his contributions that I haven't read
+yet.
+
+John Plevyak, Andrew A. Chien. Iterative Flow Analysis.
+http://citeseer.nj.nec.com/plevyak95iterative.html
+
+They wrote a bunch of similar papers, I'm not sure which is best.
+Their stuff is tackling data polymorphism more directly, and I think
+that's the harder and more important problem for inferring types in
+Perl6.
+
+=head2 CONTRIBUTORS
+
+Ken Fox gave some helpful advice and suggestions, particularly to
+avoid confusing static type checking with type inference.
+
+Hildo Biersma had several useful comments that I've partly integrated
+and am partly still thinking about.

@@ -1,0 +1,126 @@
+=head1 TITLE
+
+Extend AUTOLOAD functionality to AUTOGLOB
+
+=head1 VERSION
+
+  Maintainer: David Cantrell <david@cantrell.org.uk>
+  Date: 26 Sep 2000
+  Last Modified: 30 Sep 2000
+  Mailing List: perl6-language-subs@perl.org
+  Number: 324
+  Version: 2
+  Status: Developing
+  Original co-author: David H. Adler <dha@panix.com>
+
+=head1 ABSTRACT
+
+The functionality of the existing AUTOLOAD should be available for all
+datatypes.
+
+=head1 CHANGES
+
+Comments received have been that it would be better to use AUTOSCALAR,
+AUTOHASH etc instead of AUTOGLOB in the interests of encapsulation.
+The argument being that if you only want to implement AUTO scalars in
+your program, then doing:
+
+C<if($type_of_thing eq 'scalar') {
+	# do some stuff
+} else {
+	SUPER::...
+	# use our parent's AUTOGLOB
+}>
+
+breaks encapsulation.  However, these sort of shenanigans are common in
+other OO languages such as Java and C++, and in any case, we still need
+to 'break encapsulation' like this if RFC 8 is implemented.  If
+programmers really want to use AUTOHASH, AUTOSCALAR etc then they can
+put their own suitably constructed AUTOGLOB subroutine in the UNIVERSAL
+class which will do all the appropriate magic.
+
+There was also a desire to 'control what was auto-globbable' (Nate
+Wiger).  Whilst I can understand this, I feel that allowing this for
+some datatypes and not others is an arbitrary restriction and goes
+against the general perl ethos.  By making all autoglobbing be off
+by default and having quite fine-grained control over what can be
+autoglobbed and in what scope, I feel that we give advanced
+programmers the power that they need whilst also protecting novices
+from shooting themselves in the foot.  Well, protect them from blowing
+their foot completely off anyway.
+
+Leon Brocard commented that the ability to refuse a request a la RFC 8
+would be really useful.  On consideration, I agree, and have incorporated
+that into this revised version.  I have also removed the 'special case'
+of an AUTOGLOBbed sub not returning a reference unlike all other types.
+This is also in line with RFC 8.  See also RFC 190 for a proposal for
+re-dispatching methods which may be preferable to using SUPER like in
+the example above.
+
+Finally, also in line with RFC 8 I have removed the special $AUTOGLOB
+variable, instead passing the name of the item in with AUTOGLOB's
+arguments.
+
+=head1 DESCRIPTION
+
+Whilst the current AUTOLOAD is very useful, we do not feel that it goes
+far enough.  It only works for subroutines.  We believe this sort of
+functionality should be available for anything in the symbol table.  A
+sensible name would be AUTOGLOB.
+
+For example: one current use for AUTOLOAD is in the Sub::Approx module.
+It is not, however, possible to write Scalar::Approx, Hash::Approx,
+Array::Approx, or Filehandle::Approx.  This would allow for catching
+common errors such as mis-typing of class fields as well as mis-typing
+of class methods.
+
+=head1 IMPLEMENTATION
+
+In the interests of backward compatibility, the existing AUTOLOAD should
+be kept temporarily.  It's use should be deprecated and should generate
+a suitable warning under -w.  It would not be upgraded in line with other
+RFCs submitted (notably 8, 190 and 232) but the changes proposed would
+go in to the AUTOGLOB melting pot.  AUTOLOAD should be removed from the
+development codebase after the first stable release of perl 6.
+
+The AUTOGLOB subroutine should expect to take three parameters, the invocant,
+a scalar parameter specifying what type of item is being AUTOGLOBbed, and
+another scalar with the name of the item being AUTOGLOBbed; followed by -
+in the case of a sub - the sub's arguments.  We suggest that the 'type'
+scalar should take values like 'scalar' for an AUTOGLOBbed scalar, 'array'
+for an AUTOGLOBbed array, and so on.
+
+We suggest that the AUTOGLOB subroutine should return a reference to an
+item of the appropriate type.  That will then be dereferenced and used
+as normal in the calling code.  If it returns anything other than a
+reference this should be a fatal error, unless it returns undef (which,
+as in RFC 8 should be taken to mean "this isn't an error but I'm declining
+to handle this request"), in which case the AUTOGLOB should be suitably
+delegated as in RFC 8 (see also RFC 190).
+
+As AUTOGLOBbing is expected to be a relatively expensive and dangerous
+operation, it should be off by default (with the exception of subs), and
+should be turned on and off via a new lexically scoped autoglob pragma:
+
+C<use autoglob;                      # turn on all AUTOGLOBbing>
+
+C<use autoglob qw(scalar hash);      # turn it on for scalars and hashes>
+
+C<no autoglob qw(filehandle scalar); # turn it off for ...>
+
+=head1 MIGRATION FROM PERL 5
+
+Changes from the semantics of AUTOLOAD mean that existing AUTOLOADs
+will almost certainly break badly if simply renamed.  Therefore it
+would be wise to keep the existing AUTOLOAD (although deprecated)
+for the first stable release of perl6, but remove it in later
+releases.  This will give people sufficient time to heed the
+warnings (we do heed warnings, right?) and update their code.
+
+=head1 REFERENCES
+
+RFC 8: The AUTOLOAD subroutine should be able to decline a request
+  
+RFC 190: Objects : NEXT pseudoclass for method redispatch
+  
+RFC 232: Replace AUTOLOAD by a more flexible mechanism

@@ -1,0 +1,108 @@
+=head1 TITLE
+
+All perl generated errors should have a unique identifier
+
+=head1 VERSION
+
+  Maintainer: Chaim Frenkel <chaimf@pobox.com>
+  Date: 9 Aug 2000
+  Last Modified: 19 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 85
+  Version: 2
+  Status: Developing
+
+=head1 ABSTRACT
+
+All perl generated errors should have a unique identity. So that
+changes in the text should not cause breakage in code.
+
+=head1 DESCRIPTION
+
+Currently many programs handle error returns by examining the text of
+the error returned in $@. This makes changes in the text of the error
+message, an issue for the backwards compatibility police.
+
+In addition error messages can be localized without effecting a
+working script.
+
+=head1 CHANGES
+
+=item *
+
+Removed any mention of language implementation as part of this RFC.
+This is too dependent upon other changes in the language.
+
+=head1 IMPLEMENTATION
+
+Each unique identifier once assigned as part of a stable release
+of perl will be guarenteed never to be changed, or if the error
+text is removed, never to be reused.
+
+This RFC currently makes no attempt to define the actual methodology
+of how the unique ids are assigned or how they will be made available
+at the language level.
+
+However some discussion was sparked by the original RFC and is left
+as a historical note.
+
+=head1 Appendix
+
+=head2 Unique number
+
+Each error message will be assigned a unique number. The number
+could be made accessible via the $@ in a numeric context.
+
+This would be simple and direct. With no major hassles.
+
+=head2 Unique String
+
+Each error message will have a unique string assigned.
+
+The unique string could be accessible as
+
+	$@->id
+
+An id string could have some structure associated to enable 
+better handling. One suggestion was to follow the lead of VMS.
+
+	facility:
+		The program (or, in perl's case, the thing that errored)
+	status:
+		I=information, W=warning, E=error, S=Severe error
+	message-code:
+		A one word abbreviation for the text message 
+
+	text message:
+		A human readable string with more detail
+
+	A sample error:
+
+	%APPEND-I-CREATED, MEM.SUM;1 created
+
+For perl the actual text would be in $@.
+
+or rather than make the user break up the text string the values
+could be supplied as
+
+	$@->id		# The unique identifier for this error
+	$@->facility	# regex, io, syscall
+	$@->severity	# Fatal, Warning, Informationl, 
+
+=head1 Aknowledgements
+
+Bryan C. Warnock <bwarnock@gtemail.net>
+Peter Scott <Peter@PSDT.com>
+Uri Guttman <uri@sysarch.com>
+Ariel Scolnicov <ariels@compugen.co.il>
+Juanma Barranquero <lektu@uol.com.br>
+"Paul L. Allen" <pla@softflare.net>
+Brian Wheeler <bdwheele@wombat.educ.indiana.edu>
+
+=head1 REFERENCES
+
+IBM Messages and Codes
+
+VMS (anyone have a reference)
+
+SCCS

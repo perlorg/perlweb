@@ -1,0 +1,788 @@
+=head1 TITLE
+
+Improved Module Versioning And Searching
+
+=head1 VERSION
+
+  Maintainer: Steve Simmons <scs@ans.net>
+  Date: 8 Aug 2000
+  Mailing List: perl6-language@perl.org
+  Number: 78
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+Modern production systems may have many versions of different modules
+in use simultaneously.  Workarounds are possible, but they lead to
+a vast spaghetti of fragile installation webs.  This proposal will
+attempt to redefine module versioning and its handling in a way that
+is fully upward compatible but solves the current problems.
+
+An up-to-the-instant version of this RFC will be posted as HTML
+at C<http://www.nnaf.net/~scs/Perl6/RFCxx.html> as soon as I
+know the RFC number.
+
+=head1 DESCRIPTION
+
+There are several classes of problem with the current module
+versioning and searching, which will be discussed separately.
+The solutions proposed overlap, and are discussed in
+B<IMPLEMENTATION> below.
+
+=head2 Current Implementation Is Broken
+
+These problems are ones in which I would go so far as to say that
+the current (C<perl5>) performance is actually broken.
+
+=head3 Discovery Of Older Versions Aborts Searches
+
+Currently a statement
+
+  use  foo 1.2;
+
+can cause C<perl> to search C<@INC> until it finds a C<foo.pm> file
+or exhausts the search path.  When a C<foo.pm>, its C<VERSION>
+is checked against the one requested in the C<use> statement.
+If the C<foo.pm> version is less than 1.2, C<perl> immediately
+gives an error message and halts the compilation.
+A satisfactory version may exist elsewhere in C<@INC>, but it is
+not searched for.
+
+=head3 First Module Discovered May Not Be Newest
+
+I believe that when a programmer writes
+
+    use module;
+
+`Do What I Mean' should find the newest version of the module present on the
+C<@INC> search path.
+Instead, the very first C<module.pm> file found is taken,
+regardless of the presence of others on the path.
+
+=head2 Current Methods Are Insufficient for Complex Installations
+
+Deployment of perl modules in high-reliability or widely shared
+environments often requires multiple versions of modules installed
+simultaneously.
+(Comments `but that's a bad idea' will be cheerfully ignored --
+if I could control what other departments need, I would).
+This leads to an endless proliferation of C<use lib> directories
+and ever-more-pervasive `silos of development.'
+
+Part of the problem is the limitations of the current system in
+how modules are versioned and how C<perl> decides which version
+to load.  In worst case, code such as
+
+    use lib '/path/to/department/module/versionX';
+    use module ;	# To get version X for sure
+    no use lib '/path/to/department/module/versionX';
+
+has been found in production equipment.
+Why does such bogosity occur?
+It's an attempt to solve both the above problems and
+the deployment issues which follow below.
+
+=head3 New Module Releases Can Break Existing Scripts
+
+I<Working tools persist.>
+An application which does its job well will live as long as the
+problem it addresses.
+This means old code may continue running for a long time.
+
+For C<perl> itself, most sites solve this problem by having
+the perl invocation include versioning:
+
+   #!/usr/bin/perl5.005
+
+The indicated version will likely remain installed and stable as long
+as the script which uses it and the platform on which that script runs.
+
+The proliferation and increasing use of modules is generally a
+good thing.  However, installation of new modules can and sometimes
+does break existing scripts.  Workarounds for this problem are
+cumbersome at best, and we have existence proofs in other languages
+that this can be handled better (notably C<tcl>, but there are
+probably more).
+
+=head3 Test Systems Need Test Modules
+
+Mission-critical scripts often need to have a final test pass
+by releasing experimental versions onto productions systems
+alongside the production systems.
+
+The inflexibility of perl module versioning also contributes to
+difficulties in releasing systems for test.  A new script may require
+significant changes to internals of one or more supporting modules.
+The changes need not be visible to existing scripts; if bugs are introduced
+then previously working systems may change or break in obscure ways.
+
+Ideally, there would be a mechanism by which C<scriptI<.new>> or
+C<I<new>script> could be released
+simultaneously with an appropriate version of C<moduleI<.new>.pm>
+or C<I<new>module.pm>
+while the previous version
+remains in place for older code.
+A more flexible mechanism for module version specification
+and searching can fix the problem. 
+
+=head2 Proposed Solution
+
+I believe that relatively simple changes can be made to the version
+identification and module installation systems which will solve all
+the above problems.
+In addition, those changes should be largely upward compatible
+from current functioning; and if needed could be made 100% 
+compatible.
+
+=head1 IMPLEMENTATION
+
+Several changes, working together, should provide the flexibility
+needed to solve all the stated problems and deficiencies:
+
+=over4
+
+=item 1.
+
+Clarification on how version numbers are formed (largely done
+as per C<perl5.6>)
+
+=item 2.
+
+Well-defined rules for version number comparison.
+
+=item 3.
+
+Extensions to the C<use module I<version>> syntax to support
+better specification of version numbers.
+
+=item 4.
+
+A modification to the module installation mechanism to make
+version numbers more immediately recognizable without requiring
+parsing/compiling of C<module.pm> files.
+
+=item 5.
+
+Modifications to the C<@INC> path searching rules to reflect the
+changes in numbers 1-4 above.
+
+=back
+
+We believe that most if not all of these changes can be made without
+requiring a change either to older scripts, existing modules, or
+items already in CPAN.
+New scripts and new modules should be able to take advantage of the
+changes with relatively minimal changes.
+
+=head2 Overview
+
+In brief, I propose the installation method for modules as provided
+by C<perl Makefile.PL> be changed such that version numbers appear
+in the path of the module being installed.  This would require that
+the C<Makefile.PL> support functions open the module, extract the
+value of C<$VERSION> (if any), and use that to build the pathnames
+to install the module.
+
+This change has two huge wins:
+
+=over 4
+
+=item
+
+Authors of modules would have to do literally I<nothing> to use
+the new mechanism.
+
+=item
+
+Having the version numbers embedded in the path means they could be
+reliably determined without having to actually
+open and parse each candidate C<.pm> file.
+
+=back
+
+Programs which request versions in their C<use module> statements
+would be compiled with the ``best fit'' commensurate with their
+request and with the request of other modules.
+
+Note that it may not be possible to satisfy conflicting requests.  If
+module C<A> and module C<B> demand two different versions of the same
+module C<C>, the compiler should halt and state the module conflicts.
+
+``Best fit'' cannot reliably be determined without examining all
+the secondary modules required as a consequence of using some
+lower-level module and without processing the C<@INC> changes
+introduced by C<use lib>, etc.
+Thus the compiler might have to examine the internals of a number
+of versions of some modules before choosing which to use.
+But it would not have to do a full parse of those modules,
+and the section on B<Possible Optimization - Indexes> suggests
+some further wins.
+
+=head2 Path/Module Renaming
+
+There are a variety of mechanisms which could embed the
+version number into the path name.
+This RFC does not strongly favor any one over any other.
+It does have some general suggestions, but is not imposing
+a particular solution.
+
+Here are some guidelines for choosing a naming system:
+
+=over 4
+
+=item *
+
+The new names should do minimal violence to the existing structure.
+The following guidelines are suggestions, the implementers should
+feel free to follow any of the possible implementations (see below)
+or choose another as they please.
+In the discussion below, I<pathname> means
+the full path from file system root to the actual file containing
+the module.
+
+=item *
+
+The new names should allow for version-less modules, indicated
+by a versionless pathname.
+
+=item *
+
+The C<.pm> filename extension should be preserved.  Thus
+it is probably better to embed the version number into the file
+name or a directory name immediately above it on the search path.
+
+=item *
+
+If a module is selected for compilation and
+a mismatch is found between installed name (eg, C<foo-1.0.pm>) and
+the setting in the C<VERSION> statement (eg, C<VERSION=1.1;>),
+C<perl6> should issue a compile-time error which includes the full path
+to the module and the internal C<VERSION> number.
+No recovery should be done.
+
+=back
+
+Here are some possible implementations:
+
+=over 4
+
+=item *
+
+In locations where a C<foo.pm> file would currently be installed,
+replace it with a C<foo.pm> directory.
+In that directory, versioned modules would be installed as
+C<foo-version.pm>, and versionless as C<foo.pm>.
+or as C<version.pm> and C<none.pm>
+
+=item *
+
+Create a C<foo.pm> directory as above, but populate it
+with subdirectories for each installed version.
+A C<foo.pm> file containing the module code would reside
+in that directory.
+Versionless modules could be installed into the C<foo.pm>
+directory rather than in a subdirectory.
+This mechanisms has some possible wins should it be
+appropriate to support simultaneous load of multiple versions.
+
+=back
+
+=head2 Definition Of Version Numbers
+
+A detailed definition of a version number appears immediately below.
+It is my belief that this definition and usage is an upward extension
+from current C<perl> performance; and therefore simple (current) use
+of version numbers should work without requiring script code change
+under this proposal.
+
+Note we are not I<requiring> version numbers, just specifying
+format and comparison rules.
+
+=over 4
+
+=item 1.
+
+Version numbers consist of one or more I<version levels> separated
+by dots.
+
+=item 2.
+
+Each version level must consist of a non-negative number expressed
+as a series of the digits, ie C<[0-9]+>.
+
+=item 3.
+
+The first version level and first dot are required.
+
+=item 4.
+
+There is no limit to how many levels a version may have.
+
+=item 5.
+
+If a version number ends in a dot, a final level of C<0> is assumed.
+
+=item 6.
+
+Leading zeros are allowed in level numbers, but are ignored.
+If a version level contains leading zeros, those zeros will be
+stripped in all cases except for version(s) C<0.*>.
+
+=item 7.
+
+Trailing zeros in version numbers, whether explicit or implied by
+a final dot, are trimmed from the version number internally when
+deriving paths.
+See above for pathname deriving.
+
+=back
+
+The following example shows some valid and invalid version numbers
+
+    use   foo  1.;	# Valid, means '1.0'
+    use   foo  01.;	# Valid, means '1.0'
+    use   foo  1.1;	# Valid, means '1.1'
+    use   foo  1.01;	# Valid, means '1.1'
+    use   foo  1.01.;	# Valid, means '1.1.0'
+    use   foo  1.1e;	# Invalid, has non-digit
+    use   foo  .1;	# Invalid, must start with explicit level
+    use   foo  0.1;	# Valid, means '0.1'
+    use   foo  1;	# Invalid, must have at least one dot
+    use   foo  1.-1;	# Invalid, no negative numbers (and not a digit)
+    use   foo  ;	# Valid, means no version specified
+
+Invalid version numbers cause a compile-time error on the module.
+
+=head2 Usage in Programs
+
+The existing version request syntax is:
+
+   use module [ version ] [ qw(func1 func2 func3)] ;
+
+Currently version is a single C<perl>-style version number (whatever
+the heck that means).  I propose we extend the allowable forms to allow
+ranges, lists, limits, and version limiting.
+Doing this properly requires
+some well-defined mechanisms for comparing disparate version numbers.
+
+Version numbers may appear in the C<use> statement of C<perl> scripts
+and in the C<VERSION> statement of a C<perl> modules.
+
+They may either be quoted strings or barewords.
+
+Usage in any other circumstance is not treated as a version number,
+but rather the appropriate C<perl> construct for the circumstances.
+If a bareword, it is almost certainly an error.
+
+I believe that this usage is consistent with current C<perl>.
+
+=head3 Ordered and Unordered Version Lists
+
+A program can specify a list of versions in no-preference order
+by listing them separated by whitespace:
+
+    use   foo 1.0 1.1 1.3;
+    use   foo 1.3 1.1 1.0;
+
+These two requests are effectively identical, with the
+compiler accepting any version of C<foo.pm>
+beginning with 1.0, 1.1 or 1.3.
+
+A program can specify a list of versions in preference order
+by adding commas:
+
+    use   foo 1.0, 1.1, 1.3;
+    use   foo 1.3, 1.1, 1.0;
+
+In these cases the compiler can proceed if any of the three
+versions are available.  In the first case some version 1.0 is
+preferred, the the second 1.3 is preferred.
+
+The whitespace following the commas is optional.
+
+In cases where there are requests for two different versions of
+module C<foo>, both of which were first in the request orders,
+the highest-level module (closest to the original script) shall
+win.
+
+If both requests are at the same level offset from the original
+script, the first requester shall win.
+
+=head3 Version Inequalities
+
+A program can indicate a minimum, maximum, exact,
+and super-exact version it will accept.
+The following syntax handles these requests:
+
+The form
+
+    use foo <1.2;
+
+indicates that any version prior to 1.2 is acceptable.
+This would mean any version with 1.1 or less
+for its first two levels.
+
+The form
+
+    use foo <=1.2;
+
+indicates that any version prior to 1.2 is acceptable.
+This would mean any version with 1.2 or
+less for its first two levels.
+
+The form
+
+    use foo >1.2
+
+indicates that any version greater than 1.2 is acceptable.
+This would mean any version with 1.3 or more for its first two levels.
+
+The form
+
+    use foo >=1.2
+
+indicates that any version greater than or equal to 1.2 is acceptable.
+This would mean any version with has 1.2 or more as the first two levels.
+
+The form
+
+    use foo =1.2
+
+indicates that only versions which begins with 1.2 are acceptable.
+
+These may be further tightened by ending the version number in a period.
+The period forces the rest of the version levels to always be treated
+at zeros.  Thus the form
+
+    use foo =1.2.
+
+indicates that only version 1.2.0 is acceptable, not 1.2.0.0...1.
+
+=head3 Ordered and Unordered Version Ranges
+
+A program should be able to use two version numbers
+to indicate a range of acceptable version numbers.  The
+separator between the two ranges indicates preference order, with
+
+=over 4
+
+=item -
+
+meaning no preference,
+
+=item <
+
+meaning the right hand side is preferred, and
+
+=item >
+
+meaning the left hand side is preferred.
+
+=back
+
+No whitespace is allowed between the separator and the
+version number; reasons for this will become apparent in
+the sections on complex lists.
+
+Examples of ranges:
+
+    use foo 1.1-1.4
+
+means that any version which begins with 1 and has a 1.4 as the
+second level is acceptable.
+
+    use foo 1.1<1.4
+
+means that any version which begins with 1 and has a 1.4 as the
+second level is acceptable, with preference given to the highest
+version in the range.
+
+    use foo 1.1>1.4
+
+means that any version which begins with 1 and has a 1.4 as the
+second level is acceptable, with reference given to the lowest
+version in the range.
+
+A terminating dot may be used as well, so that
+
+    use foo 1.1-1.4.
+
+means that any version 1.1 through 1.3 is acceptable, but the only
+acceptable 1.4 version is 1.4.0.
+
+=head3 Combining Lists and Ranges
+
+Lists and ranges may be combined in arbitrary ways to make complex
+preference sets.  Thus
+
+    use   foo 1.5 1.0-1.3;
+
+means that any version 1.0, 1.1, 1.2, 1.3 or 1.5 is acceptable,
+without preference order.  By contrast,
+
+    use   foo 1.5, 1.0-1.3, 1.4;
+
+means that 1.5 is preferred, then anything in the 1.0 to 1.3 range,
+then 1.4.
+
+=head3 Why Not Regexps?
+
+It has been suggested that C<globs> or even full-bore regular
+expressions be allowed for version specification.  It has not
+been included for the following reasons:
+
+=over 4
+
+=item *
+
+Version numbers are an ordered set of positive integers.
+As such, simple comparisons are powerful enough to handle
+most needs.
+
+=item *
+
+Regexps do not allow for a mechanism to order preference within
+a given regexp, ie, one could not write
+
+    use foo 1.[023]
+
+and indicate that there was some ordering to the sub-version.  I
+am concerned that people would naively expect that the Do What I
+Mean principle would cause C<perl> to assume that the following
+
+    use foo 1.[203]
+
+is equivalent to
+
+    use foo 1.2, 1.0, 1.3
+
+on the naive theory that the two regexps look different so they should
+do something different.
+
+=item *
+
+We don't allow regexps in other non-run-time constructs, we shouldn't
+allow them here.
+
+=item *
+
+The use of the . as a terminator would seem to be sufficient for
+all cases where C<globs> have been suggested.
+Having more than one mechanism for this would intermediate C<perl>
+programmers to assume that there was some subtle difference between
+the two.
+
+=back
+
+Since regexps and C<globs> bring little additional utility and
+introduce possible confusion, I have chosen not to put them in
+this suggestion.
+
+=head2 Resolving Version Request Problems
+
+=head3 When Nothing Works
+
+When we permit modules to request only certain versions of
+other modules, we will find cases where no version of
+module C<foo> is acceptable to all modules which wish to use it.
+In such as case, the compiler should give up with an error
+message stating that due to conflicting version requests,
+module C<foo> could not be loaded.  This could
+become The Error Message From Hell if sufficient detail was
+included.
+
+A utility (perl module?!) should be provided which
+would recursively examine the C<use> lines a perl script
+and the system configuration and produces the appropriately
+voluminous output report.
+
+=head3 When More Than One Acceptable Version Is Found
+
+Modules load modules load modules, ad nauseum.  It is quite
+possible that two or more different modules will request some
+other module.  If there is only one version which satisfies all
+the requests, we don't have a problem.
+
+If there is more than one version acceptable to all callers,
+we choose which to use based on the following rules:
+
+=over 4
+
+=item 1.
+
+If no preference was expressed, first acceptable version that was
+found is used.
+
+=item 2.
+
+If a preference was expressed, highest preference is given to the
+requests which come from the original script.
+
+=item 3.
+
+If no request came from the original script, highest preference
+is given to second-level requesters.
+If there is more than one second-level requester, the first requesters
+preferences are used.
+If there are no second-level requester, the third level is used, and so on.
+
+=back
+
+=head2 How This Solves The Problems
+
+There were four problems identified with the current system.
+Implementation of this proposal solves those problems as follows:
+
+=head3 Discovery Of Older Versions No Longer Aborts Searches
+
+The statement
+
+  use  foo 1.2;
+
+can cause C<perl> to search C<@INC> until it finds the first
+C<foo.pm> file of version 1.2 or greater.
+
+=head3 Programmer Can Now Specify Newest Module
+
+I believe that when a programmer writes
+
+    use module;
+
+`Do What I Mean' should find the newest version of the module present
+in C<@INC>.
+The current proposal does I<not> cause this to occur,
+and thereby permits backwards-compatible behavior.
+
+However, the programmer can now write
+
+    use module >=0.0;
+
+and accept any module, but give preference to the highest.
+
+=head3 New Module Releases Can Break Existing Scripts
+
+This proposal does not prevent new modules from breaking
+existing scripts.
+It does, however, permit those scripts to be repaired by the
+simple change of locking the script to the acceptable version(s)
+of the module.
+This is often I<significantly> easier than updating the script,
+and avoids the possibility of introducing new bugs either due
+to modifications of the script or from bugs in the newer module.
+
+=head3 Test Systems Need Test Modules
+
+In mission-critical environments, production versions of
+scripts could always be released to a version range of a 
+module, reflecting the ranges of the module it had been tested
+and known to work against:
+
+    use foo 2.0-2.1;	# Accept any 2.0 or 2.1 version
+
+When a new version of C<foo.pm> needs to be rolled out with the
+new version of the script, the version of C<foo.pm> could be
+set to 2.2 and the new script released with
+
+    use foo =2.2;	# Accept any 2.2 version
+
+Now new and old versions of script and module can be released
+with no impact on existing production software.  When it is
+decided that the new versions should become the standard
+versions, the new script is copied over the old and the modules
+are not touched.
+
+=head2 Possible Optimization - Indexes
+
+A possible problem introduced with this proposal is an even
+greater increase in the amount of searching of directories
+that must be done.  This is an often-expensive process, and
+can have a serious impact when even small scripts are run tens
+of thousands of times per day (as ours do).
+
+This could be resolved by adding some sort of simple index
+files to the installation tree.  The index files could simply
+be a list of all the files (pathnames) found under this particular
+branch of the file tree.  Since those pathnames would contain
+the version numbers, examining any index file would be sufficient
+for determining what versions lay where.  If later uses of
+C<use lib> chose a subset of that tree, the index data would
+already be present.  In an ideal situation, only one or two
+index files might be all that is needed to find all versions
+of all modules.
+
+More complex indexes could be built which might include all the
+dependency information in a manner not dissimilar to the output
+of C<lorder(1)>.
+
+Reliability would best be done by implementing index construction
+as an automatic part of module install.  As above, this could
+be automated such that neither the module developer nor the
+system administrator would have to worry about it; the process
+would still be:
+
+    perl6 Makefile.PM
+    make
+    make install
+
+and the C<make install> updates the indexes.  At that point it
+is not clear to mean that such an index is required; in its
+absence C<perl6> should simply search the C<@INC> directories
+as it does now.
+
+=head2 Adaptation to Perl5
+
+There is nothing in this proposal which could not be implemented
+in perl5.X, and it would probably be a Good Thing if such were done.
+
+=head2 Alternative Idea - Module Versioning In Namespaces
+
+Some languages allow multiple versions of a module to be loaded
+simultaneously.  It is my opinion that In This Way Lies Madness, but
+C<perl> has done stranger things.  Should we decide to allow this,
+incorporating the version number into the namespace would allow the
+appropriate disambiguation.
+
+Let us suppose that module C<foo> requires module C<bar v1.0>,
+while module C<baz> requires module C<bar 2.0>.  Also assume
+that both versions of C<bar> provide a C<op> function.  Then
+these two modules could do
+
+    module foo.pm			module baz.pm
+
+    use bar =1.0.;			use bar =2.0. ;
+    # Uses bar1.0::op                   # Uses bar2.0::op
+    bar::op();                          bar::op();
+
+and each time get the appropriate invocation of C<op>.
+
+Similarly modules C<foo> and C<baz> both create a C<bar> object,
+the object should blessed into the appropriate version of C<baz>,
+so that
+
+    my $handle1 = new foo ;
+    my $handle2 = new bar ;
+    my $var1 = $handle1->op();	# Always gets op 1.0
+    my $var2 = $handle2->op();	# Always gets op 2.0
+
+always invokes the appropriate version of C<$op>.
+
+While I'm not seriously suggesting this dual loading be allowed, it should
+at least be considered by the folks who know more about objects than
+I do.  Note, though, that this kind of feature might prove to be invaluable
+in testing new versions of modules.  With appropriate aliasing added,
+a test script could do
+
+    use foo <3.0 as foo_old;
+    use foo =3.0. as new_foo;
+
+    # do something with foo_old
+    # do identical things with foo_new
+    # compare results
+
+Again, I'm not seriously suggesting this feature.  But if it comes
+up, all the module versioning rules above need to be revisited.
+
+=head1 REFERENCES
+
+    lorder(1) - Optimising .o file orders for UNIX loader ld(1)

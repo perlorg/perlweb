@@ -1,0 +1,102 @@
+=head1 TITLE
+
+The AUTOLOAD subroutine should be able to decline a request
+
+=head1 VERSION
+
+  Maintainer: Leon Brocard <acme@astray.com>
+  Date: 10 Aug 2000
+  Last Modified: 25 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 8
+  Version: 3
+  Status: Frozen
+
+=head1 ABSTRACT
+
+In Perl 5, the first AUTOLOAD subroutine found in an object's hierarchy
+is used and any other AUTOLOAD subroutines higher up are ignored. I
+propose that in Perl 6 we allow AUTOLOAD subroutines to decline a
+request, which allows other AUTOLOADs to cope with it.
+
+=head1 DESCRIPTION
+
+AUTOLOAD is a very useful and handy way to handle cool and exciting
+things, but as has been pointed out many times before, only one
+AUTOLOAD can be called in the object's hierarchy, even if multiple ones
+exist. This is due to the fact that AUTOLOAD subroutines must do
+something - they can not currently decline a request. I propose one of
+the methods which has previously been discussed on p5p.
+
+Instead of calling the right thing or actually doing the right thing,
+AUTOLOAD subroutines should return a coderef which will be run as if
+it were the method called. If an AUTOLOAD subroutine does not wish to
+cope with a method call, it should return undef. Perl would then walk
+the OO hierarchy and find the next AUTOLOAD to call, eventually failing
+with an error if no AUTOLOAD method is found which will accept the
+call.
+
+Some other RFC's have appeared which mention alternative ways of
+coping with this problem. Some of them are cute, but there has not
+really been much discussion of the methods. See the references section
+for more.
+
+=head2 EXAMPLE
+
+The following Perl 5 code (an extension of the AUTOLOAD example in the
+perlsub manpage):
+
+  sub AUTOLOAD {
+    my $program = $AUTOLOAD;
+    my @args = @_;
+    $program =~ s/.*:://;
+    if ($program =~ /^[aeiou]/) {
+      system($program, @args);
+    }
+  }
+
+... would be rendered as the following in Perl 6:
+
+  sub AUTOLOAD {
+    my $program = $AUTOLOAD;
+    my @args = @_;
+    $program =~ s/.*:://;
+    if ($program =~ /^[aeiou]/) {
+      return sub { system($program, @args) }
+    } else {
+      return undef;
+    }
+  }
+
+=head2 $AUTOLOAD
+
+While we're at it, it *may* be a good idea to remove the global
+$AUTOLOAD variable and instead pass it as the first parameter of the
+AUTOLOAD subroutine call. For: general global drought, the fact that
+perlsub's argument "because, er, well, just because, that's why..." is
+a bit weak. Against: makes AUTOLOAD more complicated, breaking the
+"subroutine parameters end up as @_" paradigm (apparently).
+
+=head2 UNIVERSAL->can
+
+This proposal has the added bonus that the UNIVERSAL->can method (or
+whatever replaces it) will now work with AUTOLOAD-ed methods, whereas
+in Perl 5 it used to fail.
+
+=head1 IMPLEMENTATION
+
+This strikes me as being a fairly easy thing to do, but then again
+internals ain't my thing, baby.
+
+=head1 REFERENCES
+
+Mike Guy's "AUTOLOADREF" idea on p5p:
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2000-03/msg01317.html
+
+Ilya Zakharevich "sub autoload" idea on p5p:
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2000-01/msg01381.html
+
+RFC 190: "Objects : NEXT pseudoclass for method redispatch" by Damian Conway
+<damian@conway.org>
+
+RFC 232: "Replace AUTOLOAD by a more flexible mechanism" by Ilya Zakharevich

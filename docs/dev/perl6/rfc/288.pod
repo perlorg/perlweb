@@ -1,0 +1,131 @@
+=head1 TITLE
+
+First-Class CGI Support
+
+=head1 VERSION
+
+  Maintainer: Adam Turoff <ziggy@panix.com>
+  Date: 24 Sep 2000
+  Last Modified: 26 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 288
+  Version: 2
+  Status: Frozen
+
+=head1 ABSTRACT
+
+Perl is frequently used in CGI environments.  It should be as easy
+to write CGI programs with perl as it is to write command line text
+filters.  This means making Perl more aware of the nature of the
+CGI invocation context, as well as the CGI output context.
+
+This can be accomplished by adding a very simple pragma that
+automatically turns on tainting and parses CGI GET/POST request
+strings.  This rudimentary support for CGI programming does not
+extend to including output formatters with this pragma.
+
+It may make sense to expose this pragma through a hypothetical '-cgi'
+command line option to Perl.
+
+=head1 DESCRIPTION
+
+Tom Christiansen proposed this in his perl6storm message:
+
+	=item perl6storm #0025
+
+	Make -T the default when operating in a CGI env.  That is, taintmode.
+	Will this kill us?  Close to it.  Tough.  Insecurity through idiocy
+	is a problem.  Make them *add* a switch to make it insecure, like
+	-U, if that's what they mean, to disable tainting instead.
+
+and this:
+
+	=item perl6storm #0026
+
+	Make CGI programming easier.  Make as first class as
+	@ARGV and %ENV for CLI progging.
+
+Perl6 make it *easier* to write CGI programs than Perl5.  
+
+This should be accomplished by adding a 'use cgi;' pragma that
+does the very basics for plugging Perl into a CGI invocation
+context.  This pragma could be loaded through '#!/usr/bin/perl -cgi',
+'#!/usr/bin/perl -Mcgi' or some other such flag.
+
+To make CGI programming easier, this option/pragma should:
+
+=over 4
+
+=item *
+
+Turn on tainting
+
+=item *
+
+Parse the CGI GET/POST request, returning CGI variables into %CGI
+(regardless of the source) in an un-HTTP escaped fashion
+
+=item *
+
+Parse the incoming HTTP headers and deposit them into a %HTTP variable
+
+=item *
+
+Offer simple interfaces to set HTTP headers (e.g. content type, result codes)
+
+=item *
+
+Load quickly in standard forked CGI instances
+
+=item *
+
+Not take up gobs of memory
+
+=back
+
+This option/pragma should B<NOT> load any content-generation interfaces.
+
+Tainting should be able to be turned off, as Tom recommends,
+but only if the user turns on the "absolutely, positively,
+do NOT turn on taint mode" switch.
+
+Nate Wiger pointed out that support for emitting HTTP
+headers before content is ready for output would help Perl
+"do the right thing".  See the implementation section for details.
+
+=head1 IMPLEMENTATION
+
+Write a very small cgi.pm pragma that does as little as possible,
+perhasp based on Lincoln's code for parsing CGI contexts and
+returning them into a hash.  This pragma should be loadable
+through a very simple and obvious command line switch
+(e.g. 'perl -cgi', 'perl -Mcgi', etc.)
+
+Taint mode should be turned on when this module loads.  If
+this not be easily accomplished thorugh a pragma, then the 
+pragma should be loaded through a command line switch that can
+be processed when -T would be.
+
+This pragma should create a %CGI variable, similar to %ENV
+available as soon as the program starts executing.  This pragma
+should also expose an array, such as @HTTP or @HEADERS, where
+users can queue up header name/value pairs to be emitted prior
+to the first print statement.
+
+This module should also create a %HTTP variable, similar to %CGI,
+that contains the contents of the HTTP header values.
+
+When this pragma is loaded, it should replace the print coderef
+with a function that will print out all headers in the @HEADERS
+queue, print out the desired output, and restore the print coderef.
+If the @HEADERS queue is empty, it should emit a standard
+"Content-type: text/html\n\n" string before resuming normal printing.
+
+No support is made for magical header types, such as expiry, cookie
+or redirect headers.  That is left for other modules to implement.
+
+=head1 REFERENCES
+
+CGI.pm
+
+perl6storm

@@ -1,0 +1,61 @@
+=head1 TITLE
+
+Operators: Multiway comparisons
+
+=head1 VERSION
+
+  Maintainer: Damian Conway <damian@conway.org>
+  Date: 4 Aug 2000
+  Last Modified: 18 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 25
+  Version: 2
+  Status: Frozen
+
+=head1 ABSTRACT
+
+This RFC proposes that multiway comparisons such as:
+
+	if ( 0 <= $x < 10 ) {
+		print "digit"
+	}
+
+should do what the user means.
+
+
+=head1 DESCRIPTION
+
+It is proposed that expressions involving multiple chained comparisons
+should be automagically expanded to the equivalent binary conjunction. That is:
+
+	0 <= $x < 10
+
+is DWIMmed to:
+
+	0 <= $x && $x < 10
+
+Furthermore, it is proposed that any operations, function calls, or subroutine 
+invocations should only be performed once in such expansions and that such
+expansions should short-circuit on failure. That is:
+
+	$min < nextval() < $x+$y < length $string
+
+should become:
+
+	do {
+		my $tmp1, $tmp2;
+		$min < do{$tmp1=nextval} &&
+		$tmp1 < do{$tmp2=$x+$y} &&
+		$tmp2 < length $string;
+	}
+
+
+
+=head1 IMPLEMENTATION
+
+As described above
+
+=head1 REFERENCES
+
+None.
+

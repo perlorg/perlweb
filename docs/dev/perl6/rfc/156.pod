@@ -1,0 +1,37 @@
+=head1 TITLE
+
+Replace first match function (C<?...?>) with a flag to the match command.
+
+=head1 VERSION
+
+  Maintainer: Stephen P. Potter <spp@ds.net>
+  Date: 24 Aug 2000
+  Mailing List: perl6-language@perl.org
+  Number: 156
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+The first match function should be removed from the language and its
+functionality should be implemented via a flag to the standard match function.
+
+=head1 DESCRIPTION
+
+The syntax of the first match function is a special case anomoly which causes
+the parser to have to work harder.  Removing its special syntax would
+simplify the language definition and make writing parsers easier.
+
+=head1 IMPLEMENTATION
+
+It is recommended that the flag be C<f>, which is a mneumonic for "first".
+Additionally, the code for the parser which checks for C<?...?> should
+be removed from the grammar.
+
+=head1 REFERENCES
+
+perl6-language message
+C<200008182343.JAA00690@indy05.csse.monash.edu.au> by Damian Conway
+
+RFC 135: Require explicit m on matches, even with ?? and // as delimiters.
+

@@ -1,0 +1,85 @@
+
+=head1 TITLE
+
+Index Attribute
+
+=head1 VERSION
+
+  Maintainer: David Nicol <perl6rfc@davidnicol.com>
+  Date: 19 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 262
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+
+An attribute C<:n> is defined which means the index or key of a
+contained item.  This attribute is useful when an index number is needed
+within a C<foreach> statement, it also may be used inside container-like
+abstractions 
+which dynamicly generate their contents.
+
+
+=head1 DESCRIPTION
+
+
+	foreach $item (@items){
+		#print "$item was at location ",$item:n,"\n";
+		print "$item was at location ${item:n}\n";
+	};
+
+
+Given acceptance of several other iffy proposals,
+
+	@Nplus1 = lazy sub { return $_:1 + 1 }; # or something like this
+
+
+
+=head1 DISCUSSION
+
+When this was suggested on the language-objects list,
+there was discussion of the name of the attribute, with C< :i > being
+suggested as well as C< :index >
+
+We also need access to attributes of variables as a standard language
+feature, that is implicit here.
+
+Another possibility would be to use C< $[ > for the attribute, which
+makes sense if we allow C< $[ > to be set individually per container.
+
+Use of brackets in variable names is a Big Hassle for parsing:
+
+		print "$item was at location ${item:[}\n";
+
+is parseable if colon is elevated to the same level of immediacy,
+in terms of eating subsequent tokens, as dollar-sign now has.
+
+Use of left-bracket as the index attribute matches very well with
+the situation of pulling sequential items out of a function pretending
+to be a list, though, as internal to the code
+we can refer to $[, "The index of the first item", to get the index
+of the current item after several items have been shifted off (and
+the specific $[ attribute incremented each time.)
+
+	@Nplus1 = lazy sub { return $[ + 1 }; # or something like this
+
+
+=head1 IMPLEMENTATION
+
+Within looping constructs, we only need to track this if it is used.
+We may be using an implied c-like C<for> when we do a looping construct
+anyway, in which case we already have the information, and just need some
+Perl syntax for sharing it with user code.  In linked-list kinds of
+situations, we will need to identify the need to track this info and
+then track it for the user.
+
+In terms of $[ we would make the familiar and vaguely deprecable $[ be
+the global to which the one specific to an array instance defaults to
+or starts at.  (which may deserve it's own RFC it is true.)
+
+=head1 REFERENCES
+
+John McNamara left this radical suggestion out of RFC 120.
+

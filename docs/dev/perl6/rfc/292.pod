@@ -1,0 +1,162 @@
+=head1 TITLE
+
+Extensions to the perl debugger
+
+=head1 VERSION
+
+  Maintainer: David Storrs <dstorrs@dstorrs.com>
+  Date: 25 Sep 2000
+  Last Modified: 30 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 292
+  Version: 2
+  Status: Frozen
+
+=head1 ABSTRACT
+
+The perl debugger is good, but there are several features it lacks (or at
+least, that it lacks convenient, single-key commands for) that would be
+extremely useful.  
+
+=head1 DESCRIPTION
+
+The following features appear in many modern IDEs, but not in the perl
+debugger.   It is generally possible to duplicate this functionality by
+writing an appropriate command string, but there should be easy ways to do
+these things.
+
+=over 4
+
+=item 1
+
+The ability to easily retrieve and edit your N most recent commands to the
+debugger (much like a bash_history).
+
+=item 2
+
+A better default pager.  The default pager should assume a 24x80 term
+window and use an absolute minimal number of control characters (e.g., use
+spaces in preference to horizontal tab) to format things.  This is not
+particularly fast or efficient but people who want that can reset it to
+something else, and using an absolute minimal one will make life easier
+for people (like me!) who use limited telnet clients to get to the box
+which runs Perl for them.
+
+=item 3
+
+The ability to look at an object and, with just one or two keystrokes,
+list 
+
+=over 4
+
+=item (A) 
+
+the names of all its ancestors, 
+
+=item (B) 
+
+the names of all its descendants, 
+
+=item (C) 
+
+the names of everything in its inheritance hierarchy (i.e., all of its
+ancestors, itself, all of its descendants).  
+
+=back
+
+Note that it is possible (generally by error) to construct cyclic
+inheritance graphs; the debugger would need to detect this and cope with
+it.
+
+=item 4
+
+The ability to provide a function name (preferably just the first unique
+section of its name) and 
+
+=over 4
+
+=item (A) 
+
+jump to where that function is defined, 
+
+=item (B) 
+
+list the names of all functions that call that function, 
+
+=item (C) 
+
+show all lines in the current package or file which call that function, 
+
+=item (D) 
+
+show all lines in the program (including linked modules) which call that
+function, 
+
+=item (E) 
+
+list all user-defined functions that that function calls
+=back
+
+=item 5
+
+The debugger should be better at storing state.  I should be able to do
+this:
+
+        <DB1> $foo = 2
+        <DB2> p $foo
+
+and have it print "2"
+
+=item 6
+
+It should be possible to enter multiline commands into the debugger
+without having to backslash each new line.  This could be done by using
+prefix and postfix command strings as markers (perhaps ML: and :LM) to
+show where the multiline begins and ends, or by simply making the engine
+smarter (difficult, I know).
+
+=item 7
+
+The O command should be extended to allow user modification of what is
+printed when the debugger must display an undef value (e.g., O
+undef_str=**UNDEF**).  If the default value is "", then we will maintain
+backwards compatibility.
+
+=cut
+
+=head1 IMPLEMENTATION
+
+1) The history functionality only requires a buffer in which to store the
+most recent N strings.
+
+2) The pager should be relatively straightforward; it is intended to be
+extremely minimalist, after all.
+
+3) Showing the ancestors of an object is easy (just dump @ISA), but
+showing the descendants might be harder, since it requires scanning the
+@ISAs of all known objects (unless there is some magic from -internals?).
+The best might be to construct a giant @ISA graph of all classes at
+runtime.  Note the possibility of circular inheritance graphs, and the
+fact that @ISA can be modified at runtime, which would require modifying
+the graph.
+
+4) The function tracking will be difficult, and will require much help
+from the -internals people.
+
+5) I'm not sure how to handle this one.  I'm tempted to say that the
+debugger should simply store its state in the program's stash, but that
+might cause problems.  It will mean that the debugger cannot simply "eval"
+all commands and then forget them.
+
+6) See RFC 184 for discussion on this.
+
+7) This should be straightforward, I hope.
+
+=head1 REFERENCES
+
+perldebug man page
+
+RFC 184: Perl should support an interactive mode.
+
+
+

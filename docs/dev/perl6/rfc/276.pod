@@ -1,0 +1,120 @@
+=head1	TITLE
+
+Localising Paren Counts in qr()s.
+
+=head1 VERSION
+
+  Maintainer: Richard Proctor <richard@waveney.org>
+  Date: 24 Sep 2000
+  Last Modified: 30 Sep 2000
+  Mailing List: perl6-language-regex@perl.org
+  Number: 276
+  Version: 2
+  Status: Frozen
+
+=head1 ABSTRACT
+
+The Paren Counts and backreferences should be localised in each qr(), to prevent
+surprises when qr()s are used in combination.
+
+=head1 DESCRIPTION
+
+TomCs perl storm #0040 has:
+
+> Figure out way to do 
+> 
+>     /$e1 $e2/
+> 
+> safely, where $e1 might have '(foo) \1' in it. 
+> and $e2 might have '(bar) \1' in it.  Those won't work.
+
+=head2 DISCUSSION
+
+Me: If e1 and e2 are qr// type things the answer might be to localise 
+the backref numbers in each qr// expression.   Use of assignment in a regex
+and named backrefs (RFC 112) would make this a lot safer.
+
+
+Hugo: 
+I think it is reaonable to ask whether the current handling of qr{}
+subpatterns is correct:
+
+perl -wle '$a=qr/(a)\1/; $b=qr/(b).*\1/; /$a($b)/g and print join ":", $1, 
+pos for "aabbac"' 
+a:5
+
+I'm tempted to suggest it isn't; that the paren count should be local
+to each qr{}, so that the above prints 'bb:4'. I think that most people
+currently construct their qr{} patterns as if they are going to be
+handled in isolation, without regard to the context in which they are
+embedded - why else do they override the embedder's flags if not to
+achieve that?
+
+The problem then becomes: do we provide a mechansim to access the
+nested backreferences outside of the qr{} in which they were referenced,
+and if so what syntax do we offer to achieve that? I don't have an answer
+to the latter, which tempts me to answer 'no' to the former for all the
+wrong reasons. I suspect (and suggest) that complication is the only
+reason we don't currently have the behaviour I suggest the rest of the
+semantics warrant - that backreferences are localised within a qr().
+
+I lie: the other reason qr{} currently doesn't behave like that is that
+when we interpolate a compiled regexp into a context that requires it be
+recompiled, we currently ignore the compiled form and act only on the
+original string. Perhaps this is also an insufficiently intelligent thing
+to do.
+
+MJD:
+Interpolated qr() items shouldn't be recompiled anyway.  They should
+be treated as subroutine calls.  Unfortunately, this requires a
+reentrant regex engine, which Perl doesn't have.  But I think it's the
+right way to go, and it would solve the backreference problem, as well
+as many other related problems.
+
+Me: You can access the nested backreferences outside of the qr{} in which 
+they were referenced by use of the named backref see RFC 112.
+
+=head2 AGREEMENTS
+
+The paren count in each qr() is localised to each qr().
+
+There is no way to access the nested backrefernces outside of the qr() by
+number they may be accessed by name (see RFC 112). 
+
+The regex engine must be made re-entrant.
+
+The regex compiler should not need to recompile qr()s when used as part of
+another regex.
+
+=head1 CHANGES
+
+V2 - Added a some more comments under implementation and froze - 
+no significant changes.
+
+=head1 IMPLENTATION
+
+The Regex engine must be made re-entrant.
+
+The expansion of variables in regexes must be driven by the regex compiler
+(Same problem as for RFCs 112, 166 ...)
+
+Hugo:
+
+None of these are necessarily true - we could change the overloading
+of the Regexp object instead. Currently we have:
+
+  my $re = qr{pattern};
+  print "$re";
+
+.. giving 'pattern' by overloading stringification. If we overload it
+instead to give '(??{ $re })' (or a moral equivalent) we have a nasty
+hack, it is true, but it could allow us to defer the much trickier
+proper solution. Of course it breaks every other use of the string
+value, and I'm not sure how big a problem that might be.
+
+
+=head1 REFERENCES
+
+Perlstorm #0040 from TomC.
+
+RFC 112: Assignment within a regex

@@ -1,0 +1,135 @@
+=head1 This week on perl5-porters (15-21 July 2002)
+
+OK, you know already I<the> big news of the week, don't you ?
+This report will tell you what happened behind the scenes of the 5.8.0
+final releasing.
+
+=head2 Module upgrades
+
+Russ Allbery released new versions of C<Term::ANSIColor> (1.05) and of
+C<podlators> (1.23), with documentation changes only, which were promptly
+assimilated.
+
+=head2 .pmc files
+
+Nick Ing-Simmons found an old, unused feature that was deeply burried into
+the perl code : when loading a module via C<use> or C<require>, perl
+checks whether there's a C<.pmc> file along the C<.pm> file, and newer; if
+it finds it, it gets loaded in place of the C<.pm>. This was intended to
+be used by the byteloader, but apparently isn't used at all (unless
+something was missed.) Anyway it was too late to remove it.
+
+=head2 Working on the bug database
+
+The perlbug database has switched from the old perlbug system to a new
+system running Request Tracker (at F<http://rt.perl.org/perlbug/>). The new
+system will probably need a few weeks of tuning before it finds a stable
+state. It's worth nothing that bug ids (now known as ticket numbers) have
+changed -- the new system converting them internally.
+
+Many thanks to Robert Spier, Jesse Vincent, Robert Foley, and to everyone
+that works (and has worked) on implementing and improving the bug report
+system ! Quoting Jarkko, I<it's a very thankless task>, and it's one of
+the key elements in successful software projects.
+
+Robert Spier and Ask Bjoern Hansen also built
+F<http://dev.perl.org/perl5/> that now centralizes the Perl 5 development
+resources.
+
+=head2 Insure
+
+Aaron J Mackey built perl RC 3 with Insure (a tool to check memory access
+and leaks). As he summarized the results : I<in short: not too bad>.
+Nevertheless, some of the points he uncovered will need some checking in
+the future.
+
+=head2 A PerlIO bug
+
+Marcel Gruenauer found a new bug in the PerlIO system, related to stacking
+the C<via> and the C<scalar> layers. Apparently, something like
+
+    open my $fh, ">:scalar:via(QuotedPrint)", \$x or die $!;
+
+didn't work as intended. This buglet was promptly fixed by Nick Ing-Simmons.
+
+Moreover Elizabeth Mattijsen found a workaround -- postponing the push of
+the C<via> layer makes this example work :
+
+    open( my $fh, ">", \$x );		# equivalent to ">:scalar"
+    binmode( $fh,":via(QuotedPrint)" );
+
+=head2 PerlIO and MacPerl line endings
+
+Chris Nandor, maintainer of MacPerl, asked about the better way to add
+support for programs with MacOS-style end of lines : a straight
+modification of the tokenizer, or a C<:mac> PerlIO layer ? Gurusamy
+Sarathy and Nick Ing-Simmons said that modifying the tokenizer is probably
+best done by using the source filter hook that is already in place. But
+Chris decided to work on a PerlIO-based solution, that will be in MacPerl
+5.8.0 (and hopefully in Perl 5.8.1).
+
+=head2 About the maintenance releases
+
+Sarathy said that I<there will be a 5.6.2 at some point, but I don't care
+to speculate on when. I foresee no urgency for a 5.6.2 if 5.8.0 turns out
+to be the high quality release all of us expect it to be.>
+
+Chip Salzenberg began to work on a new maintenance release of the 5.005
+branch, aimed at keeping it buildable with modern systems and compilers.
+Welcome back to Perl development, Chip !
+
+=head2 The pumpking is dead, long live the pumpking !
+
+I<I can see the light at the end of the tunnel... or is it the oncoming
+upset dragon?> -- Jarkko Hietaniemi
+
+Now that Perl 5.8.0 has been released, Jarkko will now be able to get some
+well-deserved vacation. Kudos to him for his unbelievable amount of work,
+his helpfulness, his competence, his professionalism, and his humor.
+Jarkko, this was a pleasure to work with you.
+
+The pumpking for the 5.9 development branch is Hugo van der Sanden,
+who says :
+
+I<I'll be in San Diego for the next week, so don't expect anything
+much during that time. Please start thinking off-list about what
+should go into 5.9; the lists will be opened when I get back.>
+
+=head2 Do hashes waste memory ?
+
+Chip Salzenberg, working on 5.005_04, discovered an apparent memory waste
+on hash buckets allocation. This suboptimal memory allocation is still
+present in perl 5.8.0, for perls built without C<-Dusemymalloc> or without
+the C preprocessor symbol C<STRANGE_MALLOC> (that you should define
+yourself, as it is never set by C<Configure>.)
+
+Chip suggested to build perl with C<-DSTRANGE_MALLOC> when perl's malloc
+isn't used. Nick Clark ran a benchmark and this option doesn't seem to
+increase perl's speed ; but the memory usage should go down significantly
+in programs that use large hashes or lots of hashes. What's missing is a
+benchmark that outputs comprehensive memory stats.
+
+=head2 About the C<sort> pragma
+
+Michael G Schwern pointed a small inaccuracy in the docs for the C<sort>
+pragma. John P Linderman (expert in sorting), while trying to improve
+those docs, realized that the interface to this pragma was rather minimal
+and threw up a couple of new options in its import and unimport methods.
+
+=head2 defined or
+
+Brent Dax submitted a patch that adds the C<//>, C<//=> and C<err>
+operators to Perl 5. As you know if you've read the Apocalypses, these
+operators are borrowed from Perl 6. As Brent puts it in the doc part of
+his patch : C<//> [...] is I<exactly the same as C<||>, except that it
+tests the left hand side's definedness instead of its truth.>
+
+As this patch adds new ops, various tweaks are necessary to the rest of
+perl to make it work flawlessly ; Brent provided an assorted patch to
+C<B::Deparse>, and pointed out that the C<Opcode> and C<Safe> modules may
+need some work.
+
+=head2 About this report
+
+This report is now availaible via a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>.

@@ -1,0 +1,61 @@
+=head1 TITLE
+
+Wildcards for multiple module imports
+
+=head1 VERSION
+
+  Maintainer: Peter Bevan <peter@scalarmonkey.com>
+  Date: 8 Aug 2000
+  Mailing List: perl6-language@perl.org
+  Number: 62
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+It occurs that being able to include modules via wildcards
+for entire packages would be a desirable feature. Just as in
+Java, related packages could then be loaded implicitley without
+the need for specifying each one in turn. The LWP and Net
+packages, are a good example.
+
+=head2 DESCRIPTION
+
+A directory in the perl library is intended to encapsulate modules
+which have relevance to each other (again the Net package is a good
+example). Given that this is the case (and given extensive expirience)
+it is apparent that there are many situations in which onw would wish
+to load the entire group.
+
+As things stand this is not a possibility (without reading the dir
+stuctures and loading each file dynamicly - which isn't a great idea).
+
+As a side point this may push module developers into even better
+co-operative working enviroments (i.e. they will need to work much
+more closely together in order to tie up their respective modules)
+
+
+=head2 IMPLEMENTATION
+
+The option to load modules thus:
+
+use Foo::*  [The '*' character isn't very pleasant, any sugestions??]
+or
+use Foo::Bar::* [An alternate Foo::, has been sugested]
+etc
+
+Also, having thought about it, it occurs that the ability to opt-out
+of such a scheme is desirable. This could be acheived by eigther setting
+some kind of global identifier within the module to signal it's
+"community-mindedness" or possibly a new naming convention (.pm for modules
+which have opted-out and .pmc for instance, for those which have not). It
+may
+even be possible to set a flag of somekind in the module packlist. I guess
+thats up to the internals developers to decide...
+
+
+=head2 REFERENCES
+
+Any java class package...
+perldoc perlmod
+

@@ -1,0 +1,204 @@
+Perl 5.8.0 版正式釋出
+=====================
+譯者: 唐宗漢
+
+Perl 5 開發團隊很高興能在此宣告 Perl 5.8.0 版的釋出.
+
+Perl 5.8.0 是 Perl 5 語言的大幅更新版本. 它涵括了自上次大幅更新版 5.6.0
+釋出以來, 所有發展與維護性的增修, 也包括 5.6.1 維護版本內的所有增修.
+
+Perl 5.8.0 可由「Perl 綜合典藏網」(CPAN) 下載. 請挑選一個離您較近的映射
+站台; http://mirrors.cpan.org/ 提供了完整的站台列表.
+
+  [全區]
+    FTP 總站	ftp://ftp.cpan.org/pub/CPAN/src/perl-5.8.0.tar.gz
+    HTTP 總站	http://www.cpan.org/src/perl-5.8.0.tar.gz
+
+  [臺灣]
+    淡江大學	http://ftp.tku.edu.tw/pub/CPAN/src/perl-5.8.0.tar.gz
+    中央研究院	ftp://ftp1.sinica.edu.tw/pub1/perl/CPAN/src/perl-5.8.0.tar.gz
+    交通大學	ftp://ftp.nctu.edu.tw/UNIX/perl/CPAN/src/perl-5.8.0.tar.gz
+    成功大學	ftp://ftp.ee.ncku.edu.tw/pub/perl/CPAN/src/perl-5.8.0.tar.gz
+
+  [中國]
+    中國軟件行業協會
+    ftp://freesoft.cei.gov.cn/pub/languages/perl/CPAN/src/perl-5.8.0.tar.gz
+    中國 Linux 論壇
+    http://www2.linuxforum.net/mirror/CPAN/src/perl-5.8.0.tar.gz
+
+  [香港]
+    熊顯力	http://ftp.shellhung.org/CPAN/src/perl-5.8.0.tar.gz
+
+  [新加坡]
+    華中中學	http://cpan.hjc.edu.sg/src/perl-5.8.0.tar.gz
+
+和以前一樣, Perl 適用於五花八門的各種作業平台, 包括所有已知的 UNIX/Linux
+及微軟的作業系統, 以及足夠支援 POSIX 的下列平台: BeOS, Cygwin, Netware,
+MPE/iX, OS/2, QNX, VMS, VOS, 以及 z/OS. 麥金塔 MacOS Classic 的用戶請到
+http://dev.macperl.org/ 下載專屬的移植版本. 若想知道所有支援的平台列表.
+請參見 pod/perlport.pod 檔.
+
+我們釋出的是源碼版本, 而非編譯過的二進制檔案. 您需要有 C 語言的開發環境,
+纔能從源碼安裝 Perl. 許多廠商稍後會提供編譯後的版本.
+
+請參見內附的 INSTALL 檔與相關的 README.平台 檔案, 以瞭解裝設 Perl 所需的
+步驟, 以及如何回報問題. 另外, 我們也為正體中文的使用者準備了 README.tw
+這份「正體中文指南」, 內容以 BIG5-ETEN (Big5) 編碼.
+
+請注意裝設 Perl 所需的時間可能視情況而異. Perl 5.8.0 版約為 5.6.1 版的兩
+倍大小, 並含有數個相當龐大的源碼檔案, 也許會讓編譯器相當頭痛. 在具備高效
+能處理器及充足記憶體的機器上, 裝設過程可能會花上十分鐘左右. 不過若系統的
+速度較慢/型號較舊/負載較高, 最多可能花上八小時; 在一般的情況下, 半小時到
+一小時是很正常的.
+
+除此之外, 執行測試所需的時間也可長可短. Perl 5.8.0 包括了幾乎六倍於 Perl
+5.6.1 版的測試數量. 測試通常需要約十五分鐘到半小時, 但是在慢一些的系統上
+則很可能超過一小時.
+
+如同 Perl 的授權條款所述 (請參見 Artistic 或 Copying 等檔案), 本套件並不
+提供任何使用上的擔保責任.
+
+同樣的, 也請您在將運作中的環境昇級到新版前, 先進行必要的測試.
+
+根據 5.6.0 版時確立的編號方式, Perl 5.8 此刻將進入「維護階段」; Perl 5.9
+將作為新的開發分支, 交由 Hugo van der Sanden 領導. Perl 5.8 的第一個維護
+版本將稱為 5.8.1 版, 多半會在 5.9.0 版釋出後再發佈.
+
+Perl 5.8.0 的釋出, 並不代表我們將停止維護 Perl 5.6 系列, 但也不保證未來
+必然會有 Perl 5.6.2 版; 這要看日後 5.8.0 版的穩定性如何.
+
+底下附上精簡版的更動摘要, 以及已知的問題; 在 pod/perldelta.pod 檔案裡有
+更詳細的說明. Changes 檔案裡, 則有鉅細靡遺的更動記錄.
+
+請與我們分享 Perl 的喜悅!
+
+-- Jarkko Hietaniemi 
+   謹代表 Perl5 Porters 團隊  敬上
+
+*** 底下是技術細節 ***
+
+摘要
+
+[5.8.0 的焦點]
+
+- 更佳的 Unicode (萬國碼) 支援:
+  自從 5.6 版以來, Unicode 支援已在各層面上大幅更新:
+  - 支援 Unicode 3.2.0 版 (Perl 5.6.1 支援 3.0.1 版)
+  - 在語言及內部層次上, 提供更普遍而平順的 Unicode 環境
+  - 正規表示式能夠配合 Unicode 了
+  - 提供 Encode 模組, 以支援現存的編碼方式 (包括各種中/日/韓系統)
+
+- 多執行緒模式:
+  「解譯器執行緒」(interpreter threads, 簡稱「ithreads」) 是新的多執行緒
+  模式. 我們強烈建議您用它來取代舊版的「5.005 執行緒」模式. 兩者間主要的
+  差異, 在於 ithreads 下必需明確宣告要共享的資料.
+
+- 新的輸入/輸出模式:
+  新推出的 PerlIO 模式, 同時提供了源碼層級的跨平台 stdio 實作, 以及更豐
+  富的輸出入控制架構.
+
+- 更精確的數值:
+  之前的 Perl 版本依賴於您系統上的字串/數值轉換函式; 這往往造成了跨平台
+  的障礙, 以及錯誤的計算結果.
+
+- 64 位元支援:
+  目前的 64 位元支援已經成熟 -- 若您的系統支援 64 位元的整數或定址空間,
+  就可以在編譯時指定使用這些功能.
+
+- 安全的信號 (signal) 處理:
+  之前的版本裡, Perl 在接收信號時可能會破壞解譯器的內部狀態.
+
+- 大量的新模組:
+  Digest::MD5, File::Temp, Filter::Simple, libnet, List::Util,
+  Memoize, MIME::Base64, Scalar::Util, Storable, Switch,
+  Test::More, Test::Simple, Text::Balanced, Tie::File, ...
+
+- 徹底的相容性測試:
+  Perl 現在具備了六倍於 5.6 版的測試套件, 並且每日在各種平台上進行裝設
+  測試.
+
+[相容性]
+
+- 二進制檔案不相容:
+  主要由於 PerlIO 的導入, Perl 5.8 與先前的 Perl 版本之間並無「二進制相
+  容性」. 您可能會需要再次編譯各個 XS 延伸模組.
+
+- AIX 動態載入:
+  為了與 AIX 系統上的其他程式更加相容, Perl 在 AIX 系統上啟用了系統的動
+  態載入, 而非早先的模擬方式.
+
+- 停用 64 位元平台上的 Perl Malloc 記憶體配置:
+  Perl 的 malloc 函式在 64 位元定址的機器上似乎有許多問題. 因此, 我們現
+  在預設使用系統原生的 malloc 函式.
+
+- 雜湊順序又改變了:
+  Perl 內部的雜湊函式又改成了較好的版本, 不過祗要您的源碼不依賴於特定的
+  雜湊鍵順序, 這就不成問題.
+
+- my 的屬性改在執行階段處理:
+  my() 變數的屬性目前改在執行階段處理, 而非編譯階段.
+
+- REF(...) 取代了 SCALAR(...):
+  為符合 ref() 的結果, 對參照 (reference) 的參照在字串裡改以 "REF(...)"
+  表示.
+
+- 更新的 Unicode 處理模式, 大幅減少了需要使用 "use utf8" 之處:
+  在 Perl 5.6 版時, 資料是否視為 Unicode, 端視其運算是否處於 "use utf8"
+  編譯命令的有效範圍內而定; 現在, Perl 5.8 直接將 "Unicode 性質" 連結到
+  資料上. 因此, 目前祗有在程式碼內用到 UTF-8 字面值 (literal) 時, 纔需
+  使用 "use utf8". (在沒有 "use utf8" 時, 為了保持與現存命令稿的相容性,
+  字面值仍視為位元組處理.)
+
+- VMS: Socket 延伸模組動態化, Alpha 預設使用 IEEE 浮點數
+  - Socket 延伸模組在 VMS 平台上改為動態載入; 這在極舊版的 VMS 上可能會
+    造成問題.
+  - OpenVMS Alpha 目前預設使用 IEEE 浮點數格式. 這樣做的理由及細節, 請見
+    README.vms.
+
+[用詞改變]
+
+- 《駱駝書》(Programming Perl, 《Perl 程式設計》) 第三版內的「IO 紀律」
+  (IO discipline), 現在改稱為「IO 層」(IO layer).
+
+[不建議使用]
+
+- dump():
+  dump 指令的功能, 目前視同作廢.
+
+- 5.005 執行緒模式已不建議使用
+  請採用新的「解譯器執行緒」模式.
+
+- 擬雜湊 (Pseudohash):
+  使用者層級的擬雜湊語法將被移除, 改成比較簡潔的操作界面. 此外, 內部的
+  實作方式也必須更改, 因為它減緩了一般雜湊的存取速度.
+
+- "exec(串列)" 與 "system(串列)" 參數內的受污染 (tainted) 資料:
+  目前這會觸發警告訊息, 但在未來的版本裡會變成致命錯誤.
+
+- tr///C, tr///U:
+  這兩個操作界面是個意外; 請採用 pack("C0", ...) 及 pack("U0", ...).
+
+[已知問題]
+
+- AmigaOS 無法裝設 Perl 5.8.0.
+
+- 編譯套件: 位元碼編譯及原生碼編譯仍然有問題.
+
+- Lvalue 左值函式仍然視為實驗性質.
+
+- local() 與 tie() 的交互使用結果, 仍未清楚定義.
+
+- 繫結(Tied) 或魔法(Magical) 陣列及雜湊並不會自動生成 (Autovivify).
+
+- 自我繫結的陣列及雜湊, 目前禁用.
+
+--- 
+
+再次提醒您, 請詳閱 pod/perldelta.pod, INSTALL, 以及 README.平台. 就這樣.
+
+
+
+<%flags>
+inherit => undef
+</%flags>
+%$r->content_type("text/plain; charset=big5");

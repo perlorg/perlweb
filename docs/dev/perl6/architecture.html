@@ -1,0 +1,76 @@
+[% page.title = "Perl6 Architecture" %]
+
+<h2>
+Quick Summary</h2>
+Source enters the parser. The parser emits a syntax tree.
+<p>The syntax tree enters the compiler. The compiler spits out bytecode.
+<p>The bytecode enters the optimizer. The optimizer spits out more bytecode.
+<br>(But better!)
+<p>The bytecode enters the runtime, which then Does Something with the
+<br>bytecode. (Presumably run it, but possibly turn it to Java bytecode,
+or
+<br>.NET bytecode, or an Alpha executable, or an encoded DNA sequence for
+<br>fruitflies or something)
+<p>Or, in glorious ASCII art form (data flows from top to bottom):
+<table BORDER >
+<tr>
+<td>
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Source Code</pre>
+
+<pre>&nbsp;&nbsp;&nbsp; +------------+
+&nbsp;&nbsp;&nbsp; | The Parser |
+&nbsp;&nbsp;&nbsp; +------------+</pre>
+
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Syntax Tree</pre>
+
+<pre>&nbsp;&nbsp;&nbsp; +--------------+
+&nbsp;&nbsp;&nbsp; | The Compiler |
+&nbsp;&nbsp;&nbsp; +--------------+
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Byte Code</pre>
+
+<pre>&nbsp; +--------------------+&nbsp;&nbsp;
+&nbsp; | Bytecode Optimizer |&nbsp;&nbsp;
+&nbsp; +--------------------+&nbsp;&nbsp;</pre>
+
+<pre>&nbsp;&nbsp;&nbsp; Better Byte Code</pre>
+
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; +---------+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Runtime |
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; +---------+</pre>
+</td>
+</tr>
+</table>
+
+<h2>
+The Plans</h2>
+The parser will permit you to change its rules.&nbsp; Rule sets define
+major languages (Perl, C, Python, Java, etc.) and you can write new rules
+to define minor languages (Perl without $ @ % sigils, Python with curly
+braces, etc.).
+<p>The runtime engine (which Dan has codenamed "<a href="http://www.perl.com/pub/2001/04/01/parrot.htm">Parrot</a>")
+is a register-based virtual machine (compare to
+the perl5 virtual machine, which is stack-based).&nbsp; Combined with this
+and work on vtables (values have tables of operations attached to them),
+we hope the virtual machine will be faster and more powerful than that
+of perl5.
+<p>One of the major reasons to revisit Perl was to fix the mess that is
+XS (the way you extend Perl with C or C++ subroutines).&nbsp; Perl5 has
+no API for extension, separate from the functions used to implement Perl,
+and extending Perl requires hideous amounts of work.&nbsp; Dan and Larry
+are aiming to make C extensions as easy as they possibly can be (Brian
+Ingerson's excellent perl5 <a href="http://www.perl.com/pub/2001/02/inline.html">Inline</a>
+modules give some directions for this).&nbsp; Anyone who has used XS looks
+forward to its demise.
+<p>Perl5 was designed in such a way that it would run wherever there was
+C.&nbsp; These days, though, it's becoming more and more common to not
+have C but instead to have some kind of virtual machine (JVM, .NET, etc.).&nbsp;
+So we'd like to have our own virtual machine that will run wherever there's
+C, but also to make it easy to port the bytecode to another virtual machine
+for places without C.
+
+<p>
+
+For more information, look for Dan Sugalski's Perl6 internals slides
+in the <a href="talks/">talks section</a>.
+

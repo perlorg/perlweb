@@ -1,0 +1,118 @@
+=head1 This Week on perl5-porters (9-15 December 2002)
+
+Busy week for the Perl 5 porters : lots of patches were sent. In the
+discussion, several curious behaviors of perl were also explained, for the
+enlightenment of all. Ain't it interesting ?
+
+=head2 Deparse barewords with leading hyphens
+
+Yves Orton remarked that the popular syntax
+
+    my $hashref = { -foo => "bar" };
+
+doesn't seem to be properly deparsed by B::Deparse, which turns the hash
+key into C<-'foo'>. As Stephen McCamant points out, this is still correct
+however, because I<if you apply the unary minus operator to a string that
+starts with a letter or _, it prepends "-" to the string.>
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg89762.html
+
+=head2 Debugger regression
+
+David Dyck noticed (bug #19017) that the x debugger command doesn't
+display lexical variables any longer in bleadperl (this works fine in
+5.8.0 and before). Dave Mitchell identified and fixed the bug, which was
+introduced by one of his patches, and explained how the debugger is
+actually able to do things like this.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg89794.html
+
+=head2 %z in strftime()
+
+Jarkko Hietaniemi grumbled about the %z strftime() format, recently
+introduced. This format appears to be non-POSIX, for some values of the
+POSIX standard. Finally, as it can't be tested portably, Jarkko removed
+the tests for it from the POSIX test suite.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg89791.html
+
+=head2 Compile-time hints
+
+Rafael Garcia-Suarez proposed a master plan to reconsider the way compiler
+hints are implemented. The compiler hints are the mechanism that make
+lexically scoped pragmas work. The need to make hints more extensible and
+more flexible has been discussed several times since last year, see for
+example an older summary :
+
+    http://dev.perl.org/perl5/list-summaries/p5p-200208-1.pod.html
+
+Rafael's detailed proposal and first patch, and the start of the relevant
+thread, are here :
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg89822.html
+
+=head2 goto and redo
+
+Mark-Jason Dominus reported bug #19061, which can be summarised as
+follows : if goto() is used to jump in the middle of a block which has a
+label C<FOO>, a C<redo FOO> in this block won't be able to restart it.
+In other words :
+
+    goto FOO; BAR:{ FOO: print 1; redo BAR; }
+
+emits an error I<Label not found for "redo BAR">.
+
+Stephen McCamant explained this specific behavior, which seems to be hard
+to change.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg89886.html
+
+=head2 In brief
+
+Nicholas Clark suggested a performance enhancement by reordering code in
+pp_entersub() (a C function which implements a Perl subroutine call).
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg89810.html
+
+Nicholas Clark suggested also another potential improvement : replace the
+%s in the printf-like formats in the core by %_, when the argument is an
+SV*. %_ is an internal-only printf format hack, that doesn't seem to be
+widely used anymore in the core, I wonder why.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg89813.html
+
+Ton Hospel reported several obscure bugs on regular expressions (bugs
+#19048, #19049, #19050, #19078, and #19134, no less). Some of them were
+already known or corrected.
+
+John Peacock proposed a small change in the implementation of v-strings,
+consecutive to some earlier critics regarding the consistency of the
+current behavior.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg89649.html
+
+Various people reported that the tests for POSIX are quite noisy those
+days, spitting out strange error messages like I<Unbalanced string table
+refcount>. Dave Mitchell and Nicholas Clark provided fixes and tests. (Bug
+#19022.)
+
+Craig Berry, back on the VMS port front, asks what the command-line flag
+C<-IFoo::Bar> (found in a regression test) is supposed to do. The answer
+is simple : it should put a directory C<Foo::Bar> in @INC (at least on
+platforms that accept a colon in file names).
+
+Ilya Zakharevich, back on the OS/2 port front, sent six various patches in
+a row (not all related to OS/2, several being related to MakeMaker).
+
+Tels noticed that the modulus (%) operator works only on integers.
+Non-integers arguments to % are truncated. If you want a modulus that
+works on floats, use C<bignum>.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg89995.html
+
+=head2 About this summary
+
+This summary brought to you in time by Rafael Garcia-Suarez, both on
+F<http://use.perl.org/> and via a mailing list, which subscription address
+is F<perl5-summary-subscribe@perl.org>. Comments and corrections are, as
+always, welcome.

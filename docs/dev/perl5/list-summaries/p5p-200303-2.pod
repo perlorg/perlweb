@@ -1,0 +1,106 @@
+=head1 This Week on perl5-porters (17-23 March 2003)
+
+This week -- well, I have to admit that, if I wasn't writing these
+summaries, I'd have forgotten most the of things that happened this week :
+because it was busy. Read on for the short notes I've taken about all
+those recent developments -- pack(), FETCH()es, threads port, et alii.
+
+=head2 pack() changes
+
+Wolfgang Laun sent a new version of his patches to pack() and unpack(),
+which were integrated into the development and the maintenance versions
+of perl. See the impressive detail of improvements in his message :
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg93325.html
+
+=head2 XS++
+
+Salvador FandiE<ntilde>o sent a patch to MakeMaker to allow to use C++/XS
+source files with a F<.xss> filename extension. These will produce F<.cpp>
+files that will be compiled by the C++ compiler of choice.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg93406.html
+
+=head2 Fetching while fetching
+
+Miko O'Sullivan reports (bug #21602) a complicated but interesting bug
+with tied hashes accessed from within FETCH methods of other tied hashes.
+Dave Mitchell knows about this bug already, which is caused by I<the
+internal implementation of ties using a shared global variable>, which
+can't be considered clean. Nicholas Clark encourages Dave to write a fix,
+and Miko to write a regression test.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg93355.html
+
+=head2 Threaded Cygwin
+
+Great news : Perl with ithreads now compiles on Cygwin ! and only one
+regression test fails (something in the guts of MakeMaker).
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg93417.html
+
+=head2 rcatline bug
+
+Matt Sergeant remarked that the internal C<rcatline> operator (that
+appends to a variable a line read from a filehandle), new in perl 5.8.0,
+is sometimes broken, and therefore breaks some code. Enache Adrian
+provided a fix.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg93454.html
+
+=head2 Force failure of a regexp
+
+Jonathan Stiles asks for a way to assert a failure in a regular expression.
+Hugo gives an example that inserts the constants
+
+    our $fail = qr{(?!)};
+    our $succeed = qr{(?=)};
+
+into C<(??{...})> blocks. Enache Adrian recalls the C<fail> builtin
+described in Apocalypse 5, wondering if it could be backported to Perl 5.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg93505.html
+
+=head2 Unbalanced string table refcount
+
+Paul Dyer reports bug #21614, about the internal warning I<Unbalanced
+string table refcount> being issued under mod_perl. It's not really clear
+whether it's a mod_perl-specific problem, since it wasn't successfully
+reproduced with a standalone perl interpreter. Nicholas Clark, however, is
+able to reproduce a memory access error with perl 5.8.0 (but not with
+maint- or bleadperl), and even able (apparently) to understand what's
+going on.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg93433.html
+
+=head2 Maintsnap
+
+Jarkko Hietaniemi released a snapshot of maintperl. He hasn't worked on
+perldelta yet, but a list of changes since the last snapshot can be found
+at :
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg93488.html
+
+=head2 Other news with no title
+
+Marek Rouchal remarks that the bytecode compiler/loader is broken with
+perl 5.8.0. Enache Adrian submits a patch to solve one of the most obvious
+problems : it's not up to date with some of the recent changes to the core.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg93336.html
+
+Stas Bekman asks why one can redefine the active subroutine, but not
+undefine it. So far, nobody knows.
+
+Last week, I summarized that Inline::C wasn't working with bleadperl and
+maintperl ; the patch to be blamed for this has been found, it's an
+innocent-looking regexp bug fix (#18533). Waiting for a proper cure to be
+found, this patch has been withdrawn from maintperl. Hopefully Inaba
+Hiroto proposed a patch.
+
+=head2 About this summary
+
+This summary was brought to you by Rafael Garcia-Suarez. Weekly summaries
+are available on F<http://use.perl.org/> and/or via a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. Comments,
+corrections, additions, and suggestions are welcome.

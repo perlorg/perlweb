@@ -1,0 +1,35 @@
+
+=head1 TITLE
+
+wait() and waitpid() should return false on failure
+
+=head1 VERSION
+
+  Maintainer: Nathan Torkington <gnat@frii.com>
+  Date: 13 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 220
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+All system calls in Perl should return false on failure.
+
+=head1 DESCRIPTION
+
+wait() and waitpid() return -1 on failure.  They should
+return C<undef>, and return C<"0 but true"> if the system call
+returned 0.
+
+=head1 IMPLEMENTATION
+
+Straightforward.  The perl526 translator simply wraps the perl6 wait()
+and waitpid():
+
+  do { my $r = waitpid(...); return -1 if !defined $r;
+       return 0 if !$r; $r }
+
+=head1 REFERENCES
+
+the perlfunc manpage for information on waitpid() and wait()

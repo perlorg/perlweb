@@ -1,0 +1,169 @@
+=head1 TITLE
+
+Replace => (stringifying comma) with => (pair constructor)
+
+=head1 VERSION
+
+  Maintainer: Damian Conway <damian@conway.org>
+  Date: 10 Aug 2000
+  Last Modified: 18 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 84
+  Version: 2
+  Status: Frozen
+
+=head1 ABSTRACT
+
+This RFC proposes the introduction of a new data type -- the I<pair> -- and
+the co-opting of the => operator to act as a pair constructor. Most existing
+uses of => would be preserved.
+
+=head1 DESCRIPTION
+
+It is proposed that a new data structure, to be known as a I<pair>, be
+added to the language. The => operator would cease to be a
+first-argument-stringifying comma operator, and becomes an anonymous pair
+constructor (just as [...] and {...} are anonymous list and hash constructors
+respectively). The => operator would return a reference to a pair containing
+the two scalar operands to =>.
+
+The first component of a pair would be called its I<key>, and the
+second, it's I<value>. Two new lvalue built-ins -- C<key> and C<value>
+-- would be introduced to provide read and write access the components
+of a pair.
+
+	print key $pair_ref;
+	value($pair_ref) = $newval;
+
+
+=head2 Pairs and hashes
+
+A hash could be constructed from a list of pair references. In fact a
+hash could be thought of (and perhaps implemented!) as a set of pairs.
+
+Thus:
+
+        %hash = ( a=>1, b=>2, 'c', 3 );
+
+does what it does in Perl 5, but works slightly differently. The list being
+assigned consists of four elements (not six): a pair reference, another pair
+reference, a string, and an integer.
+
+When a pair reference is assigned (in)to a hash, the pair's key becomes
+the hash entry's key, and the pair's value becomes the entry's value
+
+As the above example indicates, hashes could still be assigned "flat" lists.
+
+
+=head2 Pairs and arrays
+
+When a pair reference is assigned (in)to an array, it remains a single scalar
+(referential) value. So:
+
+        @array = ( a=>1, b=>2, 'c', 3 );
+
+assigns four elements (not six) to @array.
+
+
+=head2 Pairs and subroutines
+
+When a pair reference is used in the argument list of a subroutine with
+no parameter list, it is passed as a single scalar value (i.e it remains
+a pair reference).
+
+When a pair reference is passed to a subroutine with named parameters, it
+binds its value to the parameter of the same name, regardless of the order
+in which it is passed.
+
+Thus:
+
+        use Data::Dumper;
+
+        sub no_params {
+                print "no_params:\n"
+                print join "\n", map {ref||"scalar val"} @_;
+                print Dumper @_;
+        }
+
+        sub params ( $name, $rank, $serial_num) {
+                print "params:\n"
+                print join "\n", map {ref||"scalar val"} @_;
+                print Dumper @_;
+        }
+
+        no_params(serial_num=>1234, name=>'demo', rank=>'RFC');
+
+        params(serial_num=>1234, name=>'demo', rank=>'RFC');
+
+prints:
+
+        no_params:
+        PAIR
+        PAIR
+        PAIR
+        $VAR1 = ( 'serial_num' => 1234 );
+        $VAR2 = ( 'name' => 'demo' );
+        $VAR3 = ( 'rank' => 'RFC' );
+
+        params:
+        scalar val
+        scalar val
+        scalar val
+        $VAR1 = 'demo';
+        $VAR2 = 'RFC';
+        $VAR1 = 1234;
+
+
+Note that these semantics still support the popular:
+
+        sub hash_like_args {
+                my %args = @_;
+                # etc.
+        }
+
+        hash_like_args(serial_num=>1234, name=>'demo', rank=>'RFC');
+
+
+=head2 Pairs and multiway comparisons
+
+Pairs also provide a clean way of implementing multiway comparisons.
+
+It is proposed that when a pair is evaluated in a boolean context, it
+would evaluate to the truth value of its key. But when evaluated as the left
+operand of a comparison operator, it would evaluate to its value,
+I<but> would short-circuit if its key were false.
+
+Thus:
+
+        1 < 4 < 7 < 9
+
+would be evaluated:
+
+        (((1 < 4) < 7) < 9)
+        (((true=>4) < 7) < 9)   # true because 1 < 4
+        ((true=>7) < 9)         # true because 4 < 7
+        (true=>9)               # true because 7 < 9
+        1                       # boolean context evals to truth of key
+
+On the other hand:
+
+        1 < 4 < 7 < 3 < 9
+
+would be evaluated:
+
+        ((((1 < 4) < 7) < 3) < 9)
+        ((((true=>4) < 7) < 3) < 9)     # true because 1 < 4
+        (((true=>7) < 3) < 9)           # true because 4 < 7
+        ((''=>3) < 9)                   # '' (false) because !(7 < 3)
+        ''                              # short circuits to false
+
+=head1 IMPLEMENTATION
+
+See Description.
+
+=head1 REFERENCES
+
+Forthcoming Conway RFC on subroutine parameter lists
+(including named parameters)
+
+RFC 25: Operators: Multiway comparisons

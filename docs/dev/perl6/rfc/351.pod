@@ -1,0 +1,114 @@
+=head1 TITLE
+
+Beyond the amnesic eval
+
+=head1 VERSION
+
+  Maintainer: Stéphane Payrard <stef@francenet.fr>
+  Date: 29 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 351
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+An unscoped eval is needed. It is part of the necessary steps to
+make Perl palatable as an interactive shell.
+
+=head DESCRIPTION
+
+A perl shell, beyond its intrinsic utility, will be a great
+interactive learning tool.  The absence of unscoped eval makes perl
+based shells unattractive because they must be implemented as a scoped
+eval around each command line. As a result most of the interesting
+context is lost.
+
+
+In command line mode, an interpretor reads a line typed by the user
+then evaluates it. And so for the next lines, ad nauseam.  It is only
+natural to propagate the context from one line to another. This is
+what make possible inteesting interactive uses.
+
+This is not what happens in perl5 because C<eval> is always scoped.
+The lost context is: the current package, special variables sets by
+regexp ($1...), scoped variables (lexical and local).
+
+
+A basic CLI can be built as a oneliner in classic Perl, the perl
+debugger invoked by C<perl -de 0> is a glorified but specialized
+command line. But without unscoped eval. It does not cut it.
+
+An example of a frustrating session where a naive user expect a
+unscoped eval:
+
+    DB<1> package FOO
+
+    DB<2> print __PACKAGE__
+  main
+    DB<3> $_='foo'
+
+    DB<4> print m/(foo)/
+  foo
+    DB<5> print $1
+
+    DB<6> my $foo = 'bar'
+
+    DB<7> print $foo
+
+    DB<8> local $foo = 'bar'
+
+    DB<9> print $foo
+
+
+Certainly, one can get away by cramming a lot of stuff in one line.
+But the idea of granular interactivity is lost:
+
+
+    DB<13> package FOO;  print __PACKAGE__
+  FOO
+    DB<14>  $_='foo'; print m/(foo)/
+  foo
+    DB<15> local $foo = 'bar'; print $foo
+  bar
+    DB<16> my  $foo = 'bar'; print $foo
+  bar
+
+
+=head2 Syntax
+
+I propose the unary + as a marker that differentiates unscoped eval
+from classic (scoped) eval. Or one may consider a explicit keyword.
+I can't find a satisfactory one.
+
+
+Classic eval:
+
+ eval {}
+ eval ""
+
+Unscoped eval
+
+ +eval {}
+ +eval ""
+
+=head1 IMPLEMENTATION
+
+=head1 REFERENCES
+
+Refeences to forthcoming RFCs.
+
+There are other features needed to make perl6 a good shell.  They can
+be mode-dependant so as not to interfere with perl as a programming
+language.
+
+
+Command line languages make heavy usage of litterals. In perl6 command
+line mode, the default should be to interpret most strings as
+litteral. For example C</etc/> should be a string that will
+interpreted as a filename.  "Taking things litterally" will describe
+what change of syntax this implies.
+
+"User defined microsyntax" goes one step further and will propose user
+defined litterals to avoid writing complex constructors.
+

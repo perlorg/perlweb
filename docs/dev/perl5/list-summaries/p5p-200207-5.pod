@@ -1,0 +1,138 @@
+=head1 This Week on perl5-porters (29 July / 4 August 2002)
+
+Now that perl 5.8.0 is out and flies by itself, the 5.9 development track
+begins. Learn about what may go (or not) in perl 5.9. Plus the usual
+amount of bugs.
+
+=head2 Some directions for perl 5.9
+
+Hugo van der Sanden posted his views on the general directions of perl 5.9
+development. Shortly, he listed (with varying degrees of importance or
+probability) : improving perl's speed ; cleaning the sources ; converging
+with Perl 6 (with a possible new perl6ish pragma, to use some of the
+incompatible Perl 6 constructs or deprecations) ; providing multiple Perl
+distributions containing a various amount of modules.
+
+There was also some handwaving (which I initiated) about having some kind
+of Perl 5 to Perl 6 or Parrot translator. This would probably involve
+improving the C<B::> backend framework if this is the way to go.
+
+    http://groups.google.com/groups?threadm=200207301220.g6UCKtr07589%40crypt.compulink.co.uk
+
+(I now give the message links to google, so you can navigate the whole
+thread. I found this more convenient.)
+
+Pseudo-hashes and the old 5005 threads will be removed. Michael G Schwern
+provided a first patch to cut off pseudo-hashes, that doesn't handle
+the necessary changes to the core modules, esp. fields.pm and
+base.pm.
+
+Hugo also wondered if non-PerlIO perls should be deprecated. This decision
+should be based on some real-world feedback -- are there platforms that
+have problems with PerlIO ?
+
+    http://groups.google.com/groups?selm=200207301220.g6UCKvQ07607%40crypt.compulink.co.uk
+
+=head2 Change in the logic of the CPAN indexer
+
+As 5.8.0 is out, some problems arise when the CPAN shell is used to
+install modules that have a dual life (on CPAN and in the core.) Andreas
+Koenig has updated the CPAN indexer so that I<it indexes perl distribution
+only for packages that have no separate lives on CPAN.> All packages that
+have dual lives have been also re-indexed ; this should solve current
+problems.
+
+=head2 PID and threads on Linux
+
+One of the specificities of the implementation of threads on Linux is
+that threads get different PIDs. So Elizabeth Mattijsen asked for a
+way to get this PID from inside Perl, because C<$$> is always the process
+number of thread 0.
+
+It turned out that C<POSIX::getpid()> simply returns C<$$>, and that C<$$>
+is is a read-only scalar, set at startup- and at fork-time. But the system
+call C<getpid()> returns different values for different threads (on Linux).
+
+It was agreed that, to be portable (and POSIX-compliant), C<$$> should
+return the same value across all threads -- the current behavior is thus
+correct (but undocumented.) However Perl's built-in function C<getppid()>
+always performs the underlying C call, and return different values from
+different threads. This should be fixed.
+
+    http://groups.google.com/groups?threadm=4.2.0.58.20020801191058.02b8a440%40mickey.dijkmat.nl
+
+=head2 A couple of core dumps
+
+Somebody reported that writing C<%:: = ""> with warnings enabled leads to
+immediate segfault (bug #15479). Elizabeth, trying to write
+something like C<our ${""} : foo = 1>, reported another core dump case
+(this should be a syntax error) (bug #15898). This lead to a small thread
+about the right place for regression tests for nonsense code like this.
+The conclusion is that they should go in the test file that seems the more
+appropriate for it (in those cases, respectively tests for symbol table
+hashes and for attributes.)
+
+=head2 Schwern's Thoughts from TPC
+
+Michael G Schwern sent a list of thoughts and ideas that were discussed at
+TPC :
+
+What new modules should be included in 5.10, and based on which criteria ?
+The simple criterion he proposes is : I<Will this module help users
+install more modules?> He suggests notably to borgify CPANPLUS, a
+simplified LWP, Archive::Tar, Archive::Zip, Module::Build
+(this implies YAML), and Inline.
+
+    http://groups.google.com/groups?threadm=20020801160521.GB1064%40ool-18b93024.dyn.optonline.net
+
+About Inline, and related to the QA effort, Schwern suggests to test
+the core API and internals with Inline::C. Continuing on Inline, he
+emits also the idea that XS core modules may be ported to an Inline::C
+implementation. Brian Ingerson (author of Inline) acknowledges that
+Inline::C can be used at perl build-time, but he thinks that the only
+thing that needs to be installed on a user machine is I<enough of
+Inline.pm to invoke Dynaloader. About 30 lines of code.> He adds that this
+is the only part of Inline that he would like to see distributed with 5.9.
+
+    http://groups.google.com/groups?threadm=20020801161356.GD1064%40ool-18b93024.dyn.optonline.net
+
+Finally,  Schwern suggests to eliminate the changelogs and the old
+perldelta manpages from the perl distribution (those are pretty huge and
+can be distributed separately), and to provide an alternate bzip2 tarball
+of perl.
+
+=head2 In brief
+
+Philip Hazel reported a couple of bugs about the C<\C> regexp anchor.
+(Bugs #15763 and #15774).
+
+Ilya Zakharevich reported that list assignment with common variables
+on both sides (e.g. C<($a,$b) = ($b,$a)>) don't work with aliased
+variables (e.g. C<($a,$b) = ($c,$d)> where $c is an alias to $b and $d an
+alias to $a.) Bug #15667.
+
+Craig Berry noticed that I<extension building against an installed Perl
+on VMS is broken in 5.8.0>. He provided a patch, and said also that
+I<in lieu of the patch, folks can either build extensions against an 
+uninstalled Perl or simply copy the missing files manually.>
+
+Elizabeth Mattijsen reported a memory leak in threads::shared.
+Hopefully this problem will only need a patch to threads::shared, that
+can be released to CPAN. (Bug #15893.)
+
+Bleadperl now reports its version as 5.9.0, and Hugo began to apply
+patches. We're waiting for the first snapshot...
+
+=head2 About this summary
+
+This summary brought to you by Rafael Garcia-Suarez, from Lyon, France. --
+Nota. I'll be on vacation (and off-line) for two weeks in August :
+approximately from 12th to 25th. So there will be no summary for those
+weeks. If you find those summaries helpful, and if you want to become a
+superhero, take over the report for two little weeks! Please drop me a
+line at rgarciasuarez at free.fr. (If you find those summaries helpful but
+don't want to take them over, go send money to YAS. Perhaps they'll hire
+an interim writer.)
+
+This report is also available via a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>.

@@ -1,0 +1,36 @@
+=head1 TITLE
+
+Legacy Perl $pkg'var should die
+
+=head1 VERSION
+
+  Maintainer: Nathan Wiger <nate@wiger.org>
+  Date: 8 Aug 2000
+  Last Modified: 15 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 71
+  Version: 2
+  Status: Frozen
+
+=head1 ABSTRACT
+
+Perl used to use $pkg'var instead of the modern $pkg::var. This is still
+in Perl 5. It's gotta go.
+
+=head1 DESCRIPTION
+
+See above.
+
+=head1 IMPLEMENTATION
+
+See above.
+
+=head1 NOTES ON FREEZE
+
+Damian worried that this would mean Klingon.pm would no longer be
+portable to Perl 6. He failed to convince other people on the list that
+this was actually a bad thing. ;-) (kidding!!)
+
+=head1 REFERENCES
+
+Camel-3 p. 60 reminded me of this.

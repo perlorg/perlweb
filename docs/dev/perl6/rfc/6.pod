@@ -1,0 +1,125 @@
+=head1 TITLE
+
+Lexical variables made default
+
+=head1 VERSION
+
+  Maintainer: J. David Blackstone <jdavidb@dfw.net>
+  Date: 1 Aug 2000
+  Last Modified: 26 Sep 2000
+  Mailing List: perl6-language-strict@perl.org
+  Number: 6
+  Version: 3
+  Status: Frozen
+
+=head1 ABSTRACT
+
+Prior to version 5, all implementations of Perl were designed with
+only dynamic (global) variables in mind.  Perl5 provided lexical
+variables in a backward compatible way, along with a pragma to force
+either declaration of variables or import of dynamic variables.  Perl6
+should make lexical variables and required variable declarations the
+default.
+
+=head1 CHANGES
+
+The author cannot decide whether doing this with something analogous
+to a C<use strict 'vars'> is better or worse than doing this with a
+proposal like RFC 106.  Although the RFC 106 proposal seemed to gather
+more interest, there were still enough naysayers that I believe it
+would be incorrect to claim a consensus (as to which, if B<either>,
+proposal should be implemented).
+
+These two RFCs should be read in comparison with each other.
+
+=head1 DESCRIPTION
+
+Dynamically-scoped variables can have many effects which are
+counterintuitive and undesirable.  In Perl5, lexically-scoped
+variables are available with the C<my> operator.  Without C<my>, a
+variable is assumed to be dynamic.
+
+Perl5 provides the C<strict> pragma, which forces the programmer to do
+one of three things: 1) declare a variable to be lexical with C<my>;
+2) declare a variable to be dynamic with C<our>; 3) import a dynamic
+variable from another namespace with C<vars> or otherwise.  This
+forced declaration of variables is generally desirable as good
+programming practice, although the ability does exist to turn off the
+pragma when necessary.
+
+There are very few circumstances in which dynamic variables have a
+distinct advantage over lexicals.  Most modules in the standard
+library are deliberately written with C<strict 'vars'> to avoid
+interfering with other modules or the application programmer's code.
+More recent and enlightened documentation and educational material
+teaches the use of lexical variables as preferred.
+
+In Perl6, the concept of C<strict 'vars'> should on by default.  Every
+variable should be declared either as lexical with C<my> or dynamic
+with C<our>.  New Perl6 programmers should be immediately introduced
+to lexical scoping and its benefits.  The ability to disable the
+strictness should be retained through C<no strict 'vars';> or an
+equivalent, for "quick-and-dirty" programs, backward compatibility,
+and where otherwise necessary or desired by those who Know What They
+Are Doing.
+
+Attempts to silently make all undeclared variables lexical does not
+address the benefits to be gained by forcing declaration of all
+variables.  Declarations provide quite a bit of information to the
+compiler, including a notion of exactly which block a variable should
+be scoped in.  Declarations are also now being used in various
+proposals involving strong(er?) typing, constants, O-O, and so on.
+
+This RFC is not suggesting that any of the other features of the
+C<strict> pragma be on by default (such as C<'refs'> or C<'subs'>).
+If that is desired, it should be submitted in a separate RFC.
+
+The C<local> operator is misnamed, since it operates on dynamic
+(global) variables.  This operator should be removed or renamed, but
+this should be the subject of a separate RFC.
+
+=head1 IMPLEMENTATION
+
+I don't know enough about internals to say anything about
+implementation from that standpoint.
+
+The following program examples show how declarations would work.
+
+	my $name = "J. David";   # lexical variable
+	our($VERSION) = 5.31;    # dynamic variable in current package
+	$this *= 7;              # illegal; variables must be
+	# declared lexical or dynamic
+	my($arg1, $arg2) = @_;   # lexical (traditional for a subroutine)
+	{
+	no strict 'vars';       # or something new
+	$quick = 7;             # legal in this scope =
+	# dynamic variable in current package
+	$quick *= $main::var;
+	print "$quick\n";
+	}
+	$package::count++;       # always legal (I presume?)
+
+=head2 Alternative
+
+Although the implementation above is currently considered to be the
+best, an alternative would allow undeclared lexical variables.  In
+this approach, C<strict 'vars'> would become C<strict 'decs'>,
+requiring declaration of all variables.  Without C<strict 'decs'>,
+undeclared variables would be considered to be lexical, or variables
+could be declared dynamic with C<our> or some other syntax.
+
+RFC 106 gives more details on such an alternative implementation.
+This approach would require more complexity in Perl5 -> Perl6
+translation and be a much larger step in a new direction for the
+language.  Since the state-of-the-practice of Perl5 programming has
+evolved to generally include C<strict 'vars'>, it makes more sense to
+simply make that the default than to modify the language any further.
+
+=head1 REFERENCES
+
+RFC 106: Yet another lexical variable proposal: lexical variables made default without requiring strict 'vars'
+
+The section on "Private Variables via my()" in the perlsub manpage.
+
+The Camel book.
+

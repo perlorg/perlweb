@@ -1,0 +1,151 @@
+=head1 TITLE
+
+Change the way $SIG{__WARN__} and $SIG{__DIE__} are used
+
+=head1 VERSION
+
+  Maintainer: Chris Hostetter <chrish@cnet.com>
+  Date: 15 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 236
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+The current method in which C<__WARN__> and C<__DIE__> signal handlers are
+used is limited in 2ways:
+
+=over 8
+
+=item It does not allow them to accept robust parameter lists.
+
+=item It does not allow for multiple layers of handlers.
+
+=back
+
+
+=head1 DESCRIPTION
+
+=head2 Parameter Treatment
+
+The current behavior of C<warn> and C<die> is to first concatenate the
+parameter LIST into a single string, before checking if there is a
+user specified signal handler.  Then pass that string as a single
+argument to any handler if it exists.
+
+I propose, that a registered signal handler for C<__WARN__> or C<__DIE__>
+should be passed the exact same LIST of arguments that the
+corresponding warn or die call received.  This would allow complex
+programs to use the warn/die signal handling mechanism to for dealing
+with complex exception handling, and still recognize low level
+warnings / errors from the interpreter.
+
+For example: It is reasonable when developing a large system to want a
+mechanism for dealing with "error levels" -- one such approach would
+be something like the following...
+
+	# use this function EXCLUSIVELY in your code for dealing with
+	# warnings or errors so that the appropraite acction is taken
+	sub errorHandle {
+		my $level = shift;
+		my @msgs = @_;
+		if ($config{abort_level} < $level) {
+			die "Fatal Error ($level): ", @msgs;
+		} 
+		if ($config{warn_level} < $level) {
+			warn "Warning ($level): ", @msgs;
+		}
+		if ($config{log_level} < $level) {
+			# log something about @msgs
+		}
+		# etc ...
+	}
+
+	# want to make sure we catch things from interpreter and
+	# code from CPAN
+	$SIG{__WARN__} = sub { &errorHandler(9,  @_); }
+	$SIG{__DIE__} =  sub { &errorHandler(11, @_); }
+
+	# ...
+
+	&validateSomething($someArg) or errorHandle 9, "couldn't validate";
+
+
+The problem with this, is that it requires you to use the non standard
+"errorHandle" function explicitly in your code.  If you are writing a
+module that you plan on distributing to others, this is not ideal.
+
+This would be far better, but would require that C<$SIG{__WARN__}>
+(and C<$SIG{__DIE__}>) received the same list of parameters that warn (and
+die) received...
+
+	# want to make sure we catch things from our code, the
+	# interpreter, or code from CPAN
+	$SIG{__WARN__} = sub {
+		my $level = $config{default_warn_level};
+		(1 < scalar(@_)) ? $level = shift;
+		my @msgs = @_;
+		if ($config{abort_level} < $level) {
+			die "Fatal Error ($level): ", @msgs;
+		} 
+		if ($config{warn_level} < $level) {
+			warn "Warning ($level): ", @msgs;
+		}
+		if ($config{log_level} < $level) {
+			# log something about @msgs
+		}
+		# etc ...
+	}
+	$SIG{__DIE__} =  sub { warn $config{default_warn_level}, @_; }
+
+	# ...
+
+	&validateSomething($someArg) or warn 9, "couldn't validate";
+
+
+=head2 Nested Handlers
+
+Currently, if a handler is called to deal with C<$SIG{__WARN__}> or
+C<$SIG{__DIE__}> then the handler is disabled to prevent infinite
+recursion if the handler itself calls C<die> or C<warn>.
+
+It seems only logical, that if the current handler has been localized,
+and overshadows an outer handler, then calling C<warn> or C<die> should
+invoke the outer handler -- not the real C<warn> or C<die>.  For example...
+
+	#!/usr/local/bin/perl -w
+	$SIG{__WARN__} = sub { print "outer handler: ", @_; };
+
+	sub bar {
+	    warn "in bar";
+	}
+	
+	sub foo {
+	    local $SIG{__WARN__} = sub { warn "foo: ", @_; };
+	    &bar();
+	}
+
+	&foo();
+
+... this script causes "C<foo: in bar at warn.test.pl line 6.>" to be
+written to standard error.  I propose that "C<outer handler: foo: in bar
+at warn.test.pl line 6.>" is more logical output.
+
+This would allow modules to do their own C<__WARN__> and C<__DIE__> handling,
+but still propagate the messages out to an application specific
+handler.
+
+
+=head1 IMPLEMENTATION
+
+Unknown.
+
+=head1 REFERENCES
+
+Programming Perl, 2nd Ed -- p139
+
+Programming Perl, 2nd Ed -- p157
+
+Programming Perl, 2nd Ed -- p241
+

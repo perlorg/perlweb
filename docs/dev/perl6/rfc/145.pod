@@ -1,0 +1,188 @@
+=head1 TITLE
+
+Brace-matching for Perl Regular Expressions
+
+=head1 VERSION
+
+  Maintainer: Eric J. Roode <eric@myxa.com>
+  Date: 24 Aug 2000
+  Last Modified: 25 Aug 2000
+  Mailing List: perl6-language-regex@perl.org
+  Number: 145
+  Version: 2
+  Status: Developing
+
+=head1 ABSTRACT
+
+It is quite difficult to match paired characters in Perl 5 regular
+expressions. A solution is proposed, using new \m (match opening grouping
+character) and \M (match closing grouping character) metacharacters.
+A new compiler directive, "use matchpairs" controls which strings
+are considered grouping characters and what their complement is.
+
+=head1 DESCRIPTION
+
+A new regular expression metacharacter \m would match any of the 
+following characters: ([{"'< in a regexp. A later \M metacharacter
+would match the corresponding closing pair character )]{"'> I<at the
+same nesting level> within the string being searched. 
+
+For example,
+    $string = "([b - (a + 1)] * 7)";
+    $string =~ /\m.*?\M/;
+
+The \m would match the first open parenthesis, the .*? would match the
+substring "[b - (a + 1)] * 7", and the \M would match the second close
+parenthesis.
+
+Used within a character class (square brackets in a regular expression),
+\m would match I<any> opening grouping character, and \M would match I<any> 
+closing grouping character. Thus, [^\m\M]* would return a span of non-
+grouping characters.
+
+What exactly is matched by \m and \M is controlled by a new compiler
+directive, "use matchpairs". The default is:
+
+    use matchpairs ('('=>')', '{'=>'}'; '['=>']', '"'=>'"', 
+                    "'"=>"'", '<'=>'>');
+
+One could restrict the sets for various parsing situations:
+    Block:
+    {
+	use matchpairs ( '(' => ')' );
+        ...
+    }
+
+Or one could come up with completely new pair sets:
+    Block:
+    {
+        use matchpairs ( '/*' => '*/', '"' => '"' );
+        $c_code_snippet =~ /\m(.*?)\M/;  # Find string or comment
+    }
+
+It is a compile-time error to specify an odd number of elements in 
+a "use matchpairs" directive.
+
+Note: "use matchpairs" is a scope-limited compile-time directive. 
+A regular expression uses whichever matchpairs were in effect at the time
+it was compiled. So:
+
+    my $pat;
+    {
+        use matchpairs ( '{' => '}' );
+        $pat = qr/\m(.*?)\M/;
+    }
+    $data =~ /$pat/;    # Only matches curly braces
+
+Footnote: Someone has suggested "use re 'pairs' LIST;" as the directive
+instead of "use matchpairs LIST;". Comments? 
+
+
+
+=head1 EXAMPLES
+
+# 1. Recursive processing of nested groupings
+sub parse
+{
+    my $string = shift;
+    while ($string =~ /([^\m]*)(\m)(.*?)(\M)([^\m\M]*)/g)
+    {
+        my ($pre, $quote, $mid, $endquote, $post) = ($1,$2,$3,$4,$5);
+        process ($pre);
+        parse ($mid);   # Note recursion
+        process ($post);
+    }
+}
+
+# 2. Greedy vs non-greedy matching:
+
+    $string = '(a + b) * (c + d)';
+    $string =~ /\m(.*)\M/;    # Greedy. $1 is 'a + b) * (c + d'.
+    $string =~ /\m(.*?)\M/;   # Non-greedy. $1 is 'a + b'.
+
+
+=head1 IMPLEMENTATION
+
+Disclaimer: I know little about Perl internals, particularly the RE engine.
+
+When the RE engine encounters a \m, it should match if it finds an open
+grouping character. From that point forward, it should maintain an internal
+count of "like" open and close grouping characters, When it encounteres a 
+\M metacharacter, it should match if it finds a closing grouping character
+of the same sort (ie, the complement to the specific string that was matched
+by the \m), I<and> if the nesting level of that pair is zero. 
+
+So, in parsing the string "(abc[def](ghi)jkl)" with the RE /\m(.*?)\M/:
+
+    First, \m matches "(". The engine remembers that it is looking for "(" and
+    its complement ")".
+
+    Next, as it processes .*?, scanning the string, it encounters the "["
+    between the "c" and the "d". It ignores it (it has no effect on the 
+    nesting-level count, since it is not "(" or ")").
+
+    As it continues scanning, it encounters the "]" between the "f" and the
+    ")". The \M does not match this "]" character, because the \M must match
+    a ")".
+
+    Next, as it continues processing the .*?, it enounters the "(" between
+    the "]" and the "g". This does match the current grouping set, so the
+    engine increments the nesting level to 1.
+
+    Next, it encounters the ")" between the "i" and the "j". The \M does not
+    match this ")", because the nesting level is not zero. Having encountered
+    the ")", however, the engine decrements the nesting level to 0.
+
+    Finally, it encounters the ")" after the "l". This one does match the \M
+    because the nesting level is 0.
+
+Nested \m\M pairs present a problem in that the engine must remember which
+pair of grouping characters it is looking for. Example:
+
+Parse the string "(abc[def](ghi)jkl)" with the RE /\m(.*?)\m(.*?)\M(.*?)\M/:
+
+    \m matches "(". Engine remembers that this \m corresponds to "(", ")".
+
+    .*? matches "abc".
+
+    The second \m matches the "[". The engine remembers that I<this> \m  
+    corresponds to "[", "]".
+
+    The second .*? matches "def". 
+
+    The \M matches "]", since the second \m was for square brackets, and the
+    nesting level for square brackets is zero.
+
+    The third .*? matches "(ghi)jkl". The ")" between the "i" and the "j" 
+    does not match the \M pattern because, as in the first example, the
+    nesting level is not zero.
+
+    The second \M matches ")".
+
+=head1 PROBLEMS
+
+1. How should a \M without a prior \m be interpreted in a regular expression?
+Probably should be a compile-time error: 
+
+    \M without preceding \m in pattern at ...
+
+2. How should an expression like /\m?.*?\M/ be interpreted? Specifically, what
+should the meaning of the \M be if the optional \m does not match?
+
+=head1 CHANGE HISTORY
+
+    v1  08/23/2000  Initial submission
+
+    v2  08/24/2000  1. Change clumsy @^g, @^G configuration variables 
+                       to "use matchpairs" directive.
+                    2. Change \g\G metacharacters to \m\M.
+                    3. Fix a couple typos.
+                    4. Add the greedy vs non-greedy example.
+
+=head1 REFERENCES
+
+perlre perldoc page for general discussion of existing regexps
+
+Mastering Regular Expressions book
+
+Blue Camel, chapter 2.

@@ -1,0 +1,104 @@
+=head1 This Week on perl5-porters (20-26 January 2003)
+
+This week, the P5P summary will attempt to entertain you with several
+low-level hacks. (A weird kind of entertainment if any.) Read about
+printf(), optimisations, internals, perldoc, and other code stories below.
+
+=head2 printf, perlio and XS
+
+Nick Ing-Simmons changed (or restored, depending on the point of view) the
+meaning of printf() in XS code. As of Perl 5.8.0, printf() was
+C<#define>'d to be an alias to C<PerlIO_printf(PerlIO_stdout(),...)>. Now,
+it will be the bare C-level stdio printf(). Notably, when the standard
+output is redirected from a Perl program, and when the perlio layer is
+used (e.g. when the PERLIO environment variable has the value C<perlio>),
+printf() will continue to write to the pristine stdout stream. Thus, it's
+now possible to have access to the perlio and to the stdio implementations
+from XS.
+
+This eventually caused some smoke tests to fail.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg91091.html
+
+=head2 Modify a subroutine's prototype
+
+Mark-Jason Dominus wants a way to modify, at run-time, the prototype of a
+subroutine, and explained why (bug #20463). Rafael Garcia-Suarez said that
+this doesn't need to be in the core, and proposed a naive Inline::C-based
+implementation. However, as MJ wants this feature for Memoize, which is a
+core module, it needs to be in the core : perhaps in the Scalar::Util
+module ?
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg91171.html
+
+=head2 C<,=>
+
+Joachim Breitner, wondering how to merge hashes efficiently, proposed to
+introduce a new operator, C<,=>, so that
+
+    %hash1 ,= %hash2;
+
+would be semantically equivalent to
+
+    %hash1 = (%hash1, %hash2);
+
+but faster (and it would work similary for arrays). Mark-Jason Dominus
+pointed out that push() already merges arrays, and that I<some time ago
+there was discussion of extending push to operate on hashes also>.
+
+Nicholas Clark objected to this new operator, as efficient merging of
+hashes can be done in a XS module ; and he provided this XS module,
+C<Hash::Append>. (Though perhaps this code belongs to the core module
+C<Hash::util>.) Abigail, on the other hand, approved the creation of a
+new operator, but dislikes the odd-looking C<,=>.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg91184.html
+
+=head2 In brief
+
+Dave Mitchell fixed the debugger slowdown noticed last week.
+
+Mark Mielke noticed that I<the array of back-references attached to a
+reference never shrinks>, and he proposed a patch to improve the speed of
+the routine that weakens references.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg91077.html
+
+There was a thread about the different ways to modify the C<fileno> value
+of a C<FILE> C structure on various platforms.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg91095.html
+
+Dan Kogai released Encode v1.85, and, a few hours later, v1.86. Note that
+some tests are skipped on perl 5.8.0, since they rely on newest fixes.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg91144.html
+
+Rafael Garcia-Suarez sent a fix for bug #18232 : the C<$1>...C<$n>
+variables loose their utf8 flag when they're overriden by another
+pattern match in an enclosed scope.
+
+David Nicol reports (bug #20503) that perldoc produces confused output on
+RedHat 8.0. Guess what, that's probably caused by UTF8 locales. Russ
+Allbery blames groff. Adrian Enache suggests to pass the option
+C<-Tlatin1> to [ng]roff (and to change /etc/man.config as well).
+
+Adrian Enache also reports that reading from a filehandle in fixed-length
+record mode, and appending the results to a variable, doesn't work correctly
+since Perl 5.7.2. He also fixed it.
+
+Alain Barbet posted some graphs about the smoke test results.
+
+    http://www.alianwebserver.com/perl/smoke/stats.html
+
+Sean M. Burke advices Windows users to upgrade their perldoc to the newest
+distribution (Pod::Perldoc) he put up on CPAN. The original perldoc
+distributed with 5.8.0 apparently has problems with some pagers (e.g.
+C<more> on some flavours of Windows.)
+
+=head2 About this summary
+
+This summary brought to you by Rafael Garcia-Suarez. Summaries are
+available on F<http://use.perl.org/> and/or via a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. Comments and
+corrections are welcome.

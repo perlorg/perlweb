@@ -1,0 +1,239 @@
+=head1 TITLE
+
+True Polymorphic Objects
+
+=head1 VERSION
+
+  Maintainer: Nathan Wiger <nate@wiger.org>
+  Date: 25 Aug 2000
+  Last-Modified: 16 Sep 2000
+  Mailing List: perl6-language-objects@perl.org
+  Number: 159
+  Version: 2
+  Status: Frozen
+
+=head1 ABSTRACT
+
+Currently, using objects in numeric and string contexts is not very
+useful or easy:
+
+   $r = new CGI;
+   $z = $r + $x;      # oops
+   print "$r\n";      # double-oops
+
+You can use facilities such as C<tie> to help fix this issue, but C<tie>
+is limited and slow. You can also C<use overload>, but this is not
+flexible enough for many applications since it applies to a package (and
+not individual objects).
+
+This RFC proposes the concept of B<true polymorphic objects>, which are
+objects that can morph into numbers, strings, booleans, and much more
+on-demand. As such, objects can be freely passed around and manipulated
+without having to care what they contain (or even that they're objects).
+
+=head1 NOTES ON FREEZE
+
+The only comments received were function additions. No real oppositions
+were recorded. As such, the functions have been added and the RFC
+frozen. 
+
+=head1 DESCRIPTION
+
+=head1 Overview
+
+The top-level syntax remains the same. As such, transition to Perl 6 is
+very smooth for most people, and in fact most users don't have to care
+about any of the following details. To them, this script will "just
+work":
+
+   $y = Math->data(7); 
+   $x = 3;
+   $name = getname("Nate");
+   if ( $x < 5 ) {
+      $y += $x;
+      if ( ! $name ) {
+         $name = "The math whiz";
+      }
+   }
+   print "$name got $y";   # "Nate got 10"
+
+However, under the hood things might work drastically differently. In
+fact, C<$y> and C<$name> might well be polymorphic objects:
+
+   $y = Math->data(7);          # $y = Math->data; $y->STORE(7)
+   $x = 3;                      # $x = 3
+   $name = getname("Nate");     # $name = getname; $name->STORE("Nate")
+   if ( $x < 5 ) {              # $x < 5
+      $y += $x;                 # $y->STORE($y->PLUS($x))
+      if ( ! $name ) {          # $name || $name->BOOLEAN
+        $name = "The math whiz";# $name->STORE("...")
+      }
+   }
+   print "$name got $y";        # $name->STRING , $y->STRING
+
+Here, C<$y> and C<$name> are objects, but we don't have to care. These
+objects have a key property: I<context sensitivity>. They have numerous
+different methods which are each called only in specific instances. So,
+being called in a numeric context calls C<NUMBER>, whereas being called
+in a string context would call C<STRING>.
+
+Plus, operators are overloadable as well. This means that we might
+decide to overload C<+> to become a Java-like concatenation operator on
+our objects:
+
+   $string = $name + "Wiger";   # $name->PLUS("Wiger")
+
+Yuck. :-) But it can be done, and that's pretty cool.
+
+=head2 Polymorphic Methods
+
+The following are the proposed methods for Perl 6 objects.  Note that
+these methods are completely I<optional> for a class to define. If they
+are not defined, the object would retain its current behavior. The hooks
+are in Perl if you want them, otherwise they don't get in the way.
+
+Note that C<STRING>, C<NUMBER>, and C<BOOLEAN> are specialized forms of
+C<FETCH>. If you define them, they are used instead of C<FETCH> in the
+given context, otherwise C<FETCH> is used. Also note that the operators,
+when overloaded, behave similarly to 'use overload', but on an
+I<object by object basis>, rather than package-wide.
+
+Alternative names are listed in parens.
+
+   Data Conversion and Access
+   -------------------------------------------------
+   STRING           Called in a string context
+   NUMBER           Called in a numeric context
+   BOOLEAN          Called in a boolean context
+
+
+   Operator Overloading
+   -------------------------------------------------
+   PLUS     (ADD)   Called in + context
+   MINUS    (SUB)   Called in - context
+   TIMES    (MUL)   Called in * context
+   DIVIDE   (DIV)   Called in / context
+   MODULUS  (MOD)   Called in % context
+   CONCAT           Called in . context
+
+   NUMCMP           Called in <=> context 
+   NUMEQ            Called in == context
+   NUMNE            Called in != context
+   NUMLT            Called in <  context
+   NUMGT            Called in >  context
+   NUMLE            Called in <= context
+   NUMGE            Called in >= context
+
+   STRCMP           Called in cmp context
+   STREQ            Called in eq context
+   STRNE            Called in ne context
+   STRLT            Called in lt context
+   STRGT            Called in gt context
+   STRLE            Called in le context
+   STRGE            Called in ge context
+
+   BITAND           Called in & context
+   BITOR            Called in | context
+   BITXOR           Called in ^ context
+   BITNOT           Called in ~ context
+
+   LOGNOT           Called in ! context
+   LOGHIGHAND       Called in && context
+   LOGHIGHOR        Called in || context
+   LOGLOWAND        Called in and context
+   LOGLOWOR         Called in or context
+   LOGIFELSE        Called in ?: context
+
+
+   Operator Fallbacks (like 'use overload')
+   -------------------------------------------------
+   OVERLOAD         Like an AUTOLOAD for the above,
+                    perhaps NOMETHOD is a better name
+
+
+   Assignment and Existence
+   -------------------------------------------------
+   CREATE           Called in variable creation (?)
+   BUILD            Called in object blessing
+   REBUILD          Called in object reblessing
+   STORE            Called in an lvalue = context
+   FETCH            Called in an rvalue = context
+   DESTROY          Called in object destruction
+
+
+There are undoubtedly other functions that should be added. However, the
+purpose of this RFC is to propose an idea and a basic interface. [1]
+
+Now, whether the word C<TIMES> is better than C<MUL> is debateable. I
+was trying to get the English verb context right, sticking with words:
+
+   $x * $y     # $x->TIMES($y)
+
+Which I think makes the function names intuitive and easy to remember. I
+left out any potential _'s because these are a pain to type, and no
+other Perl builtins have them.
+
+The C<CREATE> method may or may not serve to be useful; there is some
+debate about what it could do since the true creation of an object
+occurs on blessing, not on variable declaration. With embedded objects
+it could well serve to prepare the object, optimizing storage space and
+tinkering with internals. However, without embedded objects it is
+probably of dubious usefulness. For more details and discussion on this
+particular issue, please see B<RFC 189: Hierarchical calls to
+initializers and destructors>.
+
+=head1 IMPLEMENTATION
+
+Fundamental hooks would have to be put into Perl in order to look for
+these subs for the corresponding operations. Since it looks like
+-internals will probably put vtable stuff in SV from the get-go, this
+could potentially not be that tricky. At compile-time, Perl could simply
+look for these subs in a class definition and create the proper hooks
+for overloading, similar to how 'use overload' works now but at a lower
+level.
+
+Note that the C<OVERLOAD> method serves a simliar purpose to C<AUTOLOAD>
+and the C<nomethod> tag in overloading. If it exists, then it is used to
+fallback for non-overloaded operations. Otherwise, the overloading
+behavior is automatically determined by Perl. Perl should make these
+decisions in C<UNIVERSAL::OVERLOAD>, so that the user can defer to it in
+their own C<OVERLOAD> method if need be.
+
+=head1 MIGRATION
+
+This introduces new functionality, however p52p6 would have to catch any
+subs defined with the names listed above and warn the user that this sub
+name is now reserved for Perl. 
+
+Worth consideration with the proliferation of ALLCAPS methods and
+variables is whether a warning like this:
+
+   ALLCAPS sub name may conflict with future reserved word at line 3.
+
+Might not be worth spitting out if a user defines a sub in ALLCAPS that
+is not a recognized special Perl sub. This RFC does I<not> take a stand
+on this issue but rather provides it for consideration.
+
+=head1 NOTES
+
+[1] Abiding by the KISS property (Keep It Simple, Stupid)
+
+=head1 REFERENCES
+
+RFC 189: Hierarchical calls to initializers and destructors
+
+RFC 49: Objects should have builtin stringifying STRING method 
+
+RFC 73: All Perl core functions should return objects 
+
+Perl's existing C<use overload> and C<tie>
+
+http://www.mail-archive.com/perl6-language-objects@perl.org/msg00142.html
+
+=head1 ACKNOWLEDGEMENTS
+
+Thanks to brian d foy and Damian Conway for their input
+
+Thanks to Uri Guttman for suggesting CREATE on a different topic
+
+Thanks to David Nicol for his suggestion of BOOLEAN

@@ -1,0 +1,91 @@
+=head1	TITLE
+
+Allow Varibles in tr///
+
+=head1 VERSION
+
+  Maintainer: Richard Proctor <richard@waveney.org>
+  Date: 27 Aug 2000
+  Last Modified: 22 Sep 2000
+  Mailing List: perl6-language-regex@perl.org
+  Number: 165
+  Version: 3
+  Status: Frozen
+
+=head1 ABSTRACT
+
+Allow variables in a tr///.  At present the only way to do a tr/$foo/$bar/
+is to wrap it up in an eval.  I dont like using evals for this sort of thing.
+
+=head1 DESCRIPTION
+
+Suggested syntax: tr/$foo/$bar/e
+
+With a /e, tr will expand both the LHS and RHS of the translate function.
+Either or both could be variables. I am suggesting /e as it is sort of like
+/e for s///e.
+
+These words from MJD:
+
+The way tr/// works is that a 256-byte table is constructed at compile
+time that say for each input character what output character is
+produced.  Then when it's time to apply the tr/// to a string, Perl
+iterates over the string one character at a time, looks up each
+character in the table, and replaces it with the corresponding
+character from the table.
+
+With tr///e, you would have to generate the table at run-time.
+
+This would suggest that you want the same sorts of optimizations that
+Perl applies when it encounters a regex that contains variables:
+
+        1. Perl should examine the strings to see if they have changed
+           since the last time it executed the code
+
+        2. It should rebuild the tables only if the strings changed
+
+        3. There should be a /o modifier that promises Perl that the
+           variables will never change.
+
+The implementation could be analogous to the way m/.../o is
+implemented, with two separate op nodes: One that tells Perl
+'construct the tables' and one that tells Perl 'transform the
+string'.  The 'construct the tables' node would remove itself from the
+op tree if it saw that the tr//o modifier was used.
+
+Hugo wrote:
+> Definitely. Should be easy to implement. There is a potential for
+> confusion, since it makes the tr/ lists look even more like
+> m/ and s/ patterns, but I think it can only be less confusion than
+> the current state of affairs. It is tempting to make it the default,
+> and have a flag to turn it off (or just backwhack the dagnabbed
+> dollar), and auto-translation of existing scripts would be pretty
+> easy, except that it would presumably fail exactly where people
+> are using the current workaround, by way of eval.
+> 
+
+Comments by me:
+
+Therefore tr///o might be a good idea as well.  
+
+If Hugo's idea of making this the normal behaviour, the problem of
+existing evals is avoided by p52p6 changing the eval to a perl5_eval
+which acts accordingly.  (One of MJD's ideas).
+
+=head1 IMPLENTATION
+
+Hugo:  Should be easy to implement.  
+
+Me: Should not be too complicated, this is just a case of doing existing
+things in a different context.
+
+=head1 CHANGES
+
+V2 - Added words from MJD and Hugo - This hopefully in a pre freeze state.
+
+V3 - re issued due to an error in posting V2 and now frozen
+
+=head1 REFERENCES
+
+None yet.
+

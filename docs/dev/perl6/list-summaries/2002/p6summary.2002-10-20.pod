@@ -1,0 +1,314 @@
+=head1 The Perl 6 Summary for the week ending 20021020
+
+I'm sorry to have to inform you that I've returned from my holiday
+(no, base jumping and paragliding were I<not> involved) and that this
+week's summary will not be written by the estimable Leon
+Brocard. Sorry about that. Leon is currently taking a rest cure.
+
+So, with the customary mention of Mister Brocard out of the way good
+and early this week, it's time to take a look at what's been discussed
+on the internals list:
+
+=head2 Regarding JVM - Parrot Compatibility
+
+Newcomer Karthik Kumar is interested in writing a tool to convert java
+C<.class> files to parrot C<.pbc> files and asked for information on
+what had been done in this area. Leon Brocard says it's very easy to
+get the basics working because of the low number of JVM bytecodes. But
+getting the fundamentals (classes, objects) right is hard. Ramesh
+Ananthakrishnan commented that it might be a little early for anything
+more than proofs of concept at the moment as Parrot is a rapidly
+moving target. Ramesh also came up with the idea of compiling `real
+machine' assembly language to `virtual machine' parrot assembler.
+
+Karthik commented that the real issue seems to be one of what level of
+support Parrot will offer for objects, and until that is known the
+class->parrot problem is almost pointless to solve.
+
+L<http://groups.google.com/groups?threadm=20021014103743.83432.qmail%40web13204.mail.yahoo.com>
+
+L<http://groups.google.com/groups?threadm=20021015083634.61117.qmail%40web40503.mail.yahoo.com> -- Ramesh
+clarifies his `Linux in Parrot' idea. 
+
+=head2 The Getting Started Guide
+
+Erik Lechak is still not loving POD but, despite his distaste he
+posted version 0.4 of his getting started guide in POD format. Thanks
+a lot Erik. Marty Pauley suggested that Erik take a look at the Simple
+Document Format which may meet his needs better than POD
+
+L<http://groups.google.com/groups?threadm=20021017182228.GO3764%40soto.kasei.com>
+
+L<http://groups.google.com/groups?threadm=3DB1B188.2000508%40the-small-print.com>
+
+=head2 C# and Parrot
+
+Rhys Weatherly, author of Portable.NET, part of the DotGNU project
+made a welcome appearance on the list. Apparently the DotGNU people
+are looking into compiling C# down to parrot bytecode and hoped that
+there might be parrot people who were interested in trying to complete
+their compiler and system library. 
+
+Rhys wanted to know how to make a user-defined class in Parrot; what
+the convention is for which registers must be saved across a call;
+the size of C<int> and whether there was a way to store and access
+auxiliary data in a Parrot bytecode file. 
+
+Answers were provided. Sadly, the answer to Rhys's question about
+user-defined classes was "You don't, yet." Other answers were more
+immediately useful.
+
+The DotGNU weekly IRC meeting discussed Parrot this week, Leon and Dan
+managed to cover both sessions between them, and there's a log
+available.
+
+L<http://groups.google.com/groups?threadm=3DAF74B6.1B9A6B1%40zip.com.au>
+
+L<http://dotgnu.info/pipermail/developers/2002-October/008380.html> --
+Condensed summary of the meeting
+
+L<http://ajmitch.dhis.org/dotgnu/> -- unedited logs available here
+
+=head2 Variable/Value Split Prelims
+
+Leopold Toetsch rather confused me when he replied to a two week old
+message (I thought I'd completely screwed up setting the `limit by
+date' values in my summary buffer) about the conceptual split between
+variables and values. Leo wanted some clarification which Dan
+provided. 
+
+L<http://groups.google.com/groups?threadm=a05111b07b9c6cdf2da21%40%5B63.120.19.221%5D> -- Dan's old message
+
+L<http://groups.google.com/groups?threadm=200210180849.g9I8ngI11385%40thu8.leo.home> -- Leo's questions
+
+=head2 PMC Initializers
+
+Leon Brocard attempted to kick start discussion of Jonathan Sillito's
+patch to pass more information when creating new PMCs. Leopold Toetsch
+and Josef HE<ouml>E<ouml>k both said they thought that something along
+those lines was a good idea, but the discussion seemed to die
+there. Later in the week, Dan introduced the new C<init_pmc> function
+to PDD02, which works along the lines suggested.
+
+L<http://groups.google.com/groups?threadm=a05111b06b9d5e367ade6%40%5B63.120.19.221%5D>
+
+L<http://groups.google.com/groups?threadm=20021014191656.GA13787%40ns0>
+
+=head2 PerlHash questions
+
+Clinton A. Pierce wondered about how to do the equivalent of C<exists
+$hash{$key}> in Parrot when one doesn't necessarily know the types of
+the things in the hash. Leo Toetsch pointed to C<exists_keyed> and
+C<type_keyed>. Jason Gloudon pointed out that the docs for
+C<type_keyed> referred only to PMCs, with no mention of 'primitive'
+types. He wondered if PerlHash shouldn't just dictate that its
+contents were all PMCs.
+
+L<http://groups.google.com/groups?threadm=5.1.0.14.2.20021019230909.02179648%40www.geeksalad.org>
+
+=head2 Meanwhile in Perl6-language
+
+The language group is trying to catch up with internals in number of
+posts. They managed 89 posts this week compared to internals' 96. If
+you discount attachments, language probably won on volume (and it
+certainly wins hands down on the `difficulty of summarization'
+metric).
+
+=head2 Draft Proposal: Declaring Classwide Attributes
+
+The discussion of how to declare classwide attributes rumbled on from
+last week; I'll just pick out a few nuggets.
+
+=over 4
+
+=item * C<HASH>, <ARRAY> etc will likely become <Hash>, <Array> etc,
+and there's a good chance that C<UNIVERSAL> will become C<Object>
+
+=item * Implicit invocants can participate in multiple dispatch
+
+=item * It's worth taking a look at Smalltalk metaclasses, or Ruby's
+classes. I<Putting Metaclasses to To Work> might also be worth a read
+
+=back
+
+L<http://groups.google.com/groups?threadm=9B4F541C-D7F2-11D6-8390-00050245244A%40cognitivity.com> -- Thread
+starts here
+
+L<http://www.aw.com/catalog/academic/product/1,4096,0201433052,00.html>
+-- the Metaclasses book
+
+=head2 Perl6 Operator Precedence Table
+
+The `Operator Precedence' thread kept on rolling from last week. The
+current game appears to be `working out how to free C<&> and C<|> to
+become superposition constructors', which means hanging the bitwise
+operators somewhere else. Various ideas have been proposed, but people
+really didn't like C<|||> and C<&&&>. The current front runners appear
+to be:
+
+=over 4
+
+=item * C<$a b& $b>
+
+=item * C<$a .& $b>
+
+=item * 
+
+    my @a is bitmap($a);
+    my @b is bitmap($b);
+    my @c is bitmap($c); 
+
+    @a = @b ^|| @c; # Correcting what I assume is Larry's typo
+
+=back
+
+It looks like this whole area is still somewhat fluid though.
+
+L<http://groups.google.com/groups?threadm=Pine.LNX.4.44.0210170843110.11057-100000%40london.wall.org> 
+
+L<http://groups.google.com/groups?threadm=Pine.LNX.4.44.0210171406430.13330-100000%40london.wall.org>
+
+L<http://groups.google.com/groups?threadm=Pine.LNX.4.44.0210171436350.13850-100000%40london.wall.org>
+
+=head2 C<untaintby> property
+
+Miko O'Sullivan proposed an C<untaintby> property which `restricts
+which modules may untaint the data or data derived from that data.'
+The feedback wasn't that positive, but Larry came up with the idea of
+callbacks on properties which look rather cool. (`too cool!' according
+to Miko).
+
+L<http://groups.google.com/groups?threadm=232810-220021011414941899%40M2W063.mail2web.com>
+
+L<http://groups.google.com/groups?threadm=Pine.LNX.4.44.0210141007390.20533-100000%40london.wall.org>
+
+=head2 Indeterminate Maths
+
+Michael Schwern opened a can of worms when he wondered if C<1/0> would
+throw an error or just return a value representing an indeterminate
+result. Leon wondered if it'd be possible to, for instance have a
+module which did all its arithmetic in, say, integers module prime
+P. Dan thought yes, with lots of overloading. Adam Lopresto thought
+C<1/0> would be a good place for the new C<fail> semantics. We ended
+up in a debate about the mathematical values of C<$n/0> (apparently
+x/0 is indeterminate when x is zero and undefined otherwise).
+
+This thread also saw discussion of: the nature of Object Orientation
+and the benefits of instance based inheritance; the
+semantics of NaN. (Did you know that C<NaN != NaN>; the use of
+exceptions; proofs that 1/0 is, necessarily, undefined; Lukasiewiczian
+logic (SQL type NULLs); Miko's `inner Larry Wall'; and the hypothetical
+C<Math::Perverse> module, which sounds like a candidate for the Acme
+namespace to me.
+
+Larry seems to think that a combination of pragmas and overloaded
+classes should be enough to do the job.
+
+L<http://groups.google.com/groups?threadm=20021014210513.GM4719%40ool-18b93024.dyn.optonline.net>
+
+L<http://groups.google.com/groups?threadm=168270-220021021505816688%40M2W053.mail2web.com> -- complete with
+citation of www.userfriendly.org
+
+=head2 A concept for Exceptions
+
+Miko O'Sullivan has been doing some serious thinking. After wowing us
+with his C<untaintby> proposal, he came up with some proposals for
+exceptions which would allow for all sorts of cunning tricks. Dan
+pointed out that at least one of the cunning tricks wasn't actually
+possible, but that you could get something like it by throwing
+continuations with your exceptions.
+
+L<http://groups.google.com/groups?threadm=410-2200210215183328386%40M2W045.mail2web.com>
+
+=head1 In brief
+
+The effort to fix the JIT core when compiled with optimizations on x86
+boxes continues (with a certain amount of discussion of how to use the
+test modules). 
+
+Simon Glover sent a covey of patches, mostly adding tests (yay!) along
+with one to fix up and document the C<.include> assembler
+macro. Applied.
+
+Chromatic did some copy editing of the docs and sent in a patch with
+his fixes. Applied.
+
+Leopold Toetsch has a large patch for the GC system which tries to
+deal with some of the problems. It's not a complete fix, but Leo
+thinks it's a start.
+
+Simon Glover noticed that F<lib/Parrot/PMC.pm> is marked as
+autogenerated and therefore removed by a C<make clean>, which would be
+okay, but there's no rule in the makefile to regenerate it. Steve Fink
+fixed it using Simon's suggested solution.
+
+Dan's fixed the docs for the splice vtable entries in PDD2. Leopold
+Toetsch promised to implement it.
+
+Michael Lazzaro offers a summary of variables and assignment at
+L<http://cog.cognitivity.com/perl6/var.html>. Thanks Michael.
+
+=head1 Who's Who in Perl 6
+
+=over 4
+
+=item Who are you?
+
+Brent Dax
+
+=item What do you do for/with Perl 6?
+
+I manage Configure changes and occasionally work on embedding and
+extending, the regex engine, misc.c, or whatever catches my fancy.
+
+=item Where are you coming from?
+
+The end of a day in high school (or sometimes the middle of the day...)
+:^)
+
+Seriously, I think Perl 6 is an excellent idea.  Perl is a great
+language, but it's been in need of a de-crufting for some time.
+
+=item When do you think Perl 6 will be released?
+
+Hmm...probably next year sometime.  Not soon enough for me to like it,
+but not late enough to complain about it.
+
+=item Why are you doing this?
+
+Because it's fun and interesting.  And I get paid to manage a Web site,
+so Perl eq money.  And I'm actually taken seriously.
+
+=item You have 5 words. Describe yourself.
+
+Hubristic hacker who really knows_little.
+
+=item Do you have anything to declare?
+
+No, of course not.  No need to search this suitcase.  Nope, not a bit.
+The customs dogs must have smelled a doggy treat or something.
+
+=back
+
+=head1 Acknowledgements
+
+Thanks are, of course, due to Leon Brocard for ably filling my shoes
+for the past couple of weeks and making sure that the summaries got
+through.
+
+I'd also like to thank Rhys Weatherly and Gopal V for popping up on
+the internals list. I think it's I<great> to see good communication
+and cooperation between the different projects working in this field.
+
+Thanks too to my army of crack proofreaders who help to turn the
+misspelled morass of bad grammar that is my first draft into something
+that's readable. This week's team was: Chris Ball
+
+The Perl 6 Summary was produced with the aid of GNER tea, the
+distractions of MAME and I<10 Yard Fight> and with money from O'Reilly
+and Associates. If you liked it, please consider giving money to the
+Perl Foundation at L<http://donate.perl-foundation.org> and feedback
+and/or NeXTcubes to me, L<mailto:pdcawley@bofh.org.uk>. 
+
+The fee paid for publication of this summary on perl.com has been
+donated directly to the Perl Foundation.

@@ -1,0 +1,88 @@
+=head1 TITLE
+
+Lazy Input / Context-sensitive Input
+
+=head1 VERSION
+
+  Maintainer: Adam Turoff <ziggy@panix.com>
+  Date: 24 Sep 2000
+  Last Modified: 26 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 285
+  Version: 2
+  Status: Frozen
+
+=head1 ABSTRACT
+
+Currently, file read operations work in either scalar context or list
+context.  When the left-hand-side of an input operation contains a finite
+list of scalars, a finite number of records should be returned, rather than
+reading all of the records and losing most of them.
+
+=head1 NOTES
+
+Damian mentioned that this "tricky" bit of magic is trivial with his
+proposed context sensitive want() function.
+
+=head1 DESCRIPTION
+
+Tom Christiansen proposed this in his perl6storm message:
+
+	=item perl6storm #0000
+
+	This:
+
+		($a,$b) = <FH>;  
+
+	should not drain whole ahndle on known LHS count, to rescue
+
+		my($x) = <FH>;
+
+As Tom points out, this is an accidental misfeature, caused by enabling
+
+	@lines = <FH>;
+
+to be sensible.
+
+=head1 IMPLEMENTATION
+
+Not so tricky, if RFC 21 is implemented.  
+
+In order for I/O operations (or any function) to emit the proper
+number of return values in each of the following cases:
+
+	$x = foo();
+
+	($x) = foo();
+
+	($x, $y) = foo();
+
+	($x, $y, ...) = foo();
+
+	@values = foo();
+
+The function in question needs to return values in a manner similar
+to this RFC 21-inspired bit of pseudo code:
+
+	if (want "SCALAR") {
+		return next_singleton();
+	} elsif ($count = want "COUNT") {
+		my @list;
+		push(@list, next_singleton()) for (1..$count);
+		return @list;
+	} elsif(want "LIST") {
+		my @list;
+		my $singleton;
+		while (defined($singleton = next_singleton())) {
+			push(@list, $singleton);
+		}
+		return (@list)
+	}
+
+	... ## More contexts to follow.  These three cover intelligent I/O.
+
+=head1 REFERENCES
+
+RFC 21: Subroutines: Replace C<wantarray> with a generic C<want> function
+
+perl6storm

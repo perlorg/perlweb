@@ -1,0 +1,201 @@
+<HTML>
+<HEAD>
+<TITLE>This Week on perl5-porters</TITLE>
+<LINK REV="made" HREF="mailto:bhcompile@daffy.perf.redhat.com">
+</HEAD>
+
+<BODY>
+
+<A NAME="__index__"></A>
+<!-- INDEX BEGIN -->
+
+<UL>
+
+	<LI><A HREF="#this week on perl5porters (30 september / 6 october 2002)">This Week on perl5-porters (30 September / 6 October 2002)</A></LI>
+	<UL>
+
+		<LI><A HREF="#hash::util::lock_keys inhibits bless">Hash::Util::lock_keys inhibits bless</A></LI>
+		<LI><A HREF="#just in time subroutine loading">Just in time subroutine loading</A></LI>
+		<LI><A HREF="#collections">Collections</A></LI>
+		<LI><A HREF="#overriden builtin misparsing">Overriden built-in misparsing</A></LI>
+		<LI><A HREF="#the void context">The void context</A></LI>
+		<LI><A HREF="#make too slow"><CODE>make</CODE> too slow</A></LI>
+		<LI><A HREF="#safe.pm security hole">Safe.pm security hole</A></LI>
+		<LI><A HREF="#memory stats interface">Memory stats interface</A></LI>
+		<LI><A HREF="#in brief">In brief</A></LI>
+		<LI><A HREF="#about this summary">About this summary</A></LI>
+	</UL>
+
+</UL>
+<!-- INDEX END -->
+
+<HR>
+<P>
+<H1><A NAME="this week on perl5porters (30 september / 6 october 2002)">This Week on perl5-porters (30 September / 6 October 2002)</A></H1>
+<P>It was a busy week indeed, with long threads, interesting bugs, clever
+fixes, miscellaneous optimizations, some new ideas, a few jokes,
+mysterious failures, and, finally, a security hole. Read on.</P>
+<P>
+<H2><A NAME="hash::util::lock_keys inhibits bless">Hash::Util::lock_keys inhibits bless</A></H2>
+<P>Andreas Koenig reported that a restricted hash (that is, a hash that has
+been marked as readonly), can't be blessed. In fact, no readonly variable
+can't be blessed, and that's a feature. As Tim Bunce said, <EM>generally
+hashes are locked by constructors and a constructor can bless it prior to
+locking it.</EM> This behavior was thus documented in the Hash::Util manpage.</P>
+<P>Nicholas Clark then proposed to mark restricted hashes with some other flag
+than SVf_READONLY. This implies to find a free slot in the SV flags
+bitvector. Tim Bunce pointed out that this property (to use a Perl 6 word)
+can also be implemented as a new type of magic.</P>
+<PRE>
+    <A HREF="http://archive.develooper.com/perl5-porters@perl.org/msg87205.html">http://archive.develooper.com/perl5-porters@perl.org/msg87205.html</A></PRE>
+<P>
+<H2><A NAME="just in time subroutine loading">Just in time subroutine loading</A></H2>
+<P>Elizabeth Mattijsen requested comments on her new creation, <CODE>jit.pm</CODE>, a
+module that loads modules and subroutines `just in time' (using the same
+autoloading mechanism as AutoLoader and SelfLoader.)</P>
+<P>Several porters didn't like the name, for several reasons : it's too
+generic ; Parrot has already an unrelated JIT project, using the Java
+sense of the acronym, so the word may confuse people ; it doesn't begin
+with an uppercase letter.</P>
+<P>Elizabeth finally decided to go for the name <CODE>load.pm</CODE>.</P>
+<P>In the background, Tim Bunce suggested that AutoLoader and SelfLoader
+could be patched so that the <CODE>-c</CODE> command-line option to perl triggers
+loading and compilation of all subroutines.</P>
+<PRE>
+    <A HREF="http://archive.develooper.com/perl5-porters@perl.org/msg87273.html">http://archive.develooper.com/perl5-porters@perl.org/msg87273.html</A></PRE>
+<P>The new module's manpage from the CPAN :</P>
+<PRE>
+    <A HREF="http://search.cpan.org/author/ELIZABETH/load-0.03/lib/load.pm">http://search.cpan.org/author/ELIZABETH/load-0.03/lib/load.pm</A></PRE>
+<P>
+<H2><A NAME="collections">Collections</A></H2>
+<P>The biggest thread of the week -- 65 messages -- began with a question by
+Christian Jaeger, about the possibility of having some sort of hash that
+accepts references as keys without stringifying them.</P>
+<P>Brian Ingerson came up with a comparison to Ruby, in which any object that
+provides a <CODE>hash()</CODE> method can be used as a hash key. Semantic problems
+arise when arrayrefs are used as hash keys, when they are modified, and
+when they're used again as a hash key. Do they still refer to the same
+hash entry ? Do another arrayref, equivalent to the first one, refer to
+the same hash entry ? How to compute an hash code, or to compare for
+equality two arbitrary complex objects ? And, as Brian wondered, <EM>isn't
+that Elvis parking next to my car?!?!</EM></P>
+<P>The hash code for a Perl data structure could be, as a first
+proof-of-concept implementation, the MD5 checksum of a Storable
+serialization. Brian proposed an implementation of this as a new pragma,
+<CODE>keys</CODE>, that would <EM>turn on complex-key functionality for all hashing
+operations in that scope</EM>.</P>
+<P>On the other hand, Tim Bunce suggested to rewrite <CODE>Tie::RefHash</CODE> as an XS
+extension.</P>
+<PRE>
+    <A HREF="http://archive.develooper.com/perl5-porters@perl.org/msg87276.html">http://archive.develooper.com/perl5-porters@perl.org/msg87276.html</A></PRE>
+<P>
+<H2><A NAME="overriden builtin misparsing">Overriden built-in misparsing</A></H2>
+<P>Bradley Baetz reported that an overriden built-in function isn't always
+parsed like the original built-in. He provided an example with die(),
+which breaks the use of <CODE>CGI::Carp</CODE> with the Template Toolkit.</P>
+<P>The problem is on code that looks like this :</P>
+<PRE>
+    die MyModule-&gt;my_method();</PRE>
+<P>which is incorrectly parsed as <CODE>(die MyModule)-&gt;my_method()</CODE> when
+<CODE>die()</CODE> is overriden. This comes from the indirect object notation, that
+makes perl believe that <CODE>die()</CODE> is a method from class MyModule. Rafael
+Garcia-Suarez provided a patch to the tokenizer to fix this behavior.</P>
+<PRE>
+    <A HREF="http://archive.develooper.com/perl5-porters@perl.org/msg87354.html">http://archive.develooper.com/perl5-porters@perl.org/msg87354.html</A></PRE>
+<P>Bradley reported also another bug on <CODE>die()</CODE> (bug #17763), occurring when
+<CODE>die()</CODE> throws an exception object, for which stringification has been
+overloaded : this exception gets incorrectly stringified before being
+passed to a <CODE>$SIG{__DIE__}</CODE> handler. Nobody commented.</P>
+<P>
+<H2><A NAME="the void context">The void context</A></H2>
+<P>Yitzchak Scott-Thoennes proposed a patch for the <CODE>our(%hash)</CODE> slowness
+bug reported last week. Tony Bowden also ran some benchmarks on the
+relative speeds of <CODE>my @x</CODE> and <CODE>my(@x)</CODE>. Stephen McCamant explained that
+the `padav' op (declaration of a lexical array) doesn't have a specific
+optimization for void context, and uses scalar context instead, and he
+provided a patch, and a list of other ops that may benefit from the same
+improvement.</P>
+<PRE>
+    <A HREF="http://archive.develooper.com/perl5-porters@perl.org/msg87539.html">http://archive.develooper.com/perl5-porters@perl.org/msg87539.html</A></PRE>
+<P>
+<H2><A NAME="make too slow"><CODE>make</CODE> too slow</A></H2>
+<P>Slaven Rezic noticed that make'ing a large module tree is much slower with
+5.8.0 than with previous versions of Perl. If I understand correctly,
+that's due to a limitation of command-line lengths in MakeMaker-generated
+Makefiles, currently hardwired at 200 chars. He proposed to add a new
+parameter MAX_SHELL_LENGTH to tune this, and also to look at the POSIX
+constant ARG_MAX on systems that define it.</P>
+<PRE>
+    <A HREF="http://archive.develooper.com/perl5-porters@perl.org/msg87342.html">http://archive.develooper.com/perl5-porters@perl.org/msg87342.html</A></PRE>
+<P>Later, he also thought about <EM>making `make test' faster by using parallel
+processes</EM>, and provided a proof-of-concept test script.</P>
+<PRE>
+    <A HREF="http://archive.develooper.com/perl5-porters@perl.org/msg87700.html">http://archive.develooper.com/perl5-porters@perl.org/msg87700.html</A></PRE>
+<P>
+<H2><A NAME="safe.pm security hole">Safe.pm security hole</A></H2>
+<P>Andreas Jurenda discovered a security hole in the <CODE>Safe</CODE> module (bug
+#17744), and also suggested a fix. The <CODE>Safe</CODE> module provides a way to
+construct restricted compartments, in which it's possible to eval some
+perl code, while some ops have been forbidden. An opmask describes the
+list of disabled ops. The problem is that it's possible to modify the
+opmask from within the eval'd perl code; thus, if the safe compartment is
+used again, it's possibly no longer safe.</P>
+<P>This bug has been fixed in the development version of Perl, and Arthur
+Bergman quickly uploaded Safe 2.08 (and then 2.09) to CPAN.</P>
+<PRE>
+    <A HREF="http://archive.develooper.com/perl5-porters@perl.org/msg87643.html">http://archive.develooper.com/perl5-porters@perl.org/msg87643.html</A></PRE>
+<P>
+<H2><A NAME="memory stats interface">Memory stats interface</A></H2>
+<P>H.Merijn Brand proposed an interface to the <CODE>sbrk(2)</CODE> C function, to help
+tracing the memory used by a perl interpreter. This triggerred quite a bit
+of discussion, because <CODE>sbrk(2)</CODE> has peculiar semantics, is not in POSIX,
+and there's other equally unportable methods to stat the memory (for
+example reading this data from <CODE>/proc</CODE>). The ultimate goal is, of course,
+to help us producing a better perl, that consumes less memory resources
+while being faster.</P>
+<PRE>
+    <A HREF="http://archive.develooper.com/perl5-porters@perl.org/msg87502.html">http://archive.develooper.com/perl5-porters@perl.org/msg87502.html</A></PRE>
+<P>
+<H2><A NAME="in brief">In brief</A></H2>
+<P>Alain Barbet continued to work on his web-browseable smoke database.</P>
+<P>H.Merijn Brand reported that gdbm-1.8.1 breaks <CODE>GDBM_File</CODE>, but
+with gdbm-1.8.2 the breakage is gone. So it's probably not a perl bug.</P>
+<P>Brian Ingerson proposed that the CPAN modules could install their
+regression tests somewhere in the lib directories. Then a <CODE>perltest</CODE>
+command could be used to run them again. The changelogs could be installed
+as well, and accessible via another ad-hoc command, esp. if they're
+rearranged into YAML format.</P>
+<P>While hunting down a bug, Yitzchak Scott-Thoennes discovered another one
+(#17718) : <CODE>if(%h){...}</CODE> (or other boolean constructs) fail to test
+correctly the emptiness of a hash if this hash is tied.</P>
+<P>Rafael Garcia-Suarez added a new warning, <EM>Possible precedence problem on
+bitwise %c operator</EM>, to warn about constructs like <CODE>($x &amp; $y == $z)</CODE>,
+which is confusingly equivalent to <CODE>($x &amp; ($y == $z))</CODE>. This uncovered a
+bug in a regression test for Storable.</P>
+<P>H.Merijn Brand provided a first patch to remove 5.005-threads from Perl.
+(They were deprecated in perl 5.8 in favor of ithreads.)</P>
+<P>Chris Darroch noticed that using the <CODE>English</CODE> module and the <CODE>study()</CODE>
+function together breaks <CODE>s///g</CODE>. Slaven Rezic proposed a very
+simple patch -- that just disables <CODE>study()</CODE> when <CODE>$&amp;</CODE> is used in the
+code. As he says, <EM>whoever introduces a performance hit in his script by
+using $&amp; does not need the performance improvement of study :-)</EM>. Hugo
+disapproved.</P>
+<P>Dan Kogai released Encode v1.77.</P>
+<P>The regression test t/op/closure.t fails mysteriously on some
+configurations, apparently when using perl's malloc and without the
+debugging code (the one that implements the -D command-line option).
+Apparently this is caused by Dave Mitchell's pad.[ch] patch. Dave proposed
+a fix, the smoke tests have to be run again with it.</P>
+<P>
+<H2><A NAME="about this summary">About this summary</A></H2>
+<P>This summary brought to you by Rafael Garcia-Suarez. It's also
+available via a mailing list, which subscription address is
+<EM><A HREF="mailto:perl5-summary-subscribe@perl.org">perl5-summary-subscribe@perl.org</A></EM>. If you wonder why I switched to
+yet another mail archive, here's the reason : Google Groups breaks threads
+at subject changes, which is probably not the Right Thing, and the
+xray.mpe.mpg.de mail archive breaks threads at month boundaries, which is
+definitively not the Right Thing either.</P>
+
+</BODY>
+
+</HTML>

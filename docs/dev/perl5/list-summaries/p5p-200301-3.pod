@@ -1,0 +1,115 @@
+=head1 This Week on perl5-porters (13-19 January 2003)
+
+Another week, and its load of patches. A major evolution of the UTF8
+implementation, some experimental surgery on the debugger, weak hashes,
+strong pack templates, Win32 modules and quite a number of new ideas are
+summarized in this week's summary.
+
+=head2 The UTF8 patch
+
+Jarkko Hietaniemi solved the problems pertaining UTF8 locales that I
+summarized last week (see bug #19743). If I understand correctly :
+
+The newest version of Encode (1.84, released by Dan Kogai last week)
+now reports malformed data read from an UTF8 filehandle.
+
+Moreover, the B<-C> command-line switch is now required to enable
+UTF8-ification of I/O. It no longer occurs automatically (and silently)
+when perl is run under an UTF8 locale. Another way to achieve this is to
+set the environment variable PERL_UTF8_LOCALE. (Running smoke tests with
+this variable set and with an UTF8 locale would be a good idea.)
+
+(PS: hijacking -C doesn't mean that wide system calls are to be dropped
+on Windows. Gurusamy Sarathy said that he'll look at them in the future.)
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg90835.html
+
+=head2 Strange modulus failure
+
+Abigail's smoke tests on Linux show a regular failure on a regression test
+concerning integer modulus, when perl is compiled with 64 bit capability.
+Other people are unable to reproduce it, so we may start to blame the
+glibc or something.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg90917.html
+
+=head2 Debugger performance degradation
+
+Bug #20218, reported by Dirk Koopman, demonstrates that the debugger is
+ten times slower (under some circumstances) in perl 5.8.0 than in perl
+5.6.1.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg90866.html
+
+Jarkko Hietaniemi then found a single one-line change that is to be blamed
+for a large part of this slowdown. The discussion continues...
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg90985.html
+
+=head2 Weak hashes
+
+Mark Mielke asked for ways to implement weak hashes in Perl (i.e. hashes
+that contain weak references, and from which keys are deleted when the weak
+reference is collected.) Several alternatives were proposed.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg90773.html
+
+=head2 Work on pack()
+
+Wolfgang Laun proposed a huge patch to the pack() and unpack() functions,
+that fixes a lot of problems. He's still working on it, as it's not
+perfect yet. On his to-do list is also defining I<the syntax for the
+template language>. We're looking forward for it.
+
+He posted a summary of the changes here :
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg90819.html
+
+=head2 In brief
+
+Rafael Kitover sent a huge set of patches for the libwin32 bundle, a suite
+of Windows-specific modules, maintained on CPAN by Gurusamy Sarathy.
+
+Brent Dax proposed to add a new prototype to mimic the delete() built-in
+(i.e. define a function that takes an hash/array slice/element as
+argument.) Rafael Garcia-Suarez answered that this is possible, but not
+trivial.
+
+Paul Marquess says that he's I<almost finished putting a module together,
+called DBM_Filter, that builds on the existing DBM Filter hooks, but makes
+it easer to write DBM Filters and to stack multiple filters.> This is
+intended to allow writing encoding filters for the C<.*DBM?_File> modules.
+He asks whether this module should go in the core. Nobody commented.
+
+The same bug was reported as #20154 and #20357 : a case of coredump caused
+by goto() inside a C<do/while> or a C<for> loop.
+
+Nicholas Clark had a damn good idea about optimizing the entersub op
+(executed when a subroutine is called.)
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg90802.html
+
+Campo Weijerman remarked that isa() doesn't work on magic variables. This
+was promptly fixed.
+
+Ton Hospel continues to report obscure bugs. (bug #20321, I<indexing the
+result of a listcontext match inside a string interpolation looses values>.)
+
+Jason Lee notes that C<%lf> is not recognized by perl 5.8.0 in a printf()
+format. This is apparently not the right thing. (bug #20339.)
+
+Dave Rolsky asked if it was possible to call perl's regex engine from XS
+code. Nick Ing-Simmons provided an answer (and a few hints) : it's indeed
+possible, but I<tricky and risky>, as there is no clean external interface
+to the regex engine.
+
+Alan Burlison advertised his newest creation, Solaris-PerlGcc (found on
+CPAN), that allows to compile modules against the perl shipped with
+Solaris, with the gcc compiler.
+
+=head2 About this summary
+
+This summary brought to you by Rafael Garcia-Suarez. Summaries are
+available on F<http://use.perl.org/> and/or via a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. Comments and
+corrections are welcome.

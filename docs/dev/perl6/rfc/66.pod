@@ -1,0 +1,118 @@
+=head1 TITLE
+
+Shell Style Redirection
+
+=head1 VERSION
+
+  Maintainer: David Nicol <perl6rfc@davidnicol.com>
+  Date: 8 Aug 2000
+  Last Modified: 5 Sep 2000
+  Mailing List: perl6-language-io@perl.org
+  Number: 66
+  Version: 2
+  Status: Developing
+
+=head1 ABSTRACT
+
+The C<use redirect> pragma or a new C<redirect> keyword is introduced
+to allow redirection of streams of any kind into each other.
+
+The keyword may not be really needed, as when does it make any
+sense to do a lt or gt comparison with a file handle?
+
+
+=head1 SUMMARY
+
+	sub callfritz{
+
+	   local STDIN < $InputData;
+
+	   local STDOUT > PREVIOUSLY_OPENED_HANDLE;
+
+	   eval `cat fritz.pl`;
+
+	};
+
+is proposed as an alternative to doing the same thing
+with a variety of open2 calls.
+
+=head1 DESCRIPTION
+
+As an alternative to the Bourne shell style C<open> syntax
+described in `perldoc -f open`,  this
+proposal overloads the less than and greater than operators
+in order that subsequent statements,
+particularly external routines that will be looking to
+a file descriptor table for their file handles, will get from
+and give to where we want them to.
+
+The redirection is affected by the scoping operators like
+any other variable which alters the situation.
+
+It will also provide another way to capture STDERR from
+within backticks.
+
+	sub ToolErrorsFirst{
+
+		# place to hold the output
+		my $tooloutput;	
+
+		# place to hold the errors
+		my $errors;
+
+		# use redirect: very similar to shell redirection
+		my use redirect STDOUT > $tooloutput ;   
+
+		# alternately, FILE > $scalar is obviously a redirect
+		# (if we accept the overload of >)
+		# so no additional keywords are required
+		my  STDERR > $errors ;   
+
+		$tooloutput = `tool @_`;
+		
+		return $errors . $tooloutput;
+
+	};
+
+Currently I do this kind of thing by using the
+file system as temporary storage.
+
+another use of the angle brackets would be as a single-character
+print operator, similar to << in C++ streams.
+
+	print $abc;
+	print OUT $z;	# one way to do it
+
+	< $abc;
+	OUT < $z;	# another way to do it
+
+Left-angle could differ from C<print> by returning the file handle,
+instead of a success code, making C++ like constructions possible:
+
+	< $this < "and" < $that; 	# same as print "${this}and$that"
+
+=head1 IMPLEMENTATION
+
+We need overloading based on type.  The < operator will be
+like C<print> when there is a file handle on the left side,
+it will be like assigning from <FH>  when there is a file handle on the
+right, and it will be like the Bourne shell duplicate C<open> when there
+are file handles on both sides.
+
+Setting up a way to trap the standard error from a forked process
+and load it into a scalar -- will that be difficult?
+
+=head1 MIGRATION
+
+Code that compares file handles, or compares file handles
+with scalars, will break.
+
+=head1 CHANGES
+
+discussion of C++ and use of < as a print operator
+
+=head1 REFERENCES
+
+RFC 39: Perl should have a print operator
+
+RFC 61: Interfaces for linking C objects into perlsubs

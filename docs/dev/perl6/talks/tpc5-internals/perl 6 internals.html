@@ -1,0 +1,435 @@
+<%method title>Perl 6 Internals</%method>
+<STRONG>
+Dan Sugalski<BR>
+TPC 5.0
+</STRONG>
+<P>
+"Here there be dragons"
+<P>
+The big goals of perl 6's internals
+<UL>
+  <LI> Speed
+  <LI> Extendibility
+  <LI> Cleanliness
+  <LI> Compatibility
+  <LI> Modularity
+  <LI> Thread Safety
+  <LI> Flexibility
+</UL>
+<P>
+Some global decisions
+<UL>
+  <LI> The core will be in C. (Like it or not, it's appropriate for code at this level)
+  <LI> The core must be modular, so pieces can be swapped out without rebuilding
+  <LI> It must  be fast
+  <LI> Long-term binary compatibility is a must
+  <LI> Your average perl coder or extension writer shouldn't need any info about the guts
+  <LI> Things should generally be thought out, documented, and engineered
+</UL>
+<P>
+<H3>The quick overview</H3>
+<UL>
+  <LI>Parser
+  <LI>Compiler
+  <LI>Optimizer
+  <LI>Runtime engine
+</UL>
+<P>
+The parser
+<UL>
+  <LI> Where the whole thing starts
+  <LI> Generally takes source of some sort and turns it into a syntax tree
+</UL>
+<P>
+The Bytecode Compiler
+<UL>
+  <LI> Turns a syntax tree into bytecode
+  <LI> Performs some simple optimization
+</UL>
+<P>
+The optimizer
+<UL>
+  <LI> Takes the plain bytecode from the compiler and abuses it heavily
+  <LI> An optional step, generally skipped for compile-and-go execution
+  <LI> Should be able to work on small parts of a program for JIT optimization
+</UL>
+<P>
+The Interpreter
+<UL>
+  <LI> Takes compiled (and possibly optimized) bytecode and does something with it
+  <LI> Generally that something is execute, but it might also be:
+  <UL>
+    <LI>Save to disk
+    <LI>Translate to another format (.NET, Java bytecode)
+    <LI>Compile to machine code
+  </UL>
+</UL>
+<P>
+<H3>The Parser</H3>
+<UL>
+  <LI>"Double, double, toil and trouble<br>
+Fire burn, and cauldron bubble"
+</UL>
+<P>
+Parser goals
+<UL>
+  <LI> Extendible in perl
+  <LI> More powerful than what we have now
+  <LI> Retargetable
+  <LI> Self-contained and removable
+</UL>
+<P>
+Parsing perl isn't easy
+<UL>
+  <LI> May well be one of the toughest languages to properly parse
+  <LI> If we get perl right other languages are easy. Or at least easier
+  <LI> We have the full power of perl to draw on to do the parsing (Including the regex engine and Damian's Bizarre Idea de Jour)
+</UL>
+<P>
+<H3>The Compiler</H3>
+<UL>
+  <LI>"Mmmmm, tasty!"
+</UL>
+<P>
+From syntax tree to bytecode
+<UL>
+  <LI> The compiler takes a syntax tree and turns it into bytecode
+  <LI> Very little optimization is done here.
+  <LI> Optimization is expensive and optional
+  <LI> Pretty straightforward-this isn't rocket science
+</UL>
+<P>
+<H3>The Optimizer</H3>
+<UL>
+  <LI>"We can rebuild it. Make it better, faster, stronger"
+  <LI> Takes plain bytecode and makes it faster
+  <LI> Does all the sorts of things that you expect an optimizer to do-code motion, loop unrolling, common subexpression work, etc.
+  <LI> Will be an iterative process
+  <LI> This will be interesting, as perl's a pain to optimize
+  <LI> An optional step, of course
+</UL>
+<P>
+Things that make optimizing perl tough
+<UL>
+  <LI> Active data
+  <LI> Runtime redefinitions of everything
+  <LI> Really, really late binding (Waiting for Godot late)
+  <LI> Perl programmers are used to more predictable runtime characteristics than, say, C programmers.
+</UL>
+<P>
+<H3>The Interpreter</H3>
+<UL>
+  <LI>"Polly want a cracker?"
+</UL>
+<P>
+Interpreter goals
+<UL>
+  <LI> Fast
+  <LI> Tuned for perl
+  <LI> Language neutral where possible
+  <LI> Event capable
+  <LI> Sandboxable
+  <LI> Asynchronous I/O built in
+  <LI> Built with an eye towards TIL and/or native code compilation
+  <LI> Better debugging support than perl 5
+</UL>
+<P>
+The perl 6 interpreter is software CPU
+<UL>
+  <LI> Complete with registers and an assembly language
+  <LI> This can make translating perl 6 bytecode into native machine code easier
+  <LI> There's a lot of literature on building optimzing compilers that can be leveraged
+  <LI> While more complex than a pure stack-based machine, it's also faster
+  <LI> Opcode dispatch needs to be faster than perl 5
+  <LI> Opcode functions can be written in perl
+</UL>
+<P>
+CPU specs
+<UL>
+  <LI> 64 int, float, string, and PMC registers
+  <LI> A segmented multiple stack architecture
+  <LI> Interrupt-capable (for events)
+  <LI> Pretty much completely position independent-everything is referenced via register, pad entry, or name
+</UL>
+<P>
+The regex engine
+<UL>
+  <LI> The regex engine is going to be part of the perl 6 CPU, not separate as it is now
+  <LI> A good incentive to get opcode dispatch fast
+  <LI> Makes expanding the regex engine a bit easier
+  <LI> Details will be hidden as a set of regex opcodes
+</UL>
+<P>
+A few words on the stack system
+<UL>
+  <LI> Each register file has an associated stack
+  <LI> All registers of a particular type can be pushed onto or popped off the stack in one go
+  <LI> Individual registers or groups of registers can be pushed or popped
+  <LI> The stacks are all segmented so we're not relying on finding contiguous chunks of memory for them
+  <LI> There's also a set of call and scratch stacks
+</UL>
+<P>
+<H3>Bytecode</H3>
+<UL>
+  <LI>"Could you say that a little differently?"
+</UL>
+<P>
+What is bytecode?
+<UL>
+  <LI> A distilled version of a program
+  <LI> Machine language for the PVM
+  <LI> Can contain a lot of 'extra' information, including full source
+  <LI> Designed to be platform independent
+  <LI> Should be mostly mappable as shared data (modulo the fixup sections)
+</UL>
+<P>
+<H3>Data Structures</H3>
+<UL>
+  <LI>"Vtables and strings and floats, oh my!"
+</UL>
+<P>
+Variables
+<P>
+<UL>
+  <LI> Generically called a PMC
+  <LI> Bigger than Perl 5's base data structure
+  <LI> Synchronization data built-in
+  <LI> Same for all variable types
+  <LI> GC data is not part of base structure
+</UL>
+<P>
+Scalars
+<UL>
+  <LI> Built off the base PMC structure
+  <LI> Use the integer and float areas as caches
+  <LI> Data pointer points off to string, large int, or large float
+  <LI> Vtable functions determine how it all works
+</UL>
+<P>
+Arrays
+<UL>
+  <LI> Built off the base PMC structure
+  <LI> Data pointer points to array data
+  <LI> All perl 6 arrays are typed
+  <LI> May have an array of scalars, strings, integers, or floats
+  <LI> Array only takes up enough memory to hold their types
+</UL>
+<P>
+Hashes
+<UL>
+  <LI> Built off the base PMC structure
+  <LI> Data pointer points to array data
+  <LI> All perl 6 hashes are typed
+  <LI> May have a hash of scalars, strings, integers, or floats
+  <LI> Hashes only takes up enough memory to hold their types
+  <LI> Hashing function is overridable
+</UL>
+<P>
+Strings
+<UL>
+  <LI> Strings are sort of abstract
+  <LI> Perl 6 can mix and match string data (Unicode, ASCII, EBCDIC, etc)
+  <LI> New string types can be loaded on the fly
+</UL>
+<P>
+String handling
+<UL>
+  <LI> Perl 6 has no 'built-in' string support-all string support is via loadable libraries
+  <LI> There'll be Unicode, ASCII, and EBCDIC support provided (at least) to start
+</UL>
+<P>
+Numbers
+<P>
+<UL>
+  <LI> Bigints and bigfloats share the same header
+  <LI> Arbitrary-length floating point and integer numbers are supported
+  <LI> Perl automagically upgrades ints and floats when needed
+</UL>
+<P>
+Vtables
+<UL>
+  <LI> All variable data access is done through a table of functions that the variable carries around with it
+  <LI> This allows us faster access, since code paths are specialized for just the functions they need to perform
+  <LI> Isolates us from the implementation of variables internally
+  <LI> Allows special purpose behaviour (like perl 5's magic) to be attached without cost to the rest of perl
+</UL>
+<P>
+Vtables (cont'd)
+<UL>
+  <LI> Makes thread safety easier
+  <LI> A little bit more overhead because of the extra level of indirection, but the smaller functions make up for that
+  <LI> Vtable functions can be written in perl. (Each class with objects blessed into it will have at least one)
+  <LI> There may be more than one vtable per package
+</UL>
+<P>
+Vtables hide data manipulation
+<UL>
+  <LI> Pretty much all the code to handle data manipulation will be done via variable vtables
+  <LI> Ths allows the variable implementation to change without perl needing to know
+  <LI> Allows far more flexibility in what you can make a variable do
+  <LI> Shortens the code path for data functions and trims out extraneous conditionals
+</UL>
+<P>
+For example:
+<P>
+Fetching the string value of a scalar
+<P>
+For scalars with strings:
+<P>
+<PRE><CODE>
+String *get_str(PMC *my_PMC) {
+  return my_PMC->data_pointer;
+}
+</CODE></PRE>
+<P>
+For int-only scalar:
+<P>
+String *get_str(PMC *my_PMC) {
+<PRE><CODE>
+  my_PMC->data_pointer = 
+    make_string(my_PMC->integer);
+  my_PMC->vtable = int_and_string_vtable;
+  return my_PMC->data_pointer;
+}
+</CODE></PRE>
+<P>
+<H3>Memory Management</H3>
+<UL>
+  <LI>"Now where did I put that?"
+</UL>
+<P>
+Getting headers
+<UL>
+  <LI> All the fixed-size things (PMCs, string/number headers) get allocated from arenas
+  <LI> All headers, with the exception of PMCs (maybe) are moveable by the garbage collector
+  <LI> Non-PMC header allocation is very fast
+  <LI> PMC allocation is only mostly fast
+</UL>
+<P>
+Buffer Management
+<UL>
+  <LI> Anything that isn't a fixed size gets allocated from the buffer pools
+  <LI> All buffered data, with the exception of data allocated in special pools, is moveable by the garbage collector
+  <LI> Because of GC, allocation is very quick
+</UL>
+<P>
+<H3>Garbage Collection</H3>
+<UL>
+  <LI>"Bring out yer dead!"
+</UL>
+<P>
+The perl 6 GC is a copying collector
+<UL>
+  <LI> Everything except PMCs is moveable in Perl 6
+  <LI> PMCs might be moveable too
+  <LI> We get a compact memory heap out of this, which allows for fast allocation
+  <LI> Perl 6 will release empty memory back to the system when it can
+  <LI> Refcounts are used only to note object lifetimes, not for GC
+  <LI> Refcounts, for the most part, are dead
+</UL>
+<P>
+GC considerations for Objects
+<UL>
+  <LI> Garbage collection and object death are now separate things
+  <LI> Perl's guarantee of timely object death is stronger
+  <LI> We still don't guarantee perfect collection (but it sucks less)
+  <LI> We still refcount for real perl references, but only 2 bits are used
+  <LI> Objects with more than two simultaneous references won't get collected until a full dead variable scan is made
+</UL>
+<P>
+Extensions beware!
+<UL>
+  <LI> Since we have no refcounts, extensions must tell perl when they hold on to PMCs
+  <LI> Not a huge deal, as we piggy-back on the cross-interpreter PMC tracking we use for threads
+  <LI> No more struct PMC; in extensions...
+</UL>
+<P>
+<H3>Extending Perl 6</H3>
+<P>
+Extensions Made Easier
+<UL>
+  <LI> Perl 6 will have a real API
+  <LI> The API is multilevel
+  <UL>
+    <LI>Simple for embedders
+    <LI>More complex for extension authors
+    <LI>Pretty messy for vtable or opcode writers
+  </UL>
+  <LI> Binary compatibility is a very strong consideration
+</UL>
+<P>
+Embedding
+<UL>
+  <LI> Guaranteed stable and binary compatible for the life of perl 6
+  <LI> Very simple API
+  <UL>
+    <LI>Create interpreter
+    <LI>Destroy interpreter
+    <LI>Parse source
+    <LI>Run code
+    <LI>Register native functions
+  </UL>
+</UL>
+<P>
+Extensions
+<UL>
+  <LI> Much simpler interface to perl's internals
+  <LI> The gory details are hidden
+  <LI> Stable binary compatibility is a very strong goal
+  <UL>
+    <LI>We may add functions or options, but we won't take them away
+    <LI>Extensions built for perl 6.0.1 should still run with perl 6.8.12 without rebuilding
+  </UL>
+  <LI> Manipulating perl data should be much easier
+  <LI> If you have to resort to Inline to wrap a library then it means we've not got it right
+</UL>
+<P>
+Extensions (cont)
+<UL>
+  <LI> Inline, or something like it, is probably going to be the standard for extending perl
+  <LI> XS, when you have to resort to it, will be far less nasty than it is now
+</UL>
+<P>
+Homegrown Opcodes and Vtables
+<UL>
+  <LI> This is part of the grubby inside of perl 6
+  <LI> You can use any of the internal routines of perl
+  <LI> If you do, though, you may run into backward-compatibility issues at some point. (If it's not part of the embedding, utility, or extension API, we make no promises)
+  <LI> There's no guarantee that  calling conventions won't change.
+  <LI> No guarantees that perl 6.4 will even use vtables or opcodes
+</UL>
+<P>
+Utility library
+<UL>
+  <LI> Perl 6 will provide a set of utility routines to handle common tasks
+  <UL>
+    <LI>String manipulation
+    <LI>Encoding changes (Shift-JIS to Unicode, EBCDIC to ASCII)
+    <LI>Conversion routines (string to int or float)
+    <LI>Extended precision math (int and float)
+  </UL>
+  <LI> These will be stable, like the rest of the API
+</UL>
+<P>
+<H3>Variations on a Theme</H3>
+<UL>
+  <LI>"Tocatta and Fuge in perl minor by Wall"
+</UL>
+<P>
+The source doesn't have to be perl
+<UL>
+  <LI> The parser isn't obligated to be parsing perl
+  <LI> Input source could be Python, Ruby, Java, or INTERCAL
+  <LI> The full perl parser is optional
+</UL>
+<P>
+The interpreter doesn't have to interpret
+<UL>
+  <LI> The interpreter is the destination for bytecode, but it doesn't have to interpret it
+  <LI> It might save directly to disk
+  <LI> It might translate the bytecode into an alternate form-Java bytecode, .NET code, or executable code, for example
+  <LI> The interpreter might translate to machine code on the fly, as a sort of JIT compiler. (Well, really a TIL, but...)
+</UL>
+<hr>
+HTMLified from <a href="http://dev.perl.org/perl6/talks/tpc5-internals/perl%206%20internals.ppt">Dan's powerpoint talk</a> by Daniel Allen (da@coder.com) on 15 Aug. 2001.
+

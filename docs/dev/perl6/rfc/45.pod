@@ -1,0 +1,76 @@
+=head1 TITLE
+
+C<||> and C<&&> should propagate result context to both sides
+
+=head1 VERSION
+
+  Maintainer: Peter Scott <peter@psdt.com>
+  Date: 5 Aug 2000
+  Last Modified: 29 Aug 2000
+  Mailing List: perl6-language@perl.org
+  Number: 45
+  Version: 3
+  Status: Frozen
+
+=head1 ABSTRACT
+
+Currently the expressions
+
+       lvalue = expr_A || expr_B
+       lvalue = expr_A && expr_B
+
+evaluate C<expr_A> in scalar context, regardless of the type of C<lvalue>,
+only propagating list or scalar context to C<expr_B>.  This proposal is
+that the context of C<lvalue> should be propagated to C<expr_A> as well.
+
+=head1 DESCRIPTION
+
+It would be nice to be able to say
+
+       @a = @b || @c
+
+instead of having to resort to
+
+       @a = @b ? @b : @c
+
+The reason that it is not currently possible is that C<@b> (or the list
+expression in its place) has to be evaluated in scalar context to determine
+whether to evaluate C<@c>, and that propagating context to C<@b> would
+require reevaluating it, which might have undesirable side effects (instead
+of C<@b>, it might be C<decrement_balance()>).
+
+Tom Christiansen pointed out that for consistency, both C<||> and C<&&> need to
+be changed, since in the latter case, if C<@b> is empty, then C<@a> will
+currently get the single element 0.  We want it to get an empty list.
+
+=head1 IMPLEMENTATION
+
+It seems that it ought to be possible to evaluate something in a list
+context and test whether there are any entries in the resulting list
+without having to reevaluate the expression in a scalar context.  The
+work-around with the trinary operator also evaluates C<@b> twice (which
+H.Merijn Brand pointed out could even be tied and hence evaluation not
+idempotent).
+
+It's true that we are evaluating something in list context and then applying
+a boolean interpretation to the result (empty list is false, otherwise true);
+in this case we are trading a lesser consistency (likely only to be
+appreciated by someone who's been thinking for a long time about contexts)
+for a greater one.
+
+=head1 IMPACTS
+
+L<RFC 82> would require a different interpretation, namely that the result
+would be the list formed by applying C<&&> or C<||> to each successive pair
+of elements in C<@b> and C<@c>.  This author likes the idea of certain
+component-wise operators, and appreciates the importance of consistency,
+but just can't see a component-wise interpretation of the logical operators
+being either useful or intuitive.
+
+=head1 REFERENCES
+
+L<perlop/"C-style Logical Or">
+
+RFC 21: "Replace C<wantarray> with a generic C<want> function"
+
+RFC 82: "Apply operators component-wise in a list context"

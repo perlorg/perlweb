@@ -1,0 +1,77 @@
+=head1 This Week on perl5-porters (3-9 February 2003)
+
+I'm not sure whether it's me or if the Perl 5 porters discussions were
+actually a bit shorter than usual, but this week's summary, indeed,
+appears to be a bit shorter than usual. This doesn't mean that it's
+absolutely without interest.
+
+=head2 Maintenance releases
+
+Leon Brocard asked for the expected availability of the 5.005_04 and 5.6.2
+releases. Notably, there are known fixes to allow building perl 5.005_03
+and 5.6.1 with the newest versions of gcc and of the Berkeley DB. Gurusamy
+Sarathy intends to release a 5.6.2, and adds that smoke tests results are
+welcome. Tim Bunce and Nicholas Clark add that I<it's important that the
+Perl community be seen to actively support at least one previous major
+version.>
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg91424.html
+
+=head2 Reducing op size
+
+Stephen McCamant provided some ideas about removing the op_seq field from
+the op node structure (more precisely, to reduce it to two flags). An op
+could be reasonably identified by a couple (address, checksum of fields).
+He also sent a patch for B::Concise to remove its dependency on op_seq.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg91553.html
+
+=head2 Seeking a safe signal test
+
+Jarkko Hietaniemi proposes to add a new magic variable ${^SIGNAL_UNSAFE}
+(or something) to restore locally the pre-5.8.0 "unsafe" signal behavior
+when set to a true value.
+
+He asks whether someone could provide I<sample code of where the safe
+signals "reliably" gets it wrong>, to be used as a basis for tests for
+this new feature. To be noted, this kind of tests are extremely dependent
+on the platform.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg91763.html
+
+=head2 In brief
+
+Robert Spier posted a handy list of untouched bugs, alongside his weekly
+perlbug summary. He says that I<a bunch of em look easy>, and I feel
+guilty : he's right.
+
+Dustin Jones reports an interesting parser bug (#20716) : the lexical $x
+in the double-quoted string below is not seen by perl :
+
+    my $x = 'x'; print "${x}{";
+
+(removing the C<my> solves the problem.) Enache Adrian provided a fix.
+
+Dan Kogai reported that formats don't seem to play well with PerlIO and
+Unicode strings. This didn't surprise Jarkko. Inaba Hiroto proposed some
+patches to fix this.
+
+Enache Adrian was busy solving several bugs related to C<goto> : segfaults
+(#20154, #20357) and a newly discovered memory leak (#20777).
+
+Ton Hospel reported three new regular expressions bugs (if I count
+correctly).
+
+Abigail requests that Test::Harness should provide a way to be optionally
+silenced. Currently it prints a string for each test ran (the counter.)
+This may take some time for large test suites.
+
+H. Merijn Brand reports that Cygwin v1.3.20 now has nanosleep() and that
+bleadperl successfully compiles and passes all tests on it.
+
+=head2 About this summary
+
+This summary brought to you by Rafael Garcia-Suarez. Summaries are
+available on F<http://use.perl.org/> and/or via a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. Comments and
+corrections are welcome.

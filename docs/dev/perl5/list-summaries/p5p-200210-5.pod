@@ -1,0 +1,108 @@
+=head1 This Week on perl5-porters (28th October / 3rd November 2002)
+
+This week's summary features UTF8 and locale incompatibility problems,
+discovered on RedHat 8, but pertaining to UTF8 locales ; various bugs fixed ;
+various bugs discovered ; the C<//> operator reappearing shortly ; and a
+new way to consider goto harmful.
+
+=head2 Problems with RedHat 8
+
+Paul Marquess reported that the test suite for Compress::Zlib fails on the
+newest RedHat 8.0. This problem is due to a string holding binary data
+which, once written to a file, gets apparently corrupted.
+
+Gurusamy Sarathy pointed out that marking the output filehandle with
+binmode() solves the problem. In fact, RedHat 8's default configuration
+apparently use UTF-8 locales, which are recognized by perl 5.8.0. Gurusamy
+quoted the appropriate paragraph from the perldelta manpage for perl 5.8.0 :
+
+=over
+
+=item
+
+Note for code authors: if you want to enable your users to use UTF-8 as
+their default encoding but in your code still have eight-bit I/O streams
+(such as images or zip files), you need to explicitly open() or binmode()
+with C<:bytes> (see perlfunc/open and perlfunc/binmode), or you can just
+use binmode(FH) (nice for pre-5.8.0 backward compatibility).
+
+=back
+
+Tom Horsley added that there are probably additional bugs in RedHat 8.0
+Unicode handling, judging from mysterious coredumps from system libraries.
+
+Finally, Jarkko Hietaniemi proposed a patch to fix UTF-8 enabling via
+locales. The LANGUAGE environment variable should not be used (as it is in
+5.8.0) to enable UTF-8.
+
+    http://www.perldoc.com/perl5.8.0/pod/perldelta.html#PerlIO-is-Now-The-Default
+    http://archive.develooper.com/perl5-porters@perl.org/msg88580.html
+
+=head2 AUTOLOAD subroutines from undefined stashes
+
+Jan Dubois reported a bug on AUTOLOADed subroutines (bug #18113, also
+reported previously as #17967) : AUTOLOAD is not called on packages that
+haven't been encountered by perl before. This used to work with perl
+5.6.1, but is broken with perl 5.8.0. Gurusamy Sarathy provided a fix.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg88519.html
+
+=head2 goto considered harmful in __DIE__ handlers
+
+Peter Scott reported an interesting behavior : when using a magical
+C<goto> to exit from a __DIE__ handler, one could generate an infinite
+loop :
+
+    $SIG{__DIE__} = sub { goto &foo };
+    sub foo { print "foo\n"; die "rethrow" }
+    die "throw";
+
+Whether it's actually a bug is open to discussion.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg88578.html
+
+=head2 B::* adjustments
+
+Yitzchak Scott-Thoennes remarked that B::Concise doesn't handle well the
+new C<//> and C<//=> operators (bug #18175). Stephen McCamant sent a fix,
+but a similar problem on other B:: modules (at least B::Terse) should be
+fixed as well.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg88595.html
+
+=head2 Tied hashes in boolean context
+
+Bug #18186 was already reported as #17718 : one can't test the emptyness
+of a tied hash by using it in scalar context. Yitzchak points out that
+it's difficult to fix, and explains why. Mark-Jason Dominus proposed an
+alternative solution (a HASHSIZE method), which was already suggested a
+while back by Rick Delaney, and rejected at this time.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg88626.html
+
+=head2 In brief
+
+Autrijus Tang reported that uc(), lc() and ucfirst() don't appear to work
+correctly on the right side of C<s///e> expressions, applied on UTF-8
+strings. Strangely, this bug (#18107) doesn't affect lcfirst().
+
+Mark Pease found a problem on offset calculations in regular expressions
+(bug #18154) and offered a patch.
+
+Nicholas Clark proposed to replace the current implementation of the
+makefile target C<regen_headers> by a perl script, which he provided.
+
+Rafael Garcia-Suarez asked why DESTROY is called in scalar context (and
+proposed a patch to have it called in void context), and faced Warnock's
+dilemma.
+
+Abhijit Menon-Sen and Slaven Rezic fixed a problem with the C<..>
+operator, that didn't handle well some cases where the operands were
+strings (C<"-4".."0"> and C<"-4\n".."0\n">). (bugs #18114 and #18165.)
+
+=head2 About this summary
+
+This summary brought to you by Rafael Garcia-Suarez. It's
+also available via a mailing list, which subscription address is
+F<perl5-summary-subscribe@perl.org>. Comments and corrections are, as
+always, welcome.

@@ -1,0 +1,131 @@
+=head1 This Week on perl5-porters (23-29 September 2002)
+
+This was a nice week, with lots of discussion, on various interesting
+topics. Read on for strange bugs, strange fixes, strange error messages,
+and as always, the ongoing efforts made to improve Perl 5.
+
+=head2 C<our(%hash)>
+
+The construct C<our(%hash)> appears to be a lot slower than C<our %hash>,
+written without the parens (this is strange bug #17376). Yitzchak
+Scott-Thoennes diagnosed the cause of this -- the parens trigger list
+context, for no apparent purpose, hence the slowdown for large hashes --,
+and he proposed new tests for it, with the appropriate failing tests
+marked as TODO.
+
+    http://groups.google.com/groups?threadm=JNri9gzkgSBB092yn%40efn.org
+
+=head2 Source code reorganization
+
+Dave Mitchell proposed a huge patch to move all code related to the
+handling of pads in new files, pod.h and pod.c. In addition to making the
+code clearer, better organized, and more maintainable, Dave also made the
+-DX debugging flag more comprehensive, and spotted a few places where
+improvements could be made. This kind of reengineering effort is rare
+enough to deserve to be underlined.
+
+    http://groups.google.com/groups?threadm=20020925234023.A20044%40fdgroup.com
+
+=head2 Strange package names
+
+Marc Lehmann discovered that when you declare a package as
+
+    package test::
+
+then the C<__PACKAGE__> token contains "test::" instead of "test". Mike
+Guy says that this behavior is to be expected, and gives some examples.
+
+    http://groups.google.com/groups?threadm=rt-17571-38545.5.9750724209421%40bugs6.perl.org
+
+=head2 Misleading warning
+
+Arthur Bergman was puzzled by this warning : this one-liner
+
+    perl -we "close(STDOUT); open(F, qq{out.txt}) || die;"
+
+says I<Filehandle STDOUT opened only for input> (where F<out.txt> is an
+existing file.) In fact, once STDOUT has been closed, F gets the file
+descriptor number of STDOUT. Hugo proposed to make the warning message
+more explicit, like F<Filehandle STDOUT reopened as F only for input>.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-09/msg00942.html
+
+=head2 Memory usage
+
+Elizabeth Mattijsen warns : I<In order to determine ways of reducing
+memory usage with perl, and with threaded perl in particular, I will be
+annoying p5p with some memory benchmarks in the coming time.> She adds
+also that every related message she'll send to p5p will have C<[Memory]>
+in the subject line.
+
+    http://groups.google.com/groups?threadm=4.2.0.58.20020925194559.04498d80%40mickey.dijkmat.nl
+
+She started immediately to post a memory-related message, wondering why
+the threads module overloads the C<==> operator. A long thread was the
+consequence of this first post, where we learned why a specific comparison
+method is needed (in fact, the C<==> operator on threads compares thread
+ids to know whether two threads objects refer to the same thread.)
+
+    http://groups.google.com/groups?threadm=4.2.0.58.20020925195132.028317c0%40mickey.dijkmat.nl
+
+=head2 Making C<charnames> more flexible
+
+H.Merijn Brand proposed to extend the C<charnames> pragma to allow
+user-defined aliases for commonly used Unicode characters. Jarkko
+discussed some implementation and API issues with the proposed
+implementation. Everybody seems to agree now, but there is apparently no
+definitive patch in.
+
+    http://groups.google.com/groups?threadm=20020926112635.BB02.H.M.BRAND%40hccnet.nl
+
+=head2 Per-filehandle state variables
+
+Eric Roode proposed to allow the I/O tuning variables ($,, $/, $\, $:
+and $^L) to be set on a per-filehandle basis. Hugo provided insightful
+advice about the proposed implementation and the potential problems.
+
+    http://groups.google.com/groups?threadm=20020927202723.GE584%40orwell.myxa.com
+
+=head2 In brief
+
+Ton Hospel reported an obscure regexp behavior, bug #17542. At least perl
+golf is useful to uncover obscure bugs, isn't it ?
+
+While we're at regexps, Barrie Slaymaker made the regexp engine dump core
+via recursion, matching a quite long string (bug #17611).
+
+And also, bug #17605 is about a change of behavior between perl 5.6.x and
+5.8.0 in the s///e operator, when the right side (the Perl expression) is
+empty. Nobody commented.
+
+Sudhindra Herle proposed to add to Pod::Html the ability to translate
+links of form LE<lt>description|URLE<gt>. However Ronald J Kimball pointed
+out that this syntax is not valid POD, according to the specs.
+
+Marcel Grünauer (author of Getopt::Attribute, this very cool module you
+should try) found a bug (#17587) in Attribute::Handlers, that wasn't
+recognizing C<shared> and C<unique> as built-in attributes. Rafael
+Garcia-Suarez provided a patch (will hopefully will end up on CPAN).
+
+Jarkko Hietaniemi provided a new manpage, perl573delta, missing from perl
+5.8.0.
+
+Andreas J. Koenig posted a documentation patch to the perlunicode manpage,
+providing a bit of good advice about porting code from perl 5.6.x. A code
+example included in the patch quickly triggered a discussion about the
+relative merits and readability of several perl constructs. The original
+intent of the patch was lost somewhere in the middle.
+
+G. Rossati reported bug #17632, about stat() not behaving properly; it
+turned out to be caused by File::stat, overriding the core function
+stat(), but inconsistently (not checking for list context.) Hugo thinks
+it's too late to change it to avoid difficult-to-spot breakages.
+
+=head2 About this summary
+
+This summary brought to you, as usual, by Rafael Garcia-Suarez. It's also
+available via a mailing list, which subscription address is
+F<perl5-summary-subscribe@perl.org>. As usual, comments, corrections and
+additions welcome. (Last minute -- for some reason Google sometimes
+doesn't seem to return the whole thread. So I link sometimes to another
+archive.)

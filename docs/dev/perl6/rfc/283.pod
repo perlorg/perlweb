@@ -1,0 +1,43 @@
+=head1 TITLE
+
+C<tr///> in array context should return a histogram
+
+=head1 VERSION
+
+  Maintainer: Simon Cozens <simon@brecon.co.uk>
+  Date: 24 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 283
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+C<tr///> in array context should return a histogram explaining the
+number of matches for each letter in the pattern.
+
+=head1 DESCRIPTION
+
+This has been on the Perl 5 to-do list for ages and ages. The idea is
+that when you're transliterating a bunch of things, you want to know
+how many of each of them matched in your original string.
+
+For instance, while C<tr/x//> will count the x's, C<tr/xy//> will count
+both x's and y's - you don't know how many of each. So, the proposal is
+that C<tr> in the array context should return a hash, like this:
+
+    (%foo) = "xyzzy" =~ tr/xyz//
+
+    # %foo is ( x => 1, y => 2, z => 3);
+
+=head1 IMPLEMENTATION
+
+I posted a patch to Perl 5.6 to do this some time back; it's a very
+simple matter of constructing the hash and incrementing the values every
+time you do a transliteration of a character. Of course, since we don't
+know what Perl 6's transliteration operator's going to look like, it's
+hard to know how to implement an extension to it...
+
+=head1 REFERENCES
+
+None.

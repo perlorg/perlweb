@@ -1,0 +1,163 @@
+=head1	TITLE
+
+Generalised Additions to Regexs
+
+=head1 VERSION
+
+  Maintainer: Richard Proctor <richard@waveney.org>
+  Date: 22 Sep 2000
+  Last Modified: 1 Oct 2000
+  Mailing List: perl6-language-regex@perl.org
+  Number: 274
+  Version: 2
+  Status: Frozen
+
+=head1 ABSTRACT
+
+This proposes a way for generalised additions to regex capabilities.
+
+=head1 DESCIPTION
+
+Given that expansion of regexes could include (+...) and (*...) I have
+been thinking about providing a general purpose way of adding
+functionality.  Hence I propose that the entire (+...) syntax is
+kept free from formal specification for this. (+ = addition)
+
+A module or anything that wants to support some enhanced syntax
+registers a callback that handles "regex enhancements".
+
+=head2 Basic operation
+
+There are two ways these could operate: 
+
+=head3 My original:
+
+My thoughts where to leave the syntax completely open so that anything 
+could be added - words, chinese, $$$.
+
+At regex compile time, if and when (+foo) is found perl calls
+each of the registered regex enhancements in turn, these:
+
+1) Are passed the foo string as a parameter exactly as is.  (There is
+an issue of actually finding the end of the generic foo.)
+
+2) The regex enhancement can either recognise the content or not.
+
+Does a newer localised definition replace the older one?  The handling of
+multiple regestrations has to be resolved. My initial thoughts are that a
+"Last registered is checked first" approach may be best.
+
+3) If not the enhancement returns undef and perl goes to the next regex
+enhancement (Does it handle the enhancements as a stack (Last checked first)
+or a list (First checked first?) how are they scoped?  Job here for the
+OO/scoping fanatics)
+
+4) If perl runs out of registered regex enhancements it reports an error.  
+
+=head3 Hugo alternative:
+
+I'd be more inclined to have callbacks registered for a word: that
+way we can complain earlier when two modules try to register the
+same word. Then at regexp-compile time we parse out the word
+following the (+ and immediately know who to pass it to (or fail).
+
+Well, there are limits to what we can handle - earlier, the parser
+will have had to be able to determine where the end of the regexp
+is. Even specifying a word at the beginning doesn't help: we need
+to know whether the rest should look like a regexp, or code, or
+whatever else. The regexp compiler doesn't get a look in until
+after that has been done.
+
+Which suggests that maybe each callback - whether or not we link
+them to words - should specify what it will match, which suggests
+it should be linked with a regexp.
+
+=head2 Actions by the Callback
+
+If an enhancement recognises the content it could do either of:
+
+a) return replacement expanded regex using existing capabilities perl will
+then pass this back through the regex compiler.
+
+(+...) loops are allowed though the compiler might want to issue a warning
+if they appear to go too deep.
+
+b) return a coderef that is called at run time when the regex gets to this
+point.  (?{...}) or (??{...}) or maybe (?*{...}) see RFC 198.
+
+=head2 Embeded Code
+
+The referenced code needs to have enough access to the regex internals
+to be able to see the current sub-expression, request more characters, access
+to relevant flags and visability of greediness.  It may also need a coderef
+that is simarly called when the regex is being unwound when it backtracks.
+These features would also be of interest to the existing code inside regexes
+as well.
+
+Thinking from that - the last case should be generalised (it is sort of
+like my (?*{...}) from RFC 198 or an enhancement to (??{...}).  If so cases
+(a) and (b) are the same as case (b) is just a case of returning (?*{...}) the
+appropriate code.  
+
+Access to subexpresions - ok this can be done.
+
+Visability of flags - Not curently possible. The code might like to know that
+/i is in effect, it might want to know that /s is in effect it probably does
+not need to know about /o.  This is equally true to the enhancement regex
+handler that looks at the (+foo) in the first place.  I think that these
+could be of use to (?{...}) code.
+
+Greediness - maybe not necessary, but I think better visability of
+internals might be beneficial.
+
+Hugo: Hm, I do appreciate the problem - I wasn't too happy when I realised
+that embedded qr{} expressions are protected from the flags of their outer
+regexp, cos I wanted to specify /i on the outside and have it trickle in to
+the rest. It feels like its going to get real messy, though, and totally
+screw the optimiser.
+
+Me: This also needs thinking about, but I cant resolve this at the
+moment.
+
+=head2 Code execution for backtracking
+
+Following on, if (?{...}) etc code is evaluated in forward match, it would be
+a good idea to likewise support some code block that is ignored on a forward
+match but is executed when the code is unwound due to backtracking.  Thus 
+(?{ foo })(?\{ bar }) executes foo on the forward case and bar if it unwinds. 
+I dont care at the moment what the syntax is - what about the concepts. Think
+about foo putting something on a stack (eg the bracket to match [RFC 145])
+and bar taking it off for example.
+
+These might be acheieved by complex localisation.  Is localisation enough?
+Enough to achieve everything you might want to? Yes: you can always
+have a (?{ local $a = new Object }) with a DESTROY method. It may not
+necessarily be the cleanest possible way to write everything, though.
+
+So functionality for doing this easier might be a good idea.
+
+=head1 CHANGES
+
+V2 - Several additions of clarity and discussion as to how the content is
+recognised - mainly between myself and Hugo.  Everything here has come
+from the discussion on the list.
+
+=head1 MIGRATION
+
+This is a new feature - no compatibity problems
+
+=head1 IMPLENTATION
+
+This has not been looked at in detail, but the desciption above provides
+some views as to how it may operate.
+
+=head1 REFERENCES
+
+RFC 145: Brace-matching for Perl Regular Expressions
+
+RFC 198: Boolean Regexes
+
+This message from Larry:
+
+http://www.mail-archive.com/perl6-language%40perl.org/msg02955.html
+

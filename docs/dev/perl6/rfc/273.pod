@@ -1,0 +1,336 @@
+=head1 TITLE
+
+Internal representation of Pseudo-hashes using attributes.
+
+=head1 VERSION
+
+  Maintainer: Michael Maraist <maraist@udel.edu>
+  Date: 27 Sep 2000
+  Last Modified: 30 Sep 2000
+  Mailing List: perl6-internals@perl.org
+  Number: 273
+  Version: 2
+  Status: Frozen
+
+=head1 ABSTRACT
+
+Pseudo-hashes were an attempt to mix the speed of arrays with the named
+fields of hashes.  For compatibility issues, the new data-type used
+[ { field-mapping }, data-list ], which at the very least looks bizarre.  It
+has the required overhead of a dereference and does not behave well as an
+array since the field-mapping is required to be the first field.
+
+An attempt was made to make this the basis for classes, making use of
+pragmas such as 'fields', 'base', and module functions such as fields::new,
+fields::phash.  Performance was really secondary to the ability to perform
+strict-type checking.  It was also necessary to use 'my Foo $dog = new Foo'
+to perform compile-time optimizations.
+
+There is a growing need to provide structured named parameters.
+Pseudo-hashes provide the type-checking, and _can_ provide the ordering of
+fields, though non-transparently.
+
+Other RFC's have proposed plausible structured data-types, namely the 'qs'
+and 'struct' keywords.  This RFC, however, proposes a modification of the
+existing system that maintains procedural compatibility, and allows for the
+integration of named structures.  It provides enhancements for the OOP
+model, and provides a 100% compatible method of named subroutine parameters
+by merely extending the concept of strict-hashes through the use of
+attributes.
+
+=head1 DESCRIPTION
+
+ sub getStat {
+  my %stat: fields( name size ctime mtime inode );
+  $stat{name} = 'Foo'; # array 0 access
+  $stat{inode} = 50;   # array 4 access
+
+  my @fields = keys %stat;      # get raw internal key listing
+  my @stat_list = values %stat; # get raw internal data listing
+  my %loose_stat = %stat;       # interlace internal key and data listings
+
+  $stat{nme} = 'Bar';       # compiler error!
+  $loose_stat{nme} = 'Bar'; # OK, regular hash operations
+
+  @stat{qw(name size)}; # compiled to @stat[ 0, 1 ]
+  # In general, slice works in all cases except modification of index
+positions
+
+  return \%stat;        # references entire structure and meta-data
+ } # end getStat
+
+ my $rh_stat = getStat();
+ $rh_stat->{size};  # OK, performs internal lookup to find size == 1
+ $rh_stat->{nme};   # run-time error! (after ! exists internal lookup for
+nme )
+
+
+The above describes how a variable attribute can be used to impose
+type-checking and compile-time optimizations to a normal hash.  The
+modified hash should always look and feel the same, exept in the case of
+type-checking.
+
+This is very similar to pseudo-hashes with the following exceptions:
+
+=over 4
+
+=item *
+
+We define the typed-hash with attributes instead of using the first
+array-position.
+
+=item *
+
+We use an internal (and transparent) representation of name-to-index
+mapping.
+
+=item *
+
+We redundantly store the key-names in an array for speed-up (essentially
+swapping space for speed).  Though there are alternatives (below).
+
+=back
+
+Additionally, this can work transparently with the OO approach to allow
+compiler optimizations for standard returned hash refs. Just like current
+pseudo-hashes as in:
+
+ {
+   package Foo;
+   use class qw( a b );  # same functionality as 'fields', but internal
+   sub new { class::new(shift) } # again, class works like fields
+   # It does something similar to:
+   # eval "my $class \%this; return \\\%this;";
+   # but in an optimized way.
+   # a => 0, b => 1
+
+ }
+ {
+   package Bar;
+   use extends qw( Foo Other);  # similar functionality to 'base', but
+internal
+     # also allows multiple inheritance (compiler error if conflicting
+name-space)
+     # If this turns out to be problematic, single inheritance can be used.
+   use class qw( c d );
+   # a => 0, b => 1, c => 2, d => 3
+
+   # new inherited
+ }
+
+ my Bar $obj = new Bar;
+ $obj->{a};   # compile-time mapping of a => 0
+ $obj->{zap}; # compiler error!
+
+ my @keys = keys %$obj;     # internal fetching of ordered key-list
+ my @values = values %$obj; # internal fetching of ordered values
+ my @array_hash = %$obj;    # loses type-checking: ( a, undef, b, undef, c,
+undef, d, undef )
+ my %hash = %$obj;          # loses type-checking: same as above
+
+ # The following makes use of the above class as a pre-defined version of ":
+fields(..)"
+ # All that follows is optional, but a logical extension of the above
+ my %h_bar: Bar;  # Uses that above class to define a hash
+ $h_bar{a};       # OK, same as $h_bar[ 0 ]
+ $h_bar{zap};     # compiler-error
+
+ sub doFoo : Bar {  # optionally restricts parameters at compile time (when
+it knows ahead
+                    # of time)
+   my %args : Bar = @_;  # takes in a normal set of hash-ed parameters, but
+restricts them
+     # Essentially performs a faster hash-assignment
+   $args{a};  # similar to $args[ 0 ];
+ } # end doFoo
+
+The above would be similar to:
+
+ my %doFoo_valid_args = qw( a 1 b 1 c 1 d 1 ); # global for better
+performance
+ sub doFoo {
+   my %args = @_;
+   for my $key ( keys %args ) {
+      die "invalid arg: $key" unless exists $doFoo_valid_args{ $key };
+   }
+   $args{a};
+ }
+
+Except that validation is _much_ faster, AND occurs at compile-time (where
+possible).  Also, access to %args is significantly faster with
+strict-hashes.
+
+Because of the performance / storage benifits of this approach (see below),
+it would be worth while reimplementing internal functions such as stat to
+work as:
+
+ sub stat {
+  my %data : fields( ... ) = get-stat-data
+  return wantarray ? values %data : \%data;
+ }
+
+ my $file_stat = stat( 'file' );
+ my @file_stat = stat( 'file' );
+ print "Size: $file_stat->{size}";
+
+=head1 IMPLEMENTATION
+
+Things to note:
+
+Typed-hashes can only be created at compile-time, and can not be altered,
+much like a normal structure.  This is desirable for formal definitions and
+for syntax checking.
+
+High level representation of internal structure:
+
+ struct hash:
+   misc_info_t var_info
+   perl_hash_table_t data
+
+
+ struct strict_hash:
+   misc_info_t var_info      # same as above
+   perl_array[] key_names    # used for "keys" and "get-hash-as-array"
+   perl_array[] values       # the actual field-values
+   perl_hash_table_t mapping # optimized mapping of keys to positions
+
+ struct strict_hash2:     # optional representation
+   misc_info_t var_info
+   string[] key_names     # only used by c-functions, so reduced overhead
+   scalar[] values        # static c-array of scalars, no overhead of
+dynamic @array
+   c_lookup_t mapping     # static DS that maps names to indexes
+
+ struct strict_hash3:      # alternative representation
+   misc_info_t var_info
+   perl_array[] key_values # composit array ( @key_names, @values )
+   c_lookup_t mapping
+
+ struct strict_hash4:
+   misc_info_t var_info
+   scalar[] values
+   c_tree_t mapping        # makes fetching keys slower, but can maintain
+order
+                           # and alleviates redundant storage of key-names
+
+
+Providing the seperate list of key-names greatly enhances performance for %
+-> @, and also could allow extensions that could query attribute
+information, such as
+
+ my %hash : fields( a b );
+ my $key_name = key_at_index( %hash, 1 ); # 'b'
+
+If redundant data is undesirable, then there are three alternatives.  The
+first is to remove the linear list of keys, since this can extracted from
+the hash (with performance cost).  The other is to remove the hash mapping.
+This would seriously hurt non-strict usage (by an unsuspecting module
+user), though it can be avoided by the usage of typed-variables.  The third
+is a hybrid:
+
+Start with the linear list, since it ultimately uses less space.  As perl
+compiles, if it never encounters a non-strict dynamic lookup, the hash
+never needed to have been generated, both space and performance have been
+conserved.  The first time the compiler notices the use of non-strict
+dynamic lookup, it generates a mapping and stores it within the variable.
+This way, performance is not hurt in the run time in either direction.
+
+Since the information is always available to regenerate the mapping, we are
+not
+threatened by eval statements which may do things like:
+
+ 1 my %hash : fields( a b );
+ 2 my $field_name = "a";
+ 3 $hash{a};
+ 4 eval "\$hash{$field_name} for 0 .. 10000";
+ 5 eval '$hash{$field_name} for 0 .. 10000';
+
+At line 1, we produce a strict hash, and maintain a compiler-based symbol
+mapping table.  By compilation of like 5, we haven't noticed any dynamic
+uses of the fields, so we free up memory by throwing away the internal
+mapping.
+
+By execution of line 4, we need to compile again.  We find that we have to
+regenerate the mapping table so that we can convert interpolated 'a' into 0.
+The presence of evals is less common than that of hashes, so this
+performance hit should be acceptible.  It might be better to not regenerate
+the mapping, and simply perform a linear search for all compiled mappings.
+Greater knowledge of the compiler internals is needed.  Execution of the
+newly evaled line 4 is just as fast as execution of line 3.
+
+At execution of line 5, we find that compilation reveals a dynamic
+hash-lookup of a strict hash that does not have a mapping.  At this point,
+we generate a mapping.  Execution of the newly evaled line 5 then performs
+a mapping from 'a' to 0 at a slightly higher cost than for normal
+hash-lookup.  Line 4 is obviously faster than line 5.  If we had not used
+line 5, then the above program would saved considerable space (assuming
+that even a c-type hash takes up lots of room).
+
+Assuming that optimized c-array's are used, then this strict-hash _can_
+take up even less room than @array.  This assumes that the overhead used in
+storing field-names is less than that for dynamic perl arrays.  This
+probably won't be the case, but it is certain that less room will be taken
+up than with perl hashes.
+
+Additionally, since compiler optimizations would allow direct access to
+fixed sized c-arrays of perl-scalars, then strict-hashes might even work
+faster than dynamic perl arrays.
+
+We get the best of all worlds: We waste no unnecessary memory, have minor
+additional compiler time / complexity, increase overall performance, and
+enhance readibility of perl code.
+
+The main question I have is what to do with the symbol-mapping table. Do
+we:
+
+=over 4
+
+=item A
+
+Always store the symbol mapping inside the data-structure (but just don't
+provide it as perl-scalars)
+
+=item B
+
+Do as with the above and throw away the symbol-maping after each
+compilation / eval stage.
+
+=item C
+
+Never store a mapping file and instead perform linear searches for symbols
+since the number of symbols is so low that the process of check-summing a
+symbol might outweight that of a 8 field linear-search.
+
+=item D
+
+Instead of using a hash, use a simple cost-effective binary tree.  The
+storage requirements will definately be greater than that of an array, but
+this is essentially a compromise between compiler time, memory storage, and
+dynamic-run-time.  The down side is that dynamic lookup might be slower
+with a tree than with the hash, and tree's normally require linked lists
+instead of static arrays (more malloc's are required).  A hybrid Data
+Structure could be created that used a static array for the tree, while
+also providing optimized searches for ordered field-names (not typically
+available from simple tree lookups).  I'd have to think more on this.
+Worst case in this method is a linked-list lookup.
+
+=back
+
+
+=head1 REFERENCES
+
+Perl5.005 pseudo-hashes
+
+RFC 188: Objects : Private keys and methods
+
+RFC 241: Pseudo-hashes must die!
+
+RFC 122: types and structures
+
+RFC 196: More direct syntax for hashes
+
+RFC  75: structures and interface definitions
+
+RFC 268: Keyed arrays
+
+RFC 259: Builtins : Make use of hashref context for garrulous builtins

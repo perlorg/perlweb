@@ -1,0 +1,98 @@
+=head1 TITLE
+
+Remove mathematic and trigonomic functions from core binary
+
+=head1 VERSION
+
+  Maintainer: Stephen P. Potter <spp@ds.net>
+  Date: 24 Aug 2000
+  Last Modified: 28 Aug 2000
+  Mailing List: perl6-internals@perl.org
+  Number: 155
+  Version: 2
+  Status: Developing
+
+=head1 ABSTRACT
+
+Move the mathematic functions (C<exp>, C<log>, C<sqrt>) from the core
+binary into a loadable module.  Remove the trigonomic (C<atan2>, C<cos>, 
+C<sin>) functions from the binary, they can already be loaded from the 
+Math::Trig.pm module.
+
+=head1 DESCRIPTION
+
+It is desirable to make the perl core binary be easy to maintain and
+parse.  It is further desirable to make it easy for parts of the language
+to be unimplemented on future ports (such as for embedded systems).  Moving
+as many of the special purpose functions to loadable modules serves these
+goals well.
+
+There are very few mathematic functions currently in the core binary.
+These appear to have been mostly chosen only because they were either easy
+to implement or they had been included in other languages that perl was
+designed to "replace".  It would be worthwhile to move these functions to
+a loadable module (C<Math.pm>).  Moving these functions to a module also
+allows ease of adding other functions to these categories.  The specific
+functions that would move to the C<Math.pm> module are:
+
+=over 4
+
+=item
+
+C<exp>
+
+=item
+
+C<log>
+
+=item
+
+C<sqrt>
+
+=back
+
+The trigonomic functions currently included in the core binary are of
+generally limited and specific value.  This RFC is further proposing that all 
+trigonomic functions should move to a Math::Trig.pm module.  In general,
+those functions are already there, this proposal would have them removed from
+the core binary.
+
+The specific functions that would be covered under this proposal are:
+
+=over
+
+=item
+
+C<atan2>
+
+=item
+
+C<cos>
+
+=item
+
+C<sin>
+
+=back
+
+=head1 IMPLEMENTATION
+
+Creation of C<Math.pm> module for the listed math functions.  Other useful
+functions can also be added to this module.  Removal of mathematic and
+trigonomic functions from core binary.  It is recommended that they be 
+defined to require C<use Math;> or C<use Math::Trig>, but it should be
+acceptible for them to autoload.
+
+=head1 REFERENCES
+
+L<perlfunc>
+
+=head1 CHANGES
+
+Version 1 of this RFC included a brain-drain on the category of the functions.
+They are trigonomic, not geometric.
+
+Version 1 of this RFC lumped all mathematic functions into one category.
+This version breaks them into two categories.
+
+Inclusion of more reasoning.

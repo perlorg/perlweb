@@ -1,0 +1,125 @@
+<HTML>
+<HEAD>
+<TITLE>This Week on perl5-porters</TITLE>
+<LINK REV="made" HREF="mailto:bhcompile@daffy.perf.redhat.com">
+</HEAD>
+
+<BODY>
+
+<A NAME="__index__"></A>
+<!-- INDEX BEGIN -->
+
+<UL>
+
+	<LI><A HREF="#this week on perl5porters (1622 september 2002)">This Week on perl5-porters (16-22 September 2002)</A></LI>
+	<UL>
+
+		<LI><A HREF="#pedantic compilation">Pedantic compilation</A></LI>
+		<LI><A HREF="#default install location">Default install location</A></LI>
+		<LI><A HREF="#closures in begin blocks don't feel ok">Closures in BEGIN blocks don't feel OK</A></LI>
+		<LI><A HREF="#perlopentut">perlopentut</A></LI>
+		<LI><A HREF="#smoke effort">Smoke effort</A></LI>
+		<LI><A HREF="#in brief">In brief</A></LI>
+		<LI><A HREF="#about this summary">About this summary</A></LI>
+	</UL>
+
+</UL>
+<!-- INDEX END -->
+
+<HR>
+<P>
+<H1><A NAME="this week on perl5porters (1622 september 2002)">This Week on perl5-porters (16-22 September 2002)</A></H1>
+<P>That's on a week like this that you realize that lots of porters are
+European (and managed to free themselves for YAPC::Europe.) Or were they,
+on the contrary, too busy in the big blue room ? On the other hand, the
+number of bug reports stayed at its habitual average level.</P>
+<P>
+<H2><A NAME="pedantic compilation">Pedantic compilation</A></H2>
+<P>Jarkko Hietaniemi provided a patch to add the -ansi -pedantic flags for
+gcc on core C files. This triggered a bit of discussion, as those B&amp;D
+flags will be useful for the porters only, but may cause trouble to casual
+users who want to compile perl on less common platforms. Jarkko then
+reworked his patch so -ansi -pedantic get enabled only if
+<CODE>-Dgccansipedantic</CODE> is passed to Configure.</P>
+<PRE>
+    <A HREF="http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-09/msg00720.html">http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-09/msg00720.html</A></PRE>
+<P>
+<H2><A NAME="default install location">Default install location</A></H2>
+<P>Jarkko also proposed that the Configure symbol <CODE>installusrbinperl</CODE> should
+be turned off by default. Currently, unless <CODE>-Uinstallusrbinperl</CODE> is
+passed to Configure, (or if you're building a development version), a copy
+of perl will be installed in <CODE>/usr/bin/perl</CODE>, overwriting any previous
+(and maybe vendor-supplied) version, and regardless the installation
+prefix you passed to Configure.</P>
+<P>Jarkko's idea was followed by a massive approval. He then offered a patch
+that <EM>defaults to not overwriting /usr/bin/perl if one exists, but it
+will still default to creating one if one does not exist.</EM></P>
+<PRE>
+    <A HREF="http://groups.google.com/groups?threadm=20020919035818.GE178196%40lyta.hut.fi">http://groups.google.com/groups?threadm=20020919035818.GE178196%40lyta.hut.fi</A></PRE>
+<P>
+<H2><A NAME="closures in begin blocks don't feel ok">Closures in BEGIN blocks don't feel OK</A></H2>
+<P>Rafael Garcia-Suarez proposed to the audience a coredump case :</P>
+<PRE>
+    BEGIN { $f = sub { eval $_[0] } }   
+    $bar = &quot;ok\n&quot;;
+    print $f-&gt;( '$bar' ) ;</PRE>
+<P>The cause of the coredump wasn't difficult to trace : the memory for the
+BEGIN block has been free'd, and the closure still refers to the
+non-existent lexical scope of the enclosing BEGIN block, where it looks
+for $bar -- provoking a core dump.</P>
+<P>The problem, still not solved, is to figure out what is the right thing
+perl has to do in this case (and in some other similar cases, e.g. when
+there's a lexical $bar in the BEGIN block.)</P>
+<PRE>
+    <A HREF="http://groups.google.com/groups?threadm=20020917232515.7c413109.rgarciasuarez%40free.fr">http://groups.google.com/groups?threadm=20020917232515.7c413109.rgarciasuarez%40free.fr</A></PRE>
+<P>
+<H2><A NAME="perlopentut">perlopentut</A></H2>
+<P>Andy Lester courageously began to work on the perlopentut manpage, that
+wasn't actually up-to-date with the last improvements that were made on
+the <CODE>open()</CODE> syntax. He produced three successive versions of a patch,
+introducing to perlopentut the 3-arg form of <CODE>open()</CODE> and the indirect
+(lexical) filehandles.</P>
+<PRE>
+    <A HREF="http://groups.google.com/groups?threadm=20020919154346.GA11114%40petdance.com">http://groups.google.com/groups?threadm=20020919154346.GA11114%40petdance.com</A>
+    <A HREF="http://groups.google.com/groups?threadm=20020920035935.GA13547%40petdance.com">http://groups.google.com/groups?threadm=20020920035935.GA13547%40petdance.com</A>
+    <A HREF="http://groups.google.com/groups?threadm=20020920172341.GA15672%40petdance.com">http://groups.google.com/groups?threadm=20020920172341.GA15672%40petdance.com</A></PRE>
+<P>
+<H2><A NAME="smoke effort">Smoke effort</A></H2>
+<P>Alain Barbet continued to produce huge smoke reports, adding new compilers
+to his list (now with Borland on Windows). He also suggested to build a
+web-accessible database of smoke builds. And not only suggested. He
+actually provided a draft application containing his results. Thanks Alain !</P>
+<PRE>
+    <A HREF="http://groups.google.com/groups?threadm=3D8DB756.3090104%40jupiter.alianet">http://groups.google.com/groups?threadm=3D8DB756.3090104%40jupiter.alianet</A></PRE>
+<P>
+<H2><A NAME="in brief">In brief</A></H2>
+<P>H.Merijn Brand provided a patch to remove the support for <CODE>-DLEAKTEST</CODE>,
+which was broken anyway (see previous week's summary).</P>
+<P>John Peacock told us that he was in the process of releasing a v-string
+module, <CODE>version.pm</CODE>, to CPAN. As he says, <EM>the code is intended to be
+basically 100% equivalent to the code which will be included in 5.10</EM>, but
+backported to perl 5.005_03 ! (or should it be v5.5.3 now ?)</P>
+<P>Abhijit Menon-Sen, who was rare on the list these few last months, rapidly
+fixed obscure bug #17375 (<CODE>$r .= &lt;FH&gt;</CODE> not working properly when $r
+has been undefined.)</P>
+<P>The person who reported bug #17422 -- the RT system didn't gave his name
+-- reported that the GLOB_NOCASE flag of File::Glob doesn't appear to have
+any effect when one wants to glob a wildcard pattern that doesn't contain a
+wildcard character. Rafael Garcia-Suarez suggested that this might be the
+desired behavior. No further comments were made.</P>
+<P>Another memory leak problem with shared arrays has been reported (bug
+#17460). In fact this problem is already known and will be hopefully fixed
+by an upcoming release of the threads::* modules on CPAN.</P>
+<P>H.Merijn Brand is now officially the Configure pumpking (and that's a
+scary task). The new mailing list <EM>perl5-build</EM> (at the usual domain)
+will be dedicated to discussions about Configure and metaconfig (the tool
+used to generate the Configure script).</P>
+<P>
+<H2><A NAME="about this summary">About this summary</A></H2>
+<P>This summary brought to you by Rafael Garcia-Suarez, from Lyon, France, a
+city that's not that close to Munich. It's also available via a mailing
+list, which subscription address is <EM><A HREF="mailto:perl5-summary-subscribe@perl.org">perl5-summary-subscribe@perl.org</A></EM>.</P>
+
+</BODY>
+
+</HTML>

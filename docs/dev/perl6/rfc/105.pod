@@ -1,0 +1,52 @@
+=head1 TITLE
+
+Remove "In string @ must be \@" fatal error
+
+=head1 VERSION
+
+  Maintainer: Nathan Wiger <nate@wiger.org>
+  Date: 15 Aug 2000
+  Last-Modified: 16 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 105
+  Version: 2
+  Status: Frozen
+
+=head1 ABSTRACT
+
+Currently, if you write:
+
+   $email = "nate@wiger.org";
+
+You get a B<fatal> error:
+
+   In string, @wiger now must be written as \@wiger
+
+This should be removed altogether in Perl 6.
+
+=head1 DESCRIPTION
+
+This is something that was put in to catch Perl 4 to Perl 5 migration.
+Perl 6 shouldn't need it, and should just assume that "@wiger" is an
+array, even if it's unitialized. This is what it does for all the other
+data types.
+
+As Randal noted, this whole RFC is probably better phrased as:
+
+   array interpolation should work exactly like scalar interpolation
+
+And I agree.
+
+=head1 MIGRATION
+
+People that are relying on this to catch sloppy coding should be beaten.
+
+=head1 IMPLEMENTATION
+
+Remove the error altogether. Perl 5's been out for years.
+
+=head1 REFERENCES
+
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/1998-07/msg02150.html
+
+hfile//www.mail-archive.com/perl6-language@perl.org/msg02231.html

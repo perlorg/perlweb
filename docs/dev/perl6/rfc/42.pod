@@ -1,0 +1,104 @@
+=head1 TITLE
+
+Request For New Pragma: Shell
+
+=head1 VERSION
+
+  Maintainer: Bryan C. Warnock <bwarnock@gtemail.net>
+  Date: 5 Aug 2000
+  Last Modified: 18 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 42
+  Version: 3
+  Status: Frozen
+  Frozen since: v2
+
+=head1 CHANGES
+
+Added the heavy footnoting about name-clobbering with C<Shell.pm>.
+
+=head1 ABSTRACT
+
+Perl 6 should add a new pragma, previously thought to be called C<shell>, but
+now called something else, although I don't know what.  So I'll stick with
+C<shell>.  Although quite frankly C<Bob> would be just fine with me.
+
+=head1 DESCRIPTION
+
+The shell that Perl uses for shell interpretation is defined at compile
+time.  Furthermore, it is optimized away when no metacharacters are found
+within the command string.
+
+There are times when one may need (or desire) to change the shell used for
+interpretation, as well as force shell interpretation, regardless of
+optimization, for consistency's sake.
+
+Perl runs on many platforms.  Many of these platforms, either by default,
+desire, or need, may have multiple command interpreters that Perl may want to
+interface with by default.  (ie, through the use of backticks or system().)
+
+Perl is not just a glue language, but a SuperGlue language.  I ab^H^Huse 
+Perl to interact with a lot of home-grown command interpreters as either a
+driver, a hardware controller, or Expect-type engine.  It's a lot more 
+DWIMmer when I can operate in that environment, vice the standard OS one.
+
+Furthermore, there are times when speed be damned!  I need every `` to go
+through the command interpreter in order to get back consistent results,  and
+I don't want to have to mangle the output string in order to force a
+metacharacter.
+
+It is important, however, that this be lexically scoped.  One can't really
+afford to have some unknown module expect /bin/sh and accidentally send the
+command to turn on a robot's "Kill Human" mode, for instance.
+
+=head1 MOTIVATORS
+
+Laziness, and perhaps a bit of Hubris.
+
+=head1 IMPLEMENTATION
+
+This was an easy hack in Perl 5, except for the scoping issue.  Ideally,
+there'd be a -force flag to check, and a method to change the location of the
+shell, the shell arguments, and perhaps what is defined as a shell
+metacharacter.
+
+=head2 SUMMARY OF IMPLEMENTATION
+
+See above.  I hacked this for Perl 5 in about two minutes, minus the scoping,
+which I never could figure out.  :-(  The scoping lament is continued in RFC
+40.
+
+=head2 IMPACT
+
+=over 4
+
+=item *
+
+Impact on Perl 5.  Mutual compatibility between Perl 5 and Perl 6, with the
+exception of C<use shell> and the semantics it would add.  (Obviously,  other
+changes to the language notwithstanding.)
+
+=back
+
+=head2 UNKNOWNS
+
+=over 4
+
+=item *
+
+What if the interfaced modules return things that `` and system() don't
+expect?
+
+=back
+
+=head1 STATUS
+
+Frozen.  There has been little discussion, other than pointing out that Shell
+is already a module, and on platforms that are case insensitive, the
+two would clobber.  Furthermore, it was agreed that this C<shell>
+doesn't fit well into that C<Shell>.  Hence, this pragma is more or
+less the ubiquitous "player to be named later."
+
+=head1 REFERENCES
+
+RFC 40: Module Scope Control.

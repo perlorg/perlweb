@@ -1,0 +1,33 @@
+=head1 TITLE
+
+Data/Binary Dumping and Freezing
+
+=head1 VERSION
+
+  Maintainer: John van Vlaanderen   
+  Date: 12 Sep 2000
+  Mailing List: perl6-internals@perl.org
+  Number: 210
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+Allow Perl to create serialize both data and code from the core.
+
+=head1 DESCRIPTION
+
+The modules Storable and Data::Dumper should be combined to dump data as well
+as code in text, binary and network order binary form.
+
+=head1 IMPLEMENTATION
+
+The immediate need for this is to support unmanned remote devices and
+lightweight clients where listeners evoke frozen classes upon receiving them.  
+
+Other implementation would allow kiosk browsers, for instance, to run any perl
+from a minimal plugin.
+
+=head1 REFERENCES
+
+A sample implementation in Java: http://websprocket.com/vmfoundry.html

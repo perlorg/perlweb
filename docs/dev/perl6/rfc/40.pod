@@ -1,0 +1,96 @@
+=head1 TITLE
+
+Module Scope Control
+
+=head1 VERSION
+
+  Maintainer: Bryan C. Warnock <bwarnock@gtemail.net>
+  Date: 5 Aug 2000
+  Last Modified: 28 Sep 2000
+  Mailing List: perl6-internals@perl.org
+  Number: 40
+  Version: 2
+  Status: Frozen
+
+=head1 CHANGES
+
+Froze.  
+
+=head1 ABSTRACT
+
+Modules should be able to, internally, control how they (and their
+members) are scoped.
+
+=head1 DESCRIPTION
+
+Hooks should allowed so that module writers can control global and lexical
+scoping of its own subs and variables.
+
+
+    package MyModule;
+    @globals = qw/$foo $bar %hash @array/;
+    @lexicals = qw/$ork $gork @hork $./;
+    BEGIN{$. = 834;}
+    
+    #!/usr/local/bin/perl    
+    use MyModule;  # same as use MyModule; local $ork; local $.=834;
+    use OtherPackage;
+    
+    print $MyModule::foo;  # Okay, it exists
+    foo() if ($MyModule::$ork);   # Okay, it's scoped here.
+    OtherPackage::bar();
+    print $.;   # Prints 834.
+    
+    
+    package OtherPackage;
+    sub bar {
+        print $MyModule::$bar;  # Okay, global.
+        print $MyModule::$hork[0];   # Nope, not seen down here.    
+        print $.;  Prints whatever it was before 834.  0?
+    }
+
+=head1 MOTIVATORS
+
+Impatience, and a little laziness.
+
+=head1 IMPLEMENTATION
+
+I'm not too terribly sure I even got the terminology correct.  Scoping
+makes my head hurt.  :-(
+
+I'll concede right now, the above is a mess, and I'd like to find a more
+elegant way of handling this.
+
+The point is to allow a module to define (or override) variables only in
+the file where C<use $Module;> was invoked.
+
+I thought there was something in Perl 5 that made this easier from a core
+perspective, but it seemed to be overly complex for my puny little brain.
+
+This should allow modules to behave like pragmas, in some respects.
+
+=head2 SUMMARY OF IMPLEMENTATION
+
+I've no real concrete ideas on this, sorry.  Yes, that's a cop out.  This
+seems like one way to handle some of the pragma issues, but I just don't
+know enough to make any sort of decent proposal.  Apparently, neither
+did anyone else, or maybe this is just so stupid that it wasn't worth
+comments.
+
+=head2 IMPACT
+
+=over 4
+
+=item *
+
+Impact on Perl 5.  Mutual compatibility between Perl 5 and Perl 6, with the
+exception of this feature and the sematics it would add.  (Obviously, 
+other changes to the language notwithstanding.)
+
+=back
+
+=head1 REFERENCES
+
+RFC 2: Request For New Pragma: Implicit
+
+RFC 42: Request For New Pragma: Shell

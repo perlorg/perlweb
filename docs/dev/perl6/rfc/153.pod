@@ -1,0 +1,127 @@
+=head1 TITLE
+
+New pragma 'autoload' to load functions and modules on-demand
+
+=head1 VERSION
+
+  Maintainer: Nathan Wiger <nate@wiger.org>
+  Date: 24 Aug 2000
+  Last Modified: 19 Sep 2000
+  Mailing List: perl6-language-subs@perl.org
+  Number: 153
+  Version: 2
+  Status: Frozen
+
+=head1 ABSTRACT
+
+Some goals for Perl 6 include making it more compact and lighter weight.
+While much stuff will remain available, many things are potentially
+being moved out of core and into modules, like C<Socket> functions,
+C<Format> stuff, C<chop>, C<localtime>, C<gmtime>, and so on.
+
+While good from a computer standpoint, having to start a script with:
+
+   #!perl -w
+   use User::pwent;
+   use Time::Local;
+   use Format;
+   use String::Util;
+
+Just to parse the C</etc/passwd> file and print the date is "bad".
+
+This RFC proposes a new pragma, C<autoload>, that could autoload the
+functions from the appropriate modules on-demand. Unlike the existing
+C<autouse>, which loads modules on demand that you specifically tell it
+to, C<autoload> looks at a configuration file and loads the appropriate
+modules for you.
+
+=head1 DESCRIPTION
+
+=head2 The Basics
+
+The new C<autoload> pragma would rely on an C<autoload.conf> file that
+was located in C<@INC> and looked something like this:
+
+   # proposed autoload.conf format
+   # function     module
+   getpwnam       User::pwent
+   date           Date::Time
+   time           Date::Time
+   open           IO::File
+   chomp          String::Util
+
+This file could be auto-appended to by module installations, similar to
+C<.packlist>. However, it could also be manually modified by the system
+administrator. A custom one could also be included in C<@INC> ahead of
+the system one so that a user could include their own definitions. The
+user can also specify the path to a custom configuration file via the
+C<use autoload> pragma directly:
+
+The script would then start with:
+
+   #!perl -w
+   use autoload '/home/nwiger/perl/autoload.conf';
+   $uid = getpwnam($>);
+
+Which would autoload C<getpwnam> from C<User::pwent> per the
+C</home/nwiger/perl/autoload.conf> file. Like C<use lib>, this should
+just add an additional config file to read onto the start of the search
+path.
+
+In addition, C<autoload> should be able to handle simple C<use>
+operations:
+
+   #!perl -w
+   use autoload;
+   my $r = new CGI;                 # these are both loaded from
+   tie %session, Apache::Session;   # @INC just like via 'use'
+
+This makes easy things easier. The person still gets the same
+functionality as if they had manually C<use>'d (actually,
+C<require>'d/C<import>'ed) each module, since C<@INC> is still
+searched.   
+
+=head2 Module Installation
+
+On installation, some part of the Perl module install driven by
+C<MakeMaker> would have to read the exported function list from a given
+module and append it to the C<autoload.conf> file.
+
+=head2 Extensions
+
+The C<autoload> pragma could be extended in several ways:
+
+   1. If duplicate modules or methods are found, <autoload> should
+      issue messages like:
+
+   Duplicate CGI modules found - autoloading /path/to/CGI.pm
+   Duplicate getpwnam functions registered - using User::pwent::getpwnam
+
+      C<autoload> should always use the last one in the list,
+      since this will be the most recent one if the person
+      is not actively maintaining the file (i.e., just letting
+      it be appended to automatically).
+
+   2. The C<autoload.conf> file could list version numbers and
+      the such to take advantage of advanced module versioning
+      as mentioned in RFC 78.
+
+=head1 IMPLEMENTATION
+
+Mostly harmless. Right before raising the famous "Can't locate method
+..." error, Perl should check to see if C<autoload> is in effect. If so,
+it should read the C<autoload.conf> config file and try to load the
+appropriate function and module. If not possible, then the error should
+be raised.
+
+=head1 MIGRATION
+
+None. This introduces new functionality.
+
+=head1 REFERENCES
+
+http://www.mail-archive.com/perl6-language@perl.org/msg02576.html
+
+RFC 78: Improved Module Versioning And Searching
+
+Existing C<use autouse> pragma/module

@@ -1,0 +1,101 @@
+<HTML>
+<HEAD>
+<TITLE>TITLE</TITLE>
+<LINK REV="made" HREF="mailto:ask@tmtowtdi.perl.org">
+</HEAD>
+
+<BODY>
+
+<!-- INDEX BEGIN -->
+
+<UL>
+
+	<LI><A HREF="#TITLE">TITLE</A>
+	<LI><A HREF="#VERSION">VERSION</A>
+	<LI><A HREF="#ABSTRACT">ABSTRACT</A>
+	<LI><A HREF="#DESCRIPTION">DESCRIPTION</A>
+	<LI><A HREF="#IMPLEMENTATION">IMPLEMENTATION</A>
+	<UL>
+
+		<LI><A HREF="#Checkpointing">Checkpointing</A>
+		<LI><A HREF="#Event_loop">Event loop</A>
+	</UL>
+
+	<LI><A HREF="#REFERENCES">REFERENCES</A>
+</UL>
+<!-- INDEX END -->
+
+<HR>
+<P>
+<H1><A NAME="TITLE">TITLE</A></H1>
+<P>
+Safe signal-handling for Perl.
+
+<P>
+<HR>
+<H1><A NAME="VERSION">VERSION</A></H1>
+<P>
+<PRE>  Maintainer: Nathan Torkington &lt;gnat@frii.com&gt;
+  Date: 30 Jul 2000
+  Version: 2
+  Mailing List: perl6-internals
+  Number: 1
+</PRE>
+<P>
+<HR>
+<H1><A NAME="ABSTRACT">ABSTRACT</A></H1>
+<P>
+The signal-handling mechanism in Perl 5 is not safe, but should be. The two
+main candidates for implementation are delayed delivery via checkpointing
+and the event loop.
+
+<P>
+<HR>
+<H1><A NAME="DESCRIPTION">DESCRIPTION</A></H1>
+<P>
+Signals may leave Perl in an inconsistent state, so that an inocuous
+<CODE>print</CODE> in a signal handler might trigger a core-dump. This is referred to as
+``unsafe signals''.
+
+<P>
+Signal safety is crucial. Signals are how timeouts, child process deaths,
+and many other important things are conveyed to a program. Many programs
+with operating-system interaction require signals, and core-dumps are
+unacceptable.
+
+<P>
+<HR>
+<H1><A NAME="IMPLEMENTATION">IMPLEMENTATION</A></H1>
+<P>
+There are two choices for implementation: checkpointing, and event loop.
+[Editor's note: the other RFC I refer to is fictitious]
+
+<P>
+<HR>
+<H2><A NAME="Checkpointing">Checkpointing</A></H2>
+<P>
+If the Perl interpreter checkpointed itself at internally consistent
+states, those states could be used to deliver signals. This would delay
+delivery, however, and the semantics of delayed signals might make some
+programs impossible to write correctly.
+
+<P>
+<HR>
+<H2><A NAME="Event_loop">Event loop</A></H2>
+<P>
+RFC 6 describes a desired event loop mechanism. If the existing signal
+mechanism (%SIG) were dropped, signals could simply become events that a
+program might or might not respond to. This would be a new model of signal
+handling which would make it difficult to reuse algorithms and code for
+systems programming from C.
+
+<P>
+<HR>
+<H1><A NAME="REFERENCES">REFERENCES</A></H1>
+<P>
+<PRE>  RFC 6: &quot;Standard Event Loop&quot;
+  perlvar manpage for discussion of %SIG
+</PRE>
+</BODY>
+
+</HTML>

@@ -1,0 +1,174 @@
+=head1 TITLE
+
+Implicit counter in for statements, possibly $#.
+
+=head1 VERSION
+
+  Maintainer: John McNamara <jmcnamara@cpan.org>
+  Date: 16 Aug 2000
+  Last Modified: 27 Sep 2000
+  Mailing List: perl6-language-flow@perl.org
+  Number: 120
+  Version: 5
+  Status: Frozen
+  Frozen since: v3
+
+=head1 ABSTRACT
+
+The syntax of the Perl style C<for> statement could be augmented by the
+introduction of an implicit counter variable. The deprecated variable
+C<$#> could be used for this purpose due to its mnemonic association
+with C<$#array>.
+
+Other alternatives are also proposed: an explicit counter returned by a
+function; an explicit counter defined after foreach; an explicit counter
+defined by a scoping statement.
+
+=head1 DESCRIPTION
+
+The use of C<for> and C<foreach> statements in conjunction with the
+range operator, C<..>, are generally seen as good idiomatic Perl:
+
+    @array = qw(sun moon stars rain);
+    
+    foreach $item (@array) {
+        print $item, "\n";
+    }
+
+as opposed to the "endearing attachment to C" style:
+
+    for ($i = 0; $i <= $#array; $i++) {
+        print $array[$i], "\n";
+    }
+
+
+In particular, the foreach statement provides a useful level of
+abstraction when iterating over an array of objects:
+
+    foreach $object (@array) {
+        $object->getline;
+        $object->parseline;
+        $object->printline;
+    }
+
+However, the abstraction breaks down as soon as there is a need to access
+the index as well as the variable:
+
+    for ($i = 0; $i <= $#array; $i++) { # Note
+        $array[$i]->index = $i;
+        $array[$i]->getline;
+        $array[$i]->parseline;
+        $array[$i]->printline;
+    }
+    
+    # Note - same applies to: foreach $i (0..$#array)
+
+
+Here we are dealing with array variables and indexes instead of objects.
+
+
+The addition of an implicit counter variable in C<for> statements would
+lead to a more elegant syntax. It is proposed the deprecated variable
+C<$#> should be used for this purpose due to its mnemonic association
+with C<$#array>. For example:
+
+    foreach $item (@array) {
+        print $item, " is at index ", $#, "\n";
+    }
+
+
+=head1 ALTERNATIVE METHODS
+
+Following discussion of this proposal on perl6-language-flow the following
+suggestions were made:
+
+
+=head2 Alternative 1 : Explicit counter returned by a function
+
+This was proposed by Mike Pastore who suggested reusing pos() and by
+Hildo Biersma who suggested using position():
+
+    foreach $item (@array) {
+        print $item, " is at index ", pos(@array), "\n";
+    }
+    
+    # or:
+    
+    foreach $item (@array) {
+        $index = some_counter_function();   
+        print $item, " is at index ", $index, "\n";
+    }
+
+
+=head2 Alternative 2 : Explicit counter defined after foreach
+
+This was proposed by Chris Madsen and Tim Jenness, Jonathan Scott Duff
+made a similar pythonesque suggestion:
+
+    foreach $item, $index (@array) {
+        print $item, " is at index ", $index, "\n";
+    }
+    
+Glenn Linderman added this could also be used for hashes:
+
+    foreach $item $key ( %hash ) {
+        print "$item is indexed by $key\n";
+    }
+
+
+Ariel Scolnicov suggested a variation on this through an extension of
+the C<each()>:
+
+    while (($item, $index) = each(@array)) {
+        print $item, " is at index ", $index, "\n";
+    }
+
+With this in mind Johan Vromans suggested the use of C<keys()> and
+C<values()> on arrays.
+
+A variation on this is an explicit counter after C<@array>. This was
+alluded to by Jonathan Scott Duff:
+
+    foreach $item (@array) $index {
+        print $item, " is at index ", $index, "\n";
+    }
+
+
+=head2 Alternative 3 : Explicit counter defined by a scoping statement
+
+This was proposed by Nathan Torkington. This behaves somewhat similarly
+to Tie::Counter.
+
+    foreach $item (@array) {
+        my $index : static = 0; # initialized each time foreach loop starts
+        print "$item is at index $index\n";
+        $index++;
+    }
+    
+    # or: 
+
+    foreach $item (@array) {
+        my $index : counter = 0; # initialized to 0 first time
+                                 # incremented by 1 subsequently
+        print "$item is at index $index\n";
+    }
+
+
+
+=head1 IMPLEMENTATION
+
+There was no discussion about how this might be implemented. It was
+pointed out by more than one person it would inevitably incur an
+overhead.
+
+=head1 REFERENCES
+
+perlvar
+
+Alex Rhomberg proposed an implicit counter variable on clpm:
+http://x53.deja.com/getdoc.xp?AN=557218804&fmt=text and
+http://x52.deja.com/threadmsg_ct.xp?AN=580369190.1&fmt=text
+
+Craig Berry suggested C<$#>:
+http://x52.deja.com/threadmsg_ct.xp?AN=580403316.1&fmt=text
+

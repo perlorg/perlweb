@@ -1,0 +1,96 @@
+=head1 This Week on perl5-porters (10-16 March 2003)
+
+It's back, it's back, the weekly P5P summary, after two weeks of vacation.
+
+=head2 Pseudo-hash deprecation
+
+Jarkko Hietaniemi asks the gang about the pseudo-hash deprecation in perl
+5.8.1. Currently, with maintperl, a deprecation warning is issued whenever
+a pseudo-hash is accessed. This warning is not triggered by pseudo-hash
+creation, because the C<fields> pragma still legitimately creates
+pseudo-hashes. However, the return value of C<fields::new>, when used,
+will thus warn, being a (blessed) pseudo-hash. This is annoying, because
+this very warning will disappear with perl 5.9.0, where pseudo-hashes have
+been removed, and where C<fields> uses restricted hashes instead of
+pseudo-hashes.
+
+Jarkko wondered whether the best solution would be to backport the
+restricted-hash-based C<fields> implementation in 5.8.1. Nicholas Clark
+worries about backward compatibility. Rafael Garcia-Suarez proposes an
+alternative solution, more conservative : to issue the deprecation warning
+only when accessing unblessed pseudo-hashes. The discussion continues.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg93050.html
+
+=head2 Posixly////
+
+A smoke run on bsdos 4.1 reminds us that, while POSIX requires trailing
+slashes to be ignored on the arguments to system calls that represent
+directories, this is not always implemented by the operating systems.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg93139.html
+
+=head2 Imaginary signals
+
+Rafael added a test to lib/Config.t to check that all signal numbers found
+by the Configure script are positive. Unfortunately, signal numbers may
+actually be, very legitimately, negative : e.g. on HP-UX 10.20. Jarkko
+then fixed Configure to ignore negative signal numbers, and put in a
+couple of other corrections, too.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg93174.html
+
+=head2 More briefly
+
+Stas Bekman asked how to emulate an C<eval {}> block in XS code.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg93048.html
+
+Hugo van der Sanden and David Dyck are trying to find the cause of
+a segfault that occurs with Parse::RecDescent under bleadperl (but not
+under perl 5.8.0). This bug prevents Inline::C from working with
+bleadperl.
+
+Jos Boumans is setting up smoke boxes. He gave up installing Darwin/Intel,
+an OS which appears to be more alpha than bleadperl.
+
+Fergal Daly sent several bug-fix patches for Test::More.
+
+Jerrad Pierce is working on the FileCache module.
+
+Abigail finds out that localizing elements from the @_ array doesn't
+work quite right. I'm not really surprised. Bug #21542.
+
+Hiroo Hayashi proposes a patch for the FILE* typemap of Perl 5.8.0,
+to prevent segfaults with C<FileHandle>s in certain conditions.
+I'm not sure I understand all the issues here. The relevant RT bug id
+is #21549.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg93145.html
+
+Tim Maher reports that Regexp::Common and Filter::Simple can't be
+apparently used together (bug #21574).
+
+Philippe 'BooK' Bruhat reports an amusing parser bug, #21575, about
+a lexical hash variable being suddenly understood as package-wise when
+used in a weirdly-indented print() statement. A couple of hours later,
+Enache Adrian comes up with a fix.
+
+Hugo asks why the one-liner :
+
+    perl -le 'print $a++'
+
+prints "0". Abigail doesn't find this behavior strange, and (as expected)
+has I<written code that depends on this>. The discussion continues.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg93265.html
+
+=head2 About this summary
+
+This summary was brought to you by Rafael Garcia-Suarez. Summaries are
+available on F<http://use.perl.org/> and/or via a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>.
+
+I'd like to thank everyone who provided support and encouragements.
+Without them, I wouldn't have continued to write these summaries.
+Enjoy !

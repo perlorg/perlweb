@@ -1,0 +1,306 @@
+=head1 TITLE
+
+Parrot Calling Conventions
+
+=head1 VERSION
+
+1
+
+=head2 CURRENT
+
+    Maintainer: Dan Sugalski
+    Class: Internals
+    PDD Number: 03
+    Version: 1.3
+    Status: Developing
+    Last Modified: 2 May 2003
+    PDD Format: 1
+    Language: English
+
+=head2 HISTORY
+
+=over 4
+
+=item Version 1.3
+
+2 May 2003
+
+=item Version 1,2
+
+11 March 2003
+
+=item Version 1.1
+
+16 September 2002
+
+=item version 1
+
+None. First version
+
+=back
+
+=head1 CHANGES
+
+=over 4
+
+=item Version 1.3
+
+No longer use the stack, with overflow going into the array in P3.
+
+Clarified some muddy language.
+
+=item Version 1.2
+
+Dropped the number of registers passed in and out of subs.
+
+=item Version 1.1
+
+We now call with a frame, rather than pushing on the stack, and we
+return frames, rather than returning a stack. We also pass in context
+information for the return.
+
+=item Version 1.0
+
+None. First version
+
+=back
+
+=head1 ABSTRACT
+
+This PDD describes Parrot's inter-routine calling conventions.
+
+=head1 DESCRIPTION
+
+Please note that the following conventions are I<only> necessary when
+exposing subs and methods via the generic parrot routine exposure
+mechanism. What does this mean?
+
+It means the caller needs to follow these conventions I<only> when
+calling into subs and methods that it has looked up symbolically via
+parrot's default lookup system. If a language has a lighter-weight
+calling mechanism that's safe to use in some circumstances, it's
+perfectly fine to use them.
+
+This means that if you write a C compiler that targets Parrot, for
+example, you don't need to use parrot's caller-save, full-on calling
+conventions when one C function calls another if the compiler knows
+at compile (or possibly link) time what parameters are being passed
+into the function.
+
+This can potentially save a significant amount of time when dealing
+with languages that are fully, or nearly fully, bound at compile
+time, and especially when dealing with languages, such as Forth, that
+would otherwise spend an inordinate amount of time calling small
+functions.
+
+If a function isn't exposed at all, it doesn't need to have any way
+to call into it with the standard calling conventions. It's also
+perfectly acceptable for there to be two ways to call into a
+function--one with a language's private calling method, and another
+that follows the standard conventions.
+
+When this document refers to an "array PMC", used for passing
+overflow parameters in and out, this means a PMC that can be accessed
+by integer index and which can return its length. It doesn't need to
+be of any particular class, it just needs to I<act> like an
+array. It specifically does I<not> need to be able to extend itself,
+and may be considered (and actually be) a constant array.
+
+=head2 Responsibility for environment preservation
+
+The caller is responsible for preserving any environment it is
+interested in keeping. This includes any and all registers, lexical
+scoping and scratchpads, opcode libraries, and so forth.
+
+Use of the C<savetop> opcode is recommended if the caller wishes to
+save everything, and the C<restoretop> opcode to restore everything
+C<savetop> saved. This saves off the top 16 of each register type,
+leaving the bottom 16 registers, which generally contain the return
+values, intact.
+
+=head2 Calling conventions
+
+The following registers are used in calling all subs and methods
+
+=over 4
+
+=item P0
+
+Holds the object representing the subroutine.
+
+=item P1
+
+Holds the return continuation for the caller.
+
+=item P2
+
+Holds the object the sub was called on. (For method calls)
+
+=item P3
+
+The overflow parameters. Everything that wouldn't fit in a register
+is in here. This PMC should act as an array, and belongs to the
+called sub/function/method. The caller should not assume anything
+about the state of the PMC passed in here after the call is made.
+
+=item S0
+
+The fully qualified name of the method or sub being called
+
+=item I0
+
+True if the sub is being called with prototyped parameters.
+
+=item I1
+
+The number of items pushed onto the parameter list.
+
+=item I2
+
+The number of parameters in PMC registers.
+
+=item I3
+
+The return type expected. This is the identifier number for the
+class. A return type of 0 is void context, -1 is unknown, and -2 and
+down are the number of expected return variables, negated, minus
+one. (So -2 means we expect 1 variable, -3 means we expect 2, -4
+means we expect 3, and so forth)
+
+=item I4
+
+Hash value of method or sub name. 0 means no hash value
+
+=back
+
+The following registers, with the exception of P registers, are used
+I<only> when calling a subroutine for which there is a compile-time
+prototype. The first 11 PMC parameters may be passed in registers P5
+through P15. 
+
+=over 4
+
+=item I5 through I15
+
+The first 11 integer parameters.
+
+=item S5 through S15
+
+The first 11 string parameters.
+
+=item N5 through N15
+
+The first 11 numeric parameters.
+
+=item P5 through P15
+
+The first 11 PMC parameters.
+
+=back
+
+Overflow parameters go in the array PMC passed in P3. Overflow
+entries are in there in order, so element 0 is the first overflow
+parameter, element 1 the second, and so on.
+
+The PMC for a hash, array, or list is passed if one of the entries in
+the parameter list is a hash, array, or list. The aggregate is B<not>
+flattened. (Though when accessing the parameters it may be)
+
+Parameters are passed in S, I, and N registers only if the sub's
+prototype specifically indicates it takes parameters of that type. I0
+must be set to 1 if that is the case. If I0 is 0, then the S, I, and
+N registers can be assumed to be garbage.
+
+Note that it doesn't matter what the order of the integer, string,
+numeric, and PMC parameters are in the parameter list up until
+overflow occurs. Once overflow occurs the parameters must be taken in
+the exact order that they appear in the signature.
+
+=head2 Prototyped parameters
+
+A sub or method can be called in two ways--either prototyped or
+non-prototyped.
+
+A prototyped call means that the caller has an idea of what
+parameters the sub takes, and has placed its parameters in the
+appropriate S, I, N, and P registers. I0 will be true in this case.
+
+An unprototyped call means the caller doesn't know what the sub
+takes, so has stuffed all its parameters into PMCs, and put those
+PMCs first in the PMC registers with any overflow in the overdlow
+array. I0 will be false in this case.
+
+The sub being called is responsible for runtime checking the parameter
+types to see if there is a parameter mismatch problem, if it
+cares. (Often it doesn't) This isn't a replacement for that sort of
+parameter type checking. What it is, instead, is a means of allowing
+shortcutting parameter placement checking for the called sub.
+
+For example, assume we have a subroutine with a signature that looks
+like:
+
+    sub foo(int a, int b, string c, PMC d, float e);
+
+If we were calling without prototyping, all five parameters would be
+passed in as PMCs, in registers P5 through P9. If, on the other hand,
+we were calling with prototyping, a would be in I5, b in I6, c in S5,
+d in P5, and e in N5. 
+
+=head2 Return conventions
+
+On return from a function, the following registers are set. Return
+values are placed in I, S, and N registers only if the function is
+prototyped to do so. It is unlikely that more than one of these
+registers is set, but you never know. (Perl 6 having fancier return
+types if nothing else) If a prototyped return is indicated then
+register I0 B<must> be set to 1. If I0 is set to 0, then this is a
+non-prototyped return and only the PMC registers and overflow in P3
+may be set.
+
+Overflow return values are put in the array PMC in register P3.
+
+=over 4
+
+=item I0
+
+True if prototyped return, false otherwise
+
+=item I1
+
+Holds the number of return values in integer registers.
+
+=item I2
+
+Holds the number of return values in string registers.
+
+=item I3
+
+Holds the number of return values in PMC registers.
+
+=item I4
+
+Holds the number of return values in numeric registers.
+
+=item P3
+
+Holds the overflow return values in an array PMC
+
+=item P5-P15
+
+PMC return values
+
+=item I5-I15
+
+Integer return values
+
+=item S5-S15
+
+String return values
+
+=item N5-N15
+
+Numeric return values
+
+=back
+
+=head1 REFERENCES

@@ -1,0 +1,146 @@
+=head1 TITLE
+
+Overloadable parentheses for objects
+
+=head1 VERSION
+
+  Maintainer: pdl-porters team <pdl-porters@jach.hawaii.edu>
+  Date: 16 Aug 2000
+  Last Modified: 30 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 115
+  Version: 3
+  Status: Frozen
+
+=head1 DISCUSSION
+
+There was hardly any response to this RFC. That can be
+interpreted in a number of ways C<;)>. RFC 231 suggests
+an alternative way to get what we tried to get from
+this RFC: Syntactical ease of making slices of multidim
+array objects. RFC 231 suggests
+
+   $a->[1..3; 4] * $b->[];
+
+>From our point of view this is not too bad but we would like
+to get rid of the requirement for C<-E<gt>>. An extended C<tie>
+mechanism with possibility of overloaded operations on those
+arrays might do it. But then again, if we get all those
+polymorphic methods we could also allow the one suggested by
+this RFC -- TIMTOWTDI.
+
+=head1 ABSTRACT
+
+This RFC proposes syntactic support for a polymorphic method
+that can be defined for blessed references. It would
+allow the parentheses C<()> to be used for a variety of convenient
+syntaxes for objects. This is principally motivated by a need
+of PDL for a simple syntax of PDL object slicing.
+
+=head1 DESCRIPTION
+
+=head2 Motivation
+
+Currently, PDL objects have to use quite an unwieldy syntax
+for the all important slicing and indexing. In perl5 the syntax is
+
+  $n1 = $n-1;                       # since we need to stringify
+  $y = $x->slice("0:$n1:4");
+  $y = $x->slice("0:${\($n-1)}:4"); # even more horrible
+  
+This should be contrasted with the less cluttered syntax offered
+by numerical Python and commercial systems such as Matlab and IDL:
+
+  y = x[0:n-1:4]; 
+  
+In perl we desire to say:
+
+ $y = $x(0:$n-1,4); # or, depending on the choice of separator
+ $y = $x(0:$n-1;4); # see also RFC 169
+
+Note that we need to keep l-value subs in perl6 to avoid related
+types of syntactical clumsiness if C<$x()> can invoke a subroutine
+(see below).
+
+  $x(0:$n-1:4) *= 2;
+
+should be allowed, as well as the long form
+
+  $x->slice(0:$n-1:4) *= 2;
+
+L<RFC 81> and related RFCs propose introducing ranges as part of the
+syntax cleanup, this RFC proposes C<()> overloading for
+objects.
+
+=head2 Overloading C<()>'s
+
+If classes allowed the definition of a method that is invoked with a
+syntax akin to one used with sub refs (but without the need for the
+C<&> dereferencing) we could have the cake and eat it.  The parentheses
+method notion seems general enough to be useful for other classes.
+
+=head2 Examples:
+
+A possible scenario could be as follows. The class PDL
+defines a default method that is invoked when a syntax
+like
+
+  $<variable_name>(args)
+
+is used, where C<$E<lt>variable_nameE<gt>> is supposed to be an
+instance of the class in question (here PDL).
+
+The PDL package would contain the definition of the
+method C<PARENTHESES> (a polymorphic method along the lines of RFC 159):
+
+  package PDL;
+
+   ....
+
+  sub PARENTHESES {
+	my $this = shift;
+	$this->slice(@_);
+  }
+
+This would allow for the creation of a variety of powerful syntaxes
+for different kinds of objects. For example in PDL we might
+wish to use C<()> to slice by index value and in a derived class
+PDL::World C<()> would slice by physical real-value coordinate.
+
+One could think of this as saying that C<()> is an
+operators which can be overloaded.
+
+Note that we still would like to have such a feature even if
+Perl 6 provided its own multi-dim array type. It would
+give us the freedom to provide an object oriented interface
+to these arrays and/or derive classes from it I<and> have
+convenient slicing syntax.
+
+=head1 IMPLEMENTATION
+
+Changes to the parser to allow the new syntax.
+We are not aware of any other conflicts with existing
+or proposed language features.
+
+=head1 SEE ALSO
+
+RFC 159: True Polymorphic Objects
+
+RFC 117: Perl syntax support for ranges
+
+RFC 81: Lazily evaluated list generation functions
+
+RFC 169: Proposed syntax for matrix element access and slicing
+
+RFC 231: Data: Multi-dimensional arrays/hashes and slices
+
+L<PDL> (http://pdl.sourceforge.net/PDLdocs)
+
+http://pdl.perl.org
+
+Numerical Python:
+
+http://starship.python.net/~da/numtut/
+
+
+

@@ -1,0 +1,69 @@
+=head1 TITLE
+
+Objects : Rationalizing C<ref>, C<attribute::reftype>, and C<builtin:blessed>
+
+=head1 VERSION
+
+  Maintainer: Damian Conway <damian@conway.org>
+  Date: 14 Sep 2000
+  Last Modified: 18 Sep 2000
+  Mailing List: perl6-language-objects@perl.org
+  Number: 224
+  Version: 2
+  Status: Frozen
+
+=head1 ABSTRACT
+
+This RFC proposes that rather than three separate mechanisms (in three
+separate namespaces) to determine object typing information, Perl 6
+simply extend the C<ref> function to return all the necessary
+information in a list context.
+
+=head1 DESCRIPTION
+
+In Perl 5, the class into which an object is blessed is returned by
+calling C<ref> on a reference to that object. To determine the
+underlying implementation type of the object, C<attribute::reftype> is
+used. To determine whether or not a reference refers to a blessed
+object, <builtin::blessed> is used.
+
+It is proposed that the behaviour of C<ref> be altered in Perl 6 so that
+in a list context it returns up to two values: the underlying
+implementation type of the object (always returned), and the class into
+which the object is blessed (only if the object I<is> blessed).
+
+Thus:
+
+        if (builtin::blessed $ref) {
+                $type  = attribute::reftype $ref;
+                $class = ref $ref;
+        }
+        else {
+                $type  = ref $ref;
+                $class = "<no class>";
+        }
+
+        print "Object of type $type, blessed into $class\n";
+
+
+Would become:
+
+        ($type, $class) = ref($ref);
+        $class ||= "<no class>";
+
+        print "Object of type $type, blessed into $class\n";
+
+
+=head1 MIGRATION ISSUES
+
+All existing calls to C<ref> in a list context would have to be
+translated to C<scalar ref>.
+
+
+=head1 IMPLEMENTATION
+
+Trivial.
+
+=head1 REFERENCES
+
+None.

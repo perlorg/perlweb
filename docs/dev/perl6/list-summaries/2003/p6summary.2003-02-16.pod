@@ -1,0 +1,143 @@
+=head1 The Perl 6 summary for the week ending 20030216
+
+Welcome to the all new, entirely unaltered, all singing, all dancing
+Perl 6 summary. Your beacon of reliability in the crazy world that is
+Perl 6 design and development.
+
+Another quiet week. Even quieter than last week in fact, unless my
+mail spent some of the time up the spout, but I don't think so.
+
+So, as is traditional, we kick off with perl6-internals
+
+=head2 CGP - The Computed Goto Prederefed Runloop
+
+Last week I mentioned that nobody seemed to have commented on Dan's
+bet with Guido van Rossum that Parrot would outperform Python by OSCON
+2004. (I also missed the fact that the penalty for losing the bet now
+involves cream pies as well as $10 and a round of drinks...). After I
+posted the summary to the mailing lists, Leopold TE<ouml>tsch informed
+me that he had commented indirectly by announcing his new, improved,
+ludicrously quick runloop that combines computed GOTOs and
+predereferencing. Whatever that means. 
+
+This week, Leo and Nicholas Clark worked out how to combine the
+blistering pace of the JIT core (for operations that had been
+translated into hand hacked machine code) with the blistering pace of
+the CGP runloop (for the other ops). As far as I can tell, this
+involved turning the idea 'inside out', the VM actually starts up
+running JIT compiled code and calls out to the CGP core to execute
+non-JITable sequences of ops. The numbers for this approach look
+fantastic (quite stunningly quick...) So Leo checked it in.
+
+L<http://groups.google.com/groups?threadm=3E48C71A.2090708%40toetsch.at>
+
+L<http://groups.google.com/groups?threadm=3E4BBD29.7060307%40toetsch.at> -- Some numbers
+
+L<http://groups.google.com/groups?threadm=3E4CEF66.7020900%40toetsch.at> -- Check in notice
+
+=head2 Optimized runloops and threading issues
+
+Last week we were reminded that JIT and Predereferenced runloops don't
+work in a threaded environment. This week Jerome Vouillon pointed out
+an approach that looks like it could fix that (it seemed to convince
+Leo). Dan (possibly playing mail catchup) said he was okay with having
+to fall back to the old fast core (as opposed to the current, stupidly
+fast core) in the presence of threads, but Leo seem to think that,
+using Jerome's scheme we'll be able to have our cake, eat it and still
+throw the cream pie at the Python team. Huzzah!
+
+L<http://groups.google.com/groups?threadm=20030214133916.GA19119%40strontium.pps.jussieu.fr>
+
+=head2 C<keyed_int> issues
+
+Leo TE<ouml>tsch had wondered about why 
+C<< {get,set}_<type>_keyed_int >> vtable methods needed to take an C<INTVAL*>
+value instead of a plain C<INTVAL> as it introduced some possibly unneeded
+conditional code, a stack variable for the key and made life hard for
+JIT code. It looks like the pointer is a holdover from an early
+approach to doing multidimensional keyed structures. 
+
+L<http://groups.google.com/groups?threadm=3E4B76E8.2040509%40toetsch.at>
+
+=head2 Changes to the calling convention and other fallout
+
+Dan returned from the Sebastapol Perl 6 meeting with a few
+announcements and one change in the parrot calling convention (how
+many calling conventions have we had now?). 
+
+L<http://groups.google.com/groups?threadm=a05200f00ba72cc9686b5%40%5B63.120.19.221%5D>
+
+=head2 Macro support in IMCC
+
+JE<uuml>rgen BE<ouml>mmels announced that he'd implemented macro
+expansion in IMCC (Yay JE<uuml>rgen!). Leo liked it, but requested a
+few changes before he'd check it in, so hopefully, some time soon the
+mainline IMCC will have macros, which is very nice.
+
+L<http://groups.google.com/groups?threadm=rt-21033-51310.14.4462403001212%40bugs6.perl.org>
+
+=head1 Meanwhile, in perl6-language
+
+Almost all the discussion was about the difference between arrays and
+lists. Deborah Ariel Pickett came up with a good list of questions
+about arrays and array references in scalar and list contexts, which
+Michael Lazzaro answered (very neatly I thought) with a list of their
+different contextual behaviours. Deborah extended Michael's list to
+hashes and hashrefs in a reasonably obvious way. Smylers came up with
+a possible new sigquote (after paraphrasing): "We should limit new
+features to those that arise from a desire for the functionality
+rather than a desire to use up 'spare' syntax". (Okay, it's not
+exactly I<snappy>, but I think it's important).
+
+L<http://groups.google.com/groups?threadm=200302120056.h1C0uaec026963%40bruce.csse.monash.edu.au> -- Deborah's questions
+
+L<http://groups.google.com/groups?threadm=90876177-3EB9-11D7-A9B7-00050245244A%40cognitivity.com> -- Michael's answers
+
+And that wraps it up for the language list. I'm sure it'll pick up
+again soon though. There are rumours of a draft apocalypse in the next
+couple of weeks, and presumably that implies a real apocalypse soon
+after. Assuming we haven't had another kind of Apocalypse in the mean
+time. 
+
+=head1 Announcements, Acknowledgements and AnotherWordBeginningWithA
+
+This week's summary was again prepared in the comfy chair with
+surprisingly few distractions apart from the late arrival of mail from
+Leon Brocard announcing that he'd implemented a brainf*ck compiler in
+brainf*ck, but that didn't really happen this week so I've got no
+excuse for mentioning Leon's name in this summary. 
+
+Thanks to everyone who dropped us a line about our American Odyssey;
+I'm hoping I'll have one of those web page things up at some point
+with a rough itinerary in case anyone wants to come and throw rotten
+tomatoes at me (or, preferably, buy me sushi).
+
+Proofreading services were again down to Aspell and me. 
+
+If you  appreciated this summary, please consider one or more of the
+following options:
+
+=over
+
+=item *
+
+Send money to the Perl Foundation at
+L<http://donate.perl-foundation.org/> and help support the ongoing
+development of Perl.
+
+=item *
+
+Get involved in the Perl 6 process. The mailing lists are open  to
+all. L<http://dev.perl.org/perl6/> and L<http://www.parrotcode.org/>
+are good starting points with links to the appropriate mailing lists.
+
+=item *
+
+Send feedback, flames, money, job offers or 17 inches of aluminium
+goodness to L<p6summarizer@bofh.org.uk>
+
+=back
+
+This week's summary was, once more, sponsored by Darren Duncan. Thanks
+Darren. If you'd like to become a summary sponsor, drop me a line at
+L<p6summarizer@bofh.org.uk>.

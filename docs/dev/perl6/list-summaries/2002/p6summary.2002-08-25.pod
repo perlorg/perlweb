@@ -1,0 +1,614 @@
+=head1 Perl6 Summary for the week ending 20020825
+
+=over
+
+=item I<The clocks will all run backwards>
+
+=item I<All the sheep will have two heads>
+
+=item I<And Thursday night and Friday will be on Tuesday night instead>
+
+=over
+
+=item B<-- World Party E<ldquo>Way Down NowE<rdquo>>
+
+=back
+
+=back
+
+Or, to put it another way, this summary is late, but I have a very
+good excuse involving a pub, a barn, 100 or so folk singers and a
+wooden flute. I also have a sore throat. 
+
+Hmm... exactly how obscene does that sound? "There was this one
+time... at Towersey..."
+
+Meanwhile, on the Perl6 mailing lists and elsewhere, stuff
+happened. (Will that do? Didn't think so.)
+
+So, as is traditional at this point in the proceedings, we'll start
+with perl6-internals.
+
+=head2 Keyed Access
+
+The keyed access thread just keeps rolling along. Tom Hughes'
+comprehensive keyed access patch was praised, (Congregation: "He's
+even fixed tracing and disassembly!" Rev. Tom: "Well, they mostly got
+fixed because I needed to work out what I'd broken..."). Then Mike
+Lambert found a showstopper; the patche stopped BASIC users from
+playing `Hunt the Wumpus'. So Tom fixed the BASIC interpreter as well
+(the keys patch was working as designed, BASIC was doing Bad Things.)
+
+L<http://makeashorterlink.com/?G659121A1>
+
+=head2 Regex speedup
+
+(Or, the Int*ll*ct**l Masturbation thread).
+
+Angel Faus replied to Simon Cozens' crack about the aforementioned
+practice (which is apparently okay, so long as you do it in private
+and don't frighten the horses), by pointing out that "optimizing the
+hell out of something" was sometimes the only way to find out if it
+could be fast enough. Angel (and Nicholas Clark) also wondered whether
+Simon's YAPC slides about Parrot development were available anywhere
+(they are). 
+
+Nicholas also wondered which parts of the current parrot
+implementation were definitely prototypes and due to be thrown
+out. Answer: The GC system, the JIT system, the IO system, exceptions
+(needs designing first), the parser (which also needs designing), the
+regex engine, `the compiler...'. Garbage collection, JIT and the
+pattern engine (I'll follow Damian's usage, you can think `regex' if
+you want.) are all being reworked as I type.
+
+L<http://makeashorterlink.com/?M20A12F91>
+
+L<http://makeashorterlink.com/?L12A23F91> -- Dan's answers
+
+L<http://makeashorterlink.com/?C169231A1> -- Simon's slides
+
+=head2 COW... Again and Again
+
+This thread arose from a patch that Mike Lambert made as a result of
+discussions about Peter Gibbs' `Pirate Parrot', aka `grey parrot'. The
+patch uses copy on write techniques to speed up parrot's garbage
+collection. The general response to this patch was highly favourable
+-- it speeds GC up, it'll make capturing patterns more efficient, it's
+a desert wax, it's a floor topping! It's also a very meaty thread with
+lots of in depth technical discussions that are both fascinating and
+nearly impossible to summarize.
+
+L<http://makeashorterlink.com/?Y1BA25F91>
+
+=head2 What does `neonate' mean?
+
+Ximon Eighteen wondered about the meaning of `neonate' in the context
+of Parrot and, more specifically, garbage collection. Brent Dax got in
+first with an answer. Neonate means `newborn', and the problem that's
+referred to is when a newborn object, which hasn't yet been attached
+to the root set, gets garbage collected before one has a chance to use
+it, causing general wailing and gnashing of teeth. Solving the problem
+efficiently is hard (or possibly Hard,) currently we have to walk the
+hardware call stack (and possibly grovel through hardware registers as
+well). This is another thread that's well worth reading if you're even
+remotely interested in GC, and it's pitched at a reasonably
+`introductory level' if you find the other GC discussions scary.
+
+L<http://makeashorterlink.com/?Q3FA52F91>
+
+L<http://makeashorterlink.com/?Q11B32F91> -- Brent's answer
+
+=head2 GC generation
+
+Dan wondered if it would make life easier if we add a C<GC_GENERATION>
+field to the interpreter which gets incremented on every DOD or GC
+run. The consensus appears to be `No, it's not the right way to do
+it.'
+
+L<http://makeashorterlink.com/?W22B15F91>
+
+=head2 Regexen? Rules? Patterns?
+
+Jeff Goff offered a grammar for Apocalypse 5 style patterns and
+rules. So did Simon Cozens. And Sean O'Rourke committed his work so
+far on this subject for his Perl6 compiler. Hopes are high for
+synthesis, integration and other good stuff.
+
+L<http://makeashorterlink.com/?D179611A1>
+
+L<http://makeashorterlink.com/?L389521A1>
+
+L<http://makeashorterlink.com/?O23B12F91>
+
+=head2
+
+Sean O'Rourke also added a patch to IMCC so it could handle the regex
+code his Perl6 compiler generates. Melvin Smith wondered if it
+couldn't be possible to have IMCC use infix notation instead of the
+current, prefix, notation, but Angel Faus disagreed. Steve Fink
+wondered if the IMCC chaps couldn't make more of their discussions
+public instead of in private email. So they did; Leopold Toetsch
+delivering a particularly effective summary of what had been
+covered. John Porter wondered what IMCC's status within parrot was. Is
+it part of the core? Should compilers target IMCC rather than directly
+targeting parrot? More specifically, will the Perl6 compiler target
+IMCC or parrot? Answers appear to be: Yes, for now. Yes, if they want
+what IMCC provides. Well, the current Perl 6 compiler targets it.
+
+John went on to wonder if we weren't taking a very Perl6-centric view,
+and that he may want to implement his own register allocation and
+optimization schemes. Sean pointed out that, in general with low level
+tasks like this, there's pretty much only one `right' way to do it,
+and IMCC was really only concerned with helping with the low level
+stuff. Steve Mosher wondered whether IMCC should morph into a library
+which emitted parrot byte code directly.
+
+John also wanted some pronouncement from Dan about IMCC and also
+wanted some word from Larry or Damian about IMCC's status. Dan told us
+that neither Larry or Damian had anything to say on the matter (no
+surprise there then). His ultimate goal is to have IMCC rolled into
+Parrot as the point between parser and interpreter; the idea being
+that the parser would throw an abstract syntax tree (and maybe some
+rules) at IMCC and it'd create the bytecode for you from that. There
+would be no obligation for anything else to use it, but it will be
+built into parrot. John told us all that we `want a syntax highly
+tuned for tree structures (and other things), and the current syntax
+doesn't sound like it fits this criterion.'. Dan agreed, and wondered
+if John had any free time.
+
+Away from the IMCC meta-discussion, where people were still talking
+about IMCC syntax, Melvin Smith wondered if there might be some
+mileage in making C<=> mean `clone', and adding a C<:=> operator to
+mean `set'. Sean wondered what we'd use for `assign', and Leopold
+reckoned that it'd be better to leave the syntax as it was for set and
+clone, but to maybe add C<:=> for the forthcoming `assign'.
+
+Melvin also supplied I<his> vision of where he sees IMCC going. He
+wants it to be an intermediate language, not just an `assembler with a
+register allocator and spiller', and that his whole reason for writing
+IMCC in the first place was that he didn't want to target the
+assembler directly.
+
+L<http://makeashorterlink.com/?K1BB34F91>
+
+L<http://makeashorterlink.com/?J5BE62F91>
+
+L<http://makeashorterlink.com/?I1DB65F91> -- Dan's vision for IMCC
+
+L<http://makeashorterlink.com/?U20C12F91> -- Melvin's vision.
+
+=head2 More IMCC discussion
+
+As the IMCC discussion rumbled on, a thread sprang up about off-list
+discussions and how, maybe, IMCC and other intermediate/high level
+languages should get their own list. The general response to this was
+approximately favourable, though Piers Cawley did think it might make
+the life of a summarizer slightly harder. Dan mentioned something
+about getting Ask or Robert to set up such a list, but I'm not yet
+sure if it happened, or what it's called. John Porter wondered if
+perl6-internals shouldn't really be called `parrot', but Dan pointed
+out that this would be somewhat tricky, since the list started before
+Parrot got named. 
+
+Also during this thread, a few lurkers chimed in with some egoboo for
+all the hard working developers, which I'd like to echo here. Sterling
+work chaps.
+
+L<http://makeashorterlink.com/?I23C65F91>
+
+L<http://makeashorterlink.com/?Z15C32F91> -- Egoboo starts here.
+
+=head2 MORE about GC.
+
+Dave Mitchell wondered about
+
+   { my $fh = IO::File->new(...); ... }
+
+and the timely execution of object destructors at scope exit. Dan
+explained his idea about how it would work, and Dave immediately
+spotted a problem with it. What followed was a long discussion about
+the best way forward which wouldn't lead to a DOD run being triggered
+at the end of every scope, slowing down the whole enterprise
+dramatically. Consensus appears not to have been attained yet, but at
+least the handwaving about this area has stopped, which is good
+thing.
+
+L<http://makeashorterlink.com/?N299311A1>
+
+=head2 Unicode!
+
+Jeff Goff has added ICU to the parrot core. The idea is that parrot
+needs to do Unicode and it's better to start off with an existing
+implementation which has already made most of its mistakes than it is
+to start from scratch and make those mistakes all over again. Brent
+Dax wondered about issues of portability to the core Parrot
+platforms. The answer to that question appears to be that, at the
+moment at least, ICU is more portable than parrot is.
+
+L<http://makeashorterlink.com/?V2A9121A1>
+
+=head2 Cleanup time!
+
+Parrot is shooting for another release, so Dan told us it was time for
+a bit of spring cleaning, and also, for getting a working Perl 6 regex
+compiler. Sean wondered what, exactly, Dan meant by `working'; he has
+parsing pretty much working, but execution is looking a little
+ropier. Dan reckons ropy is good enough for now.
+
+Dan also wondered about a codename for the next release, 0.0.8 and
+wondered if `Octarine' might fit the bill. Piers wondered about the
+wisdom of choosing a colour which can only be seen by witches, wizards
+and cats. (It's a Pratchett reference, octarine is the colour of
+magic.) Andy Wardley offered some possible logos, cunningly choosing
+Leon Brocard Orange as the base colour -- thus allowing me to refer to
+Leon during a week in which he himself said nothing... again.  Paul
+Johnson pointed out that, in Moonraker, 008 was known as
+`Bill'. Garrett Goebel suggested `Pieces-of-Eight', which sounds like
+a winner to me.
+
+L<http://makeashorterlink.com/?V5B9121A1>
+
+L<http://www.lspace.org>
+
+L<http://www.andywardley.com/parrot/>
+
+L<http://www.andywardley.com/parrot/borg.html>
+
+=head2 set_p_p
+
+Aldo Calpini wondered if the current implementation of C<set_p_p> made
+sense. Which led to a vaguely confusing (if you're me at least)
+discussion about assignment versus set, Peter Gibbs offered a patch
+which implemented assign, and Dan applied it.
+
+L<http://makeashorterlink.com/?K47C21F91>
+
+=head2 Even more about GC
+
+Mike Lambert added an explicit C<free> opcode and got a 7% speedup for
+a rejigged F<life.pbc>, he wondered if this was worthwhile. Dan seems
+to think it might be. Peter Gibbs pointed out that, on a slower
+machine, using explicit free to get rid of the GC stack walk made for
+a really big gain, which led to a discussion of a putative benchmark
+farm of machines with different architectures and specs, hopefully
+helping to show up where there may be problems with particular
+algorithms implemented on particular architectures. If anyone has
+machines to donate, speak to Nicholas Clark...
+
+L<http://makeashorterlink.com/?Q48C12F91>
+
+L<http://makeashorterlink.com/?T59C23F91>
+
+=head1 Meanwhile over in perl6-language
+
+There was a lot more traffic this week, mostly as a result of the
+release of the long awaited Exegesis 5. So, here goes with the summary
+
+=head2 Sigils
+
+Erik Steven Harrison re asked his question about sigils and how to
+alias rules, and got some answers this time (or at least, he got some
+speculations). 
+
+On the subject of Sigils, Trey Harris wondered how Perl6's sigil
+invariance rule interacts with class attributes. Damian reckoned that
+Trey's example code wouldn't cause a problem as it stood, but that it
+would almost certainly be a compile time error if you declared two
+public attributes with the same symbolic name but of different types.
+
+L<http://makeashorterlink.com/?L2BC12F91> -- Erik's question
+
+L<http://makeashorterlink.com/?M4DC14F91> --
+Trey's question
+
+=head2 C<:>, C<::>, C<:::>, and C<::::> in P6REs.
+
+Simon Cozens asked for some clarification of the various C<<rx/:<1,4>/>>
+pragmas in the new Perl 6 pattern language. Damian clarified, and
+Simon was Enlightened, but asked that 
+
+    "ab" =~ rx:any / $match := (\w) /;
+    print $match;
+
+be taken as undefined behaviour. Damian disagreed, thinking that $0
+would contain and array of match objects, one for each possible
+match. To see the individual hypotheticals one could do:
+
+    for @$0 -> $possible_match {
+        print $possible_match{match}, "\n";
+    }
+
+Damian, being the mad scientist he is, also suggested that maybe the
+top level match object would I<also> have a `match' key, whose value
+would be a superposition of all the possible hypotheticals. The phrase
+`Bwah-ha-ha-ha-hah!!!!!!' was involved.
+
+L<http://makeashorterlink.com/?C2C9131A1>
+
+=head2 Exegesis 5 is alive!
+
+At around this point in the discussion, Exegesis 5 got released on
+perl.com, and was worth it for the Dylan parody alone.
+
+L<http://makeashorterlink.com/?W2E9411A1>
+
+=head2 C<rule>, C<rx> and C<sub>
+
+Deborah Ariel Picket wondered why we only had one operator for
+creating both named and anonymous subroutines: C<sub>, but in Perl 6
+there were distinct keywords for creating named and anonymous rules:
+C<rule> and C<rx>. Damian pointed out that these two weren't quite
+synonymous as C<rule> allowed for adding a name and an argument list
+to a pattern, and it requires braces as a delimiter. C<rx> meanwhile
+doesn't allow for naming or argument lists, but allows you to use
+almost any character you could possibly desire as your delimiter.
+
+L<http://makeashorterlink.com/?H2FC15F91>
+
+=head2 E5: Questions
+
+Deborah had some more questions about E5:
+
+=over 
+
+=item 1
+
+Does C<< "${linerange}" >> still mean what it does in Perl 5, as the
+Exegesis seems to imply?
+
+=item 2
+
+Is C<< @$appendline =~ s/<in_marker>/< /; >> doing an implicit loop?
+
+=item 3
+
+What's the magic about C<< <appendline>+ >> and C<< @$appendline >>?
+How come C<< $appendline >> captures all the matches?
+
+=back
+
+Damian thought that C<< "${foo}" >> should still work, but Larry
+disagreed, the new syntax is C<< $($linerange) >>. (Does that work
+outside string interpolations btw?)
+
+Yes, C<< @$appendline =~ s/.../.../ >> does do an implicit loop.
+
+And yes, there is magic involved where quantifiers are
+concerned. Damian's answer post contains more details.
+
+Garrett Goebel also had a pile of questions, 11 of 'em. Tell you what,
+go read the thread.
+
+L<http://makeashorterlink.com/?S10D61F91> -- questions
+
+L<http://makeashorterlink.com/?Y2F9321A1> -- answers
+
+L<http://makeashorterlink.com/?U41D22F91> -- Garrett's
+questions
+
+=head2 Grammar access
+
+Luke Palmer wondered if C<grammar> would allow C<public> and
+C<private>, before quoting Damian out of context and indirectly
+calling him an idiot. Damian responded with a good deal of restraint
+and no small amount of backup. Luke retracted, and complimented Damian
+on Exegesis 5 (Hear! Hear!)
+
+L<http://makeashorterlink.com/?K52D65F91>
+
+L<http://makeashorterlink.com/?E20A521A1>
+
+=head2 Inlining subrules
+
+Angel Faus wondered if Perl would guarantee that subrules couldn't be
+redefined at runtime, allowing the possibility of optimizing matches
+by inlining subrules. Damian thought not. Angel wondered if it might
+not be possible to have C<< grammar HTML is frozen { ... } >>,
+signifying that no subrules would be overridden, and further, maybe
+C<< class Foo is frozen { ... } >> would be a possibility. Luke Palmer
+wondered if he meant the same thing as Java's `terribly named'
+C<final> property. Damian agreed that C<final> was indeed terribly
+named, but that was okay, because it was a terrible I<idea> too. 
+
+Meanwhile, on a different branch of the thread, Damian agreed that
+having subrules redefinable meant the loss of a possible optimization,
+but that the Perl Way is generally to choose flexibility over
+speed. Damian then went on to say that, given the choice he'd rather
+have Perl 6 default to frozen. 
+
+Simon Cozens meanwhile thought that it didn't really matter if you
+lost the possibility of inlining as he had a cunning approach which
+would make modifications of a grammar bordering on the trivial. The
+margin of his initial email wasn't quite large enough to contain his
+thoughts on the subject, but he put a page up on his website
+explaining what he meant. And all of a sudden, perl6-language turned
+into perl6-internals as folks argued about whether it was better to
+use a bytecode or a tree structure before Simon remembered why he'd
+made it a tree in the first place: It's much easier to dynamically
+alter a tree than it is a stream of bytecodes. And dynamically
+altering a parse tree is really rather important if you want Perl6 to
+be able to dynamically alter its parsing rules as it loads the
+source. Which we do. Dan agreed, sort of. We'll definitely be keeping
+the tree representation around, but I'm not sure whether we'll be
+walking it directly, or using bytecodes and regenerating if the tree
+changes. 
+
+I'm putting a link to the base of the thread, if you're interested in
+Perl 6 rules and grammars then it's all worth reading.
+
+L<http://makeashorterlink.com/?Q33D22F91>
+
+L<http://makeashorterlink.com/?C31A141A1> -- The thoughts
+of Chairman Cozens.
+
+
+=head1 In Brief
+
+Brian Ingerson wondered about overriding the new 'freeze' and 'thaw'
+methods to do YAML serialization of PMCs. Dan said that one would
+actually override the `serialization/deserialization code that
+abstracts the freezing/thawing, which the PMCs use to
+serialize/deserialize themselves.' Dan's goal is for Parrot to be
+neutral about how its PMCs are encoded, so long as they can be decoded
+too...
+
+Nick Ing Simmons wondered about GC and data-cache locality, and
+wondered if going back to refcounting might not be a good idea. Dan
+thinks not; parrot is currently reasonably cache friendly.
+
+The ongoing 'Parrot dandruff' effort to get rid of compiler warnings
+hit a snag this week. It turns out that to stop an MSVC warning in `be
+completely and utterly paranoid about everything' mode, you'll end up
+triggering a warning in GCC. It looks like a certain amount of
+preprocessor fairy dust will have to be sprinkled over this particular
+problem.
+
+Leopold Toetsch patched assemble.pl to get rid of the hand coded list
+of PMC types. Actually, Leopold was something of a patch monster this
+week, contributing patches to F<lib/Parrot/Test.pm> getting rid of
+C<make test> warnings; F<pbc2c.pl> to use a similar startup sequence
+to the `real' parrot; and something to fix a problem with
+C<hash_clone>. This last patch wasn't committed, but the bug report
+was gratefully received by Steve Fink who made the actual fix.
+
+Jerome Quelin submitted a fix for his Befunge interpreter.
+
+Jason Gloudon supplied a `logical right shift' operator, C<lsr>. 
+
+Steve Fink offered an interpreter PMC, which wraps up the interpreter
+in a PMC allowing for handy introspection tricks. 
+
+Chris Dutton had a problem with the Perl6 compiler. Apparently you
+have to have an explicit C<main> function for the current version to
+work. 
+
+Brent Dax offered a documentation patch to PDD07, documenting
+structure naming conventions.
+
+Jason Gloudon offered a patch to make C<find_bucket> GC-safe. Steve
+Fink: "Wow, it's amazing the number of GC bugs I can fit in a few hundred
+lines of code."
+
+If I read his post right, Leopold Toetsch now has his native parrot
+assembler up and at least assembling the entire test suite into a
+runnable state (even if some of the tests then fail.) Ah... no,
+apparently I did read it incorrectly. Leopold now has a toolchain in
+place which will allow you to go from perl6 source to native
+code. And some of the tests that are compiled this way pass. Hurrah!
+
+Peter Gibbs found a `bug waiting for Unicode' in Mike Lambert's string
+COW code, Mike agreed, and committed a fix. Mike also coined the term
+`uncowify' for the process of removing the copy on write semantics
+from a buffer, and David Wheeler looked forward to a time when he
+could use that word in a conversation. I think Mr Wheeler may be
+strange.
+
+Josef HE<ouml>E<ouml>k has a `cvaazy idea' about adding a
+F<multihash.pmc>, especially for multidimensional hashes. I confess I
+didn't understand what he was driving at, nor did Nicholas Clark who
+wondered what the advantage would be over a hash of hashes. According
+to Josef `it saves memory and its faster.'. And that's where it was
+left. 
+
+Dan asked for volunteers to implement packed string arrays, something
+he'd hoped to avoid, but parrot string structs are getting a tad on
+the big side. Peter Gibbs asked for some clarification and posted some
+reference code.
+
+Parrot's docs are now available on the web, point your browser at
+L<http://www.parrotcode.org/docs/>, kudos to Robert Spier.
+
+In a self referential moment, Piers Cawley warned that the upcoming
+summary would be late.
+
+Jerome had a problem reporting parrot bugs on the RT site
+L<http://bugs6.perl.org>, which has Robert Spier foxed for the
+moment. Bug reporting should definitely work if you send mail to
+bugs-parrot@perl6.perl.org.
+
+Nicholas Clark patched the ARM JIT so it compiles again.
+
+Chris Dutton pointed at L<http://pike.ida.liu.se/> for a description
+of Pike (which I'd requested in the last summary). 
+
+Chromatic wondered about bound hypothetical scalars. Should C<$0{$foo}>
+be an alias of C<$0{foo}>? Answer: No, but C<$0{'$foo'}> might
+be. 
+
+Exegesis 5 got slashdotted:
+L<http://makeashorterlink.com/?G2F912F91>
+(gotta love those short slashdot URLs). 
+
+=head1 Who's who in Perl 6
+
+=over 4
+
+=item Who are you?
+
+        Aaron Sherman [ajs at ajs dot com]
+
+=item What do you do for/with Perl 6?
+
+        Mostly waiting for the point that module porting becomes an
+        issue, which is when I'll start working directly on Perl6.
+        Otherwise just mailing to the list when I feel a topic bears
+        commenting on.
+
+=item Where are you coming from?
+
+        It would take many of your "Earth years" to explain that one.
+        Let's just say the greater Boston, MA, USA area.
+
+=item When do you think Perl 6 will be released? 
+
+        When it's done, or slightly after.
+
+=item Why are you doing this?
+
+        Because perl has contributed to my career, and it does my ego
+        good to contribute back.
+
+=item You have 5 words. Describe yourself.
+
+        Obvious answer: Lazy, Impatient, Hubritical.
+
+=item Do you have anything to declare?
+
+        twwwoooo wwwwwweeks!
+
+=back
+
+More answers wanted! I'm down to three sets of answers in my
+queue. Must nag Damian at the Conway Hall tonight.
+
+=head1 Acknowledgements
+
+This summary was, once again prepared on the train.
+
+I hope that, but the time this gets released I will have received the
+tender proofreading ministrations of Pete "I can't work out what
+you're trying to say here" Sergeant. Except, Pete didn't have time to
+look at it yet. Hopefully I've sorted out most of the glitches. If
+there's anything really glaring, please let me know and I'll try and
+fix it.
+
+Again, if you're named in any of my summaries, and you haven't yet
+answered the `Who's Who?' questions, please do, and send your answers
+to 5Ws@bofh.org.uk.
+
+Various people mailed me last week to point out that they hadn't
+actually been present for the famous coffee cup incident, but I
+maintain that they were there in spirit. Apart from that, there's been
+no hate mail, and nobody has started their own summary, so I'm
+probably doing something right. If you liked this, or any summary,
+please consider giving some money to the Perl Foundation
+(L<http://donate.perl-foundation.org>) to help support the ongoing
+development of Perl.
+
+Oh yes, I'm pleased to note that the O'Reilly Network people who run
+L<http://www.perl.com> now have facilities in place that people who
+write articles for publication on their website can have their fee
+paid directly to The Perl Foundation. Therefore, my fees for these
+summaries will go towards supporting Larry and the ongoing development
+of Perl 6.
+

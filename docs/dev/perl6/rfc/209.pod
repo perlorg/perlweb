@@ -1,0 +1,47 @@
+
+=head1 TITLE
+
+Fuller integer support in Perl.
+
+=head1 VERSION
+
+  Maintainer: Shane Kerr <shane@time-travellers.org>
+  Date: 11 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 209
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+Perl currently allows blocks of code to use integer math for both 
+increased performance and integer semantics.  This should be extended
+to allow programs to specify both the size and signedness of integers.
+
+=head1 DESCRIPTION
+
+Programs sometimes need to operate on values that map in a natural 
+fashion to integers of specific size.  For example, IPv4 addresses
+may most naturally be represented as unsigned 32-bit integers.  By 
+default, Perl uses floating point numbers, but precision is lost in
+the 32-bit integer range.
+
+Currently the only safe alternative is to use strings for this range, 
+e.g. 0-padded hexidecimal numbers.  In order to both save memory and
+allow more rapid processing, Perl should support the ability to specify
+both the size and signedness of numbers for a given block.
+
+=head1 IMPLEMENTATION
+
+Programs will specify arithmetic processing in typical Perl fashion:
+
+  use integer qw(32bit unsigned);
+
+  use integer qw(64bit);
+
+Perl semantics will reflect this value until the end of current block.
+
+=head1 REFERENCES
+
+perldoc integer for discussion of current integer support
+

@@ -1,0 +1,121 @@
+<HTML>
+<HEAD>
+<TITLE>This Week on perl5-porters</TITLE>
+<LINK REV="made" HREF="mailto:bhcompile@daffy.perf.redhat.com">
+</HEAD>
+
+<BODY>
+
+<A NAME="__index__"></A>
+<!-- INDEX BEGIN -->
+
+<UL>
+
+	<LI><A HREF="#this week on perl5porters (2329 december 2002)">This Week on perl5-porters (23-29 December 2002)</A></LI>
+	<UL>
+
+		<LI><A HREF="#implicit localisation of $digit variables">Implicit localisation of $DIGIT variables</A></LI>
+		<LI><A HREF="#defining lexical aliases">Defining lexical aliases</A></LI>
+		<LI><A HREF="#%inc on windows">%INC on Windows</A></LI>
+		<LI><A HREF="#eol agnosticism">EOL agnosticism</A></LI>
+		<LI><A HREF="#iterator classes and memory leaks">Iterator classes and memory leaks</A></LI>
+		<LI><A HREF="#in brief">In brief</A></LI>
+		<LI><A HREF="#about this summary">About this summary</A></LI>
+	</UL>
+
+</UL>
+<!-- INDEX END -->
+
+<HR>
+<P>
+<H1><A NAME="this week on perl5porters (2329 december 2002)">This Week on perl5-porters (23-29 December 2002)</A></H1>
+<P>Not even Christmas and other holidays will stop the Perl 5 Porters.
+Find below the weekly list of issues, and it's not shorter than usual :
+lexical scoping questions, portability concerns, refcounting, and other
+bugs and fixes.</P>
+<P>
+<H2><A NAME="implicit localisation of $digit variables">Implicit localisation of $DIGIT variables</A></H2>
+<P>Martien Verbruggen notes that the $DIGIT variables are implicitly
+localized to the scope of a <CODE>while()</CODE> loop, when the regular expression that
+sets them is in the loop condition. This doesn't appear to be consistent
+with the documentation, that says that a <CODE>while()</CODE> statement never
+implicitly localises any variables. Moreover, this behavior doesn't occur
+with <CODE>if()</CODE> and foreach(). Nicholas Clark comments that the <CODE>while()</CODE> loop
+condition seems to be scoped within the block. Probably the only thing
+that's needed is a documentation fix. Bug #19236.</P>
+<PRE>
+    <A HREF="http://archive.develooper.com/perl5-porters@perl.org/msg90096.html">http://archive.develooper.com/perl5-porters@perl.org/msg90096.html</A></PRE>
+<P>Maybe that's also related to Strange Regexp Scoping Bug #19388, reported
+by Ton Hospel.</P>
+<PRE>
+    <A HREF="http://archive.develooper.com/perl5-porters@perl.org/msg90218.html">http://archive.develooper.com/perl5-porters@perl.org/msg90218.html</A></PRE>
+<P>
+<H2><A NAME="defining lexical aliases">Defining lexical aliases</A></H2>
+<P>David Nicol asked whether the syntax <CODE>\$alias = \$value</CODE> could be made to
+work to define aliases, including some form of <CODE>my \$alias = \$value</CODE> for
+lexically scoped aliases.</P>
+<P>Yitzchak Scott-Thoennes proposed to introduce the Perl 6
+binding operator <CODE>my $alias := $value</CODE> instead. (Oddly enough this
+particular syntax isn't currently rejected by Perl 5.)</P>
+<P>Nobody proposed a plan to implement this, but looking at Devel::LexAlias
+(or another alias module) might give some ideas to start with.</P>
+<PRE>
+    <A HREF="http://archive.develooper.com/perl5-porters@perl.org/msg90213.html">http://archive.develooper.com/perl5-porters@perl.org/msg90213.html</A></PRE>
+<P>
+<H2><A NAME="%inc on windows">%INC on Windows</A></H2>
+<P>Chip Salzenberg provided a patch for bug #19213, reported last week, to
+canonicalize the names of require()d files on Windows. This way, duplicate
+entries in %INC are avoided (e.g. <CODE>Foo/Bar.pm</CODE> and <CODE>Foo\\Bar.pm</CODE>). The
+discussion then derived to case-insensitive filesystems, Unicode
+filenames, and other cans that presumably contain worms.</P>
+<PRE>
+    <A HREF="http://archive.develooper.com/perl5-porters@perl.org/msg90229.html">http://archive.develooper.com/perl5-porters@perl.org/msg90229.html</A></PRE>
+<P>
+<H2><A NAME="eol agnosticism">EOL agnosticism</A></H2>
+<P>Jarkko Hietaniemi proposed a draft patch to add <EM>EOL agnosticism</EM> to
+perl, i.e. to allow LF, CR and CRLF line-endings in perl scripts. After
+some discussion, it was decided that his proposed implementation was not
+good enough, and that using a source filtering mechanism would be better.</P>
+<PRE>
+    <A HREF="http://archive.develooper.com/perl5-porters@perl.org/msg90253.html">http://archive.develooper.com/perl5-porters@perl.org/msg90253.html</A></PRE>
+<P>
+<H2><A NAME="iterator classes and memory leaks">Iterator classes and memory leaks</A></H2>
+<P>Bug report #18581 led to an interesting discussion. As Hugo summarized it,
+the problem is with the postincrement statement <CODE>$bar = $foo++</CODE>, where
+$foo is an object with the <CODE>++</CODE> operator overloaded, and with a copy
+constructor that simply returns the original object itself. What happens
+then is that perl copies $foo, increments it, and returns the copy, which
+is itself copied (via the copy constructor) to $bar. At some point there
+is some dangling copy somewhere, leading to a memory leak, or (more
+precisely) to an object that will be destroyed later than it should.</P>
+<PRE>
+    <A HREF="http://archive.develooper.com/perl5-porters@perl.org/msg89230.html">http://archive.develooper.com/perl5-porters@perl.org/msg89230.html</A></PRE>
+<P>
+<H2><A NAME="in brief">In brief</A></H2>
+<P>Ton Hospel reported that affecting a number to the special variable <CODE>$\</CODE>
+doesn't work as it should (bug #19330). Rafael Garcia-Suarez, who has to
+be blamed for this bug, provided a patch.</P>
+<P>Blair Zajac reported a case of intermittent segmentation fault when the
+newest Storable module is used with signals handlers and under the perl
+profiler. Scary. Bug #19385.</P>
+<P>Michael G Schwern released a new alpha version of ExtUtils::MakeMaker,
+6.06_02. Work on the Windows, MacPerl and VMS ports is still needed.</P>
+<P>Nathan Torkington tried to build perl on FreeBSD 5.0-RC2, and found that
+some adjustements to the FreeBSD hints file and/or to the Configure script
+are needed.</P>
+<P>Jim Cromie wrote a script to harvest all error and warning messages from
+the perl sources, including some of the standard modules, and to compare
+them to what's actually in perldiag.pod. Now he has to sort out the
+results :)</P>
+<P>Mark Mielke and Nicholas Clark suggested to use the <CODE>__builtin_expect()</CODE>
+feature of gcc 3.x to help it to optimize perl for speed.</P>
+<P>
+<H2><A NAME="about this summary">About this summary</A></H2>
+<P>This summary brought to you by Rafael Garcia-Suarez, back to work. Read it
+on <EM><A HREF="http://use.perl.org/">http://use.perl.org/</A></EM> and/or via a mailing list, which subscription
+address is <EM><A HREF="mailto:perl5-summary-subscribe@perl.org">perl5-summary-subscribe@perl.org</A></EM>. Comments and corrections
+are, as always, welcome.</P>
+
+</BODY>
+
+</HTML>

@@ -1,0 +1,330 @@
+=head1 TITLE 
+
+Replace localtime() and gmtime() with date() and utcdate()
+
+=head1 VERSION
+
+  Maintainer: Nathan Wiger <nate@wiger.org>
+  Date: 5 Aug 2000
+  Last Modified: 25 Sep 2000
+  Mailing List: perl6-language-datetime@perl.org
+  Number: 48
+  Version: 4
+  Status: Frozen
+  Requires: RFC 21, RFC 159
+
+=head1 ABSTRACT
+
+Currently, Perl uses the C library C<localtime()> and C<gmtime()>
+functions for date access. However, because of many problems, these
+should be replaced with two new functions, C<date()> and
+C<utcdate()> that will be called as follows:
+
+   $object  =  date;     # object with accessor functions (new)
+   print "$object";      # scalar ctime date, same as current
+   @array   =  date;     # list of date/time values (new order)
+   %hash    =  date;     # hash of date/time values (new)
+
+The new C<date()> function will return time adjusted for the local
+timezone. The C<utcdate()> function will return time in UTC. In a scalar
+context, an object is always returned. This object is then converted to
+a string on-demand via B<RFC 159: True Polymorphic Objects>.
+
+=head1 NOTES ON FREEZE
+
+Everyone felt pretty good about this, I think. The only thing we'd all
+probably like to see is one single C<date> function, but unfortunately
+dealing with timezone specifications is an extraordinarily difficult
+issue. 
+
+=head1 DESCRIPTION
+
+=head2 Overview
+
+In the past, Perl has provided access to date and time information
+through the C library C<localtime()> and C<gmtime()> functions.
+Unfortunately, these functions have several "really bad things" about
+them:
+
+   1. some values are 0-indexed while others are 1-indexed
+   2. they return massive lists as their only interface
+   3. minute and second values aren't 0-padded
+   4. the year has to have 1900 added to it to be correct.
+
+While some of these are perhaps understandable, that last one just plain
+doesn't make I<any> sense. :-)
+
+With Perl 6 we have the chance to fix this. While some have suggested
+merely changing what C<localtime()> and C<gmtime()> return, this is a
+bad idea because:
+
+   1. Many Perl scripts already use it
+   2. Many C programmers are familiar with its stupidity
+
+As such, we should replace these functions with versions that work the
+way that we want them to. The new names will indicate that these are
+"not the same old time functions", and that you'd better read the docs.
+
+=head2 Proposed Syntax
+
+The new syntax of C<date()> and C<utcdate> is proposed as:
+
+   $|@|%return  =  date [ $time ], [ $format ];
+
+If C<$time> is not specified, then the current return value from
+C<time()> is used (just like C<localtime()>).
+
+The optional C<$format> affects the format of the date returned. By
+default, a ctime-formatted string is used, like C<localtime>. However,
+any POSIX-compatible format can be passed in, in which case the date
+returned in a scalar context is formatted accordingly.
+
+I<Actually>, what it does is call the object function C<setformat()>
+with the format, which in turn determines what calls to the C<date()>
+object member function look like. Since the C<date()> member function
+is what is output when the date object is stringified, this is how 
+the scalar date appears to change. See below.
+
+The C<$format> specifier is the same one used in C<POSIX strftime()>,
+allowing complete date formatting with having to import the C<POSIX>
+module.
+
+Depending on the context within which C<date()> is called, many
+different things are returned:
+
+   # Get some various local date stuff
+   $object  =  date;            # scalar ctime date, same as now
+   $object  =  date time, '%m/%d/%Y';  # set date MM/DD/YYYY format
+   $object  =  date $time;      # relative to time $time
+   print "$object";             # scalar date string per format   
+
+   @array   =  date;            # array of date/time values
+   %hash    =  date;            # hash of values
+
+   # Access UTC information
+   $object  =  utcdate time, '%H:%M'; # return time in UTC
+
+=head2 Return Values
+
+The return values are dependent on the context within which C<date()> is
+called. For all contexts, the following are the values and their ranges:
+
+   $hour  =  0 .. 23  
+   $min   =  00 .. 59   # 0-padded
+   $sec   =  00 .. 59   # 0-padded
+   $fsec  =  0 .. 1     # fractional seconds per hw clock
+
+   $month =  1 .. 12    # hooray!
+   $day   =  1 .. 31 
+   $year  =  1 .. 9999  # 4-digit! 
+
+   $wday  =  1 .. 7     # 1 == *Monday*, POSIX-compliant
+   $yday  =  1 .. 366
+
+   $isdst =  1 or undef;  # daylight savings?
+   $isgmt =  1 or undef;  # is GMT?
+   $tz    =  [depends on your system, this "eats people"]
+
+For those who are concerned about $wday not being 0-indexed, please see
+below under the object methods. Remember you can always use formats to
+return what you want as well.
+
+=head3 STRING Context
+
+In a C<STRING> (not scalar) context, a single ctime-formatted date
+string is returned, consistent with the current usage of C<localtime()>.
+If the optional C<$format> is included, this format is used to change
+the string accordingly.
+
+In order to emulate a string, a call is made to the date object's
+builtin C<STRING> function, which prints out a date string. This is per
+RFC 159: True Polymorphic Objects.
+
+=head3 LIST, ARRAY, and ARRAYREF Contexts
+
+A list of date/time values is returned. The ordering and format of these
+values has been radically changed to reflect what most of us probably
+view as "ordinary":
+
+  ($year, $month, $day, $hour, $min, $sec, $tz) = date;
+
+You'll note that many elements, such as $isdst, $wday, and $yday have
+been dropped from the list return context. This is to encourage the use
+of more sane contexts, such as object and hash/hashrefs for complex
+operations.
+
+This ordering follows the predictable pattern of being in increasing
+granularity and so should be easy to remember. Just think of a
+computer-esque decending timestamp:
+
+   2000/11/4 12:03:09
+
+Note that the month, day, and year are not 0-padded. If you want a
+padded date, perhaps as a file backup suffix, you'll have to say:
+
+   $backup_suffix = date time, '%Y%m%d%H%M%S';
+
+Which would return something like "20001104120309" (actually, it would
+return an object with the appropriate default format so that, when
+stringified, it would yield the above result).
+
+These same values can be retrieved when referred to as an arrayref,
+so these two:
+
+    $month = (date)[1];
+    $month = date->[1];
+
+Have the same effect. Now, of course, if you want specific values you
+should be using...
+
+=head3 HASH and HASHREF Contexts
+
+A hash of values is returned. These are named the same as the variables
+above. So,
+
+   %date = date;
+
+Would return a hash with these values (assuming the same date shown
+above):
+
+   $date{year}  = 2000;
+   $date{month} = 11; 
+   $date{day}   = 4;   
+   $date{hour}  = 12;
+   $date{min}   = 03; 
+   $date{sec}   = 09;
+   $date{fsec}  = 0.4291;  # up to hw resolution
+   $date{wday}  = 2; 
+   $date{yday}  = 331;
+   $date{tz}    = 'PST';   # or maybe 'US/Pacific', or ...
+   $date{isdst} = undef;
+
+These same values will be available via a HASHREF, so again these:
+
+   $month = ${(date)}{month};
+   $month = date->{month};
+
+Will work the same (at least, I think that first one's right per RFC
+21)...
+
+=head3 SCALAR Context
+
+In an C<SCALAR> context, an object is returned. This is somewhat adapted
+from C<Time::Object> and Larry's own comments, but with several key
+differences. The ones noted with * are incompatible with C<Time::Object>
+
+   $t = date;            # create date object
+
+   "$t"                  # calls $t->STRING, same as $t->date
+   $t++                  # calls $t->NUMBER, same as $t->time
+
+   $t->year
+   $t->month             # *
+   $t->day               # *
+   $t->hour
+   $t->min
+   $t->sec
+   $t->fsec              # fractional seconds
+   $t->fsecres           # fsec resolution (num of digits for hw)
+   $t->wday              # *
+   $t->yday
+   $t->isdst
+   $t->tz
+   $t->tzoffset          # timezone offset in seconds ($t->tzsec?)
+   $t->time              # number of seconds since the epoch, so it
+                         # contains what time() was when you called
+                         # date() 
+
+These functions are object-specific:
+
+   $t->date              # Tue Feb 29 01:23:45 2000 (depending on 
+                         # default format set by $t->setformat)
+
+   $t->date(FORMAT)      # Return a temporarily-modified date,
+                         # without affecting the default format.
+
+   $t->setformat(FORMAT) # Set default format which determines what
+                         # calls to $t->date (stringified $t) look like
+                         # This is called on object creation
+
+These functions are separate for an important reason:
+
+   print $t->date('%H:%M');    # prints out hours and minutes
+   print "$t";                 # without touching default format
+
+   $oldfmt = $t->setformat('%Y');  # sets POSIX fmt string
+   print "$t";                 # which affects the default format
+
+The C<set> prefix was explicitly added to make it obvious this sets
+something (rather than just formatting the date like strftime).
+
+Many functions were deemed of dubious quality/excessive bloat and were
+all removed from the RFC. Note that you can get to any extra data by
+calling $t->date with the correct format. So,
+
+   print $t->date('%w');
+
+Will give you the weekday numbered starting with 0 == Sunday.
+
+=head2 Date Arithmetic
+
+You'll note that simple date arithmetic is available via polymorphic
+overloading in numeric contexts. For example:
+
+   $t1 = date;
+   $t2 = date;
+   $diff = $t2 - $t1;   # calls ->NUMBER (->time) on both
+
+The result will simply be the difference in seconds between the two, in
+simple scalar form (i.e., "15"). The result is designed to be the same
+as if you had created $t1 and $t2 based on the output of time(), without
+requiring you to put extra calls in your code. To simply increment the
+date by one second each loop, do:
+
+   $d = date;
+   while (stuff()) {
+      $d++;
+   }
+
+This gives the basis from which more complex date arithmetic can be
+derived, which should be in a module.
+
+=head1 IMPLEMENTATION
+
+Slash and burn C<localtime()> and C<gmtime()>. Actually, we should
+probably move them to C<Time::Local> or some other place and keep them
+available, since some people like pain.
+
+Nonetheless, C<localtime()> and C<gmtime()> SHOULD BE REMOVED FROM CORE
+and placed in a module. Perl 6 should support ONE date/time interface
+natively.
+
+Extensive date calculations, including reverse date calculations, should
+be left to an external module.
+
+I am currently working on a Perl 5 prototype and will announce it to the
+list when it is completed.
+
+=head1 ACKNOWLEDGEMENTS
+
+Jonathan Scott Duff, Tim Jenness, Johan Vromans, Buddha Buck, and lots
+of other members of perl6-language for great feedback.
+
+Russ Allbery and John Tobey for suggesting parts to slice-and-dice.
+
+=head1 REFERENCES
+
+Larry Wall's post of 8 Jan 2000 on deprecating localtime:
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2000-01/msg00241.html
+
+RFC 159: True Polymorphic Objects
+
+RFC 21: Replace wantarray() with a generic want() function
+
+RFC 37: Positional Return Lists Considered Harmful
+
+Matt Sergeant's great Time::Object CPAN module
+
+http://www.jach.hawaii.edu/JACpublic/stardocs/sun67.htx/node217.html
+
+http://tycho.usno.navy.mil/systime.html

@@ -1,0 +1,174 @@
+<HTML>
+<HEAD>
+<TITLE>This Week on perl5-porters</TITLE>
+<LINK REV="made" HREF="mailto:bhcompile@daffy.perf.redhat.com">
+</HEAD>
+
+<BODY>
+
+<A NAME="__index__"></A>
+<!-- INDEX BEGIN -->
+
+<UL>
+
+	<LI><A HREF="#this week on perl5porters (1824 november 2002)">This Week on perl5-porters (18-24 November 2002)</A></LI>
+	<UL>
+
+		<LI><A HREF="#carp patch, rejected">Carp patch, rejected</A></LI>
+		<LI><A HREF="#require $foo versus require foo">require $foo versus require Foo</A></LI>
+		<LI><A HREF="#atomic inplace edit">Atomic in-place edit</A></LI>
+		<LI><A HREF="#called as a subroutine or as a method ">Called as a subroutine or as a method ?</A></LI>
+		<LI><A HREF="#parser patch for  :">Parser patch for <CODE>? :</CODE></A></LI>
+		<LI><A HREF="#new warning proposal">New warning proposal</A></LI>
+		<LI><A HREF="#in brief">In brief</A></LI>
+		<LI><A HREF="#about this summary">About this summary</A></LI>
+	</UL>
+
+</UL>
+<!-- INDEX END -->
+
+<HR>
+<P>
+<H1><A NAME="this week on perl5porters (1824 november 2002)">This Week on perl5-porters (18-24 November 2002)</A></H1>
+<P>Several longs threads will be summarized for your enjoyment and education
+in this week's P5P summary. Learn about how new features are added in
+perl! How to enhance a core module like Carp! How to change the
+implementation of a command-line switch! How to change the semantics of
+require()! How to introduce a new warning! And, last but not least, how to
+modify the perl parser itself! Ain't it exciting ?</P>
+<P>
+<H2><A NAME="carp patch, rejected">Carp patch, rejected</A></H2>
+<P>Brent Dax proposed a patch to the Carp module, to allow</P>
+<PRE>
+    use Carp 'die';
+    use Carp 'warn';</PRE>
+<P>to install references to <CODE>cluck()</CODE> and <CODE>confess()</CODE> in the <CODE>$SIG{__DIE__}</CODE> and
+<CODE>$SIG{__WARN__}</CODE> handlers, respectively.</P>
+<P>Michael G Schwern commented that overriding <CODE>warn()</CODE> and <CODE>die()</CODE> in the
+package that uses Carp may be more useful, since signal handlers are
+global.</P>
+<P>Hugo van der Sanden made a similar remark : changing <CODE>$SIG{__DIE|WARN__}</CODE>
+this way feels like pragmatic behaviour, expected to be reversible by a
+simple <CODE>no Carp '...'</CODE>. Hence he rejected the proposed patch to avoid
+confusion.</P>
+<PRE>
+    <A HREF="http://archive.develooper.com/perl5-porters@perl.org/msg89074.html">http://archive.develooper.com/perl5-porters@perl.org/msg89074.html</A></PRE>
+<P>
+<H2><A NAME="require $foo versus require foo">require $foo versus require Foo</A></H2>
+<P>Matt Sergeant asked why the behavior of <CODE>require</CODE> is different when it's
+followed by a string or by a bareword, as in :</P>
+<PRE>
+    require IO::Socket;
+    require 'IO/Socket.pm';</PRE>
+<P>Tim Bunce explained that the bareword argument is intended to provide a
+package name, while the string argument is intended to provide a file
+name. Jan Dubois helpfully added that this enables to distinguish
+between the two forms</P>
+<PRE>
+    require 'Foo'; # loads a file Foo
+    require Foo;   # loads a file Foo.pm</PRE>
+<P>Michael G Schwern then pointed out his UNIVERSAL::require module, that
+provides an equivalent syntax <CODE>Foo-&gt;require()</CODE>.</P>
+<P>Jos Boumans then proposed to provide a new function, via a carefully named
+module, to load modules and files at runtime with an appropriate amount of
+DWIMmery.</P>
+<PRE>
+    <A HREF="http://archive.develooper.com/perl5-porters@perl.org/msg89111.html">http://archive.develooper.com/perl5-porters@perl.org/msg89111.html</A></PRE>
+<P>
+<H2><A NAME="atomic inplace edit">Atomic in-place edit</A></H2>
+<P>Eduardo Pérez Ureta remarked that the <CODE>-i</CODE> command-line switch, used in
+one-liners to edit files in place, first performs an unlink of the
+original file (after having opened it for reading), then reads it while it
+writes to a new file, just opened for writing under the same name.
+Potentially, this can cause some data to be lost, when some failure occurs.</P>
+<P>It was pointed out that doing the rename by hand, or using a backup file
+(as with <CODE>-i.bak</CODE>) makes the operation more reliable ; however that
+doesn't necessarily mean that <CODE>-i</CODE> by itself shouldn't be made more
+reliable if it's reasonably possible. Eduardo proposed that a temporary
+file should be used for output instead. This change also would make
+possible to use <CODE>-i</CODE> without a backup extension on Windows systems, where
+it's not possible to unlink an opened file.</P>
+<P>During the discussion, I recalled a little-known feature of <CODE>-i</CODE>,
+described in perlrun : its ability to create backup files in any
+directory, with the syntax <CODE>-i/tmp/*.bak</CODE>.</P>
+<P>In any case, true atomicity for every possible failure mode can't be
+achieved. Mark Jason Dominus submitted a bug report for the universe.</P>
+<PRE>
+    <A HREF="http://archive.develooper.com/perl5-porters@perl.org/msg89057.html">http://archive.develooper.com/perl5-porters@perl.org/msg89057.html</A></PRE>
+<P>
+<H2><A NAME="called as a subroutine or as a method ">Called as a subroutine or as a method ?</A></H2>
+<P>Yves Orton asked for <EM>a way to determine if a sub was called as a
+subroutine or as a method</EM>.</P>
+<P>Apparently there is no way to get this information from perl : digging
+into the internals is necessary. Richard Clamp provided an update to his
+Devel::Caller module that adds a <CODE>called_as_method()</CODE> function, to answer
+this exact question.</P>
+<PRE>
+    <A HREF="http://archive.develooper.com/perl5-porters@perl.org/msg89183.html">http://archive.develooper.com/perl5-porters@perl.org/msg89183.html</A>
+    <A HREF="http://search.cpan.org/author/RCLAMP/Devel-Caller-0.07/Caller.pm">http://search.cpan.org/author/RCLAMP/Devel-Caller-0.07/Caller.pm</A></PRE>
+<P>
+<H2><A NAME="parser patch for  :">Parser patch for <CODE>? :</CODE></A></H2>
+<P>Stephen McCamant provided a one-line patch to the perl parser that
+modifies the way the <CODE>? :</CODE> ternary operator binds its second argument.</P>
+<P>In other words : currently the following are syntax errors :</P>
+<PRE>
+    $a = $b ? $c, $d : $e;
+    $a = $b ? $c and $d : $e;</PRE>
+<P>because the precedence of the comma-operator and of textual logical
+operators are very low. However it's possible to parse them unambiguously,
+and that's what Stephen's patch does, without introducing any backward
+incompatibility (if I'm not mistaken).</P>
+<PRE>
+    <A HREF="http://archive.develooper.com/perl5-porters@perl.org/msg89206.html">http://archive.develooper.com/perl5-porters@perl.org/msg89206.html</A></PRE>
+<P>
+<H2><A NAME="new warning proposal">New warning proposal</A></H2>
+<P>Rafael Garcia-Suarez proposed a new compile-time warning for Perl, to
+detect potential misleading uses of split(), namely when the first
+argument is written as a string (but interpreted, as always, as a
+pattern.) The canonical example is</P>
+<PRE>
+    my @array = split '|', $string;</PRE>
+<P>that doesn't probably do what was meant.</P>
+<P>It appears that running regression tests with this new warning reveals
+that eleven core modules use this syntax (sometimes unreasonably, as in
+<CODE>split '\.', $string</CODE>). Brent Dax suggested that the warning should be
+triggered only on strings with metacharacters, the other cases not leading
+to confusion. Hugo liked this last idea, though being <EM>still dubious that
+the benefits outweigh the irritation.</EM></P>
+<PRE>
+    <A HREF="http://archive.develooper.com/perl5-porters@perl.org/msg89209.html">http://archive.develooper.com/perl5-porters@perl.org/msg89209.html</A></PRE>
+<P>
+<H2><A NAME="in brief">In brief</A></H2>
+<P>Ronald Otto Valentin Fischer reported bug #18479, about <CODE>use strict
+'subs'</CODE> not detecting barewords in an eval(``'')'d BEGIN block.</P>
+<P>H.Merijn Brand reported that the test <EM>t/io/openpid.t</EM> began to hang on
+AIX 4.3.3. No workaround is known, so no smoke reports have been produced
+for this system.</P>
+<P>Bugs #18489, #18579 and #18571 are about small snippets of code that make
+perl dump core. (In fact, the first two are equivalent bugs.) They all
+involve modifying an array while a foreach loop iterates over it (or kind
+of). Dave Mitchell commented : <EM>in the longer term, Perl should be fixed
+so that it doesn't coredump in such situations (but this is hard to do
+efficiently)</EM>.</P>
+<P>Bug #18573 demonstrates a strange memory allocation problem : <CODE>eval
+q(&quot;\c&quot;)</CODE> produces an <EM>Out of memory</EM> error.</P>
+<P>Joost van Baal and Slaven Rezic tried to work out a solution to a
+Sys::Syslog portability problem on Solaris (bug #18180).</P>
+<P>Dave Mitchell proposed a new version of his patch to allow <CODE>eval(``'')</CODE> to see
+the full enclosing lexical scope. This patch follows a discussion about
+lexicals in evals that occured two weeks ago.</P>
+<P>Rafael Garcia-Suarez fixed bug #17920, a case of parser coredump, and
+added a new test file <EM>t/comp/parser.t</EM> aimed at testing that syntax
+errors are correctly reported. He moved also some tests there from the
+infamous <EM>t/run/fresh_perl.t</EM> (aimed at testing things that used to
+dump core, a sloppy classification for tests indeed.)</P>
+<P>
+<H2><A NAME="about this summary">About this summary</A></H2>
+<P>This summary brought to you by Rafael Garcia-Suarez, both on
+<EM><A HREF="http://use.perl.org/">http://use.perl.org/</A></EM> and via a mailing list, which subscription address
+is <EM><A HREF="mailto:perl5-summary-subscribe@perl.org">perl5-summary-subscribe@perl.org</A></EM>. Comments and corrections are, as
+always, welcome.</P>
+
+</BODY>
+
+</HTML>

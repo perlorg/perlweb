@@ -1,0 +1,52 @@
+=head1 TITLE
+
+Data types: Semi-finite (lazy) lists
+
+
+=head1 VERSION
+
+  Maintainer: Damian Conway <damian@conway.org>
+  Date: 4 Aug 2000
+  Last Modified: 18 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 24
+  Version: 2
+  Status: Withdrawn
+
+=head1 ABSTRACT
+
+This RFC proposes that the right operand of a C<..> operator
+may be omitted in a list context, producing a lazily evaluated
+semi-finite list. It is further proposed that operations on
+such lists also be carried out lazily.
+
+=head1 DESCRIPTION
+
+It is proposed that the right operand of a list context range operation
+be made optional. If omitted, the resulting range would become semi-infinite:
+
+	for (1..) {
+		print "The next number is: $_\n";
+	}
+
+	@odds = grep { $_%2 } (1..);
+
+	switch ($n) {
+		case [32..]	{ print "Two many characters in filename" }
+		case (@odds)	{ print "That's odd!" }
+	}
+
+Note that the values in @odds would also be lazily generated
+(otherwise the C<grep> would never finish).
+
+
+
+=head1 IMPLEMENTATION
+
+Ask MJD.
+
+=head1 REFERENCES
+
+RFC proposing a co-routine mechanism
+
+The thoughts and writings of Mark-Jason Dominus.

@@ -1,0 +1,107 @@
+=head1 TITLE
+
+Handling environment setting in extension modules
+
+=head1 VERSION
+
+  Maintainer: Jonathan Leffler <jleffler@informix.com>
+  Date: 25 September 2000
+  Mailing List: perl6-internals@perl.org
+  Number: 318
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+The Perl 5 XS mechanism can get confused when the code called by an XS
+extension adds to (or alters) the environment.  Perl 6 should not.
+
+=head1 DESCRIPTION
+
+Some Perl 5 XS modules (a case in point is DBD::Informix) use C code
+which cannot be modified by the user (commercial libraries distributed
+in binary formats only).  This C code contains calls to putenv() or
+other mechanisms which modify the environment.  Since Perl also plays
+with the environment via %ENV, there is lots of room for confusion and
+corruption.
+
+Neither POSIX.1 nor POSIX.2 defines a function for setting environment
+variables.  In fact, there is not even a header which declares the
+'extern char **environ;' variable -- the only C object mandated by POSIX
+without such a header.  The Single Unix Specification does require the
+putenv() function, but POSIX-compliant (only) libraries could use some
+other mechanism -- a home-brew analogue of putenv() -- to modify the
+environment.
+
+The Perl 6 extension mechanisms should circumvent this problem.  There
+are at least two possible ways to do it: the magic, and the mundane.
+
+=head2 Magic
+
+If Perl 6 is to perform magic, it must somehow track the complete
+environment through environ, and ensure that the environment has not
+been changed since Perl last modified the environment.  If the
+environment has changed, then Perl must resynchronize %ENV with the
+current contents of 'environ'.  Further, Perl must ensure that 'environ'
+contains everything in %ENV at all times.  Obviously, there are only a
+limited number of places where such behind-the-scenes manipulation would
+occur.  Code that is directly written to work with XS would (presumably)
+be commanded to modify the %ENV hash via the equivalents to the
+HV-routines documented in perlguts.  So, it is only when that code calls
+out to vendor-provided binary libraries that the problem can occur.
+Determining when that is what is happening is why it requires magic.
+
+=head2 Mundane
+
+If Perl 6 is unable to perform the magic cost-effectively, Perl 6 should
+provide extension authors with a mechanism for letting Perl 6 know when
+the environment may have been modified from within extensions.  One
+possible interface, requiring cooperation from the module author, would
+be a pair of functions, mark_environment() and fixup_environment() --
+the names don't matter but the functionality does.
+
+Before calling the library code that might change the environment, the
+extension would call mark_environment() to tell Perl 6 that the
+environment might be changed surreptitiously.  Perl could do some sort
+of check-summing or other analysis of the current environment, and the
+result of the analysis might be returned as a value of some sort for use
+with fixup_environment().
+
+The extension would then call the library code that might modify the
+environment.  When that code returns, the extension would call
+fixup_environment() would use the information stashed by
+mark_environment() to recognize whether the environment has been changed
+and to reconcile the Perl internal representation of %ENV with what has
+been modified.
+
+If Perl provides its own variant on putenv(), would the extensions always
+call it automatically?
+
+=head1 IMPLEMENTATION
+
+The magical implementation, requiring no help from the module author, is
+unlikely to be doable at an acceptable cost.  I don't have any real
+information on what might be required.
+
+The mundane implementation can probably be made to work without undue
+hardship; the biggest problem area could be memory leaks caused by the
+conservative decisions the code might need to make if the called code
+changes the list of pointers that environ points to, because of the
+defined behaviour of the putenv() function).
+
+=head1 REFERENCES
+
+POSIX.1 IEEE Std 1003.1, 1996 (aka ISO/IEC 9945-1:1996): Information
+technology - Portable Operating System Interface (POSIX) - Part 1:
+System Application Program Interface (API) [C Language].
+
+POSIX.2 IEEE Std 1003.2, 199x (aka ISO/IEC 9945-2:199x): Information
+technology - Portable Operating System Interface (POSIX) - Part 2:
+...(rest of title to be filled in)...
+
+The Unix System Today (ISBN 1-85912-296-5, Open Group, June 2000).
+http://www.opengroup.org/
+
+Various discussions at various times in perl5-porters mailing list.
+...[details can be dug out of private email archives if relevant]...
+

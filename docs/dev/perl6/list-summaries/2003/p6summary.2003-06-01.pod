@@ -1,0 +1,285 @@
+=head1 The Perl 6 Summary for the week ending 20030601
+
+Another Monday, another Perl 6 Summary. Does this man never take a
+holiday? (Yes, but only to go to Perl conferences this year, how did
+that happen?)
+
+We start with the internals list as usual.
+
+=head2 More on timely destruction
+
+The discussion of how to get timely destruction with Parrot's Garbage
+Collection system continued. Last week Dan announced that, for
+languages that make commitments to call destructors as soon as a thing
+goes out of scope, there would be a set of helpful ops to allow
+languages to trigger conditional DOD (Dead Object Detection) runs at
+appropriate times. People weren't desperately keen on the performance
+hit that this entails (though the performance hit involved with
+reference counting is pretty substantial...) but we didn't manage to
+come up with a better solution to the issue.
+
+L<http://groups.google.com/groups?threadm=200305251047.h4PAl4k24911%40thu8.leo.home>
+
+=head2 Bryan C. Warnock, patchmonster of the week
+
+Bryan C. Warnock seems to be attempting to outdo Leo TE<ouml>tsch in
+the patchmonster stakes this week. He put in a miscellany of patches
+dealing with the Perl based assembler, opcode sizes, debugging flags
+and probably others. Most of them were applied with alacrity.
+
+=head2 The Perl 6 Essentials book
+
+Dan Sugalski gave a rundown of how the Perl 6 Essentials book came
+about, what's in it and all that jazz. He started by apologizing for
+not mentioning it before, but he thought he had. This led Clint Pierce
+to wonder if there was something up with Dan's Garbage Collection
+system. The existence of the book probably goes some way to explaining
+Leo TE<ouml>tsch's relative silence over the last few weeks. Nicholas
+Clark wondered if it explains why Parrot doesn't have objects
+yet. Brent Dax wondered when it would be available (by OSCON this year
+apparently). 
+
+L<http://groups.google.com/groups?threadm=a05210638baf81088c209%40%5B63.120.19.221%5D>
+
+=head2 IMCC, PASM and constants/macros
+
+Clint Pierce had some big headaches with moving his BASIC interpreter
+over to IMCC owing to problems with C<.constant> which is legal for
+the assembler, but not for IMCC. Leo TE<ouml>tsch pointed Clint at
+IMCC's C<.const> operator. Bryan Warnock wondered if IMCC and the
+assembler's syntax couldn't be unified. Leo noted that it wasn't quite
+that straightforward because C<.constant> declares an untyped
+constant, but C<.const> requires a type as well. It turns out that
+C<.const> wasn't quite what Clint needed, so Leo pointed him at
+C<.sym> and C<.local> which do seem to do what he needs.
+
+L<http://groups.google.com/groups?threadm=5.1.0.14.2.20030526183737.027afa68%40mail.geeksalad.org>
+
+=head2 3-arg opens
+
+Bryan Warnock wondered if 
+
+    open I3, "temp.file", "r"
+
+was valid code. Answer, no, the right way to do it is the Perlish
+C<< open I3, "temp.file", "<" >>. JE<uuml>rgen BE<ouml>mmels promised
+more and better documentation for the Parrot IO system. Eventually.
+
+L<http://groups.google.com/groups?threadm=1053992856.2210.330.camel%40wakko>
+
+=head2 Smaller PMCs
+
+Leo TE<ouml>tsch's work on the new PMC layout continues apace. I'm
+afraid I don't quite understand what's going on in this area, which
+does make it rather tricky to summarize things. It seems to have a
+good deal to do with memory allocation and garbage collection... Leo
+thinks that it's the right thing, but there seem to be issues involved
+with good ways of allocating zeroed memory.
+
+L<http://groups.google.com/groups?threadm=3ECF439A.2080005%40toetsch.at>
+
+=head2 An experimental Wiki for parrot development
+
+Mitchell N Charity has put up an experimental Wiki for Parrot and
+primed it with a few things. StE<eacute>phane Payrard pointed out that
+it's rather hard to make a WikiWord from, for example, PMC. (10 points
+to the first person to email p6summarizer@bofh.org.uk with the
+expansion of PMC).
+
+L<http://groups.google.com/groups?threadm=200305272235.h4RMZCn02786%40vendian.org>
+
+=head2 IMCC packfile bug
+
+While toying with F<pbc2c.pl>, Luke Palmer discovered that it doesn't
+want to play with IMCC generated .pbc files. Apparently this is
+because we currently have two bytecode file formats. Leo TE<ouml>tsch
+thought the problem lay with F<assemble.pl> which is old and slow and
+doesn't produce 'proper' parrot bytecode. Leo also thought that the
+way F<pbc2c.pl> worked wasn't actually any use. Dan reckoned the time
+had come to ditch F<assemble.pl> too, and reckoned there was a case
+for renaming IMCC as F<parrot> since it can run either .pbc or
+assembly files. Leo liked the idea, but is concerned about the state
+of the Tinderbox. 
+
+L<http://groups.google.com/groups?threadm=rt-22352-58313.14.7340141747095%40rt.perl.org>
+
+=head2 Method Calling
+
+Dan tantalized all those waiting eagerly for objects in Parrot by
+discussing how to make method calls. This, of course, means a few new
+ops, called C<findmeth>, C<callmeth> and C<callccmeth> for the time
+being. Jonathan Sillito had a few naming consistency issues with the
+ops. Dan agreed there were issues and asked for suggestions for an
+opcode naming convention. 
+
+L<http://groups.google.com/groups?threadm=a05210601bafc74ec3036%40%5B192.168.0.78%5D>
+
+=head2 Simple Constant Propagation in IMCC
+
+Matt Fowles posted a patch to add simple constant propagation to
+IMCC. Essentially this means that, say
+
+    set I0, 5
+    set I1, 2
+    set I2, I1
+    add I2, I0
+
+would compile as if it were:
+
+    set I0, 5
+    set I1, 2
+    set I2, 7
+
+Leo TE<ouml>tsch liked the idea modified it slightly and added it to
+the code base, but disabled. Apparently there are problems with it,
+but it's a good starting framework. There need to be lots more tests
+though...
+
+L<http://groups.google.com/groups?threadm=rt-22387-58435.10.9396178319999%40rt.perl.org>
+
+=head2 Make mine SuperSized...
+
+Bryan Warnock (in his own words) popped in to 'waffle on Parrot's core
+sizes'. He proposed a way of drastically simplifying Parrot's type
+system. He and Gopal V had a long discussion that I didn't quite
+follow. I think Leo thinks that what Bryan proposes is doable, but I'm
+not entirely sure whether he thinks it's a good idea...
+
+L<http://groups.google.com/groups?threadm=1054389285.2211.685.camel%40wakko>
+
+=head2 Register allocation in IMCC
+
+Clint Pierce had some problems with IMCC's register allocation. He
+posted an example that gave problems and wondered if the problem was
+with him or with IMCC. Leo TE<ouml>tsch confirmed that it was a
+bug. Luke Palmer pointed Clint at C<find_global> and friends as the
+'correct' way to solve the problem. For bonus points, Clint showed of
+a pathological example of why BASIC should not be anyone's favourite
+language. 
+
+L<http://groups.google.com/groups?threadm=5.1.0.14.2.20030601114720.01f2cec8%40mail.geeksalad.org>
+
+=head1 Meanwhile, in perl6-language 
+
+=head2 Cothreads
+
+As if the Coroutine thread wasn't confusing enough, we now have the
+Cothread thread, in which Michael Lazzaro argued that we should blur
+the distinctions between coroutines and threads. Dave Whipp pointed
+everyone at 'Austin Hastings' draft for A17 (threads)' and argued
+that, whilst Coroutines, threads, closures, and various other things
+that Michael had argued were aspects of the same thing were related,
+they sufficiently different that bundling them all up behind a single
+class would lead to badness ("a bloated blob with a fat interface" was
+the phrase he used). 
+
+This thread saw even more unrestrained speculation than usual and saw
+the first use on the Perl 6 lists of the adjective 'Cozeny', from
+Simon Cozens, possibly meaning "feeling that what is being discussed
+is over fussy and generally trying to take the language a I<long> way
+from what Real Programmers need". This would seem to imply a verb form
+'to Cozen', "To more or less forcibly express ones Cozeny feelings".
+
+I'm afraid this was another thread I had a hard time following. I
+reckon there's some interesting ideas in there, but I'm hoping that
+someone will pull it all together in an RFC type document so I can go
+"Remember that Cothreads thread last week? Leon Brocard summarized it
+all neatly in a single proposal, you can find it here." (Except it
+almost certainly won't be Leon Brocard, it'll be Mike Lazzaro, Leon
+doesn't seem to do perl6-language very much).
+
+L<http://groups.google.com/groups?threadm=8520E9CC-8FAB-11D7-92AB-000A277AA894%40cognitivity.com>
+
+L<http://archive.develooper.com/perl6-language@perl.org/msg14771.html>
+-- Austin Hastings on threads
+
+=head2 Compile time binding
+
+In an effort to learn about Perl 6, Luke Palmer has been reading about
+Haskell. For reasons he doesn't understand, this set him to wondering
+what C<::=> is supposed to mean -- it means 'compile time
+binding', but what does I<that> mean?
+
+Damian Conway came through with the goods, summarizing his answer as
+C<::=> is to C<:=> as a macro call is to a subroutine call.
+
+L<http://groups.google.com/groups?threadm=ygcel2j5p5r.fsf%40babylonia.flatirons.org>
+
+=head2 Threads and Progress Monitors
+
+Dave Whipp had some more thread questions, and wondered what would be
+a good Perl 6ish way of implementing a threaded progress
+monitor. Whilst the discussion of all this was interesting, I'm not
+sure that it's really much to do with the language, more something
+that one would implement according to taste and the particular
+requirements of a given project. 
+
+L<http://groups.google.com/groups?threadm=20030529174736.34522.qmail%40onion.perl.org>
+
+=head2 Exegesis 6 Status Update
+
+Damian announced that Exegesis six is mostly written, and should be
+undergoing final revisions while he and Larry are on the Perl
+Whirl. Hopefully we'll see the Exegesis before YAPC::America::North.
+
+L<http://groups.google.com/groups?threadm=3EDA5C10.9020904%40conway.org>
+
+=head1 Acknowledgements, Announcements and Apologies
+
+Thanks once again are due to all the good people on the Perl 6
+lists. Apologies will almost certainly be due to the organizers of
+YAPC North America as I I<still> haven't started writing the talks I'm
+supposed to be giving.
+
+As I noted last week, I'm awarding points (and points mean prizes) to
+those kind people who spotted the deliberate mistake. Smylers gets 100
+points for spotting the accidental mistake (last week was I<not> in
+2004.) Sam Smith, David Wheeler, David Cantrell and Leon Brocard all
+earned 50 points for spotting the deliberate mistake of not mentioning
+Leon Brocard. But they've helped me make up for it this week by
+mentioning him twice, so the karmic balance is restored.
+
+The points I have awarded can be redeemed for the following,
+wonderful prizes:
+
+=over
+
+=item 1
+
+A lifetime subscription to the Perl 6 summaries.
+
+=item 2
+
+Er...
+
+=item 3
+
+That's it
+
+=back
+
+If you've appreciated this summary, please consider one or more of the
+following options:
+
+=over
+
+=item *
+
+Send money to the Perl Foundation at
+L<http://donate.perl-foundation.org/> and help support the ongoing
+development of Perl.
+
+=item *
+
+Get involved in the Perl 6 process. The mailing lists are open  to
+all. L<http://dev.perl.org/perl6/> and L<http://www.parrotcode.org/>
+are good starting points with links to the appropriate mailing lists.
+
+=item *
+
+Send feedback, flames, money, photographic and writing commissions, or
+a patches to Camelbones making it possible to make Perl classes that
+inherit from Objective C classes (heck, if Ruby and Python can do it)
+to L<p6summarizer@bofh.org.uk>.
+
+=back

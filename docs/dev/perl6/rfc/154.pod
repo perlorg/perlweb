@@ -1,0 +1,132 @@
+=head1 TITLE
+
+Simple assignment lvalue subs should be on by default
+
+=head1 VERSION
+
+  Maintainer: Nathan Wiger <nate@wiger.org>
+  Date: 24 Aug 2000
+  Last-Modified: 25 Sep 2000
+  Mailing List: perl6-language-subs@perl.org
+  Number: 154
+  Version: 2
+  Status: Frozen
+
+=head1 ABSTRACT
+
+Currently, there are several competing RFC's for lvalue subs, all of
+which do things a little differently to please different groups.
+
+This RFC proposes a means by which they can mostly coexist peacefully,
+simply by making simple assignment-only lvalue subs the default.
+
+=head1 NOTES ON FREEZE
+
+Unfortunately, there was no chance for people to attempt to reach
+consensus on the complicated subject of lvalue subs. The author feels
+that this RFC has some nice syntactic advantages. However, implementing
+it would be "tricky", to say the least, since it essentially requires a
+specialized fake-rvalue-context-bubble-inside-true-lvalue-context for
+the sub to be evaluated in. As such, it may not be feasible. However, if
+it were feasible it would be, in the author's opinion, really cool.
+
+=head1 DESCRIPTION
+
+=head2 Simple lvalue subs
+
+RFC's 107 proposes a very simplistic lvalue sub mechanism which
+seeks to make lvalue and rvalue subs more or less directly equivalent.
+While nice, this is truly only suitable for assignment. Still, this
+approach provides powerful capabilities:
+
+   $cgi->param($name) = @newval;
+   $oldpath = $tree->path('L','R') = 'R';
+   @document = ($title, $junk, $r->xml_extract) = <STDIN>;
+
+Here, assignment can be used to dynamically call subs in lvalue and
+rvalue contexts, allowing powerful syntactic constructs. This presents
+functionality akin to tie, without all the unnecessary overhead or pain
+tie involves.
+
+This RFC proposes that this capability be on by default. No C<:lvalue>
+constraint would be required. Instead, the sub would obey the B<exact>
+same rules as an rvalue sub, including sub parameters, @_, scoping, and
+so forth:
+
+   package CGI;
+   sub param ($var, @val) {
+       # do stuff
+   }
+
+   $r = new CGI;
+   $r->param($var, @val);      # ok
+   $r->param($var) = @val;     # ok too
+   $r->param = $var, @val;     # ok, but silly looking
+
+The key to the proposal is this: lvalue and rvalue versions of a sub
+would work I<identically>, and both would be enabled by default.
+I<However>, assignment is the only valid operator for these default
+lvalue subs. Attempts to use other operators, such as ++ or s/// on
+these subs would yield an error like:
+
+   Attempt to modify simple lvalue sub, only = is allowed
+
+Even with this restriction, lvalue subs in this format give us lots of
+syntax advantages. As users, not only are we allowed to choose which
+form suits a given situation:
+
+   $cgi->param($name) = split /\s+/, "Nathan Wiger";
+   ($user, $r->uid('anon')) = @data;
+
+But it also allows you to chain subs together, as you can do in Perl 5
+with basic data types and even tied variables:
+
+   @htmldoc = ($title, $r->htmlify) = <FILE>;
+
+If overused, this could be gross. However, if used properly this greatly
+increases the amount of Laziness and Impatience you can have as a Perl
+programmer. The above example would require at least 2-3 lines with
+several "in-betweener" variables in Perl 5. [1] As written, it's quite
+readable and obvious what it does.
+
+=head2 Complex lvalue subs
+
+Damian has an upcoming RFC on this topic, and it is being widely
+discussed. These complex lvalue subs should have several properties
+differentiating them from the simple lvalue subs described in this RFC:
+
+   1. True lvalue scoping
+
+   2. Ability to accept any operation
+
+   3. Return an lvalue which is then evaluated like any
+      other lvalue
+
+These complex subs are outside the scope of this RFC. However, these
+would be enabled with the C<:lvalue> constraint, indicating that they
+are fundamentally different from rvalue subs.
+
+By using the C<:lvalue> constraint on these fundamentally different
+subs, we can allow both the simple and complex lvalue subs to coexist.
+
+=head1 IMPLEMENTATION
+
+Enable lvalue and rvalue versions of subs to be used interchangeably by
+default. I<Everything> about the two (including scoping) should be
+identical.
+
+=head1 MIGRATION
+
+None. This introduces new functionality, and since it does not require
+the use of an C<:lvalue> constraint requires no code translation.
+
+=head1 NOTES
+
+[1] Or unreadable syntactic sugar. Take your pick. Either way it's
+nastier than the example of chained lvalue subs presented.
+
+=head1 REFERENCES
+
+RFC 107: lvalue subs should receive the rvalue as an argument 
+
+RFC 57: Subroutine prototypes and parameters

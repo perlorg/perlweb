@@ -1,0 +1,149 @@
+=head1 TITLE
+
+"=for testing" - Embedded tests
+
+=head1 VERSION
+
+  Maintainer: Michael G Schwern <schwern@pobox.com>
+  Date: 31 Aug 2000
+  Mailing List: perl-qa@perl.org
+  Number: 183
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+Using "=for testing", regression tests can be embedded in the code and
+documentation near what they are testing.
+
+=head1 DESCRIPTION
+
+It's an old rule of thumb that documentation should be near the code it's
+documenting.  This increases the likelyhood that the docs will be kept up to
+date with the code.  This is one of the reasons we have POD.  Building on
+that idea is that tests should also be near what it is testing.  This
+involves embedding tests in the documentation.
+
+    =item B<is_pirate>
+
+        @pirates = is_pirate(@arrrgs);
+
+    Go through @arrrgs and return a list of pirates.
+
+    =for testing
+
+    my @p = is_pirate('Blargbeard', 'Alfonse', 'Capt. Hampton', 'Wesley');
+    ok(@p == 2);
+
+    =cut
+
+    sub is_pirate {
+        ....
+    }
+
+"=begin testing/=end testing" will also be recognized as per the
+normal POD rules for "=begin/end" blocks.
+
+Either during the make process (via Makemaker), with a Pod::Tests
+module, or a pod2tests utility, the POD will be scanned and all "=for
+testing" blocks would be appended to a generated .t file in the t/
+directory.  This .t file would then be run as part of a normal "make
+test".
+
+Several utility functions will be provided to make the test author's
+life easier.  ok() is one of them, providing a simple "ok/not ok"
+output depending on the truth of the given expression.
+
+By default, a seperate .t file for the tests will be generated.  This
+file will be named based on the file from which it was generated.
+Thus, "lib/Some/Module.pm" might generate "t/Some-Module-embedded.t".
+This .t file will start with the normal testing stub similar to that
+provided by h2xs, as well as the mentioned utility routines.
+
+If this is not to the author's liking, they may specify a specific
+file where their tests are to go.
+
+    =for testing t/my_tests.t
+
+The filename is relative to the current working directory.  Embedded
+tests which have filenames will simply be appended to that file.
+Nothing else will be provided as it is assumed the author will handle
+it.
+
+
+=head2 Compatibility
+
+"=for testing" and the associated modules and utilities are compatible
+with Perl5 and most POD utilities.  They do not have to wait for
+Perl6.  Its inclusion in the core is not mandatory and it can life
+life as seperate utility if necessary (see below).
+
+
+=head2 Uses
+
+Embedded tests have obvious uses for module and program authors.  It
+also has use in developing Perl.  Since the Perl C code contains POD,
+tests can be embedded within same as anything else!
+
+
+=head1 IMPLEMENTATION
+
+A Pod::Tests module need be written.  Its purpose is to scan the POD,
+find the "=for testing" bits and organize them in some useful manner
+for other utilities to use.  Pod::Tests can be written using Pod::Parser.
+
+pod2tests will be a utility written using Pod::Tests.  It will take
+the collected tests and generate the .t files.
+
+Both Pod::Tests and pod2tests should be distributed with Perl for
+maximum effectiveness.  However, should they not be distributed with
+Perl, or should the module user have an older version of Perl,
+embedded tests are still useful.  The module author will have to run
+pod2tests before distributing their code and include the generated .t
+file(s) in their distribution.  Current versions of Perl will run the
+tests like any other.
+
+Makemaker should be patched to be aware of pod2tests.  The generated
+Makefile should run pod2tests similar to the way it runs pod2man.
+However, should the patch not be accepted, the module author can
+pregenerate the tests as above.
+
+If Pod::Tests and pod2tests are accepted for the core, perlpod should
+be patched to mention them.
+
+
+=head2 Problems
+
+=over 4
+
+=item scope
+
+Each test block will be placed inside a block to attempt to protect
+lexical context.
+
+=item editors
+
+Editors may not recognize the =for testing block as perl code and will
+not highlight syntax.  I have no solution for this.
+
+=item embedded vs .t
+
+This is not intended to replace hand-written .t files, but to augment
+it.  Embedded tests will likely be short, specific tests.  Any larger
+tests would be unwieldy to embed in the code and are more suited for
+.t files.
+
+=item this isn't documentation
+
+POD stands for Plain Old Documentation.  Technically, tests are not
+documentation.  In this sense, we are abusing POD a bit.  Oh well, its
+not like any feature of Perl wasn't ever used for something its
+designer didn't intend!
+
+=back
+
+=head1 REFERENCES
+
+L<perlpod>
+
+L<Pod::Parser>

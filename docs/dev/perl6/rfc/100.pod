@@ -1,0 +1,91 @@
+=head1 TITLE
+
+Embed full URI support into Perl
+
+=head1 VERSION
+
+  Maintainer: Nathan Wiger <nate@wiger.org>
+  Date: 14 Aug 2000
+  Last-Modified: 16 Sep 2000
+  Mailing List: perl6-language-io@perl.org
+  Number: 100
+  Version: 2
+  Status: Frozen
+
+=head1 ABSTRACT
+
+Currently, Perl does not natively support URIs. It would be really cool
+if it did, since this would make writing and maintaining portable
+programs a breeze.
+
+=head1 NOTES ON FREEZE
+
+The only comments received were on my crappy examples, which have been
+clarified. Everyone seemed to like the idea. I am currently developing
+the Perl 5 C<URI::Embed> module as a prototype.
+
+=head1 DESCRIPTION
+
+Full URI support gives us several benefits:
+
+   1. It allows easy authoring of portable scripts
+
+   2. It is a stable and well-established standard
+
+   3. It is easily recognizable and very web-friendly
+
+The key syntax benefit is #1. This lets us use URIs in any function to
+allow scripts that can be used on many platforms simultaneously:
+
+   $fo = open 'C:\docs\private';           # non-portable
+   $fo = open 'file://C|/docs/private';    # portable
+
+   unlink "/local/etc/script.conf";        # non-portable
+   unlink "file:///local/etc/script.conf"; # portable
+
+If portability is not a concern, then scripts can be written using the
+familiar, native syntax. Otherwise, all Perl funcs should be able to
+accept URIs so that writing portable programs is simple.
+
+Many asked "Hey, how are those two any more portable? The drive letter
+is still in there." Good point. I would argue that this is where Perl
+should DWIM. For example, if a script doing this:
+
+   $fo = open 'file://C|/docs/private';
+
+Is run on a UNIX box, Perl should be able to realize that it's currently
+on a UNIX machine and say:
+
+   1. Ok, lose the drive letter and '|', that's useless
+
+   2. Our file separator here is '/', so let's do this!
+
+Then it would contruct the correct path of C</docs/private> without the
+script being changed. This is the way C<File::Spec> works, basically.
+The goal of this proposal is to get the same effect by using URIs, which
+are more commonly used and understood, and easier to work with since
+they can be passed around as simple strings.
+
+=head1 IMPLEMENTATION
+
+B<Internally>, URIs and native filenames should be converted into a
+third, different representation. This allows for the easy conversion
+back and forth between them. For example, URIs could be converted to
+native filenames and then the native filenames passed to the actual
+functions. Indeed, this is the way URIs generally work.
+
+The internal representation of Perl filenames is covered in RFC 36 and
+is beyond the scope of this RFC. Something akin to C<File::Spec> is
+probably suitable.
+
+=head1 REFERENCES
+
+RFC 36: Structured Internal Representation of Filenames 
+
+http://www.mail-archive.com/perl6-language-io@perl.org/msg00096.html
+
+http://www.mail-archive.com/perl6-language-io@perl.org/msg00117.html
+
+http://www.w3.org/Addressing/
+
+The CPAN C<File::Spec> and C<URI> modules (and upcoming C<URI::Embed>)

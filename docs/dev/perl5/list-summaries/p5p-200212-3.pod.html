@@ -1,0 +1,115 @@
+<HTML>
+<HEAD>
+<TITLE>This Week on perl5-porters</TITLE>
+<LINK REV="made" HREF="mailto:bhcompile@daffy.perf.redhat.com">
+</HEAD>
+
+<BODY>
+
+<A NAME="__index__"></A>
+<!-- INDEX BEGIN -->
+
+<UL>
+
+	<LI><A HREF="#this week on perl5porters (1622 december 2002)">This Week on perl5-porters (16-22 December 2002)</A></LI>
+	<UL>
+
+		<LI><A HREF="#version object updates">Version object updates</A></LI>
+		<LI><A HREF="#new warning discussed">New warning discussed</A></LI>
+		<LI><A HREF="#a bit of language design">A bit of language design</A></LI>
+		<LI><A HREF="#perl birthday present">Perl birthday present</A></LI>
+		<LI><A HREF="#in brief">In brief</A></LI>
+		<LI><A HREF="#about this summary">About this summary</A></LI>
+	</UL>
+
+</UL>
+<!-- INDEX END -->
+
+<HR>
+<P>
+<H1><A NAME="this week on perl5porters (1622 december 2002)">This Week on perl5-porters (16-22 December 2002)</A></H1>
+<P>This week, in spite of the approaching holidays, the Perl 5 porters
+mailing list wasn't completely silent. Read about version objects, various
+warnings, operator precedence design, and a birthday.</P>
+<P>
+<H2><A NAME="version object updates">Version object updates</A></H2>
+<P>The (apparently) never-tired John Peacock pulled another improvement of
+his version object patches, that should now, as he says, satisfy everyone.
+Basically we have now (in version.pm v0.25, found on CPAN)</P>
+<PRE>
+    version-&gt;new(1.10)   &lt; version-&gt;new(1.2)   # 1.100 &lt; 1.200
+    version-&gt;new(&quot;1.10&quot;) &gt; version-&gt;new(&quot;1.2&quot;) # 1.010 &gt; 1.002</PRE>
+<P>The integration of this into bleadperl will wait until next year, if a
+full consensus is reached -- see the thread for the porters' comments.</P>
+<PRE>
+    <A HREF="http://groups.google.com/groups?threadm=3DFF94D7.6020605%40rowman.com">http://groups.google.com/groups?threadm=3DFF94D7.6020605%40rowman.com</A></PRE>
+<P>
+<H2><A NAME="new warning discussed">New warning discussed</A></H2>
+<P>Benjamin Goldberg proposed to introduce a new warning, aimed at warning
+programmers against using a <CODE>$DIGIT</CODE> variable when the previous regular
+expression didn't match, as in :</P>
+<PRE>
+    $str =~ /(something)/; print $1;</PRE>
+<P>In fact he proposes the warning to be triggerred whenever a regular
+expression match is used in void context. Among the points discussed were:
+should this be a run-time or a compile-time warning ? Should it be limited
+to failing matches ? Should it warn when the <CODE>$DIGIT</CODE> variables aren't
+used ? What about regular expression with side-effects ?</P>
+<PRE>
+    <A HREF="http://groups.google.com/groups?threadm=3E001681.BC9B0946%40earthlink.net">http://groups.google.com/groups?threadm=3E001681.BC9B0946%40earthlink.net</A></PRE>
+<P>
+<H2><A NAME="a bit of language design">A bit of language design</A></H2>
+<P>Larry Wall commented about the recently modified parsing of the <CODE>? :</CODE>
+ternary operator, proposed by Stephen McCamant one month ago. Current
+perls reject <CODE>$cond ? $a and $b : $c;</CODE> as a syntax error, and Stephen
+provided a patch to accept this. However, Larry notes that with this
+patch,</P>
+<PRE>
+    $cond ? $a and $b : $c and $d;</PRE>
+<P>would be equivalent to</P>
+<PRE>
+    ($cond ? $a and $b : $c) and $d;</PRE>
+<P>which doesn't look like the Right Thing.</P>
+<PRE>
+    <A HREF="http://groups.google.com/groups?threadm=200212200035.gBK0ZRm29309%40crypt.compulink.co.uk">http://groups.google.com/groups?threadm=200212200035.gBK0ZRm29309%40crypt.compulink.co.uk</A></PRE>
+<P>
+<H2><A NAME="perl birthday present">Perl birthday present</A></H2>
+<P>Perl is 15 years old ! To commemorate this event, perl 1.0.15, the
+latest maintenance release of Perl 1, was released by Michael G Schwern.</P>
+<PRE>
+    <A HREF="http://groups.google.com/groups?threadm=20021218235532.GA852%40blackrider.schwern.org">http://groups.google.com/groups?threadm=20021218235532.GA852%40blackrider.schwern.org</A></PRE>
+<P>
+<H2><A NAME="in brief">In brief</A></H2>
+<P>Michael also released an alpha version (6.06_01) of MakeMaker, and asked
+for testers, notably on non-Unix platforms, and for complex modules.
+Some problems were reported on Windows.</P>
+<P>Jos Boumans remarks that on Windows, both <CODE>'Foo/Bar.pm'</CODE> and
+<CODE>'Foo\\Bar.pm'</CODE> could be set as keys in the %INC hash. This behavior
+could cause problems, notably with IPC::Run. (Bug #19213)</P>
+<P>Steve Noynaert reported a couple of strange build problems on AIX, one of
+them involving breakage of the <CODE>glob()</CODE> function. Nicholas Clark suggested
+that his system (libraries and/or compiler versions) could be blamed for
+this.</P>
+<P>H. Merijn Brand suggested that <CODE>perl -v</CODE> should report the patchlevel on
+developement build (as <CODE>perl -V</CODE> does).</P>
+<P>Dave Mitchell continues to patch the lexical engine, first by proposing to
+remove the useless SvPADBUSY flag, then by introducing a new flag
+SvPADSTALE, <EM>set on a lexical in a pad which has gone out of scope</EM>.</P>
+<P>Paul Marquess asked for a good generic way to catch C++ exceptions in XSUB
+code and to pass them back to Perl code.</P>
+<P>Jeff Sumler notes that the infamous warning <EM>Use of uninitialized value</EM>
+would be better written <EM>Use of undefined value</EM>, as one could initialize
+a value to <CODE>undef</CODE> on purpose.</P>
+<P>Clinton Pierce reported bug #18917, about <CODE>system()</CODE> executing external
+commands twice on Win32 in some cases, when its exit status is non null.</P>
+<P>
+<H2><A NAME="about this summary">About this summary</A></H2>
+<P>This summary brought to you by Rafael Garcia-Suarez, from holidays on the
+French Riviera, where he insanely brought his new laptop. Read it on
+<EM><A HREF="http://use.perl.org/">http://use.perl.org/</A></EM> and/or via a mailing list, which subscription
+address is <EM><A HREF="mailto:perl5-summary-subscribe@perl.org">perl5-summary-subscribe@perl.org</A></EM>. Comments and corrections
+are, as always, welcome.</P>
+
+</BODY>
+
+</HTML>

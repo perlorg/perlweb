@@ -1,0 +1,102 @@
+=head1 This Week on perl5-porters (7-13 October 2002)
+
+A new week, a new p5p summary. This week, the porters were busy with small
+bugs, compilation problems, and a few interesting new ideas. Read on.
+
+=head2 Speeding up Unicode handling
+
+Jarkko Hietaniemi introduced his new idea by saying I<I have a task for
+someone.> The purpose is to speed up string handling functions (length(),
+substr(), index(), etc.) on Unicode strings. Various technical solutions
+(involving different types of caching) were proposed in the discussion,
+but nobody volunteered yet to begin experimentation and implementation.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg87763.html
+
+=head2 Module signatures
+
+Well, this is not strictly perl-core-related, but interesting nonetheless.
+Autrijus Tang reported that Module::Signature begins to be usable and
+deployed. This module allows to PGP-sign CPAN modules, via a special SIGNATURE
+file. F<http://search.cpan.org/> now lists the signature on the module
+information pages, and the development version of CPANPLUS recognizes it
+optionally.
+
+    http://search.cpan.org/author/AUTRIJUS/Module-Signature/
+
+=head2 Taint propagation
+
+Jerome Quelin wondered why
+
+    perl -Tle '$cmd="print q(foo)";$cmd.=".q(bar)" if pop; eval $cmd' foo
+
+fails with an I<insecure dependency> error (bug #17867), while it doesn't
+fail when the regular form of C<if> is used. Benjamin Goldberg explains that
+this construct is strictly equivalent to the expression
+
+    pop and ($cmd.=".q(bar)")
+
+and an expression is tainted whenever one of its parts is tainted.
+Michael Schwern still thinks that's is a weird behavior, from a control
+modifier (tainting affects data, not control flow).
+
+=head2 Versions too accurate
+
+The newest version patches (by J. Peacock) made a new test failure appear
+(on ext/Storable/t/code.t). Apparently, when a module is required from XS
+code, using a bare floating point value as the required version, the usual
+rounding of floats may transform the required version in a higher version
+number -- hence the require() failure.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg87919.html
+
+=head2 Too safe signals
+
+Slaven Rezic remarked that the new safe signals may cause problems, when
+one wants to timeout an operation that involves a C library function.
+Hence some code that used alarm() for this purpose may stop working with
+perl 5.8.0. (See also bug #17341.) But this code was fragile anyway, being
+at risk of the SIGALRM perl handler being called in a manner which could
+segfault.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg87982.html
+    http://perldoc.com/perl5.8.0/pod/perldelta.html#Safe-Signals
+
+=head2 In brief
+
+Paul Johnson reported that the C<for> statement modifier, used inside a
+C<map>, segfaults (bug #17771). Fixed.
+
+Nicholas Clark improved the error reporting and the documentation on
+C<pack "w"> (compressed integers) (bug #17772).
+
+Nicholas Clark provided a few patches to Storable (version 2.06 should
+appear on CPAN in the near future.)
+
+Simon Cozens provided a patch to perldoc, to remove the annoying message
+I<Superuser must not run perldoc without security audit and taint checks>.
+Applied with a few tweaks by Hugo, who added : I<patches to make it run
+securely under tainting would also be welcome.>
+
+H.Merijn Brand reported that DB_File doesn't compile with db-4.1.24.
+He investigated the problem with Paul Marquess, but apparently it's not
+completely solved yet.
+
+Dan Sugalski uploaded the helpful module C<Devel::Size> to CPAN, to find
+the memory usage of Perl variables.
+
+Tommy Wareing reported that the precompiled regular expression C<qr/##/x>
+corrupts memory (bug #17776). Fixed.
+
+Nicholas Clark reported that C<tr///> stringifies its argument, even when
+it's used to count occurrences of a character (bug #17823). Fixed.
+
+Brian Ingerson reported that C<$/> is not initialized at compile-time by
+the -0 command-line switch. Fixed.
+
+=head2 About this summary
+
+This summary brought to you by Rafael Garcia-Suarez. It's also available
+via a mailing list, which subscription address is
+F<perl5-summary-subscribe@perl.org>. Comments and corrections are, as
+always, welcome.

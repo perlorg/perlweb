@@ -1,0 +1,92 @@
+=head1 TITLE
+
+Elements of @_ should be read-only by default
+
+=head1 VERSION
+
+  Maintainer: John Tobey <jtobey@john-edwin-tobey.org>
+  Date: 28 Sep 2000
+  Last Modified: 1 Oct 2000
+  Mailing List: perl6-language@perl.org
+  Number: 344
+  Version: 2
+  Status: Frozen
+
+=head1 ABSTRACT
+
+Unprototyped subs should not be allowed to modify their callers' data
+simply by assigning to elements of the arg array.
+
+=head1 COMMENTS ON FREEZE
+
+This RFC generated no discussion in 3 days.
+
+=head1 DESCRIPTION
+
+In Perl 5, you can modify a caller's value by assigning directly to
+elements of C<@_>, like this:
+
+    sub perp {
+        $_[0] = 'ha!';
+    }
+
+    sub victim {
+        my $num = 42;
+        perp($num);
+        print $num;    # prints ha!
+    }
+
+This form of passing arguments by reference is obsolete now that Perl
+has hard references and C<\$> in prototypes.
+
+The feature is surprising.  At least, I was surprised when I first
+learned you could modify a caller's value by assigning to $_[0].
+
+The feature is confusing, since it means that the recommended
+convention for naming parameters (by assigning C<@_> to a C<my> list)
+alters semantics.  For example, the following subs do I<not> have the
+same effect as above:
+
+    sub perp1 {
+        my $arg = shift;
+        $arg = 'ha!';
+    }
+
+    sub perp2 {
+        my ($arg) = @_;
+        $arg = 'ha!';
+    }
+
+The Perl 5 (and older) behavior may preclude optimizations in compiled
+code.  If a compiler knows that arguments are passed by value, it may
+generate code that places the value directly in a register or on the
+stack.  With the Perl 5 semantics, it would normally have to pass a
+pointer to each scalar and dereference the pointer to obtain the
+argument's value.
+
+I think this change should not affect subs with a prototype, so the
+examples in L<perlsub/Prototypes> would still work.  People who bother
+to use prototypes and sub attributes should know what they are getting
+into.  The prototype and attribute system will, I think, give plenty
+of opportunities to specify compiler optimizations.  Just the default
+case should be changed.
+
+=head1 IMPLEMENTATION
+
+A fascist implementation would emit a compile-time error any time
+C<@_> or one of its elements were assigned to, taken a refernce to,
+etc.  A friendlier version would automatically copy the arg value to a
+new temporary.
+
+This change would mean a moderate Perl 5 compatibility breakage.  The
+Perl-5-to-Perl-6 converter could insert whatever trick is used to
+obtain the Perl 5 behavior (perhaps a C<(@)> prototype) when it
+detects (or suspects) argument modification.
+
+=head1 REFERENCES
+
+RFC 154: Simple assignment lvalue subs should be on by default
+
+L<perlsub>
+
+The C-- homepage - http://www.cminusminus.org/

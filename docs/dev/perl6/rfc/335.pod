@@ -1,0 +1,240 @@
+=head1 TITLE
+
+Class Methods Introspection: what methods does this object support?
+
+=head1 VERSION
+
+  Maintainer: Mark Summerfield <summer@perlpress.com>
+  Date: 28 Sep 2000
+  Last Modified: 29 Sep 2000
+  Mailing List: perl6-language-objects@perl.org
+  Number: 335
+  Version: 2
+  Status: Frozen
+
+=head1 NOTES ON FREEZE
+
+In view of the lateness of my submission I've only had one response, from
+Piers Cawley; we've exchanged several emails and Piers' suggestions and code
+has been incorporated. 
+
+There are no issues to resolve.
+
+This RFC does not depend on any other RFC.
+
+=head1 ABSTRACT
+
+This RFC proposes a new UNIVERSAL method which would be used thus:
+
+    my @method_names = $object->methods(); # OR MyClass->methods();
+
+The C<methods> call would return the public methods of the C<$object> or
+class; calling with the argument 'all' would return all the public methods
+that the C<$object> or class could respond to.
+
+=head1 DESCRIPTION
+
+How can we tell which methods an object supports? If we know the names
+of the methods we're interested in we can use 
+C<$object-E<gt>can('methodname')>. However if we don't know the possible names
+then we're stuck. This RFC proposes a new UNIVERSAL method which would be used
+thus:
+
+    @method_names = $object->methods(); # OR MyClass->methods();
+
+    @method_names = $object->methods('all'); # OR MyClass->methods('all');
+
+The first example returns the public methods of the C<$object> or class
+itself; the second example returns any public methods that the C<$object> or
+class could respond to, i.e. all the methods of the class plus those of any
+classes it inherits from. 
+
+The C<methods()> method may I<not> be able to determine definitively all the
+methods that are available: firstly it is perfectly possible to define new
+methods at runtime using C<eval>; secondly if the class has an C<AUTOLOAD>
+method then the methods it supports may not be determinable. In the case of
+classes that use C<AUTOLOAD> the string 'AUTOLOAD' would naturally be one of
+the method names returned so at least the programmer would be aware that any
+number of other methods may exist. Thus C<methods> would return the list of
+methods known to be available to the object at the time that C<methods> is
+called.
+
+Piers Cawley suggested this:
+"I would say that in an OO context there's a case for walking the @ISA tree to
+find out all the methods that the class will respond to, say
+C<$object->all_methods>, after all, in a complex class hierarchy there may be
+classes that implement only one or two methods that are distinct from the
+methods of their parent class."
+
+I think that Piers extension is a valuable one, but propose that it should be
+achieved by having an optional argument, 'all' to C<methods> rather than a
+separate new method; this ensures the minimum addition to UNIVERSAL and also
+leaves open the prospect of additional or different parameters being added in
+future.
+
+C<methods> could of course be over-ridden on a class-by-class basis; for
+example, if your class supported fifty methods, but half of them were so
+rarely needed that they were created on-the-fly in AUTOLOAD you could
+return all their names if you override C<methods> and return the list of 
+names yourself. Furthermore as a method of UNIVERSAL C<methods> would not
+collide with any existing or subsequent function of that name.
+
+In terms of RFC 188 I would expect C<methods> to return public methods
+only.
+
+Why not simply use C<isa> to determine the class? Often knowing the
+class is all that is necessary; however sometimes it is useful to know 
+what the possible methods are. Imagine we have a simulation system with 
+a core application that sends and receives signals to the objects it is
+simulating (by calling their methods). Users may implement the objects 
+they want simulated by creating their own classes for each type of object. 
+One approach to this is to supply the user with a base class from which 
+they inherit. This has a disadvantage -- a given method is always called 
+in response to a given event because each event in the simulator maps to a 
+method in the base class. Sometimes we want to "wire up" the simulated 
+object so that on a particular run event A calls method A, but on another 
+run event A calls method B. Hardwiring this isn't a problem, but what if 
+we want to provide the user with this choice interactively -- well, if we 
+don't know what methods the class supports in the first place we cannot 
+give the user a list to choose from. The solution is to be able to 
+introspect on the class they've chosen and show them the list of methods 
+available; they can then choose which to wire up to which events in the 
+simulator. I am sure that there are other situations where object
+introspection would be useful, for example a class browser.
+
+=head1 IMPLEMENTATION
+
+I think this needs to be implemented in Perl itself so that it can avoid
+private methods and can be implemented efficiently, but here's some code which
+provides a combined implementation and example:
+
+    #!/usr/bin/perl -w
+    # filename: test.pl
+    #
+    # Unlike a built-in this method cannot distinguish between `real' 
+    # methods and `constants' defined with use constant (but hopefully 
+    # that pragma will go away). 
+    # We skip private methods by ignoring names that begin with an 
+    # underscore; we skip overloaded methods by ignoring names that 
+    # begin with an open parenthesis.
+
+    use strict;
+
+    package BaseClass;
+    sub baseclass {}
+
+    package DerivedClass1;
+    use base 'BaseClass';
+    sub derived {}
+    sub one {}
+
+    package DerivedClass2;
+    use base 'BaseClass';
+    sub derived {}
+    sub two {}
+
+    package BabyClass;
+    use base qw(DerivedClass1 DerivedClass2);
+    sub three {}
+
+    package main;
+    print "BaseClass:           ", 
+        join(", ", sort BaseClass->methods()), "\n";
+    print "BaseClass (all):     ", 
+        join(", ", sort BaseClass->methods('all')), "\n";
+    print "DerivedClass1:       ", 
+        join(", ", sort DerivedClass1->methods()), "\n";
+    print "DerivedClass1 (all): ", 
+        join(", ", sort DerivedClass1->methods('all')), "\n";
+    print "DerivedClass2:       ", 
+        join(", ", sort DerivedClass2->methods()), "\n";
+    print "DerivedClass2 (all): ", 
+        join(", ", sort DerivedClass2->methods('all')), "\n";
+    print "BabyClass:           ", 
+        join(", ", sort BabyClass->methods()), "\n";
+    print "BabyClass (all):     ", 
+        join(", ", sort BabyClass->methods('all')), "\n";
+
+
+    package UNIVERSAL;
+
+    use strict;
+
+    sub methods {
+        my ($class, $types) = @_;
+        $class = ref $class || $class;
+        $types ||= '';
+        my %classes_seen;
+        my %methods;
+        my @class = ($class);
+
+        no strict 'refs';
+        while ($class = shift @class) {
+            next if $classes_seen{$class}++;
+            unshift @class, @{"${class}::ISA"} if $types eq 'all';
+            # Based on methods_via() in perl5db.pl
+            for my $method (grep {not /^[(_]/ and 
+                                  defined &{${"${class}::"}{$_}}} 
+                            keys %{"${class}::"}) {
+                $methods{$method} = wantarray ? undef : $class->can($method); 
+            }
+        }
+      
+        wantarray ? keys %methods : \%methods;
+    }
+
+    1;
+     
+Here's the output:
+
+    # ./test.pl 
+    BaseClass:           baseclass
+    BaseClass (all):     baseclass
+    DerivedClass1:       derived, one
+    DerivedClass1 (all): baseclass, derived, one
+    DerivedClass2:       derived, two
+    DerivedClass2 (all): baseclass, derived, two
+    BabyClass:           three
+    BabyClass (all):     baseclass, derived, one, three, two
+
+You can test it on any class you like:
+
+    # perl -de0
+    main::(-e:1):   0
+      DB<1> require 'test.pl'
+    [snipped the tests which get executed]
+      DB<2> use CPAN;
+      DB<3> p join ", ", sort CPAN->methods()
+    AUTOLOAD, DESTROY, all, all_objects, checklock, cleanup, cwd, 
+    delete, exists, fill, find, finddepth, getcwd, has_inst, instance, 
+    new, shell, wrap
+      DB<4> p join ", ", sort CPAN->methods('all')
+    AUTOLOAD, DESTROY, all, all_objects, checklock, cleanup, cwd, 
+    debug, delete, exists, export, export_fail, export_ok_tags, 
+    export_tags, export_to_level, fill, find, finddepth, getcwd, 
+    has_inst, import, instance, new, require_version, shell, wrap
+
+Piers suggested that the C<methods> method should return an array of method
+names in a list context or a reference to a hash of 
+C<method_name =E<gt> method_coderef> pairs in a scalar context; this has been
+incorporated. Piers also rewrote the traversal so that it is done in the
+correct order, i.e. the same way that Perl itself searches for methods.
+
+=head1 REFERENCES
+
+RFC 188: Objects : Private keys and methods
+
+RFC 193: Objects : Core support for method delegation
+
+RFC 265: Interface polymorphism considered lovely
+
+perl5db.pl
+
+=head1 ACKNOWLEDGEMENTS
+
+Piers Cawley for reworking the example implementation and explaining why it
+needed reworking!
+
+I<The Librarians> for doing great work!
+
+
