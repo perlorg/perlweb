@@ -7,7 +7,7 @@
 [% review.version_reviewed ? '(' _ review.version_reviewed _ ')' : '' %]
 
 [% IF review.rating_overall %]
-<img src="/images/stars-[% review.rating_overall %].0.png">
+<img src="/images/stars-[% review.rating_overall %].0.png" alt="[% review.rating_overall %] stars">
 [% END %]
 </h3>
 <p>
