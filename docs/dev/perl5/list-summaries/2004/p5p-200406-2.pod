@@ -1,0 +1,67 @@
+=head1 This Week on perl5-porters (7-13 June 2004)
+
+This week, a small summary is better than no summary at all.
+
+=head2 h2ph
+
+Rafael Garcia-Suarez finds that h2ph can't process the newest C headers
+from the glibc, because they include inline functions (instead of good old
+macros). He forced a bit of heuristics in it to decode the less convoluted
+C inline functions that might be there. Your mileage may vary.
+
+=head2 IO::File on windows
+
+Roderich Schupp finds that IO::File fails on open a file that is found on
+another volume on Windows (bug #30132). The problem comes from the Cwd and
+File::Spec modules (and their handling of volumes in pathnames), on which
+Ken Williams is working. He released thereafter a new beta of Cwd.pm, on
+which Mark Mielke provided some performance considerations.
+
+    http://groups.google.com/groups?selm=1CDC3096-BCF9-11D8-9A4F-000A95BD9874%40mathforum.org
+
+=head2 DB_File fooled by substr
+
+Ton Hospel finds (bug #30237) that the DB_File methods don't behave
+correctly when they're passed results of substr() in argument. Paul
+Marquess investigates.
+
+    http://groups.google.com/groups?selm=rt-3.0.9-30237-90394.14.8512570678496%40perl.org
+
+=head2 Obscure bug of the week
+
+Ton Hospel (again) finds that a small snippet of code involving the
+C<locale> pragma, regexp manipulation and loading the C<POSIX> module at
+run-time dies with an insecure dependency error when run under -T. (bug
+#30068). Nobody commented on the possible causes of this regression.
+
+    http://groups.google.com/groups?selm=rt-3.0.9-30068-89825.7.20442262108094%40perl.org
+
+=head2 Data::Dumper deparsing indentation
+
+Mathieu Arnold proposed a patch to improve the indentation of the output
+of Data::Dumper when it is configured to deparse code references (bug
+#30197).
+
+=head2 Safe Panic
+
+Perl panics when one tries to use split() on an utf8-string from your
+average Safe compartment, as Rusty Conover reported (bug #30258). This is
+probably due to perl trying to load some data behind the scenes, which is
+forbidden by Safe, so the operation is aborted, and this abortion doesn't
+end well for some unclear reason.
+
+    http://groups.google.com/groups?selm=rt-3.0.9-30258-90458.7.13228983473336%40perl.org
+
+=head2 C<..> optimized
+
+The range C<..> operator is usually optimized in a foreach loop, so that
+the list is not constructed in place. However, for alphabetic ranges, and
+when the range is not the only thing in the foreach() argument, this
+optimization does not occur (bug #30123, reported by Michael G Schwern).
+
+=head2 About this summary
+
+This summary was written by Rafael Garcia-Suarez. Weekly summaries are
+published on F<http://use.perl.org/> and posted on a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. Comments and
+corrections welcome.
