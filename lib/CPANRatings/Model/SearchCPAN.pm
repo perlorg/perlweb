@@ -82,7 +82,7 @@ sub get_versions {
   my $cache = Combust::Cache->new('CR.search');
 
   my $data;
-  if ($data = $cache->fetch(id => "versions;$distribution")) {
+  if ($data = $cache->fetch(id => "versions;d:$distribution")) {
     return @{ $data->{data} };
   }
 
@@ -92,6 +92,10 @@ sub get_versions {
 
   ($data =~ s!.*?This Release.*?cell>([^<]+)!!s);
   push @rel, $1 if $1;
+
+  ($data =~ s!.*?Latest Release.*?cell>([^<]+)!!s);
+  push @rel, $1 if $1;
+
   while ($data =~ s!<option value="/author/[^>]+>([^\&]+)!!s) {
     push @rel, $1 if $1;
   } 
