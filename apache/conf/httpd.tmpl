@@ -284,8 +284,20 @@ NameVirtualHost *:[% config.port %]
       SetHandler server-status
     </Location>
   </VirtualHost>
-[% END %]
 
+    <Location /cgi-bin/>
+       SetHandler cgi-script
+    </Location>
+    ScriptAlias /cgi-bin/ "[% root %]/apache/cgi-bin/"
+    <Directory "[% root %]/apache/cgi-bin">
+        AllowOverride None
+        Options None
+        Order allow,deny
+        Allow from all
+    </Directory>
+
+</VirtualHost>
+[% END %]
 
 
 [% IF config.sites.redrock %]
