@@ -1,10 +1,11 @@
 [% page.title = header %]
 
-[% UNLESS mode == 'author' %]
 <p>
-<a href="/rate?distribution=[% distribution | uri %]">Add a review of [% distribution | html %]</a>
-</p>
+<a href="[% r.uri %].rss">RSS</a>
+[% UNLESS mode == 'author' %]
+| <a href="/rate?distribution=[% distribution | uri %]">Add a review of [% distribution | html %]</a>
 [% END %]
+</p>
 
 [% WHILE (review = reviews.next) %]
 [% PROCESS display/short_review.html, review => review, no_more => 1 %]

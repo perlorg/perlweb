@@ -86,6 +86,9 @@ undef<input type="radio" name="[% question.field %]" [% checked.${question.field
 <b>Review</b> [% IF errors.review %](<font class="error">[% errors.review %]</font>)[% END %] <br />
 <textarea name="review" cols="70" rows="12">[% review.review %]</textarea>
 <br />
+[% IF review.review_id %]
+<input type="checkbox" name="minor_edit" checked>Minor edit 
+[% END %]
 <input type="submit" name="submit" value="Submit">
 </td></tr>
 
