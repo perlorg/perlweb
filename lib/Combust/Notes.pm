@@ -30,6 +30,7 @@ sub handler {
     'time'	=> time(),
     param	=> $param,
     req_domain  => $req_domain,
+    site        => $r->dir_config("site"),
   );
 
   $r->pnotes(combust_notes => \%combust_notes);
