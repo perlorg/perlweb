@@ -464,7 +464,7 @@ data as will fit on a single line, formats that data appropriately, and
 interpolates it into the format.
 
 That means that if we use a one-line field, it only shows as much of the data
-as will fit on one lime. For example:
+as will fit on one line. For example:
 
     my $data1 = 'By the pricking of my thumbs, something wicked this way comes';
     my $data2 = 'A horse! A horse! My kingdom for a horse!';
@@ -602,7 +602,7 @@ Note that each ellipsis is a single, one-column wide Unicode HORIZONTAL
 ELLIPSIS character (C<\c[2026]>), I<not> three separate dots. The
 connotation of the ellipses is I<"...then keep on formatting from where
 you previously left off, remembering there's probably still more to
-come...">. And the commas are the ASCII symbol most like a single
+come...">. And the colons are the ASCII symbol most like a single
 character ellipsis (try tilting your head and squinting).
 
 Follow-on fields are most useful when we want to split a formatting task
