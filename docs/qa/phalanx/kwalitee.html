@@ -36,6 +36,7 @@ author's intent.
     <LI>Documents match code match tests
     <LI>Covered well
     <LI>Pod passes Test::Pod
+    <LI>All hyperlinks work
 </UL>
 
 <h2>What we're avoiding</h2>
@@ -45,3 +46,20 @@ author's intent.
 <LI>(-3)**3 == 27
 </UL>
 
+<h2>Checklist</h2>
+
+<UL>
+
+<LI>All object creation is checked with isa_ok().  Constructors
+are the most obvious, but any function that returns an object should
+be checked that the object is of the expected type.
+
+<LI>All temporary files are cleaned up.  Check the return code from
+unlink(), and then check that the file is actually gone.
+
+<PRE>
+ok( unlink $filename, "Remove $filename" );
+ok( !-e $filename, "Actually gone" );
+</PRE>
+
+</UL>
