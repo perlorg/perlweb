@@ -1,0 +1,13 @@
+  <VirtualHost *:[% config.port %]>
+    ServerName [% config.site.ldap.servername %]
+    PerlSetVar site ldap
+    <Location />
+       SetHandler perl-script
+       PerlHandler Combust::Control::Basic->super
+    </Location>
+
+    <Location /error/>
+       SetHandler   perl-script
+       PerlHandler Combust::Control::Error->super
+    </Location>
+  </VirtualHost>

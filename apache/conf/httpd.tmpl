@@ -24,9 +24,9 @@ ScoreBoardFile [% root_default %]/apache/logs/httpd.scoreboard
 Timeout 300
 KeepAlive Off
 MinSpareServers 1
-MaxSpareServers 5
-StartServers 3
-MaxClients 5
+MaxSpareServers 10
+StartServers 5
+MaxClients 20
 MaxRequestsPerChild 500
 Listen [% config.port %]
 
