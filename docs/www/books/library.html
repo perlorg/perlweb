@@ -1,0 +1,302 @@
+[% page.title = "The perl.org Online Library" %]
+[% page.style = "perl-directory.html" %]
+[% page.nonavigation = 1 %]
+
+[% MACRO booklink(name,title) BLOCK %]
+<BR>&nbsp;&nbsp;&nbsp;&nbsp; <A HREF="#[% name %]">[% title %]</A>
+[%- END %]
+
+[% page.sidebar = BLOCK %]
+
+<div class="MENU">
+<A HREF="/books.html">Books & Articles</A>
+<BR>&nbsp;&nbsp; <A HREF="#fulltext"><b>Full Text</b></A>
+[% booklink("beginningperl","Beginning Perl");
+   booklink("impatientperl","Impatient Perl");
+   booklink("macperlpe","MacPerl: Power & Ease");
+   booklink("masonbook","Embedding Perl in HTML with Mason");
+   booklink("pup","Picking Up Perl"); 
+%]
+<BR>&nbsp;&nbsp; <A HREF="#sampletext"><b>Sample Chapters</b></A>
+[% booklink("wampc","Writing Apache Modules with Perl and C");
+   booklink("pmp","Practical Mod Perl");
+   booklink("mpc","mod_perl Developer's Cookbook");
+   booklink("lwp","Perl & LWP");
+%]
+</div>
+
+<div class="NAVITEM" style="text-align: center">
+
+
+<p>Safari is the premier electronic reference library for programmers
+and IT professionals.</p>
+
+
+<A HREF="http://safari.oreilly.com/">
+  <IMG class="border" style="padding:0" 
+       SRC="/images/friends/safari_logo.gif">
+</A>
+
+<p>
+O'Reilly offers subscriptions to allow you to search through hundreds
+of online books, including many of your favorite Perl books.</p>
+</div>
+
+[% END %]
+[% page.morehead = BLOCK %]
+<style type="text/css">
+ .booktitle { font-size: 150% }
+ .book { padding: 1em; border: black solid 1px; margin-bottom: 1em }
+</style>
+[% END %]
+    
+<center><h1>The perl.org Online Library</h1></center>
+
+<A NAME="fulltext"></A>    
+<h2>Full Text</h2>
+
+
+
+<A NAME="beginningperl"></A>
+<div class="book">
+<b><a class="booktitle" href="/books/beginning-perl/">Beginning Perl</a></b>
+(click on title to read)<br>
+
+<FONT SIZE="-2">
+by Simon Cozens, Peter Wainwright.
+700 pages.
+Wrox Press Inc.
+(May 25, 2000).
+<br>
+</FONT>
+
+<p>Beginning Perl is a different kind of Perl book. It's written
+particularly with the beginning programmer in mind, but it doesn't
+treat you like an idiot, and experienced programmers will not feel
+patronised.  It covers a lot of ground, from the very basics of
+programming, right through to developing CGI applications for the
+web. More importantly, it emphasises good Perl practice, and readable
+and maintainable code.
+</p>   
+
+Buy from:
+[% INCLUDE "tpl/bookstore-links" isbn="1861003145" style="text" %]
+</div>
+
+
+<A NAME="impatientperl"></A>
+<div class="book">
+<b><a class="booktitle" href="/books/impatient-perl/">Impatient Perl</a></b>
+(click on title to read)<br>
+
+<FONT SIZE="-2">
+by Greg London
+(Feb 7, 2004).
+<br>
+</FONT>
+
+<p>We don't have a description for Impatient Perl yet.. But, it covers
+just about everything!
+</p>
+
+
+</div>
+
+
+<A NAME="macperlpe"></A>
+<DIV class="book">
+<b><a class="booktitle" href="http://macperl.com/ptf_book/r/MP/i2.html">MacPerl: Power &
+Ease</a></b>
+(click on title to read)<br>
+
+<FONT SIZE="-2">
+by Vicky Brown and Chris Nandor.
+372 pages.
+(1998).
+<br>
+</FONT>
+
+<p>MacPerl: Power and Ease is designed for both the beginner to Perl,
+and those who want to take advantage of Perl on Mac OS. It's divided
+into three primary sections: learning about programming, learning
+about Perl, and advanced topics. The latter includes brief sections on
+objects and references, and more complete information on how to use
+the Mac toolbox modules for making windows and dialog boxes and using
+AppleScript with Perl. It covers the MacPerl based on perl 5.004, and
+Mac OS (Classic), but much of the first two parts apply to any
+platform, and much of the third part applies to Mac OS X
+</p>
+
+Buy from: 
+[% INCLUDE "tpl/bookstore-links" isbn="1881957322" style="text" %]
+
+</DIV>
+
+<A NAME="masonbook"></A>
+<DIV class="book">
+<b><a class="booktitle" href="http://www.masonbook.com">Embedding Perl in HTML with
+Mason</a></b>
+(click on title to read)<br>
+
+<FONT SIZE="-2">
+by Dave Rolsky, Ken Williams.
+318 pages.
+O'Reilly & Associates.
+(October 2002).
+<br>
+</FONT>
+
+<P>This book shows you how to create large, complex, dynamically
+driven web sites that look good and are a snap to maintain. You'll
+learn how to visualize multiple Mason-based solutions to any given
+problem and select among them. The book covers the latest line of
+Mason development 1.1x, which has many new features, including line
+number reporting based on source files, sub-requests, and easier use
+as a CGI.  
+</p>
+
+Buy from: 
+[% INCLUDE "tpl/bookstore-links" isbn="0596002254" style="text" %]
+</DIV>
+
+<A NAME="pup"></A>
+<DIV class="book">
+<b><a class="booktitle" href="http://www.ebb.org/PickingUpPerl">Picking Up Perl</a></b>
+(click on title to read)<br>
+
+<FONT SIZE="-2">
+by Bradley M. Kuhn.
+self published.
+(July 1999).
+<br>
+</FONT>
+
+<P>This book has been created for a number of reasons. The primary
+reason is to provide a freely redistributable tutorial for the Perl
+language. In writing this freely redistributable tutorial, it is our
+hope that the largest number of people can have access to it and share
+it.
+</P>
+
+<P>In the Perl community, we have discovered ways to save time by
+writing Perl programs that make our jobs and lives easier. Surely,
+Perl is not a panacea, but it has certainly made our lives a little
+bit better. It is hoped that you can use Perl to make your jobs and
+lives easier, too.
+</P>
+</DIV>
+   
+
+<A NAME="sampletext"></A>    
+<h2>Sample Chapters Only</h2>
+
+<A NAME="wampc"></A>
+<DIV class="book">
+<b><a class="booktitle" href="http://www.modperl.com">Writing Apache Modules with Perl
+and C: The Apache API and mod_perl</a></b>
+(click on title to read)<br>
+
+<FONT SIZE="-2">
+by Lincoln Stein, Doug MacEachern, Linda Mui (Editor).
+724 pages.
+O'Reilly & Associates.
+(March 1999).
+<br>
+</FONT>
+
+<P>Writing Apache Modules with Perl and C will allow you to enhance
+your Apache HTTP server in just about any way you'd like. Overall, it
+is an excellent book, and it has a lot of good information and
+terrific examples on everything from "Content Handlers" to customizing
+the Apache server configuration process. <i>-- Doug Beaver</i>.
+</P>
+
+Buy from: 
+[% INCLUDE "tpl/bookstore-links" isbn="156592567X" style="text" %]
+
+</DIV>
+
+
+<A NAME="pmp"></A>
+<DIV class="book">
+<b><a class="booktitle" href="http://www.oreilly.com/catalog/pmodperl/chapter/index.html" 
+>Practical mod_perl</a></b>
+ (click on title to read)<br>
+
+<FONT SIZE="-2">
+by Stas Bekman & Eric Cholet.
+924 pages.
+O'Reilly & Associates.
+(May 27, 2003).
+<br>
+</FONT>
+
+<P>Mod_perl embeds the popular programming language Perl in 
+the Apache web server, giving rise to a fast and powerful web programming 
+environment. Written for Perl web developers and web administrators, 
+Practical mod_perl is an extensive guide to the nuts and bolts of the 
+powerful and popular combination of Apache and mod_perl. From writing and 
+debugging scripts to keeping your server running without failures, the 
+techniques in this book will help you squeeze every ounce of power out of 
+your server. True to its title, this is the practical guide to mod_perl.
+<a target="_blank" href="http://www.oreilly.com/cgi-bin/reviews?bookident=pmodperl">review</a>
+</P>
+
+Buy from: 
+[% INCLUDE "tpl/bookstore-links" isbn="0596002270" style="text" %]
+</DIV>
+
+
+<A NAME="mpc"></A>
+<DIV CLASS="book">
+<b><a class="booktitle" href="http://www.modperlcookbook.org"
+>mod_perl Developer's Cookbook</a></b>
+(click on title to read)<br>
+
+<FONT SIZE="-2">
+by Geoffrey Young, Paul Lindner, Randy Kobes.
+650 pages.
+Sams Publishing.
+(January 2002).
+<br>
+</FONT>
+
+<P>A practical, hands-on guide that shows you how to exploit the power
+of mod_perl. <a target="_blank"
+href="http://www.modperlcookbook.org/reviews.html">reviews</a> 
+</P>
+
+Buy from: 
+[% INCLUDE "tpl/bookstore-links" isbn="0672322404" style="text" %]
+
+</DIV>
+
+<A NAME="lwp"></A>
+<DIV class="book">
+<b><a class="booktitle" href="http://www.oreilly.com/catalog/perllwp/chapter/">Perl &
+LWP</a></b>
+(click on title to read)<br>
+
+<FONT SIZE="-2">
+by Sean M. Burke.
+264 pages.
+O'Reilly & Associates.
+(June 2002).
+<br>
+</FONT>
+
+<P>The LWP (Library for WWW in Perl) suite of modules lets your
+programs download and extract information from the Web. Perl & LWP
+shows how to make web requests, submit forms, and even provide
+authentication information, and it demonstrates using regular
+expressions, tokens, and trees to parse HTML. This book is a must have
+for Perl programmers who want to automate and mine the Web.
+</P>
+
+Buy from: 
+[% INCLUDE "tpl/bookstore-links" isbn="0596001789" style="text" %]
+
+</DIV>
+
+
+

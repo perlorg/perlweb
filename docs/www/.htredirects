@@ -14,7 +14,7 @@
 # Ask likes short names like this
 /docs/?     /docs.html   internal
 /docs/(.*)     /docs.html   internal
-/about/(.*)     /about.html  perm
+/about/?       /about.html  perm
 /press/?(.*)     /about.html  perm
 /news/?	    /news.html internal
 # temporary fix for evil leading //, like http://www.perl.org//about.html
@@ -27,7 +27,7 @@
 # Things from the previous incarnation of perl.org
 /advocacy/white_camels.shtml /advocacy/white_camel/  perm
 /books/?          http://books.perl.org/ perm
-/books/(.*)       http://books.perl.org/$1 perm
+#/books/(.*)       http://books.perl.org/$1 perm
 /CPAN/?           http://www.cpan.org/   perm
 /cpan/?           http://www.cpan.org/   perm
 /CPAN/(.*)        http://www.cpan.org/$1 perm

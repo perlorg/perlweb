@@ -40,6 +40,7 @@
      '<META name="description" content="' _ page.description _ '">';
      END
   %]
+  [% IF page.morehead; page.morehead; END %]
 </head>
 <body>
 
@@ -53,7 +54,7 @@
 <TD ID="NAV" WIDTH="180" HEIGHT="[% $isindex ? 350 : 500 %]">
 <DIV CLASS="SIDE">
 
-[% IF !isindex OR page.forcenavigation%] 
+[% IF (!isindex OR page.forcenavigation) AND !page.nonavigation %] 
 
 [% TRY %]
   [% PROCESS tpl/navigation.html %]
