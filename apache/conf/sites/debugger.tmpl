@@ -1,6 +1,7 @@
 
   <VirtualHost *:[% config.port %]>
     ServerName [% config.site.debugger.servername %]
+    [% expandServerAliases( config.site.debugger.aliases ) %]
     PerlSetVar site debugger
     <Location />
        SetHandler perl-script

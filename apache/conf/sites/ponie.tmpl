@@ -1,6 +1,6 @@
   <VirtualHost *:[% config.port %]>
     ServerName [% config.site.ponie.servername %]
-
+    [% expandServerAliases( config.site.ponie.aliases ) %]
     PerlSetVar site ponie
     <Location />
        SetHandler perl-script

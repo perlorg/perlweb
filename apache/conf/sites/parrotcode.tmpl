@@ -1,6 +1,7 @@
 
   <VirtualHost *:[% config.port %]>
     ServerName [% config.site.parrotcode.servername %]
+    [% expandServerAliases( config.site.parrotcode.aliases ) %]
     PerlSetVar site parrotcode
     PerlTransHandler Combust::Redirect
 

@@ -1,5 +1,6 @@
   <VirtualHost *:[% config.port %]>
     ServerName [% config.site.foundation.servername %]
+    [% expandServerAliases( config.site.foundation.aliases ) %]
     PerlSetVar site foundation
     PerlTransHandler Combust::Redirect
 

@@ -1,6 +1,6 @@
   <VirtualHost *:[% config.port %]>
     ServerName www.redrockeater.org
-    ServerAlias redrockeater.org
+    [% expandServerAliases( config.site.rre.aliases ) %]
     PerlSetVar site rre
     DocumentRoot [% root %]/docs/live/rre/
 

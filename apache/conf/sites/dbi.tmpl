@@ -1,6 +1,7 @@
 
   <VirtualHost *:[% config.port %]>
     ServerName [% config.site.dbi.servername %]
+    [% expandServerAliases( config.site.dbi.aliases ) %]
     PerlSetVar site dbi
     <Location />
        SetHandler perl-script

@@ -1,5 +1,6 @@
   <VirtualHost *:[% config.port %]>
     ServerName [% config.site.xml.servername %]
+    [% expandServerAliases( config.site.xml.aliases ) %]
     PerlSetVar site xml
     <Location />
        SetHandler perl-script

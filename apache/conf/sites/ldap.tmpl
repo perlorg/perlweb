@@ -1,5 +1,6 @@
   <VirtualHost *:[% config.port %]>
     ServerName [% config.site.ldap.servername %]
+    [% expandServerAliases( config.site.ldap.aliases ) %]
     PerlSetVar site ldap
     <Location />
        SetHandler perl-script

@@ -1,6 +1,7 @@
 
   <VirtualHost *:[% config.port %]>
     ServerName [% config.site.noc.servername %]
+    [% expandServerAliases( config.site.noc.aliases ) %]
     PerlSetVar site noc
     PerlTransHandler Combust::Redirect
 

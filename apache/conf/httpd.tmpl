@@ -302,6 +302,12 @@ NameVirtualHost *:[% config.port %]
 # likewise dispatch to /error/ - that way most site configurations can
 # be merged into one virtualhost block - maybe.
 
+[% MACRO expandServerAliases( aliasList ) BLOCK %]
+    [%- FOREACH v = aliasList.list %]
+    ServerAlias [% v %]
+    [%- END -%]
+[% END %]
+
 [% FOREACH site = config.sites_list %]
   # [% site %] 
 [% IF config.site.$site.servername;

@@ -1,6 +1,6 @@
   <VirtualHost *:[% config.port %]>
     ServerName [% config.site.www.servername %]
-	ServerAlias  new.x.perl.org 
+    [% expandServerAliases( config.site.www.aliases ) %]
     PerlSetVar site www
     PerlTransHandler Combust::Redirect
 

@@ -1,5 +1,6 @@
   <VirtualHost *:[% config.port %]>
     ServerName [% config.site.perl4lib.servername %]
+    [% expandServerAliases( config.site.perl4lib.aliases ) %]
     PerlSetVar site perl4lib
     <Location />
        SetHandler perl-script

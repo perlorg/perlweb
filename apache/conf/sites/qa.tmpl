@@ -1,6 +1,7 @@
 
   <VirtualHost *:[% config.port %]>
     ServerName [% config.site.qa.servername %]
+    [% expandServerAliases( config.site.qa.aliases ) %]
     PerlSetVar site qa
     <Location />
        SetHandler perl-script
