@@ -5,7 +5,7 @@
 
 <p>
 Eventually this section of the site will become a full introduction to
-Parrot assembly code. Please be patient while it is built.
+Parrot assembly code and PIR. Please be patient while it is built.
 </p>
 
 <h2>Introduction</h2>
@@ -37,36 +37,25 @@ and explanations - the purpose of this site.
 </p>
 
 <p>
-Download and install the latest version of Parrot if you have not already done so. 
-</p>
-
-<h2>Recent changes</h2>
-
-<p>
-The calling conventions have been completely changed from callee-save
-to caller-save. The examples have been updated and are now much more
-comprehensive.
-</p>
-
-<p>
-Updated the examples to work with the new assembler.
+Download the latest version of Parrot if you have not already done so. 
 </p>
 
 <h2>Parrot assembler</h2>
 
 <p>
-Parrot assembler is a low-level language which compiles directly into
+Parrot assembler (PASM) is a low-level language which compiles directly into
 the Parrot virtual machine. Unlike most other virtual machines (but
 like most real computers), Parrot is register-based. It has 32
 registers of four different types: integers, numbers, strings, and
-PMCs. These are named I0...I31, N0...N31, S0...S31, P0...P31. Most
+PMCs. These are named <tt>I0...I31</tt>, <tt>N0...N31</tt>, <tt>S0...S31</tt>,
+ and <tt>P0...P31</tt>. Most
 Parrot operators have the same format: the name of the operator, the
 destination register, and the operands.
 </p>
 
 <p>
-The Parrot assembly language documentation (PDD6)
-(<tt>docs/parrot_assembly.pod</tt> in the source distribution) is the
+The <a href="/docs/pdd/pdd06_pasm.html">
+Parrot assembly language documentation (PDD6)</a> is the
 main source of information about the assembly language, so you should
 read that for full information about the language.
 </p>
@@ -74,10 +63,11 @@ read that for full information about the language.
 <h2>Hello world!</h2>
 
 <p>
-The first example clearly has to be an example that prints out "Hello
-world!". What could be simpler than the following code:
+The first example clearly has to be an example that prints out <tt>&quot;Hello
+world!&quot;</tt>. What could be simpler than the following code:
 </p>
 
+<!-- CSS? -->
 
 <table CELLPADDING="1" CELLSPACING="0" BORDER="0"
 bgcolor="#0000ff"><tr><td><table WIDTH="600" BORDER="0"
@@ -87,19 +77,30 @@ CELLPADDING="0" CELLSPACING="0" bgcolor="#ccccff"><tr><td><table CELLPADDING="12
         end
 </td></tr></table></td></tr></table></td></tr></table>
 
+<p>
+If you save this small file as &quot;hello.pasm&quot;, you can assemble and execute
+it in one pass with <tt>./parrot hello.pasm</tt>
+</p>
 
 <p>
-If you save this small file as "hello.pasm", you can assemble the code
-to bytecode with <tt>./assemble.pl hello.pasm -o hello.pbc</tt> and
-actually run the code with <tt>./parrot hello.pbc</tt> which will
-indeed print out "Hello world!".
+If you would rather assemble separately, you can first generate a bytecode
+file with <tt>./parrot -o hello.pbc hello.pasm</tt>. Then, you can run the
+pre-assembled bytecode with: <tt>./parrot hello.pbc</tt>. Either way, you'll
+get:
 </p>
+
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+Hello world!
+</td></tr></table></td></tr></table></td></tr></table>
+
 
 <p>
 Note that the first line in the file is a comment, which starts with a
 '#' character - everything until the end of the line is counted as a
 comment. Note the last line contains the operator <tt>end</tt> which
-stops execution of the program.
+stops execution of the program. This is required.
 </p>
 
 <h2>Assignment</h2>
@@ -108,9 +109,8 @@ stops execution of the program.
 Assignment between registers is done with the <tt>set</tt>
 operator. The following code sets the first integer register to 1, the
 first number register to 4.2 and the first string register to
-"Resting". It will then print them all out, resulting in "1, 4.200000, Resting":
+&quot;Resting&quot;
 <p>
-
 
 <table CELLPADDING="1" CELLSPACING="0" BORDER="0"
 bgcolor="#0000ff"><tr><td><table WIDTH="600" BORDER="0"
@@ -127,12 +127,20 @@ CELLPADDING="0" CELLSPACING="0" bgcolor="#ccccff"><tr><td><table CELLPADDING="12
         end
 </td></tr></table></td></tr></table></td></tr></table>
 
+<p>Prints:</p>
+
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+1, 4.200000, Resting
+</td></tr></table></td></tr></table></td></tr></table>
+
 
 <p>
 Note how it seems that the print operator is polymorphic - it can
 print integers, numbers, strings, and string constants. Actually,
 these are all separate operators (for details look in
-<tt>core.ops</tt> in the source distribution) - the assembler
+<a href="/docs/ops/core.html"><tt>core.ops</tt></a>) - the assembler
 decides which to use, keeping our code simple.
 </p>
 
@@ -146,11 +154,19 @@ the same type.
 bgcolor="#0000ff"><tr><td><table WIDTH="600" BORDER="0"
 CELLPADDING="0" CELLSPACING="0" bgcolor="#ccccff"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
         set     I1, 10
-        set     I2, 20
         set     I3, 30
         set     I1, I3
         print   I1
+        print   &quot;\n&quot;
         end
+</td></tr></table></td></tr></table></td></tr></table>
+
+<p>Prints:</p>
+
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+30
 </td></tr></table></td></tr></table></td></tr></table>
 
 
@@ -162,9 +178,8 @@ I3. That is, I1 will hold the value 30.
 
 <p>
 To copy between registers of different types, the <tt>set</tt>
-operator is used:
+operator is also used:
 </p>
-
 
 <table CELLPADDING="1" CELLSPACING="0" BORDER="0"
 bgcolor="#0000ff"><tr><td><table WIDTH="600" BORDER="0"
@@ -180,9 +195,16 @@ CELLPADDING="0" CELLSPACING="0" bgcolor="#ccccff"><tr><td><table CELLPADDING="12
         end
 </td></tr></table></td></tr></table></td></tr></table>
 
+<p>Prints:</p>
+
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+10.000000, 4
+</td></tr></table></td></tr></table></td></tr></table>
 
 <p>
-The above code prints "10.000000, 4". Note that at the moment there
+Note that at the moment there
 are no operators to convert from or to strings.
 </p>
 
@@ -192,7 +214,7 @@ are no operators to convert from or to strings.
 A number of Parrot operators are concerned with arithmetic. The
 <tt>inc</tt> and <tt>dec</tt> operators increase/decrease an integer
 or number register by a constant. If no constant is given, 1 is
-assumed. The following code prints out "13, 39.000000":
+assumed.
 </p>
 
 
@@ -201,10 +223,12 @@ bgcolor="#0000ff"><tr><td><table WIDTH="600" BORDER="0"
 CELLPADDING="0" CELLSPACING="0" bgcolor="#ccccff"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
         set     I1, 10
 	inc	I1       # I1 is now 11
-        inc     I1, 2    # I1 is now 13
+	inc	I1       # I1 is now 12
+        inc     I1       # I1 is now 13
         set     N1, 42.0
         dec     N1       # N1 is now 41.0
-        dec     N1, 2.0  # N1 is now 39.0
+        dec     N1       # N1 is now 40.0
+        dec     N1       # N1 is now 39.0
 	print   I1
 	print   &quot;, &quot;
 	print   N1
@@ -212,13 +236,19 @@ CELLPADDING="0" CELLSPACING="0" bgcolor="#ccccff"><tr><td><table CELLPADDING="12
         end
 </td></tr></table></td></tr></table></td></tr></table>
 
+<p>Prints:</p>
+
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+13, 39.000000
+</td></tr></table></td></tr></table></td></tr></table>
 
 <p>
 More common arithmetic operators are: <tt>add</tt>, <tt>sub</tt>,
 <tt>mul</tt> and <tt>div</tt>, which add, subtract, multiply and
 divide the contents of registers:
 </p>
-
 
 <table CELLPADDING="1" CELLSPACING="0" BORDER="0"
 bgcolor="#0000ff"><tr><td><table WIDTH="600" BORDER="0"
@@ -229,21 +259,34 @@ CELLPADDING="0" CELLSPACING="0" bgcolor="#ccccff"><tr><td><table CELLPADDING="12
         sub     I3, I1, I2  # I3 is now -2 (2-4)
         mul     I3, I1, I2  # I3 is now 8 (2*4)
         div     I3, I2, I1  # I3 is now 2 (4/2)
-	add	I1, I1, 5   # I1 is now 7
+        add     I1, I1, 5   # I1 is now 7
         set     N1, 1
         set     N2, 3
         div     N3, N1, N2  # N3 is now 0.333333
+        print   I1
+        print   &quot;, &quot;
+        print   N3
+        print   &quot;\n&quot;
         end
+</td></tr></table></td></tr></table></td></tr></table>
+
+<p>Prints:</p>
+
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+7, 0.333333
 </td></tr></table></td></tr></table></td></tr></table>
 
 
 <p>
-Note that <tt>add I1, I1, 5</tt> is also valid: constants
-are allowed as well as registers for the last operand.
+Note that <tt>add I1, I1, 5</tt> is also valid: both constants
+and registers are allowed for the last operand.
 </p>
 
 <p>
-There are also other arithmetic operators, such as <tt>mod</tt>
+There are also <a href="/docs/ops/math.html">other arithmetic operators</a>,
+ such as <tt>mod</tt>
 (modulo) and a whole host of transcendental operators (<tt>sin</tt>,
 <tt>cos</tt>, <tt>pow</tt>, <tt>exp</tt>, <tt>log10</tt>...).
 </p>
@@ -251,7 +294,8 @@ There are also other arithmetic operators, such as <tt>mod</tt>
 <h2>String operators</h2>
 
 <p>
-Parrot includes a minimal set of string operators: <tt>length</tt>
+Parrot includes a minimal set of <a href="/docs/ops/string.html">
+string operators</a>: <tt>length</tt>
 (find the length of a string), <tt>chopn</tt> (remove characters from
 the end of the string), <tt>concat</tt> (concatenate one string to the
 end of another), <tt>substr</tt> (extract substrings), <tt>repeat</tt>
@@ -264,14 +308,29 @@ bgcolor="#0000ff"><tr><td><table WIDTH="600" BORDER="0"
 CELLPADDING="0" CELLSPACING="0" bgcolor="#ccccff"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
         set     S1, &quot;Fourty&quot;
         set     S2, &quot;two&quot;
-        length  I1, S2      # I1 is now 3
-	concat  S1, S2      # S1 is now &quot;Fourtytwo&quot;
-	concat  S3, S1, S2  # S3 is &quot;Fourtytwotwo&quot;
-	substr  S2, S1, 0, 4 # S2 is &quot;Four&quot;
-        chopn   S1, 3       # S1 is now &quot;Fourty&quot;
+        length  I1, S2       # I1 is now 3
+        print   I1
+        print   &quot;, &quot;
+        concat  S1, S2       # S1 is &quot;Fourtytwo&quot;
+        concat  S3, S1, S2  # S3 is &quot;Fourtytwotwo&quot;
+        substr  S2, S1, 0, 4 # S2 is &quot;Four&quot;
+        chopn   S1, 3        # S1 is &quot;Fourty&quot;
+        print   S1
+        print   &quot;, &quot;
+        print   S2
+        print   &quot;, &quot;
+        print   S3
+        print   &quot;\n&quot;
         end
 </td></tr></table></td></tr></table></td></tr></table>
 
+<p>Prints:</p>
+
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+3, Fourty, Four, Fourtytwotwo
+</td></tr></table></td></tr></table></td></tr></table>
 
 <p>
 Note that the two-argument <tt>concat</tt> concatenates the second
@@ -284,9 +343,8 @@ version which can do this, however.
 
 <p>
 Branching is terribly useful in a program. The <tt>branch</tt>
-operator is similar to a "goto", and takes a label. Labels are
-presented at the start of the line with a colon. The following code
-prints "Beautiful plumage!":
+operator is similar to a &quot;goto&quot;, and takes a label. Labels are
+presented at the start of the line with a colon. 
 </p>
 
 
@@ -303,16 +361,26 @@ CHOIR:  set     S2, &quot; plumage!\n&quot;
 END:    end
 </td></tr></table></td></tr></table></td></tr></table>
 
+<p>Prints:</p>
+
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+Beautiful plumage!
+</td></tr></table></td></tr></table></td></tr></table>
 
 <p>
 The following conditional operators are available: <tt>eq</tt>
 (equal), <tt>ne</tt> (not equal), <tt>lt</tt> (less than), <tt>le</tt>
 (less than or equal), <tt>gt</tt> (greater than), <tt>ge</tt> (greater
 than or equal). They take two integer or numeric registers and a label
-to jump to if the condition is true. The following code prints the
+to jump to if the condition is true. If the condition is false, then
+execution goes to the next statement.
+</p>
+<p>
+The following code prints the
 numbers from 1 to 10, by looping over until I1 is greater than 10:
 </p>
-
 
 <table CELLPADDING="1" CELLSPACING="0" BORDER="0"
 bgcolor="#0000ff"><tr><td><table WIDTH="600" BORDER="0"
@@ -320,12 +388,20 @@ CELLPADDING="0" CELLSPACING="0" bgcolor="#ccccff"><tr><td><table CELLPADDING="12
         set     I1, 1
 REDO:   gt      I1, 10, END
         print   I1
-        print   &quot;\n&quot;
+        print   &quot; &quot;
         inc     I1
         branch  REDO
-END:    end
+END:    print &quot\n&quot;
+        end
 </td></tr></table></td></tr></table></td></tr></table>
 
+<p>Prints:</p>
+
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+1 2 3 4 5 6 7 8 9 10 
+</td></tr></table></td></tr></table></td></tr></table>
 
 <p>
 The conditional operators take a register and either a constant or
@@ -346,18 +422,25 @@ CELLPADDING="0" CELLSPACING="0" bgcolor="#ccccff"><tr><td><table CELLPADDING="12
         set     I1, 1
 	branch  LOOP
 REDO:   print   I1
-        print   &quot;\n&quot;
+        print   &quot; &quot;
         inc     I1
 LOOP:   le      I1, 10, REDO
+        print   &quot;\n&quot;
         end
 </td></tr></table></td></tr></table></td></tr></table>
 
+<p>Also prints:</p>
+
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+1 2 3 4 5 6 7 8 9 10 
+</td></tr></table></td></tr></table></td></tr></table>
 
 <p>
 The <tt>if</tt> opcode tests if a register holds a true value. Any
-value other than zero is true, so the following code prints "True!":
+value other than zero is true.
 </p>
-
 
 <table CELLPADDING="1" CELLSPACING="0" BORDER="0"
 bgcolor="#0000ff"><tr><td><table WIDTH="600" BORDER="0"
@@ -370,13 +453,13 @@ TRUE:   print   &quot;True!\n&quot;
 END:    end
 </td></tr></table></td></tr></table></td></tr></table>
 
+<p>Prints:</p>
 
-<p>
-Note that an early version of Parrot used conditional operators which
-had an additional label to jump to if the condition was false. This is
-no longer available: on false, the operators now fall through to the
-next instruction.
-</p>
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+True!
+</td></tr></table></td></tr></table></td></tr></table>
 
 <h2>Subroutines</h2>
 
@@ -389,7 +472,7 @@ The simplest kind of subroutine is one that does not pass or return
 arguments. The important operators here are <tt>bsr</tt> (Branch
 SubRoutine, which jumps to a label) and <tt>ret</tt> (RETurn, which
 returns from a subroutine). The following code jumps to a subroutine
-named HW which prints out "Hello there!" and then returns:
+named <tt>HELLO</tt> which prints a message and returns.
 </p>
 
 
@@ -403,26 +486,37 @@ HELLO:  print &quot;Hello there!\n&quot;
         ret
 </td></tr></table></td></tr></table></td></tr></table>
 
+<p>Prints:</p>
+
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+Hello there!
+</td></tr></table></td></tr></table></td></tr></table>
+
 
 <p>
 When coding Parrot assembler, it is very important to know about the
-Parrot parameter passing conventions. These are documented in PDD03:
-Parrot Calling Conventions, available in
-<tt>docs/pdds/pdd03_calling_conventions.pod</tt>.  The most important
+Parrot parameter passing conventions. These are documented in
+ <a href="/docs/pdd/pdd03_calling_conventions.html">PDD03:
+Parrot Calling Conventions</a>.
+ The most important
 point is that the caller is responsible for preserving any environment
-it is interested in keeping.  When calling a subroutine, I0 is true if
-it is being called with prototyped parameters. I1 holds the number of
-items pushed on the stack. If called with parameters, I5-I31, S5-S31,
-P5-P31 and N5-N31 holds the integer, string, PMC and numeric
+it is interested in keeping.  When calling a subroutine, <tt>I0</tt> is true if
+it is being called with prototyped parameters. <tt>I1</tt> holds the number of,
+items pushed on the stack. If called with parameters, <tt>I5-I31</tt>, 
+<tt>S5-S31</tt>,
+<tt>P5-P31</tt> and <tt>N5-N31</tt> holds the integer, string, PMC and numeric
 parameters. All overflow parameters and parameters called without
 prototyped parameters are put on the stack in reverse order.
 </p>
 
 <p>
-Return conventions are also important. On return from a subroutine, I0
-holds the number of return values on the stack, I1-I4 the number of
+Return conventions are also important. On return from a subroutine, <tt>I0</tt>
+holds the number of return values on the stack, <tt>I1-I4</tt> the number of
 return values in the integer, string, PMC and numeric registers.
-I5-I31, S5-S31, P5-P31 and N5-N31 hold any integer, string, PMC and
+<tt>I5-I31</tt>, <tt>S5-S31</tt>, <tt>P5-P31</tt> and <tt>N5-N31</tt>
+ hold any integer, string, PMC and
 numeric return values. The stack holds overflow values or values for
 functions that don't have a return prototype.
 </p>
@@ -436,12 +530,11 @@ are going to play nice and follow the rules.
 
 <p>
 Our first example will be a subroutine that doubles its first integer
-argument. A trivial task you may think, but we're going to follow the
+argument. A trivial task, you may think, but we're going to follow the
 conventions by the book and set up the calling and returning
 environments correctly. The example also does error checking to make
 sure the subroutine has been called in the right way and the caller
 checks that the subroutine returns the values that it is expecting.
-It prints "84 was returned":
 </p>
 
 
@@ -462,7 +555,7 @@ CELLPADDING="0" CELLSPACING="0" bgcolor="#ccccff"><tr><td><table CELLPADDING="12
 	end
 
 RETURNERROR:
-	print	"Error with return values from DOUBLE!\n"
+	print	&quot;Error with return values from DOUBLE!\n&quot;
 	end
 
 DOUBLE: ne	I0, 1, CALLERROR # not prototyped
@@ -478,13 +571,21 @@ DOUBLE: ne	I0, 1, CALLERROR # not prototyped
 	ret
 
 CALLERROR:
-	print	"Error calling DOUBLE!\n"
+	print	&quot;Error calling DOUBLE!\n&quot;
 	end
+</td></tr></table></td></tr></table></td></tr></table>
+
+<p>Prints:</p>
+
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+84 was returned
 </td></tr></table></td></tr></table></td></tr></table>
 
 <p>
 Note that in the example above we're assuming that the we know the
-prototype and thus pass around an integer value in I5. The next
+prototype and thus pass around an integer value in <tt>I5</tt>. The next
 example passes the value on the stack. Note the use of the 
 <tt>save</tt> and <tt>restore</tt> operators to push and pop things
 from the stack.
@@ -504,11 +605,11 @@ CELLPADDING="0" CELLSPACING="0" bgcolor="#ccccff"><tr><td><table CELLPADDING="12
 	ne	I4, 0, RETURNERROR # numeric return values
 	restore I0
 	print	I0
-	print	" was returned\n"
+	print	&quot; was returned\n&quot;
 	end
 
 RETURNERROR:
-	print	"Error with return values from DOUBLE!\n"
+	print	&quot;Error with return values from DOUBLE!\n&quot;
 	end
 
 DOUBLE: ne	I0, 0, CALLERROR # prototyped
@@ -526,14 +627,22 @@ DOUBLE: ne	I0, 0, CALLERROR # prototyped
 	ret
 
 CALLERROR:
-	print	"Error calling DOUBLE!\n"
+	print	&quot;Error calling DOUBLE!\n&quot;
 	end
+</td></tr></table></td></tr></table></td></tr></table>
+
+<p>Also prints:</p>
+
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+84 was returned
 </td></tr></table></td></tr></table></td></tr></table>
 
 <p>
 The next example finds the greatest common divisor of two integers
-(passed in I5 and I6) and returns the value, as per the convention, in
-I5. This should print "32 was returned":
+(passed in <tt>I5</tt> and <tt>I6</tt>)
+and returns the value, as per the convention, in <tt>I5</tt>.
 </p>
 
 
@@ -551,11 +660,11 @@ CELLPADDING="0" CELLSPACING="0" bgcolor="#ccccff"><tr><td><table CELLPADDING="12
 	ne	I3, 0, RETURNERROR # PMC return values
 	ne	I4, 0, RETURNERROR # numeric return values
 	print	I5
-	print	" was returned\n"
+	print	&quot; was returned\n&quot;
 	end
 
 RETURNERROR:
-	print	"Error with return values from EUCLID!\n"
+	print	&quot;Error with return values from EUCLID!\n&quot;
 	end
 
 EUCLID: ne	I0, 1, CALLERROR # not prototyped
@@ -576,10 +685,17 @@ DONE:   set     I5, I6
 	ret
 
 CALLERROR:
-	print	"Error calling EUCLID!\n"
+	print	&quot;Error calling EUCLID!\n&quot;
 	end
 </td></tr></table></td></tr></table></td></tr></table>
 
+<p>Prints:</p>
+
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+32 was returned
+</td></tr></table></td></tr></table></td></tr></table>
 
 <p>
 
@@ -588,9 +704,7 @@ passed on the generic Parrot stack in reverse order with the
 <tt>save</tt> operator, and the number of arguments is passed in
 I1. They can then be read into a register with the <tt>restore</tt>
 operator. The following example code shows a subroutine that can
-return the sum of a variable number of integers. This will print out
-"60 was the sum":
-
+return the sum of a variable number of integers. 
 </p>
 
 <table CELLPADDING="1" CELLSPACING="0" BORDER="0"
@@ -609,11 +723,11 @@ CELLPADDING="0" CELLSPACING="0" bgcolor="#ccccff"><tr><td><table CELLPADDING="12
 	ne	I4, 0, RETURNERROR # numeric return values
 	restore I0
 	print	I0
-	print	" was the sum\n"
+	print	&quot; was the sum\n&quot;
 	end
 
 RETURNERROR:
-	print	"Error with return values from SUM!\n"
+	print	&quot;Error with return values from SUM!\n&quot;
 	end
 
 SUM:	ne	I0, 0, CALLERROR # prototyped
@@ -621,7 +735,7 @@ SUM:	ne	I0, 0, CALLERROR # prototyped
 
 	set     I2, 0 # the sum
 REDO:   restore I3
-	inc     I2, I3
+	add     I2, I3
 	dec     I1
 	if      I1, REDO
 
@@ -635,16 +749,24 @@ REDO:   restore I3
 	ret
 
 CALLERROR:
-	print	"Error calling SUM!\n"
+	print	&quot;Error calling SUM!\n&quot;
 	end
+</td></tr></table></td></tr></table></td></tr></table>
+
+<p>Prints:</p>
+
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+60 was the sum
 </td></tr></table></td></tr></table></td></tr></table>
 
 
 <p>
 When returning back a variable number of values from a subroutine,
 they are passed on the generic Parrot stack in reverse order much like
-the above example. The example below takes in two arguments via I0 and
-I1 and returns the list of integers that span between them. The
+the above example. The example below takes in two arguments via <tt>I0</tt> and
+<tt>I1</tt> and returns the list of integers that span between them. The
 following code will print out all the numbers from 42 to 56:
 </p>
 
@@ -665,13 +787,14 @@ CELLPADDING="0" CELLSPACING="0" bgcolor="#ccccff"><tr><td><table CELLPADDING="12
 
 MORE:   restore I2
 	print   I2
-	print   "\n"
+	print   &quot; &quot;
 	dec     I1
 	if      I1, MORE
+	print   &quot;\n&quot;
 	end
 
 RETURNERROR:
-	print	"Error with return values from SPAN!\n"
+	print	&quot;Error with return values from SPAN!\n&quot;
 	end
 
 SPAN:	ne	I0, 1, CALLERROR # not prototyped
@@ -691,17 +814,26 @@ REDO:   save    I6
 	ret
 
 CALLERROR:
-	print	"Error calling SPAN!\n"
+	print	&quot;Error calling SPAN!\n&quot;
 	end
+</td></tr></table></td></tr></table></td></tr></table>
+
+<p>Prints:</p>
+
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 
 </td></tr></table></td></tr></table></td></tr></table>
 
 
 <p>
 If the caller requires that some registers keep their value over a
 call to a subroutine, then it must save their value before the call
-and restore them after it. The following code saves I5 before calling
-BANNER so that even though BANNER overwrites I5 we restore it after
-the call and end up printing "I5 is 4":
+and restore them after it. The following code saves <tt>I5</tt> before calling
+<tt>BANNER</tt> so that even though <tt>BANNER</tt> overwrites 
+<tt>I5</tt> we restore it after
+the call and end up printing &quot;I5 is 4&quot;:
 </p>
 
 
@@ -719,20 +851,20 @@ CELLPADDING="0" CELLSPACING="0" bgcolor="#ccccff"><tr><td><table CELLPADDING="12
 	ne	I3, 0, RETURNERROR # PMC return values
 	ne	I4, 0, RETURNERROR # numeric return values
 	restore	I5
-	print	"I5 is "
+	print	&quot;I5 is &quot;
 	print   I5
-	print	"\n"
+	print	&quot;\n&quot;
 	end
 
 RETURNERROR:
-	print	"Error with return values from BANNER!\n"
+	print	&quot;Error with return values from BANNER!\n&quot;
 	end
 
 BANNER:	ne	I0, 1, CALLERROR # not prototyped
 	ne	I1, 0, CALLERROR # items on stack
 
 	set	I5, 10 # stomp over I5 for no reason
-	print	"Hello there. Welcome to the program.\n"
+	print	&quot;Hello there. Welcome to the program.\n&quot;
 
 	set	I0, 0 # no items on the stack
 	set	I1, 0 # no integer return values
@@ -742,9 +874,19 @@ BANNER:	ne	I0, 1, CALLERROR # not prototyped
 	ret
 
 CALLERROR:
-	print	"Error calling BANNER!\n"
+	print	&quot;Error calling BANNER!\n&quot;
 	end
 </td></tr></table></td></tr></table></td></tr></table>
+
+<p>Prints:</p>
+
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+Hello there. Welcome to the program.
+I5 is 4
+</td></tr></table></td></tr></table></td></tr></table>
+
 
 
 <h2>PMCs</h2>
@@ -767,7 +909,7 @@ ParrotPointer and IntQueue.
 To use a PMC, you must first create it using the <tt>new</tt>
 operator. You can then assign it a value and treat it much like the
 lower-level types. The following code creates two PerlInt PMCs and
-adds them together, printing out "444":
+adds them together.
 </p>
 
 
@@ -784,16 +926,21 @@ CELLPADDING="0" CELLSPACING="0" bgcolor="#ccccff"><tr><td><table CELLPADDING="12
         end
 </td></tr></table></td></tr></table></td></tr></table>
 
+<p>Prints:</p>
+
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+444
+</td></tr></table></td></tr></table></td></tr></table>
 
 <p>
 It is important to note that Perl integers also behave as strings and
 that PMCs can change their own type on the fly. The following code
-concatenates a number and a string. So while P0 starts off as a
+concatenates a number and a string. So while <tt>P0</tt> starts off as a
 PerlInt at the beginning, it is changed to a PerlString when a string
-is concatenated to it. In that way, the following prints out "42 is
-the answer!".
+is concatenated to it. 
 </p>
-
 
 <table CELLPADDING="1" CELLSPACING="0" BORDER="0"
 bgcolor="#0000ff"><tr><td><table WIDTH="600" BORDER="0"
@@ -801,22 +948,22 @@ CELLPADDING="0" CELLSPACING="0" bgcolor="#ccccff"><tr><td><table CELLPADDING="12
 	new     P0, .PerlInt
         set     P0, 42
 	new     P1, .PerlInt
-	set     P1, " is the answer!"
+	set     P1, &quot; is the answer!&quot;
 	concat  P0, P0, P1
         print   P0
-        print   "\n"
+        print   &quot;\n&quot;
         end
 </td></tr></table></td></tr></table></td></tr></table>
 
+<p>Prints:</p>
 
-<h2>Future sections</h2>
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+42 is the answer!
+</td></tr></table></td></tr></table></td></tr></table>
 
-<p>
-More sections to be added here. A great deal of the Parrot development
-process time is being spent on getting the internals right, so it may
-seem that Parrot development is slow. Future versions of Parrot will
-have scalar and list PMCs, then hash PMCs. Great things will happen.
-</p>
+<h2>Miscellaneous</h2>
 
 <p>
 The rest of this examples page consists of short, easy-to-understand
@@ -841,10 +988,20 @@ REDO: 	set	I5, I4
 	add	I4, I3, I4
 	set	I3, I5
 	print 	I3
-	print 	&quot;\n&quot;
+	print 	&quot; &quot;
 	inc	I1
 	lt 	I1, I2, REDO
-DONE:	end
+DONE:	print 	&quot;\n&quot;
+        end
+</td></tr></table></td></tr></table></td></tr></table>
+
+<p>Prints:</p>
+
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+The first 20 Fibonacci numbers are:
+1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987 1597 2584 4181 6765 
 </td></tr></table></td></tr></table></td></tr></table>
 
 
@@ -869,6 +1026,28 @@ REDO:	inc	I1
 DONE:	end
 </td></tr></table></td></tr></table></td></tr></table>
 
+<p>Prints:</p>
+
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+The first 15 factorials are:
+1
+2
+6
+24
+120
+720
+5040
+40320
+362880
+3628800
+39916800
+479001600
+1932053504
+1278945280
+2004310016
+</td></tr></table></td></tr></table></td></tr></table>
 
 <h2>Primes</h2>
 
@@ -901,11 +1080,21 @@ OK:     inc     I3
 	le      I3, I4, LOOP
 	# We haven't found a factor so it must be a prime
 	print   I1
-	print   &quot;\n&quot;
+	print   &quot; &quot;
 NEXT:   # Move on to the next number
 	inc     I1
 	le      I1, I2, REDO
+	print   &quot;\n&quot;
 	end
+</td></tr></table></td></tr></table></td></tr></table>
+
+<p>Prints:</p>
+
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+The primes up to 100 are:
+1 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97 
 </td></tr></table></td></tr></table></td></tr></table>
 
 
@@ -943,7 +1132,7 @@ REDO:   div     N4, 1.0, N1
 	branch  END
 SUB:    sub     N3, N3, N4
 	set     I1, 0
-END:    inc     N1, 2
+END:    add     N1, 2
 	le      N1, N2, REDO
 DONE:   mul     N3, N3, 4.0
 	print   &quot;PI is (very) approximately: &quot;
@@ -952,6 +1141,13 @@ DONE:   mul     N3, N3, 4.0
 	end
 </td></tr></table></td></tr></table></td></tr></table>
 
+<p>Prints:</p>
+
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+PI is (very) approximately: 3.141591
+</td></tr></table></td></tr></table></td></tr></table>
 
 <h2>Mandlebrot generator</h2>
 

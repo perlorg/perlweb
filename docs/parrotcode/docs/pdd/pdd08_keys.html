@@ -1,0 +1,19 @@
+[% page.title = "Indexing Aggregate PMCs" %]
+[% page.style = "default.html" %]
+[% page.sidebar = INCLUDE "tpl/navigation.html" %]
+
+[%#
+<B>PLACEHOLDER</B><BR>
+POD comes from 
+
+<tt>http://cvs.perl.org/cvsweb/parrot/docs/pdds/pdd08_keys.pod?rev=HEAD&content-type=text/plain</tt>
+
+and cache for 24 hours.
+%]
+
+[% USE ua = CacheLWPSimple %]
+[% data = ua.get( 'url' =>
+      'http://cvs.perl.org/cvsweb/parrot/docs/pdds/pdd08_keys.pod?rev=HEAD&content-type=text/plain'
+           'ttl' => 1*60*60 ) %]
+[% USE PodSimple %]
+[% PodSimple.parse('html', data ) %]
