@@ -7,7 +7,7 @@ use base qw(Combust::Control);
 my $map = {};
 
 sub reload {
-  my ($class, $file) = @_;
+  my ($self, $file) = @_;
 
   #warn "Checking file $file";
 
@@ -55,6 +55,7 @@ sub reload {
 
 sub handler($$) {
   my ($class, $r) = @_;
+  my $self = $class->_init($r); # we need an actual instance
 
   # this avoids some weirdness I can't otherwise figure out right now.
   return DECLINED if $r->uri =~ m!^/images!;
@@ -62,13 +63,13 @@ sub handler($$) {
   my $site = $r->dir_config('site');
   #warn join " / ", "REDIRECT CHECK FOR $site", $r->uri, $r->content_type;
 
-  my $path = $class->provider->paths;
+  my $path = $self->provider->paths;
   return unless $path and $path->[0];
   $path = $path->[0];
 
   my $file = "$path/.htredirects";
 
-  $class->reload($file);
+  $self->reload($file);
   my $conf = $map->{$file} ? $map->{$file}->{rules} : undef; 
 
   return DECLINED unless $conf and ref $conf eq "ARRAY";
@@ -84,7 +85,7 @@ sub handler($$) {
 	$r->uri($url);
       }
       else {
-	return $class->redirect($r, $url,
+	return $self->redirect($r, $url,
 				$c->[2] eq "P" ? 1 : 0
 			       );
       }
