@@ -30,8 +30,6 @@ sub _setup_dbs {
     $dbs{$db_name} = $db_config;
   }
 
-  warn Data::Dumper->Dump([\%dbs], [qw(dbs)]);
-
   unless ($got_default) {
     if (keys %dbs > 1) {
       croak 'You defined more than one database but didn\'t mark one of them "default=1"';
