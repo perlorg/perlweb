@@ -1,0 +1,228 @@
+=head1 The Perl 6 Summary for the week ending 20040118
+
+I hope you'll forgive the lack of banter before we start in on
+perl6-internals.
+
+=head2 Threads. Again.
+
+Still more proposals about threads this week. Jeff Clites offered some
+notes based on the Java Virtual Machine's threading
+model. Surprisingly, this was the week's only threads thread. Next
+week: Dan starts to outline the design that's going to be
+implemented.
+
+L<http://groups.google.com/groups?selm=DD009048-44E1-11D8-8758-000393A6B9DA@mac.com>
+
+=head2 Questions about abstract PMCs
+
+StE<eacute>phane Payrard had some questions about abstract PMCs and
+whether they were needed in F<core_pmcs.h> and F<pmctypes.pasm> to
+make PMC type checking work in IMCC. Leo TE<ouml>tsch answered
+questions, but didn't think they were actually needed in those
+files. Discussion ensued.
+
+L<http://groups.google.com/groups?selm=20040112020611.GD12650@stefp.dyndns.org>
+
+=head2 Docs and releases
+
+Tim Bunce wondered whether a date had been set for the next
+release. He also pointedly wondered if the docs were up to date with
+best practises and whether having them up to date would be a goal for
+the next release. Dan answered: "No", "no" and "yes, bordering on a
+requirement and not just a goal". Discussion ensued again. For some
+reason this thread flushed out a few 'shy lurkers' so let's extend a
+big hello to Paul Cochrane, Herbert Snorrason, Matt Diephouse, Robin
+Redeker, Richard Holden and Mark Solinski.
+
+L<http://groups.google.com/groups?selm=20040112115207.GE28690@dansat.data-plan.com>
+
+=head2 Making continuations work properly
+
+The work of getting continuations to close over the various bits and
+pieces the should close over continues; it seems there's rather more
+to doing the Right Thing than meets the eye. 
+
+L<http://groups.google.com/groups?selm=a06010205bc2868217313@[10.0.1.2]>
+
+=head2 C<new_noinit> and C<init> ops
+
+Luke Palmer was trying to implement a loop using a continuation. He
+wanted to be able to defer initialization of a continuation so he
+implemented two stage instantiation & initialization; wrapped it
+up in two new ops, C<new_noinit> and C<init>, and posted the resulting
+patch to the list. Michal Wallace thought it best to just use a
+lexical. Then he perpetrated a spectacularly extended metaphor about
+Parrot entitled I<Mr Parrot's Neighborhood>, which probably works best
+if you don't automatically correct the spelling of neighbourhood. 
+
+L<http://groups.google.com/groups?selm=20040112200006.GB16781@babylonia.flatirons.org>
+
+L<http://groups.google.com/groups?selm=Pine.LNX.4.58.0401122138370.2161@hydrogen.sabren.com> -- Mr Parrot's
+neighborhood
+
+=head2 Namespace stuff
+
+Jeff Clites revisited a thread from a while back about namespaces. His
+discussion centred on whether the namespace part of a name should be,
+logically a string C<"Global::Namespace::Hierarchy"> or list of
+strings C<["Global", "Namespace", "Hierarchy"]>. He argued that it
+made sense to just use a simple thing and asked what we actually
+gained from having a hierarchy. Dan wants a hierarchy because it makes
+cross language sharing of namespaces easier. Larry wants a hierarchy
+'cos it makes all sorts of things easier. Tim Bunce offered another
+proposal which received qualified approval from both Dan & Leo. 
+
+L<http://groups.google.com/groups?selm=2FA1B181-45F4-11D8-8AF9-000393A6B9DA@mac.com>
+
+L<http://groups.google.com/groups?selm=20040116110746.GA38383@dansat.data-plan.com> -- Tim's proposal
+
+=head2 Parrot string docs
+
+Robert Eaglestone had a bunch of questions about Parrot's String
+documentation. Answers were forthcoming.
+
+L<http://groups.google.com/groups?selm=643D1A30C819104898138C4CE3D8ABCA323256@omnimail.omnisys-inc.com>
+
+=head2 IMCC v1 feature freeze
+
+Melvin Smith announced a feature freeze for IMCC version 1 and called
+for bug reports for it. He plans to get F<imcc1> working as correctly
+as possible and frozen within a couple of weeks before starting the
+really major work (and deprecation of features) on IMCC 2. There was a
+certain amount of wrangling about CVS issues, but it was generally
+thought to be a good idea.
+
+L<http://groups.google.com/groups?selm=5.1.1.6.2.20040115021154.027cdb38@pop.mindspring.com>
+
+=head2 Managed and unmanaged structs
+
+Dan had some thoughts about accessing and generally monkeying around
+with C structs and added a couple of related tasks to the todo
+list. Leo pointed out that quite a bit of it was done, and pointed out
+where further work was needed.
+
+L<http://groups.google.com/groups?selm=a06010205bc2c6abcb9bf@[10.0.1.2]>
+
+=head2 Loading bytecode at runtime
+
+Dan did some more design work on how runtime loading of bytecode
+should be handled.
+
+L<http://groups.google.com/groups?selm=a06010206bc2c6dd27304@[10.0.1.2]>
+
+=head2 The todo list
+
+Dan was reminded that we have a full, working, RT installation so he's
+started creating tickets for each todo. This should make for better
+tracking and ownership of tasks. Hurrah. He asked for a volunteer or
+two to manage the todo queue. Dave Pippenger and Stephane Peiry
+stepped up to the plate with heartening alacrity. Go guys.
+
+L<http://groups.google.com/groups?selm=a06010208bc2c80efede3@[10.0.1.2]>
+
+L<http://bugs6.perl.org/>
+
+=head2 Numeric formatting
+
+More design from Dan. This time he was thinking about numeric
+formatting. His initial plan was to lift the formatting rules from
+SQL, but I'm not sure if that plan survived contact with Michael Scott
+who pointed out that ICU (the Unicode library that's already included
+in the Parrot tree) has its own number formatting API. After some
+discussion in which Dan pointed out that he really didn't want to have
+to initialize the entire Unicode system just to get number formatting,
+Michael suggested we copy the ICU API, even if we use our own
+implementation. 
+
+L<http://groups.google.com/groups?selm=a06010210bc2c8de4f735@[10.0.1.2]>
+
+=head2 Unicode, internationalization, C++ and ICU
+
+It's obviously an ICU week this week. Dan announced that it's time we
+actually started building ICU into Parrot. The catch is, it doesn't
+work right now. He asked for volunteers to track ICU and keep things
+reasonably up to date. Apart from the obvious pony, Dan wants ICU
+building, working and not needing any C++. Personally, I think he's
+more likely to get a pony than to get rid of the C++ dependency.
+
+Jonathan Worthington was the bearer of the bad new that, because ICU's
+configuration script is a shell script, it's going to be exceedingly
+tricky to get ICU to build on any platform that doesn't have bash or
+similar. Which makes things tricky for Win32 types (though, following
+posts from others, not as tricky as Jon first thought.) 
+
+Nobody has yet volunteered to be the ICU pumpking though.
+
+L<http://groups.google.com/groups?selm=a06010213bc2ca321f184@[10.0.1.2]>
+
+=head2 Variable clusters
+
+Melvin Smith made a suggestion for optimizing variable handling by
+using 'variable clusters'. I'm afraid I went into 'bear of little
+brain' mode when reading the thread, but there was a fair amount of
+discussion. 
+
+L<http://groups.google.com/groups?selm=5.1.1.6.2.20040115153749.01f25d90@pop.mindspring.com>
+
+=head2 POD Errors
+
+A big thank you to Michael Scott who's been cleaning up the
+documentation tree's POD errors, and has made an HTML version of
+Parrot's docs available. For his next trick, he's going to normalize
+the existing POD and add some content to those files that need it.
+
+L<http://groups.google.com/groups?selm=F2FF77FC-47AE-11D8-BC5E-000A95C50226@mac.com>
+
+=head2 Allocation food for thought
+
+Luke Palmer has been monkeying with the small object allocator in an
+effort to get things working fast enough that he can excise
+RetContinuations from Parrot's object model (They're not continuations
+and they are next to impossible to promote to continuations if you
+need to) and replacing the current chunked control stack with a
+conceptually simpler linked continuation chain. His results were
+interesting. I'm not sure his patch will be going in, but he achieved
+some pretty impressive optimization of full continuations.
+
+L<http://groups.google.com/groups?selm=20040116103456.GA3525@babylonia.flatirons.org>
+
+=head2 Vtables organization
+
+Leo had some questions about using 'magic' vtables with PMCs. Dan
+outlined his proposed approach based on chained vtables. 
+
+L<http://groups.google.com/groups?selm=4007C2C3.20209@toetsch.at>
+
+=head2 Events and JIT
+
+Leo did some thinking aloud about getting Event handling working with
+the JIT core (it works everywhere else). Cue vast amounts of discussion.
+
+L<http://groups.google.com/groups?selm=4007BF0B.6070102@toetsch.at>
+
+=head2 Ops file hints
+
+Leo had a list of suggestions for extra data that he thinks needs to
+go into the ops files. Dan agreed with everything on the list and
+added a todo item to the Parrot RT queue.
+
+L<http://groups.google.com/groups?selm=4007C7B5.7070204@toetsch.at>
+
+=head1 Meanwhile in perl6-language
+
+=head2 run-once code
+
+David Storrs wanted a way of ensuring that a an expensive function in
+a conditional would never need to be evaluated again after the
+condition became true. Various answers were suggested, some more
+complicated than others.
+
+L<http://groups.google.com/groups?selm=20040114043721.GC99058@megazone.bigpanda.com>
+
+=head1 Announcements and Apologies
+
+This week's summary is dedicated to the memory of my grandmother,
+Kathleen Hudson, who died on Monday morning in her sleep. She was 82
+years old, and apart from the last couple of years of Alzheimer's she
+was always the life and soul of any party. We're all going to miss
+her.
