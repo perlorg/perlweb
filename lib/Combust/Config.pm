@@ -79,6 +79,28 @@ sub apache_reload {
   $cfg->param('apache_reload') || 0;
 }
 
+# cronolog settings
+# {{{
+
+sub use_cronolog {
+  $cfg->param('use_cronolog') || 0;
+}
+
+sub cronolog_path {
+  $cfg->param('cronolog_path') || "/usr/sbin/cronolog";
+}
+
+sub cronolog_template {
+  $cfg->param('cronolog_template') || "%Y/%m/LOGFILE.%Y%m%d";
+}
+
+sub cronolog_params {
+  $cfg->param('cronolog_params') || "";
+}
+
+
+# }}}
+
 #sub config {
 #  $cfg;
 #}

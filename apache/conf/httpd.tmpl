@@ -1,4 +1,6 @@
+[% # -*- apache -*- %]
 [% dont_edit # add warning; do edit *THIS* file.. ;-) %]
+
 
 #
 # httpd.tmpl - 
@@ -94,13 +96,28 @@ UseCanonicalName Off
 DefaultType text/html
 HostnameLookups Off
 
-ErrorLog [% root_default %]/apache/logs/error_log
+
 LogLevel warn
 
 LogFormat "%h %V %u %t %{site}n \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
 LogFormat "%h %V %u %t \"%r\" %>s %b" common
 
-CustomLog [% root_default %]/apache/logs/access_log combined
+[% IF config.use_cronolog %]
+  [% cronolog_access      = config.cronolog_template.replace("LOGFILE","access");
+     cronolog_error       = config.cronolog_template.replace("LOGFILE","error");
+     cronolog_access_params = config.cronolog_params.replace("LOGFILE","access");
+     cronolog_error_params  = config.cronolog_params.replace("LOGFILE","error");
+     cronolog_access_params = cronolog_access_params.replace("LOGDIR", "${root_default}/apache/logs");
+     cronolog_error_params  = cronolog_error_params.replace("LOGDIR",  "${root_default}/apache/logs");
+  %]
+  ErrorLog  "|[% config.cronolog_path %] [% root_default %]/apache/logs/[% cronolog_error  %] [% cronolog_error_params  %]"
+  CustomLog "|[% config.cronolog_path %] [% root_default %]/apache/logs/[% cronolog_access %] [% cronolog_access_params %]" combined
+[% ELSE %]
+  ErrorLog  [% root_default %]/apache/logs/error_log
+  CustomLog [% root_default %]/apache/logs/access_log combined
+[% END %] 
+
+
 ServerSignature Off
 
  # <IfModule mod_alias.c>
