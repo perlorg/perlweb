@@ -11,8 +11,9 @@
 
 # Ask likes short names like this
 /docs/?     /docs.html   internal
-/about/?     /about.html  perm
-/press/?     /about.html  perm
+/docs/(.*)     /docs.html   internal
+/about/(.*)     /about.html  perm
+/press/?(.*)     /about.html  perm
 
 
 # Personal coolness
