@@ -13,8 +13,10 @@ sub do_end {
   return 1;
 }
 
+# As of Pod::Simple 0.97 and Pod::Simple::PullParser 1.03, we no
+# longer need our private hack.  (Except for the "TITLE" thing)
 # a temporary fix until Pod::Simple::PullParser catches up
-sub get_title {
+sub get_title_aside {
   my $self = shift;
   my $max_tokens = 25;
   my $title;

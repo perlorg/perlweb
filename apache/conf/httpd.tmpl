@@ -36,6 +36,7 @@ PerlPassEnv CBROOT
 PassEnv     CBROOT
 PerlPassEnv CBROOTLOCAL
 PassEnv     CBROOTLOCAL
+PerlSetEnv  APACHEROOT [% apache_root %]
 
 #LoadModule env_module         libexec/apache/mod_env.so
 #LoadModule config_log_module  libexec/apache/mod_log_config.so
@@ -59,7 +60,7 @@ PassEnv     CBROOTLOCAL
 #LoadModule setenvif_module    libexec/apache/mod_setenvif.so
 #LoadModule perl_module        libexec/apache/libperl.so
 
-#MimeMagicFile /home/perl/apache1/conf/magic
+#MimeMagicFile [% apache_root %]/conf/magic
 
 ExtendedStatus On
 Port 80
@@ -222,7 +223,7 @@ ServerSignature Off
         LanguagePriority en da nl et fr de el it ja kr no pl pt pt-br ru ltz ca es sv tw
     </IfModule>
 
-    TypesConfig /home/perl/apache1/conf/mime.types
+    TypesConfig [% apache_root %]/conf/mime.types
 
     #AddType application/x-httpd-php .php
     #AddType application/x-httpd-php-source .phps

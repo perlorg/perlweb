@@ -101,6 +101,10 @@ sub cronolog_params {
 
 # }}}
 
+sub httpd {
+  $cfg->param('httpd') || '/home/perl/apache1/bin/httpd';
+}
+
 #sub config {
 #  $cfg;
 #}

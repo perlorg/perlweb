@@ -16,7 +16,7 @@ use LWP::MediaTypes qw(guess_media_type);;
 #		   ],
 #);
 
-LWP::MediaTypes::read_media_types("/home/perl/apache1/conf/mime.types");
+LWP::MediaTypes::read_media_types("$ENV{APACHEROOT}/conf/mime.types");
 
 sub handler ($$) {
   my ($self, $r) = @_;
