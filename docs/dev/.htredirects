@@ -1,3 +1,4 @@
+# dev.perl.org redirections
 
 /perl-styles.css	http://dev.x.perl.org/perl-styles.css
 
@@ -10,7 +11,7 @@
 
 /parrot/?			http://www.parrotcode.org/
 
-/perl6/architechture		/perl6/architechture.html
+/perl6/architecture		/perl6/architecture.html
 /perl6/code			/perl6/code.html
 /perl6/people			/perl6/people.html
 /perl6/status			/perl6/status.html
@@ -22,6 +23,9 @@
 
 # Whee
 /perl6/synopsis/5.html /perl6/synopsis/S05.html
+
+/perl6/apocalypse/(\d) /perl6/apocalypse/A0$1.html
+/perl6/exegesis/(\d) /perl6/exegesis/E0$1.html
 
 # Perl6 List Summaries
 
@@ -148,4 +152,10 @@
 # cvs.perl.org
 /cvs/info(.*)	    /cvs/index.html$1	internal
 /cvs/robots.txt	    /robots.txt		internal
-/cvs/favicon.ico    /facicon.ico	internal
+/cvs/favicon.ico    /favicon.ico	internal
+
+# stupid idiots
+/cgi-bin/formmail/.*   http://www.army.mil/
+/_vti_bin/.*	       http://www.af.mil/
+/_vti_inf.*	       http://www.whitehouse.gov/
+/MSOffice/.*	       http://www.navy.mil/
