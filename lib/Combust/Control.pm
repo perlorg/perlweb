@@ -3,12 +3,13 @@ use strict;
 use Exception::Class ('ControllerException');
 use Apache::Request;
 use Apache::Cookie;
-use Apache::Constants qw(:common :response );
+use Apache::Constants qw(:common :response);
 use Apache::File;
 
 use Template;
 use Template::Parser;
 use Template::Stash;
+#use Template::Constants qw(:debug);
 
 use Combust::Template::Provider;
 use Combust::Template::Filters;
@@ -70,6 +71,7 @@ $Combust::Control::tt = Template->new
     'PRE_PROCESS'    => 'tpl/defaults',
     'PROCESS'        => 'tpl/wrapper' ,
     'PLUGIN_BASE'    => 'Combust::Template::Plugin',
+    #'DEBUG'  => DEBUG_VARS|DEBUG_DIRS|DEBUG_STASH|DEBUG_PARSER|DEBUG_PROVIDER|DEBUG_SERVICE|DEBUG_CONTEXT,
    });
 
 sub provider {
@@ -195,25 +197,27 @@ sub get_include_path {
 my $root = $ENV{CBROOT};
 
 sub evaluate_template {
-  my $class     = shift;
+  my $self      = shift;
   my $r         = shift;
   my %params    = @_;
 
   $params{params}->{r} = $r; 
   $params{params}->{notes} = $r->pnotes('combust_notes'); 
   $params{params}->{root} = $root;
+  # this is useful, is it dangerous too?  
+  $params{params}->{combust} = $self;
 
   #$params{params}->{statistics}    = XRL::Statistics->new();
   #$params{params}->{advertisement} = XRL::Advertisement->new();
 
-  my $rc = $class->tt->process( $params{'template'},
+  my $rc = $self->tt->process( $params{'template'},
                          $params{'params'},
                          $params{'output'} )
-    or warn( "$class - ". $r->uri . ($r->args ? '?' .$r->args : '')
+    or warn( (ref $self ? ref $self : $self) . "  - ". $r->uri . ($r->args ? '?' .$r->args : '')
 	     . ' - error processing template ' . $params{'template'} . ': '
-	     . $class->tt->error )
+	     . $self->tt->error )
       and eval {
-        ControllerException->throw( 'error' => $class->tt->error );
+        ControllerException->throw( 'error' => $self->tt->error );
       };
   
   $rc;
