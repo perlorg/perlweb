@@ -7,10 +7,15 @@
     page.banner = 'The Perl Directory: <SPAN CLASS="title">' _ title _  "</span>";
   END;
 
+  IF !page.site;
+    page.site = "perl.org";
+  END;
+    
+
   IF title;
-    page.title = "$title - Perl.org";
+    page.title = "$title - $site";
   ELSE;
-    page.title = "Perl.org"; 
+    page.title = "$site"; 
   END;  
 
   # is this intentionally all indexes or should it just be the most
@@ -27,7 +32,7 @@
 </head>
 <body>
 
-<TABLE CELLSPACING="0">
+<TABLE CELLSPACING="0" WIDTH="690">
 <TR>
 <TD COLSPAN="2" class="BANNER">[% page.banner %]</TD>
 
@@ -35,7 +40,7 @@
 <TD ID="NAV" WIDTH="180" HEIGHT="<% $isindex ? 350 : 500 %>">
 <DIV CLASS="SIDE">
 
-[% IF !isindex %] 
+[% IF !isindex OR page.forcenavigation%] 
 
 [% TRY %]
   [% PROCESS tpl/navigation.html %]

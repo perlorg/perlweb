@@ -7,15 +7,20 @@
    page.banner = page.bhead _ '<SPAN CLASS="title">' _ page.banner _  "</span>";
   END;
 
-  UNLESS page.banner;
-    # should we make use of page.site here?  i.e. "dbi.perl.org: "
-    page.banner = '<SPAN CLASS="title">' _ title _  "</span>";
+  IF !page.site;
+    page.site = "perl.org";
   END;
 
+  UNLESS page.banner;
+    # should we make use of page.site here?  i.e. "dbi.perl.org: "
+    page.banner = page.site _ ': <SPAN CLASS="title">' _ title _  "</span>";
+  END;
+
+
   IF title;
-    page.title = "${title} - Perl.org";
+    page.title = "${title} - ${page.site}";
   ELSE;
-    page.title = "Perl.org"; 
+    page.title = "${page.site}"; 
   END;  
 
   # is this intentionally all indexes or should it just be the most
@@ -57,21 +62,12 @@
 [% END %]
 
 
-
+[% UNLESS nofooter %] 
 <P>
 <TABLE border="0" WIDTH="730" CELLSPACING="0" CELLPADDING="0">
 <TR ALIGN="RIGHT">
 
-<TD WIDTH="110" ALIGN="left" VALIGN="TOP">
-<BR>
-
-[% UNLESS nofooter %] 
-<DIV CLASS="FOOTER">
-[% PROCESS tpl/root_info.html %]
-</DIV>
-</TD>
-
-<TD WIDTH="480" VALIGN="TOP">
+<TD WIDTH="590" VALIGN="MIDDLE">
 <BR>
 
 <DIV CLASS="FOOTER">
@@ -95,6 +91,13 @@
 [% ELSE %]
 &nbsp;
 [% END %]
+
+<DIV ALIGN="LEFT">
+[% UNLESS notes.include_root == "/" %]
+[% PROCESS tpl/root_info.html %]
+[% END %]
+</DIV>
+
 </DIV>
 </TD>
 <TD>
