@@ -1,10 +1,31 @@
-=head1 An overview of the Test::* modules
+=head1 An overview of the testing modules available on CPAN
 
 CPAN is filled with great modules to help you test your code.  Here's a
 short list of what's available, so you don't reinvent the wheel.
 
 If you have a module to add to the list, please email
 C<andy@petdance.com>.
+
+=head2 Apache::Test
+
+Allows you to run tests for Apache-based software.  Also lets you run
+tests inside Apache.  Not limited to mod_perl.
+
+=over 4
+
+=item * Introductory tutorial slides
+
+L<http://www.modperlcookbook.org/~geoff/slides/ApacheCon/2003/apache-test-printable.ppt.gz>
+
+=item * perl.com article on Apache::Test
+
+L<http://www.perl.com/pub/a/2003/05/22/testing.html>
+
+=item * Docs from apache.org
+
+L<http://perl.apache.org/docs/general/testing/testing.html>
+
+=back
 
 =head2 Test::AtRuntime
 
@@ -205,7 +226,19 @@ Checks module files for proper version information.
 
 =head2 Test::Warn
 
-Handy module for testing code that might throw a warning.
+Handy module for testing code that might throw a warning.  The testing
+function captures any warnings, so you can check them against a regex.
+
+For example, this code checks that C<WWW::Mechanize>'s C<warn()> method
+does indeed throw a warning.
+
+    my $m = WWW::Mechanize->new;
+    isa_ok( $m, 'WWW::Mechanize' );
+
+    warning_like {
+	$m->warn( "Something bad" );
+    } qr/Something bad.+line \d+/, 
+	"Passes the message, and includes the line number";
 
 =head2 Test::Without::Module
 
@@ -216,4 +249,19 @@ fallback when a certain dependency module is not installed.
 =head2 Test::XML
 
 Helper functions for testing XML for syntactic equivalency, even if the
-strings themselves are different.  Test-XML
+strings themselves are different.
+
+=head1 Contributors
+
+The following people have helped contribute to this page:
+
+=over 4
+
+=item * Andy Lester
+
+=item * Iain Truskett
+
+=item * Dominic Mitchell
+
+=back
+
