@@ -29,9 +29,15 @@ sub get_title {
     }
     elsif($state == 1) {
       --$state if $token->is_end and $token->tagname eq 'head1';
-      ++$state if $token->is_text and ($token->text eq 'TITLE' or $token->text eq "NAME");
+      if ($token->is_text) {
+	# allow poorly formed pod where people do
+	# =head1 this is the title
+	$title = $token->text unless defined $title;
+	++$state if ($token->text eq 'TITLE' or $token->text eq "NAME");
+      }
     }
     elsif($state == 2) {
+      $title = "";
       ++$state, $depth=0 if $token->is_end and $token->tagname eq 'head1';
     }
     elsif($state == 3) {

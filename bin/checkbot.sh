@@ -7,7 +7,7 @@
 #   http://freshmeat.net/projects/linkchecker/
 
 ./checkbot --style http://one.develooper.com/~ask/tmp/checkbot.css  \
-   --file /home/ask/public_html/tmp/checkbot.html \
+   --file /tmp/checkbot.html \
    --ignore http://www.ticketmaster.com/ \
    --url http://new.x.perl.org/
 

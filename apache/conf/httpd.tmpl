@@ -1,4 +1,20 @@
 [% dont_edit # add warning; do edit *THIS* file.. ;-) %]
+
+#
+# httpd.tmpl - 
+# 
+#   this is the template file for the Apache httpd.conf used for the
+#   Combust apache1 process.  You generally do not want to edit this
+#   file, as it is just a template.  
+#   In real-life, you may have to edit it to get things just right for
+#   your system.  Before doing that, try creating a 'local.tmpl' file
+#   in your apache/conf directory.  It will be processed before the
+#   virtual hosts are read it.
+#   If you do make changes to this file, be wary of merge conflicts
+#   when updating it.  Also, consider submitting them (or the "need")
+#   back to the developers, so they can consider making it more easily
+#   configurable in a future release.
+
 ServerRoot "[% root_default %]/apache/"
 LockFile [% root_default %]/apache/logs/httpd.lock
 PidFile [% root_default %]/apache/logs/httpd.pid
