@@ -245,6 +245,8 @@ sub send_output {
   }
 
   #$r->headers_out->{'Content-Length'} = $length;
+
+  $r->update_mtime(time) if $r->mtime == 0; 
   
   $r->set_content_length($length);
   $r->set_last_modified();  # set's to whatever update_mtime told us..
