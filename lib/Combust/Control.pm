@@ -135,6 +135,7 @@ sub super ($$) {
     $status = $self->handler($self->r);
   };
   warn "Combust::Control: oops, class handler died with $@" if $@;
+  return 500 if $@;
   
   return $status;
 }
@@ -329,10 +330,12 @@ sub send_output {
 sub redirect {
   my $self = shift;
   my $url = shift;
-  $url = shift if ref $url;  # if we got passed an $r as the first parameter
+  $url = shift if ref $url and ref =~ m/^Apache/;  # if we got passed an $r as the first parameter
   my $permanent = shift;
   $self->r->pnotes('combust_notes')->{cookies}->bake_cookies
     if $self->r->pnotes('combust_notes')->{cookies};
+
+  $url = $url->abs if ref $url =~ m/^URI/;
 
   # this should really check for a complete URI or some such; we'll do
   # that when it breaks on a ftp:// or whatever redirect :-)
@@ -342,6 +345,9 @@ sub redirect {
 		? ":" . $self->config->external_port
 		: ""  )	. $url;
   }
+
+  #use Carp qw(cluck);
+  #cluck "redirecting to [$url]";
 
   $self->r->header_out('Location', $url);
   return $permanent ? MOVED : REDIRECT;
