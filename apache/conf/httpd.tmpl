@@ -283,7 +283,6 @@ NameVirtualHost *:[% config.port %]
     <Location /server-status>
       SetHandler server-status
     </Location>
-  </VirtualHost>
 
     <Location /cgi-bin/>
        SetHandler cgi-script
@@ -296,7 +295,8 @@ NameVirtualHost *:[% config.port %]
         Allow from all
     </Directory>
 
-</VirtualHost>
+  </VirtualHost>
+
 [% END %]
 
 
