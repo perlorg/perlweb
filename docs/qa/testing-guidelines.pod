@@ -47,7 +47,10 @@ object inequality tests can then be done with C<isnt>:
     isnt($object, $object2, '... our objects are not equal');
 
 The reasoning behind this is that we are really comparing the stringified
-instances, and C<is> and C<isnt> compare strings.
+instances, and C<is> and C<isnt> compare strings.  If the objects'
+stringifications don't provide enough information to meaningfully
+compare the objects, which might happen if overloading the equality or
+stringification operators, find something that does.
 
 =item Use the right function for the job
 
@@ -94,6 +97,9 @@ which return a boolean when called. These can be utilized as such:
     # use eq_set to test arrays regardless of their order
 
     ok(eq_set( \@stooges, \@expected), "Got proper stooges" );
+
+C<is_deeply> is not suitable for comparing objects that overload
+dereferences to their implementation type.
 
 =item Test B<all> your assumptions.
 
