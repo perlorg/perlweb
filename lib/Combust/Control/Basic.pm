@@ -57,12 +57,12 @@ sub handler ($$) {
       $content_type = guess_media_type($file);
       my $fh;
       open $fh, $data->{path} or warn "Could not open $data->{path}: $!" and return 403;
-      return $self->send_output($r, \$fh, $content_type);
+      return $self->send_output(\$fh, $content_type);
     }
     else {
       if ($self->provider->is_directory($file)) {
 		warn "URI is $uri\n";
-	return $self->redirect($r, $uri . "/", 1);
+	return $self->redirect($uri . "/", 1);
       }
       else {
 	return 404;
@@ -78,14 +78,13 @@ sub handler ($$) {
     return 404;
   }    
 
-  my $output;
-  my $rv = $self->evaluate_template($r, output => \$output, template => $template, params => $self->params);
+  my $output = $self->evaluate_template($template);
   if ($@) {
     $r->pnotes('error', $@);
     return 404 if $@ =~ m/not found$/;
     return 500; 
   }
-  $self->send_output($r, \$output, $content_type);
+  $self->send_output($output, $content_type);
 }
 
 sub deadlink_handler {
@@ -102,9 +101,7 @@ sub deadlink_handler {
 
   my $template = "error/deadlink.html";
 
-  my $params = {
-		url => $url,
-	       };
+  $self->param(url => $url);
 
   if ($r->header_in("User-Agent") =~ /nodeworks/i) {
     # link checkers get 200s
@@ -114,10 +111,9 @@ sub deadlink_handler {
     $r->status(404);
   }
 
-  my $output;
-  $self->evaluate_template($r, output => \$output, template => $template, params => $params);
+  my $output = $self->evaluate_template($template);
   $r->update_mtime(time);
-  $self->send_output($r, \$output, "text/html");
+  $self->send_output($output, "text/html");
 
 }
 

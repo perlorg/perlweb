@@ -6,7 +6,9 @@ None of the internal methods should require $r to be passed
 
 Make the cookie validation code not be hardcoded in Combust::Cookie (!)
 
-Make Combust::Control::Basic read the right mime.types file.
+Make Combust::Control::Basic only do the transhandler rather than
+serving the file too if it's not going to be processed by template
+toolkit.
 
 Read the subversion revision or some "combust-release" file at startup time
 
@@ -31,14 +33,6 @@ Handle If-Modified-Since requests.
 
 Format POD as html when foo.html is requested and doesn't exist, but
 foo.pod does.  Format POD as html when foo.pod.html is requested too.
-
-
-In a year or three or maybe never
-=================================
-
-Migrate to XHTML and get all that <B>UPPERCASE</B> html lowercased.
-
-Get content type from svn?
 
 
 
