@@ -59,6 +59,12 @@ LoadModule perl_module        [% apache_libexec %]/libperl.so
 [% END %]
 
 
+[% TRY;
+     PROCESS local.tmpl;
+   CATCH file; %]
+     # no local.tmpl found
+[% END;  %]
+
 PerlPassEnv CBROOT
 PassEnv     CBROOT
 PerlPassEnv CBROOTLOCAL
@@ -228,7 +234,7 @@ ServerSignature Off
         LanguagePriority en da nl et fr de el it ja kr no pl pt pt-br ru ltz ca es sv tw
     </IfModule>
 
-    TypesConfig [% root %]/apache/conf/mime.types
+    TypesConfig [% apache_config %]/mime.types
 
     #AddType application/x-httpd-php .php
     #AddType application/x-httpd-php-source .phps
@@ -269,12 +275,6 @@ ErrorDocument 500 /error/500.html
     BrowserMatch "JDK/1\.0" force-response-1.0
 
 </IfModule>
-
-[% TRY;
-     PROCESS local.tmpl;
-   CATCH file; %]
-     # no local.tmpl found
-[% END;  %]
 
 [% IF config.apache_reload %]
 PerlModule Apache::Reload

@@ -39,6 +39,7 @@ sub handler ($$) {
   return $self->deadlink_handler($r)
     if $uri =~ m{^/!dl/.*};
 
+  # Equivalent of Apache's DirectoryIndex directive
   $uri =~ s!/$!/index.html!;
 
   # TODO|FIXME: set last_modified_date properly!  
@@ -62,6 +63,7 @@ sub handler ($$) {
     }
     else {
       if ($self->provider->is_directory($file)) {
+		warn "URI is $uri\n";
 	return $self->redirect($r, $uri . "/", 1);
       }
       else {

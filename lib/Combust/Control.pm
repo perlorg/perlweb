@@ -316,7 +316,10 @@ sub redirect {
   # this should really check for a complete URI or some such; we'll do
   # that when it breaks on a ftp:// or whatever redirect :-)
   unless ($url =~ m!^https?://!) {
-    $url = "http://" . $r->hostname . $url; 
+    $url = "http://" . $r->hostname .
+	  ( $self->config->external_port 
+		? ":" . $self->config->external_port
+		: ""  )	. $url;
   }
 
   $r->header_out('Location', $url);

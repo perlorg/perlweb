@@ -1,6 +1,15 @@
 perl  = /home/perl/bin/perl
 httpd = /home/perl/apache1/bin/httpd
 
+# The apache_root defaults to the directory which contains bin/httpd,
+# but you can override that.
+# apache_root = /etc/apache
+
+# By default, we expect to find some config files (like mime.types) in
+# $APACHE_ROOT/conf.  If this isn't your apache config directory, you
+# will need to set it here.
+# apache_config = /etc/apache
+
 servername = combust.c.askask.com
 
 # list of active sites.  the individual site configuration is below in
@@ -10,12 +19,16 @@ sites = www, qa
 # default port is 8225
 port = 8230
 
+# external_port.  Set to a non-zero value to set the port number used
+# for external redirects (301's, 302's)
+external_port = 0
+
 db_data_source = dbi:mysql:database=combust;host=localhost
 db_user        = combust
 # db_password    = very.s3cret
 
 # docs_name specifies the default directory name for documents (under ~user/ or $ENV{CBROOT})
-# docs_name docs
+# docs_name = docs
 
 # add Apache::Reload to the httpd configuration; good for development!
 # apache_reload = 1

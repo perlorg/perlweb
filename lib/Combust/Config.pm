@@ -60,6 +60,10 @@ sub port {
   $cfg->param('port') || 8225;
 }
 
+sub external_port {
+  $cfg->param('external_port') || undef;
+}
+
 sub db_data_source {
   $cfg->param('db_data_source') || 'db_data_source not configured';
 }
@@ -98,6 +102,22 @@ sub cronolog_params {
 
 
 # }}}
+
+sub apache_root {
+  my $root = $cfg->param('apache_root');
+  unless (defined $root) {
+    ($root = $_[0]->httpd) =~ s!/bin/httpd$!!;
+  }
+  $root;
+}
+
+sub apache_config {
+  my $config = $cfg->param('apache_config');
+  unless (defined $config) {
+    $config = $_[0]->apache_root . '/conf';
+  }
+  $config;
+}
 
 sub httpd {
   $cfg->param('httpd') || '/home/perl/apache1/bin/httpd';
