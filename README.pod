@@ -1,0 +1,55 @@
+
+=head1 Combust README
+
+Combust is the web framework / content management system for geeks
+that we use at perl.org.
+
+
+=head2 Features
+
+In brief
+
+=over 4 
+
+=item Subversion backed
+
+=item MVC architected
+
+=item Clever integrated utility modules
+
+Dealing with caching and cookies was never any easier.
+
+=item Automatic POD formatting
+
+We write pod.  Web browsers read HTML.
+
+=item Supports staging areas with branches and other goodies
+
+=item Easy to install a local development version
+
+=back
+
+
+=head2 Getting started
+
+[notes about proxy setup]
+
+=head3 Create a user and get the goods
+
+  adduser combust
+  su - combust
+  rm .bashrc
+  svn co http://svn.develooper.com/perl.org/backend/trunk .
+  svn co http://svn.develooper.com/perl.org/docs    
+
+  [... add config stuff ...]
+
+  ./bin/run_httpd
+
+
+
+=head2 Copyright
+
+Combust is Copyright 2003 Ask Bjoern Hansen.  See the LICENSE file.
+ 
+
