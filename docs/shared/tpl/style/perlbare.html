@@ -63,10 +63,7 @@
 
 [% UNLESS nofooter %] 
 <DIV CLASS="FOOTER">
-&nbsp;<small>
-<a href="[% r.uri | uri %]?root=/">root</a>: [% notes.include_root %]
-</small>
-
+[% PROCESS tpl/root_info.html %]
 </DIV>
 </TD>
 

@@ -89,15 +89,13 @@
 <TABLE border="0" WIDTH="730" CELLSPACING="0" CELLPADDING="0">
 <TR ALIGN="RIGHT">
 
-<TD WIDTH="110" ALIGN="left">
+<TD WIDTH="110" ALIGN="left" VALIGN="TOP">
 <BR>
  
 <DIV CLASS="FOOTER">
-&nbsp;<small>
 [% UNLESS notes.include_root == "/" %]
-<a href="[% r.uri | uri %]?root=/">root</a>: [% notes.include_root %]
+[% PROCESS tpl/root_info.html %]
 [% END %]
-</small>
 </DIV>
 </TD>
 
