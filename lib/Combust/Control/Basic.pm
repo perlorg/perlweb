@@ -90,7 +90,7 @@ sub deadlink_handler {
 
   # some simple validation
   return 500
-    unless $url =~ m{^https?://};
+    unless $url =~ m{^https?://?};
 
   my $template = "error/deadlink.html";
 
@@ -98,12 +98,19 @@ sub deadlink_handler {
 		url => $url,
 	       };
 
+  if ($r->header_in("User-Agent") =~ /nodeworks/i) {
+    # link checkers get 200s
+    $r->status(203);
+  } else {
+    # everyone else gets a 404
+    $r->status(404);
+  }
+
   my $output;
   $self->evaluate_template($r, output => \$output, template => $template, params => $params);
   $r->update_mtime(time);
   $self->send_output($r, \$output, "text/html");
 
-  return 404;
 }
 
 1;
