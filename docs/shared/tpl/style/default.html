@@ -51,14 +51,15 @@
 </TD>
 
 <TD>
-[% IF !isindex %]
+
+[% IF !isindex or notes.site != 'www' %]
 <DIV ID="MAIN">
 [% END %]
 <!-- end header.html -->
 
 [% content %]
 
-[% UNLESS isindex %]
+[% IF !isindex or notes.site != 'www' %]
 </DIV>
 [% END %]
 
