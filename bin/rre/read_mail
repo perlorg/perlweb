@@ -26,6 +26,8 @@ $dbh->do(q[replace into rre_mails (message_id, date, subject, header, body)
 	 $mail->head->get('Subject'),
 	 $mail->head->as_string, $body);
 
+$dbh->do(q[delete from combust_cache where purge_key=?], {}, "rre");
+
 my $mail_id = $dbh->{mysql_insertid};
 
 my @blocks = split /\n\n+/, $body;
