@@ -370,10 +370,27 @@ PerlTransHandler Combust::Redirect
   </VirtualHost>
 [% END %]
 
-[% IF config.sites.dbi %]
+
+[% IF config.sites.foundation %]
   <VirtualHost *:[% config.port %]>
-    ServerName [% config.site.dbi.servername %]
-    PerlSetVar site dbi
+    ServerName [% config.site.foundation.servername %]
+    PerlSetVar site foundation
+    <Location />
+       SetHandler perl-script
+       PerlHandler Combust::Control::Basic->handler
+    </Location>
+
+    <Location /error/>
+       SetHandler   perl-script
+       PerlHandler Combust::Control::Error->handler
+    </Location>
+  </VirtualHost>
+[% END %]
+
+[% IF config.sites.perl4lib %]
+  <VirtualHost *:[% config.port %]>
+    ServerName [% config.site.perl4lib.servername %]
+    PerlSetVar site perl4lib
     <Location />
        SetHandler perl-script
        PerlHandler Combust::Control::Basic->handler
