@@ -1,0 +1,148 @@
+
+perl6-language-regex
+
+Summary report 20000911
+
+RFC 72: The regexp engine should go backward as well as
+        forward. (Peter Heslin)
+
+The author sent revised version of the RFC.  There seem to be two ideas
+here:
+
+1. The lookbehind assertions should work for variable-length
+   patterns.  (At present they match only fixed-length strings.)
+
+2. The programmer would be able to optimize the regex match by
+   directing the engine to an unlikely part of the pattern first.  For
+   example, if you are looking for 'e.*z', and you write
+
+        /eX*z/
+
+   the regex engine might look first for an e, then some following
+   X's, in hopes of finding a 'z afterwards.  If there are many e's
+   and few z's, this may result in many false starts.  Peter's idea
+   seems to be that with 
+
+        /z(?r)X*e/
+
+   the regex engine would look first for a 'z', and then for
+   *preceding* 'X*', and then for an 'e' before that, which might be
+   faster. 
+
+   Bart Lateur said that the regex engine should do this sort of
+   optimization automatically.  (In fact it already does in some
+   cases.)  
+
+Hugo points out that a variable-length lookbehind might be more powerful.
+
+RFC 93: Regex: Support for incremental pattern matching  (Damian Conway)
+
+No discussion this week.
+
+RFC 110: counting matches  (Richard Proctor)
+
+Richard released version 4 of the RFC, which just adds a couple of
+personal opinions  about how 
+
+        $number = () = m/.../g;
+
+is ugly.  He says that he is going to add some suggestions from Hugo
+van der Sanden and then freeze the RFC at the end of the week.
+
+RFC 112: Assignment within a regex  (Richard Proctor)
+
+No discussion.
+
+RFC 138: Eliminate =~ operator.  (Steve Fink)
+
+Steve withdrew this RFC in favor of RFC 164.
+
+RFC 144: Behavior of empty regex should be simple  (Mark Dominus)
+
+Frozen.
+
+RFC 145: Brace-matching for Perl Regular Expressions  (Eric Roode)
+
+David Corbin suggested an alternative syntax.  This sparked a long
+series of syntactic suggestions.  Nathan Wiger suggested a special
+syntax for matching XML-style open and close tags.  (However, he did
+not submit an RFC.)
+
+I *still* think that all the proposals for this functionality are too
+limited and too specific.  Others seem to be thinking in the same
+direction.  Jonathan Scott Duff asked
+
+        What if we just provided deep enough hooks into the RE engine
+        that specialized parsing constructs like these could easily be
+        added by those who need them?
+
+Michael Maraist said that more powerful and convenient parsin should
+be incorporated into Perl, not into the regex engine.  Tom
+Christiansen expressed agreement.  Damian Conway suggested that
+people look at Parse::RecDescent and suggested that this and other
+parsing modules were the right direction to go.
+
+I sent a note about SNOBOL syntaxes, and promosed that Joe McMahon and
+I would an RFC, but it has not appeared yet.
+
+RFC 150: Extend regex syntax to provide for return of a hash of
+         matched subpatterns  (Kevin Walker)
+
+Kevin reported back on Python's version of this feature.  He said that
+the major deficiency in his proporsl is that there is nothing
+analogous to the \1 in /(.*)\1/.  He promised a revised RFC, which has
+not appeared yet.
+
+RFC 158: Regular Expression Special Variables  (Uri Guttman)
+
+It was pointed out that part of Uri's proposal was to make $& block
+scoped, but $& is already block scoped.  Uri has not sent a revised RFC.
+
+
+RFC 164: Replace =~, !~, m//, s///, and tr// with match(), subst(),
+         and trade()  (Nathan Wiger)
+
+Surprisingly, there was no discussion about this RFC this week.
+
+RFC 165: Allow variables in tr///  (Richard Proctor)
+
+Richard suggested that he freeze the RFC, but I don't believbe he has
+sufficiently taken into account the last round of discussion.  I have
+asked for a revision.
+
+RFC 166: Additions to regexs  (Richard Proctor)
+
+Richard plans to drop two of the three items here, and retain only
+the one that makes
+
+        (?@foo)
+
+equivalent to
+
+        (??(join '|', @foo))
+
+I pointed out that this is already possible with a compile-time
+overloaded constant, and provided a demonstration module.
+
+RFC 170: Generalize =~ to a special-purpose assignment operator
+         (Nathan Wiger)
+
+Still little discussion of this.
+
+RFC 197: Numberic Value Ranges In Regular Expressions (David Nichol)
+      
+There was no discussion.
+
+RFC 198: Boolean Regexes (Richard Proctor)
+
+Richard says that this is a development of the 'negated expression'
+idea that he dropped from RFC 166.  
+
+Discussion from RFC 166 pointed out that Richard had not said clearly
+what he wanted his (?^...) proposal to do.  Richard proposed a
+definition, and I followed up pointing out that even his proposed
+definition did not do what he wanted.  Richard then said he would
+tighten up the definition, but it appears that he didn't do this.
+
+However, there has been no discussion of this proposal.
+

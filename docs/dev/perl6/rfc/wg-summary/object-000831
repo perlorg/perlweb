@@ -1,0 +1,129 @@
+=head1 VERSION
+
+   Date: 31 Aug 2000
+   Number: 1
+   Mailing List: perl6-language-objects@perl.org
+   Chair: Nathan Wiger <nate@wiger.org>
+
+=head1 SUMMARY
+
+The main point which most discussions are currently centering around is
+the idea of fundamental embedded objects in Perl 6. With this concept, a
+simple scalar would instead be an object with properties and methods.
+Developing special datatypes (for example, int) would be as simple as
+creating a subclass.
+
+Under the current thinking, a statement like this:
+
+   my int $x = 5;
+
+Would do something like this behind the scenes:
+
+   $x = int->CREATE;
+   $x->STORE(5);
+
+Then 'int' would simply be a subclass of SCALAR which might look
+something like this (pardon the extreme pseudocode):
+
+   package int;
+
+   # inherit all methods from SCALAR except:
+
+   sub STORE {
+       if ( is_not_an_int($_[0]) ) {
+           return ERROR_BAD_DATA_TYPE;
+       } else {
+           internally_store($_[0]);
+       }
+   }
+
+Concepts such as optimization of mathematic ops, promotion of datatypes,
+operator overloading, specialized stringification, and much more could
+all be handled by simply overriding class methods. 
+
+Several RFC's - 159, 161, and 171 - work together to make this possible.
+These RFC's have comprised the majority of the discussion for the past
+two weeks. Overall the response is positive, although there are many
+details to be worked out.
+
+=head1 RFC DISCUSSIONS
+
+=head2 RFC 124 (v1): Sort order for any hash (David Nicol)
+
+Many people liked the idea, which is a shortcut to automatically sorting
+hashes. Many had very different suggestions for its implementation,
+however.
+
+=head2 RFC 137 (v1): Perl OO should I<not> be fundamentally changed
+(Damian Conway)
+
+This RFC explored several extensions to current Perl OO in order to make
+it more powerful, without sacrificing its current simplicity or
+flexibility. Unfortunately, I think most people interpreted this as a
+simple philosophy RFC because of the title, when in fact it was a very
+thorough document, so little discussion was recorded. I recommend
+renaming it.
+
+=head2 RFC 152 (v1): Replace $self in @_ with self() builtin (Nathan
+Wiger)
+
+This sparked a semi-religious debate which resulted in no clear
+resolution. Most everyone agreed that the invocant being in $_[0] is a
+PITA. But some people claimed that the invocant was worthy of a special
+pragma to allow it to be named whatever you want. Others maintained that
+this was extraneous and confusing, and that a single keyword or variable
+should be selected.
+
+=head2 RFC 159 (v1): True Polymorphic Objects (Nathan Wiger)
+
+This RFC proposes a set of default methods, similar to those used by
+tie, which could allow object-based operator, context, and data
+overloading. Some discussion insued of whether || and && should be
+overloadable, and additional methods were proposed. Overall the proposal
+was well-received.
+
+=head2 RFC 161 (v2): OO Integration/Migration Path (Matt Youell)
+
+This proposal suggests the fundamental integration of OO into Perl, with
+the key being that it should be behind the scenes and invisible. Many
+agreed it was a good concept, assuming that it was both truly invisible
+and did not cause Perl to become dog slow.
+
+=head2 RFC 163 (v1): Automatic accessors for hash-based objects (James
+Mastros)
+
+There was dislike of the complexity and implementation of this RFC,
+which allows for hash keys to masquerade as subs transparently. Several
+suggestions for simplifying it were proposed. The idea itself was
+relatively well-received.
+
+=head2 RFC 171 (v1): my Dog $spot should call a constructor implicitly
+(Michael Fowler)
+
+This proposed a C++ like constructor mechanism whereby the declaration
+of a variable implicitly creates an object. This mechanism would allow
+for declarations of datatypes to cause class inheritance. Some concerns
+over confusion and implementation details were raised, which are still
+being addressed.
+
+=head2 Protoproposal for new Backslash Operator (David Nicol)
+
+This generated a lukewarm reception. Most people objected to the idea,
+noting that it can be done other ways and didn't appear to add enough
+value for the confusion it caused.
+
+=head1 REFERENCES
+
+If you're interested in these topics, here are some highlights of the
+mail threads for several discussions. I encourage people to read them
+and join into the discussion on -objects if they're interested:
+
+http://www.mail-archive.com/perl6-language-objects%40perl.org/msg00068.html
+http://www.mail-archive.com/perl6-language-objects%40perl.org/msg00131.html
+http://www.mail-archive.com/perl6-language-objects%40perl.org/msg00148.html
+http://www.mail-archive.com/perl6-language-objects%40perl.org/msg00169.html
+http://www.mail-archive.com/perl6-language-objects%40perl.org/msg00152.html
+http://www.mail-archive.com/perl6-language-objects%40perl.org/msg00109.html
+http://www.mail-archive.com/perl6-language-objects%40perl.org/msg00093.html
+http://www.mail-archive.com/perl6-language-objects%40perl.org/msg00006.html
+http://www.mail-archive.com/perl6-language-objects%40perl.org/msg00037.html

@@ -1,0 +1,108 @@
+perl6-language-regex
+
+Summary report 20000920
+
+Mark-Jason Dominus has relinquished the wg chair due to the pressure
+of other commitments; I'll be taking over the chair for the short
+time remaining. Thanks to Mark-Jason for all his hard work.
+
+I'll be contacting the authors of all outstanding RFCs shortly to
+encourage them to work towards freezing them as soon as practical.
+
+Hugo
+
+
+RFC 72: The regexp engine should go backward as well as
+        forward. (Peter Heslin)
+
+Peter says (edited):
+:If the regexp code is unlikely to be rewritten from the ground up, then
+:there may be little chance of this feature being implemented. I'll make
+:a pitch for it anyway at the end of my talk at YAPC::Europe, and then
+:I'll freeze the RFC.
+
+RFC 93: Regex: Support for incremental pattern matching  (Damian Conway)
+
+Now frozen at v3 with no changes; I don't think there was a v2.
+
+RFC 110: counting matches  (Richard Proctor)
+
+Richard added my suggestions about the interaction between /t, /g
+and \G, and froze the RFC soon after.
+
+RFC 112: Assignment within a regex  (Richard Proctor)
+
+No discussion.
+
+RFC 138: Eliminate =~ operator.  (Steve Fink)
+
+Withdrawn.
+
+RFC 144: Behavior of empty regex should be simple  (Mark Dominus)
+
+Frozen.
+
+RFC 145: Brace-matching for Perl Regular Expressions  (Eric Roode)
+
+No discussion directly about this RFC. The discussion of XML/HTML-
+-specific extensions continued for a short while, but has not
+resulted in an RFC.
+
+The closest we have to an emerging consensus appears to be that
+it is very difficult to pin down a precise problem to solve - the
+areas in which we want to match pairs of delimiters (such as
+numeric expressions, C code, perl code, HTML and XML) each seem
+to require a variety of special cases, each different from the
+other.
+
+RFC 150: Extend regex syntax to provide for return of a hash of
+         matched subpatterns  (Kevin Walker)
+
+One suggestion from me of (?\%key) for backreferencing, but no
+substantive discussion.
+
+RFC 158: Regular Expression Special Variables  (Uri Guttman)
+
+No discussion.
+
+RFC 164: Replace =~, !~, m//, s///, and tr// with match(), subst(),
+         and trade()  (Nathan Wiger)
+
+This RFC has now been frozen; the frozen version included some
+rewording and a couple of additional explanatory notes, as well
+as introducing a typo ('$gotis') in an example.
+
+RFC 165: Allow variables in tr///  (Richard Proctor)
+
+Surprisingly, no discussion.
+
+RFC 166: Alternative lists and quoting of things  (Richard Proctor)
+
+New version, with a new name (was 'Additions to regexs'). This RFC
+is not currently available from the archive due to a misfiling, but
+you'll find it here:
+  http://www.mail-archive.com/perl6-language-regex@perl.org/msg00350.html
+
+This removes two of the three original suggestions, and expands on
+the remaining one. Mark-Jason pointed out that the (new) extension
+to (?\Q$foo) is not needed.
+
+RFC 170: Generalize =~ to a special-purpose assignment operator
+         (Nathan Wiger)
+
+Now frozen, with some modifications.
+
+RFC 197: Numberic Value Ranges In Regular Expressions (David Nichol)
+      
+No discussion.
+
+RFC 198: Boolean Regexes (Richard Proctor)
+
+No discussion.
+
+New RFCS
+
+Of the other discussions that may still spawn a new RFC, most have been
+mentioned previously. One new one: Tom Christiansen has asked '[w]hat
+can be done to make $ work "better", so we don't have to make people
+use /foo\z/ to mean /foo$/'.
