@@ -11,11 +11,11 @@ Allison Randal <al@shadowed.net>
 
 =head1 VERSION
 
-  Maintainer: Allison Randal <al@shadowed.net>
+  Maintainer: Larry Wall <larry@wall.org>
   Date: 21 Mar 2003
-  Last Modified: 15 Sep 2004
+  Last Modified: 21 Nov 2004
   Number: 6
-  Version: 2
+  Version: 5
 
 
 This document summarizes Apocalypse 6, which covers subroutines and the
@@ -58,7 +58,7 @@ The general syntax for anonymous subroutines is:
 
     sub ( PARAMS ) TRAITS {...}
 
-"Trait" is the new name for a compile-time (C<is>) property.
+"Trait" is the name for a compile-time (C<is>) property.
 See L<"Traits and Properties">
 
 
@@ -75,8 +75,8 @@ aliases to actual arguments:
 
     sub cap { $_ = uc $_ for @_ }   # Error: elements of @_ are constant
 
-If you need to modify the elements of C<@_>, declare it with the C<is rw>
-trait:
+If you need to modify the elements of C<@_>, declare it explicitly
+with the C<is rw> trait:
 
     sub swap (*@_ is rw) { @_[0,1] = @_[1,0] }
 
@@ -85,7 +85,7 @@ trait:
 
 Raw blocks are also executable code structures in Perl 6.
 
-Every block defines a subroutine, which may either be executed
+Every block defines an object of type C<Code>, which may either be executed
 immediately or passed in as a C<Code> reference argument to some other
 subroutine.
 
@@ -93,8 +93,9 @@ subroutine.
 =head2 "Pointy subs"
 
 The arrow operator C<< -> >> is almost a synonym for the anonymous
-C<sub> keyword. The parameter list of a pointy sub does not require
-parentheses and a pointy sub may not be given traits.
+C<sub> keyword, except that the parameter list of a pointy sub does
+not require parentheses, it does not require a preceding comma when
+included in a list, and a pointy sub may not be given traits.
 
     $sq = -> $val { $val**2 };  # Same as: $sq = sub ($val) { $val**2 };
 
@@ -173,34 +174,43 @@ C<FETCH> and C<STORE> methods:
 
 =head2 Operator overloading
 
-Operators are just subroutines with special names.  
+Operators are just subroutines with special names.  An operator name
+consists of a grammatical category name followed by a single colon
+followed by an operator name specified as if it were a hash subscript
+(but evaluated at compile time).  So any of these indicate the same
+binary addition operator:
+
+    infix:«+»
+    infix:<<+>>
+    infix:{'+'}
+    infix:{"+"}
+
+Use the C<&> sigil just as you would on ordinary subs.
 
 Unary operators are defined as prefix or postfix:
 
-    sub prefix:OPNAME  ($operand) {...}
-    sub postfix:OPNAME ($operand) {...}
+    sub prefix:«OPNAME»  ($operand) {...}
+    sub postfix:«OPNAME» ($operand) {...}
 
 Binary operators are defined as infix:
 
-    sub infix:OPNAME ($leftop, $rightop) {...}
+    sub infix:«OPNAME» ($leftop, $rightop) {...}
 
-Bracketing operators are defined as circumfix. The leading and trailing
-delimiters together are the name of the operator.
+Bracketing operators are defined as circumfix.  A two element slice containing
+the leading and trailing delimiters is the name of the operator.
 
-    sub circumfix:LEFTDELIM...RIGHTDELIM ($contents) {...}
-    sub circumfix:DELIMITERS ($contents) {...}
+    sub circumfix:«LEFTDELIM RIGHTDELIM» ($contents) {...}
+    sub circumfix:{'LEFTDELIM','RIGHTDELIM'} ($contents) {...}
 
-If the left and right delimiters aren't separated by "C<...>",
-the C<DELIMITERS> string must be an even number of characters. The first
-half is treated as the opening delimiter and the second half as
-the closing.
+(There is no longer any rule about splitting an even number of characters.
+You must use a two element slice.)
 
-Operator names can be any sequence of Unicode characters. For example:
+Operator names can be any sequence of non-whitespace Unicode characters. For example:
 
-    sub infix:\(c\) ($text, $owner) { return $text but Copyright($owner) }
-    method prefix:± (Num $x) returns Num { return +$x | -$x }
-    multi sub postfix:! (Int $n) { $n < 2 ?? 1 :: $n*($n-1)! }
-    macro circumfix:\<!--...--\> ($text) is parsed / .*? / { "" }
+    sub infix:«(c)» ($text, $owner) { return $text but Copyright($owner) }
+    method prefix:«±» (Num $x) returns Num { return +$x | -$x }
+    multi sub postfix:«!» (Int $n) { $n < 2 ?? 1 :: $n*($n-1)! }
+    macro circumfix:«<!-- -->» ($text) is parsed / .*? / { "" }
 
     my $document = $text (c) $me;
 
@@ -208,11 +218,20 @@ Operator names can be any sequence of Unicode characters. For example:
 
     <!-- This is now a comment -->
 
-Parentheses, square brackets, curlies, angle brackets, semicolons,
-commas, and backslashes may be part of the name only if backslashed.
-Whitespace may never be part of the name.  A null operator name does
-not define a null or whitespace operator, but a default matching rule
-for that syntactic category.
+Whitespace may never be part of the name (except as separator
+within a C<«...»> slice, as in the example above).
+
+A null operator name does not define a null or whitespace operator, but
+a default matching rule for that syntactic category, which is useful when
+there is no fixed string that can be recognized, such as tokens beginning
+with digits.  Such an operator I<must> supply an C<is parsed> trait.
+The Perl grammar uses a default rule for the C<:1st>, C<:2nd>, C<:3rd>,
+etc. rule modifiers, something like this:
+
+    sub rxmodexternal:«» ($x) is parsed(rx:p/\d+[st|nd|rd|th]/) {...}
+
+Such default rules are attempted in the order declared.  (They always follow
+any rules with a known prefix, by the longest-token-first rule.)
 
 =head1 Parameters and arguments
 
@@ -348,9 +367,11 @@ order you pass them in, so long as they follow any positional arguments:
     $formal = formalize($title, justify=>'left');
     $formal = formalize($title, :justify«right», :case«title»);
 
-Named parameters are always optional. Default values for named
-parameters are defined in the same way as for optional parameters. Named
-parameters default to C<undef> if they have no default.
+Named parameters are optional unless marked with the C<is required>
+trait.  (Alternately, we might allow a C<++> prefix for required
+name parameters.)  Default values for optional named parameters are
+defined in the same way as for positional parameters. Named parameters
+default to C<undef> if they have no default.
 
 Again, note the use of adverbial pairs in the argument list.  The following
 table shows the correspondence:
@@ -414,7 +435,7 @@ into an array when individual elements are actually accessed:
 
         @fromtwo = tail(1..Inf);        # @fromtwo contains a lazy [2..Inf]
 
-=head2
+=head2 Slurpy block
 
 It's also possible to declare a slurpy block: C<*&block>.  It slurps
 up any nameless block, specified by C<:{...}>.  This will turn out
@@ -543,6 +564,22 @@ parameters:
 This subroutine still expects an array as its first argument, just like
 the first version.
 
+=head2 Unpacking hash parameters
+
+Likewise, a hash argument can be mapped to a hash of parameters, specified
+as named parameters within curlies.  Instead of saying:
+
+    sub register (%guest_data, $room_num) {
+        my $name := delete %guest_data«name»;
+        my $addr := delete %guest_data«addr»;
+        ...
+    }
+                                                                                
+you can get the same effect with:
+                                                                                
+    sub register ({+$name, +$addr, *%guest_data}, $room_num) {
+        ...
+    }
 
 =head2 Attributive parameters
 
@@ -619,7 +656,8 @@ These are the standard type names in Perl 6 (at least this week):
 =head2 Value types
 
 Explicit types are optional. Perl variables have two associated types:
-their "value type" and their "variable type".
+their "value type" and their "implementation type".  (More generally, any
+container has an implementation type, including subroutines and modules.)
 
 The value type specifies what kinds of values may be stored in the
 variable. A value type is given as a prefix or with the C<returns> or
@@ -640,18 +678,20 @@ A value type on an array or hash specifies the type stored by each element:
     my Rat %ship;   # the value of each entry stores a Rat
 
 
-=head2 Variable types
+=head2 Implementation types
 
-The variable type specifies how the variable itself is implemented. It is
+The implementation type specifies how the variable itself is implemented. It is
 given as a trait of the variable:
 
     my $spot is Scalar;             # this is the default
     my $spot is PersistentScalar;
     my $spot is DataBase;
 
-Defining a variable type is the Perl 6 equivalent to tying a variable in
-Perl 5.
-
+Defining an implementation type is the Perl 6 equivalent to tying
+a variable in Perl 5.  But Perl 6 variables are tied directly at
+declaration time, and for performance reasons may not be tied with a
+run-time C<tie> statement unless the variable is explicitly declared
+with an implementation type that does the C<Tieable> role.
 
 =head2 Hierarchical types
 
@@ -665,13 +705,13 @@ value each of its elements stores:
     my Hash of Array of Recipe %book;  # each value is a hash of arrays of Recipes
 
 Each successive C<of> makes the type on its right a parameter of the
-type on its left. So:
+type on its left. Parametric types are named using square brackets, so:
 
     my Hash of Array of Recipe %book;
 
-means:
+actually means:
 
-    my Hash(returns=>Array(returns=>Recipe)) %book; 
+    my Hash[returns=>Array[returns=>Recipe]] %book; 
 
 Because the actual variable can be hard to find when complex types are
 specified, there is a postfix form as well:
@@ -734,13 +774,13 @@ unless you use the "anonymous declarator" (C<a>/C<an>):
 
 =head1 Properties and traits
 
-Compile-time properties are now called "traits". The 
+Compile-time properties are called "traits". The 
 C<is I<NAME> (I<DATA>)> syntax defines traits on containers and
 subroutines, as part of their declaration:
 
     my $pi is constant = 3;
 
-    my $key is Persistent(file=>".key");
+    my $key is Persistent(:file«.key»);
 
     sub fib is cached {...}
 
@@ -758,11 +798,12 @@ The C<but I<NAME> (I<DATA>)> syntax specifies run-time properties on values:
         return 0 but true;
     }
 
+Properties are predeclared as roles and implemented as mixins--see A12.
 
 =head2 Subroutine traits
 
-These traits may be declared on the subroutine as a whole (not on individual
-parameters).
+These traits may be declared on the subroutine as a whole (individual
+parameters take other traits).
 
 =over 
 
@@ -790,7 +831,7 @@ Specifies the rule by which a macro call is parsed.
 
 =item C<is cached>
 
-Marks a subroutine as being memoized
+Marks a subroutine as being memoized.
 
 =item C<is inline>
 
@@ -800,11 +841,21 @@ optimization via inlining.
 =item C<is tighter>/C<is looser>/C<is equiv>
 
 Specifies the precedence of an operator relative to an existing
-operator.
+operator.  C<equiv> also specifies the default associativity to
+be the same as the operator to which the new operator is equivalent.
+C<tighter> and C<looser> operators default to left associative.
 
 =item C<is assoc>
 
-Specifies the associativity of an operator. 
+Specifies the associativity of an operator explicitly.  Valid values are:
+
+    Tag		Examples	Meaning of $a op $b op $c
+    ===		========	=========================
+    left	+ - * / x	($a op $b) op $c
+    right	** =		$a op ($b op $c)
+    non		cmp <=> ..	ILLEGAL
+    chain	== eq ~~	($a op $b) and ($b op $c)
+    list	| & ^ ¥		listop($a, $b, $c)
 
 =item C<PRE>/C<POST>
 
@@ -815,8 +866,8 @@ otherwise an exception is thrown.
 =item C<FIRST>/C<LAST>/C<NEXT>/C<KEEP>/C<UNDO>/etc.
 
 Mark blocks that are to be conditionally executed before or after
-the subroutine's C<do> block. The return values of these blocks
-are ignored.
+the subroutine's C<do> block. These blocks are generally used only for
+their side effects, since most return values will be ignored.
 
 =back
 
@@ -843,11 +894,15 @@ element of the list:
 
     sub incr (*@vars is rw) { $_++ for @vars }
 
+(The variadic array as a whole is always modifiable, but such
+modifications have no effect on the original argument list.)
+
 =item C<is ref>
 
 Specifies that the parameter is passed by reference. Unlike C<is rw>, the
 corresponding argument must already be a suitable lvalue. No attempt at
-coercion or autovivification is made.
+coercion or autovivification is made, so unsuitable values throw an
+exception when you try to modify them.
 
 =item C<is copy>
 
@@ -868,21 +923,16 @@ to cause a final list parameter to apply a series of scalar contexts:
 
     sub format(*@data is context(Scalar)) {...}
 
+Note that the compiler may not be able to propagate such a scalar
+context to a function call used as a parameter to a method or multisub
+whose signature is not visible until dispatch time.  Such function
+call parameters are called in list context by default, and must be
+coerced to scalar context explicitly if that is desired.
+
 =back
 
 
 =head1 Advanced subroutine features
-
-
-=head2 The C<&_> routine
-
-C<&_> is always an alias for the current subroutine, much like the C<$_>
-alias for the current topic:
-
-    my $anonfactorial = sub (Int $n) {
-                            return 1 if $n<2;
-                            return $n * &_($n-1)
-                        };
 
 
 =head2 The C<caller> function
@@ -901,9 +951,8 @@ look for, and how many such scopes to skip over when looking:
     $caller = caller;                      # immediate caller
     $caller = caller Method;               # nearest caller that is method
     $caller = caller Bare;                 # nearest caller that is bare block
-    $caller = caller Sub, skip=>2;         # caller three levels up
-    $caller = caller Block, label=>'Foo';  # caller whose label is 'Foo'
-
+    $caller = caller Sub, :skip(2);        # caller three levels up
+    $caller = caller Block, :label«Foo»;   # caller whose label is 'Foo'
 
 =head2 The C<want> function
 
@@ -933,21 +982,22 @@ or has the corresponding methods called on it:
 =head2 The C<leave> function
 
 A C<return> statement causes the innermost surrounding subroutine, method,
-rule, macro, or multimethod to return.
+rule, macro, or multimethod to return.  Only declarations with an explicit
+keyword such as "sub" may be returned from.
 
-To return from other types of code structures, the C<leave> funtion is used:
+To return from other types of code structures, the C<leave> function is used:
 
     leave;                      # return from innermost block of any kind
     leave Method;               # return from innermost calling method
-    leave &=sub <== 1,2,3;      # Return from current sub. Same as: return 1,2,3
+    leave &?SUB <== 1,2,3;      # Return from current sub. Same as: return 1,2,3
     leave &foo <== 1,2,3;       # Return from innermost surrounding call to &foo
-    leave Loop, label=>'COUNT'; # Same as: last COUNT;
+    leave Loop, :label«COUNT»;  # Same as: last COUNT;
 
 
 =head2 Temporization
 
-The C<temp> function temporarily replaces a variable, subroutine, or
-other object in a given scope:
+The C<temp> function temporarily replaces the value of an existing
+variable, subroutine, or other object in a given scope:
 
     {
        temp $*foo = 'foo';      # Temporarily replace global $foo
@@ -991,6 +1041,21 @@ the temporizing scope to restore the subroutine to its pre-C<temp> state:
         return $curr;
     }
 
+    # and later...
+									    
+    say next();     # prints 0; $next == 1
+    say next();     # prints 1; $next == 2
+    say next();     # prints 2; $next == 3
+    if ($hiccough) {
+	say temp next();  # prints 3; closes $curr at 3; $next == 4
+	say next();    	  # prints 4; $next == 5
+	say next();       # prints 5; $next == 6
+    }                     # $next = 3
+    say next();     # prints 3; $next == 4
+    say next();     # prints 4; $next == 5
+
+Hypothetical variables use the same mechanism, except that the restoring
+closure is called only on failure.
 
 =head2 Wrapping
 
@@ -1025,6 +1090,38 @@ temporization:
 
     temp &thermo.wrap( { call($^t + 273.16) } );
 
+Within a wrapper, the C<&_> variable is implicitly declared as a
+lexical by the wrapper, and refers to the function that C<call>
+implicitly calls.  Thus, for non-wrappers, you may also declare
+your own C<&_> lexical variable (or parameter) and then use C<call>
+to call whatever is referenced by C<&_>.  (In the absence of such
+a declaration, C<call> magically steals the dispatch list from the
+current dispatcher, and redispatches to the next-most-likely method
+or multi-sub.)
+
+=head2 The C<&?SUB> routine
+
+C<&?SUB> is always an alias for the current subroutine, so you can
+specify tail-recursion on an anonymous sub:
+
+    my $anonfactorial = sub (Int $n) {
+                            return 1 if $n<2;
+                            return $n * &?SUB($n-1);
+                        };
+
+C<$?SUBNAME> contains the name of the current subroutine, if any.
+
+=head2 The C<&?BLOCK> routine
+
+C<&?BLOCK> is always an alias for the current block, so you can
+specify tail-recursion on an anonymous block:
+
+    my $anonfactorial = -> Int $n { $n < 2
+    					?? 1
+					:: $n * &?BLOCK($n-1)
+				  };
+
+C<$?BLOCKLABEL> contains the label of the current block, if any.
 
 =head2 Currying
 
@@ -1033,6 +1130,14 @@ of named arguments, whose names must match parameters of the subroutine
 itself:
 
     &textfrom := &substr.assuming(str=>$text, len=>Inf);
+
+or equivalently:
+
+    &textfrom := &substr.assuming(:str($text) :len(Inf));
+
+or even:
+
+    &textfrom := &substr.assuming:str($text):len(Inf);
 
 It returns a reference to a subroutine that implements the same behaviour
 as the original subroutine, but has the values passed to C<.assuming>
@@ -1048,6 +1153,11 @@ module's subroutines/methods/etc. simultaneously:
 
     (use IO::Logging).assuming(logfile => ".log");
 
+To curry a particular multimethod it may be necessary to specify the type
+of one or more of its invocants:
+
+    &woof ::= &bark<Dog>.assuming :pitch«low»;
+    &pine ::= &bark<Tree>.assuming :pitch«yes»;
 
 
 =head1 Other matters
@@ -1055,28 +1165,45 @@ module's subroutines/methods/etc. simultaneously:
 
 =head2 Anonymous hashes vs blocks
 
-C<{...}> is always a block/closure unless it consists of a single list, the
-first element of which is either a hash or a pair.
+C<{...}> is always a block.  However, if it consists of a single list, the
+first element of which is either a hash or a pair, it is executed immediately
+to compose a hash reference.
 
-The standard C<pair I<LIST>> function is equivalent to:
+The standard C<pair> list operator is equivalent to:
 
     sub pair (*@LIST) {
         my @pairs;
         for @LIST -> $key, $val {
-            push @pairs, $key=>$val;
+            push @pairs, $key => $val;
         }
         return @pairs;
     }
 
+or more succinctly (and lazily):
 
-The standard C<hash> function takes a block, evaluates it in list context, and
-constructs an anonymous hash from the resulting key/value list:
+    sub pair (*@LIST) {
+        gather {
+	    for @LIST -> $key, $val {
+		take $key => $val;
+	    }
+	}
+    }
 
-    $ref = hash { 1, 2, 3, 4, 5, 6 };   # Anonymous hash
-    $ref = sub  { 1, 2, 3, 4, 5, 6 };   # Anonymous sub returning list
+The standard C<hash> list operator is equivalent to:
+
+    sub hash (*@LIST) {
+	return { pair @LIST };
+    }
+
+So you may use C<sub> or C<hash> or C<pair> to disambiguate:
+
+    $ref =  sub { 1, 2, 3, 4, 5, 6 };   # Anonymous sub returning list
     $ref =      { 1, 2, 3, 4, 5, 6 };   # Anonymous sub returning list
     $ref =      { 1=>2, 3=>4, 5=>6 };   # Anonymous hash
     $ref =      { 1=>2, 3, 4, 5, 6 };   # Anonymous hash
+    $ref =  hash( 1, 2, 3, 4, 5, 6 );   # Anonymous hash
+    $ref =  hash  1, 2, 3, 4, 5, 6  ;   # Anonymous hash
+    $ref = { pair 1, 2, 3, 4, 5, 6 };   # Anonymous hash
 
 
 =head2 Pairs as lvalues
@@ -1097,7 +1224,7 @@ C<$CALLER::varname> specifies the C<$varname> visible in the dynamic
 scope from which the current block/closure/subroutine was called.
 
 C<$MY::varname> specifies the lexical C<$varname> declared in the current
-lexical scope.
+lexical scope.  C<%MY::> is the hash representing that scope.
 
 C<$OUTER::varname> specifies the C<$varname> declared in the lexical
 scope surrounding the current lexical scope (i.e. the scope in which

@@ -1,3 +1,5 @@
+=encoding utf-8
+
 =head1 TITLE
 
 Apocalypse 1: The Ugly, the Bad, and the Good
@@ -8,11 +10,11 @@ Larry Wall <larry@wall.org>
 
 =head1 VERSION
 
-	Maintainer: Allison Randal <al@shadowed.net>
+	Maintainer: Larry Wall <larry@wall.org>
 	Date: 2 Apr 2001
-	Last Modified: unknown
+	Last Modified: 27 Sep 2004
 	Number: 1
-	Version: 1
+	Version: 2
 
 People get scared when they hear the word Apocalypse, but here I mean
 it in the good sense: a Revealing. An Apocalypse is supposed to reveal
@@ -28,7 +30,7 @@ someone has to do it, so I'll try my best to fake it. And I'll expect
 all of you to help me out with the process of creating history. We all
 have to do our bit with free will.
 
-"If you look at the history of Perl 6 up to this point, you will see
+If you look at the history of Perl 6 up to this point, you will see
 why this column is subtitled The Ugly, the Bad, and the Good. The RFC
 process of last year was ugly, in a good sense. It was a brainstorming
 process, and that means it was deliberately ugly--not in the sense
@@ -274,6 +276,21 @@ I also happen to agree with this RFC because it's my philosophical
 position that morality works best when chosen, not when mandated.
 Nevertheless, there are times when morality should be strongly
 suggested, and I think modules and classes are a good place for that.
+
+[Update: Nowadays the main program is also strict by default, as soon
+as we know it's Perl 6 and not Perl 5.  If we say something like
+"C<use 6.0;>" as the first thing, we know it's Perl 6, and thus we
+know it's strict.  (Likewise saying C<#!/usr/bin/perl6> would default
+to strict.)   I think we could recognize a shorter, less formal
+form without the C<use> which would default to not being strict:
+
+    v6;
+    $x = 1; # global is legal
+
+(Without the C<v6> it would default to Perl 5.)  Scripts supplied
+with a C<-e> would also not be strict.  It's possible we can allow
+argumentless C<-e> as the last thing on the shebang line to suppress
+strict in the code below.  Of course, there's always "C<no strict>".]
 
 =head2 RFC 73: All Perl core functions should return objects
 

@@ -1,3 +1,8 @@
+#!/usr/bin/perl
+
+open INDEX, ">index.html" or die;
+
+print INDEX <<'END';
 [% page.title = "Perl6 Apocalypses" %]
 
 <p>
@@ -16,27 +21,32 @@ creating history. We all have to do our bit with free will."
 <p>
 
 <UL>
-<LI><A HREF="A01.html">
-    1 => "The Ugly, the Bad, and the Good (27 Sep 2004)"
+END
+
+foreach $pod (<A??.pod>) {
+    ($html = $pod) =~ s/pod$/html/;
+    ($num) = $pod =~ /(\d+)/;
+    $num += 0;
+    open POD, $pod or die;
+    undef $/;
+    $file = <POD>;
+    ($date) = $file =~ /last\s*modified:\s+(.*)/i;
+    ($anum, $title) = $file =~ /Apocalypse (\d+):\s+(.*)/;
+    warn "Mismatch" unless $anum == $num;
+    print INDEX <<"END";
+<LI><A HREF="$html">
+    $num => "$title ($date)"
 </A>
-<LI><A HREF="A02.html">
-    2 => "Bits and Pieces (27 Oct 2004)"
-</A>
-<LI><A HREF="A03.html">
-    3 => "Operators (24 Sep 2004)"
-</A>
-<LI><A HREF="A04.html">
-    4 => "Syntax (27 Oct 2004)"
-</A>
-<LI><A HREF="A05.html">
-    5 => "Pattern Matching (28 Sep 2004)"
-</A>
-<LI><A HREF="A06.html">
-    6 => "Subroutines (5 Nov 2004)"
-</A>
+END
+
+    if ($num == 6) {
+	print INDEX <<'END';
 <LI><A HREF="A06.html#Apocalypse_7:_Formats">
     7 => "Formats" </A> (see <A HREF="../exegesis/E07.html">E07</A>)
-<LI><A HREF="A12.html">
-    12 => "Objects (6 Nov 2004)"
-</A>
+END
+    }
+}
+
+print INDEX <<'END';
 </UL>
+END

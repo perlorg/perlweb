@@ -1,3 +1,5 @@
+=encoding utf-8
+
 =head1 TITLE
 
 Apocalypse 4: Syntax
@@ -8,11 +10,11 @@ Larry Wall <larry@wall.org>
 
 =head1 VERSION
 
-  Maintainer: Allison Randal <al@shadowed.net>
+  Maintainer: Larry Wall <larry@wall.org>
   Date: 18 Jan 2002
-  Last Modified: unknown
+  Last Modified: 27 Oct 2004
   Number: 4
-  Version: 1
+  Version: 3
 
 This Apocalypse is all about syntax in the large. The corresponding
 chapter in the Camel book is entitled "Statements and Declarations",
@@ -271,6 +273,14 @@ compile-time evaluation of a non-static expression:
 On the other hand, a one-line C<BEGIN> would then have to have a
 semicolon.
 
+[Update: We ended up solving this by distinguishing statement C<BEGIN>
+from term C<BEGIN>.  Also, we can't really syntactically distinguish
+the closures for constructs like C<sort> or C<map> if they are subject
+to multiple dispatch, since we wouldn't know the signature.  However,
+you never have to end such a block on a line by itself, since you can
+always put the optional comma, or even feed the list to the operator
+using the C<< <== >> pipe operator.]
+
 Anyway, back to switch statements. Damian's RFC proposes various
 specific kinds of dwimmery, and while some of those dwims are spot on,
 others may need adjustment. In particular, there is an assumption that
@@ -289,6 +299,8 @@ C<"foo"> is obviously a string. But unary C<+> can force anything to a
 number, and unary C<_> can force anything to a string. Unary C<?> can
 force a boolean, and unary C<.> can force a method call. More
 complicated thoughts can be represented with closure blocks.
+
+[Update: String context is now forced by unary C<~>.]
 
 Another thing that needs adjustment is that the concept of "isa"
 matching seems to be missing, or at least difficult to express. We need
@@ -341,6 +353,11 @@ dwimmery anyway, I think the switch statement will have to recognize
 any C<Class::Name> known at compile time, and force it to call
 C<$!.isa(Class::Name)>.
 
+[Update: Actually, it just follows from how smart matching works.  But
+in actual fact, smart match calls the C<.does> method, which is more
+general than the C<.isa> method, insofar as C<.does> can check both
+roles and inheritance.  See A12 for more.]
+
 Another possible adjustment will involve the use of switch statements
 as a means of parallelizing regular expression evaluation.
 Specifically, we want to be able to write parsers easily in Perl, which
@@ -355,6 +372,10 @@ instance. There may be special tokens referring to terminals and
 non-terminals. Basically, think of something like a yacc grammar, where
 alternative pattern/action grammar rules are most naturally expressed
 via switch statement cases. More on that in the next Apocalypse.
+
+[Update: Parsing rules tend to use the C<:p> modifier, which anchors the
+next token automatically to the start of the rule.  That's all that
+needs to be user visible.  Everything else is the domain of the optimizer.]
 
 Another possible adjustment is that the proposed C<else> block could be
 considered unnecessary. The code following the final C<when> is
@@ -427,6 +448,9 @@ since it only worked for scalar refs. (To match identities we'll need
 an explicit C<.id> method in any event. We won't be relying on the
 default numify or stringify methods to produce unique representations.)
 
+[Update: Instead of an C<.id> method, which would be unclear how to compare,
+there's a C<=:=> operator for comparing identities.]
+
 I've rearranged the table to be applied in order, so that default
 interpretations come later. Also, the "Matching Code" column in the RFC
 gave alternatives that aren't resolved. In these cases I've chosen the
@@ -460,6 +484,9 @@ But that seems a lot of trouble for a very common case of case, as it
 were. We could use vertical bars as some languages do, but I think the
 comma reads better.
 
+[Update: since we ended up adding junctions, you do use vertical bars now.
+If you like commas you can always use C<any()>.]
+
 Anyway, here's another simplification. The following table will I<also>
 define how the Perl 6 C<=~> operator works! That allows us to use a
 recursive definition to handle matching against a disjunctive list of
@@ -482,6 +509,8 @@ it's equivalent to saying this:
     for (scalar(EXPR1)) {
         if ($_ =~ (EXPR2)) { ... }
     }
+
+[Update: the C<=~> operator has been renamed C<~~>.]
 
 =head3 Table 1: Matching a switch value against a case value
 
@@ -510,6 +539,9 @@ it's equivalent to saying this:
     expr    boolean   simple expression truth* match if $b
     expr    undef     undefined                match unless defined $a
     expr    expr      run-time guessing        match if ($a =~ $b) at runtime
+
+[Update: This is inaccurate in several ways; see the most recent
+table in the Synopsis.]
 
 In order to facilitate optimizations, these distinctions are made
 syntactically at compile time whenever possible. For each comparison,
@@ -540,6 +572,9 @@ are ways to force the arguments to be treated as you intend:
     method      .foo(args)        { $_.$method(args) }
     boolean     $a == $b          ?expr or true expr or { expr }
 
+[Update: C<qr//> is now spelled C<rx//>.  String context is forced C<~>.
+A regex is interpolated with C</<$expr>/>.]
+
 A method must be written with a unary dot to distinguish it from other
 forms. The method may have arguments. In essence, when you write
 
@@ -553,6 +588,9 @@ and then the closure is evaluated for its truth.
 
 A class match works only if the class name is known at compile time.
 Use C<.isa("Class")> for more complicated situations.
+
+[Update: You can specify a run-time class name via C<::($expr)> without
+explicitly using C<.does> (or C<.isa>, for that matter).]
 
 Boolean expressions are recognized at compile time by the presence of a
 top-level operator that is a comparison or logical operator. As the
@@ -617,6 +655,9 @@ By symmetry, a C<given> will by default alias C<$_> to the "given".
 Basically, the only difference between a C<given> and a C<for> is that
 a C<given> takes a scalar expression, while a C<for> takes a
 pre-flattened list and iterates over it.
+
+[Update: C<for> takes a lazily flattened list, not a pre-flattened list.
+Use unary C<**> to pre-flatten a list.]
 
 Suppose you want to preserve C<$_> and alias C<$g> to the value
 instead. You can say that like this:
@@ -687,11 +728,15 @@ given is aliased to something other than C<$_>:
         when /bar/ { ... } # true, matches against $f
     }
 
+[Update: The first argument is always aliased to C<$_> now.]
+
 Oh, one other tweak. The RFC proposes to overload C<next> to mean "fall
 through to the next case". I don't think this is wise, since we'll
 often want to use loop controls within a switch statement. Instead, I
 think we should use C<skip> to do that. (To be read as "Skip to the
 next statement.")
+
+[Update: That's now spelled C<continue>.]
 
 Similarly, if we make a word to mean to explicitly break out of a
 topicalizer, it should not be C<last>. I'd suggest C<break>! It will,
@@ -790,6 +835,8 @@ Here's how I see that being written in Perl 6:
         POST { ... }
     }
 
+[Update: the comma in the second case should be a C<|>.]
+
 The outer block does not have to be a C<try> block. It could be a
 subroutine, a loop, or any other kind of block, including an C<eval>
 string or an entire file. We will call such an outer block a try block,
@@ -811,6 +858,9 @@ are evaluated in order before anything else in the block. C<POST>
 blocks will be evaluated in reverse order, though order dependencies
 between C<POST> blocks are discouraged. C<POST> blocks are evaluated
 after everything else in the block, including any C<CATCH>.
+
+[Update: C<PRE> and C<POST> are now spelled C<ENTER> and C<LEAVE>.
+(C<PRE> and C<POST> are reserved for Design By Contract assertions).]
 
 A C<try {}> without a C<CATCH> is equivalent to Perl 5's C<eval {}>.
 (In fact, C<eval> will go back to evaluating only strings in Perl 6,
@@ -837,7 +887,9 @@ In fact, a C<CATCH> of the form:
         when yyy { ... }          # 2nd case
         ...                       # other cases, maybe a default
     }
- means something vaguely like:
+
+means something vaguely like:
+
     BEGIN {
         %MY.catcher = {
             given current_exception() -> $! {
@@ -1206,6 +1258,10 @@ variable in question at declaration time via a property:
 
     my $f is undo { close $f } = open $file or die;
 
+[Update: All of these should use C<will> rather than C<is>, or the
+closure has to be an explicit argument to C<undo> with no intervening
+space.]
+
 Note that the block is truly a closure because it relies on the lexical
 scoping of C<$f>. (This form of lexical scoping works in Perl 6 because
 the name C<$f> is introduced immediately within the statement. This
@@ -1293,6 +1349,9 @@ uncaught exceptions are rethrown implicitly by the C<CATCH>).
 Fortunately or unfortunately, an explicit C<default> case will not
 automatically rethrow control exceptions.
 
+[Update: We now distinguish a C<CONTROL> block from a C<CATCH> block.
+Control exceptions are invisible to the CATCH block.]
+
 Following are some more examples of how the expression evaluation of
 C<when> can be used. The RFC versions sometimes look more concise, but
 recall that the "try" is any block in Perl 6, whereas in the RFC form
@@ -1314,6 +1373,8 @@ Now:
     }
 
 This works because =~ is considered a boolean operator.
+
+[Update: The operator is C<~~> now.]
 
 RFC:
 
@@ -1365,6 +1426,9 @@ Actually, by the "any" rules of the C<=~> table, we can just say:
             when @$! =~ Foo { ... }
         }
     }
+
+[Update: Lists must be explicitly made into junctions, so now we'd
+write that as C<any(@$!) ~~ Foo>.]
 
 The RFC proposes the following syntax for finalization:
 
@@ -1506,7 +1570,7 @@ for C<$foo{...}> (the hash element).>
 
 =back
 
-We now require whitespace before non-subscript block, so this is not
+We now require whitespace before a non-subscript block, so this is not
 much of a problem.
 
 RFC:
@@ -1990,6 +2054,9 @@ not a predefined class. What we have is a unary operator C<last> that
 is taking an adverbial modifier specifying what to return from the
 loop.
 
+[Update: there's now a general C<leave> verb that can exit from an inner
+block.]
+
 The interesting policy question as we go on will be whether a given
 construct responds to a given exception or not. Some exceptions will
 have to be restricted in their use. For instance, we should probably
@@ -2102,6 +2169,8 @@ The proposed syntax is fine, except that we'll be using C<is> instead
 of C<:> for properties, as discussed in Apocalypse 2. (And it's
 C<constant>, not C<const>.)
 
+[Update: compile-time properties are now called "traits".]
+
 =head2 RFC 337: Common attribute system to allow user-defined,
 extensible attributes
 
@@ -2109,6 +2178,9 @@ As already revealed in Apocalypse 2, attributes will be known as
 "properties" in Perl 6, to avoid confusion with existing OO
 nomenclature for instance variables. Also, we'll use the C<is> keyword
 instead of the colon.
+
+[Update: run-time properties are set with C<but>, while traits
+are set with C<is>.]
 
 Setting properties on array and hash elements bothers me, particularly
 when those properties have names like "public" and "private". This
@@ -2140,6 +2212,9 @@ following is always true:
 
     @dogpound.is.loud
 
+[Update: The C<.is> is no longer needed, since properties are really
+mixin methods now.]
+
 since the C<loud> is a property of the array object, even if it
 contains no dogs. It turns out that
 
@@ -2154,6 +2229,9 @@ Note that you can use:
     @dogpound =~ Dog
 
 to test the individual elements for Doghood.
+
+[Update: We use C<~~> instead of C<=~> now.  And C<@dogpound.DogPound>
+throws an exception if C<@dogpound> doesn't have a C<DogPound> method.]
 
 =head2 RFC 173: Allow multiple loop variables in foreach statements
 
@@ -2229,6 +2307,10 @@ and so on forever (or at least for a very long time):
     for 0 .. Inf; "a" .. "z" x 1000 -> $i; $a {
         print "$a$i";
     }
+
+[Update: This has been simplified.  The arguments to a closure are
+always separated by commas, and you can use the C<zip> function to
+interleave two or more arrays on the left.]
 
 =head2 RFC 019: Rename the local operator
 
@@ -2396,6 +2478,9 @@ closure.
 We'll solve the C<;> problem by jiggering the definition of C<{...}>,
 not by fiddling with C<do>.
 
+[Update: Bare blocks are still legal, and always execute immediately
+as expected.  To return a closure you must be more explicit.]
+
 =head2 RFC 209: Fuller integer support in Perl.
 
 The old C<use integer> pragma was a hack. I think I'd rather use types
@@ -2455,6 +2540,9 @@ not.) In any event, I think some kind of explicit regex notation is
 called for, not the promotion of identifiers to token matchers. We may
 want identifiers in signatures for something else later, so we'll hold
 them in reserve.
+
+[Update: This functionality is provided by macros using the C<is parsed>
+trait.  See A6.]
 
 =head2 RFC 340: with takes a context
 
@@ -2537,6 +2625,9 @@ explicit:
         last unless CONDITION;
     }
 
+[Update: We'll also allow the C<<loop {...} while CONDITION;>> form to mean
+execute once first.]
+
 =head2 Bare blocks
 
 In Perl 5, bare blocks (blocks used as statements) are once-through
@@ -2548,6 +2639,8 @@ Therefore the use of a closure at the statement level will be
 considered an error, whether or not it's in a void context. Use C<do
 {}> for a "once" block, and an explicit C<return> or C<sub> when you
 want to return a reference to the closure.
+
+[Update: Bare blocks are legal again and work as expected.]
 
 =head2 continue block
 
@@ -2571,6 +2664,8 @@ can now be defined as equivalent to:
 lexical scope). The C<NEXT> block is called only before attempting the
 next iteration of the loop. It is not called when the loop is done and
 about to exit. Use a C<POST> for that.
+
+[Update: s/POST/LEAVE/]
 
 Well, that about wraps it up for now. You might be interesting to know
 that I'm posting this from the second sesquiannual Perl Whirl cruise,

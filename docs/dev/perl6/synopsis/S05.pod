@@ -13,9 +13,9 @@ Allison Randal <al@shadowed.net>
 
   Maintainer: Larry Wall <larry@wall.org>
   Date: 24 Jun 2002
-  Last Modified: 13 Sep 2004
+  Last Modified: 20 Nov 2004
   Number: 5
-  Version: 2
+  Version: 4
 
 This document summarizes Apocalypse 5, which is about the new regex
 syntax.  We now try to call them "rules" because they haven't been
@@ -209,6 +209,8 @@ which is the same as:
     m/(\d+)/ && m:c/(\d+)/ && s:c/(\d+)/@data[$1]/;
 
 Lists and junctions are allowed: C<:nth(1|2|3|5|8|13|21|34|55|89)>.
+
+So are closures: C<:nth{.is_fibonacci}>
 
 =item *
 
@@ -522,6 +524,10 @@ The special named assertions include:
 
     / <sp> /                # match a space char
 
+The C<after> assertion implements lookbehind by reversing the syntax
+tree and looking for things in the opposite order going to the left.
+It is illegal to do lookbehind on a pattern that cannot be reversed.
+
 =item *
 
 A leading C<$> indicates an indirect rule.  The variable must contain
@@ -531,7 +537,7 @@ either a hard reference to a rule, or a string containing the rule.
 
 A leading C<::> indicates a symbolic indirect rule:
 
-    / <::{$somename}>
+    / <::($somename)>
 
 The variable must contain the name of a rule.
 
@@ -665,7 +671,10 @@ rare cases that need them you can use C<< <{ lc $rule }> >> etc.
 
 =item *
 
-The C<\G> sequence is gone.  Use C<< <( .pos == $oldpos )> >>.
+The C<\G> sequence is gone.  Use C<:p> instead.  (Note, however, that
+it makes no sense to use C<:p> within a pattern, since every internal
+pattern is implicitly anchored to the current position.  You'll have
+to explicitly compare C<< <( .pos == $oldpos )> >> in that case.)
 
 =item *
 
@@ -1095,8 +1104,25 @@ The binding shorthand is right associative just like the ordinary operator.
 
 =item *
 
-The numeric variables (C<$1>, C<$2>, etc.) are automatically bound
-"hypothetically".
+When implicitly bound by captures, the numeric variables (C<$1>,
+C<$2>, etc.) are automatically bound "hypothetically", as if you'd
+said
+
+    { let $1 := "string" }
+
+If you explicitly say
+
+    { $1 := "string" }
+
+the variable is not bound hypothetically, so C<$1> persists as long as
+the current match object persists, even if this closure is backtracked
+over.  However, since C<$0> is itself a hypothetical numbered variable,
+the lifetime of any numbered variable is somewhat hypothetical in
+any case, scoped to some outer calling context, either a calling
+pattern, or the current non-pattern scope that invoked this pattern.
+This implies that, outside the entire match, a failed, false C<$0>
+can return a defined, non-hypothetically bound C<$1>, up till the time
+the C<$0> object is itself destroyed.
 
 =item *
 
@@ -1112,7 +1138,7 @@ the rule.  So the example above doesn't automatically set C<$3> or C<$4>.
 
 =item *
 
-You may also bind the numberic variables explicitly in closures, in which
+You may also bind the numeric variables explicitly in closures, in which
 case the normal numbering is not disabled:
 
     my ($key, $val) = m:w{ (\w+) =\> (.*?)
@@ -1226,14 +1252,13 @@ In numeric context it evaluates to the number of matches:
 
 =item * 
 
-In string context it evaluates to the captured substring (if there
-was exactly one capture in the pattern) or to the entire text that
-was matched (if the pattern does not capture, or captures multiple
-elements):
+In string context it evaluates to C<$1>.  (If there were no explicit
+captures, the entire match is assumed to be a capture to C<$1>, as
+if there were parens around the entire match.)
 
-    print %hash{$text ~~ /,? (<ident>)/};
+    print %hash{"{$text ~~ /,? (<ident>)/}"};
     # or: 
-    $text ~~ /,? (<ident>)/  &&  print %hash{$0};
+    $text ~~ /,? (<ident>)/  &&  print %hash{~$0};
 
 =item *
 
@@ -1247,7 +1272,13 @@ can also be written:
     $result = m:w/ (\S+) => (\S+)/;
     ($key, $val) = @$result;
 
-For this reason $0 is not considered part of the array.
+For this reason C<$0> is not considered part of the array.  But again,
+if there are no explicit capture parens, the entire match is considered
+a capture into $1.
+
+To get all the captures into a string, use a "zen" slice:
+
+    $mystring = "{ m:w/ (\S+) => (\S+)/[] }";
 
 =item *
 
@@ -1258,11 +1289,21 @@ However, you may still refer to it as C<@«foo»> anywhere C<$0>
 is visible.  (But it is erroneous to use the same name for two different
 capture datatypes.)
 
+The I<string> matched by the entire pattern may always be named via the
+"MATCH" key, even if there are captures:
+
+    $mystring = "{ m:w/ (\S+) => $1/«MATCH» }";
+
+Note that C<$«MATCH»> is not merely a recursive reference to C<$0>.
+C<$«MATCH»> always returns the entire match in string context.  (C<$0>
+always returns C<$1> in string context.)
+
 =item *
 
 In ordinary code, variables C<$1>, C<$2>, etc. are just aliases into
 C<$0[0]>, C<$0[1]>, etc.  Hence they will all be undefined if the
-last match failed.
+last match failed (unless they were explicitly bound in a closure without
+using the C<let> keyword).
 
 =back
 
@@ -1296,6 +1337,9 @@ to the right end of the "new" C<$0>.)  However, all the numbered and
 named fields are available just as if the entire match had been returned
 for C<$0>.  So the quote character still shows up in C<$1>.
 
+If you wish to rebind only the return string that will be returned in
+string context, rebind C<$1> rather than C<$0>.
+
 =item *
 
 When binding C<$0> in a closure, it is syntactically valid to
@@ -1316,12 +1360,32 @@ string entirely.
 Anything that can be tied to a string can be matched against a
 rule. This feature is particularly useful with input streams:
 
-    my @array := <$fh>;           # lazy when aliased
-    my $array is from(\@array);   # tie scalar
+    my $stream is from($fh);       # tie scalar to filehandle
 
     # and later...
 
-    $array ~~ m/pattern/;         # match from stream
+    $stream ~~ m/pattern/;         # match from stream
+
+An array can be matched against a rule.  The special C<< <,> >>
+rule matches the boundary between elements.  If the array elements
+are strings, they are concatenated virtually into a single logical
+string.  If the array elements are tokens or other such objects, the
+objects must provide appropriate methods for the kinds of rules to
+match against.  It is an assertion error to match a string matching
+assertion against an object that doesn't provide a string view.
+However, pure token objects can be parsed as long as the match rule
+restricts itself to assertions like:
+
+    <.isa(Dog)>
+    <.does(Bark)>
+    <.can(«scratch»)>
+
+It is permissible to mix tokens and strings in an array as long as they're
+in different elements.  You may not embed objects in strings, however.
+
+To match against each element of an array, use a hyper operator:
+
+    @array».match($rule)
 
 =back
 
@@ -1409,16 +1473,16 @@ Perl 6 will come with at least one grammar predefined:
 
     grammar Perl {    # Perl's own grammar
 
-        rule prog { <line>* }
+        rule prog { <statement>* }
 
-        rule line { <decl>
+        rule statement { <decl>
                   | <loop>
                   | <label> [<cond>|<sideff>|;]
         }
 
         rule decl { <sub> | <class> | <use> }
 
-        # etc. etc.
+        # etc. etc. etc.
     }
 
 =item *
@@ -1436,17 +1500,17 @@ Hence:
 For writing your own backslash and assertion rules or macros, you may
 use the following syntactic categories:
 
-    rule rxbackslash:w { ... }    # define your own \w and \W
-    rule rxassertion:* { ... }    # define your own <*stuff> and «*stuff»
-    macro rxmetachar:, { ... }    # define a new metacharacter
-    macro rxmodinternal:x { ... } # define your own /:x() stuff/
-    macro rxmodexternal:x { ... } # define your own m:x()/stuff/
+    rule rxbackslash:«w» { ... }    # define your own \w and \W
+    rule rxassertion:«*» { ... }    # define your own <*stuff> and «*stuff»
+    macro rxmetachar:«,» { ... }    # define a new metacharacter
+    macro rxmodinternal:«x» { ... } # define your own /:x() stuff/
+    macro rxmodexternal:«x» { ... } # define your own m:x()/stuff/
 
 As with any such syntactic shenanigans, the declaration must be visible in
 the lexical scope to have any effect.  It's possible the internal/external
 distinction is just a trait, and that some of those things are subs
 or methods rather than rules or macros.  (The numeric rxmods are recognized
-by fallback macros that have nothing after the colon.)
+by fallback macros defined with an empty operator name.)
 
 =head1 Pragmas
 
@@ -1459,39 +1523,51 @@ compilation and usage not otherwise provided for.
 
 =item *
 
-The C<tr///> quote-like operator now also has a subroutine form called
-C<tr()>.  Its argument is a list of pairs.  You can use anything that
+The C<tr///> quote-like operator now also has a method form called
+C<trans()>.  Its argument is a list of pairs.  You can use anything that
 produces a pair list:
 
-    $str ~~ tr( %mapping.pairs.sort );
+    $str.trans( %mapping.pairs.sort );
+
+Use the .= form to do a translation in place:
+
+    $str.=trans( %mapping.pairs.sort );
 
 =item *
 
 The two sides of the any pair can be strings interpreted as C<tr///> would:
 
-    $str ~~ tr( 'A-C' => 'a-c', 'XYZ' => 'xyz' );
+    $str.=trans( 'A-C' => 'a-c', 'XYZ' => 'xyz' );
 
 As a degenerate case, each side can be individual characters:
 
-    $str ~~ tr( 'A'=>'a', 'B'=>'b', 'C'=>'c' );
+    $str.=trans( 'A'=>'a', 'B'=>'b', 'C'=>'c' );
 
 =item *
 
 The two sides of each pair may also be array references:
 
-    $str ~~ tr( ['A'..'C'] => ['a'..'c'], «X Y Z» => «x y z» );
+    $str.=trans( ['A'..'C'] => ['a'..'c'], «X Y Z» => «x y z» );
 
 =item *
 
 The array version can map one-or-more characters to one-or-more
 characters:
 
-    $str ~~ tr( [' ',      '<',    '>',    '&'    ] =>
-                ['&nbsp;', '&lt;', '&gt;', '&amp;' ]);
+    $str.=trans( [' ',      '<',    '>',    '&'    ] =>
+                 ['&nbsp;', '&lt;', '&gt;', '&amp;' ]);
 
 
 In the case that more than one sequence of input characters matches,
 the longest one wins.  In the case of two identical sequences the
 first in order wins.
+
+There are also method forms of C<m//> and C<s//>:
+
+    $str.match(//);
+    $str.subst(//, "replacement")
+    $str.subst(//, {"replacement"})
+    $str.=subst(//, "replacement")
+    $str.=subst(//, {"replacement"})
 
 =back

@@ -1,0 +1,115 @@
+=encoding utf8
+
+=head1 TITLE
+
+Synopsis 10: Packages
+
+=head1 AUTHOR
+
+Larry Wall <larry@wall.org>
+
+=head1 VERSION
+
+  Maintainer: Larry Wall <larry@wall.org>
+  Date: 27 Oct 2004
+  Last Modified: 20 Nov 2004
+  Number: 10
+  Version: 2
+
+=head1 Overview
+
+This synopsis summarizes Apocalypse 10, which discusses packages
+despite never having been written.
+
+=head1 Packages
+
+As in Perl 5, packages are the basis of modules and classes.  Unlike in
+Perl 5, modules and classes are declared with separate keywords,
+but they're still just packages with extra behaviors.
+
+An ordinary package is declared with the C<package> keyword.  There are
+two basic declaration syntaxes:
+
+    package Foo;	# rest of scope is in package Foo
+    ...
+
+    package Bar {...}	# block is in package Bar
+
+The first form, if it occurs as the first thing in a file, is taken to
+mean that the rest of the file is Perl 5 code.  In any other place it just
+indicates a Perl 6 package (but maybe you should use a module instead).
+
+Since there are no barewords in Perl 6, package names must be predeclared,
+or use the sigil-like C<::PackageName> syntax.  The C<::> prefix does not
+imply top-levelness as it does in Perl 5.  (Use C<::*> for that.)
+
+A bare C<package> declarator declares a global package name in C<::*>.
+To declare a package in the current package (or module, or class), use
+C<our package>.  To declare a lexically scoped package, use C<my package>.
+Package names are always searched for from innermost scopes to outermost.
+As with an initial C<::>, the presence of a C<::> within the name
+does not imply globalness (unlike in Perl 5).
+
+The C<::*> namespace is not "main".  The default namespace for the main
+program is C<::*Main>.
+
+Package traits are set using C<is>:
+
+    package Foo is bar {...}
+
+All symbolic links are done with the C<::($expr)> syntax, which is
+legal in any variable, package, module, or class name anywhere a
+C<::Ident> is legal.  The string returned by the expression will be
+parsed for C<::> indicating subpackage names.  Do not confuse this
+with the
+
+    %Foo::{$key}
+
+syntax that lets you do a lookup in a particular symbol table.  In this case,
+the key is not parsed for C<::>.
+
+=head1 Autoloading
+
+The package is the namespace that controls autoloading.  There is still
+an C<AUTOLOAD> hook that behaves as in Perl 5.  However, that is being
+replaced by various autoload hooks that distinguish declaration from
+definition, and various types from one another.  In particular:
+
+    AUTOSCALAR
+    AUTOARRAY
+    AUTOHASH
+    AUTOSUB
+    AUTOMETH
+
+stand in for the declaration of objects; they are called when anyone
+is searching for a name in the package (or module, or class), and the
+name doesn't already exist in the package.  (In particular, C<.can>
+calls C<AUTOMETH> when trying to determine if a class supports a
+particular method.)  The routines are expected to return a reference to
+an object of the proper sort (i.e. a variable, subroutine, or method
+reference), or undef if that name is not to be considered declared.
+That object need not be defined yet, though the routine is allowed
+to define it, and even install it into the symbol table if it likes.
+
+When someone tries to actually call or access an undefined object
+(which may have come from one of the routines above, or might have
+just been declared with a body of C<{...}>), a different set of hooks
+is used to define actual behavior at the last moment:
+
+    AUTOSCALARDEF
+    AUTOARRAYDEF
+    AUTOHASHDEF
+    AUTOSUBDEF
+    AUTOMETHDEF
+
+These routines are expected to define the object, but not to call
+it, since the call is already "scheduled" from somewhere else.
+(The C<goto &$AUTOLOAD> is implicit, in other words.  But you can
+hijack the call via the C<call> builtin, in which case the autoloader
+behaves just like a wrapper--see A6.)
+
+In any case, there is no longer any magical C<$AUTOLOAD> variable.
+The name being declared or defined can be found in C<$_>
+instead.  The name does not include the package name.  You can always
+get your own package name with C<$?PACKAGENAME>.
+

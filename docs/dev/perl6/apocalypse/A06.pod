@@ -1,3 +1,5 @@
+=encoding utf-8
+
 =head1 TITLE
 
 Apocalypse 6: Subroutines
@@ -8,11 +10,11 @@ Larry Wall <larry@wall.org>
 
 =head1 VERSION
 
-  Maintainer: Allison Randal <al@shadowed.net>
+  Maintainer: Larry Wall <larry@wall.org>
   Date: 7 Mar 2003
-  Last Modified: 7 Mar 2003
+  Last Modified: 5 Nov 2004
   Number: 6
-  Version: 1
+  Version: 3
 
 This is the Apocalypse on Subroutines.  In Perl culture the term
 "subroutine" conveys the general notion of calling something that
@@ -25,7 +27,7 @@ subroutines, but they're still essentially the same thing underneath.
 Insofar as they all behave similarly, this Apocalypse will have
 something to say about them.  (And if we also leak a few secrets
 about how method calls work, that will make Apocalypse 12 all the
-easierE<8212>presuming we don't have to un-invent anything between now
+easier--presuming we don't have to un-invent anything between now
 and then...)
 
 Here are the RFCs covered in this Apocalypse.  PSA stands for "problem,
@@ -191,6 +193,8 @@ list that happens to have a first argument that is a pair or hash:
     { 1 => 2, 3, 4 }	hash { 1 => 2, 3 => 4 }
     { %foo, 1 => 2 }	hash { %foo.pairs, 1 => 2 }
 
+[Update: C<hash> has been demoted to a list operator, actually.]
+
 Anything else that is not a list, or does not start with a pair or
 hash, indicates a subroutine:
 
@@ -275,6 +279,9 @@ which properties are subject to change, and which ones aren't.
 
 A given trait may or may not be implemented as a method on the
 underlying container object.  You're not supposed to care.
+
+[Update: Actually, they're done as mixins if the container type doesn't
+already support the role.  See A12.]
 
 There are actually several syntactic forms of trait:
 
@@ -373,8 +380,10 @@ A C<method> participates in inheritance and always has an invocant
 (object or class).  A C<submethod> has an invocant but does not
 participate in inheritance.  It's a sub pretending to be a method
 for the current class only.  A C<multi> is a multimethod, that is,
-a method that called like a subroutine or operator, but is dispatched
-based on the types of one or more of its arguments.
+a method that is called like a subroutine or operator, but is
+dispatched based on the types of one or more of its arguments.
+
+[Update: These days C<multi> is just a modifier on C<sub> or C<method>.]
 
 Another variant is the regex C<rule>, which is really a special kind
 of method; but in actuality rules probably get their own set of parse
@@ -541,7 +550,7 @@ to push it much further than that if we're to have a type system
 that is good enough to specify interfaces to languages like C++
 or Java.  In particular, we have to be able to specify the types of
 composite objects such as arrays and hashes without resorting to class
-definitions, which are rather heavyweightE<8212>not to mention opaque.
+definitions, which are rather heavyweight--not to mention opaque.
 We need to be able to specify the types of individual function and
 method parameters and return values.  Taken collectively, these
 parameter types can form the signature of a subroutine, which is one
@@ -554,7 +563,7 @@ Yeah, sure, you say.
 
 Well, let's see how far we can get with it.  If the type system is
 too klunky for some particular use, people will simply avoid using it.
-Which is fineE<8212>that's why it's optional.
+Which is fine--that's why it's optional.
 
 First, let's clarify one thing that seems to confuse people frequently.
 Unlike some languages, Perl makes a distinction between the type of
@@ -611,7 +620,7 @@ is like:
     my Cat %pet is Hash;
 
 You can think of the C<%pet> hash as a function that maps cat names
-(strings) to cats.  Of course, that's an oversimplificationE<8212>for both
+(strings) to cats.  Of course, that's an oversimplification--for both
 arrays and hashes, subscripting is not the only operation.  But it's
 the fundamental operation, so the declared type of the returned value
 reflects the return value of such a subscripted call.
@@ -677,7 +686,7 @@ I suppose you could also write that as:
 but for linguistic reasons it's probably better to keep the variable
 name near the left and put the long, heavy phrases to the right.
 (People tend to prefer to say the short parts of their sentences
-before the long partsE<8212>linguists call this the "end-weight" problem.)
+before the long parts--linguists call this the "end-weight" problem.)
 The C<Hash> is implied by the C<%pet>, so you could leave out the "C<is>"
 part and just say:
 
@@ -856,8 +865,8 @@ One of Perl's strong points has always been the blending of
 positional parameters with variadic parameters.
 
 "Variadic" parameters are the ones that I<vary>.  They're the "...And
-The Rest" list of values that many functionsE<8212>like C<print>, C<map>,
-and C<chomp>E<8212>have at the end of their call.  Whereas positional
+The Rest" list of values that many functions--like C<print>, C<map>,
+and C<chomp>--have at the end of their call.  Whereas positional
 parameters generally tell a function I<how> to do its job, variadic
 parameters are most often used to pass the arbitrary sequences of
 data the function is supposed to do its job on/with/to.
@@ -891,7 +900,7 @@ rather high.
 Perl 6 still allows you to access the arguments via C<@_> if you
 like, but in general you'll want to hoist the metadata up into
 the declaration.  Perl 6 still fully supports the distinction
-between positional and variadic dataE<8212>you just have to declare them
+between positional and variadic data--you just have to declare them
 differently.  In general, variadic items must follow positional items
 both in declaration and in invocation.
 
@@ -933,7 +942,7 @@ breaking old code.
 Since there are constraints on the ordering of parameters, similar
 parameters tend to clump together into "zones".  So we'll call the
 C<?>, C<+>, and C<*> symbols you see above "zone markers".  The
-underlying metaphor really is very much like zoning regulationsE<8212>you
+underlying metaphor really is very much like zoning regulations--you
 know, the ones where your city tells you what you may or may not do
 on a chunk of land you think you own.  Each zone has a set of possible
 uses, and similar zones often have overlapping uses.  But you're still
@@ -1027,7 +1036,7 @@ Next come the optional positional parameters.  (They have to come next
 because they're positional.)  In the declaration, optional positional
 parameters are distinguished from required parameters by marking the
 optional parameters with a question mark.  (The parameters are not
-distinguished in the callE<8212>you just use commas.  We'll discuss call
+distinguished in the call--you just use commas.  We'll discuss call
 syntax later.)  All optional positional parameters are marked with
 C<?>, not just the first one.  Once you've made the transition to the
 optional parameter zone, all parameters are considered optional from
@@ -1057,7 +1066,7 @@ for that variable.
 
 Additional named parameters may be placed at the end of the
 declaration, or marked with a unary C<+> (because they're "extra"
-parameters).  Since they areE<8212>by definitionE<8212>in the variadic region,
+parameters).  Since they are--by definition--in the variadic region,
 they may only be passed as named arguments, never positionally.  It is
 illegal to mark a parameter with C<?> after the first C<+> or C<*>,
 because you can't reenter a positional zone from a variadic zone.
@@ -1067,6 +1076,9 @@ necessarily declared in the same order as they will be passed in the
 call.  They may be declared in any order (though the exact behavior
 of a slurpy array depends slightly on whether you declare it first
 or last).
+
+[Update: The behavior of a slurpy array is the same now regardless of
+whether there are any C<+> parameters in front of it.]
 
 =head4 Named-only parameters
 
@@ -1223,6 +1235,9 @@ distinguishable only by their type signature:
 Note that when following a name like "C<&factorial>", parentheses do not
 automatically mean to make a call to the subroutine.  (This Apocalypse
 contradicts earlier Apocalypses.  Guess which one is right...)
+
+[Update: Er, actually, the earlier Apocalypse is right.  We now write
+those references above as C<< &factorial<complex> >> and such.]
 
     $val = &factorial($x);	# illegal, must use either
     $val = factorial($x);	#   this or
@@ -1416,6 +1431,8 @@ You may, however, supply a signature if you like:
 	block(foo => $bar);
     }
 
+[Update: That can be written C<< &block<$foo> >> now.]
+
 With an explicit signature, it would be error to bind a block to
 C<&block> that is not compatible.  We're leaving "compatible" undefined
 for the moment, other than to point out that the signature doesn't have
@@ -1493,6 +1510,8 @@ but this becomes illegal:
 
     push(@foo, 1,2,3);
 
+[Update: Actually, it's still legal now.]
+
 because the slurpy array is in the named-only zone.  We'll need an
 explicit way to indicate the start of the list in this case.  I can
 think of lots of (mostly bad) ways.  You probably can too.  We'll
@@ -1506,7 +1525,7 @@ but whenever they are there, they I<must> occur in that order.  It's
 more efficient for the compiler (and less confusing to the programmer)
 if all the positional arguments come before all the non-positional
 arguments in the list.  Likewise, the named arguments are constrained
-to occur before the list arguments for efficiencyE<8212>otherwise the
+to occur before the list arguments for efficiency--otherwise the
 implementation would have to scan the entire list for named arguments,
 and some lists are monstrous huge.
 
@@ -1530,8 +1549,8 @@ particular location, at least not here in Silicon Valley.  "I'm going
 out to McDonald's" doesn't mean a particular location anywhere in
 the world, with the possible exception of "not Antarctica".
 
-You don't really care exactly where a factory isE<8212>as long as it's not
-in your back yardE<8212>you care what it produces.  The typical factory is
+You don't really care exactly where a factory is--as long as it's not
+in your back yard--you care what it produces.  The typical factory is
 for mass producing a series of similar things.  In programming terms,
 that's like a generator, or a pipe...or a list.  And you mostly worry
 about how you get vast quantities of stuff into and out of the factory
@@ -1574,8 +1593,8 @@ the list part.
 All unbound named arguments are bound to elements of the slurpy hash,
 if one was declared.  If no slurpy hash is declared, an exception is
 thrown (although some standard methods, like C<BUILD>, will provide
-an implicitly declared slurpy hashE<8212>known as C<%_> by analogy
-to C<@_>E<8212>to handle surplus named arguments).
+an implicitly declared slurpy hash--known as C<%_> by analogy
+to C<@_>--to handle surplus named arguments).
 
 At the end of named argument processing, any unmapped optional
 parameter ends up with the value C<undef> unless a default value is
@@ -1631,6 +1650,9 @@ Then you can treat the slurp array as a positional parameter.
 That's the solution we used to add an extra argument to C<push>
 earlier, where the list always starts at the second argument.
 
+[Update: The slurpy array is now always treated as a positional
+parameter even if there are named parameters intervening.]
+
 On the calling end, you don't have any control of the declaration,
 but you can always specify one of the arguments as named, either the
 final positional one, or the list itself:
@@ -1649,7 +1671,9 @@ So we'll just say that the actual name of the slurpy list parameter is
 
     stuff(@foo, '*@' => (1,2,3))
 
-That's still a lot of extra unnecessary cruftE<8212>but we can do better.
+[Update: Actually, it's the null name that maps to the slurpy list.]
+
+That's still a lot of extra unnecessary cruft--but we can do better.
 List operators are like commands in Unix, where there's a command line
 containing a program name and some options, and streams of data coming
 in and going out via pipes.  The command in this case is C<stuff>,
@@ -1716,6 +1740,9 @@ on the pointy end that is in scalar context, but rather the positional
 arguments of whatever list function is pointed to by the pointy end.)
 See Appendix A for details.
 
+[Update: We also now have a slurpy routine, C<*&block>, that binds to
+an anonymous adverbial block.]
+
 =head3 Context
 
 As with Perl 5, the scalar arguments are evaluated in scalar context,
@@ -1741,6 +1768,9 @@ doesn't matter if there are more splatted terms.)  If the function
 wants more positional arguments, they are assumed to come from the
 generated list, as if the list had been specified literally in the
 program at that point as comma-separated values.
+
+[Update: Splat is now a unary operator even in list context.
+Use parens to make it flatten an entire list.]
 
 With splat lists, some of the argument processing may have to be
 deferred from compile time to runtime, so in general such a call may
@@ -1837,6 +1867,8 @@ caller.  If you call:
 you get two scalar references and the scalar result of C<baz()>, not a
 flattened list.  You can have lists without list context in Perl 6!
 
+[Update: But only on ordinary subs.]
+
 If you want to have alternating types in your list, you can.
 Just specify a tuple type on your context:
 
@@ -1915,6 +1947,12 @@ first (or next) value off of the the slurpy list.  The C<[]> notation
 is still useful though for when you really do have a single array
 ref coming in as a parameter.
 
+[Update: A slurpy scalar might also be bound to an unnamed adverbial
+block if there is no slurpy block to bind it to.  Since named parameter
+processing precedes slurpy list processing, any named parameter bound
+to an adverbial block is automatically excluded from binding to the
+slurpy list.]
+
 =head3 Attributive parameters
 
 It is typical in many languages to see object initializers that look
@@ -1946,7 +1984,7 @@ in Perl 6 as:
 Any parameter that appears to be an attribute is immediately
 copied directly into the corresponding object attribute, and no
 lexical parameter is generated.  You can mix these with ordinary
-parametersE<8212>the general rule of thumb for an initializer is that you
+parameters--the general rule of thumb for an initializer is that you
 should see each dotted attribute at least once:
 
     submethod BUILD ($.a, $.b, $c) {
@@ -1967,8 +2005,10 @@ intended for other classes participating in the current construction.
 It's likely that this implicit C<*%_> feature extends to other routines
 declared in all-caps as well, and perhaps all submethods.
 
+[Update: Turns out that all methods and submethods work this way.]
+
 As in Perl 5, subroutines declared in all-caps are expected to be
-called automatically most of the timeE<8212>but not necessarily all the
+called automatically most of the time--but not necessarily all the
 time.  The BUILD routine is a good example, because it's only called
 automatically when you rely on the default class initialization rules.
 But you can override those rules, in which case you may have to call
@@ -1987,7 +2027,7 @@ with names or have other kinds of parameter declarations does not
 change the fact that an anonymous bare block without parameters is
 also a kind of subroutine.  Of course, if the compiler can determine
 that the block is only executed inline, it's free to optimize away
-all the subroutine linkageE<8212>but not the lexical linkage.  It can only
+all the subroutine linkage--but not the lexical linkage.  It can only
 optimize away the lexical linkage if no external lexicals are accessed
 (or potentially accessed, in the case of C<eval>).
 
@@ -1997,7 +2037,7 @@ As introduced in Apocalypse 4, loops and topicalizers are often
 written with a special form of closure declaration known these days
 as "pointy subs".  A pointy sub is exactly equivalent to a standard
 anonymous sub declaration having the same parameters.  It's almost
-pure syntactic sugarE<8212>except that we embrace syntactic sugar in Perl
+pure syntactic sugar--except that we embrace syntactic sugar in Perl
 when it serves a psychological purpose (not to be confused with a
 logical psycho purpose, which we also have).
 
@@ -2056,7 +2096,7 @@ it drop-dead easy to write small, self-contained closures with a
 small number of parameters that you'd probably give single-character
 alphabetical names to in any event.  If you want to get fancier than
 that, you should probably be using a fancier kind of declaration.
-I define "small number" as approximately I<e> E<177> E<960>.  But as
+I define "small number" as approximately I<e> ± π.  But as
 is generally the case in Perl, you get to pick your own definition of
 "small number".  (Or at the very least, you get to pick whether to
 work with a company that has already defined "small number" for you.)
@@ -2114,7 +2154,7 @@ a method has a single invocant.  Other kinds of programming don't.
 Perl 6 supplies support for the latter kind of programming, where
 the relationships between classes are just as interesting as the
 classes themselves.  In some languages, all methods are multimethods.
-Perl 6 doesn't go quite that farE<8212>you must declare your multimethods
+Perl 6 doesn't go quite that far--you must declare your multimethods
 explicitly.  To do so, use the C<multi> keyword in place of C<method>,
 and optionally place a colon after the list of invocants in the
 declaration, unless you want them all to be invocants.  Then your
@@ -2174,7 +2214,7 @@ and a rule really is just a method with a funny syntax.
 
 A macro is a function that is called immediately upon completion of
 the parsing of its arguments.  Macros must be defined before they
-are usedE<8212>there are no forward declarations of macros, and while a
+are used--there are no forward declarations of macros, and while a
 macro's name may be installed in either a package or a lexical scope,
 its syntactic effect can only be lexical, from the point of declaration
 (or importation) to the end of the current lexical scope.
@@ -2249,9 +2289,13 @@ same effect, though.
 A C<macro> by default parses any subsequent text using whatever
 C<macro> rule is currently in effect.  Generally this will be the
 standard C<Perl::macro> rule, which parses subsequent arguments as a
-list operator wouldE<8212>that is, as a comma-separated list with the same
+list operator would--that is, as a comma-separated list with the same
 policy on using or omitting parentheses as any other list operator.
 This default may be overridden with the "C<is parsed>" trait.
+
+[Update: There is probably a different default macro rule for each
+syntactic category.  An infix macro wants to parse the right argument
+as a single value, not a list, for instance.]
 
 If there is no signature at all, C<macro> defaults to using the null
 rule, meaning it looks for no argument at all.  You can use it for
@@ -2353,6 +2397,9 @@ C<&_> produces a reference to your current C<Routine>, though in the
 signature above we have to use C<&CALLER::_> to get at the caller's
 C<&_>.
 
+[Update: Since the caller's sub is now named C<&?SUB>, that'd presumably
+default to C<&?CALLER::SUB> instead.]
+
 Note that use of C<caller> can prevent certain kinds of optimizations,
 such as tail recursion elimination.
 
@@ -2430,7 +2477,7 @@ are subclasses of C<List>.
 The valid contexts are pretty much as listed in RFC 21, though to the
 extent that the various contexts can be considered types, they can
 be specified without quotes in smart matches.  Also, types are not
-all-caps any more.  We know we have a C<Scalar> typeE<8212>hopefully we also
+all-caps any more.  We know we have a C<Scalar> type--hopefully we also
 get types or pseudo-types like C<Void>, C<List>, etc.  The C<List>
 type in particular is an internal type for the temporary lists that
 are passed around in Perl.  Preflattened lists are C<Eager>, while
@@ -2453,6 +2500,8 @@ intended for a particular variable that I<is> known to exist in every
 caller's lexical scope, namely C<$_>.  Your caller's current topic
 is named C<$CALLER::_>.  Your caller's current C<Routine> reference
 is named C<&CALLER::_>.
+
+[Update: The latter is now C<&?CALLER::SUB>.]
 
 Note again that, as a form of C<caller>, use of C<CALLER::> can
 prevent certain kinds of optimizations.  However, if your signature
@@ -2574,7 +2623,7 @@ by the wrapper, even if access is only through the reference:
 	# preprocessing here
 	call;
 	# postprocessing here
-    }
+    })
 
 The C<call> built-in knows how to call the inner function that this
 function is wrapped around.  In a void context, C<call> arranges for
@@ -2611,6 +2660,11 @@ manipulation of this list is beyond the scope of this document, but
 such activity will be necessary for anyone implementing Aspect-Oriented
 Programming in Perl 6.
 
+[Update: The name C<&_> now names the wrapped routine that C<call> will
+call into (which may in turn be a wrapper around some "innerer" routine,
+but C<&_> points to the outermost one).  Anything that sets C<&_> can
+use the C<call> function to invoke it.]
+
 =head4 The C<.assuming> method
 
 Currying is done with the C<.assuming> method.  It works a bit like
@@ -2622,10 +2676,17 @@ some of the parameters are assumed to be certain values:
 
 You can even curry built-in operators:
 
-    my &prefix:E<frac12> ::= &infix:/ .assuming(y => 2);
+    my &prefix:½ ::= &infix:/ .assuming(y => 2);
 
 (assuming here that built-in infix operators always use C<$x>
 and C<$y>).
+
+[Update: We now use hash subscript syntax for quoting:
+
+    my &prefix:«½» ::= &infix:«/».assuming(y => 2);
+    my &prefix:{'½'} ::= &infix:{'/'}.assuming(y => 2);
+
+.]
 
 =head4 The C<.req> method
 
@@ -2689,6 +2750,9 @@ the example above really turns into something like this:
 	&foo.do = { return +@many[$one] }
     }
 
+[Update: A12 goes as far as to turn all properties (including traits)
+into mixins, so all these traits really are accessor methods.]
+
 =head4 C<is rw>
 
 This trait identifies lvalue subs or methods.  See the section on
@@ -2706,6 +2770,15 @@ an ordinary expression.
 In the absence of an explicit <is parsed> trait, a macro's arguments
 are parsed with whatever C<macro> rule is in effect, by default the
 standard C<Perl::macro>.
+
+[Update: The default parse rule probably turns out to be dependent
+on the grammatical category of the macro.  A term macro wants a list
+by default, while an infix macro just wants a scalar expression
+for the right argument.  Macros for things like rule modifiers
+probably want to parse like trait verbs.  On the other hand, an
+infix_circumfix_meta_operator like C<»«> probably just wants to parse
+its argument as /.*?/.  Or maybe there should be no default for
+such abstruse categories.]
 
 =head4 C<is cloned("BEGIN")>
 
@@ -2747,6 +2820,19 @@ Note that the actual "first" or "last" property attached to a
 subroutine may well be a list of C<FIRST> or C<LAST> blocks, since
 there can be more than one of them.
 
+[Update: C<FIRST> and C<LAST> are now named C<ENTER> and C<LEAVE>.
+There is still a C<FIRST> block, but it has different semantics
+from C<ENTER>--an C<ENTER> fires every time this block is entered,
+but a C<FIRST> will only fire the first time the block is entered,
+and not on subsequent entries.  (If a closure is cloned, each clone
+is considered a separate block for initialization purposes, since
+each closure clone gets its own copies of any state variables, and
+the C<FIRST> block is primarily for initializing state variables.
+The "firstness" may be implicit: assignment to a C<state> variable
+declaration implies "first" semantics, just as assignment to an
+object attribute declaration implies attribute defaults at "build"
+time, not real assignment.)]
+
 =head3 Overriding built-ins
 
 All built-in functions that can be overridden are either multimethods
@@ -2756,6 +2842,8 @@ For instance, the standard non-filehandle print function may well be
 declared as:
 
     multi *print (*@list) {...}
+
+[Update: That'd be "C<multi sub>" these days.  No bare "multis" anymore.]
 
 Just declare your own sub:
 
@@ -2788,6 +2876,12 @@ you're really doing this internally:
 
     infix:+( prefix:-($a), $b)
 
+[Update: That's now
+
+    infix:«+»( prefix:-($a), $b)
+
+.]
+
 Operator names start with one of four names followed by a colon:
 
     prefix:	a unary prefix operator
@@ -2802,10 +2896,16 @@ so if the first thing after the colon is a left parenthesis, it
 is part of the operator, and if the first thing is whitespace,
 it's an illegal name.  Boom!
 
+[Update: Nowadays the operator name is quoted as if it were a hash
+subscript.  A null name specifies a default rule to match when that
+syntactic category is in effect, but nothing else matches.]
+
 You can make your own lexically scoped operators like this:
 
     my sub postfix:! (Int $x) { return factorial($x) }
     print 5!, "\n";	# print 120
+
+[Update: That's C<postfix:«!»> now.]
 
 You can use a newly declared operator recursively as soon as its name
 is introduced, including in its own definition:
@@ -2828,6 +2928,8 @@ some existing operator:
     multi infix:poach    (PDL $a, PDL $b) is looser(&infix:+) { ... }
     multi infix:scramble (PDL $a, PDL $b) is tighter(&infix:+) { ... }
 
+[Update: Now C<infix:«coddle»> etc.]
+
 If you base a tighter operator on a looser one, or a looser one on
 a tighter one, you don't get back to where you were.  It always goes
 into the cracks no matter how many times you derive.
@@ -2849,7 +2951,7 @@ However, two operators derived by the same path have the same
 precedence.  All binary operators of a given precedence level are
 assumed to be left associative unless declared otherwise with an
 C<assoc('right')> or C<assoc('non')> trait.  (Unaries pay no attention
-to associativityE<8212>they always go from the outside in.)
+to associativity--they always go from the outside in.)
 
 This may sound complicated, and it is, if you're implementing
 it internally.  But from the user's point of view, it's much less
@@ -2886,6 +2988,8 @@ closure just as a macro would:
     macro circumfix:(**) () is parsed(/.*?/ { "" }
 				# "Comment? What comment?"
 
+[Update: That'd be C<circumfix:«(* *)»> nowadays.]
+
 A circumfix operator is assumed to be split symmetrically between
 prefix and postfix.  In this case the circumfix of four characters
 is split exactly in two, but if you don't want it split in the
@@ -2896,11 +3000,22 @@ of the name:
 
     macro circumfix:(*...*) () is parsed(/.*?/ { "" }
 
+[Update: That's now solved by use of existing slice syntax:
+
+    macro circumfix:«(* *)» () is parsed(/.*?/ { "" }
+    macro circumfix:{'(*', '*)'} () is parsed(/.*?/ { "" }
+
+That's so convenient that we'll discard the special rule about
+splitting symmetrically in favor of requiring a two element slice.]
+
 The default parse rule for a circumfix is an ordinary Perl expression of
 lowest precedence, the same one Perl uses inside ordinary parentheses.
 The defaults for other kinds of operators depend on the precedence of
 the operator, which may or may not be reflected in the actual name of
 the grammatical rule.
+
+[Update: It depends not on the precedence but on the grammatical
+category.]
 
 Note that the ternary operator C<??::> has to be parsed as an infix
 C<??> operator with a special parsing rule to find the associated
@@ -2908,6 +3023,13 @@ C<::> part.  I'm not gonna explain that here, partly because
 user-defined ternary operators are discouraged, and partly because
 I haven't actually bothered to figure out the details yet.  This
 Apocalypse is already late enough.
+
+[Update: I suppose it could now be solved by feeding a slice to the
+infix category:
+
+    our sub infix:«?? ::» ($a, $b, $c) {...}
+
+But maybe not...]
 
 Also please note that it's perfectly permissible (but not extremely
 expeditious) to rapidly reduce the Perl grammar to a steaming pile
@@ -2975,15 +3097,15 @@ print any of these values:
 
 =head3 Lvalue subroutines
 
-The purpose of an lvalue subroutine is to return a "proxy"E<8212>that is,
+The purpose of an lvalue subroutine is to return a "proxy"--that is,
 to return an object that represents a "single evaluation" of the
 subroutine while actually allowing multiple accesses within a single
 transaction.  An lvalue subroutine has to pretend to be a storage
 location, with all the rights, privileges, and responsibilities
 pertaining thereto.  But it has to do this without repeatedly
 calculating the I<identity> of whatever it is you're actually modifying
-underneathE<8212>especially if that calculation entails side effects.
-(Or is expensiveE<8212>meaning that it has the side-effect of chewing up
+underneath--especially if that calculation entails side effects.
+(Or is expensive--meaning that it has the side-effect of chewing up
 computer resources...)
 
 An lvalue subroutine is declared with the C<is rw> trait.  The compiler
@@ -3037,10 +3159,15 @@ conditionally only upon failure (where failure is defined as throwing
 a non-control exception or returning undef in scalar context or C<()>
 in list context).
 
+[Update: Returning () is now considered successful.  An undef may now
+be returned in a list context to indicate failure, and it acts as a
+generator of 0 elements if you force list flattening.  Use C<scalar
+undef> to actually interpolate a single undef value in a list.]
+
 After the C<.TEMP> method returns the closure, you never have to worry
 about it again.  The C<temp> or C<let> will squirrel away the closure
 and execute it later when appropriate.  That's where the real power of
-C<temp> and C<let> comes fromE<8212>they're fire-and-forget operators.
+C<temp> and C<let> comes from--they're fire-and-forget operators.
 
 The standard C<Scalar>, C<Array>, and C<Hash> classes also have
 a C<.TEMP> method (or equivalent). So I<any> such variable can be
@@ -3056,7 +3183,7 @@ temporized, even lexicals:
     print $identity;    # prints 'Clark Kent'
 
 We'll talk more about lvalues below in reference to various RFCs that
-espouse lvalue subsE<8212>all of which were rejected. C<:-)>
+espouse lvalue subs--all of which were rejected. C<:-)>
 
 =head3 Temporizing any subroutine call
 
@@ -3114,7 +3241,7 @@ See appendix C for more about this line of thought.
 
 Let me reiterate that there's little difference between an RFC accepted
 with major caveats and a rejected RFC from which some ideas may have
-been stolen.  Please don't take any of this personallyE<8212>I ignore
+been stolen.  Please don't take any of this personally--I ignore
 author names when evaluating RFCs.
 
 =head3 Rejected RFCs
@@ -3197,7 +3324,7 @@ offsets from the stack pointer.
 =head4 RFC 107: lvalue subs should receive the rvalue as an argument
 
 This would make it hard to dynamically scope an attribute.  You'd have
-to call the method twiceE<8212>once to get the old value, and once to set
+to call the method twice--once to get the old value, and once to set
 the new value.
 
 The essence of the lvalue problem is that you'd like to separate
@@ -3334,7 +3461,7 @@ Since there are no longer any barewords, we can assume that any
 unrecognized word is a subroutine or method call of some sort even
 in the absence of parens.  We could assume all such words are list
 operators.  That works okay for overriding built-ins that actually
-*are* list operatorsE<8212>but not all of them are.  If you say:
+*are* list operators--but not all of them are.  If you say:
 
     print rand 1, 2;
     sub rand (*@x) { ... }
@@ -3657,6 +3784,8 @@ I find it odd to propose using C<PRE> for something with side effects
 like flock.  Of course, this RFC was written before C<FIRST> blocks
 existed...
 
+[Update: That is, before C<ENTER> blocks existed.]
+
 On the other hand, it's possible that a system of C<PRE> and C<POST>
 blocks would need to keep "dossiers" of its own internal state
 independent of the "real" data.  So I'm not exactly sure what the
@@ -3675,6 +3804,9 @@ the routine should handle that.  (And turning the problem into
 one of being able to generate a reference to a multimethod with
 a particular signature, in essence, doing method dispatch without
 actually dispatching at the end.)
+
+[Update: Such an individual multimethod is named with the argument
+types in angles: C<< &foo<Bar,Baz> >>.
 
 My gut feeling is that C<$_[-1]> is a bad place to keep the return
 value.  With the C<call> interface we're proposing, you just harvest
@@ -3941,6 +4073,9 @@ would really do something more like appending a named argument:
 or however we decide to mark the beginning of the "real" list within
 a larger list.
 
+[Update: It's just the null key, not C<*@>.  (And the null key on
+a closure argument binds to the slurpy block parameter instead.)]
+
 But I do rather like the looks of:
 
     push @foo <== 1,2,3;
@@ -4149,6 +4284,13 @@ immediately write:
 
 "So we might as well make it standard."
 
+[Update: Nowadays those'd be more like:
+
+    our multi sub *infix:«==>» (Lazy $list, @array is rw) { @array = $list }
+    our multi sub *infix:«<==» (@array is rw, Lazy $list) { @array = $list }
+
+.]
+
 On the other hand...
 
 I'm suddenly wondering if assignment and binding can change precedence
@@ -4346,8 +4488,10 @@ would return C<36>, but:
 would return 2, one for each range object.  (That's presuming you
 didn't already ask for the length of the array, since in general
 asking for the length of an array flattens it completely and blows
-away the specsE<8212>though perhaps in this case the range specs can
+away the specs--though perhaps in this case the range specs can
 calculate their lengths non-destructively.)
+
+[Update: It's C<.elems>, not C<.length>.]
 
 Anyway, in the absence of such a flattening event, both C<@foo>
 and C<@foo.specs> are true.  However, if instead you'd given it a
@@ -4399,7 +4543,7 @@ arrays using transfinite numbers.
 [This is a portion of a letter I sent to the design team.  This stuff
 is still in discussion with the internals folks, so please take this
 as informative rather than definitive.  But I just thought you might
-like to see how sausage is made.  C<:-)>  E<8212>Larry]
+like to see how sausage is made.  C<:-)>  --Larry]
 
     : Seems like you're going to have to explain the C<TEMP>/C<RESTORE> 
     : relationship in A6, Larry, since C<RESTORE> isn't even mentioned

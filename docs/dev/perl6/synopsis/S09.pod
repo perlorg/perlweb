@@ -12,9 +12,9 @@ Larry Wall <larry@wall.org>
 
   Maintainer: Larry Wall <larry@wall.org>
   Date: 13 Sep 2004
-  Last Modified: 13 Sep 2004
+  Last Modified: 20 Nov 2004
   Number: 9
-  Version: 1
+  Version: 3
 
 =head1 Overview
 
@@ -129,12 +129,12 @@ dimension.  So
 
 is really short for
 
-    @array.postcircumfix:[]( <== [0..10], [42], [@x] );
+    @array.postcircumfix:«[ ]»( <== [0..10], [42], [@x] );
 
 though in the list of lists form, a bare number is interpreted as if
 it were a list of one element, so you can also say:
 
-    @array.postcircumfix:[]( <== [0..10], 42, [@x] );
+    @array.postcircumfix:«[ ]»( <== [0..10], 42, [@x] );
 
 Note that at the comma level, a list such as:
 
@@ -147,24 +147,24 @@ dimension, which is the same as:
 
 or more verbosely:
 
-    @array.postcircumfix:[]( <== [@x,@y] );
+    @array.postcircumfix:«[ ]»( <== [@x,@y] );
 
 To interpolate an array at the semicolon level rather than the comma level,
-use the C<semi> list operator:
+use the C<dims> list operator:
 
-    @array[semi @x; @y]
+    @array[dims @x; @y]
 
 which is equivalent to
 
-    @array.postcircumfix:[]( <== @x, [@y] );
+    @array.postcircumfix:«[ ]»( <== @x, [@y] );
 
 Note the difference between that and
 
-    @array[semi @x, @y]
+    @array[dims @x, @y]
 
 which is the same as
 
-    @array.postcircumfix:[]( <== @x, @y );
+    @array.postcircumfix:«[ ]»( <== @x, @y );
 
 To declare a multidimensional array, you add a shape parameter:
 
@@ -184,9 +184,9 @@ it differently.
 
 You can pass a list for the shape as well:
 
-    my int @ints is shape(semi @foo.shape);
+    my int @ints is shape(dims @foo.shape);
 
-Again, the C<semi> list operator interpolates a list into a semicolon
+Again, the C<dims> list operator interpolates a list into a semicolon
 list, which we do for consistency with subscript notation, not because
 it makes a great deal of sense to allow slices for dimensional specs
 (apart from ranges).  So while the following is okay:
@@ -224,7 +224,7 @@ or by both:
 
 An array C<@array> can be tied to a piddle at declaration time:
 
-    my num @array is Piddle is shape(semi @mytensorshape);
+    my num @array is Piddle is shape(dims @mytensorshape);
     my @array is Piddle(:shape(2;2;2;2)) of int8;
 
 Piddles are allowed to assume a type of C<num> by default rather than
@@ -328,9 +328,9 @@ If you wanted that C<0..2> range to mean
 
     @nums[0;1;2]
 
-instead, then you need to use that C<semi> we keep mentioning:
+instead, then you need to use that C<dims> we keep mentioning:
 
-    @nums[semi 0..2]
+    @nums[dims 0..2]
 
 The zero-dimensional slice:
 
@@ -402,7 +402,7 @@ resembling this:
 
     role PDL_stuff[type $TYPE] {
 	PDLsub inner (@a[$n], @b[$n]) returns(@c[]) {
-	    my ::{$TYPE} $tmp = 0;
+	    my ::($TYPE) $tmp = 0;
 	    for 0..^$n {
 		$tmp += @a[$_] * @b[$_];
 	    }
@@ -413,10 +413,10 @@ resembling this:
 where that turns into something like this:
 
     role PDL_stuff[type $TYPE] {
-	multi sub inner (::{$TYPE} @a, ::{$TYPE} @b) returns(::{$TYPE}) {
+	multi sub inner (::($TYPE) @a, ::($TYPE) @b) returns(::($TYPE)) {
 	    my $n = @a.shape[0];	# or maybe $n is just a parameter
 	    assert($n == @b.shape[0]);	#  and this is already checked by PDL
-	    my ::{$TYPE} $tmp = 0;
+	    my ::($TYPE) $tmp = 0;
 	    for 0..^$n {
 		$tmp += @a[$_] * @b[$_];
 	    }
@@ -477,6 +477,51 @@ Junction type, that routine is "autothreaded", meaning the routine
 will be called automatically as many times as necessary to process
 the individual scalar elements of the junction in parallel.
 
+The results of these separate calls are then recombined into a
+single junction of the same species as the junctive argument.
+If two or more arguments are junctive, then the argument that is
+chosen to be "autothreaded" is:
+									    
+=over
+									    
+=item *
+									    
+the left-most conjunction or injunction (if any), or else
+									    
+=item *
+									    
+the left-most abjunction or disjunction
+									    
+=back
+									    
+with the tests applied in that order.
+									    
+Each of the resulting set of calls is then recursively autothreaded
+until no more junctive arguments remain. That is:
+									    
+       substr("camel", 0|1, 2&3)
+									    
+    -> all( substr("camel", 0|1, 2),      # autothread the conjunctive arg
+	    substr("camel", 0|1, 3)
+	  )
+									    
+    -> all( any( substr("camel", 0, 2),   # autothread the disjunctive arg
+		 substr("camel", 1, 2),
+	       ),
+	    any( substr("camel", 0, 3),   # autothread the disjunctive arg
+		 substr("camel", 1, 3),
+	       )
+	  )
+									    
+    -> all( any( "ca",                    # evaluate
+		 "am",
+	       ),
+	    any( "cam",
+		 "ame",
+	       )
+									    
+    -> ("ca"|"am") & ("cam"|"ame")        # recombine results in junctions
+
 Junctions passed as part of a container do not cause autothreading
 unless individually pulled out and used as a scalar.  It follows that
 junctions passed as members of a "slurpy" array or hash do not cause
@@ -488,10 +533,12 @@ array or hash references.)
 =head1 Parallelized parameters and autothreading
 
 Within the scope of a C<use autoindex> pragma (or equivalent, such as
-C<use PDL> (maybe)), any closure that uses parameters as subscripts is also
-a candidate for autothreading.  For each such parameter, the compiler
-supplies a default value that is a range of all possible values that
-subscript can take on.  That is, if you have a closure of the form:
+C<use PDL> (maybe)), any closure that uses parameters as subscripts
+is also a candidate for autothreading.  For each such parameter, the
+compiler supplies a default value that is a range of all possible
+values that subscript can take on (where "possible" is taken to
+mean the declared shape of a shaped array, or the actual shape of an
+autoextending array).  That is, if you have a closure of the form:
 
     -> $x, $y { @foo[$x;$y] }
 
@@ -499,6 +546,8 @@ then the compiler adds defaults for you, something like:
 
     -> $x = @foo.shape[0].range,
        $y = @foo.shape[1].range { @foo[$x;$y] }
+
+where each such range is autoiterated for you.
 
 In the abstract (and often in the concrete), this puts an implicit
 loop around the block of the closure that visits all the possible
@@ -512,6 +561,7 @@ So to write a typical tensor multiplication:
 
 you can just write this:
 
+    use autoindex;
     do { @c[$^i, $^j, $^k, $^l] = @a[$^i, $^j] * @b[$^k, $^l] };
 
 or equivalently:
@@ -534,11 +584,11 @@ them with a C<.assuming> method, in which only the unbound parameters
 autothread.
 
 If you use an unbound array parameter as a semicolon-list interpolator
-(via the C<semi> list operator), it functions as a wildcard list of
+(via the C<dims> list operator), it functions as a wildcard list of
 subscripts that must match the same everywhere that parameter is used.
 For example,
 
-    do -> @wild { @b[semi reverse @wild] = @a[semi @wild]; };
+    do -> @wild { @b[dims reverse @wild] = @a[dims @wild]; };
 
 produces an array with the dimensions reversed regardless of the
 dimensionality of C<@a>.
@@ -567,7 +617,11 @@ just a string, say something like:
 
 Likewise, you can limit the keys to objects of particular types:
 
-    my Fight %hash is shape(Dog;Cat)
+    my Fight %hash is shape(Dog;Cat);
+
+The standard Hash is just
+
+    my Any %hash is shape(Str);
 
 =head1 Autosorted hashes
 
@@ -578,8 +632,8 @@ start one.  In scalar context, C<.iterator> returns an iterator object.
 In list context, it returns a lazy list fed by the iterator.  It must
 be possible for a hash to be in more than one iterator at at time,
 as long as the iterator state is stored in a lazy list.
-However, there is only one implicit iterator that works in scalar context
-to return the next pair.
+However, there is only one implicit iterator (the C<each> iterator)
+that works in scalar context to return the next pair.
 
 The downside to making a hash autosort via the iterator is that you'd
 have to store all the keys in sorted order, and resort it when the

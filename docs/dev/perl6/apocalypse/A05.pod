@@ -1,3 +1,5 @@
+=encoding utf-8
+
 =head1 TITLE
 
 Apocalypse 5: Pattern Matching
@@ -8,11 +10,11 @@ Larry Wall <larry@wall.org>
 
 =head1 VERSION
 
-  Maintainer: Allison Randal <al@shadowed.net>
+  Maintainer: Larry Wall <larry@wall.org>
   Date: 4 Jun 2002
-  Last Modified: unknown
+  Last Modified: 28 Sep 2004
   Number: 5
-  Version: 1
+  Version: 2
 
 This is the Apocalypse on Pattern Matching, generally having to do with
 what we call "regular expressions", which are only marginally related
@@ -561,6 +563,8 @@ I've also stolen C<{...}> from generalized quantifiers and made them
 into closure delimiters. (Use C<< <n,m> >> for the generalized
 quantifier now.)
 
+[Update: The generalized quantifier is now C<**{n..m}>.]
+
 I've stolen three new metacharacters. The new extensible metasyntax for
 assertions uses angle brackets, C<< <...> >>. And the colon C<:> is
 now used for declaration and backtracking control. (Recall Larry's 2nd
@@ -582,6 +586,8 @@ simplifying. We now have the following regex invariants:
 (Note that we're using "assertion" here in the broad sense of anything
 that either matches or fails, whether or not it has a width.)
 
+[Update: We now also have C<«...»> for capturing assertions.]
+
 The nature of the angle assertion is controlled by the first character
 inside it. If the first character is alphabetic, it's a grammatical
 assertion, and the entire first word controls the meaning. The word is
@@ -601,6 +607,9 @@ an assertion. An assertion that starts with a square bracket or another
 angle bracket is a character class. An assertion that starts with a
 quote asserts the match of a literal string. And so on.
 
+[Update: If the inside character is an angle bracket, it's the ASCII
+workaround C<<< <<...>> >>> for C<«...»>.]
+
 Some metacharacters are still used but have a slightly different
 meaning, in part to get rid of the C</s> and C</m> modifiers, and in
 part because most strings in Perl 6 will come from the filehandle
@@ -610,6 +619,11 @@ beginnings and endings of lines I<within> a string. (They're doubled
 because they're "fancier", because they can match in multiple places,
 and because they'll be rarer, so Huffman says they should be longer.)
 The C<^^> and C<$$> also match where C<^> and C<$> would.
+
+[Update: If the string ends with a newline, the null string following it
+is not considered a line.  So neither C<^^> nor C<$$> match after a final
+newline.  In other words, C<$$> matches at C<$> only if there is "extra"
+text there not terminated by a newline.]
 
 The dot C<.> now always matches any character including newline. (Use
 C<\N> to match a non-newline. Or better, use an autochomping
@@ -658,6 +672,10 @@ Here are some of the metacharacter differences in table form:
 
     (??{$rule})           <$var>                # call $var as regex
                           <name>                # call rule from current grammar
+
+[Update: Follows ordinary scoping rules, so lexical rules take precedence
+over grammar rules.]
+
                           <Other::rule>         # call rule from some Other grammar
                           <*rule>               # bypass local rule to call built-in
                           <@array>              # call array of alternate rules
@@ -687,8 +705,16 @@ Here are some of the metacharacter differences in table form:
                           <alpha>               # more international
     [[:alpha:][:digit:]   <<alpha><digit>>      # POSIX classes are built-in rules
 
+[Update: That must now be written C<<< <+<alpha>+<digit>> >>>, or it
+will be mistaken for C<< «alpha><digit» >>, which doesn't work too well.]
+
     {n,m}                 <n,m>                 # assert repeat count
+
+[Update: Is now C< **{n..m} >.]
+
     {$n,$m}               <$n,$m>               # indirect repeat counts
+
+[Update: Is now C< **{$n..$m} >.]
 
     (?>.*)                [.*]:                 # don't backtrack through [.*]
                           .*:                   # brackets not necessary on atom
@@ -728,6 +754,10 @@ things like:
 
     $(lc $foo)
 
+[Update: And in fact, they did all go away.]
+
+[Update: C<$()> is gone, so you have to say C<< <{lc $foo}> >> or some such.]
+
 For any bracketing construct, square brackets are preferred, but others
 are allowed:
 
@@ -764,6 +794,9 @@ ordinarily force the search to start from the beginning. Subrules
 automatically continue at the current location, since their initial
 position is controlled by some other rule.
 
+[Update: There's also a C<:p> that is like C<:c> but anchors the
+next chunk to the starting position, so it's good for parsers.]
+
 There are two new backslash sequences, C<\h> and C<\v>, which match
 horizontal and vertical whitespace respectively, including Unicode
 spacing characters and control codes. Note that C<\r> is considered
@@ -786,6 +819,9 @@ is the normal newline for the current architecture.)
     \p{prop}            <prop>                  # properties are just grammar rules
     \P{prop}            <!prop>
 
+[Update: That's C<< <-prop> >> now, since C<< <!prop> >> would be a zero-width
+assertion.]
+
     [\040\t\p{Zs}]      \h                      # horizontal whitespace
     space               \h                      # not exact, but often more correct
     [\r\n\ck\p{Zl}\p{Zp}] \v                    # vertical whitespace
@@ -796,6 +832,8 @@ is the normal newline for the current architecture.)
 
     \E                  gone                    # use \Q[...] instead
 
+[Update: C<\Q[...]> is also gone.  Use C<< <{quotemeta ...}> >>.]
+
     \A                  ^                       # ^ now invariant
     \a                  \c[BEL]                 # alarm (bell)
 
@@ -804,6 +842,8 @@ is the normal newline for the current architecture.)
     \G                  <( .pos == $oldpos )>   # match at particular position
                                                 # typically just use m:c/pat/
 
+[Update: Or C<m:p/pat/>.]
+
     \N{CENT SIGN}       \c[CENT SIGN]           # named character
     \c[                 \e                      # escape
     \cX                 \c[^X]                  # control char
@@ -811,6 +851,10 @@ is the normal newline for the current architecture.)
     \x0a\x0d            \x[0a;0d]               # CRLF
     \x0a\x0d            \c[CR;LF]               # CRLF (conjectural)
     \C                  [:u0 .]                 # forced byte in utf8 (dangerous)
+
+[Update: The Unicode levels are now specified by C<:bytes>, C<:codes>,
+C<:graphs>, and C<:langs>, not by numeric level.]
+
     [^\N[CENT SIGN]]    \C[CENT SIGN]           # match any char but CENT SIGN
 
     \Q$var\E            $var                    # always assumed literal,
@@ -831,6 +875,8 @@ is the normal newline for the current architecture.)
 
     \X                  <.>                     # a grapheme (combining char seq)
                         [:u2 .]                 # At level 2+, dot means grapheme
+
+[Update: That's C<:graphs> now.]
 
 Under level 2 Unicode support, a character is assumed to mean a
 grapheme, that is, a sequence consisting of a base character followed
@@ -859,12 +905,16 @@ Single character modifiers may be bundled like this:
 
     s:wie /foo/bar/             # :words :ignorecase :each
 
+[Update: Bundling is no longer allowed.]
+
 ...but only if the sequence as a whole is not already defined as a long
 modifier, since ambiguity will be resolved in favor of the long
 modifier. Long modifiers may I<not> be bundled with any other modifier.
 So this is legal:
 
     s:once:wie /foo/bar/
+
+[Update: Not any more.]
 
 but not these (unless you've defined them):
 
@@ -881,6 +931,10 @@ This rule also allows us to differentiate C<s///> from an C<s()>
 function, C<tr///> from C<tr()>, etc. If you want matching brackets for
 the delimiters I'd suggest that you use square brackets, since they now
 mean grouping without capturing.
+
+[Update: Parens may be used for delimiters as long as they are not
+adjacent to the final option.  They may be separated with either a
+colon or whitespace.]
 
 Several modifiers, C</x>, C</s>, and C</m>, are no longer needed and
 have been retired. It's unclear whether C</o> is necessary any more. We
@@ -908,6 +962,10 @@ or even
 
     s(/pat/, { code });
 
+[Update: C<:each> is gone, and we're back to C<:global> and C<:g> to
+stay with common culture.  Since C<$()> is also gone, just interpolate
+code using a closure: S<C<s/pat/{ code }/>>.]
+
 There's a new modifier, C<:once>, that causes a match to succeed only
 once (like the old C<?...?> construct). To reset it, use the C<.reset>
 method on the regex object. (If you haven't named the regex object, too
@@ -924,6 +982,9 @@ else). So
 really means (expressed in Perl 5 form):
 
     m:p5/\s*foo\s+bar\s*:(\s*baz\s*)*/
+
+[Update: The optional whitespace is actually matched by the C<< <ws> >>
+rule, which you can redefine to change the semantics of C<:words>.]
 
 You can still control the handling of whitespace under C<:w>, since we
 extend the rule to say that any explicit whitespace-matching token
@@ -980,6 +1041,11 @@ regex:
     $_ = "foofoofoo foofoofoo";
     $rx = rx/foo/;
     m/<$rx>*/;          # matches "foofoofoo"
+
+[Update: Now we use C<:p>/C<:pos> to get contiguous semantics.
+The C<:c>/C<:continue> modifier starts scanning again each time, so
+when used with C<:global> it really only influences where the first
+match is found.]
 
 A modifier that starts with a number causes the pattern to match that
 many times. It may only be used outside the regex. It may not be
@@ -1039,6 +1105,10 @@ you'll get every possible parsing of the sentence according to the
 rules of C<english> (not to be confused with the rules of English,
 which are already confusing enough, except when they aren't).
 
+[Update: C<:any> has been replaced with C<:overlap> and C<:exhaustive>
+to differentiate the cases of wanting one solution at each position from
+wanting all solutions at every position.]
+
 To indicate varying levels of Unicode support we have these modifiers,
 which may be used either inside or outside a regex:
 
@@ -1053,10 +1123,14 @@ under C<:u1>, the precomposed characters will usually do the right
 thing. Note that these modifiers are for overriding the default support
 level, which was probably set by pragma at the top of the file.
 
+[Update: Replaced with C<:bytes>, C<:codes>, C<:graphs>, and C<:langs>.]
+
 Finally, there's the C<:p5> modifier, which causes the rest of the
 regex (or group) to be parsed as a Perl 5 regular expression, including
 any interpolated strings. (But it still doesn't enable Perl 5's
 trailing modifiers.)
+
+[Update: Now spelled out C<:perl5>.]
 
     Old                 New
     ---                 ---
@@ -1097,6 +1171,8 @@ Likewise, these are equivalent:
     @x = split rx[...];
     @x = split rule {...};
 
+[Update: Note that C<split> supplies an implicit C<:c> here.]
+
 The "rule" syntax is just a way of declaring a deferred regex as if it
 were a subroutine or method. More on that later.
 
@@ -1106,6 +1182,8 @@ ordinarily be, you can use the appropriate unary operator:
     my $foo = ?/.../;   # boolean context, return whether matched, 
     my $foo = +/.../;   # numeric context, return count of matches
     my $foo = _/.../;   # string context, return captured/matched string
+
+[Update: Unary C<_> is now unary C<~>.]
 
 The standard match and substitution forms also force immediate
 evaluation regardless of context:
@@ -1122,6 +1200,9 @@ on context. In particular, a deferred regex naturally assumes C<:c>
 when used as a subrule. That is, it continues where the last match left
 off, and the next thing has to match right there at the head of the
 string.
+
+[Update: A regex actually assumes C<:p> semantics when used as a subrule.
+And the long form of C<:c> is C<:continue>.]
 
 In any other context, including list context, a deferred regex is
 I<not> immediately evaluated, but produces a reference to the regex
@@ -1149,6 +1230,8 @@ since the deferred regex assumes a C<:c> modifier, C<< <$rx> >>
 won't scan through the string like C<m//>. It can return multiple
 values to the list, but they have to be contiguous. You can get the
 scanning effect of C<m//> by prepending the pattern with C<.*?>.
+
+[Update: Where the preceding paragraphs says C<:c> read C<:p>.]
 
 But it's vitally important to understand this fundamental change, that
 C<//> is no longer a short form of C<m//>, but rather a short form of
@@ -1224,6 +1307,9 @@ their base object is modified.) In either case, the evaluated regex is
 treated as a subrule, and any captures it does are invisible to the
 outer regex unless the outer regex takes steps to retrieve them. In any
 event, subrule parens never change the paren count of the outer rule.
+
+[Update: Use C<«$rule»> to turn any non-capturing rule into a capturing
+rule.  Or say C<(<$rule>)> if you only want to capture the string.]
 
 The C<{code}> form doesn't return anything meaningful--it is used for
 its side effects. Any such closure may behave as an assertion. It
@@ -1451,6 +1537,10 @@ extra syntax we decide to come up with for character set manipulation:
 
     <[_]+<alpha>+<digit>-<Swedish>>
 
+[Update: If the first thing in angle brackets is another angle bracket,
+you have to put a C<+> between to avoid confusion with "Texas" quotes
+emulating French quotes.]
+
 =head2 State
 
 [This section gets pretty abstruse. It's okay if your eyes glaze over.]
@@ -1510,6 +1600,9 @@ returned object as a "hypothetical" variable, the name of which is
 either implicitly generated from the name of the rule, or explicitly
 bound using C<:=>. Through that variable you can get at anything
 captured by the subrule. (That is what C<$expr> was doing earlier.)
+
+[Update: Rules are not captured by default.  You can use C<:=> or
+use C<«...»> instead of angles to force capture.]
 
 When the entire match succeeds, the top-level node is returned as a
 result object that has various values in various contexts, whether
@@ -1588,6 +1681,10 @@ an argument, C<$rx_state>. It suffices to say:
 
     given $rx_state { let $x = .pos }
 
+[Update: This restriction is no longer in effect.  Any variable may
+be treated hypothetically, not just variables stored in $0.  The distinction
+of $0 variables is now syntactic.]
+
 As it happens, C<$1> and friends are all simply hypothetical variables.
 When we say "hypothetical variable", we aren't speaking of where the
 variable is stored, but rather how its contents are treated
@@ -1605,9 +1702,14 @@ named C<$maybe>, its external name is C<$0._var_{'maybe'}>. The C<$0>
 object can behave as a hash, so C<$0{maybe}> is the short way to say
 that.
 
+[Update: Nowadays the short name of that variable is C<$«maybe»>.]
+
 All other variable names are stored with their sigil, so the external
 name for C<@maybe> is C<$0{'@maybe'}>, and for C<%maybe> is
 C<$0{'%maybe'}>.
+
+[Update: None of these are stored with their sigil, which means
+you can't store two different types under the same name.]
 
 C<$1> is a special case--it's visible outside the regex, not because
 it's predeclared, but because Perl already knows that the numbered
@@ -1623,10 +1725,14 @@ C<$somerule>. (Rules accessed indirectly must be captured explicitly,
 or they won't have a name by which you can get to them. More on that in
 the next section.)
 
+[Update: Any subrule may be captured with French quotes.]
+
 As the current recursive regex executes, it automatically builds a tree
 of hashes corresponding to all captured hypothetical variables. So from
 outside the regex, you could get at the C<$1> of the subrule
 C<< <somerule> >> by saying C<$0{somerule}[1]>.
+
+[Update: These days that's C<$0{'somerule'}[1]> or C<$«somerule»[1]>.]
 
 =head2 Named Captures
 
@@ -1704,6 +1810,12 @@ than once. So, presuming you have grammar rules defining "key" and
 
     / <key> \: <value> { let %hash{$key} = $value } /
 
+[Update: That is now written:
+
+    / «key» \: «value» { let %hash{$«key»} = $«value» } /
+
+]
+
 Of course, in a typical grammar the typical rule may not return a
 string, but a reference to an anonymous object representing a node of
 the parse tree. But that depends on what the subrule decides to
@@ -1719,6 +1831,8 @@ you've quantified the capture or not. So if you say any of:
     / $x := <word>*/
     / $x := <word>+/
     / $x := <word><1,3>/
+
+[Update: That last should use C<**{1..3}> instead.]
 
 then you've "pluralized" the naming, and you can expect to get some
 number of values in C<$x> as an anonymous list. However, the C<?>
@@ -1748,6 +1862,9 @@ done.
 =item 2. Next we look for C<@foo> in the current regex's name table.
 The name of the variable is really C<$0{'@foo'}>.
 
+[Update: These C<$0> variables now have names like C<@«foo»>, so skip
+this step.]
+
 =item 3. If the regex belongs to a grammar, we next look for C<@foo> in
 the grammar object. If there, its real name is C<@.foo>, or some such.
 (It might be objected that the grammar object is not yet constructed
@@ -1756,6 +1873,9 @@ passed to the grammar object's constructor. But I think if such a
 variable is declared as an object attribute we know that there I<will>
 be such a variable/accessor later when we have finished constructing,
 and that seems like enough info to know how to compile the regex.)
+
+[Update: I think we can skip this one too--just import the array if
+you need it, or call it via a real rule accessor.]
 
 =item 4. Next we look for C<@foo> as a declared core global variable
 C<@*foo>.
@@ -1862,6 +1982,11 @@ In essence, the presence or absence of the C<valuematch> property
 controls whether the hash tries to match only keys, or both keys and
 values.
 
+[Update: The above is all completely bogus.  A hash's set of
+keys are simply compiled into a longest-first token match table.
+The corresponding value contains the closure or rule to fire off when
+you match, or a boolean to make the key match merely succeed.  See S5.]
+
 A hash may be used inside angles as well. In that case, it finds the
 key by the same method (steps 1 and 2 above), but always treats the
 corresponding hash value as a regex (regardless of any properties the
@@ -1901,6 +2026,9 @@ is really much as if we'd said:
 Only it actually works more like
 
     / $k=<{ %controls.prop{keymatch} // /\w+:/ }> <%controls{$k}> /
+
+[Update: This is also bogus.  The keys are treated as a set of rules with
+longest-first semantics for any leading literal components.  See S5.]
 
 Note that in Perl 6 it's perfectly valid to use C<//> inside an
 expression embedded in a regex delimited by slashes. That's because a
@@ -1949,11 +2077,15 @@ C<< <before \w> >> are really just calls to methods in the RULE
 class. The namespace of a grammar is simply the method namespace of the
 current class, which is the class's methods plus all inherited methods.
 
+[Update: Nowadays it's the C<Rule> class.]
+
 In addition to normal subrules, we allow some funny looking method
 names like:
 
     rule :a { ... }
     rule \a { ... }
+
+[Update: These are now handled as macro-like syntactic categories.  See S5.]
 
 Modules that mutate Perl's grammar on the fly can do so by deriving an
 anonymous grammar class from the default Perl6Grammar, and installing
@@ -2035,6 +2167,10 @@ uses for a string that's really an array. In fact, C<@array =~ /regex/>
 could conceivably be matching against a set of infinite strings in
 parallel, though that seems a bit scary.
 
+[Update: The C<=~> operator is renamed C<~~>, and it doesn't automatically
+"any-fy" an array anymore, so we could pretty easily make it work over an
+entire array as if it were a string.]
+
 Even if we don't care about the boundaries between array elements, this
 approach gives us the ability to read a file in chunks and not worry
 that the pattern won't match because it happens to span a boundary.
@@ -2106,6 +2242,8 @@ C<< <cut> >>, which makes the current position the new string
 beginning. (If you backtrack over C<< <cut> >>, the entire match
 will fail.)
 
+[Update: Now we can just say C<<@lines ~~ s/^.*? \n**{2...} //>>.]
+
 =head2 RFC 110: counting matches
 
 I think we can avoid using any options if we make a pattern count
@@ -2172,6 +2310,8 @@ might be C<(?\$foo)>.>
 
 Backrefs are now unified with hypothetical variables, so the issue
 doesn't arise. Just use C<$foo>.
+
+[Update: Now C<$«foo»>, short for C<$0{'foo'}>.]
 
 =over
 
@@ -2323,6 +2463,9 @@ recognized subscripts:
 
     %hash{"foo"}        # scalar literal
     %hash{bar}          # scalar literal
+
+[Update: Now C<%hash«bar»> instead.]
+
     %hash{1}            # scalar literal
     %hash{$x}           # scalar variable
     %hash{\$x}          # scalar reference
@@ -2331,6 +2474,9 @@ recognized subscripts:
     %hash{ "a" => "b" } # pair reference
     %hash{ /pat/ }      # rule reference
     %hash{ _ expr }     # force expr to return a single string
+
+[Update: Now C<~> instead of C<_>.]
+
     %hash{ + expr }     # force expr to return a single number
 
 Boolean expressions and closures look like singular values but cause a
@@ -2352,6 +2498,8 @@ important for multi-dimensional arrays:
     @3d_slice = @array[ 0,1,3,8 ; 0,1,3,8; ?1 ];
     @3d_slice = @array[ 0..9 ; 0..9:-1; ?test($_) ];
     @3d_slice = @array[ !($_ % 2) ; 0..9:3; ?test($_) ];
+
+[Update: C<dim> is now spelled C<shape>.  See S9.]
 
 =head2 RFC 274: Generalized Additions to Regexs
 
@@ -2559,6 +2707,8 @@ I think in the long run people will find this more readable once
 they're used to it. Certainly tabularizing the parallelisms will make
 any typing errors stand out.
 
+[Update: The C<:ie> is now written C<:i:g>.]
+
 =head2 RFC 361: Simplifying C<split()>
 
 The RFC makes five suggestions. I'll consider them one by one.
@@ -2583,6 +2733,8 @@ split on the first delimiter matched by another pattern:
 That would split on either all commas or all semicolons, depending on
 which it found first in the string. The _ forces the regex to return a
 string, which is whatever was captured by the parens in this case.
+
+[Update: C<_> is now C<~>.]
 
 =over
 
@@ -2681,6 +2833,8 @@ more readable...
 Fortunately, C<split> is a function, so I can put off that decision
 till Apocalypse 29. C<:-)>
 
+[Update: At the moment I think there's a .words method on strings.]
+
 =head1 Rejected RFCs
 
 =head2 RFC 135: Require explicit m on matches, even with ?? and // as
@@ -2774,6 +2928,8 @@ We'll stick with the standard boolean assertion:
 Interestingly, that can also be written:
 
     / <( _/\d+/ =~ 1..10 )> /
+
+[Update: That'd be C<< <( ~/\d+/ ~~ 1..10 )> >> these days.]
 
 =head2 RFC 198: Boolean Regexes
 

@@ -10,11 +10,11 @@ Larry Wall <larry@wall.org>
 
 =head1 VERSION
 
-  Maintainer: Luke Palmer <luke@luqui.org>
+  Maintainer: Larry Wall <larry@wall.org>
   Date: 10 Aug 2004
-  Last Modified: 16 Sep 2004
+  Last Modified: 27 Oct 2004
   Number: 2
-  Version: 0
+  Version: 1
 
 This document summarizes Apocalypse 2, which covers small-scale
 lexical items and typological issues.  (These Synopses also contain
@@ -176,8 +176,13 @@ The C<$pkg'var> syntax is dead.  Use C<$pkg::var> instead.
 
 =item *
 
+You may no longer put whitespace between a sigil and its following
+name or construct.
+
+=item *
+
 You may interpolate a string into a package or variable name using
-C<::{$expr}> where you'd ordinarily put a package or variable name.
+C<::($expr)> where you'd ordinarily put a package or variable name.
 The string is allowed to contain additional instances of C<::>, which
 will be interpreted as package nesting.  You may only interpolate
 entire names, since the construct starts with C<::>, and either ends
@@ -186,14 +191,13 @@ All symbolic references are done with this notation:
 
     $foo = "Foo";
     $foobar = "Foo::Bar";
-    $::{$foo}		# package-scoped $Foo
-    $::{"MY::$foo"}	# lexically-scoped $Foo
-    $::{"*::$foo"}	# global $Foo
-    $::{$foobar}	# $Foo::Bar
-    $::{$foobar}::baz	# $Foo::Bar::baz
-    $::{$foo}::Bar::baz	# $Foo::Bar::baz
-    $::{$foobar}baz	# ILLEGAL at compile time (no operator baz)
-    ${$foobar}::baz	# ILLEGAL at run time (no hard ref in $foobar)
+    $::($foo)		# package-scoped $Foo
+    $::("MY::$foo")	# lexically-scoped $Foo
+    $::("*::$foo")	# global $Foo
+    $::($foobar)	# $Foo::Bar
+    $::($foobar)::baz	# $Foo::Bar::baz
+    $::($foo)::Bar::baz	# $Foo::Bar::baz
+    $::($foobar)baz	# ILLEGAL at compile time (no operator baz)
 
 Note that unlike in Perl 5, initial C<::> doesn't imply global.
 Package names are searched for from inner lexical scopes to outer,
@@ -381,9 +385,11 @@ possibilities:
     @?PACKAGE   Which packages am I in?
     $?MODULE    Which module am I in?
     @?MODULE    Which modules am I in?
-    $?CLASS     Which class am I in?
+    ::?CLASS	Which class am I in? (as package name)
+    $?CLASS     Which class am I in? (as variable)
     @?CLASS     Which classes am I in?
-    $?ROLE      Which role am I in?
+    ::?ROLE     Which role am I in? (as package name)
+    $?ROLE      Which role am I in? (as variable)
     @?ROLE      Which roles am I in?
     $?GRAMMAR   Which grammar am I in?
     @?GRAMMAR   Which grammars am I in?
@@ -607,7 +613,7 @@ are predeclared, or prefixed with the C<::> sigil.)  A consequence of
 this is that there's no longer any "use strict subs".  There's also no
 "use strict refs" because symbolic dereferences are now syntactically
 distinguished from hard dereferences.  C<@{$arrayref}> must now be a
-hard reference, while @::{$string} is explicitly a symbolic reference.
+hard reference, while @::($string) is explicitly a symbolic reference.
 (Yes, this may give fits to the P5-to-P6 translator, but I think it's
 worth it to separate the concepts.)
 

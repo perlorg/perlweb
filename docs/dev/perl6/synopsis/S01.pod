@@ -71,13 +71,26 @@ language.  We are not turning Perl into any other existing language.
 Migration is important.  The perl interpreter will assume that it
 is being fed Perl 5 code unless the code starts with a "class" or
 "module" keyword, or you specifically tell it you're running Perl 6
-code in some other way.
+code in some other way, such as by:
+
+    #!/usr/bin/perl6
+    use v6.0;
+    v6;
 
 =item *
 
-Scaling is one of those areas where Perl needs to be multiparadigmatic and
-context sensitive.  Therefore your main code is allowed to be lax, while
-module and class code is (by default) required to be strict.
+Scaling is one of those areas where Perl needs to be multiparadigmatic
+and context sensitive.  Perl 5 code is not strict by default, while
+Perl 6 code is.   But it should be easy to relax with C<-e> or maybe
+even a bare version number:
+
+    perl -e '$x = 1'
+
+    #!/usr/bin/perl -e
+    $x = 1;
+
+    #!/usr/bin/perl
+    v6; $x = 1;
 
 =item *
 

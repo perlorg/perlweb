@@ -10,11 +10,11 @@ Larry Wall <larry@wall.org>
 
 =head1 VERSION
 
-  Maintainer: Allison Randal <allison@perl.org>
+  Maintainer: Larry Wall <larry@wall.org>
   Date: 13 Apr 2004
-  Last Modified: 13 Apr 2004
+  Last Modified: 6 Nov 2004
   Number: 12
-  Version: 1
+  Version: 4
 
 The official unofficial slogan of Perl 6 is "Second System Syndrome
 Done Right!".  After you read this Apocalypse you will at least be
@@ -609,6 +609,9 @@ strict refs>, since it amounts to a symbolic reference.  (Not that the
 others aren't symbolic, but the rules may be looser for package names
 than for variable names, depending on how strict our strictures get.)
 
+[Update: There is no "strict refs" anymore, since we have a separate
+syntax for when we explicitly want symbolic references.]
+
 =head2 Private Classes
 
 A class named with a single initial colon is a private class name:
@@ -691,6 +694,8 @@ or more generically using the C<::_> "current class" pronoun:
 
     method doit (::_ $self: $a, $b, $c) { ... }
 
+[Update: The current class is now named via C<::?CLASS>.]
+
 In any case, the method sets the current invocant as the topic, which is
 also known as the C<$_> variable.  However, the topic can change depending
 on the code inside the method.  So you might want to declare an explicit
@@ -738,6 +743,9 @@ a term or operator, so you can write things like this:
     $thumb.twiddle + 1		# same as $thumb.twiddle() + 1
     .mode 1			# same as $_.mode(1)
 
+[Update: This is retracted.  Parens are always required if there are
+arguments.]
+
 (Parens are always required around the argument list when a method call
 with arguments is interpolated into a string.)
 
@@ -757,6 +765,9 @@ is simply rejected.  So
     $obj.method+1
 
 produces a parse error.
+
+[Update: The preceding is also retracted.  None of those would be
+interpreted as arguments now.  However, the following is still true.]
 
 In particular, curlies, brackets, or parens would be interpreted
 as postfix subscripts or argument lists if you leave out the space.
@@ -781,6 +792,10 @@ between the method call and the argument list:
     $thumb.twiddle: + 1		# same as $thumb.twiddle(+ 1)
     .mode: 1			# same as $_.mode(1)
     $obj.for: 1,2,3 -> $i { ... }
+
+[Update: There is no colon disambiguator any more.  Use parens if there
+are arguments.  (However, you can pass an adverbial block using C<:{}>
+notation with a null key.  That does not count as an ordinary argument.)]
 
 If a method is declared with the trait "C<is rw>", it's an lvalue
 method, and you can assign to it just as if it were an ordinary
@@ -850,6 +865,12 @@ a string, since they don't start with a sigil.  You can always use the
 C<$()> expression interpolater though:
 
     say "$(greet $lang), world!";
+
+[Update: The C<$()> notation is gone.  Use
+
+    say "{greet $lang}, world!";
+
+instead.]
 
 As in Perl 5, the indirect object syntax is valid only if you haven't
 declared a subroutine locally that overrides the method lookup.
@@ -975,6 +996,9 @@ That's a case where you ought to have parenthesized the indirect object
 for clarity anyway:
 
     print ($obj.meth): "Howdy, world!\n";
+
+[Update: There is no disambiguating colon on dot calls anymore, so
+a colon there can only indicate an indirect object to the print now.]
 
 =head3 Calling private methods
 
@@ -1275,6 +1299,11 @@ have:
     $.foo	# a public attribute
     $:foo	# a private attribute
 
+[Update: A regex-scoped variable now looks like C<$«foo»> instead.
+A C<$?foo> variable is now a compiler variable, and a C<$=foo>
+variable is a POD variable.  By the way, lately I've been calling
+the secondary sigils "twigils".]
+
 As a form of the dreaded "Hungarian notation", secondary sigils are
 not introduced lightly.  We define secondary sigils only where we
 deem instant recognizability to be crucial for readability.  Just as
@@ -1484,6 +1513,10 @@ conceivably have things like:
 
 So as it happens, C<0> is short for the layout "P6opaque".
 
+[Update: There is no C<0> argument.  Just leave it out if you wish to
+declare a C<P6opaque> object.  If you wish to pass some other representation
+name to C<CREATE>, use a named argument like C<:CREATE[:repr«Cstruct»]>.]
+
 Any additional arguments to C<.bless> are automatically passed on to
 C<CREATE> and C<BUILDALL>.  But note that these I<must> be named arguments.
 It could be argued that the I<only> real purpose for writing a C<.new>
@@ -1671,6 +1704,8 @@ value are of compatible types.  Some classes will wish to define special
 in-place mutators.  The syntax for that is:
 
     method self:sort (Array @a is rw) {...}
+
+[Update: That's now C<self:«sort»> instead.]
 
 It is illegal to use C<return> from such a routine, since the invocant
 is automatically returned.  If you do not declare the invocant, the
@@ -1867,6 +1902,8 @@ C<WALK[:omit(SomeClass)]> to call all classes not equivalent to or
 derived from C<SomeClass>.  For instance, to call all super classes,
 and not just your immediate parents, you could say C<WALK[:omit(::_)]>
 to skip the current lexical class or anything derived from it.
+
+[Update: The lexical class is now named C<::?CLASS>.]
 
 But again, that's not usually the right thing to do.  If your base classes
 are all willing to cooperate, it's much better to simply call
@@ -2069,6 +2106,8 @@ are declared this way:
     multi sub *push (Array $array, *@args) {...}
     multi sub *infix:+ (Num $x, Num $y) returns Num {...}
     multi sub *infix:.. (Int $x, Int $y: Int ?$by) returns Ranger {...}
+
+[Update: Those are now named C<infix:«+»> and C<infix:«..»>.]
 
 Note the use of colon in the last example to exclude C<$by> as part of
 the long name.  The range operator is dispatched only on the types of
@@ -2367,11 +2406,32 @@ you're really saying something like this:
 	)
     )
 
+[Update: All the operator names need to be quoted now as a hash
+subscript or slice.  And instead of breaking C<.[]> into C<.> and
+C<[]>, there is now a C<postcircumfix> grammatical category.  So we
+have:
+
+    $x = circumfix:«< >»(
+	infix:«*»(
+	    postfix:«++»($a),
+	    prefix:«-»(
+		postcircumfix:«[ ]»(
+		    @b,
+		    term:«...»();
+		)
+	    )
+	)
+    )
+
+.]
+
 Perl 5 had special key names representing stringification and numification.
 In Perl 6 these naturally fall out if you define:
 
     method prefix:+ () {...}	# what we do in numeric context
     method prefix:~ () {...}	# what we do in string context
+
+[Update: Here and below, it's C<prefix:«+»> etc.]
 
 Likewise you can define what to return in boolean context:
 
@@ -2410,6 +2470,8 @@ Binary operators should generally be defined as multi subs:
 
     multi sub infix:+ (Us $us, Us $ustoo) {...}
     multi sub infix:+ (Us $us, Them $them) is commutative {...}
+
+[Update: And these are C<infix:«+»> now.]
 
 The "C<is commutative>" trait installs an additional autogenerated sub
 with the invocant arguments reversed, but with the same semantics otherwise.
@@ -2895,6 +2957,8 @@ more multisubs into a property role like this:
 	multi sub trait_auxiliary:is(xxx $trait, Any $container: ?$arg) {...}
     }
 
+[Update: Taht's C<trait_auxiliary:«is»> now.]
+
 Then it can function as a trait.  A well-behaved trait handler will say
 
     $container does xxx($arg);
@@ -2968,6 +3032,8 @@ Apocalypse 6 is defined something like this:
 	...
     }
 
+[Update: Make that C<trait_verb:«returns»> now.]
+
 Note that the argument is not optional on "C<returns>".
 
 Earlier we defined the C<xxx> trait using multi sub definitions:
@@ -2989,7 +3055,7 @@ single-dispatch methods:
 
 Some traits are control freaks, so they want to make sure that anything
 mentioning them comes through their control.  They don't want something
-dispatching to another trait's trait_help:is method just because
+dispatching to another trait's C<trait_auxiliary:is> method just because
 someone introduced a cute new container type they don't know about.
 That other trait would just mess things up.
 
@@ -3264,6 +3330,8 @@ to the object that should be delegated to:
 		);
     method prefix:~( return "$.breed" )
 
+[Update: That's C<prefix:«~»> now.]
+
 If the string is not found in the hash, a "C<next METHOD>" is
 automatically performed.
 
@@ -3417,6 +3485,15 @@ keyword.  It's actually the C<where> that creates the type.  The C<type>
 keyword just marks the name as "not really a classname" so that you
 don't accidentally try to derive from it.
 
+[Update: I decided I don't like the forced use of C<::=>, nor do I
+like the confusion engendered by use the word "type" to mean "subtype",
+so the syntax is now any of:
+
+    my subtype Str_not2b of Str where /^[isnt|arent|amnot|aint]$/;
+    my Str subtype Str_not2b where /^[isnt|arent|amnot|aint]$/;
+
+.]
+
 Since a type is "post-class-ical", there's really no such thing as an
 object blessed into a type.  If you try it, you'll just end up with
 an object blessed into whatever the underlying unconstrained class
@@ -3474,6 +3551,9 @@ We say that types are "post-class-ical", but since you can base them off
 of any class including C<Any>, they are actually rather orthogonal to
 the class system.
 
+[Update: Everywhere the preceding section says "type", change to "subtype",
+including the keyword.  And change C<::=> to C<of>.]
+
 =head1 Enums
 
 An enum functions as a subtype that is constrained to a single value.
@@ -3494,10 +3574,19 @@ we allow a shorthand:
     type DayOfWeek ::= int enum
 	«Sunday Monday Tuesday Wednesday Thursday Friday Saturday»;
 
-Type int is the default enum type, so that can be:
+[Update: The syntax is now more like existing declarations:
+
+    our int enum DayOfWeek
+	«Sunday Monday Tuesday Wednesday Thursday Friday Saturday»;
+
+where C<int> is usually omitted.]
+
+Type C<int> is the default enum type, so that can be:
 
     type DayOfWeek ::= enum
 	«Sunday Monday Tuesday Wednesday Thursday Friday Saturday»;
+
+[Update: Now just C<enum DayOfWeek «...»>.]
 
 The enum installer inspects the strings you give it for things that
 look like pairs, so to number your days from 1 to 7, you can say:
@@ -3514,6 +3603,13 @@ question has the right semantics mixed in.  Two builtin enums are:
 
     type bool ::= bit enum «false true»;
     type taint ::= bit enum «untainted tainted»;
+
+[Update: Now just:
+
+    our bit enum *bool is «false true»;
+    our bit enum *taint is «untainted tainted»;
+    
+.]
 
 =head1 Open vs Closed Classes
 
@@ -3576,11 +3672,18 @@ Syntax?  You want syntax?  Hmm.
 
     use classes :closed :open«Mammal Insect»;
 
+[Update: Now more like "C<use opt :classes(:close :finalize);>", since
+it's direct instruction to the optimizer.  It doesn't directly change
+the meaning of the C<class> keyword, so it shouldn't use C<class>
+as the pragma name.]
+
 Or some such.  Maybe certain kinds of class reference automatically request
 the class to be open without a special pragma.  A module could request
 open classes without attempting to close everything with just:
 
     use classes :open«Mammal Insect»;
+
+[Update: Just "C<class>" to match the keyword.]
 
 On the other hand, maybe that's another one of those inside-out interfaces,
 and it should just be options on the classes whose declarations you have
@@ -4340,6 +4443,8 @@ and
 In the latter case, the option is being passed to C<randomlistop()>
 rather than the C<infix:..> operator.
 
+[Update: That's C<infix:«..»> now.]
+
 =head2 Special Quoting of Identifiers Inside Curlies Going Away!
 
 Novice Perl 5 programmers are continually getting trapped by
@@ -4445,6 +4550,12 @@ Yes, that will make it a little harder to translate Perl 5 to Perl 6.
 
 (Parentheses are still required if there are any arguments, however.)
 
+[Update: We're back to requiring parens on methods.  In fact, we've gone
+the other way--we now require square brackets on arrays and curlies on
+hashes.  And a bare closure also interpolates.  The I<only> interpolator
+that doesn't require some kind of bracketing terminator is a simple
+scalar.  See S2.]
+
 =head2 The =:= Identity Operator
 
 There is a new C<=:=> identity operator, which tests to see if
@@ -4489,6 +4600,32 @@ You'd be right.  The longer the name, the longer you should think
 before adding a new operator of that category.  (And the length of
 time you should think probably scales exponentially with the length of
 the name.)
+
+[Update: The actual operator name must be quoted like a hash subscript:
+
+    coerce:«as»					123 as BigInt, BigInt(123)
+    self:«sort»					@array.=sort
+    term:«...»					$x = {...}
+    prefix:«+»					+$x
+    infix:«+»					$x + $y
+    postfix:«++»				$x++
+    circumfix:«[ ]»				[ @x ]
+    postcircumfix:«[ ]»				$x[$y] or $x .[$y]
+    rule_modifier:«p5»				m:p5//
+    trait_verb:«handles»			has $.tail handles «wag»
+    trait_auxiliary:«shall»			my $x shall conform«TR123»
+    scope_declarator:«has»			has $.x;
+    statement_control:«if»			if $condition {...} else {...}
+    statement_modifier:«if»			... if $condition
+    infix_postfix_meta_operator:«=»		$x += 2;
+    postfix_prefix_meta_operator:{'»'}		@array »++
+    prefix_postfix_meta_operator:{'«'}		-« @magnitudes
+    infix_circumfix_meta_operator:{'»','«'}	@a »+« @b
+
+The curly form is required if the operator name contains French quotes.
+Also, please note that the "hole" in circumfixes is now specified by
+slice notation.  There is no longer any special split-down-the-middle
+rule.]
 
 =head2 Assignment to C<state> variable declaration now does "first" semantics.
 
@@ -4637,6 +4774,8 @@ level of Unicode support. To be more specific, there's also:
     $string.codepoints
     $string.graphemes
     $string.letters
+
+[Update: Those are shortened to C<.codes>, C<.graphs>, and C<.langs> now.]
 
 ...none of which should be confused with:
 

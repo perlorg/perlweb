@@ -10,11 +10,11 @@ Larry Wall <larry@wall.org>
 
 =head1 VERSION
 
-  Maintainer: Luke Palmer <luke@luqui.org>
+  Maintainer: Larry Wall <larry@wall.org>
   Date: 19 Aug 2004
-  Last Modified: 8 Sept 2004
+  Last Modified: 20 Nov 2004
   Number: 4
-  Version: 0
+  Version: 2
 
 This document summarizes Apocalypse 4, which covers the block and
 statement syntax of Perl.
@@ -117,14 +117,7 @@ disallowed.  Instead of
 	...
     } while $x;
 
-you must write
-
-    loop {
-	...
-	last unless $x;
-    }
-
-or
+you should write
 
     loop {
 	...
@@ -145,9 +138,9 @@ The C<loop> statement is the C-style C<for> loop in disguise:
 
 As seen in the previous section, the 3-part loop spec may be entirely
 omitted to write an infinite loop.  If you omit the 3-part loop spec
-you may add a statement modifier at the end to make it a "repeat at
-least once" loop.  Unlike C<do> in Perl 5, it's a real loop block,
-so you may use loop modifiers.
+you may add a C<while> or C<until> statement modifier at the end
+to make it a "repeat at least once" loop.  Unlike C<do> in Perl 5,
+it's a real loop block, so you may use loop modifiers.
 
 =head1 The C<for> statement
 
@@ -210,7 +203,7 @@ what
 
     for <> {...}
 
-is for.
+is for.  (If you write it with C<while> you'll get a warning.)
 
 Parameters are by default constant within the block.  You can
 declare a parameter read/write by including the "C<is rw>" trait.
@@ -434,9 +427,9 @@ the closure as its topic:
     my $r will first { .set_random_seed() };
     our $h will enter { .rememberit() } will undo { .forgetit() };
 
-Apart from C<CATCH>, which can only occur once, most of these can occur
-multiple times within the block.  So they aren't really traits,
-exactly--they actually add themselves onto a list stored in the
+Apart from C<CATCH> and C<CONTROL>, which can only occur once, most of
+these can occur multiple times within the block.  So they aren't really
+traits, exactly--they actually add themselves onto a list stored in the
 actual trait.  So if you examine the C<ENTER> trait of a block, you'll
 find that it's really a list of closures rather than a single closure.
 
@@ -488,7 +481,7 @@ In this statement:
         ...
     }
 
-the parentheses aren't necessary around C<EXPR> because the whitespace
+parentheses aren't necessary around C<EXPR> because the whitespace
 between C<EXPR> and the block forces the block to be considered a
 block rather than a subscript.  This works for all control structures,
 not just the new ones in Perl 6.  A bare block where an operator
@@ -559,9 +552,13 @@ precedence afterwards regardless of the position of the closing curly.
 Statement-level constructs are distinguished in the grammar by being
 declared in the statement syntactic group:
 
-    macro statement:if ($expr, &ifblock) {...}
-    macro statement:while ($expr, &whileblock) {...}
-    macro statement:BEGIN (&beginblock) {...}
+    macro statement_control:«if» ($expr, &ifblock) {...}
+    macro statement_control:«while» ($expr, &whileblock) {...}
+    macro statement_control:«BEGIN» (&beginblock) {...}
+
+It's possible the full name of the C<if> operator is now:
+
+    statement_control:«if elsif else»
 
 Statement-level constructs may start only where the parser is expecting
 the start of a statement.  To embed a statement in an expression you
@@ -570,29 +567,29 @@ must use something like C<do {...}> or C<try {...}>.
     $x =  do { given $foo { when 1 {2} when 3 {4} } + $bar;
     $x = try { given $foo { when 1 {2} when 3 {4} } + $bar;
 
-Just because there's a C<statement:BEGIN> does not preclude us from
-also defining a C<prefix:BEGIN> that I<can> be used within an expression:
+Just because there's a C<statement_control:«BEGIN»> does not preclude us from
+also defining a C<prefix:«BEGIN»> that I<can> be used within an expression:
 
-    macro prefix:BEGIN (&beginblock) { beginblock().repr }
+    macro prefix:«BEGIN» (&beginblock) { beginblock().repr }
 
 Then you can say things like:
 
     $recompile_by = BEGIN { time } + $expiration_time;
 
-But C<statement:BEGIN> hides C<prefix:BEGIN> at the start of a statement.
-You could also conceivably define a C<prefix:if>, but then you would
+But C<statement_control:«BEGIN»> hides C<prefix:«BEGIN»> at the start of a statement.
+You could also conceivably define a C<prefix:«if»>, but then you would
 get a syntax error when you say:
 
     print if $foo
 
-since C<prefix:if> would hide C<statement_modifier:if>.
+since C<prefix:«if»> would hide C<statement_modifier:«if»>.
 
 =head1 Smart matching
 
 Here is the current table of smart matches (which probably belongs in
 S3).  The list is intended to reflect forms that can be recognized at
 compile time.  If none of these forms is recognized at compile time, it
-falls through to a multiple dispatch to C<infix:~~()>, which presumably
+falls through to a multiple dispatch to C<infix:«~~»()>, which presumably
 reflects similar semantics, but can finesse things that aren't exact
 type matches.  Note that all types are scalarized here.  Both C<~~>
 and C<given>/C<when> provide scalar contexts to their arguments.
@@ -631,7 +628,7 @@ separate entries for lists.
     Any     subst     substitution match*      match if $_ ~~ subst
     Any     boolean   simple expression truth* match if true given $_
     Any     undef     undefined                match unless defined $_
-    Any     Any       run-time multi call      match if infix:~~($_, $x)
+    Any     Any       run-time dispatch        match if infix:«~~»($_, $x)
 
 Matches marked with * are non-reversible, typically because C<~~> takes
 its left side as the topic for the right side, and sets the topic to a
@@ -663,19 +660,11 @@ the context to that operand, so that, for instance, a regular expression
 can return a list of matched substrings, as in Perl 5.  The complete
 list of such operands is TBD.
 
-XXX How close can the final run-time multi call get to reproducing
-the ordering of the compile-time table, which breaks ties according
-to that ordering?  Seems to say that multiple dispatch should have a
-way to break ties by precedence, not just by "is default".  Or maybe
-the default routine itself can use precedence of some sort.  Seems
-like it would be breaking ties that don't even arise in the original
-table, however.  It's not clear, for instance, whether
-
-    %hash ~~ { foo }
-
-would resolve as infix:~~<Hash,Any> or infix:~~<Any,Code> under
-multiple dispatch.  With the ordered table it clearly prefers the
-latter interpretation.
+It has not yet been determined if run-time dispatch of C<~~> will
+attempt to emulate the compile-time precedence table before reverting
+to MMD, or just go directly to MMD.  There are good arguments for
+both sides, and we can decide when we see more examples of how
+it'll work out.
 
 =head1 Definition of Success
 
@@ -690,7 +679,9 @@ is okay.
 In the absence of exception propagation, a successful exit is one that
 returns a defined value in scalar context, or any number of values
 in list context as long as the length is defined.  (A length of +Inf
-is considered a defined length.)  A list can have a defined length
+is considered a defined length.  A length of 0 is also a defined length,
+which means it's a "successful" return even though the list would evaluate
+to false in a boolean context.)  A list can have a defined length
 even if it contains undefined scalar values.  A list is of undefined
 length only if it contains an undefined generator, which, happily, is
 what is returned by the C<undef> function when used in list context.
@@ -706,12 +697,12 @@ context.  To return an explicit scalar undef, you can always say
 Then in list context, you're returning a list of length 1, which is
 defined (much like in Perl 5).  But generally you should be using
 C<fail> in such a case to return an exception object.  Exception
-objects also behave like undefined generators in list context.  In any
-case, returning an unthrown exception is considered failure from the
-standpoint of C<let>.  Backtracking over a closure in a rule is also
-considered failure, which is how hypothetical variables are managed
-by rules.  (And on the flip side, use of C<fail> within a rule closure
-initiates backtracking of the rule.)
+objects also behave like undefined generators in list context.
+In any case, returning an unthrown exception is considered failure
+from the standpoint of C<let>.  Backtracking over a closure in a rule
+is also considered failure of the closure, which is how hypothetical
+variables are managed by rules.  (And on the flip side, use of C<fail>
+within a rule closure initiates backtracking of the rule.)
 
 =head1 When is a closure not a closure
 
