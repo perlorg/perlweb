@@ -106,7 +106,7 @@ sub handler ($$) {
     $content_type = 'application/rdf+xml';
   }
 
-  $self->send_output($r, \$output, $content_type);
+  $self->send_output(\$output, $content_type);
 }
 
 1;

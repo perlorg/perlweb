@@ -20,19 +20,18 @@ sub super ($$) {
 
 sub send_output {
   my $class   = shift;
-  my $r       = shift;
   my $routput = shift;
 
   $routput = $$routput if ref $routput;
 
-  return $class->SUPER::send_output($r, \$routput, @_)
+  return $class->SUPER::send_output(\$routput, @_)
     if (ref $routput eq "GLOB" or $class->{utf8});
 
 #  binmode STDOUT, ':utf8';
 
   my $str = Encode::encode('iso-8859-1', $routput, Encode::FB_HTMLCREF);
 
-  $class->SUPER::send_output($r, \$str, @_);
+  $class->SUPER::send_output(\$str, @_);
 }
 
 sub is_logged_in {
