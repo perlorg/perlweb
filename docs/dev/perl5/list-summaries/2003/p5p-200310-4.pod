@@ -1,0 +1,139 @@
+=head1 This Week on perl5-porters (27 October / 2 November 2003)
+
+The big news of the week is of course the first release candidate of perl
+5.8.2, the problems it solves, and the new problems it causes.
+
+=head2 5.8.2-RC1
+
+Nicholas Clark, the new maint pumpking (if you have missed previous
+episodes), released perl 5.8.2-RC1.
+
+    http://xrl.us/2sg
+    first perldelta draft : http://xrl.us/2sh
+
+Alexey Tourbin found a problem with this latest version : an
+incompatibility is caused by a patch to UNIVERSAL.pm committed at the
+beginning of the month. This affects BerkeleyDB's test suite, but can
+arguably be caused by BerkeleyDB's reliance on the specific behaviour so
+far of UNIVERSAL::import(), that was inherited by subclasses. Paul
+Marquess is going to fix the next release of BerkeleyDB. Nicholas backed
+the change out of maint for 5.8.2.
+
+    http://xrl.us/2si
+
+Another compatibility problem was caused in mod_perl by a patch by Rick
+Delaney that changed the behaviour of require() regarding files that one
+try to load again after a first unsuccessful attempt. This one also was
+backed out of maint.
+
+    http://xrl.us/2sj
+
+=head2 The adventures of binary compat
+
+There was also a long, technical discussion about mod_perl 2 and the
+new hashing scheme in perl 5.8.2 (rehash hashes only if a bucket contains
+too many entries), that was introduced for binary compatibility. These
+threads involved also security considerations and tests for potential
+attacks against this hashing schemes. I'll shamelessly refer the
+interested parties to the archives :
+
+    http://xrl.us/2sk
+    http://xrl.us/2sl
+
+Meanwhile, Jan Dubois spotted another potential binary incompatibility
+between 5.8.0 and 5.8.1, the problem being related to the reentrant APIs.
+His proposed change doesn't solve all issues (XS modules compiled with a
+threaded 5.8.1 and that use the reentrant system calls will have problems)
+but it makes the situation better, as it restores the compatibility
+between 5.8.0 and 5.8.2. Details to be supplied in the next iteration of
+perldelta.
+
+    http://xrl.us/2sm
+    http://xrl.us/2sn
+
+=head2 Threads and -D
+
+Stas Bekman produces a segfault by using the B<-Dm> debug flag on a
+threaded perl, and suggests a patch. Rafael says that spotting problems
+with perl's debugging flags could be done by running perl's test suite
+with C<PERL5OPT=-D...> (at least for the tests that aren't run under taint
+mode).
+
+    http://xrl.us/2so
+
+=head2 Attribute::Handlers and UNIVERSAL
+
+Michael Jacob notices that Attribute::Handlers is a bit cavalier with
+UNIVERSAL, pushing itself into C<@UNIVERSAL::ISA>. Thus, all classes now
+can() AUTOLOAD(), DESTROY() and import(). To fix this, he suggests to
+override UNIVERSAL::can() to reject inherited methods. But Damian Conway
+says he hasn't a good solution for this problem.
+
+    http://xrl.us/2sp
+
+=head2 Setting group and user ids
+
+Alan Burlison remarks that assigning to C<$)> and then to C<< $> >>
+doesn't produce the same result than assigning to the list C<< ($),$>) >>
+(at least on Solaris.) Rick Delaney sends a patch, but points out that it's
+hard to write tests for this.
+
+    http://xrl.us/2sq
+
+=head2 Selected bugs
+
+Abigail reported (bug #24313) that the numeric constant C<0> can't be
+overloaded via C<overload::constant('integer')> like other integers. This
+was fixed by Rick Delaney.
+
+Ton Hospel produces a segfault by attempting to modify an array slice with
+C<-=> while the array is being assigned to. Michael Jacob explains why
+this happens, but there's no fix in sight. (bug #24342.)
+
+Ton Hospel also files bug #24346, about the substr() lvalues. He notices
+that he's able, when operating on a substring, to pull in characters from
+the rest of the said string (i.e. from outside the substr() window.) As
+the docs are unclear, he can't say he's sure it's a bug, but that's at
+least a potentially dangerous behaviour. Graham Barr proposes a patch.
+
+    http://xrl.us/2sr
+
+David Dyck has some problems with a snippet of code where he's eval()'ing
+a string that contains a scalar variable in an END block (bug #24296).
+Dave Mitchell explains what's happening and provides some insight about
+how closures work.
+
+    http://xrl.us/2ss
+
+Yitzchak Scott-Thoennes demonstrates that list assignment to a hash in list
+context has some problems (bug #24380).
+
+    http://xrl.us/2st
+
+=head2 In Brief
+
+Arthur Bergman considers deprecating the SvPVX macro.
+
+    http://xrl.us/2su
+
+Jeff Pinyan has a question about how the regular expression engine treats
+terms that match an empty string in an alternation. Mark-Jason Dominus
+provides some answers.
+
+    http://xrl.us/2sv
+
+ExtUtils::MakeMaker 6.18 is coming soon, announces Michael Schwern,
+listing the new improvements and features :
+
+    http://xrl.us/2sw
+
+Nicholas explicits his maint patching policy.
+
+    http://xrl.us/2sx
+
+=head2 About this summary
+
+This week was summarized by Rafael Garcia-Suarez. Summaries appear weekly
+on F<http://use.perl.org/> and on a mailing list, which subscription
+address is F<perl5-summary-subscribe@perl.org>. Corrections and comments
+are welcome.

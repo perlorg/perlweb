@@ -1,0 +1,62 @@
+=head1 This Week on perl5-porters (16-22 June 2003)
+
+This week, there was fewer threads than usual, but they were larger, so
+the volume of mail exchanged on p5p remained more or less constant. Here's
+the high signal-to-noise ratio summary for this week.
+
+=head2 Algorimic Complexity Attack
+
+You might remember that last month, Scott Crosby reported (as bug #22371)
+a way to produce colliding hash keys. Once fed into a hash, these may
+severely degrade performance of element lookup, and thus be used as a
+basis for DoS attacks. Jarkko proposed a way to protect hash tables
+against this : instead of using 0 as initial value for the computation of
+the hash value, as it is now, use some pseudo-random value, computed at
+interpreter startup time.
+
+This raises two interesting questions : is this a significant threat ?
+And how to enhance the hash function without performance degradation ?
+Hopefully the arguments ended in some interesting benchmarks. To be
+continued.
+
+    http://xrl.us/j7m
+
+=head2 Clearing $1
+
+Dan Kogai thinks that it would be a good idea, if a failing match did
+reset the C<< $<digit> >> variables to C<undef>. This opinion is not
+universally shared. SeveralLots of arguments are proposed against this
+change, from backwards compatibility to good coding practices.
+
+    http://xrl.us/j7n
+
+=head2 siginfo
+
+Jarkko Hietaniemi proposed an experimental patch to take advantage of the
+POSIX signal handling feature that goes by the name of I<siginfo>. It
+enables additional information to be passed to signal handlers : sending
+process id, real user id of sending process, etc. (See your sigaction(2)
+manpage if you have it.)
+
+    http://xrl.us/j7o
+
+=head2 Selected bugs
+
+Perl segfaults during C<make install> on Mario A Cruz Gartner's FreeBSD
+4.4 box (bug #22740). That's puzzling because C<make> and C<make test>
+both succeeded.
+
+Shlomi Fish and Ton Hospel reported bug #22744, demonstrating an old
+problem with the C<.=> operator :
+
+    $b = ($a.="5")."6"; print "$a $b"
+
+prints "56 56", but it should have been "5 56". Enache Adrian provided a
+fix.
+
+=head2 About this summary
+
+This week's short summary was written by Rafael Garcia-Suarez. Weekly
+summaries are available on F<http://use.perl.org/> and/or via a mailing
+list, which subscription address is L<perl5-summary-subscribe@perl.org>.
+Comments, corrections, additions, and suggestions are welcome.

@@ -1,0 +1,97 @@
+=head1 This Week on perl5-porters (26 May / 1 June 2003)
+
+As usual, the weekly summary will try to present a useful or entertaining
+cross-section of the perl 5 porters' activity. The various topics include
+C-level I/O, scoping, installation layouts, and some amount of bugs and
+patches.
+
+=head2 setvbuf()
+
+Mark-Jason Dominus tried to use C<IO::Handle::setvbuf()>, and his recent
+5.8ish perl complained that it wasn't implemented (bug #22339). In fact,
+PerlIO-enabled perls don't support setvbuf() anymore. This was followed by
+a small discussion about different methods to do unbuffered I/O at the C
+level.
+
+    http://xrl.us/ivx
+
+=head2 C<< $<digit> >> scoping
+
+Bug #22369 demonstrates an oddity concerning the lexical scoping of C<$1>
+(and other variables that depend on regexps.) Basically, when the same
+scope is entered twice, recursively, and when C<$1> is set by a successful
+match inside this scope, the second value obliterates the first one, even
+after exiting that scope. Rafael explained what happens behind the scenes
+-- C<< $<digit> >> values are actually associated to regexps, not to
+lexical scopes -- and said that this behaviour ought to be better
+documented.
+
+    http://xrl.us/ivy
+
+=head2 @INC setup
+
+There was a small but interesting thread on the default setup of the
+@INC path, why it was designed that way, and how OS vendors implement
+it. Andy Dougherty summarizes it :
+
+    http://xrl.us/ivz
+
+=head2 Cygwin and IO layers
+
+Gerrit P. Haase, our Cygwin porter, proposed to make no-CRLF the default
+for output on Cygwin. It's still possible to to pull it in every time it is
+needed with the environment setting PERLIO=crlf, or on a per-filehandle
+basis with C<< open OUT, '>:crlf', 'text.txt' >>. Sounds like a good idea.
+
+=head2 Unicode char classes proposal
+
+Jeff Pinyan posted several mails entitled I<another attempt at adding
+unicode regex support to perl>, about designing new Unicode-enabled
+character classes. For example, C<[\p{AtoZ}&&\P{Vowels}]> would be
+equivalent to C<[b-df-hj-np-tv-z]>. He faced Warnock's dilemma at an
+unprecedented level.
+
+    http://xrl.us/iv2
+
+=head2 In Brief
+
+Joe McMahon is cleaning up and documenting the perl debugger. He says that
+I<it's about 3000 more lines of POD and comments.> And while he's at it,
+he fixed a few bugs that were on his way. Impressive.
+
+Alexey Tourbin remarks that C<a2p>, when built, is linked against
+libraries that it doesn't actually use (on linux). Andy Dougherty says
+it's mostly harmless, at least in the usual cases, and provides a patch
+that removes from C<a2p> the libraries that are only needed for
+extensions.
+
+A patch that Dave Mitchell sent some time ago, known by the codename of
+B<jumbo closure patch>, was applied this week. This is basically a
+reimplementation of closures in Perl. Apparently it broke something on
+HP-UX 11 + gcc.
+
+Dave Rolsky volunteered to backport C<Time::Local> to the CPAN.
+
+=head2 Best of Bugs
+
+Manoj Kumar reports (bug #22329) that perldoc doesn't support command-line
+options in the PAGER environment variable.
+
+Enache Adrian fixed bug #22372 : in perl 5.8.0, a format that uses a
+foreach loop variable is likely to segfault.
+
+Scott A Crosby reports (bug #22371) a way to produce hash keys that will
+collide and that may severely degrade performance of hash lookup. This can
+be used against some Perl applications as a denial of service attack.
+Nobody commented.
+
+Craig Barratt reports (bug #22395) a regular expression, C</(.*)[bc]/>
+that appears to be much slower in perl 5.8.0 than in perl 5.6.x (it's
+apparently O(N^2), versus O(N) previously). It's not clear why.
+
+=head2 About this summary
+
+This summary was brought to you by Rafael Garcia-Suarez. Weekly summaries
+are available on L<http://use.perl.org/> and via a mailing list, which
+subscription address is L<perl5-summary-subscribe@perl.org>. Feedback
+appreciated.

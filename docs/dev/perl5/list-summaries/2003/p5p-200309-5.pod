@@ -1,0 +1,89 @@
+=head1 This Week on perl5-porters (29 September - 6 October 2003)
+
+It was relatively quiet in the aftermath of the release of Perl 5.8.1.
+
+=head2 First bugs
+
+Unfortunately, the first bugs in 5.8.1 were found also.  Some annoying,
+such as a memory leak when initializing a shared array:
+
+ http://xrl.us/vwv
+
+and, more seriously, a bug with random numbers after fork() which basically
+cause each child to get the same random numbers as the parent:
+
+ http://xrl.us/vww
+
+Fortunately, the upcoming mod_perl release 1.29, will take this bug into
+account when running with 5.8.1.  More bugs will no doubt be found and more
+fixes will be made in the coming weeks.
+
+=head2 Hidden Dependencies
+
+Johan Vromans found some warnings when installing 5.8.1 RPM's that indicated
+dependencies of core modules on non-core modules.
+
+ http://xrl.us/vwx
+
+This thread turned into a discussion whether Perl should / could be
+responsible for packaging on different platforms.
+
+ http://xrl.us/vwy
+
+Some consensus was reached in that it was felt to be a good idea to supply
+a META.yml file with each Perl distribution, which would allow packagers to
+more easily package.
+
+And then Ken Williams realized there suddenly was a META.yml in bleadperl.
+With incorrect information.  But that all got sorted out:
+
+ http://xrl.us/vwz
+
+=head2 A bleadperl snapshot!
+
+Hugo released a snapshot and fires up bleadperl development again!
+
+ http://xrl.us/vw2
+
+=head2 Documentation patches
+
+A flurry of documentation patches started when Shlomi Fish returned to p5p:
+
+ http://xrl.us/vw3
+
+As a side note, Shlomi also started some action to refurbish learn.perl.org
+on the Perl Advocacy list:
+
+ http://xrl.us/vw4
+
+=head2 64bit configurations
+
+Michael Schwern found an(other) difference between 5.8.0 and 5.8.1.  This time
+it involves configuration on 64bit platforms.  Previously, some configurations
+would silently fall back.  In 5.8.1, they exit with an error.
+
+ http://xrl.us/vw5
+
+=head2 Attribute::Handlers: our vs my
+
+Jos Boumans reported a bug in the handling of attributes with our and my.
+Richard Clamp explained why C<my> attributes are handled at execution time and
+C<our> at compile time.  But there may still be something amiss:
+
+ http://xrl.us/vw6
+
+=head2 In brief
+
+Abigail added TODO functionality to one of the core-test internal dialects of
+Test::xxx.
+
+Robin Barker found an oddity when using perl -V:'?flags'.  The C<?> makes it
+possible to search for any string, rather than the ones anchored to the
+beginning (because it makes the /^ optional).
+
+=head2 About this summary
+
+This week's summary was produced by Elizabeth Mattijsen. Summaries are
+published weekly on F<http://use.perl.org/> and on a mailing list, which
+subscription address is perl5-summary-subscribe@perl.org. Corrections
+and comments are welcome. Next week Rafael will be taking the honours again.

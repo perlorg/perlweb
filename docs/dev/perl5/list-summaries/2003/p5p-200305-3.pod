@@ -1,0 +1,126 @@
+=head1 This Week on perl5-porters (12-18 May 2003)
+
+This week, discussions spawned across : manual pages, and their adaptation
+to perl's audience ; build problems ; interfaces ; conventions ; and the
+usual amount of bugs.
+
+=head2 Working on man pages
+
+Shlomi Fish proposed successive incarnations of several patches to the
+perlsyn and perldata manpages. Casey West, Tom Christiansen, and others,
+commented.
+
+Looking at Shlomi's patches, Michael G Schwern noticed a lot of references
+to other languages in perl's core documentation -- mostly to Unixish
+little languages (sed and awk) and to C. In spite of their historical
+interest, those references are no longer relevant to most readers of those
+documents nowadays. So he decided to do something about it.
+
+    http://xrl.us/h7g
+
+And by the way, while Casey posted a patch to replace all occurrences of
+I<catenate> by I<concatenate>, Tom explained the subtle difference between
+those two words.
+
+    http://xrl.us/h7h
+
+=head2 A new version of Getopt::Long
+
+Johan Vromans uploaded to the CPAN an alpha version of his module
+Getopt::Long (2.32_03) which implemented automatic support for --version
+and --help flags (based on a patch by Ilya Zakharevich). Quoting
+the announcement : I<Since this is a non-compatible API change, the new
+features will only be available to programs that explicitly require
+version 2.3203 or later.>
+
+This unconventional way to enable these new features was discussed and
+adapted, after the problems it caused were sorted out.
+
+    http://xrl.us/h7i
+
+For the latest state of the module (2.32_05), see :
+
+    http://xrl.us/h7j
+    http://search.cpan.org/src/JV/Getopt-Long-2.32_05/CHANGES
+
+=head2 Build problems
+
+Gerrit P. Haase and H. Merijn Brand were investigating build problems
+under the latest snapshots of the Cygwin environment (1.5.0s). At some
+point they suspected a broken header file, but the problem seems to be
+deeper. Anyway, bleadperl builds (almost) correctly on the more stable
+Cygwin 1.3.22.
+
+Enache Adrian tried to build bleadperl on Windows 2000 with MS Visual C.
+He gets several failures, and also reminds us about bug #21473
+(C<sysread()> and C<syswrite()> don't process CRLF correctly).
+
+    http://xrl.us/h7k
+
+Alain Barbet gets smoke failures, building perl on NetBSD on a Sparc 64
+hardware, but apparently upgrading gcc helps a lot. He's going to try with
+the very recent gcc 3.3, that has also been installed by Merijn on his
+smoke systems. However, perl + long doubles still fails on AIX 4.3.3 with
+this latest compiler.
+
+=head2 Multidimensional array emulation
+
+David Nicol remarks that the (little-known) multidimensional array
+emulation works when written C<$hash{$x,$y}>, but not in the construct
+C<$hash{@array}>. That's because the subscript must be a list, so it's
+necessary to employ some syntactic trick, as C<$hash{@array,()}> to get it
+working.
+
+    http://xrl.us/h7l
+
+Later, Rafael asks whether this feature should be deprecated, and after
+discussion, the answer appears to be no.
+
+    http://xrl.us/h7m
+
+=head2 Alpha version numbers
+
+Elaine Ashton noticed that I<the documented method of denoting an alpha
+module release and the way that PAUSE and C<search> denote them do not
+match>. This remark was triggered by the upload on CPAN of a module that
+has a C<X_YY>-style version number.  C<search.cpan.org> understands this
+to be an alpha version number, while PAUSE, for doing so, requires that
+the distribution filename matches C</d\.\d+_\d/>, and moreover it looks
+into the module(s) for $VERSION scalars.
+
+    http://xrl.us/h7n
+
+=head2 In brief
+
+Back in January, Jarkko Hietaniemi asked for a couple of new README
+documents, README.macosx and README.linux. But they were never written.
+Perhaps before 5.8.1 ?
+
+Jarkko also released a maintenance snapshot, and he asked, for the last
+time, for a list of most wanted fixes to go in 5.8.1.
+
+Tassilo von Parseval, who remarked last month that C<h2xs> was not able to
+handle C enums, proposed a patch for it. It adds an C<-e>/C<--omit-enums>
+command-line option, to disable the proposed new default behavior, that
+is to process enums. (Bug #21887.)
+
+Ilya Sandler reported bug #22181, a case of core-dump involving a
+combination of C<foreach()> and C<goto()>. Dave Mitchell and Enache Adrian
+hunted it down.
+
+Dave Mitchell remarked that the construct C<$hash{$foo}>, where $foo is
+undefined, doesn't give a warning when %hash is empty. That would be a
+bug.
+
+Michael Fowler reported a weird parsing bug (#22231) caused by the presence
+of the C<Switch> module in a program, and of a comment containing the word
+"switch".
+
+MIME::Base64 was upgraded.
+
+=head2 About this summary
+
+This summary was brought to you by Rafael Garcia-Suarez. Weekly summaries
+are available on L<http://use.perl.org/> and via a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. Feedback
+is (as always) welcome.

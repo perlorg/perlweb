@@ -1,0 +1,112 @@
+=head1 This Week on perl5-porters (13-19 October 2003)
+
+What happens in the post-5.8.1 world ? Read about the plans for the
+(nearest than you may think) 5.8.2, 5.8.1-specific problems, and other
+Perl language and implementation questions.
+
+=head2 Binary Compatibility
+
+Nicholas Clark prepares himself to release perl 5.8.2, which should fix
+the binary compatibility issue raised last week between 5.8.0 and 5.8.1.
+The discussions are highly technical, since the fix should preserve binary
+compatibility and at the same time preserve the security feature (the hash
+seed randomization) which was introduced in 5.8.1 and that broke binary
+compatibility.
+
+    http://xrl.us/xwk
+
+The announcement of Nicholas' first snapshot can be found at
+F<http://xrl.us/xwl>.
+
+=head2 Version numbering
+
+With all those version number increments around, a question was raised :
+should perl's internal version number be incremented just after the
+release of the previous version, or just before the release of the new
+version ? Several arguments were raised. Usually, the tradition is to
+bump up the version number before the first release candidate.
+
+    http://xrl.us/xwm
+
+=head2 CPAN things
+
+Ilya Zakharevich posted a patch containing several improvements to the
+CPAN.pm module. This led to a discussion about IPC::Open3 (don't ask me
+why...)
+
+    http://xrl.us/xwn
+
+Meanwhile, Randal Schwartz notices that the CPAN shell of perl 5.8.0
+reports AutoLoader as I<to be upgraded> since 5.8.1 is out. Andreas Koenig
+agrees that the shell should be silent about core modules that are not
+(yet) dual-lived on CPAN.
+
+    http://xrl.us/xwo
+
+=head2 getppid() and mod_perl
+
+Stas Bekman reported that under mod_perl, built with perl 5.8.1 on Linux,
+the perl built-in getppid() doesn't return the actual PPID of the httpd
+process, as it should. This was the consequence of a change in perl 5.8.1,
+that now caches the result of getppid(2) in an interpreter variable, which
+is not updated when apache forks. (The rationale behind this change is
+that the implementation of getppid(2) on Linux is not POSIX-compliant when
+it comes to threads, and that Perl must be POSIX compliant when it can.)
+Rafael Garcia-Suarez, responsible for the PPID caching, provided a patch
+to mod_perl to fix this, and noted that a similar problem potentially
+occurs with the $$ special variable (although it was already correctly
+handled by mod_perl.)
+
+    http://xrl.us/xwp
+
+=head2 Dup'ing stderr
+
+Abigail filed bug #24204 : I<older versions of Perl allowed you to dup
+STDERR for reads, but newer versions> (i.e. 5.8.x) I<don't.> This disallow
+the trick to open STDERR for reading from the keyboard when standard input
+has been redirected to read from a file.
+
+The discussion continues on the cleverness of Unix tricks, how and why
+they should be supported by perl, and (permitted by Mark-Jason Dominus'
+digging skills) POSIX compliance.
+
+    http://xrl.us/xwq
+
+=head2 In Brief
+
+Rafael released a new snapshot of perl 5.6.2.
+
+    http://xrl.us/xwr
+
+Stas Bekman asked why the PERL5LIB environment variable is ignored when
+taint mode is on.
+
+    http://xrl.us/xws
+
+Autrijus Tang added support for signing distributions in
+ExtUtils::MakeMaker.
+
+    http://xrl.us/xwt
+
+Richard Clamp is working on the perl bug triaging effort, via the
+bugmongers mailing list. He posted an announcement draft :
+
+    http://xrl.us/xwu
+
+Following a suggestion by Alex Hudson, support for Linux abstract Unix
+domain sockets were implemented. Those are basically like regular named
+Unix domain sockets, but their name begins with a C<\0>, and they don't
+live in the filesystem.
+
+David Dyck found that the perl parser was fooled by non-existent filetest
+operators (such as C<-F> for example.) (bug #24212.) This was fixed by
+Rafael.
+
+And, Perl 5 turned nine years old.
+
+=head2 About this summary
+
+This week's summary was once again written by Rafael Garcia-Suarez.
+Summaries are published weekly on F<http://use.perl.org/> and on a mailing
+list, which subscription address is F<perl5-summary-subscribe@perl.org>.
+Corrections and comments are welcome.

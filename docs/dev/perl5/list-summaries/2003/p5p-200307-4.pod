@@ -1,0 +1,92 @@
+=head1 This Week on perl5-porters (21-27 July 2003)
+
+This week, a lot of porters went to YAPC::Europe in Paris, so the list
+traffic on the list was less important. It wasn't less interesting.
+
+=head2 Compile-time division by zero
+
+Ed Avis doesn't like the fact that C<1/0> is a compile-time error, and not
+a runtime one (Bug #23061). In other words, he argues that
+
+    use constant N => 0;
+    if (N) { $x = 1/N; }	# example number 1
+    eval { $x = 1/N; }		# example number 2
+
+should be legal code -- constant folding, being an optimization, should
+not change a program's meaning. (He notes also that the equivalent program
+in C is legal -- although Michael Schwern points out that C compilers
+shouldn't really be used as a guideline for designing perl errors.) On the
+other hand, Kurt Starsinic thinks about early detection of divisions by
+zero as a I<feature>, not a bug.
+
+Hugo van der Sanden describes what should be done to solve this problem :
+fatal exceptions thrown during constant folding must be caught and abort
+folding, instead of aborting the whole interpreter.
+
+    http://xrl.us/nis
+
+=head2 Checking whether a method exists
+
+Jeff 'japhy' Pinyan suggested that one could overload C<exists>, so that
+C<< exists THING->method >> would be equivalent to C<< THING->can('method') >>.
+Dave Mitchell doesn't like this new syntax proposal, and says I<yuck>.
+
+    http://xrl.us/nit
+
+=head2 Panther
+
+Dan Kogai had access to a box running an alpha version of Panther -- the
+next release of Mac OS X. He reports that the version numbers appear to be
+messed up in the perl 5.8.1 that comes bundled with Panther ; Edward Moy
+(who maintains Apple's version of perl) blames CVS expanding keywords when
+he imported the perl sources, and is going to fix it. Ken Williams says
+that the CVS manuals recommend against using the C<%Revision%> keyword to
+generate release versions, to prevent this kind of problem.
+
+    http://xrl.us/niu
+
+=head2 In Brief
+
+Ken Williams finds that -T used with a filehandle sometimes doesn't seem
+to return the appropriate result. (Bug #23077).
+
+Sean M. Burke asks for new regression tests for Perldoc ; regression
+tests are good.
+
+Ilya Zakharevich proposes to add a new built-in function,
+C<Internals::find_script()>, to emulate the B<-S> command-line option.
+Michael G Schwern disagrees on using the C<Internals> namespace (and
+points out that there's already a module on CPAN called C<Internals>.)
+
+    http://xrl.us/niv
+
+Stas Bekman finds a problem with perlio layers : if one pushes a layer
+onto a stream, it's not popped when the filehandle is closed. Nick
+Ing-Simmons replies that the Popped method should return zero in order to
+actually pop the layer.
+
+    http://xrl.us/niw
+
+Stas asks also for a way to get a complete list of the dual-life modules,
+in order to include a file C<META.yml> in the perl 5.8.1 distribution.
+(This was an idea suggested at the P5P BOF in Paris. A summary of this
+meeting will be posted at some appropriate time by Elizabeth Mattijsen.)
+
+New modules were released : ExtUtils::MakeMaker, File::Spec, Time::Local.
+Hugo released a snapshot of bleadperl.
+
+=head2 Meanwhile, in ponie-dev
+
+The very first step of the development of Ponie has been made : there is
+now a Subversion repository for Ponie, in which Arthur Bergman imported
+the current bleadperl and bleadparrot. Now, the goal is to get to
+configure and build (portably) a perl containing an embedded parrot.
+(Reminder : Ponie is I<Perl On New Internals Engine>, namely Perl 5
+running on Parrot.)
+
+=head2 About this summary
+
+This summary was written by Rafael Garcia-Suarez, back from YAPC::EU.
+Weekly summaries are published on F<http://use.perl.org/> and on a mailing
+list, which subscription address is L<perl5-summary-subscribe@perl.org>.
+Comments, corrections, additions, and suggestions are (as always) welcome.

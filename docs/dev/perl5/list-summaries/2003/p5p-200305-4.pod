@@ -1,0 +1,100 @@
+=head1 This Week on perl5-porters (19-25 May 2003)
+
+Perhaps a bit late, but ready at least, here is your latest P5P summary,
+full of last week's selected threads. Read about I/O problems and other
+language issues.
+
+=head2 Stateful PerlIO
+
+I'm not sure I understand fully the details, but : Dan Kogai, maintainer
+of the C<Encode> module, implemented a way to handle internal states, and
+thus BOMs in encoded text. This was a consequence of bug report #22261,
+about I<unrecognized BOM when reading a file larger than 1k with
+encoding(UTF-16)>.
+
+    The bug : http://xrl.us/inj
+    What's a BOM : http://www.unicode.org/unicode/faq/utf_bom.html
+
+=head2 What does sysread() do ?
+
+Nick Ing-Simmons and Gurusamy Sarathy have been working on the semantics
+of the sysread() function and try to reach a consensus. Should it read
+characters, or bytes ? That makes a difference when reading Unicode data,
+or when doing CRLF line-ending translation. Moreover, the third edition of
+the Camel Book and the perlfunc man page don't agree on this topic.
+
+Jarkko Hietaniemi votes for bytes, and for characters when the filehandle
+has been marked as UTF-8. But the common expectation seems to be that
+sysread() should do what the C-level read() does, or, at least, that it
+should always have byte semantics. That's the opinion of Nick, Graham
+Barr, Ton Hospel, and others.
+
+    http://xrl.us/ink
+
+=head2 Overloading C<=>
+
+John Peacock (still working on version objects!) wants to overload the
+assignment operator. The subsequent thread explores the semantic
+intricacies of this proposal. What happens when both sides of the
+assignment are objects that overload C<=> ?
+
+Dan Sugalski says that overloading C<=> is simply a tie, because
+I<overloading as it stands now works on the value, while tying works on
+the variable>. But, in this case, how would work a tied variable holding a
+blessed value ? Interesting thread.
+
+    http://xrl.us/inl
+
+=head2 Constant sub redefined
+
+Stas Bekman asked for a way to disable the warning I<Constant subroutine
+redefined>, which is produced by code like
+
+    use constant FOO => 1 ; use constant FOO => 2 ;
+
+(That's bug id #22291.) This warning can't be disabled via the C<no
+warnings> pragma, and that's on purpose, because the FOO constant might
+have been inlined in some code that uses it between the first and the
+second redefinitions, leading to the dangerous situation where C<FOO !=
+FOO>. However, while developing mod_perl modules under Apache::Reload,
+those warnings can be annoying. In this case the recommended way to shut
+them up is to use a custom C<$SIG{__WARN__}> handler.
+
+    http://xrl.us/inm
+
+=head2 In Brief
+
+Alan Burlison asked for a (usable) general performance benchmark for perl.
+Nicholas Clark, while claiming that I<finding a useful benchmark seems to
+be a holy grail>, suggests to use SpamAssassin with a fixed spam corpus.
+
+Nicholas reported (as bug #22270) a strange behaviour of the tainting
+mechanism he didn't understand, and Spider Boardman provided a brilliant
+explanation of it, pointing his finger at the right place in the
+documentation.
+
+    http://xrl.us/inn
+
+As a consequence from a discussion we had last month, Dave Mitchell added
+a new warning, I<Useless localization>, intended to warn at some usages of
+local() on lvalues, that actually do nothing (e.g. C<local($x = 10)>.)
+
+Jeff 'japhy' Pinyan did submit, a while ago, a patch to add a new
+zero-width assertion C<\K> to regular expressions. This was not
+integrated, so he's asking for further advice. Your summarizer pointed him
+at the old thread about this question, where Hugo suggested to turn this
+patch into a built-in optimization.
+
+A new alpha of MakeMaker, version 6.10_04, was released and integrated.
+Paul Johnson asked for a way to parse correctly a MANIFEST file (esp. now
+that MakeMaker can add a F<META.yml> file to it) ; Michael G Schwern
+pointed him at ExtUtils::Manifest::maniread().
+
+Jarkko released a new snapshot of maintperl.
+
+=head2 About this summary
+
+This was yet another summary written by Rafael Garcia-Suarez. Weekly
+summaries like this very one are usually available on
+L<http://use.perl.org/> and via a mailing list, which subscription address
+is F<perl5-summary-subscribe@perl.org>. Feedback welcome.

@@ -1,0 +1,116 @@
+=head1 This Week on perl5-porters (28 July / 3 August 2003)
+
+This week will undoubtedly be known to the future generations as the
+two-release-candidate-week. Be the first to read about it. And don't miss
+the other interesting parts : this week's summary is full of action,
+suspense and bug fixes.
+
+=head2 Release Candidates
+
+Jarkko released perl 5.8.1 RC3 and 5.8.1 RC4.
+
+RC3 announces the return of the hash randomisation : it's again turned on
+by default.
+
+In RC4 several modules were updated, notably MakeMaker and CPAN. The main
+problem with RC3 was that the CPAN module was forcing to use
+Module::Signature (to verify cryptographically signed modules), and this
+feature wasn't tested enough. Moreover Module::Signature is not part of
+the core. Autrijus Tang is working on better portability and integration
+for Module::Signature, so it may become part of the core some day.
+
+There was also some courteous fight about whether deprecating vstrings was
+a good thing or not in 5.8.1, regarding backward compatibility. It's
+apparently not finished yet (but Jarkko is until now keeping the
+deprecation warnings turned on.)
+
+    http://xrl.us/n78
+
+=head2 Notes from the P5P BOF, and perl 5.6.2
+
+Elizabeth Mattijsen posted the notes taken at the P5P meeting in Paris,
+after YAPC::EU. Go read it, that's an interesting complement to this
+summary.
+
+    http://xrl.us/n79
+
+One of the points discussed was the importance of a 5.6.2 release -- the
+conclusion being that I<it's more important to release 5.6.2 than Sarathy
+to be able to fix all his bugs>. Therefore, Sarathy transferred the 5.6
+pumpkin to Rafael, who in turn posted plans for 5.6.2 (and perhaps 5.6.3).
+A new branch was created in the perforce repository ; it's available like
+bleadperl and maintperl via rsync (pathnames being F</perl-5.6.2> and
+F</perl-5.6.2-diffs> for the patches) and via the APC. The goal of this
+new release is mainly to fix the known problems to compile it on recent
+systems ; for example, F<Configure> seems to produce no makefile on Mac OS
+X with a case-insensitive filesystem.
+
+    http://xrl.us/n8a
+
+=head2 To packagers
+
+The DESTDIR variable is now honored by C<make install>, to specify a
+prefix to all installation paths. This should please RPM package
+maintainers, thanks to Michael Schroeder. See the F<INSTALL> file for
+details.
+
+=head2 STDOUT reopened
+
+Chris Nandor complains that opening a file for reading when STDOUT has
+been just closed emits a warning : I<Filehandle STDOUT opened only for
+input>. That's because the newly opened filehandle gets the file
+descriptor number of STDOUT (which is 1). As the file descriptors are
+actually allocated by the C-level system call API, and as STDOUT is always
+the fd 1 by definition, there is no way to change this ; however, the
+condition on which the warning is produced could be changed, if we could
+agree on it.
+
+    http://xrl.us/n8b
+
+=head2 Still working on MakeMaker
+
+Steve Hay and Michael Schwern were trying to solve a MakeMaker regression
+that prevented libapreq to build correctly on Windows XP with VC++ 6.0.
+Apparently the problem comes from a hackish workaround for a now-solved
+MakeMaker bug in the libapreq sources (MakeMaker wasn't handling recursive
+makes correctly.) Michael fixed other bugs as well. As of this writing,
+the latest release of MakeMaker on CPAN is 6.13^W14^W^W^W 6.15.
+
+=head2 In Brief
+
+Dave Mitchell found and fixed a utf8+regex regression bug in 5.8.1-RC2.
+Abigail found another regex regression bug (#23171), that was fixed by Hugo.
+
+When C<use File::Glob ':glob'> is enabled, calling twice the glob
+angle-bracket operator may cause a segfault or a memory corruption error
+(bug #23185). Marcus Holland-Moritz found out that two incompatible
+internals APIs were mistakenly used together, and provided a fix.
+
+Michael Schwern notices that C<perldoc CPAN> gives the doc for the F<cpan>
+script on Mac OS X, due to the case-insensitive filesystem. To get the
+docs for the module, it's necessary to tell explicitly C<perldoc
+CPAN.pm>.
+
+Ed Avis finds that localization of C<$_> fails when it's aliased
+to C<$1>. Bug #23141.
+
+Stephen McCamant continues to improve B::Deparse.
+
+Enache Adrian proposed tests for B::Bytecode and B::ByteLoader. They
+weren't integrated into maintperl, though, due to potential instabilities.
+
+Enache also fixed bug #23207, about chained calls to C<< ^= >> not
+behaving properly.
+
+Abe Timmerman released Test::Smoke 1.18.
+
+Look, a spec for the F<META.yml> file ! (it may be a bit outdated though.)
+
+    http://module-build.sourceforge.net/META-spec.html
+
+=head2 About this summary
+
+This week's summary was, as usual, written by Rafael Garcia-Suarez. Weekly
+summaries are published on F<http://use.perl.org/> and on a mailing list,
+which subscription address is L<perl5-summary-subscribe@perl.org>.
+Comments, corrections, additions, and suggestions are welcome.

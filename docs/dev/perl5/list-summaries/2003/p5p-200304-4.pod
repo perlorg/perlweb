@@ -1,0 +1,139 @@
+=head1 This Week on perl5-porters (21-27 April 2003)
+
+This week's summary presents a nice variety of language issues. Read about
+some new errors, documentation patches, bug closing and configuration.
+
+=head2 Don't assign to C<%::>
+
+Dave Mitchell proposed to change assignments to C<%::> to be a
+compile-time error (currently, this may cause crashes, and a non-warned
+user may fall in this trap). Enache Adrian objected that this doesn't
+prevent all nasty things that may be done with the main stash, and thus
+was unnecessary bloat. Arthur Bergman proposes to mark C<%::> as read-only
+instead. Hugo van der Sanden feels this patch is actually trying to hide
+other problems.
+
+    http://xrl.us/g4o
+
+=head2 Use of freed value in iteration
+
+It's a well-known fact that you can crash perl by modifying an array over
+which a C<for> loop iterates. Dave Mitchell changed this into a new fatal
+run-time error, B<Use of freed value in iteration>.
+
+    http://xrl.us/g4p
+
+=head2 Localization of lvalues
+
+Dave Mitchell (who got bored and was browsing the bug database) reminds
+the crowd that C<local($x='bar')> is currently equivalent to C<$x='bar'>
+(i.e. the local() is silently ignored). This is not the right thing ; it
+should either produce some error, or localize $x, before or after the
+assignment occurs. The general opinion is to disallow it, purely and
+simply. Rafael, noticing that other lvalues can be localized (e.g. C<pos>
+or C<substr>, although not very reliably sometimes), thinks this should be
+fixed to work. Hugo, however, says that the most we can do is to add a
+deprecation warning.
+
+    http://xrl.us/g4q
+
+=head2 Slice auto-extending
+
+But Dave didn't stop there. He also asked about whether splice() should
+extend the array it operates on (bug #1832). The consensus was to fix the
+docs, which are unclear.
+
+    http://xrl.us/g4r
+
+=head2 Restricted hashes strike back
+
+Jarkko asks for someone to solve the remaining problems about restricted
+hashes -- that replace pseudohashes in the implementation of the
+C<fields> pragma in the perls to be released. And this someone will be ...
+Dave Mitchell ! (More precisely, the problem is with list assignment to a
+restricted hash.) Dave sends a patch that modifies the way a restricted
+hash is cleared : all keys are set to placeholders. So you can now assign
+a list to a restricted hash ( C<< %h = (key => 1) >> ). However, if this
+list contains a disallowed key, %h is left empty rather than with its
+original contents.
+
+    http://xrl.us/g4s
+
+=head2 Documentation effort
+
+Casey West announces that he's going to I<do something useful for
+documentation>, and posts a list of goals. Notably, he's willing to
+coordinate and encourage efforts. Then, proving it, he posted a large
+number of documentation patches, closing a large number of bugs.
+
+    http://xrl.us/g4t
+
+Meanwhile, Nick Ing-Simmons agrees that the PerlIO / open / binmode /
+perliol docs need to be cleaned up so that they fit more nicely together.
+
+=head2 Duplicating the DATA filehandle
+
+Josh Purinton notices (bug #22010) that reading from a dup'ed DATA
+filehandle, by doing C<< open(F,"<&DATA") >>, in fact doesn't read
+anything. (Further investigation indicates that this only occurs when the
+environment variable PERLIO is set at C<stdio>.) Nick Ing-Simmons points
+out that when the dup is done, the file pointer of DATA is at EOF, and
+that dup'ing DATA is not going to copy the DATA buffer.
+
+    http://xrl.us/g4u
+
+=head2 Lists in scalar context
+
+Bug #22027 is merely a question, asked by Mike Stok : the value of $x,
+after this statement :
+
+    $x = (1,2,3,());
+
+is C<undef>. Is this the right thing to do, or should the final
+parentheses be ignored, hence setting $x to 3 ? Graham Barr explains that
+I<a list in a scalar context evaluates each element in a scalar context
+before any flattening is done.>
+
+    http://xrl.us/g4v
+
+=head2 sfio
+
+Nick Ing-Simmons asks whether sfio support can be removed. Andy Dougherty
+and Stas Bekman point out that it's used on some mod_perl installations,
+because under mod_perl STDOUT is tied (unless perl is compiled to use the
+sfio library), and formats don't work with a tied STDOUT. Mark Mielke
+considers that writing a CGI and expecting it to work under mod_perl is
+naive anyway.
+
+    http://xrl.us/g4w
+
+=head2 prebind on Mac OS X
+
+Nathan Torkington asks about the use of the C<-prebind> linker option on
+Mac OS X. Dan Kogai tells him to use the update_prebinding command, which
+should optimize the loading of XS modules (and other dynamic libraries).
+Wilfredo Sánchez adds that adding C<-prebind> to the linker flags can't
+hurt.
+
+    http://xrl.us/g4x
+
+=head2 etc.
+
+Dave Mitchell fixed a case of memory corruption with the C<goto &sub>
+construct.
+
+Abe Timmerman released Test-Smoke v1.17, with loads of improvements.
+
+Peter Scott produces a mysterious case (filed as bug #21999) where $1 is
+modified by an unsuccessful regex match, inside a C<for> loop.
+
+Several people walked through the bug database, closing bugs to be closed,
+or proposing fixes for old bugs. Thanks to Robert, Ask, Arthur, Dave,
+Casey, and probably others.
+
+=head2 About this summary
+
+This summary was brought to you by Rafael Garcia-Suarez. Weekly summaries
+are available on L<http://use.perl.org/> and via a mailing list, which
+subscription address is L<perl5-summary-subscribe@perl.org>. Feedback (and
+patches) welcome.

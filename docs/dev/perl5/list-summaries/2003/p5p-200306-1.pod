@@ -1,0 +1,104 @@
+=head1 This Week on perl5-porters (2-8 June 2003)
+
+What happened this week ? Interesting bugs were found, and solutions
+proposed ; new areas explored, technical points raised, and patches
+applied.
+
+=head2 Multiline regexp flag buggy
+
+Ton Hospel reported bug #22354, about the use of the multiline flag C</m>
+in regular expressions : when a function is called from the right side of
+a substitution that uses C</m>, and when this function uses a second
+regular expression, this second regexp has implicitly and incorrectly
+C</m> turned on.
+
+Rafael Garcia-Suarez explained what happens behind the scenes : setting
+C</m> on a match or on a substitution is equivalent to setting the global
+special variable $* to 1 (locally). Thus, it will influence the behaviour
+of all regexps that haven't C</m> or C</s> set in that scope.
+
+As $* is deprecated (and discouraged due to its action-at-distance
+semantics), Rafael proposes to purely and simply remove it. That will
+solve the bug. He asks : I<when removing a deprecated feature, should the
+deprecation warning be removed as well ?>
+
+    http://xrl.us/jb3
+    http://xrl.us/jb4
+
+=head2 Lexical warnings from XS
+
+Steve Hays asked how to do the equivalent of warnings::warnif() from XS
+code (conditionally warn, depending on whether a custom warning category
+is in use.) Paul Marquess gives some hints, but says that there is no
+general solution at the moment.
+
+    http://xrl.us/jb5
+
+=head2 Temp files
+
+Should the internal function PerlIO_tempfile() call the core module
+File::Temp ? Jarkko Hietaniemi proposed this. This would avoid code
+duplication and ensure that the core works at the same safety level as
+File::Temp. Gurusamy Sarathy says, however, that this method is bloated
+and should be avoided, especially on Windows, where File::Temp is
+sub-optimal. He proposed an implementation based on the native Win32 API.
+Jarkko reverted his changes.
+
+    http://xrl.us/jb6
+
+=head2 Fat comma auto-quoting
+
+William R Ward noticed that the fat comma C<< => >> no longer auto-quotes
+compound barewords (that contain C<::>.) Thus, something like
+
+    %h = (Foo::Bar => 1);
+
+is now refused when C<strict 'subs'> is in effect. In fact, only perl
+5.6.1 accepted this last construct without complaining. This is
+potentially dangerous, because if Foo::Bar is a function here, it's not
+turned into a literal string. Rafael and Michael Schwern explored a bit more
+this change, and this ended in a documentation patch, to clarify the
+current behaviour.
+
+    http://xrl.us/jb7
+
+=head2 In brief
+
+Uri Guttman asks about safe signal callbacks -- more precisely, when can
+be a signal callback be invoked, under the new safe signal implementation.
+Nick Ing-Simmons says that perl dispatches signals when it gets its
+next operation. However, the IO system may also dispatch them when it
+gets an I<interrupted function call> error (EINTR).
+
+Dan Kogai proposes that on Mac OS X perl should not be built as a shared
+library by default, to resolve prebinding woes. (Moreover that's the
+default on most other platforms.) Chris Nandor wonders about whether it
+would be useful to use prebinding for XS. Dan doesn't think it's a good
+idea.
+
+Michael Schwern asked for clarifications about how the I<used only once>
+typo warning works, and why it works that way. Rafael explains that it's
+issued only at compile-time, and not for variables defined in modules
+pulled in by C<use>.
+
+    http://xrl.us/jb8
+
+Ton Hospel came up with	a new bug gem : #22614, I<the array length of @-
+and @+ is not properly localized during backtracking>, which leads to the
+presence of spurious undefined values in those arrays.
+
+Steve Hay released Win32::UTCFileTime on CPAN, a module intended to
+provide alternative versions of the built-in functions stat(), lstat() and
+utime() on Win32 systems, to handle correctly UTC file times.
+
+    http://xrl.us/jb9
+
+Jarkko released a new maintperl snapshot.
+
+=head2 About this summary
+
+This summary was brought to you by your usual summarizer, Rafael
+Garcia-Suarez. Weekly summaries are available on F<http://use.perl.org/>
+and/or via a mailing list, which subscription address is
+L<perl5-summary-subscribe@perl.org>. Comments, corrections, additions, and
+suggestions are welcome.

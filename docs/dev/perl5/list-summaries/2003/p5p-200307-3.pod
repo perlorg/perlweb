@@ -1,0 +1,152 @@
+=head1 This Week on perl5-porters (14-20 July 2003)
+
+One week after the second release candidate of perl 5.8.1, and as expected,
+problems were found, and bugs fixed. Meanwhile, development continues.
+Read all details in this week's summary.
+
+=head2 Tied hashes and scalar context
+
+Using a tied hash in scalar context gives in maintperl and in bleadperl a
+fatal error : this was added two months ago (to test for the emptiness of
+a tied hash, you should use keys()). However, this new fatal error was
+integrated into 5.8.1-RC2 and this appears to be a surprising change,
+probably not suited to a maintenance release (bug #22973).
+
+    http://xrl.us/mux
+
+=head2 5.8.1-RC2 incompatibilities
+
+Arthur Bergman finds that the type of a reference to an element of a tied
+hash is now LVALUE instead of SCALAR. This is, strictly speaking, correct,
+regarding the internal implementation, but incompatible with 5.8.0.
+Moreover one could argue that references to tied hash elements should
+behave the same way than references to regular hash elements. Dave
+Mitchell proposes to I<make tie-specific LVs stringify to SCALAR, while
+other LVs remain as LVALUE.>
+
+    http://xrl.us/muy
+
+=head2 A case of C<$1> scoping
+
+Steve Grazzini demonstrates that C<$1> and the other digit-variables are
+not always dynamically scoped to the enclosing block, when C<qr//> comes
+to play. Arthur explains what happens in the guts of perl, but this
+behaviour is nevertheless surprising (or so do I imagine).
+
+    http://xrl.us/muz
+
+=head2 Improving B::Deparse and other backends
+
+Stephen McCamant did some work on B::Deparse and B::Concise. Firstly, he
+sent a patch to help Deparse (and other backends) to figure out the order
+in which BEGIN blocks and C<use> declarations are issued, by numeroting
+them just like other statements. Secondly, he made several suggestions
+about adding information in the op tree for figuring out the place of
+those statements relatively to scoping operators.
+
+    http://xrl.us/mu2
+
+He also sent a fix for an obscure deparsing bug, related to
+ithread-specific optrees, reported a while back by Alexey Tourbin.
+
+=head2 Signing CPAN distributions
+
+Tels explains why external signatures are more secure than embedded ones for
+CPAN packages. Autrijus Tang then added to CPANPLUS the ability to check
+the integrity of a package against a separate F<.sig> file.
+
+    http://xrl.us/mu3
+
+=head2 Hash key placeholders
+
+Marcus Holland-Moritz finds that I<since 5.8.0, having hash values set to
+C<&PL_sv_undef> causes the hash entries to be treated as 'placeholders'.
+Thus, they do not appear when checking with hv_exists() or iterating over
+the hash.> And this new behaviour is under-documented.
+
+He proposes that, instead of using PL_sv_undef to mark placeholders (which
+are used to implement restricted hashes), a new global PL_sv_placeholder
+should be created (and proposes a patch against RC2).
+
+    http://xrl.us/mu5
+
+=head2 Perlbug attack
+
+Due to an accident and to the OSCON distraction, bug reports weren't
+forwarded to the p5p mailing list for two weeks. As a consequence, after
+Robert Spier fixed the mail stuff, we received about 40 of them in a few
+minutes ! Some of them were already known (or even fixed), though.
+
+Moreover, Tony Bowden walked through the bug database and found a large
+number of bugs that were already fixed and should have been closed.
+This led also to a significant number of fixes.
+
+=head2 Our Selection of Bugs
+
+Dave Mitchell fixed bug #3284 : the call C<< $x->isa('UNIVERSAL') >>
+wasn't returning the correct value (except the first time) when @ISA was
+empty.
+
+Alex Davies reports (bug #22967) that study() behaves incorrectly
+when invoked from an XML::Parser callback. Is it a bug in study() or in
+XML::Parser ?
+
+XML::Parser and Storable also appear to interact badly since Storable
+understands utf-8 keys or something. (Bug #23004.)
+
+Ilya Martynov reports that the syntax C<$hash{BAREWORD}> doesn't work with
+perl 5.8.0 and later when BAREWORD contains non-ASCII chars. Bug #22969.
+This used to work with 5.6.x.
+
+sauoq reports that using a tainted string as a hash key untaints it. (Bug
+#22974.)
+
+Alexey Tourbin finds that tied values were mishandled by formats. Dave
+Mitchell proposed a fix, and Nick Clark proposed a regression test. (Ah,
+this one doesn't have a bug id.)
+
+Iain Truskett reports an error in the docs for C<Switch> : one should
+write
+
+    case (\@array) { statement(); }
+
+instead of
+
+    case (@array) { statement(); }
+
+But perhaps is it better to fix the module to match the docs ? (Bug
+#22999).
+
+Jerrad Pierce is testing his module IO::Pager for portability and runs
+into problems, because behaviour changes depending on perl version and IO
+library. (Bug #23043)
+
+=head2 In Brief
+
+Jim Cromie is trying to get B::Generate working with recent perls.
+
+Tassilo von Parseval is working on F<h2xs>, although he finds it
+hopelessly unmaintainable. He considers rewriting it from scratch.
+
+    http://xrl.us/mu6
+
+Chip Salzenberg tries to find a way to add additional options to
+File::Copy::copy() (his primary goal being to add C<cp -p> behaviour).
+Slaven Rezic proposes that File::Copy::copy() could be made to support
+most of the POSIX or GNU options of cp(1). Which seems to involve a
+Getopt-like interface.
+
+    http://xrl.us/mu7
+
+Tim Jenness found out that the C<**> operator was broken in RC2. Stephen
+McCamant fixed it.
+
+Ilya Martynov backported Data::Dumper on CPAN. The latest and greatest
+Data::Dumper is now available for perl 5.6.1 !
+
+=head2 About this summary
+
+This summary was written by Rafael Garcia-Suarez. Weekly summaries are
+published on F<http://use.perl.org/> and on a mailing list, which
+subscription address is L<perl5-summary-subscribe@perl.org>. Comments,
+corrections, additions, and suggestions are (as always) welcome.

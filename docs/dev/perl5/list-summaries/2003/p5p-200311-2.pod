@@ -1,0 +1,103 @@
+=head1 This Week on perl5-porters (10-16 November 2003)
+
+For some reason, (maybe the approach of mod_perl 2), one of the main
+topics this week was interpreter cloning and the problems it may cause.
+But the release of perl 5.6.2 is an event that is not to be neglected.
+Read on.
+
+=head2 5.6.2
+
+The latest episode in our maintenance series is perl 5.6.2, which was
+released saturday. After the RC1 last week, some remaining bugs were
+shaken out, and some of them solved. The announcement on P5P is here :
+
+    http://xrl.us/4pb
+
+Perl 5.6.3 will eventually be a more advanced release, including a load
+of bugfixes and module upgrades (while 5.6.2 is merely oriented toward
+fixing compilation issues.)
+
+=head2 Cloning problems
+
+Bug #24463 reports that a DBI test is failing under perl 5.8.2-ithreads
+built with debugging capabilities (-DDEBUGGING). This is due to a
+regression in the cloning of interpreters, that was introduced to fix a
+segfault when using the C<-D> switch to perl. The problem here is that the
+new interpreter that is being cloned hasn't yet perlio layers, and thus
+can't use print debug messages ; but trying to set the context back at the
+perlio layers of the pristine interpreter leads to this breakage.
+
+    http://xrl.us/4pe
+
+Stas Bekman reported that C<Config::myconfig()> is prone to fail with a fatal
+error under ithreads, with perl 5.8.[12], due to its internal use of a
+C<:unique> variable (made readonly when a new thread is started).
+Elizabeth provides a fix. (It appears that mod_perl 2 is a great tool to
+find thread-related bugs.)
+
+Stas reported also another problem with C<Scalar::Util::weaken()> : clones
+of weak scalars are messed up. This happens since perl 5.8.1.
+
+Following to another question by Stas about the CLONE method, Elizabeth
+introduced her module C<Thread::Bless>.
+
+    http://xrl.us/4pk
+
+=head2 Empty subroutines
+
+Elizabeth Mattijsen notices that using an empty subroutine as a method may
+produce segfault in some specific cases with perl 5.8.2. Enache Adrian
+provides a fix.
+
+    http://xrl.us/4pc
+
+=head2 C++ bindings
+
+Chip Salzenberg reports as bug #24468 that the headers of perl 5.8.2, with
+threading turned on, can't be compiled from within C++ sources. This is
+a problem for C++ applications that embed perl. Jan Dubois suggests a
+fix, which Chip is going to try.
+
+    http://xrl.us/4pd
+
+=head2 In Brief
+
+Nicholas Clark notices that creating threads in BEGIN blocks is
+unsupported. He disapproves this constraint.
+
+Nicholas also found and fixed obscure bugs with hashes and UTF8 keys. He
+proposes to refactor some hash-handling code.
+
+    http://xrl.us/4pp
+
+Alan Burlison notices that the MANIFEST.SKIP distributed with perl 5.8.2
+(as part of ExtUtils::Makemaker) is unfortunately broken. Rafael takes the
+blame.
+
+    http://xrl.us/4pf
+
+Nick Ing-Simmons suggests to investigate using mapfiles on Linux for the
+compilation of perl. Alan Burlison nods.
+
+    http://xrl.us/4pg
+
+A version of the IRIX compiler can't build perl 5.8.1 or 5.8.2 (bug
+#24471). Rafael suggests it's a bug in the C preprocessor.
+
+=head2 New modules
+
+Andy Lester released Test::Harness 2.36. This version includes a
+command-line utility, C<prove>, that can run individual tests. Its
+inclusion into the core still causes a few unresolved problems.
+
+    http://xrl.us/4ph
+
+Michael Schwern released ExtUtils::MakeMaker 6.21, I<mostly to fix building
+modules that call dir_target() or completely rewrite top_targets()>.
+
+=head2 About this summary
+
+This summary was brought to you by Rafael Garcia-Suarez. Weekly summaries
+are available on L<http://use.perl.org/> and via a mailing list, which
+subscription address is L<perl5-summary-subscribe@perl.org>. Feedback (and
+patches) welcome.
