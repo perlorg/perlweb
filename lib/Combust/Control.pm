@@ -8,6 +8,7 @@ use Apache::File;
 
 use Template;
 use Template::Parser;
+use Template::Stash;
 
 use Combust::Template::Provider;
 use Combust::Template::Filters;
@@ -15,6 +16,11 @@ use Combust::Template::Filters;
 #use HTTP::Date qw(time2str); 
 
 $Template::Config::STASH = 'Template::Stash::XS';
+
+$Template::Stash::SCALAR_OPS->{ rand } = sub {
+  return int(rand(shift));
+    };
+
 
 my $parser = Template::Parser->new(); 
 
@@ -62,6 +68,7 @@ my $tt = Template->new
     #	            },
     'PRE_PROCESS'    => 'tpl/defaults',
     'PROCESS'        => 'tpl/wrapper' ,
+    'PLUGIN_BASE'    => 'Combust::Template::Plugin',
    });
 
 sub provider {
