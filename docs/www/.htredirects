@@ -1,0 +1,26 @@
+# syntax:
+#   regexp  url  option
+#
+# the regular expression is always anchored at the start and the end.
+# the option is one of "permanent" or "internal".  It defaults to "temporary".
+# Permanent gives a 301 response, the default gives a 302 response and
+# the temporary just silently changes the request URL.
+
+/docs/      /docs.html   internal
+/about/     /about.html  perm
+
+/ask(/.*)?  http://www.askbjoernhansen.com/
+
+/advocacy/white_camels.shtml /advocacy/white_camel/  perm
+/books/          http://books.perl.org/ perm
+/CPAN/           http://www.cpan.org/   perm
+/cpan/           http://www.cpan.org/   perm
+/friends.shtml   /siteinfo.html         intern
+/headlines.shtml /news.html             perm
+/index.shtml     /                      perm
+/jobs/          http://jobs.perl.org/          perm
+/perl6/         http://dev.perl.org/perl6/     perm
+/ThePerlReview/ http://www.theperlreview.com/  perm
+
+
+/index.php  /  internal
