@@ -1,0 +1,23 @@
+#!/bin/sh
+
+targetpath=/home/newweb/var/rss/
+
+function getrss () {
+    target="$1.rss"
+    targettemp="/tmp/${target}.new"
+    url=$2
+
+    /usr/bin/lwp-request \
+      $url > ${targettemp}
+
+    if [ $? -eq 0 ]; then
+      mv $targettemp $targetpath/$target
+    fi
+
+}
+
+getrss "useperl" "http://use.perl.org/index.rss";
+getrss "cpanrecent" "http://search.cpan.org/recent.rdf?desc=1";
+getrss "perlcom" "http://www.perl.com/pace/perlnews.rdf";
+
+
