@@ -1,0 +1,263 @@
+=head1 The Perl 6 Summary for the week ending 20030824
+
+Another week, another Perl 6 summary. I'm running late writing this
+and I don't care because I spent the bank holiday weekend at a folk
+festival and didn't get back 'til Monday evening. 
+
+Predictably enough, we'll start with the shenanigans in perl6-internals.
+
+=head2 Timely Destruction: Luke Palmer's Scheme
+
+The timely destruction meme just won't go away. This week Luke Palmer
+suggested a possible improvement to Parrot's current scheme (Parrot
+keeps a counter of 'eager' objects needing timely destruction, and
+a language's compiler emits conditional C<sweep> opcodes at
+appropriate points. In Perl's case, for instance, the conditional
+sweeps would be triggered on scope exit, other languages may have
+different requirements). 
+
+Luke's scheme involves terminating the DOD (Dead Object Detection)
+run if every outstanding eager object is found alive at any point in
+the run. For added performance, there would also be a 'high priority'
+flag on all objects. The idea is that the high priority flag could be
+used to ensure that, during a sweep, the paths through the object
+group that are likely to lead to an eager object get checked first,
+hopefully ensuring that the C<sweep> gets terminated as quickly as
+possible in the case where no eager objects need to be finalized.
+
+The proposal was discussed, but I don't think anyone has gone so far
+as to implement anything based on the scheme.
+
+This discussion led Klaas-Jan Stol to ask what the heck timely
+destruction was, anyway. This sparked a longish discussion, covering
+what timely destruction is all about, why you'd want it, and why
+having it could be problematic.
+
+L<http://groups.google.com/groups?threadm=20030817114814.GA5132%40babylonia.flatirons.org>
+
+L<http://groups.google.com/groups?threadm=003401c365b1%248ac7ea00%240cf479d9%40cc101682a>
+
+=head2 The String API
+
+Benjamin Goldberg is concerned with 'a number of shortcomings in the
+[string] API' and outlined the problems he sees, along with some
+proposed improvements. Luke Palmer generally liked the ideas, but Leo
+TE<ouml>tsch had concerns about some of Benjamin's proposals. The
+discussion that ensued got fairly technical. (One of these days I'm
+actually going to go and get my head properly around the details of
+the various encodings and charactersets. And then I'll probably go
+insane.)
+
+Dan also thought that Benjamin was confusing language level strings
+with low-level strings, and that this was a Bad Thing. He outlined the
+difference between language level (PMC) and low-level (Parrot S
+register) strings, and explained what each was appropriate for.
+
+L<http://groups.google.com/groups?threadm=3F41A27A.2963844A%40hotpop.com>
+
+=head2 Making the Perl 6 Compiler use Continuation Passing Style
+
+Allison Randal sent in a patch to switch F<languages/perl6> -- Parrot's
+(incomplete) Perl 6 Compiler -- over to using Continuation Passing
+Style, which is a useful step in the right direction. Leo applied it.
+
+L<http://groups.google.com/groups?threadm=rt-23368-62986.11.2858919704281%40rt.perl.org>
+
+=head2 Fun with C<search_lex>
+
+Jos Visser (who in an earlier post confided that he's working on
+writing a parrot compiler back end for his personal 'computer
+language personality disorder: Comal', and that he does this for
+'therapeutical value') wants to generate some parrot code that is
+capable of searching the lexical pads for the existence of a
+lexical. His current code tries to look up a lexical and catches the
+exception when the lexical doesn't exist, but this is apparently very
+slow. So, he proposes an op, C<search_lex> which, instead of throwing
+an exception, returns a null PMC if the lexical is not found. 
+
+Leo TE<ouml>tsch wasn't convinced by the need for the op, but he is
+looking into why the exception handling route is so slow (indeed, he
+seems to have found the reason, now he's trying to fix it). 
+
+L<http://groups.google.com/groups?threadm=20030819141248.GO652%40jadzia.test.uzorg>
+
+=head2 Syntax Highlighting
+
+Inspired by Luke Palmer's cunning, core.ops parsing vim syntax
+highlighter, Andy Bussey wrote something similar for the KDE Kate
+editor. Now, if someone could modify F<pasm.el>, the Emacs
+highlighting mode to use the autogeneration trick too...
+
+L<http://groups.google.com/groups?threadm=rt-23430-63132.19.8912005357393%40rt.perl.org>
+
+=head2 RFC: Constant PMCs and Classes
+
+Leo TE<ouml>tsch kicked off a discussion of the handling of constants
+within Parrot and proposed adding a bunch of functions for creating
+constant strings (symbols?) within the core. He also proposed a
+system for creating constant classes. In the ensuing discussion I
+think the proposals for strings were pretty much accepted, but it's
+not yet known if the proposal for constant classes is quite the
+Right Thing.
+
+L<http://groups.google.com/groups?threadm=3F4363FF.2010204%40nextra.at>
+
+=head2 Should Tom Locke target parrot?
+
+Tom Locke is about to start on a project to create a new language and
+wondered if Parrot might be a good target VM for him. In short, we
+think so. But we would, wouldn't we?
+
+L<http://groups.google.com/groups?threadm=20030820155804.91449.qmail%40onion.perl.org>
+
+=head2 More fun with set/assign
+
+The semantics of C<set> in Parrot are, somewhat complex. Leo
+TE<ouml>tsch showed a fragment of code which got a value from out of
+a hash, set the fetched value to a new value and then printed out the
+value from the hash. Depending on whether the original hash entry
+existed or not, the fragment of code printed different things. He
+wondered if things shouldn't be fixed to make it print the same thing
+each time. Consensus has not yet been reached.
+
+L<http://groups.google.com/groups?threadm=3F44EA28.6060105%40nextra.at>
+
+=head2 Registers vs. Stacks
+
+Tom Locke reopened the register or stack machine can of worms. He
+even offered to recan them afterwards (by writing up the discussion
+for adding to the FAQ). In particular, he wanted to know what we
+thought Miguel de Icaza meant when he claimed that Parrot was "based
+on religion". Klaas-Jan Stol pointed us at Dan's blog where he'd
+addressed this issue some time ago.
+
+L<http://groups.google.com/groups?threadm=20030821160342.96490.qmail%40onion.perl.org>
+
+L<http://www.sidhe.org/~dan/blog/archives/2003_05.html>
+
+=head2 Weak References
+
+Benjamin Goldberg hoped that Parrot would have some way of creating
+Weak References, as he felt that they were probably a vital feature.
+He outlined a scheme for implementing them. Various people disagreed
+about their level of vitality. 
+
+Dan pointed out that weak refs could be implemented with no special
+core support beyond a general notification mechanism (which we're
+getting anyway) and a weak reference PMC. Dan seemed to think that
+this had already been discussed, but I confess that I can't remember
+the discussion and, as Benjamin pointed out, it looks like Google
+can't remember it either.
+
+L<http://groups.google.com/groups?threadm=3F457174.9E6EDEA%40hotpop.com>
+
+=head2 Print warning location
+
+Leo kicked off a discussion of embedding debugging information (line
+numbers, both for parrot code and the original high level code) in
+parrot bytecode. Right now, only the slow core tracks lines within
+the pasm file, and he wondered if using the C<-w> switch should
+automatically force using the slow core.
+
+Nobody actually answered that question, choosing to discuss the
+various means of storing meta data about line numbers and the like in
+the bytecode file. Consensus hasn't been attained yet, but I think
+we're getting there.
+
+L<http://groups.google.com/groups?threadm=3F45EAA3.4070900%40nextra.at>
+
+=head2 WARNING: Incompatible changes to IMCC
+
+As he warned some time ago, Leo has finally removed the 'feature'
+whereby IMCC would parse code it found outside of subs. All IMCC code
+must now be contained in C<.sub>/C<.pcc_sub>/C<.emit> blocks. If
+you're writing code that doesn't behave properly, please fix it.
+
+L<http://groups.google.com/groups?threadm=3F48820B.4050103%40nextra.at>
+
+=head2 Program exit status
+
+Leo noted that Parrot programs get commandline info passed in in P0,
+but there is currently no way for a parrot program to communicate an
+exit status to the shell. Leo offered up 3 different possibilities
+for fixing this and asked for comments. Dan came up with a 4th option
+involving a status PMC. Discussion is ongoing.
+
+L<http://groups.google.com/groups?threadm=3F488ED1.7000802%40nextra.at>
+
+=head1 Meanwhile in perl6-language
+
+There were all of 6 messages. Gordon Henriksen moved the set/assign
+discussion over from perl6-internals, asking for clarification of
+what various bits of Perl 6 should do. Essentially it boils down to
+'when should Perl 6 autovivify?'. The discussion is ongoing. 
+
+L<http://groups.google.com/groups?threadm=C7E8652A-D516-11D7-8481-000502994722%40mac.com>
+
+=head1 Next Week in the Perl 6 Summary
+
+=over
+
+=item *
+
+The perl6-language list will erupt in a massive discussion of the
+meaning of C<my Dog $spot>
+
+=item *
+
+Leo TE<ouml>tsch will post precisely no patches to Parrot
+
+=item *
+
+Dan will finish up the objects implementation
+
+=item *
+
+Leon Brocard will say something on one of the lists
+
+=item * 
+
+Damian will release Perl6::Rules
+
+=item *
+
+Your summarizer will have written some real Perl code and released
+the code he talked about in Paris
+
+=back
+
+=head1 Acknowledgements, Announcements and Apologies
+
+Does anyone want to buy a four bedroomed house in Newark upon Trent, dating
+back to the late 16th century? The house is on the market, Gill's
+term starts on September 15th and so far the Estate Agents haven't
+sent any prospective buyers. Well, at least it gives me time to write
+the summary.
+
+Check out L<http://pc1.bofhadsl.ftech.co.uk:8080/> for more of my
+writing (and thanks to those who have already popped by).
+
+As ever, if you've appreciated this summary, please consider one or
+more of the following options:
+
+=over 
+
+=item *
+
+Send money to the Perl Foundation at
+L<http://donate.perl-foundation.org/> and help support the ongoing
+development of Perl.
+
+=item *
+
+Get involved in the Perl 6 process. The mailing lists are open  to
+all. L<http://dev.perl.org/perl6/> and L<http://www.parrotcode.org/>
+are good starting points with links to the appropriate mailing lists.
+
+=item *
+
+Send feedback, flames, money, requests for consultancy, photographic
+and writing commissions, or a dual-processor G5 with 23" Cinema
+Display to L<p6summarizer@bofh.org.uk>
+
+=back
