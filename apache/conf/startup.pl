@@ -24,7 +24,7 @@ sub ProxyIP::handler {
     my $r = shift;
     my $config = new Combust::Config;
     return OK
-     unless grep {$_ == $r->connection->remote_ip} $config->proxyip_forwarders;
+     unless grep {$_ eq $r->connection->remote_ip} $config->proxyip_forwarders;
 
     my @ip = split(/,\s*/, ($r->header_in('X-Forwarded-For')||''));
     if (my $ip = pop(@ip)) {
