@@ -150,9 +150,12 @@ TD#middle {
         
         <DIV id="stats" ALIGN="CENTER">
           <H1>Statistics</H1>
+          [% USE cpanstat = datafile("${root}/var/rss/cpan.dat") %]
+          [% c = cpanstat.first %]
+
           online since 1995-10-26<BR>
-          2390 MB 243 mirrors<BR>
-          3643 authors 6431 modules<BR>
+          [% c.mb %] MB [% c.mirrors %] mirrors<BR>
+          [% c.authors %] authors [% c.modules %] modules<BR>
         </DIV>
       </TD>
 
