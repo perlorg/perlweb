@@ -1,0 +1,13 @@
+  <VirtualHost *:[% config.port %]>
+    ServerName [% config.site.perl4lib.servername %]
+    PerlSetVar site perl4lib
+    <Location />
+       SetHandler perl-script
+       PerlHandler Combust::Control::Basic->handler
+    </Location>
+
+    <Location /error/>
+       SetHandler   perl-script
+       PerlHandler Combust::Control::Error->handler
+    </Location>
+  </VirtualHost>

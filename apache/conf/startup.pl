@@ -1,4 +1,7 @@
+BEGIN { if ($ENV{CBROOTLOCAL}) { use lib "$ENV{CBROOTLOCAL}/lib" } }
 use lib "$ENV{CBROOT}/lib";
+
+use Apache::DBI;
 
 use Data::Dumper;
 use Combust::Control::Basic;
@@ -24,6 +27,11 @@ sub ProxyIP::handler {
 	$r->connection->remote_ip($ip);
     }
     return OK;
+}
+
+if ($ENV{CBROOTLOCAL}) {
+  my $file = "$ENV{CBROOTLOCAL}/apache/conf/startup.pl";
+  require $file if -e $file;
 }
 
 

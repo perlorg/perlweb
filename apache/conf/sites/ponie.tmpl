@@ -1,0 +1,14 @@
+  <VirtualHost *:[% config.port %]>
+    ServerName [% config.site.ponie.servername %]
+
+    PerlSetVar site ponie
+    <Location />
+       SetHandler perl-script
+       PerlHandler Combust::Control::Basic->handler
+    </Location>
+
+    <Location /error/>
+       SetHandler   perl-script
+       PerlHandler Combust::Control::Error->handler
+    </Location>
+  </VirtualHost>

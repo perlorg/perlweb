@@ -1,0 +1,29 @@
+  <VirtualHost *:[% config.port %]>
+    ServerName www.redrockeater.org
+    ServerAlias redrockeater.org
+    PerlSetVar site rre
+    DocumentRoot [% root %]/docs/live/rre/
+
+    <Location />
+       SetHandler perl-script
+       PerlHandler RRE::Control->handler
+    </Location>
+
+    <LocationMatch "/rss/.*\.xml">
+       SetHandler perl-script
+       PerlHandler RRE::Control::RSS->handler
+    </LocationMatch>
+
+    <Location /error/>
+       SetHandler   perl-script
+       PerlHandler Combust::Control::Error->handler
+    </Location>
+
+    <Location /images/>
+      SetHandler default
+    </Location>
+
+    <Location /server-status>
+      SetHandler server-status
+    </Location>
+  </VirtualHost>

@@ -1,0 +1,32 @@
+  <VirtualHost *:[% config.port %]>
+    ServerName [% config.site.www.servername %]
+	ServerAlias  new.x.perl.org 
+    PerlSetVar site www
+    PerlTransHandler Combust::Redirect
+
+    <Location />
+       SetHandler perl-script
+       PerlHandler Combust::Control::Basic->handler
+    </Location>
+
+    <Location /error/>
+       SetHandler   perl-script
+       PerlHandler Combust::Control::Error->handler
+    </Location>
+
+    <Location /server-status>
+      SetHandler server-status
+    </Location>
+
+    <Location /cgi-bin/>
+       SetHandler cgi-script
+    </Location>
+    ScriptAlias /cgi-bin/ "[% root %]/apache/cgi-bin/"
+    <Directory "[% root %]/apache/cgi-bin">
+        AllowOverride None
+        Options None
+        Order allow,deny
+        Allow from all
+    </Directory>
+
+  </VirtualHost>
