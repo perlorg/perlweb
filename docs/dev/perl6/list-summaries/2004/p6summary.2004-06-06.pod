@@ -1,0 +1,203 @@
+=head1 The Perl 6 Summary for the fortnight ending 2004-06-06
+
+Whee! There's a new graphics card in the G5, which means I can type this
+at the big screen again, which makes me happy. Well, it would make me
+far happier if the new card didn't leave horrible artifacts all over
+the screen like some kind of incontinent puppy attempting to fulfil
+OpenGL draw instructions. Maybe next week will see a third card in the
+box.
+
+Dang! It looks like the G5 will be off receiving some TLC from an Apple
+service centre while I'm on holiday next week. Which means that the
+'weekly' summaries will continue on their fortnightly summer holiday
+schedule for at least one more summary. But then the lists themselves
+appear to be on summer footing anyway.
+
+Ahem. 
+
+As you will probably have worked out by now, we start with
+perl6-internals. 
+
+=head2 Library loading
+
+Jens Rieks is working on library loading code that does all the nice
+things we've come to expect from other languages. The plan being that
+you'll be able to write (say)
+
+    use('some_library')
+
+and Parrot will go off and search it's include paths for
+F<some_library.(pbc|imc|pasm|whatever)> and load it. As he noted, if
+you're going to implement that kind of code in parrot assembler (or
+PIR, or whatever), you need some way of loading the loading code. It's
+also a good idea to have a working C<stat>. Jens added a
+C<Parrot_load_bytecode_direct> function to the parrot core to support
+the first part. His please for a functional (if not complete) C<stat>
+were answered by Dan who set about implementing the C<stat> API he
+outlined a few weeks ago.
+
+L<http://groups.google.com/groups?selm=200405211333.22233.parrot@jensbeimsurfen.de>
+
+=head2 Embedding Parrot
+
+Leo Tötsch and chromatic answered Paul Querna's questions from last
+week about embedding Parrot. 
+
+L<http://groups.google.com/groups?selm=200405241043.i4OAh7a01618@thu8.leo.home>
+
+=head2 Using PMCs as PerlHash keys
+
+TOGoS wanted to know how he could use a PMC as a key in a
+PerlHash. Leo replied that it was as simple as doing
+
+    $P2 = new Key
+    $P2 = "key_string"
+    $P0 = $P1[$P2]
+
+Piers Cawley did some naive translation into PASM and got himself
+horribly confused. Leo and TOGoS corrected him.
+
+
+L<http://groups.google.com/groups?selm=20040520190352.46387.qmail@web41410.mail.yahoo.com>
+
+=head2 First draft of IO and event design
+
+Remarking that events and IO are "(kinda, sorta)" the same thing, Dan
+posted his first draft of a unified IO and events design and asked for
+comments. This being p6i, he got several (though not as many as usual,
+maybe everyone likes it).
+
+L<http://groups.google.com/groups?selm=a0611040abcd7faf9492e@[10.0.1.3]>
+
+=head2 Freeze, objects, crash, boom
+
+Will Coleda tried to get freezing and objects to play well together and
+failed. So he asked a bunch of questions. Leo didn't solve the problem,
+but he did have some pointers to where it was coming from. 
+
+L<http://groups.google.com/groups?selm=40B4D76B.5060306@coleda.com>
+
+=head2 MMD table setup semantics
+
+Possibly winning an award for the oldest rejuvenated thread, Nicholas
+Clark had some questions about a post Dan made about MMD at the end of
+April. He made a suggesting about how to calculate 'distance' for multi
+dispatch. Dan pointed out that Larry had decreed that the 'distance'
+would be the 'Manhattan Distance'. (Google has several definitions). 
+
+L<http://groups.google.com/groups?selm=20040527143518.GD1129@plum.flirble.org>
+
+=head2 Compiler FAQ entry
+
+Will Coleda posted a possible set of entries for the compiler writers'
+FAQ. Leo had a few quibbles. Sterling Hughes suggested that having
+small, runnable source code examples would be really helpful. 
+
+L<http://groups.google.com/groups?selm=40B7ECCF.6030205@coleda.com>
+
+=head2 Layering PMCs
+
+Dan kicked off a discussion on how to go about layering PMCs. The usual
+suspects offered suggestions. The aim is to be able to layer behaviours
+on top of PMCs without massive overhead or combinatorial explosion
+problems. As usual with these things, there's several possible ways of
+doing it, the debate is about choosing the best one.
+
+L<http://groups.google.com/groups?selm=a06110404bcde7bf18ebd@[172.24.18.98]>
+
+=head2 IO Layers 
+
+Leo had some questions about the (not fully implemented)
+ParrotIOLayerAPI. He laid out a proposal for implementing
+things. Uri Guttman and Dan joined in a discussion of the
+issues. (Simple summary of the issues: Asynchronous IO is
+hard. Possibly more accurate summary of the issues: Asynchronous IO
+is *not* synchronous)
+
+
+L<http://groups.google.com/groups?selm=40B71F53.8000001@toetsch.at>
+
+=head2 C<PIO_unix_pipe()>
+
+Leo's implemented a C<PIO_unix_pipe()> method which allows you to run an
+external program and capture the results with a Parrot IO handle. He
+doctored the C<open> opcode to use it
+
+    pipe = open "/bin/ls -l", "-|" 
+
+Dan liked it, but proposed also adding a C<backtick> operator.
+
+L<http://groups.google.com/groups?selm=40C1C64D.5080105@toetsch.at>
+
+=head2 Register spilling
+
+Dan noted that it's possible to get the register allocator caught up in
+an infinite loop (or as near infinite as makes no difference) as it
+tries to work out a register spilling strategy. He proposed there be a
+'slow but working' fallback method to use if the normal method goes
+through too many iterations. Leo suggested an delightfully brute force
+approach with some possible elaborations that Dan didn't think would be
+that useful in the cases he was seeing.
+
+L<http://groups.google.com/groups?selm=rt-3.0.9-29837-88076.5.39698439413385@perl.org>
+
+=head2 Stat
+
+Dan implemented a simple C<stat> function that should be enough for
+Jens Rieks to get a library path based loading system to work. Leo
+patched his first attempt and most things in the garden were lovely
+(with a couple of rather less pretty spots that are being worked on as
+I type).
+
+L<http://groups.google.com/groups?selm=a06110401bcd836c94dd7@[172.24.18.98]>
+
+=head2 Bit ops on strings
+
+Argh! The character encoding discussion! Run away!
+
+Nicholas Clark and Dan discussed Parrots Unicode handling.
+
+L<http://groups.google.com/groups?selm=20040525113008.GC1129@plum.flirble.org>
+
+=head2 Standard Library behaviour
+
+Dan commented that now Jens was working the architecture of the
+standard library, the time had come to discuss how things should
+work. He outlined the options, asked for comments, and got promptly
+Warnocked. 
+
+L<http://groups.google.com/groups?selm=a06110407bcd924533939@[10.0.1.3]>
+
+=head1 Meanwhile, in perl6-language
+
+=head2 The Periodic Table of the Operators
+
+Mark Lentczner announced that he'd put together a periodic table of
+Perl 6 operators. Everyone liked it, though several amendments were
+proposed and made. Check it out, it's very lovely (and anyone who
+references the great Edward Tufte in his explanation of the design is
+likely to be all right in my book). 
+
+There will be T-shirts.
+
+L<http://groups.google.com/groups?selm=486B658A-AF64-11D8-8F60-000393A56BB6@glyphic.com>
+
+L<http://www.ozonehouse.com/mark/blog/code/PeriodicTable.html>
+
+=head2 Announcements, Apologies, Acknowledgements
+
+Ah well, if you can't beat the system, roll with it and pretend it's
+deliberate. Next week's summary definitely won't be next week, but there will
+be another fortnightly summary covering the fortnight ending
+2004-06-20. And the next summary will almost certainly be on a
+fortnightly schedule too, unless BT work some miracle and sort out my
+ADSL transfer promptly.
+
+If you find these summaries useful or enjoyable, please consider
+contributing to the Perl Foundation to help support the development of
+Perl. You might also like to send me feedback at
+L<mailto:pdcawley@bofh.org.uk>
+
+L<http://donate.perl-foundation.org/> -- The Perl Foundation
+
+L<http://dev.perl.org/perl6/> -- Perl 6 Development site
