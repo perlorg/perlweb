@@ -10,12 +10,14 @@
 
 
 # Ask likes short names like this
-/docs/ ?     /docs.html   internal
+/docs/?     /docs.html   internal
 /about/?     /about.html  perm
 /press/?     /about.html  perm
 
+
 # Personal coolness
-/ask(/.*)?  http://www.askbjoernhansen.com/
+/~?ask(/.*)?     http://www.askbjoernhansen.com/
+/~?robert(/.*)?  http://robert.spier.us/
 
 # Things from the previous incarnation of perl.org
 /advocacy/white_camels.shtml /advocacy/white_camel/  perm
@@ -39,3 +41,4 @@
 
 # Freak people out
 /index.php  /  internal
+
