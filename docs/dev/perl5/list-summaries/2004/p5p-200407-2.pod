@@ -1,0 +1,134 @@
+=head1 These Weeks on perl5-porters (12-25 July 2004)
+
+This week's summary actually covers two weeks. Anyway, with OSCON,
+vacations and all that stuff, those are quiet weeks. Read on.
+
+=head2 5.8.5 is out
+
+Perl 5.8.5 was released. The P5P announcement can be found at:
+
+    http://groups.google.com/groups?selm=20040719222147.GG784%40plum.flirble.org
+
+=head2 Readonlyness
+
+The thread that spawned from the RC2 release candidate and the problems
+solved by it then discussed the problem of the meaning of readonlyness of
+SVs. Does it mean that the internal representation of the SV (notably
+regarding UTF-8) should be read-only too? No precise consensus was
+reached, although Hugo suggested that a readonly PV can be upgraded to
+UTF-8, but not downgraded.
+
+    http://groups.google.com/groups?selm=20040720102342.GL784%40plum.flirble.org
+
+=head2 Flexible exceptions
+
+Nicholas Clark wonders what represents the C compilation symbol
+C<PERL_FLEXIBLE_EXCEPTIONS>. Nick Ing-Simmons says that it's an old,
+unmaintained branch of the code, no longer used. H. Merijn Brand speaks
+about chainsaws.
+
+    http://groups.google.com/groups?selm=20040713143217.GB1424%40plum.flirble.org
+
+=head2 Snatching SVs
+
+Stas Bekman asks a question: how (from XS code) can he store an SV away
+and reuse it later, making sure that perl won't touch it and try to reuse
+it again. Dave Mitchell explains the difference between mortals and
+PADTMPs, and how Stas can achieve his goal.
+
+    http://groups.google.com/groups?selm=41016DE5.40206%40stason.org
+
+=head2 Thread bugs
+
+Nigel Sandever remarks that sharing an array or a hash (in the ithread
+sense of the word) empties it. Elizabeth Mattijsen explains that it's a
+side-effect of using ties to share things, and Nick Ing-Simmons adds that
+it's expected behaviour (by design.) (bug #30702.)
+
+    http://groups.google.com/groups?selm=rt-3.0.11-30702-92297.10.3407352468845%40perl.org
+
+Nigel also reported (bug #30674) that perl segfaults when lots of threads
+are created. This is due to the lack of check for the return value of the
+internal CreateThread() function. He suggests that perl should die or panic
+in this case. Discussion goes on on memory allocators. Meanwhile, Nicholas
+patches.
+
+    http://groups.google.com/groups?selm=rt-3.0.11-30674-92219.13.8761503317861%40perl.org
+
+=head2 Other bugs
+
+Nicholas found that for 64 bit builds, there is a problem with overloading
+C<0+>. He then patched the bug out.
+
+    http://groups.google.com/groups?selm=20040714125211.GO784%40plum.flirble.org
+
+Mike Rosulek found that I<passing C<@array[()]> as the second arg to a
+($;$) prototyped sub actually passes the first arg twice> (bug #30688).
+This was fixed by Rick Delaney.
+
+File::Find is known to be memory intensive when traversing deep directory
+trees (bug #30718). Jim Cromie's advice is to use File::Find::Rule
+instead.
+
+Ton Hospel reported that deleting a non-existent element of an array leaks
+memory. This was fixed by Dave Mitchell, who remarked that this bug
+doesn't affect hashes. (Bug #30733.)
+
+James Mastros makes perl dump core by localising C<$foo> and then assigning
+to C<*foo> (bug #30778).
+
+Autrijus Tang found (and patched) a bug in Test::Builder (bug #30783). It
+comes from the fact that it's not allowed to store an unshared reference
+in a shared structure. Thus, overloaded unshared refs are not allowed as
+test names.
+
+DH finds that C<blib> uses Cwd and File::Spec, and consequently doesn't
+work to test Cwd and File::Spec. He proposes a patch, but Rafael has some
+concerns with it.
+
+    http://groups.google.com/groups?selm=20040722043138.40380.qmail%40web60801.mail.yahoo.com
+
+=head2 To-do
+
+More to-do items were discussed and added to the perltodo list:
+
+    http://groups.google.com/groups?selm=20040711194958.GI784%40plum.flirble.org
+
+Among wanted items: a reentrant regexp engine, autoloaded inlineable
+constants, better patchlevel information in the B<-v> output, and more
+human beings to implement all that stuff.
+
+=head2 Other news
+
+Casey West announced the resurrection of the grand Perl Power Tools
+project (and its associated mailing list).
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-07/msg00715.html
+
+Tels is in the process of releasing Math::BigInt v1.71, which addresses
+bug #30609 (reported last week.)
+
+Michael Schwern released Test::Simple 0.48_02 (alpha version), and
+announced that his aegis repository for Test::More is publicly accessible.
+
+    http://groups.google.com/groups?selm=20040719062510.GA19661%40windhund.schwern.org
+    http://groups.google.com/groups?selm=20040719165659.GA23035%40windhund.schwern.org
+
+Brad Elkins send some compilation fixes for AIX 5.1, to have PAR working
+correctly on it.
+
+=head2 NetWare port
+
+P Aravinda sent a big patch to make perl compile on NetWare (or, more
+precisely, to cross-compile a perl for NetWare from Linux). Nicholas Clark
+raised some concerns concerning his patch, both on technical and on
+licensing points.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-07/msg00570.html
+
+=head2 About this summary
+
+This summary was written by Rafael Garcia-Suarez. Weekly (or, sometimes,
+fortnightly) summaries are published on F<http://use.perl.org/> and posted
+on a mailing list, which subscription address is
+F<perl5-summary-subscribe@perl.org>. Comments and corrections welcome.
