@@ -31,8 +31,10 @@ sub handler($$) {
 
   # TODO|FIXME: set last_modified_date properly!  
 
-  if ($uri =~ m!/(.*\.(gif|jpe?g|png|css))$!) {
-    my $file = $1;
+  if ($uri !~ m!/(.*\.(?:html?))$!) {
+    # not a html (TT) file
+    my $file = $uri;
+    substr($file,0,1) = ""; # trim leading slash
     #warn "going to load $file";
     my ($data, $error) = $class->provider->load($file);
     if ($data and !$error) {
