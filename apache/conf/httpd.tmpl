@@ -233,11 +233,12 @@ PerlInitHandler Apache::Reload
 
 PerlRequire [% root %]/apache/conf/startup.pl
 
-PerlHeaderParserHandler Combust::Notes
+#PerlHeaderParserHandler 
 # Combust::UserID
-
-PerlPostReadRequestHandler ProxyIP
 #PerlTransHandler Combust::Trans
+
+PerlPostReadRequestHandler ProxyIP Combust::Notes
+
 
 NameVirtualHost *:[% config.port %]
 
@@ -270,6 +271,8 @@ NameVirtualHost *:[% config.port %]
   <VirtualHost *:[% config.port %]>
     ServerName [% config.site.www.servername %]
     PerlSetVar site www
+PerlTransHandler Combust::Redirect
+
     <Location />
        SetHandler perl-script
        PerlHandler Combust::Control::Basic->handler

@@ -244,7 +244,7 @@ sub paths {
     my @ipaths = @{ $self->{ INCLUDE_PATH } };
     my (@opaths, $dpaths, $dir);
     my $count = $MAX_DIRS;
-    
+
     while (@ipaths && --$count) {
         $dir = shift @ipaths || next;
 
@@ -255,6 +255,7 @@ sub paths {
             eval { $dpaths = &$dir() };
             if ($@) {
                 chomp $@;
+		warn "error: $@";
                 return $self->error($@);
             }
             unshift(@ipaths, @$dpaths);

@@ -40,7 +40,7 @@ my %provider_config = (
 					     
 		      );
 
-my $combust_provider = Combust::Template::Provider->new
+$Combust::Control::provider ||= Combust::Template::Provider->new
   (
    %provider_config,
    INCLUDE_PATH => [
@@ -52,11 +52,11 @@ my $combust_provider = Combust::Template::Provider->new
   );
 
 
-my $tt = Template->new
+$Combust::Control::tt = Template->new
   ({
     FILTERS => { 'navigation' => [ \&Combust::Template::Filters::navigation_filter_factory, 1 ] },
     RELATIVE       => 1,
-    LOAD_TEMPLATES   => [$combust_provider],
+    LOAD_TEMPLATES   => [$Combust::Control::provider],
     #'LOAD_TEMPLATES' => [ $file, $http ],
     #PREFIX_MAP => {
     #               file => 0,
@@ -69,11 +69,11 @@ my $tt = Template->new
    });
 
 sub provider {
-  $combust_provider;
+  $Combust::Control::provider;
 }
 
 sub tt {
-  $tt
+  $Combust::Control::tt
 }
 
 sub get_include_path {
@@ -137,14 +137,14 @@ sub evaluate_template {
   #$params{params}->{statistics}    = XRL::Statistics->new();
   #$params{params}->{advertisement} = XRL::Advertisement->new();
 
-  my $rc = $tt->process( $params{'template'},
+  my $rc = $class->tt->process( $params{'template'},
                          $params{'params'},
                          $params{'output'} )
     or warn( "$class - ". $r->uri . '?' .$r->args
 	     . ' - error processing template ' . $params{'template'} . ': '
-	     . $tt->error )
+	     . $class->tt->error )
       and eval {
-        ControllerException->throw( 'error' => $tt->error );
+        ControllerException->throw( 'error' => $class->tt->error );
       };
   
   $rc;
@@ -223,6 +223,11 @@ sub redirect {
   my $url = shift;
   my $permanent = shift;
   $r->pnotes('combust_notes')->{cookies}->bake_cookies;
+
+  unless ($url =~ m!^http://!) {
+    $url = "http://" . $r->hostname . $url; 
+  }
+
   $r->header_out('Location', $url);
   return $permanent ? MOVED : REDIRECT;
 }

@@ -4,6 +4,7 @@ use Data::Dumper;
 use Combust::Control::Basic;
 use Combust::Control::Error;
 use Combust::Notes;
+use Combust::Redirect;
 
 #use Combust::UserID;
 
