@@ -306,7 +306,8 @@ sub redirect {
   my $r   = shift;
   my $url = shift;
   my $permanent = shift;
-  $r->pnotes('combust_notes')->{cookies}->bake_cookies;
+  $r->pnotes('combust_notes')->{cookies}->bake_cookies
+    if $r->pnotes('combust_notes')->{cookies};
 
   unless ($url =~ m!^http://!) {
     $url = "http://" . $r->hostname . $url; 
