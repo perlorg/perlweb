@@ -1,0 +1,13 @@
+[% page.style = "bare.html";
+   rotato_image_base = "http://www.perl.org";
+   content = BLOCK %]
+<DIV STYLE="text-align: center; font-family: arial;sans-serif;
+font-size: 80%; ">
+site hosting<BR>
+provided by <A HREF="http://www.perl.org">perl.org</A><BR>
+and supported by:<BR>
+[% INCLUDE "tpl/sponsor-rotato.html" %]
+</DIV>
+[% END %]
+[%# need to JS escape content %]
+document.write( '[% content.replace("\n","\\\n").replace("'","\\'") %]' );
