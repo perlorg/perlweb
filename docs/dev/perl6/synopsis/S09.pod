@@ -12,9 +12,9 @@ Larry Wall <larry@wall.org>
 
   Maintainer: Larry Wall <larry@wall.org>
   Date: 13 Sep 2004
-  Last Modified: 20 Nov 2004
+  Last Modified: 2 Dec 2004
   Number: 9
-  Version: 3
+  Version: 4
 
 =head1 Overview
 
@@ -129,12 +129,12 @@ dimension.  So
 
 is really short for
 
-    @array.postcircumfix:«[ ]»( <== [0..10], [42], [@x] );
+    @array.postcircumfix:<[ ]>( <== [0..10], [42], [@x] );
 
 though in the list of lists form, a bare number is interpreted as if
 it were a list of one element, so you can also say:
 
-    @array.postcircumfix:«[ ]»( <== [0..10], 42, [@x] );
+    @array.postcircumfix:<[ ]>( <== [0..10], 42, [@x] );
 
 Note that at the comma level, a list such as:
 
@@ -147,7 +147,7 @@ dimension, which is the same as:
 
 or more verbosely:
 
-    @array.postcircumfix:«[ ]»( <== [@x,@y] );
+    @array.postcircumfix:<[ ]>( <== [@x,@y] );
 
 To interpolate an array at the semicolon level rather than the comma level,
 use the C<dims> list operator:
@@ -156,7 +156,7 @@ use the C<dims> list operator:
 
 which is equivalent to
 
-    @array.postcircumfix:«[ ]»( <== @x, [@y] );
+    @array.postcircumfix:<[ ]>( <== @x, [@y] );
 
 Note the difference between that and
 
@@ -164,7 +164,7 @@ Note the difference between that and
 
 which is the same as
 
-    @array.postcircumfix:«[ ]»( <== @x, @y );
+    @array.postcircumfix:<[ ]>( <== @x, @y );
 
 To declare a multidimensional array, you add a shape parameter:
 
@@ -202,12 +202,12 @@ The shape may be supplied entirely by the object at run-time:
     my num @nums = Array of num.new(:shape(3;3;3));
     my num @nums .=new():shape(3;3;3); # same thing 
 
-Any dimension of the array may be specified as C<*>, in which case
+Any dimension of the array may be specified as "C<Int>", in which case
 that dimension will autoextend.  Typically this would be used in the
 final dimension to make a ragged array functionally equivalent to an
 array of arrays:
 
-    my int @ints is shape(42; *);
+    my int @ints is shape(42; Int);
     push(@ints[41], getsomeints());
 
 The shape may also be specified by types rather than sizes:
@@ -607,8 +607,8 @@ if you're going to limit the keys of one dimension of a hash, you have
 to provide an explicit list of keys to that dimension of the shape,
 or an equivalent range:
 
-    my num %hash is shape(«a b c d e f»; *);
-    my num %hash is shape('a'..'f'; *);		# same thing
+    my num %hash is shape(<a b c d e f>; Str);
+    my num %hash is shape('a'..'f'; Str);		# same thing
 
 To declare a hash that can take any object as a key rather than
 just a string, say something like:
@@ -622,6 +622,12 @@ Likewise, you can limit the keys to objects of particular types:
 The standard Hash is just
 
     my Any %hash is shape(Str);
+
+Note that any type used as a key must be intrinsically immutable,
+or it has to be able to make a copy that functions as an immutable key,
+or it has to have copy-on-write semantics.  It is erroneous to change
+a key object's value within the hash except by deleting it and reinserting
+it.
 
 =head1 Autosorted hashes
 

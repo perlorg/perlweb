@@ -12,9 +12,9 @@ Larry Wall <larry@wall.org>
 
   Maintainer: Larry Wall <larry@wall.org>
   Date: 19 Aug 2004
-  Last Modified: 20 Nov 2004
+  Last Modified: 2 Dec 2004
   Number: 4
-  Version: 2
+  Version: 3
 
 This document summarizes Apocalypse 4, which covers the block and
 statement syntax of Perl.
@@ -55,7 +55,7 @@ the enclosing block.  Period.  Lexicals may not "leak" from a block to any
 other external scope (at least, not without some explicit aliasing
 action on the part of the block, such as exportation of a symbol
 from a module).  The "point of declaration" is the moment the compiler
-sees "my $foo", not the end of the statement as in Perl 5, so
+sees "C<my $foo>", not the end of the statement as in Perl 5, so
 
     my $x = $x;
 
@@ -78,7 +78,9 @@ Perl 5's "C<local>" function has been renamed to C<temp> to better
 reflect what it does.  There is also a C<let> function that sets a
 hypothetical value.  It works exactly like C<temp>, except that the
 value will be restored only if the current block exits unsuccessfully.
-(See Definition of Success below for more.)
+(See Definition of Success below for more.)  C<temp> and C<let> temporize
+or hypotheticalize the value or the variable depending on whether you
+do assignment or binding.
 
 =head1 Conditional statements
 
@@ -178,14 +180,14 @@ to read a file a line at a time:
 
 you should use a C<for> instead:
 
-    for <$*IN> -> $line {...}
+    for *$*IN -> $line {...}
 
 This has the added benefit of limiting the scope of the C<$line>
 parameter to the block it's bound to.  (The C<while>'s declaration of
 C<$line> continues to be visible past the end of the block.  Remember,
 no implicit block scopes.)  It is possible to write
 
-    while <$*IN> -> $line {...}
+    while *$*IN -> $line {...}
 
 but you have to be careful that the object being evaluated for truth
 can also behave as a line after behaving as a boolean.  If you write:
@@ -199,11 +201,11 @@ Note also that Perl 5's special rule causing
     while (<>) {...}
 
 to automatically assign to C<$_> is not carried over to Perl 6.  That's
-what
+should now be written:
 
-    for <> {...}
+    for * {...}
 
-is for.  (If you write it with C<while> you'll get a warning.)
+(If you write it with C<while> you'll get a warning.)
 
 Parameters are by default constant within the block.  You can
 declare a parameter read/write by including the "C<is rw>" trait.
@@ -347,7 +349,7 @@ just mention the value last that you want to return, or you can
 use C<leave>.  A C<leave> by default exits from the innermost block.
 But you may change the behavior of C<leave> with selector adverbs:
 
-    leave :from(Loop) :label«LINE» <== 1,2,3;
+    leave :from(Loop) :label<LINE> <== 1,2,3;
 
 The innermost block matching the selection criteria will be exited.
 The return value, if any, must be passed as a list.  To return pairs
@@ -552,13 +554,13 @@ precedence afterwards regardless of the position of the closing curly.
 Statement-level constructs are distinguished in the grammar by being
 declared in the statement syntactic group:
 
-    macro statement_control:«if» ($expr, &ifblock) {...}
-    macro statement_control:«while» ($expr, &whileblock) {...}
-    macro statement_control:«BEGIN» (&beginblock) {...}
+    macro statement_control:<if> ($expr, &ifblock) {...}
+    macro statement_control:<while> ($expr, &whileblock) {...}
+    macro statement_control:<BEGIN> (&beginblock) {...}
 
 It's possible the full name of the C<if> operator is now:
 
-    statement_control:«if elsif else»
+    statement_control:<if elsif else>
 
 Statement-level constructs may start only where the parser is expecting
 the start of a statement.  To embed a statement in an expression you
@@ -567,29 +569,29 @@ must use something like C<do {...}> or C<try {...}>.
     $x =  do { given $foo { when 1 {2} when 3 {4} } + $bar;
     $x = try { given $foo { when 1 {2} when 3 {4} } + $bar;
 
-Just because there's a C<statement_control:«BEGIN»> does not preclude us from
-also defining a C<prefix:«BEGIN»> that I<can> be used within an expression:
+Just because there's a C<< statement_control:<BEGIN> >> does not preclude us from
+also defining a C<< prefix:<BEGIN> >> that I<can> be used within an expression:
 
-    macro prefix:«BEGIN» (&beginblock) { beginblock().repr }
+    macro prefix:<BEGIN> (&beginblock) { beginblock().repr }
 
 Then you can say things like:
 
     $recompile_by = BEGIN { time } + $expiration_time;
 
-But C<statement_control:«BEGIN»> hides C<prefix:«BEGIN»> at the start of a statement.
-You could also conceivably define a C<prefix:«if»>, but then you would
+But C<< statement_control:<BEGIN> >> hides C<< prefix:<BEGIN> >> at the start of a statement.
+You could also conceivably define a C<< prefix:<if> >>, but then you would
 get a syntax error when you say:
 
     print if $foo
 
-since C<prefix:«if»> would hide C<statement_modifier:«if»>.
+since C<< prefix:<if>> > would hide C<< statement_modifier:<if> >>.
 
 =head1 Smart matching
 
 Here is the current table of smart matches (which probably belongs in
 S3).  The list is intended to reflect forms that can be recognized at
 compile time.  If none of these forms is recognized at compile time, it
-falls through to a multiple dispatch to C<infix:«~~»()>, which presumably
+falls through to a multiple dispatch to C<< infix:<~~>() >>, which presumably
 reflects similar semantics, but can finesse things that aren't exact
 type matches.  Note that all types are scalarized here.  Both C<~~>
 and C<given>/C<when> provide scalar contexts to their arguments.
@@ -609,7 +611,7 @@ separate entries for lists.
     Hash    Rule      hash key grep            match if any($_.keys) ~~ /$x/
     Hash    Any       hash entry existence     match if exists $_{$x}
     Hash    .{Any}    hash element truth*      match if $_{Any}
-    Hash    .«string» hash element truth*      match if $_«string»
+    Hash    .<string> hash element truth*      match if $_<string>
     Array   Array     arrays are identical     match if $_ »~~« $x
     Array   any(list) list intersection        match if any(@$_) ~~ any(list)
     Array   Rule      array grep               match if any(@$_) ~~ /$x/
@@ -628,7 +630,7 @@ separate entries for lists.
     Any     subst     substitution match*      match if $_ ~~ subst
     Any     boolean   simple expression truth* match if true given $_
     Any     undef     undefined                match unless defined $_
-    Any     Any       run-time dispatch        match if infix:«~~»($_, $x)
+    Any     Any       run-time dispatch        match if infix:<~~>($_, $x)
 
 Matches marked with * are non-reversible, typically because C<~~> takes
 its left side as the topic for the right side, and sets the topic to a

@@ -13,9 +13,9 @@ Allison Randal <al@shadowed.net>
 
   Maintainer: Larry Wall <larry@wall.org>
   Date: 24 Jun 2002
-  Last Modified: 24 Nov 2004
+  Last Modified: 2 Dec 2004
   Number: 5
-  Version: 5
+  Version: 6
 
 This document summarizes Apocalypse 5, which is about the new regex
 syntax.  We now try to call them "rules" because they haven't been
@@ -1027,9 +1027,8 @@ so it includes C<$0>, C<$1>, C<$2>, etc.
 
 The C<$/> object also contains a hash of named variables lexically
 scoped to the current rule.  These may be named by hash subscripting:
-C<$/{'foo'}> or C<$/«foo»>.  For readability the latter form the
-C<$/> may be replaced with an appropriate sigil: C<$«foo»>.  For
-ASCII compatibility you may use Texan quotes: C<<< $<<foo>> >>>.
+C<$/{'foo'}> or C<< $/<foo> >>.  For readability the latter form the
+C<$/> may be replaced with an appropriate sigil: C<< $<foo> >>.
 
 =back
 
@@ -1064,7 +1063,7 @@ later just throw away.)
 
 You may also set rule-scoped variables hypothetically:
 
-    / (\d+) {let $«num» := $1} (<alpha>+)/
+    / (\d+) {let $<num> := $1} (<alpha>+)/
 
 In this case the variable lives in C<$/> rather than the surrounding
 lexical pad.
@@ -1079,9 +1078,9 @@ reverts to its previous value (or lack thereof).
 
 This is even more interesting in alternations:
 
-    / [ (\d+)      { let $«num»   := $1 }
-      | (<alpha>+) { let $«alpha» := $2 }
-      | (.)        { let $«other» := $3 }
+    / [ (\d+)      { let $<num>   := $1 }
+      | (<alpha>+) { let $<alpha> := $2 }
+      | (.)        { let $<other> := $3 }
       ]
     /
 
@@ -1089,9 +1088,9 @@ This is even more interesting in alternations:
 
 There is also a shorthand for binding to variables hypothetically:
 
-    / [ $«num»  := (\d+)
-      | $«alpha»:= (<alpha>+)
-      | $«other»:= (.)
+    / [ $<num>  := (\d+)
+      | $<alpha>:= (<alpha>+)
+      | $<other>:= (.)
       ]
     /
 
@@ -1108,7 +1107,7 @@ The binding shorthand is right associative just like the ordinary operator.
 
     our $cheater;
     sub foo { say $cheater }
-    / $cheater := $«capture» := (\d+) { foo() } /
+    / $cheater := $<capture> := (\d+) { foo() } /
 
 =item *
 
@@ -1160,19 +1159,19 @@ clobbering a value you're going to want later.
 
 Repeated captures can be bound to arrays:
 
-    / @«values» := [ (.*?) , ]* /
+    / @<values> := [ (.*?) , ]* /
 
 =item *
 
 Pairs of repeated captures can be bound to hashes:
 
-    / %«options» := [ (<ident>) = (\N+) ]* /
+    / %<options> := [ (<ident>) = (\N+) ]* /
 
 =item *
 
 Or just capture the keys (and leave the values undef):
 
-    / %«options» := [ (<ident>) = \N+ ]* /
+    / %<options> := [ (<ident>) = \N+ ]* /
 
 =item *
 
@@ -1181,45 +1180,37 @@ destination, you end up with a list reference as the scalar value
 (even if in the actual case only one thing matches).  This always
 puts a list into the scalar:
 
-    / $«foo» := [ (.*?) , ]* /
+    / $<foo> := [ (.*?) , ]* /
 
 And this puts a list of lists:
 
-    / $«bar» := [ (<ident>) = (\N+) ]* /
+    / $<bar> := [ (<ident>) = (\N+) ]* /
 
 =item *
 
-By default, a subrule (e.g. C<< <rule> >>) does not capture
-its results.  To capture, use French quotes instead of angles (no
+By default, any simple alphabetic subrule (e.g. C<< <rule> >>) captures
+its results.  To suppress capture, use French quotes instead of angles (no
 pun intended):
 
-    / «key» =\> «value» { %hash{$«key»} = $«value» } /
+    / <key> «ws» =\> «ws» <value> { %hash{$«key»} = $«value» } /
 
-The key is identical to whatever was within the "naughty" quotes.
-So you can use the naughty quotes anywhere single angles would work,
-but be prepared to put up with strange keys in some cases:
-
-    rule def { DEF }
-    my $bargle = &def;
-    "ABCDEF" ~~ / «[A-Z]»*? «$bargle» /;
-
-    say "@«[A-Z]»";     # prints "A B C"
-    say $«$bargle»;     # prints "DEF"
-
-Literal text is not captured unless you match it like this: «'=>'»
+Non-alphabetic assertions and assertions with arguments are not
+captured by default.  They must be explicitly bound or placed in
+parentheses to be captured.
 
 =item *
 
 All rules remember everything anyway if C<:keepall> is in effect
 anywhere in the outer dynamic scope.  To avoid any confusion with
-"intentional" names, angle fields forced to remember this way include
+"intentional" names, strange fields forced to remember this way include
 the angles as part of the variable name.  Suppose the earlier example
 parsed whitespace:
 
-    / «key» <ws> =\> <ws> «value» { %hash{$«key»} = $«value» } /
+    / <key> «ws» <'=>'> «ws» <value> { %hash{$<key>} = $<value> } /
 
-The two instances of C<< <ws> >> above would store an array of two
-values accessible as C<< @«<ws>» >>.  Just to make sure nothing is
+The two instances of C<< «ws» >> above would store an array of two
+values accessible as C<< @<«ws»> >>.  It would also store the literal
+match into C<< $«<'=>'>» >>.  Just to make sure nothing is
 forgotten, under C<:keepall> any text not otherwise remembered is
 attached as an extra property on the subsequent node. (The name of
 that property is "C<pretext>".)
@@ -1298,26 +1289,27 @@ in list context.  Use C<@$/> or C<$/[]> to flatten as an array.
 
 When used as a hash, C<$/> pretends to be a hash of all the named
 captures.  The keys do not include any sigils, so if you capture to
-variable C<@«foo»> its real name is C<$/{'foo'}> or C<$/«foo»>.
-However, you may still refer to it as C<@«foo»> anywhere C<$/>
+variable C<< @<foo> >> its real name is C<$/{'foo'}> or C<< $/<foo> >>.
+However, you may still refer to it as C<< @<foo> >> anywhere C<$/>
 is visible.  (But it is erroneous to use the same name for two different
 capture datatypes.)
 
 Note that, as a scalar variable, C<$/> doesn't automatically flatten
-in list context.  Use C<%$/> or C<$/{}> to flatten as a hash.
+in list context.  Use C<%$/> or C<$/{}> to flatten as a hash, or bind
+it to a variable of the appropriate type.
 
 =item *
 
-The numbered captures may be treated as named, so C<$«1 2 3»>
+The numbered captures may be treated as named, so C<$<1 2 3>>
 is equivalent to C<$/[0,1,2]>.  This allows you to write slices of
-intermixed named and numbered captures.  C<$0> and C<$«0»> are the
+intermixed named and numbered captures.  C<$0> and C<$<0>> are the
 same thing, but there is no way to get at C<$0> via the array subscript
 notation.  (Saying C<$/[-1]> returns the final capture, not
 C<$0>.)
 
 =item *
 
-Note that C<$«0»> is not merely a recursive reference to C<$/>,
+Note that C<$<0>> is not merely a recursive reference to C<$/>,
 because they are of different types.  C<$/> is a polymorphic match
 object, while C<$0> is a string (presuming you're matching a string).
 The two objects take different sets of methods.
@@ -1402,7 +1394,7 @@ restricts itself to assertions like:
 
     <.isa(Dog)>
     <.does(Bark)>
-    <.can(«scratch»)>
+    <.can('scratch')>
 
 It is permissible to mix tokens and strings in an array as long as they're
 in different elements.  You may not embed objects in strings, however.
@@ -1524,11 +1516,11 @@ Hence:
 For writing your own backslash and assertion rules or macros, you may
 use the following syntactic categories:
 
-    rule rxbackslash:«w» { ... }    # define your own \w and \W
-    rule rxassertion:«*» { ... }    # define your own <*stuff> and «*stuff»
-    macro rxmetachar:«,» { ... }    # define a new metacharacter
-    macro rxmodinternal:«x» { ... } # define your own /:x() stuff/
-    macro rxmodexternal:«x» { ... } # define your own m:x()/stuff/
+    rule rxbackslash:<w> { ... }    # define your own \w and \W
+    rule rxassertion:<*> { ... }    # define your own <*stuff> and «*stuff»
+    macro rxmetachar:<,> { ... }    # define a new metacharacter
+    macro rxmodinternal:<x> { ... } # define your own /:x() stuff/
+    macro rxmodexternal:<x> { ... } # define your own m:x()/stuff/
 
 As with any such syntactic shenanigans, the declaration must be visible in
 the lexical scope to have any effect.  It's possible the internal/external
@@ -1571,7 +1563,7 @@ As a degenerate case, each side can be individual characters:
 
 The two sides of each pair may also be array references:
 
-    $str.=trans( ['A'..'C'] => ['a'..'c'], «X Y Z» => «x y z» );
+    $str.=trans( ['A'..'C'] => ['a'..'c'], <X Y Z> => <x y z> );
 
 =item *
 

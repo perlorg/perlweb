@@ -10,11 +10,11 @@ Luke Palmer <luke@luqui.org>
 
 =head1 VERSION
 
-  Maintainer: Luke Palmer <luke@luqui.org>
+  Maintainer: Larry Wall <larry@wall.org>
   Date: 8 Mar 2004
-  Last Modified: 14 Sep 2004
+  Last Modified: 2 Dec 2004
   Number: 3
-  Version: 3
+  Version: 4
 
 =head1 Operator renaming
 
@@ -50,7 +50,8 @@ repetitions of a list or scalar).
 
 =item * Trinary C<? :> becomes C<?? ::>.
 
-=item * C<qw{ ... }> gets a synonym: C< « ... » >.
+=item * C<qw{ ... }> gets a synonym: C< < ... > >, and an interpolating
+variant, C<«...»>.
 For those still living without the blessings of Unicode, that can also be
 written: C<<< << ... >> >>>.
 
@@ -99,11 +100,12 @@ of the object on the left.
 
 =head1 Hyper operators
 
-The Unicode characters C<»> (C<\x[BB]>) and C<«>
-(C<\x[BB]>) and their ASCII digraphs C<<< >> >>> and C<<< << >>> are
-used to denote "list operations", which operate on each element of two
-lists (or arrays) and return a list (or array) of the results.  For
-example:
+The Unicode characters C<»> (C<\x[BB]>) and C<«> (C<\x[BB]>) and
+their ASCII digraphs C<<< >> >>> and C<<< << >>> are used to denote
+"list operations", which operate on each element of two lists (or
+arrays) and return a list (or array) of the results.  Spaces are not
+allowed on the "pointy" end of each "hyper", but are allowed on the
+blunt end. For example:
 
      (1,1,2,3,5) »+« (1,2,3,5,8);  # (2,3,5,8,13)
 
@@ -120,7 +122,8 @@ When using a unary operator, only put it on the operand's side:
      @objects ».run();
      ("f","oo","bar")».length;   # (1,2,3)
 
-Note that method calls are really postfix operators, not infix.
+Note that method calls are really postfix operators, not infix, so you
+shouldn't put a C<«> after the dot.
 
 =head1 Junctive operators
 
@@ -151,6 +154,13 @@ Junctions work through subscripting:
 
     print if @foo[any(1,2,3)]
 
+Junctions are specifically unordered.  So if you say
+
+    for all(@foo) {...}
+
+it indicates to the compiler that there is no coupling between loop
+iterations and they can be run in any order or even in parallel.
+
 =head1 Chained comparisons
 
 Perl 6 supports the natural extension to the comparison operators,
@@ -159,6 +169,9 @@ allowing multiple operands.
      if 3 < $roll <= 6              { print "High roll" }
      
      if 1 <= $roll1 == $roll2 <= 6  { print "Doubles!" }
+
+Note: any operator beginning with C<< < >> must have whitespace
+in front of it, or it will be interpreted as a hash subscript instead.
 
 =head1 Binding
 
@@ -222,12 +235,15 @@ array attribute:
 
     $foo.bar.baz.bletch.whatever.attr[] = (1,2,3)
 
-The empty C<[]> and C<.[]> postfix operators are interpreted as zero-dimensional
-slices returning the entire array, not null slices returning no elements.
-Likewise for C<{}> and C<.{}> on hashes.
+The empty C<[]> and C<.[]> postfix operators are interpreted as
+zero-dimensional slices returning the entire array, not null slices
+returning no elements.  Likewise for C<{}> and C<.{}> on hashes,
+not to mention the C<< <> >>, C<< .<> >>, C<«»>, and C<.«»>
+constant and interpolating slice subscripting forms.
 
 The C<*> operator flattens lazily.  To get an immediate flattening like
-Perl 5 does, use unary C<**> instead.
+Perl 5 does, use unary C<**> instead.  You may use either of them on
+a scalar iterator to force it to iterate.
 
 =head1 Piping operators
 

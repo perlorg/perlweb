@@ -13,9 +13,9 @@ Allison Randal <al@shadowed.net>
 
   Maintainer: Larry Wall <larry@wall.org>
   Date: 21 Mar 2003
-  Last Modified: 21 Nov 2004
+  Last Modified: 2 Dec 2004
   Number: 6
-  Version: 5
+  Version: 6
 
 
 This document summarizes Apocalypse 6, which covers subroutines and the
@@ -180,6 +180,7 @@ followed by an operator name specified as if it were a hash subscript
 (but evaluated at compile time).  So any of these indicate the same
 binary addition operator:
 
+    infix:<+>
     infix:«+»
     infix:<<+>>
     infix:{'+'}
@@ -189,17 +190,17 @@ Use the C<&> sigil just as you would on ordinary subs.
 
 Unary operators are defined as prefix or postfix:
 
-    sub prefix:«OPNAME»  ($operand) {...}
-    sub postfix:«OPNAME» ($operand) {...}
+    sub prefix:<OPNAME>  ($operand) {...}
+    sub postfix:<OPNAME> ($operand) {...}
 
 Binary operators are defined as infix:
 
-    sub infix:«OPNAME» ($leftop, $rightop) {...}
+    sub infix:<OPNAME> ($leftop, $rightop) {...}
 
 Bracketing operators are defined as circumfix.  A two element slice containing
 the leading and trailing delimiters is the name of the operator.
 
-    sub circumfix:«LEFTDELIM RIGHTDELIM» ($contents) {...}
+    sub circumfix:<LEFTDELIM RIGHTDELIM> ($contents) {...}
     sub circumfix:{'LEFTDELIM','RIGHTDELIM'} ($contents) {...}
 
 (There is no longer any rule about splitting an even number of characters.
@@ -207,9 +208,9 @@ You must use a two element slice.)
 
 Operator names can be any sequence of non-whitespace Unicode characters. For example:
 
-    sub infix:«(c)» ($text, $owner) { return $text but Copyright($owner) }
-    method prefix:«±» (Num $x) returns Num { return +$x | -$x }
-    multi sub postfix:«!» (Int $n) { $n < 2 ?? 1 :: $n*($n-1)! }
+    sub infix:<(c)> ($text, $owner) { return $text but Copyright($owner) }
+    method prefix:<±> (Num $x) returns Num { return +$x | -$x }
+    multi sub postfix:<!> (Int $n) { $n < 2 ?? 1 :: $n*($n-1)! }
     macro circumfix:«<!-- -->» ($text) is parsed / .*? / { "" }
 
     my $document = $text (c) $me;
@@ -219,7 +220,7 @@ Operator names can be any sequence of non-whitespace Unicode characters. For exa
     <!-- This is now a comment -->
 
 Whitespace may never be part of the name (except as separator
-within a C<«...»> slice, as in the example above).
+within a C<< <...> >> or C<«...»> slice, as in the example above).
 
 A null operator name does not define a null or whitespace operator, but
 a default matching rule for that syntactic category, which is useful when
@@ -228,7 +229,7 @@ with digits.  Such an operator I<must> supply an C<is parsed> trait.
 The Perl grammar uses a default rule for the C<:1st>, C<:2nd>, C<:3rd>,
 etc. rule modifiers, something like this:
 
-    sub rxmodexternal:«» ($x) is parsed(rx:p/\d+[st|nd|rd|th]/) {...}
+    sub rxmodexternal:<> ($x) is parsed(rx:p/\d+[st|nd|rd|th]/) {...}
 
 Such default rules are attempted in the order declared.  (They always follow
 any rules with a known prefix, by the longest-token-first rule.)
@@ -365,7 +366,7 @@ order you pass them in, so long as they follow any positional arguments:
 
     $formal = formalize($title, case=>'upper');
     $formal = formalize($title, justify=>'left');
-    $formal = formalize($title, :justify«right», :case«title»);
+    $formal = formalize($title, :justify<right>, :case<title>);
 
 Named parameters are optional unless marked with the C<is required>
 trait.  (Alternately, we might allow a C<++> prefix for required
@@ -381,8 +382,9 @@ table shows the correspondence:
     a => 1		:a
     a => 0		:a(0)
     a => $x		:a($x)
-    a => "foo"		:a«foo»
-    a => «foo bar»	:a«foo bar»
+    a => 'foo'		:a<foo>
+    a => <foo bar>	:a<foo bar>
+    a => «$foo @bar»	:a«$foo @bar»
     a => {...}		:a{...}
     a => [...]		:a[...]
     "" => {...}		:{...}
@@ -444,9 +446,9 @@ useful when we discuss adverbs below.
 =head2 Flattening argument lists
 
 The unary prefix operator C<*> flattens its operand (which allows the
-elements of an array to be used as an argument list). The C<*> operator
-also causes its operand -- and any subsequent arguments in the argument
-list -- to be evaluated in list context.
+elements of an array or iterator to be used as an argument list). The
+C<*> operator also causes its operand -- and any subsequent arguments
+in the argument list -- to be evaluated in list context.
 
     sub foo($x, $y, $z) {...}    # expects three scalars
     @onetothree = 1..3;          # array stores three scalars
@@ -570,8 +572,8 @@ Likewise, a hash argument can be mapped to a hash of parameters, specified
 as named parameters within curlies.  Instead of saying:
 
     sub register (%guest_data, $room_num) {
-        my $name := delete %guest_data«name»;
-        my $addr := delete %guest_data«addr»;
+        my $name := delete %guest_data<name>;
+        my $addr := delete %guest_data<addr>;
         ...
     }
                                                                                 
@@ -620,13 +622,13 @@ These are the standard type names in Perl 6 (at least this week):
 
     bit         single native bit
     int         native integer
-    str         native string
+    str         native string (sequence of integers, no Unicode)
     num         native floating point
     ref         native pointer 
     bool        native boolean
     Bit         Perl single bit (allows traits, aliasing, etc.)
     Int         Perl integer (allows traits, aliasing, etc.)
-    Str         Perl string
+    Str         Perl string (Unicode semantics)
     Num         Perl number
     Ref         Perl reference
     Bool        Perl boolean
@@ -780,7 +782,7 @@ subroutines, as part of their declaration:
 
     my $pi is constant = 3;
 
-    my $key is Persistent(:file«.key»);
+    my $key is Persistent(:file<.key>);
 
     sub fib is cached {...}
 
@@ -952,7 +954,7 @@ look for, and how many such scopes to skip over when looking:
     $caller = caller Method;               # nearest caller that is method
     $caller = caller Bare;                 # nearest caller that is bare block
     $caller = caller Sub, :skip(2);        # caller three levels up
-    $caller = caller Block, :label«Foo»;   # caller whose label is 'Foo'
+    $caller = caller Block, :label<Foo>;   # caller whose label is 'Foo'
 
 =head2 The C<want> function
 
@@ -991,7 +993,7 @@ To return from other types of code structures, the C<leave> function is used:
     leave Method;               # return from innermost calling method
     leave &?SUB <== 1,2,3;      # Return from current sub. Same as: return 1,2,3
     leave &foo <== 1,2,3;       # Return from innermost surrounding call to &foo
-    leave Loop, :label«COUNT»;  # Same as: last COUNT;
+    leave Loop, :label<COUNT>;  # Same as: last COUNT;
 
 
 =head2 Temporization
@@ -1156,8 +1158,8 @@ module's subroutines/methods/etc. simultaneously:
 To curry a particular multimethod it may be necessary to specify the type
 of one or more of its invocants:
 
-    &woof ::= &bark<Dog>.assuming :pitch«low»;
-    &pine ::= &bark<Tree>.assuming :pitch«yes»;
+    &woof ::= &bark<Dog>.assuming :pitch<low>;
+    &pine ::= &bark<Tree>.assuming :pitch<yes>;
 
 
 =head1 Other matters

@@ -12,9 +12,9 @@ Larry Wall <larry@wall.org>
 
   Maintainer: Larry Wall <larry@wall.org>
   Date: 10 Aug 2004
-  Last Modified: 24 Nov 2004
+  Last Modified: 2 Dec 2004
   Number: 2
-  Version: 2
+  Version: 4
 
 This document summarizes Apocalypse 2, which covers small-scale
 lexical items and typological issues.  (These Synopses also contain
@@ -136,12 +136,13 @@ the same performance issues they have in Perl 5.
 
 =item *
 
-Built-in object types start with an uppercase letter: Int, Num, Str,
-Bit, Ref, Scalar, Array, Hash, Rule and Code.  Non-object (value) types
-are lowercase: int, num, str, bit, and ref.  Value types are primarily
-intended for declaring compact array storage.  However, Perl will
-try to make those look like their corresponding uppercase types if
-you treat them that way.
+Built-in object types start with an uppercase letter: C<Int>, C<Num>,
+C<Str>, C<Bit>, C<Ref>, C<Scalar>, C<Array>, C<Hash>, C<Rule> and
+C<Code>.  Non-object (value) types are lowercase: C<int>, C<num>,
+C<str>, C<bit>, and C<ref>.  Value types are primarily intended for
+declaring compact array storage.  However, Perl will try to make
+those look like their corresponding uppercase types if you treat them
+that way.
 
 =item *
 
@@ -151,7 +152,7 @@ promotion to arbitrary precision.  C<Rat> supports arbitrary precision
 rational arithmetic.  Value types like C<int> and C<num> imply
 the natural machine representation for integers and floating-point
 numbers, respectively, and do not promote to arbitrary precision.
-Untyped scalars use Int semantics rather than int.
+Untyped scalars use C<Int> semantics rather than C<int>.
 
 =item *
 
@@ -243,6 +244,8 @@ whatever was to their left.  Whitespace is not allowed between a
 variable name and its subscript.  However, there is a corresponding
 "dot" form of each subscript (C<@foo.[1]> and C<%bar.{'a'}>) which
 allows optional whitespace before the dot (except when interpolating).
+Constant string subscripts may be placed in angles, so C<%bar.{'a'}>
+may also be written as C<< %bar<a> >> or C<< %bar.<a> >>.
 
 =item *
 
@@ -343,15 +346,15 @@ The current lexical symbol table may now be referenced through the
 pseudo-package C<MY>, or the corresponding variable C<%MY::>:
 
     my $foo = 42;
-    say %MY::«$foo»;	# prints "42"
+    say %MY::<$foo>;	# prints "42"
 
 =item *
 
 Typeglobs are gone.  Use binding (C<:=> or C<::=>) to do aliasing.
 Individual variable objects are still accessible through the
 hash representing each symbol table, but you have to include the
-sigil in the variable name now: %MyPackage::{'$foo'} (or also
-%MyPackage::«$foo» these days).
+sigil in the variable name now: C<%MyPackage::{'$foo'}> (or also
+C<< %MyPackage::<$foo> >> these days).
 
 =item *
 
@@ -363,12 +366,13 @@ that the variable is "wild carded" into every package.
 =item *
 
 Standard input is C<$*IN>, standard output is C<$*OUT>, and standard error
-is C<$*ERR>.
+is C<$*ERR>.  The magic command-line input handle is C<$*ARGS>.
 
 =item *
 
 Magical file-scoped values live in variables with a C<=> secondary
-sigil.  C<@=DATA> is the name of your C<DATA> filehandle, for instance.
+sigil.  C<$=DATA> is the name of your C<DATA> filehandle, for instance.
+All pod structures are available through C<%=POD> (or some such).
 As with C<*>, the C<=> may also be used as a package name: C<$=::DATA>.
 
 =item *
@@ -424,14 +428,105 @@ Underscores are allowed between any two digits in a literal number.
 
 =item *
 
+The C<qw/foo bar/> quote operator now has a bracketed form: C<< <foo bar> >>.
+When used as a subscript it performs a slice equivalent to C<{'foo','bar'}>.
+Much like the relationship between single quotes and double quotes, single
+angles do not interpolate while double angles do.  The double angles may
+be written either with French quotes, C<«$foo @bar»>, or
+with "Texas" quotes, C<<< <<$foo @bar>> >>>, as the ASCII workaround.
+The implicit split is done after interpolation, but respects quotes
+in a shell-like fashion, so that C<«'$foo' "@bar"»> is guaranteed to
+produce a list of two "words" equivalent to C<< ('$foo', "@bar") >>.
+C<Pair> notation is also recognized inside C<«...»> and such "words" are
+returned as C<Pair> objects.
+
+=item *
+
+Generalized quotes may now take adverbs:
+
+    Short	Long		Meaning
+    =====	====		=======
+    :x		:exec		Execute as command and return results
+    :w		:words		Split result on words (no quote protection)
+    :ww		:quotewords	Split result on words (with quote protection)
+    :t		:to		Interpret result as heredoc terminator
+    :0		:raw		No escapes at all (unless otherwise adverbed)
+    :1		:single		Interpolate \\, \q and \' (or whatever)
+    :2		:double		Interpolate all the following
+    :s		:scalar		Interpolate $ vars
+    :a		:array		Interpolate @ vars
+    :h		:hash		Interpolate % vars
+    :f		:function	Interpolate & calls
+    :c		:closure	Interpolate {...} expressions
+    :b		:backslash	Interpolate \n, \t, etc. (implies :m)
+
+Any of these may omit the colon after an initial "q", so we automatically
+get the forms:
+
+    Form	Same as
+    ====	=======
+    qx//	q:x//
+    qw//	q:w//
+    qww//	q:ww//
+    qt//	q:t//
+    q0//	q:0//
+    q1//	q:1//	(same as q//)
+    q2//	q:2//	(same as qq//)
+    qs//	q:s//
+    qa//	q:a//
+    qh//	q:h//
+    qf//	q:f//
+    qc//	q:c//
+    qb//	q:b//
+
+If this is all too much of a hardship, you can define your own quote
+adverbs and operators.  All the uppercase adverbs are reserved for
+user-defined quotes.  All of Unicode above Latin-1 is reserved for
+user-defined quotes.
+
+=item *
+
+A consequence of the previous item is that we can now say:
+
+    %hash = qw:c/a b c d {@array} {%hash}/;
+
+or
+
+    %hash = qq:w/a b c d {@array} {%hash}/;
+
+to interpolate items into a C<qw>.  Conveniently, arrays and hashes
+interpolate with only whitespace separators by default, so the subsequent
+split on whitespace still works out.  (But the built-in C<«...»> quoter
+automatically does interpolation equivalent to C<qq:ww/.../>.  The
+built-in C<< <...> >> is equivalent to C<q:w/.../>.)
+
+=item *
+
+Whitespace is allowed between the "q" and its adverb: C<q :w /.../>.
+
+=item *
+
+For these "q" forms the choice of delimiters has no influence on the
+semantics.  That is, C<''>, C<"">, C<< <> >>, C<«»>, C<``>, C<()>,
+C<[]>, and C<{}> have no special significance when used in place of
+C<//> as delimiters.  There may be whitespace or a colon before the
+opening delimiter. (Which is mandatory for parens because C<q()> is
+a subroutine call and C<q:w(0)> is an adverb with arguments).  Other
+brackets may also require a colon or space when they would be understood as
+an argument to an adverb in something like C<< q:z<foo>// >>.
+A colon may never be used as the delimiter since it will always be
+taken to mean something else regardless of what's in front of it.
+
+=item *
+
 New quoting constructs may be declared as macros:
 
-    macro quote:qX (AST $quoted, *%adverbs) {...}
+    macro quote:<qX> (*%adverbs) {...}
 
-Note: macro adverbs are not automatically evaluated at macro call
-time.  You must either evaluate them explicitly or arrange for them
-to be evaluated later. (But sub adverbs automatically evaluate at
-call time.)
+Note: macro adverbs are automatically evaluated at macro call
+time if the adverbs are included in the parse.  If the adverbs are
+to affect the parsing of the quoted text of the macro, then the text must
+be parsed by the body of the macro rather than by an C<is parsed> rule.
 
 =item *
 
@@ -443,12 +538,13 @@ just have to embed your construct inside a C<\qq[...]>.
 =item *
 
 Bare scalar variables always interpolate in double-quotish strings.
-Bare array, hash, and subroutine variables may I<not> be interpolated.
+Bare array, hash, and subroutine variables may I<never> be interpolated.
 However, any sigiled variable may start an interpolation if it is
 followed by a sequence of one or more bracketed dereferencers: that
 is, any of 1) an array subscript, 2) a hash subscript, 3) a set of
 parentheses indicating a function call, 4) any of 1 through 3 in their
-"dot" form, or 5) a dot-form method call that includes parentheses.
+"dot" form, or 5) a dot-form method call that includes argument parentheses if
+it's the last item in the sequence.
 
 =item *
 
@@ -467,9 +563,10 @@ tab between the key and value, and a newline after the pair.)
 =item *
 
 In order to interpolate an entire hash, it's necessary to subscript
-with empty braces:
+with empty braces or angles:
 
     print "The associations are:\n%bar{}"
+    print "The associations are:\n%bar<>"
 
 Note that this avoids the spurious "%" problem in double-quoted printf formats.
 
@@ -480,7 +577,7 @@ if you want something polished, you can be more specific.)
 =item *
 
 In order to interpolate the result of a sub call, it's necessary to include
-parentheses:
+both the sigil and parentheses:
 
     print "The results are &baz().\n"
 
@@ -510,7 +607,7 @@ end-bracket rule.)
 Multiple dereferencers may be stacked as long as each one ends in
 some kind of bracket:
 
-    print "The attribute is @baz[3](1,2,3){$xyz}«blurfl».attr().\n"
+    print "The attribute is @baz[3](1,2,3){$xyz}<blurfl>.attr().\n"
 
 Note that the final period above is not taken as part of the expression since
 it doesn't introduce a bracketed dereferencer.  Spaces are not allowed
@@ -526,7 +623,7 @@ either the C<*> or C<list> operator if necessary.
 
 The following means the same as the previous example.
 
-    print "The attribute is { @baz[3](1,2,3){$xyz}«blurfl».attr }.\n"
+    print "The attribute is { @baz[3](1,2,3){$xyz}<blurfl>.attr }.\n"
 
 The final parens are unnecessary since we're providing "real" code in
 the curlies.  If you need to have double quotes that don't interpolate
@@ -538,26 +635,6 @@ Alternately, you can build up capabilities from single quote to tell
 it exactly what you I<do> want to interpolate:
 
     q:s 'Here are { $two uninterpolated } curlies';
-
-The C<:s>, C<:a>, C<:h>, C<:f>, and C<:c> modifiers are short for the
-C<:scalar>, C<:array>, C<:hash>, C<:function>, and C<:closure> adverbs.
-If this is too much of a hardship, you can define your own quote
-operators, such as this one that does only Ruby-style interpolation:
-
-    macro term:qc () { "q:closure()" }
-
-And if that's too much of a hardship, we could define a standard "quote"
-pragma to set the default meaning of double quotes.
-
-=item *
-
-A consequence of the previous item is that we can now say:
-
-    %hash = qw:c/a b c d {@array} {%hash}/;
-
-to interpolate items into a qw.  Conveniently, arrays and hashes
-interpolate with only whitespace separators by default, so the subsequent
-split on whitespace still works out.
 
 =item *
 
@@ -614,18 +691,20 @@ Use curlies with the appropriate function instead: C<"{ucfirst $word}">.
 There are no barewords in Perl 6.  An undeclared bare identifier will
 always be taken to mean a subroutine or method name.  (Class names
 are predeclared, or prefixed with the C<::> sigil.)  A consequence of
-this is that there's no longer any "use strict subs".  There's also no
-"use strict refs" because symbolic dereferences are now syntactically
+this is that there's no longer any "C<use strict subs>".  There's also no
+"C<use strict refs>" because symbolic dereferences are now syntactically
 distinguished from hard dereferences.  C<@{$arrayref}> must now be a
-hard reference, while @::($string) is explicitly a symbolic reference.
+hard reference, while C<@::($string)> is explicitly a symbolic reference.
 (Yes, this may give fits to the P5-to-P6 translator, but I think it's
-worth it to separate the concepts.)
+worth it to separate the concepts.  Perhaps the symbolic ref form will
+admit hard refs in a pinch.)
 
 =item *
 
-There is no hash subscript autoquoting in Perl 6.  Use C<%x«foo»>
-or C<<< %x<<foo>> >>> for constant hash subscripts, or the old standby
-C<< %x{'foo'} >>.
+There is no hash subscript autoquoting in Perl 6.  Use C<< %x<foo> >>
+for constant hash subscripts, or the old standby C<< %x{'foo'} >>.  (It
+also works to say C<%x«foo»> as long as you realized it's subject to
+interpolation.)
 
 But C<< => >> still autoquotes any bare identifier to its immediate
 left (horizontal whitespace allowed but not comments).  The identifier is not
@@ -636,14 +715,14 @@ subject to keyword or even macro interpretation.  If you say
 	if => 1;
     }
 
-then C<$x> ends up containing the pair ("if" => 1).  Always.
+then C<$x> ends up containing the pair C<< ("if" => 1) >>.  Always.
 
 You can also use the :key($value) form to quote the keys of option
 pairs.  To align values of option pairs, you may use the dot postfix
 forms:
 
     :longkey  .($value)
-    :shortkey .«string»
+    :shortkey .<string>
     :fookey   .{ $^a <=> $^b }
 
 =item *
@@ -661,7 +740,7 @@ The double-underscore forms are going away:
 The C<=begin END> pod stream is special in that it assumes there's
 no corresponding C<=end END> before end of file.  The C<DATA>
 stream is no longer special--any POD stream in the current file
-can be accessed via a filehandle, named as C<%=«DATA»> and such.
+can be accessed via a filehandle, named as C<< %=POD<DATA> >> and such.
 Alternately, you can treat a pod stream as a scalar via C<$=DATA>
 or as an array via C<@=DATA>.  Presumably a module could read all
 its COMMENT blocks from C<@=COMMENT>, for instance.  Each chunk of
@@ -675,13 +754,18 @@ is C<&?BLOCK>.  If the block has a label, that shows up in C<$?BLOCKLABEL>.
 
 =item *
 
-In a heredoc, the terminating string after C<<< << >>> must be quoted
-(though custom quotes are permissible).  Since "q" forms of quote are
-allowed, adverbs are automatically also allowed:
+Heredocs are no longer written with C<<< << >>>, but with an adverb on
+any other quote construct:
 
-    print <<q:c/END/
+    print qq:to/END/
+	Give $amount to the man behind curtain number $curtain.
+	END
+
+Other adverbs are also allowed:
+
+    print q:c:to/END/
 	Give $100 to the man behind curtain number {$curtain}.
-    END
+	END
 
 =item *
 
@@ -758,12 +842,24 @@ it's more readable in some situations.)
 The C<*> unary operator may be used to force list context on its
 argument and I<also> defeat any scalar argument checking imposed by
 subroutine signature declarations.  This list flattens lazily.
+When applied to a scalar value containing an iterator, C<*> causes
+the iterator's return values be interpolated into the list lazily.
+When applied to nothing, it iterates the magic C<$*ARGS> iterator (or
+the current set of subscripts for this dimension, when used within a subscript).
+So Perl 5's
+
+    while (<>) {...}
+
+construct is instead written:
+
+    for * {...}
 
 =item *
 
 To force non-lazy list flattening, use the C<**> unary operator.
 Don't use it on an infinite generator unless you have a machine with
-infinite memory, and are willing to wait a long time.
+infinite memory, and are willing to wait a long time.  It may also
+be applied to a scalar iterator to force immediate iteration to completion.
 
 =item *
 
@@ -781,32 +877,42 @@ context operator.
 
 =item *
 
-The C<< => >> operator now constructs Pair objects rather than merely
+The C<< => >> operator now constructs C<Pair> objects rather than merely
 functioning as a comma.  Both sides are in scalar context.
 
 =item *
 
 There is no such thing as a hash list context.  Assignment to a hash
 produces an ordinary list context.  You may assign alternating keys
-and values just as in Perl 5.  You may also assign lists of Pair objects, in
+and values just as in Perl 5.  You may also assign lists of C<Pair> objects, in
 which case each pair provides a key and a value.  You may, in fact,
 mix the two forms, as long as the pairs come when a key is expected.
-If you wish to supply a Pair as a key, you must compose an outer Pair
-in which the key is the inner Pair:
+If you wish to supply a C<Pair> as a key, you must compose an outer C<Pair>
+in which the key is the inner C<Pair>:
 
     %hash = (($keykey => $keyval) => $value);
 
 =item *
 
-In contrast to assignment, binding to a hash requires a Hash (or
-Pair) reference.  Binding to a "splat" hash requires a list of pairs
-or hashes, and stops processing the argument list when it runs out
-of pairs or hashes.  See S6 for much more about parameter binding.
+The anonymous C<enum> function takes a list of keys or pairs, and adds
+values to any keys that are not already part of a key.  The value added
+is one more than the previous key or pair's value.  This works nicely with
+the new C<qq:ww> form:
+
+    %hash = enum <<:Mon(1) Tue Wed Thu Fri Sat Sun>>;
+    %hash = enum « :Mon(1) Tue Wed Thu Fri Sat Sun »;
+
+are the same as:
+
+    %hash = ();
+    %hash<Mon Tue Wed Thu Fri Sat Sun> = 1..7;
 
 =item *
 
-The C<qw/foo bar/> quote operator now has a bracketed form: C<«foo bar»>
-(or C<<< <<foo bar>> >>> as the ASCII workaround).
+In contrast to assignment, binding to a hash requires a C<Hash> (or
+C<Pair>) reference.  Binding to a "splat" hash requires a list of pairs
+or hashes, and stops processing the argument list when it runs out
+of pairs or hashes.  See S6 for much more about parameter binding.
 
 =back
 
@@ -821,17 +927,27 @@ function.
 
 =item *
 
-Input from a filehandle is still done with angle brackets, but a
-variable is required inside, since there are no bareword filehandles
-any more.  Angle brackets are not just for filehandles anymore--they
-actually cause any iterator to iterate (either once or many times,
-according to context).
+Input from a filehandle is no longer done with angle brackets.  Instead
+of
 
-There is a corresponding method, C<< .<> >>.  So, for instance,
-you can write C<< $*IN.<> >> to force iteration of standard input.
-Iterator adverbs can go inside:
+    while (<HANDLE>) {...}
 
-    for $handle.<:prompt('$ ')> { say $_ + 1 }
+you now write
+
+    for *$handle {...}
+
+As a unary prefix operator, you may also apply adverbs:
+
+    for *$handle :prompt('$ ') { say $_ + 1 }
+
+or
+
+    for *($handle):prompt('$ ') { say $_ + 1 }
+
+or you may even write it in its functional form, passing the adverbs
+as ordinary named arguments.
+
+    for prefix:<*>($handle, :prompt('$ ')) { say $_ + 1 }
 
 =back
 
