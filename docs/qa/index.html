@@ -12,11 +12,11 @@
 <h2>Perl Quality Assurance Projects</h2>
 
 <p>
-
-
-There are multiple projects in the Perl community related to improving
-and testing the quality and portability of Perl modules and Perl
-itself.
+There are multiple projects in the Perl community related to
+<ul>
+    <li>improving and testing the quality and portability of Perl modules and Perl itself, and
+    <li>using Perl's QA tools for general software development. 
+</ul>
 
 </p>
 
@@ -34,7 +34,7 @@ archive</a> and <a href="news://nntp.perl.org/perl.qa">nntp server</a>.)
 
 <p>
 The "smokers" do
-<a href="http://www.tuxedo.org/~esr/jargon/html/entry/smoke-test.html">smoke
+<a href="http://www.catb.org/~esr/jargon/html/S/smoke-test.html">smoke
 tests</a> of the bleading edge Perl on various platforms to help the
 developers spot new bugs as fast as possible.
 
@@ -59,17 +59,33 @@ for information on that.
 <h3>CPAN testers</h3>
 
 <p>
-<a href="http://testers.cpan.org/">cpan-testers</a> is a group which
-was initially setup by Graham Barr and Chris Nandor. The objective of
-the group is to test as many of the distributions on CPAN as possible,
-on as many platforms as possible.
-
+<a href="http://testers.cpan.org/">cpan-testers</a> is a group that
+tests as many of the distributions on CPAN on as many different
+platforms as possible.  It was started by Graham Barr and Chris Nandor.
 </p>
-<p>
 
+<p>
 Subscribe to the cpan-testers mailinglist by sending mail to <a
 href="mailto:cpan-testers-subscribe@perl.org">cpan-testers-subscribe@perl.org</a>.
 
 Get more information on how to get involved at <a
 href="http://testers.cpan.org/">http://testers.cpan.org</a>.
 </p>
+
+<h3>Automated testing with Perl</h3>
+Automated testing is a key part of software development, especially in environments
+that have embraced extreme programming.
+Perl's
+<A HREF="http://search.cpan.org/dist/Test-Harness/">Test::Harness</A> framework,
+along with
+<A HREF="http://search.cpan.org/dist/Test-Simple/">Test::Simple and Test::More</A>,
+allow flexible testing of all parts of your development projects.
+<P>
+A starter list of resources:
+<ul>
+    <li><A HREF="http://magnonel.guild.net/~schwern/talks/Test_Tutorial/Test-Tutorial.pdf">Test::Tutorial</A>,
+    a presentation by Michael Schwern &amp; chromatic</li>
+    <li><A HREF="http://search.cpan.org/dist/Test-Simple/lib/Test/Tutorial.pod">Test::Tutorial</A>, part of the Test::Simple distro</li>
+    <li><A HREF="http://petdance.com/perl/automated-testing/">Automated Testing With Perl</A>, a presentation by Andy Lester</LI>
+</UL>
+<!-- These links should get their own page -->
