@@ -1,0 +1,6 @@
+[% content = PROCESS $template %]
+
+[% #USE Dumper; Dumper.dump_html(page template)%]
+[% default_style_template = "tpl/style/" _ page.style;
+    PROCESS $default_style_template;
+%]

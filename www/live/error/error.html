@@ -1,4 +1,3 @@
-[% PROCESS tpl/common/header.html %]
 
 <h3>[% error %] - [% error_header %]</h3>
 
@@ -10,6 +9,10 @@ error_uri | uri %]</tt>. <br /><br />
 Go to <a href="/">the front page</a> or <a href="mailto:ask@develooper.com">send mail to the staff</a>.
 
 [% ELSIF error == 500 %]
+
+[% IF error_text %]
+<i>[% error_text %]</i></p><p>
+[% END %]
 
 Ouch!  The server made a boo-boo.  In other words: We #$%^#$ up!
 Sincere apologies all around.  The server has already sent angry mails
@@ -24,4 +27,3 @@ href="mailto:ask@develooper.com">send a mail</a>.
 [% END %]
 </p>
 
-[% PROCESS tpl/common/footer.html %]

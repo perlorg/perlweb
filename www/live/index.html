@@ -1,6 +1,6 @@
-[% banner = BLOCK %]The Perl Directory at <SPAN CLASS="title">Perl.org</span>[% END %]
+[% page.banner = BLOCK %]The Perl Directory at <SPAN CLASS="title">Perl.org</span>[% END %]
 
-[% sidebar = BLOCK%]
+[% page.sidebar = BLOCK%]
   <DIV class="MENU">
   <H3>New release!</h3>
   <a href="http://www.cpan.org/src/README.html">Download Perl 5.8.0</a>
@@ -19,7 +19,6 @@
    suggestions to the <a href="mailto:webmaster@perl.org">webmaster</a>. 
 [% END %]
 
-[% PROCESS tpl/common/header.html %]
 
 <table width="530" cellspacing="10" cellpadding="5" border="0">
   <tr valign="TOP">
@@ -81,8 +80,8 @@
     <a href="http://lists.perl.org/">mail lists</a>
     <P>
     </div>
-    
-    <a href="books.html"><DIV CLASS="TOPIC">Books and articles</DIV></a>
+
+    <a href="books.html"><DIV CLASS="TOPIC">Books!! and articles</DIV></a>
     <DIV CLASS="ITEMS">
     <a href="http://www.theperlreview.com/">the Perl Review</a>, 
     <a href="http://www.tpj.com/">the Perl Journal</a>, 
@@ -114,4 +113,3 @@
 
 
 
-[% PROCESS tpl/common/footer.html %]

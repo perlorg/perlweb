@@ -1,6 +1,6 @@
 [% META title = 'About Perl' %]
 
-[% sidebar = BLOCK %]
+[% page.sidebar = BLOCK %]
   <DIV class="NAVITEM">
    <H3>More about Perl</H3>
     <a href="http://use.perl.org/">News</a> at use.perl.org 
@@ -24,7 +24,7 @@ and was awarded the first Free Software Foundation Award for the Advancement of 
 </div>
 [% END %]
 
-[% PROCESS tpl/common/header.html %]
+[%# PROCESS tpl/common/header.html %]
 
 
 <P>
@@ -76,6 +76,6 @@ as 2000%.  See <a href="http://perl.apache.org">http://perl.apache.org</a>.
 <li>Perl's DBI package makes web-database integration easy.
 </ul>
 
-[% PROCESS tpl/common/footer.html %]
+[% #PROCESS tpl/common/footer.html %]
 
 
