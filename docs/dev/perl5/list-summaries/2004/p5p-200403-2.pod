@@ -1,0 +1,120 @@
+=head1 This Week on perl5-porters (8-14 March 2004)
+
+This week was the can-of-Unicode-worms-festival week for the Perl 5 porters.
+Regular expressions were another recurrent topic. Read on for details.
+
+=head2 Unicode and UTF-8 coding
+
+The Big Topic of this week was UTF-8, Unicode, and how Perl deals with it.
+
+This all started with a report about seemingly innocuous UTF-8 failures.
+Digging into this deeper, Chip Salzenberg pointed out a flaw in Perl's
+handling of Unicode strings: conversions from byte strings (with "regular"
+eight-bit chars) to UTF-8 currently map high bit characters to Unicode
+without translation (or, depending on how you look at it, by implicitly
+assuming the byte strings are in Latin-1). This is potentially wrong,
+because Perl assumes the C locale by default. Thus upgrading a string to
+UTF-8 may change the meaning of its contents regarding character classes,
+case mapping, etc. But this behaviour was chosen in perl 5.8.x for
+backwards compatibilty.
+
+    http://groups.google.com/groups?selm=20040310170059.GE2455%40perlsupport.com
+
+Jarkko Hietaniemi, former 5.8 pumpking and Unicode guru, stepped into the
+discussion and provided insight. Various solutions were proposed and
+discussed.
+
+    http://groups.google.com/groups?selm=40524044.1090704%40iki.fi
+
+Should upgrade from byte strings that contain characters in the range
+0x80-0xFF be forbidden, or emit a warning? Autrijus Tang, deciding to
+speak in code, released a module on CPAN that implements this last
+solution, and wishes them to be integrated into the core at some point in
+the 5.9 development track. This would need also to turn the C<encoding>
+pragma into a lexically-scoped one (like C<locale> currently is.)
+
+    http://groups.google.com/groups?selm=1079275492.4005.8.camel%40localhost
+    http://search.cpan.org/~autrijus/encoding-warnings-0.03/lib/encoding/warnings.pm
+
+While we're at it, Nick Ing-Simmons wonders what's the proper method for
+XS coders to get UTF-8 data (without converting an SV to UTF-8 in place,
+which is considered a Bad Thing). Sadahiro Tomoyuki provides some answers.
+
+    http://groups.google.com/groups?selm=20040307181606.2729.7%40llama.ing-simmons.net
+
+=head2 substr() lvalues
+
+Ton Hospel reported (some time ago) bug #24346, concerning the behaviour
+of the return value of substr() when it is used as an lvalue. He points
+out, with examples, that the current situation is not satisfactory,
+because the lvalue acts as a fixed-length window. This causes in some
+cases some surprising action at distance, making a variable (coming from
+the result of a substr()) hold a value different from the one it has been
+assigned to.
+
+Graham Barr fixed this problem. Nicholas, apparently, still hesitates
+whether this should go in perl 5.8 or not, in the absence of any good
+argument for or against.
+
+    http://groups.google.com/groups?selm=rt-24346-66654.1.8290615224722%40rt.perl.org
+
+=head2 Regular expression bugs
+
+Hugo reports that Damian reported that C<use re 'eval'> is not seen in
+patterns interpolated at run-time via C</(??{...})/>. Yitzchak
+Scott-Thoennes explains that this comes from the fact that this
+compile-time pragma setting is no longer seen at run-time (and this is one
+more reason to rewrite the support for pragmas in the core.)
+
+    http://groups.google.com/groups?selm=200403100343.i2A3hWP03026%40zen.crypt.org
+
+Hugo reports also a case of incorrect regexp compilation warning (bug
+#27603) with C</(??{...})/> blocks:
+
+    http://groups.google.com/groups?selm=rt-3.0.8-27603-81805.2.6610882472044%40perl.org
+
+Jamie Lokier found a bug in the regular expression engine, more precisely
+in the optimisation pass (bug #27515), leading to wrong interpretation of
+the regular expression C</^(.*)(?=x)x/>. Hugo confirmed that this was a
+known bug, possibly difficult to fix.
+
+    http://groups.google.com/groups?selm=rt-3.0.8-27515-81033.1.09945237479955%40perl.org
+
+Jamie found also that using return() from a C</(?{...})/> block may lead
+to segmentation fault (bug #27595). Such blocks are considered completely
+broken by the higher authorities (Dave Mitchell) and are hopefully to be
+reimplemented.
+
+=head2 Other bugs (and fixes)
+
+Rafael reports that the source-filter-based C<Switch> module is confused
+by occurences the C<($)> function prototype in the filtered source. (Bug
+#27472.)
+
+Chip Salzenberg fixed the line-buffering problem noticed by Stas Bekman
+last week.
+
+Paul Kramer remarks that one can't change the ownership of a symlink with
+perl's chown() built-in. Rafael suggests to add lchown() to the POSIX
+module (which contains chown() already.) (Bug #27547.)
+
+Nicholas Clark proposed a load of patches for C<Storable>: fixes for
+storing restricted hashes, references to C<undef>, plus a space
+optimization. (Bug #27616.)
+
+=head2 Releases
+
+Arthur Bergman released the second development release of Ponie, which
+seems to be impressive so far.
+
+    http://groups.google.com/groups?selm=EBE5CF35-7445-11D8-8D57-000A95A2734C%40nanisky.com
+
+Tels released new versions of his math packages, Math::BigInt v1.70,
+bignum 0.15, and Math::BigRat 0.12.
+
+=head2 About this summary
+
+This summary was written by Rafael Garcia-Suarez.  Weekly summaries are
+published on F<http://use.perl.org/> and posted on a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>.  Comments and
+corrections are welcome.
