@@ -1,8 +1,22 @@
 package Combust::Cookies;
 use strict;
 use Apache::Cookie;
+use URI::Escape qw(uri_escape uri_unescape);
 
-my $cookie_name  = 'z';
+my $default_cookie_name  = 'p';
+
+my %special_cookies = (
+  r => [qw(root)],
+  #svd => [qw(s)],
+);
+
+my %special_cookies_reverse;
+for my $cookie_name (keys %special_cookies) {
+  for my $cookie (@{$special_cookies{$cookie_name}}) {
+    $special_cookies_reverse{$cookie} = $cookie_name;
+  }
+} 
+
 
 sub new {
   my $proto = shift;
@@ -13,30 +27,41 @@ sub new {
 }
 
 sub changed {
-  my ($self, $val) = @_;
-  $self->{_changed} = $val if $val; 
-  return $self->{_changed} || 0;
+  my ($self, $cookie, $val) = @_;
+  $cookie ||= $default_cookie_name;
+  #$self->{_changed} = {} unless $self->{_changed};
+  $self->{_changed}->{$cookie} = $val if $val; 
+  return $self->{_changed}->{$cookie} || 0;
 }
 
 sub parse_cookies {
-  my $self = shift;
+  my ($self) = @_;
 
   return $self->{_parsed} if $self->{_parsed};
   my $cookies = Apache::Cookie->new($self->{r})->parse || {};
 
-  my $cookie = $cookies->{$cookie_name} ? $cookies->{$cookie_name}->value : "";
-  $cookie =~ s/\r$// if $cookie;  # remove occasional trailing ^M
+  my $parsed = {};
+ 
 
-  $cookie = check_cookie($cookie);
+  for my $cookie_name ($default_cookie_name, keys %special_cookies) {
+    my $cookie = $cookies->{$cookie_name} ? $cookies->{$cookie_name}->value : "";
+ 
+    next unless $cookie;
+    
+    $cookie =~ s/\r$// if $cookie;  # remove occasional trailing ^M
+ 
+    $cookie = check_cookie($cookie_name, $cookie);
 
-  warn "got cookie: [$cookie]";
+    warn "got cookie: [$cookie_name]=[$cookie]";
+    
+    # FIXME: we are unescaping the keys too... hmn 
+    $parsed = { %$parsed, map { uri_unescape($_) } split /\/~/, $cookie } if $cookie;
 
-  my $parsed = $cookie ? { split /\//, $cookie } : {};
-
-  my $last_refreshed = $parsed->{lr} || 0;
-  if ($last_refreshed < (time - (86400*7))) {
-    $parsed->{lr} = time;
-    $self->changed(1);
+    my $last_refreshed = $parsed->{"LR" . $cookie_name} || 0;
+    if ($last_refreshed < (time - (86400*7))) {
+      $parsed->{"LR" . $cookie_name} = time;
+      $self->changed($cookie_name, 1);
+    }
   }
   return $self->{_parsed} = $parsed;
 }
@@ -48,9 +73,9 @@ sub cookie {
 
   my $cookies = $self->parse_cookies;
   if ($val and (!$cookies->{$cookie} or $cookies->{$cookie} ne $val)) {
-    warn "Setting $cookie to [$val]";
+    #warn "Setting $cookie to [$val]\n";
     $cookies->{$cookie} = $val;
-    $self->changed(1);
+    $self->changed($special_cookies_reverse{$cookie} || $default_cookie_name, 1);
   }
   $cookies->{$cookie} || '';
 }
@@ -58,54 +83,65 @@ sub cookie {
 sub bake_cookies {
   my $self = shift;
 
-  return unless $self->changed;
-
-  warn " bake cookies: ", ref $self;
-  #warn Data::Dumper->Dump([\$self], [qw(self)]);
-
   my $r = $self->{r};
   my $notes  = $r->pnotes('combust_notes') or die "No combust_notes, configuration error?";
   my $domain = $notes->{req_domain};
 
-  my $cookies = $self->parse_cookies;
+  #warn "\n\n\nBAKING COOKIES\n\n";
 
-  use Data::Dumper;
-  warn Data::Dumper->Dump([\$cookies], [qw(cookies)]);
+  #warn Data::Dumper->Dump([\$self], [qw(self)]);
 
-  unless (%$cookies) {
-    $cookies->{_R} = $$ . rand(1000) . make_checksum(rand); 
+  for my $cookie_name (keys %special_cookies, $default_cookie_name) {
+
+    #warn " bake cookies for cookie $cookie_name: ", ref $self;
+
+    next unless $self->changed($cookie_name);
+
+    my $cookies = $self->parse_cookies;
+
+    use Data::Dumper;
+    #warn Data::Dumper->Dump([\$cookies], [qw(cookies)]);
+    
+    my @keys = $special_cookies{$cookie_name} ? @{ $special_cookies{$cookie_name} } : (keys %$cookies);
+    
+    push @keys, "LR" . $cookie_name unless $cookie_name eq $default_cookie_name;
+
+    #warn "KEYS for $cookie_name: ", join "!", @keys;
+
+    my $encoded = join('/~', map { $_ => (uri_escape(delete $cookies->{$_} || '', "^A-Za-z0-9\-_.!*'()")) }
+		       grep { $cookies->{$_} } @keys);
+
+    next unless $encoded;  # TODO - skip the LR cookie ... oh well.
+
+    $cookies->{_R} = $$ . rand(1000); # . make_checksum(rand); 
+
+    my $cs = make_checksum($cookie_name, $encoded);
+ 
+    # 2/ is the version
+    $encoded = "2/$encoded/$cs";
+
+    #warn "[$cookie_name] encoded: [$encoded]";
+
+    # not that we actually have the /w3c/p3p.xml document
+    $r->header_out('P3P',qq[CP="NOI DEVo TAIo PSAo PSDo OUR IND UNI NAV", policyref="/w3c/p3p.xml"]);
+
+    my $cookie = Apache::Cookie->new(
+				     $self->{r},
+				     -name	=> $cookie_name,
+				     -value	=> $encoded,
+				     -domain	=>  "$domain",
+				     -expires	=> '+180d',
+				     -path	=> '/',
+				    );
+    $cookie->bake;
   }
-  else {
-    $cookies->{_R} = undef; 
-  }
-
-  my $encoded = join('/', map { $_ => $cookies->{$_} } grep { $cookies->{$_} } keys %$cookies);
-
-  my $cs = make_checksum($encoded);
-
-  # 1/ is the version
-  $encoded = "1/$encoded/$cs";
-
-  warn "encoded: [$encoded]";
-
-  # not that we actually have the /w3c/p3p.xml document
-  $r->header_out('P3P',qq[CP="NOI DEVo TAIo PSAo PSDo OUR IND UNI NAV", policyref="/w3c/p3p.xml"]);
-
-  my $cookie = Apache::Cookie->new(
-      $self->{r},
-      -name	=> $cookie_name,
-      -value	=> $encoded,
-      -domain	=>  "$domain",
-      -expires	=> '+180d',
-      -path	=> '/',
-  );
-  $cookie->bake;
 }
 
+
 sub check_cookie {
-  my ($raw_id) = @_;
+  my ($cookie_name, $raw_id) = @_;
   my ($cookie_version, $cookie, $hex_cs) = $raw_id =~ m!^(.)/(.*?)/([^/]{8})$!;
-  warn "V: [$cookie_version]  C: [$cookie]  CS: [$hex_cs]";
+  warn "N: [$cookie_name]  C: [$cookie]  CS: [$hex_cs]\n";
   
   unless ($cookie) { # regex didn't match, probably truncated
     # the empty id have a checksum too, but we will never allow that
@@ -113,12 +149,12 @@ sub check_cookie {
     return '' unless wantarray;
     return ('', "trunc", 0); # don't reset the user_id in this case
   }
-  unless ($cookie_version eq "1") { # corruption or a hacker
-    warn "XRL::Cookies got cookie_version $cookie_version != 1 ($raw_id)";
+  unless ($cookie_version eq "2") { # corruption or a hacker
+    warn "Combust::Cookies got cookie_version $cookie_version != 2 ($raw_id)";
     return 0 unless wantarray;
     return ('', "vers",  (rand(100) < 0.1) );
   }
-  if ($hex_cs ne make_checksum($cookie)) {
+  if ($hex_cs ne make_checksum($cookie_name, $cookie)) {
     warn "Failed checksum";
     return '' unless wantarray;
     return ('', "failed", (rand(100) < 0.1) );
@@ -130,9 +166,9 @@ sub check_cookie {
 
 
 sub make_checksum {
-  my $id = shift;
-  my $pad = "\001~#{f0Oz}~\250\25043%,";
-  my $cs = DBI::hash("$pad/$id^/$id/$pad/$id\L//$pad/$id");
+  my ($key, $value) = @_;
+  my $pad = "~#[d0oODxz\001>~\250as\250d75~\%,";  # TODO|FIXME: this should be picked up from a local file
+  my $cs = DBI::hash("$pad/$key^/$key/$pad/$value/$key\L//$pad/$value");
   my $hex_cs = unpack("H8", pack("L",$cs));
   return uc $hex_cs;
 }
