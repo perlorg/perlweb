@@ -12,9 +12,9 @@ Larry Wall <larry@wall.org>
 
   Maintainer: Larry Wall <larry@wall.org>
   Date: 19 Aug 2004
-  Last Modified: 2 Dec 2004
+  Last Modified: 4 Dec 2004
   Number: 4
-  Version: 3
+  Version: 4
 
 This document summarizes Apocalypse 4, which covers the block and
 statement syntax of Perl.
@@ -180,21 +180,17 @@ to read a file a line at a time:
 
 you should use a C<for> instead:
 
-    for *$*IN -> $line {...}
+    for =$*IN -> $line {...}
 
 This has the added benefit of limiting the scope of the C<$line>
 parameter to the block it's bound to.  (The C<while>'s declaration of
 C<$line> continues to be visible past the end of the block.  Remember,
 no implicit block scopes.)  It is possible to write
 
-    while *$*IN -> $line {...}
+    while =$*IN -> $line {...}
 
-but you have to be careful that the object being evaluated for truth
-can also behave as a line after behaving as a boolean.  If you write:
-
-    while ?<$*IN> -> $line {...}
-
-then C<$line> will only ever contain 0 or 1, because that's what ? returns.
+But it won't do what you expect, because unary C<=> does a slurp in scalar
+context, so C<$line> will contain the entire file.
 
 Note also that Perl 5's special rule causing
 
@@ -203,9 +199,11 @@ Note also that Perl 5's special rule causing
 to automatically assign to C<$_> is not carried over to Perl 6.  That's
 should now be written:
 
-    for * {...}
+    for =<> {...}
 
-(If you write it with C<while> you'll get a warning.)
+which is short for
+
+    for =$*ARGS {...}
 
 Parameters are by default constant within the block.  You can
 declare a parameter read/write by including the "C<is rw>" trait.
