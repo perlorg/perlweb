@@ -1,0 +1,27 @@
+
+[% mails = rre.get_mails(limit => 10) %]
+[% #categories = mail.categories %]
+[% #USE Dumper; 
+   #Dumper.dump_html(mails, categories) %]
+
+[% mail = mails.shift %]
+
+[% PROCESS mail.html, mail => mail %]
+
+
+[% sidebar = BLOCK %]
+
+[% FOR mail = mails %] 
+<p>
+<a href="[% mail.url %]">[% mail.date %]</a><br />
+
+[% FOR category = mail.categories %]
+<a href="[% mail.url %]#[% category.category_name %]">[% category.category_name %]</a>
+[%- UNLESS category.category_name == mail.categories.last.category_name -%],[% END %]
+[% END %]
+
+</p>
+[% END %]
+
+
+[% END %]

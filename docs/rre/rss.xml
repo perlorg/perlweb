@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<rss version="2.0" 
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+    xmlns:admin="http://webns.net/mvcb/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:content="http://purl.org/rss/1.0/modules/content/">
+
+[%- page.style = 'none';
+     USE date; 
+-%]
+
+  <channel>
+    <title>[% page.title %] - [% title %]</title>
+    <link>http://www.redrockeater.org</link>
+    <description>Red Rock Eater News Service Archive - [% title %] feed</description>
+    <dc:language>en-us</dc:language>
+    <dc:creator>Phil Agre</dc:creator>
+    <dc:rights>Copyright 1993-[% date.format(date.now, "%Y") %]</dc:rights>
+    <dc:date>[% date.format(entries.0.unixtime, "%Y-%m-%dT%H:%M:%S-08:00") %]</dc:date>
+    <admin:generatorAgent rdf:resource="http://www.redrockeater.org/rss/" />
+    <admin:errorReportsTo rdf:resource="mailto:ask@develooper.com"/>
+    <sy:updatePeriod>daily</sy:updatePeriod>
+    <sy:updateFrequency>1</sy:updateFrequency>
+    <sy:updateBase>2000-01-01T12:00+00:00</sy:updateBase>
+
+[%# USE Dumper; %]
+[%# Dumper.dump(entries) %]
+
+[% FOR e = entries %]
+    <item>
+      <title>[% e.title %] - [% e.date %]</title>
+      <link>[% e.fqdn_url %]</link>
+      <description>description field</description>
+[%-
+  IF e.link_id;
+    guid = "l" _ e.link_id;
+  ELSIF e.mail_id;
+    guid = "m" _ e.mail_id;
+  END;
+%] 
+      <guid isPermaLink="false">[% guid %]@redrockeater.org</guid>
+      <content:encoded><![CDATA[[% e.cdata %]]]></content:encoded>
+[% IF e.category -%]
+      <dc:subject>[% "category" %]</dc:subject>
+[%- END %]
+      <dc:date>[% date.format(e.unixtime, "%Y-%m-%dT%H:%M:%S-08:00") %]</dc:date>
+    </item>
+[% END %]
+
+  </channel>
+</rss>
+
