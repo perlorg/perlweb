@@ -17,7 +17,11 @@
     page.title = "$title - ${page.site}";
   ELSE;
     page.title = "${page.site}"; 
-  END;  
+  END;
+
+  UNLESS page.tagline;
+    page.tagline = "When you need perl, think perl.org";
+  END;
 
   # is this intentionally all indexes or should it just be the most
   # top level one?
@@ -129,7 +133,7 @@
     </DIV>
 
 <DIV CLASS="TAGLINE">
-When you need perl, think perl.org
+[% page.tagline %]
     &nbsp;
 </DIV>
 

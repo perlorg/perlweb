@@ -4,14 +4,31 @@
 
 <H2>TODO Items from the BugTracker</H2>
 
+[%#
 <B>PLACEHOLDER</B><BR>
 
-Include raw HTML from <tt>http://rt.perl.org/rt2/NoAuth/ParrotTODO.html</tt>
+Include raw HTML from
+<tt>http://rt.perl.org/rt2/NoAuth/ParrotTODO.html</tt>
+%]
+
+[% USE ua = CacheLWPSimple %]
+[% ua.get( 'url' =>
+      'http://rt.perl.org/rt3/NoAuth/parrot/ParrotTODO.html'
+           'ttl' => 10*60 ) %]
+
 
 <HR WIDTH=50% SIZE=0>
 
 <H2>TODO file in the Source </H2>
 
+<PRE>
+[% USE ua = CacheLWPSimple %]
+[% ua.get( 'url' =>
+   'http://cvs.perl.org/cvsweb/parrot/docs/glossary.pod?rev=HEAD&content-type=text/plain',
+           'ttl' => 60*60 ) %]
+</PRE>
+
+[%#
 <B>PLACEHOLDER</B><BR>
 
 PRE block comes from 
@@ -19,5 +36,5 @@ PRE block comes from
 <tt>http://cvs.perl.org/cvsweb/parrot/docs/glossary.pod?rev=HEAD&content-type=text/plain</tt>
 
 and cache for 24 hours.
-
+%]
 

@@ -2,9 +2,17 @@
 [% page.style = "default.html" %]
 [% page.sidebar = INCLUDE "tpl/navigation.html" %]
 
-
+[%#
 <B>PLACEHOLDER</B><BR>
 
 POD source from 
 <tt>http://cvs.perl.org/cgi/cvsweb.cgi/%7echeckout%7e/parrot/docs/faq.pod</tt>
 and cache for 24 hours.
+%]
+
+[% USE ua = CacheLWPSimple %]
+[% data = ua.get( 'url' =>
+      'http://cvs.perl.org/cgi/cvsweb.cgi/%7echeckout%7e/parrot/docs/faq.pod',
+           'ttl' => 1*60*60 ) %]
+[% USE PodSimple %]
+[% PodSimple.parse('html', data ) %]

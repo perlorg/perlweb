@@ -3889,7 +3889,7 @@ breaker subroutine:
                 my ($nextline, $more) = original_breaker(*@args);
 
                 # X out any doubleplus ungood words
-                $nextline =~ s:ei/(@proscribed)/$( 'X' x length $1 )/;
+                $nextline ~~ s:ei/(@proscribed)/$( 'X' x length $1 )/;
 
                 # Return the "corrected" version...
                 return ($nextline, $more);
