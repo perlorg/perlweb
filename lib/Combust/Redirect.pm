@@ -34,6 +34,7 @@ sub reload {
       next unless (my ($regexp, $url, $option) = $_ =~ m/(\S+)\s+(\S+)(?:\s*(\S+))?/);
       $regexp =~ s/^/\^/ unless $regexp =~ m/^\^/;
       $regexp =~ s/$/\$/ unless $regexp =~ m/\$$/;
+      $option ||= '';
       $option = "I" if $option =~ m/^int/i;
       $option = "P" if $option =~ m/^per/i;
       $option = "" unless $option =~ m/^[IP]$/;

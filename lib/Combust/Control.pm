@@ -275,6 +275,13 @@ sub evaluate_template {
   $rc;
 }
 
+sub content_type {
+  my ($self, $content_type) = @_;
+  if ($content_type) {
+    $self->{_content_type} = $content_type;
+  }
+  $self->{_content_type};
+}
 
 sub send_cached {
   my ($self, $cache, $content_type) = @_;
@@ -294,7 +301,7 @@ sub send_output {
   shift @_ if ref $_[0] eq "Apache::Request";
 
   my $routput = shift;
-  my $content_type = shift || 'text/html';
+  my $content_type = shift || $self->content_type || 'text/html';
 
   my $r = $self->r;
 
