@@ -6,26 +6,7 @@ short list of what's available, so you don't reinvent the wheel.
 If you have a module to add to the list, please email
 C<andy@petdance.com>.
 
-=head2 Apache::Test
-
-Allows you to run tests for Apache-based software.  Also lets you run
-tests inside Apache.  Not limited to mod_perl.
-
-=over 4
-
-=item * Introductory tutorial slides
-
-L<http://www.modperlcookbook.org/~geoff/slides/ApacheCon/2003/apache-test-printable.ppt.gz>
-
-=item * perl.com article on Apache::Test
-
-L<http://www.perl.com/pub/a/2003/05/22/testing.html>
-
-=item * Docs from apache.org
-
-L<http://perl.apache.org/docs/general/testing/testing.html>
-
-=back
+=head1 General testing modules
 
 =head2 Test::AtRuntime
 
@@ -56,23 +37,6 @@ Comprises 4 submodules that provide a number of functions to test the
 contents of arrays, hashes, scalars and functions.  These make it easy
 to test various boundaries and edge cases without writing much code.
 
-=head2 Test::DatabaseRow
-
-Given a DBI database handle, can test to see if the database contains
-tables with particular rows. Useful for testing that database
-modifications went well.
-
-    # SQL-based test
-    row_ok( sql   => "SELECT * FROM contacts WHERE cid = '123'",
-            tests => [ name => "trelane" ],
-            label => "contact 123's name is trelane");
-
-    # test with shortcuts
-    row_ok( table => "contacts",
-            where => [ cid => 123 ],
-            tests => [ name => "trelane" ],
-            label => "contact 123's name is trelane");
-
 =head2 Test::Debugger
 
 Emits a trace of the test script to file, for perusal in the event
@@ -91,25 +55,9 @@ query has well formed records).
 Tests long strings and data structures, giving a readable output (unlike
 testing long strings with C<Test::More>'s C<is> function).
 
-=head2 Test::Distribution
-
-Performs basic Kwalitee checking on modules: checks that they have well
-formed POD, they compile, they all define the same C<$VERSION>, they
-have their prerequisites in the F<Makefile.PL> and that some standard
-files exist.
-
-=head2 Test::Easy
-
-Allegedly easier to use than C<Test::Simple>. For simple cases.
-
 =head2 Test::Env
 
 Tests that one's environment has appropriate data.
-
-=head2 Test::Exception
-
-Testing that bits of code die or don't die appropriately, and with the
-right errors.
 
 =head2 Test::Extreme
 
@@ -128,28 +76,6 @@ writeable, etc.).
 =head2 Test::Files
 
 Tests files and directories have particular contents.
-
-=head2 Test::HTML::Content
-
-Tests HTML has (or hasn't) particular links, text, tags, comments and
-such. Very useful for testing websites (see also C<WWW::Mechanize> and
-C<Test:HTML::Lint>).
-
-=head2 Test::HTML::Lint
-
-Checks that HTML is well formed as per C<HTML::Lint>.
-
-=head2 Test::HTML::Tidy
-
-Checks that HTML is well formed as per C<HTML::Tidy>.
-
-=head2 Test::HTTPStatus
-
-Ensures HTTP responses have appropriate values.
-
-=head2 Test::Helper
-
-Provides slightly less punctuated syntax for writing tests.
 
 =head2 Test::ISBN
 
@@ -170,11 +96,6 @@ inequality, or non-match, is with ease.
 
 Testing that email is sent and received properly.
 
-=head2 Test::Manifest
-
-Executes your tests in a particular non-alphabetic order without having
-to name them with numeric prefixes.
-
 =head2 Test::ManyParams
 
 Combinatorial subroutine argument testing. Lets you test every combination
@@ -190,24 +111,6 @@ return values.
 
 The most common testing module to use. Appropriate feature set for the
 majority of test cases and now standard in Perl (from 5.6.2 and 5.8.0).
-
-=head2 Test::NoWarnings
-
-Test for making sure that your test didn't emit any warnings.
-
-=head2 Test::Pod
-
-Checks a given POD or Perl file for syntactic validity.  Also has a
-function to let you easily check all files in your distribution at once.
-
-=head2 Test::Pod::Coverage
-
-Checks a given POD or Perl file for syntactic validity.  Also has a
-function to let you easily check all files in your distribution at once.
-
-=head2 Test::Prereq
-
-Checks that your F<Makefile.PL> has the proper prerequisites specified.
 
 =head2 Test::Reporter
 
@@ -235,10 +138,6 @@ run in the case of failure.
 Framework for testing distributions of Perl itself.  Not normally used
 by the general public.
 
-=head2 Test::Tester
-
-Runs tests on other C<Test::> modules based on C<Test::Builder>.
-
 =head2 Test::Unit
 
 JUnit testing for Perl.
@@ -247,6 +146,149 @@ JUnit testing for Perl.
 
 Runs verbose tests on a test file.  Seems to be obviated by the F<prove>
 program now included with C<Test::Harness>.
+
+=head2 Test::XML
+
+Helper functions for testing XML for syntactic equivalency, even if the
+strings themselves are different.
+
+=head1 Database testing modules
+
+=head2 DBD::Mock
+
+DBD::Mock is a DBI-compliant database driver that allows you to prepare
+and execute SQL statements, seed resultsets, and inspect the results of
+all calls.
+
+An example from the SYNOPSIS:
+
+    use DBI;
+
+    # ...connect as normal, using 'Mock' as your driver name
+    my $dbh = DBI->connect( 'DBI:Mock:', '', '' )
+                  || die "Cannot create handle: $DBI::errstr\n";
+
+    # ...create a statement handle as normal and execute with parameters
+    my $sth = $dbh->prepare( 'SELECT this, that FROM foo WHERE id = ?' );
+    $sth->execute( 15 );
+
+    # Now query the statement handle as to what has been done with it
+    my $params = $sth->{mock_params};
+    print "Used statement: ", $sth->{mock_statement}, "\n",
+          "Bound parameters: ", join( ', ', @{ $params } ), "\n";
+
+=head2 Test::DatabaseRow
+
+Given a DBI database handle, can test to see if the database contains
+tables with particular rows. Useful for testing that database
+modifications went well.
+
+    # SQL-based test
+    row_ok( sql   => "SELECT * FROM contacts WHERE cid = '123'",
+            tests => [ name => "trelane" ],
+            label => "contact 123's name is trelane");
+
+    # test with shortcuts
+    row_ok( table => "contacts",
+            where => [ cid => 123 ],
+            tests => [ name => "trelane" ],
+            label => "contact 123's name is trelane");
+
+=head1 Web testing modules
+
+=head2 Apache::Test
+
+Allows you to run tests for Apache-based software.  Also lets you run
+tests inside Apache.  Not limited to mod_perl.
+
+=over
+
+=item * Introductory tutorial slides
+
+L<http://www.modperlcookbook.org/~geoff/slides/ApacheCon/2003/apache-test-printable.ppt.gz>
+
+=item * perl.com article on Apache::Test
+
+L<http://www.perl.com/pub/a/2003/05/22/testing.html>
+
+=item * Docs from apache.org
+
+L<http://perl.apache.org/docs/general/testing/testing.html>
+
+=back
+
+=head2 Test::HTML::Content
+
+Tests HTML has (or hasn't) particular links, text, tags, comments and
+such. Very useful for testing websites (see also C<WWW::Mechanize> and
+C<Test:HTML::Lint>).
+
+=head2 Test::HTML::Lint
+
+Checks that HTML is well formed as per C<HTML::Lint>.
+
+=head2 Test::HTML::Tidy
+
+Checks that HTML is well formed as per C<HTML::Tidy>.
+
+=head2 Test::HTTPStatus
+
+Ensures HTTP responses have appropriate values.
+
+=head2 Test::WWW::Mechanize
+
+Subclass of C<WWW::Mechanize> with convenience methods for automated testing.
+
+=head1 Module-testing modules
+
+=head2 Test::Builder::Tester
+
+Runs tests on other C<Test::> modules based on C<Test::Builder>.
+
+=head2 Test::Distribution
+
+Performs basic Kwalitee checking on modules: checks that they have well
+formed POD, they compile, they all define the same C<$VERSION>, they
+have their prerequisites in the F<Makefile.PL> and that some standard
+files exist.
+
+=head2 Test::Exception
+
+Testing that bits of code die or don't die appropriately, and with the
+right errors.
+
+=head2 Test::Manifest
+
+Executes your tests in a particular non-alphabetic order without having
+to name them with numeric prefixes.
+
+=head2 Test::NoWarnings
+
+Test for making sure that your test didn't emit any warnings.
+
+=head2 Test::Pod
+
+Checks a given POD or Perl file for syntactic validity.  Also has a
+function to let you easily check all files in your distribution at once.
+
+=head2 Test::Pod::Coverage
+
+Checks a given POD or Perl file for syntactic validity.  Also has a
+function to let you easily check all files in your distribution at once.
+
+=head2 Test::Portability::Files
+
+Checks the portability the names of the files in a distribution.
+The tests use the advice listed in F<perlport>, section "Files and
+Filesystems".
+
+=head2 Test::Prereq
+
+Checks that your F<Makefile.PL> has the proper prerequisites specified.
+
+=head2 Test::Tester
+
+Runs tests on other C<Test::> modules based on C<Test::Builder>.
 
 =head2 Test::Version
 
@@ -274,22 +316,11 @@ Allows you to deliberately hide modules from a program even though they
 are installed. This is mostly useful for testing modules that have a
 fallback when a certain dependency module is not installed.
 
-=head2 Test::XML
-
-Helper functions for testing XML for syntactic equivalency, even if the
-strings themselves are different.
-
-=head1 Contributors
+=head1 CONTRIBUTORS
 
 The following people have helped contribute to this page:
-
-=over 4
-
-=item * Andy Lester
-
-=item * Iain Truskett
-
-=item * Dominic Mitchell
-
-=back
-
+Andy Lester,
+Dominic Mitchell
+Philipe 'BooK' Bruhat,
+Chris Winters
+and the late, great Iain Truskett.
