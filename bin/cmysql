@@ -9,7 +9,7 @@ use Fcntl;
 use lib $ENV{CBROOT} . "/lib";
 
 use Combust::Config;
-use Develooper::DB qw(db_open);
+use Combust::DB qw();
 
 my $debug=0;
 
@@ -64,7 +64,7 @@ if ($opt_dbishell) {
     exit 0;
 }
 
-my ($host, $dbi_dsn, $user, $passwd) = Develooper::DB::read_db_connection_parameters($dbname);
+my ($host, $dbi_dsn, $user, $passwd) = Combust::DB::read_db_connection_parameters($dbname);
 my @full_cmd;
 my $show_cmd;
 
@@ -125,7 +125,7 @@ sub do_connect {
     $sh->{data_source} = $dsn;
 
     $sh->log("Connecting to '$sh->{data_source}' as '$sh->{user}'...");
-    $sh->{dbh} = Develooper::DB::db_open($dsn);
+    $sh->{dbh} = Combust::DB::db_open($dsn);
     $sh->{dbh}->trace($sh->{init_trace}) if $sh->{init_trace};
 }
 
