@@ -1,0 +1,39 @@
+[% page.style = "default.html" %]
+[% page.title = 'What is Kwalitee?' %]
+[% page.footer = 'You carry your helmet for you, but you carry your shield for the entire line.' %]
+
+<h1>What is kwalitee?</h1>
+
+
+Kwalitee is inexact quality.  We don't know exactly what it is, but we know it when we see it.
+
+<h2>What is a bug?</h2>
+
+If there is any disconnect between the docs, the code and the tests,
+it is a bug.  Period.  The bug might be in the docs or the tests,
+and the code is fine, but it's still a bug.
+
+<P>
+
+If there is ambiguity about how the code is supposed to work, it
+is a bug.  The documentation must be clarified, and the code may
+be out of sync as well.
+
+<P>
+
+If a hoplite discovers something behaving "incorrectly", according
+to the hoplite,  it may or may not be a bug, according to the
+author's intent.
+
+<P>
+
+<h2>What's a kwalitee module?</h2>
+
+<ul>
+    <LI>All dependencies in Makefile.PL or the Module::Build equivalent
+    <LI>Well-tested
+    <LI>Well-documented
+    <LI>Documents match code match tests
+    <LI>Covered well
+    <LI>Pod passes Test::Pod
+</UL>

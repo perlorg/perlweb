@@ -1,0 +1,53 @@
+[% page.style = "default.html" %]
+[% page.title = 'Improving modules' %]
+[% page.footer = 'You carry your helmet for you, but you carry your shield for the entire line.' %]
+
+<h1>The life cycle of module improvement on Phalanx</h1>
+
+Modules are the standard library of Perl
+
+<UL>
+    <LI>Check for interest
+	<UL>
+	<LI>Pick a module from the list
+	<LI>Contact the author to see if he is interested
+	</UL>
+    <LI>Plan the improvements
+	<UL>
+	<LI>Check the RT queue for the module.  See if there are any big bugs or documentation problems to take care of.</LI>
+	<LI>Determine weak points in the module.
+	<LI>Decide who will work on what.
+	</UL>
+    <LI>Construction
+	<UL>
+	<LI>Fix (and write tests for) any bugs that we choose to attack.
+	<LI>Make the module pass the <A HREF="kwalitee.html">Kwalitee Standards</A>.
+	</UL>
+    <LI>Back to the author
+	<UL>
+	<LI>Pass the patches back to the author.
+	<LI>Author can accept or reject changes as he chooses.
+	<LI>Author releases the changed version back to the CPAN.
+	</UL>
+</UL>
+
+
+<h2>How much should I change?</h2>
+
+That's between you and the module author.  We are <B>not</B> here
+to take over modules.
+
+<P>
+
+Maybe the author wants an overhaul.  Maybe the author is very
+particular about indentation.  Maybe the author just needs some
+bugs fixed.  It's up to the author.
+
+<h2>What if a module's author isn't interested?</h2>
+
+Then we'll note that on the checklist and move on.  It's up to the author.
+We will not make changes against the author's will.  We are not here to take over modules.
+
+<h2>What if we can't contact the author?</h2>
+
+Hmm, I dunno.  This is really a big CPAN issue.

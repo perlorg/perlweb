@@ -1,19 +1,28 @@
 [% page.style = "default.html" %]
 [% page.title = 'The Phalanx Project' %]
 [% page.footer = 'You carry your helmet for you, but you carry your shield for the entire line.' %]
-[% page.sidebar = BLOCK %]
 
-<a href="http://testers.cpan.org/">CPAN testers</a><br />
+<img alt="[KWALITEE!]" src="../images/phalanx-kwalitee.jpg" width="520" height="232" align="right">
+<h1>Beefing up tests in Perl</h1>
 
-[% END %]
+<ul>
+    <LI><A HREF="hoplite.html">The life of a hoplite</A></LI>
+    <LI><A HREF="kwalitee.html">What is kwalitee?</A></LI>
+    <LI><A HREF="modules.html">Testing of modules</A></LI>
+    <LI><A HREF="tasks.html">Tasks to be done</A></LI>
+    <LI><A HREF="tops-from-search">Top 100 modules from search.cpan.org</A></LI>
+</UL>
+    
 
-<CENTER>
-<img alt="[KWALITEE!]" src="../images/phalanx-kwalitee.jpg" width="520" height="232" align="center">
-</CENTER>
-<h2>Phalanx</h2>
+<h2>Perl's tests</h2>
 
-<pre>
-=head1 Top 100 modules from CPAN
+Perl is treated as just another module to document.
+
+Walk through the Camel and write a test for everything.
+
+<h2>CPAN tests</h2>
+
+Top 100 modules from CPAN
 
 How the list is determined doesn't really matter.
 
@@ -21,19 +30,28 @@ The list will definitely be hand-tweaked.
 
 Separate into strata.
 
-=head1 What to avoid
+Not strictly these 100 modules.  We welcome any improvements.
 
-sprintf() breaking in PHP
+Our goals may change over time as the needs of Perl and Ponie
+change.
 
-(-3)**3 == 27
+<h2>What we're avoiding</h2>
 
-=head1 The improvements
+<UL>
+<LI>sprintf() breaking in PHP
+<LI>(-3)**3 == 27
+</UL>
 
-The muster tests are not "extra" tests.  We're adding to the distros.
+<h2>What Phalanx will do</h2>
 
-We will check against docs and code and tests.  All should be in sync.
+<UL>
+<LI>Improve the tests and test coverage in Perl
+<LI>Improve the tests, test coverage and documentation of the CPAN
+</UL>
 
-=head1 Author involvement
+Bugs will be found.  They're out there.
+
+<h2>Author involvement</h2>
 
 Want to involve the authors.  It's good for everyone.
 
@@ -42,7 +60,7 @@ If they refuse, that's OK.  We can go without them.
 We'll find some people who Get It, do their modules, and then make
 it public what we've done.
 
-=head1 Testing guidelines
+<h2>Creating testing guidelines</h2>
 
 Come up with good guidelines
 
@@ -50,36 +68,15 @@ Test the edge cases
 
 Work it into the core.
 
-=head1 Test::Harness improvements
+<h2>Coordination</h2>
 
-Improve the protocol
+<UL>
+<LI>http://qa.perl.org/phalanx/
+<LI>phalanx@perl.org
+<LI>IRC meetings at #phalanx on irc.perl.org
+</ul>
 
-Add randomizing.
-
-Add stats
-
-=head1 Stats
-
-Need to keep track of what the improvements to the distros are.
-If we add tests, we need to track that.
-
-=head1 Interested parties
-
-Testing cabal
-
-acme
-
-Autrijus
-
-cogent
-
-Fox
-
-=head1 Stuff to add/drop
-
-Sky says: No Tk, no libnet
-
-=head1 misc
+<h2>misc</h2>
 
 We WILL find bugs.  They're there.
 
@@ -94,13 +91,9 @@ The elf army slide is the key image.
 
 Doesn't rely on Ponie.  Testing will be critical with Ponie.  If DBI breaks under Ponie, it's no good for anyone.
 
-Perl core will be part of it.
-
 Need some sort of repository so people can collaborate
 
 Check module dependencies
-
-Test all pod against Test::Pod
 
 Need a tracking mechanism to track progress.  maybe an RT queue.
 
@@ -115,4 +108,11 @@ Proactive defense
 Use Devel::Cover and gconv
 
 How much of the perl code and C code in the core is acutally covered by the core tests?
-</pRE>
+
+<h2>Todo</h2>
+
+Questions to be answered
+
+<UL>
+<LI>What if we can't contact an author?
+</UL>
