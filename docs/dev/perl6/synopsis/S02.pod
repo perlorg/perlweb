@@ -1,3 +1,5 @@
+=encoding utf8
+
 =head1 TITLE
 
 Synopsis 2: Bits and Pieces
@@ -274,13 +276,13 @@ C<< &foo<int,num> >>.  It still just returns a function reference.
 
 =item *
 
-Slicing syntax will be covered in S9.  But we know that multidimensional
+Slicing syntax is covered in S9.  Multidimensional
 slices will be done with semicolons between individual slice subscripts.
 
 =item *
 
 Slicing hashes to return pairs rather than values should probably
-be done with an optional argument to C<.pairs()> or C<.kv()>.
+be done with an optional selection argument to C<.pairs()> or C<.kv()>.
 
 =item *
 
@@ -313,7 +315,7 @@ are aliases into the C<$0> object.
 =item *
 
 The C<$#foo> notation is dead.  Use C<@foo.end> or C<[-1]> instead.
-(Or maybe C<@foo.dim> for multidimensional arrays.)
+(Or C<@foo.shape[$dimension]> for multidimensional arrays.)
 
 =item *
 
@@ -351,6 +353,11 @@ that the variable is "wild carded" into every package.
 
 Standard input is C<$*IN>, standard output is C<$*OUT>, and standard error
 is C<$*ERR>.
+
+=item *
+
+Magical file-scoped lexicals live in the C<=> package.  C<@=DATA> is
+the name of your DATA filehandle, for instance.
 
 =back
 
@@ -397,12 +404,12 @@ with empty brackets:
 
     print "The answers are @foo[]\n"
 
+Note that this fixes the spurious "@" problem in double-quoted email addresses.
+
 As with Perl 5 array interpolation, the elements are separated by a space.
 (Except that a space is not added if the element already ends in some kind
 of whitespace.  In particular, a list of pairs will interpolate with a
 tab between the key and value, and a newline after the pair.)
-
-Note that this fixes the spurious "@" problem in double-quoted email addresses.
 
 =item *
 
@@ -411,11 +418,11 @@ with empty braces:
 
     print "The associations are:\n%bar{}"
 
+Note that this avoids the spurious "%" problem in double-quoted printf formats.
+
 By default, keys and values are separated by tab characters, and pairs
 are terminated by newlines.  (This is almost never what you want, but
 if you want something polished, you can be more specific.)
-
-Note that this avoids the spurious "%" problem in double-quoted printf formats.
 
 =item *
 
@@ -503,7 +510,7 @@ split on whitespace still works out.
 
 Secondary sigils have no influence over whether the primary sigil
 interpolates.  That is, if C<$a> interpolates, so do C<$^a>, C<$*a>,
-C<$?a>, C<$.a>, and C<$:a>.  It only depends on the C<$>.
+C<$=a>, C<$.a>, and C<$:a>.  It only depends on the C<$>.
 
 =item *
 
@@ -592,17 +599,21 @@ The double-underscore forms are going away:
 
     Old                 New
     ---                 ---
-    __LINE__            MY.line
-    __FILE__            MY.file
-    __PACKAGE__         MY.package
+    __LINE__            $=line
+    __FILE__            $=file
+    __PACKAGE__         $=package
     __END__             =begin END
     __DATA__            =begin DATA
 
 The C<=begin END> pod stream is special in that it assumes there's
-no corresponding C<=end END> before end of file.  The C<DATA> stream
-is not special--any POD stream in the current file can be accessed
-via a filehandle.  Presumably a module could read all its COMMENT
-blocks, for instance.
+no corresponding C<=end END> before end of file.  The C<DATA>
+stream is no longer special--any POD stream in the current file
+can be accessed via a filehandle, named as C<%=«DATA»> and such.
+Alternately, you can treat a pod stream as a scalar via C<$=DATA>
+or as an array via C<@=DATA>.  Presumably a module could read all
+its COMMENT blocks from C<@=COMMENT>, for instance.
+
+There is also a new C<$=sub> variable containing the current lexical sub.
 
 =item *
 
@@ -654,7 +665,7 @@ container references.
 =item *
 
 Unlike in Perl 5, references are no longer always considered true.
-It depends on the state of their .bit property.  Classes get to decide
+It depends on the state of their C<.bit> property.  Classes get to decide
 which of their values are true and which are false.  Individual objects
 can override the class definition:
 
@@ -699,7 +710,8 @@ infinite memory, and are willing to wait a long time.
 =item *
 
 Signatures on non-multi subs can be checked at compile time, whereas
-multi sub and method call signatures can only be checked at run time.
+multi sub and method call signatures can only be checked at run time
+(in the absence of special instructions to the optimizer).
 This is not a problem for arguments that are arrays or hashes,
 since they don't have to care about their context, but just return
 a reference in any event, which may or may not be lazily flattened.
@@ -712,7 +724,7 @@ context operator.
 =item *
 
 The C<< => >> operator now constructs Pair objects rather than merely
-functioning as a comma.
+functioning as a comma.  Both sides are in scalar context.
 
 =item *
 

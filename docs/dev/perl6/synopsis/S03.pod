@@ -1,3 +1,4 @@
+=encoding utf8
 
 =head1 TITLE
 
@@ -11,9 +12,9 @@ Luke Palmer <luke@luqui.org>
 
   Maintainer: Luke Palmer <luke@luqui.org>
   Date: 8 Mar 2004
-  Last Modified: 8 Mar 2004
+  Last Modified: 13 Sep 2004
   Number: 3
-  Version: 1
+  Version: 2
 
 =head1 Operator renaming
 
@@ -53,7 +54,7 @@ For those still living without the blessings of Unicode, that can also be
 written: C<<< << ... >> >>>.
 
 =item * The scalar comma C<,> now constructs a list reference of its
-operands.  You have to use a [-1] subscript to get the last one.
+operands.  You have to use a C<[-1]> subscript to get the last one.
 
 =back
 
@@ -72,22 +73,24 @@ pass named arguments to functions.
 =item * C<^^> is the high-precedence version of C<xor>.
 
 =item * Unary C<.> calls its single argument (which must be a method, or an
-dereferencer for a hash or array) on $_.
+dereferencer for a hash or array) on C<$_>.
+
+=item * The C<..> binary range operator has variants with C<^> on either
+end to indicate exclusion of that endpoint from the range.
 
 =item * C<...> is a unary postfix operator that constructs a semi-infinite
 (and lazily evaluated) list, starting at the value of its single argument.
 
 =item * However, C<...> as a term is the "yada, yada, yada" operator,
-which is used as the body in function prototypes.  It dies if it is ever
-executed.
+which is used as the body in function prototypes.  It complains
+bitterly if it is ever executed.
 
 =item * C<$(...)> imposes a scalar context on whatever it encloses.
-Similarly, C<@(...)> and C<%(...)> impose a list and hash context,
-respectively.  These can be interpolated into strings.
+C<*(...)> imposes a list context.
 
 =back
 
-=head1 Vector operators
+=head1 Hyper operators
 
 The Unicode characters C<E<raquo>> (C<\x[BB]>) and C<E<laquo>>
 (C<\x[BB]>) and their ASCII digraphs C<<< >> >>> and C<<< << >>> are
@@ -138,6 +141,10 @@ This opens doors for constructions like:
 
      if $roll == 1|2|3 { print "Low roll" }
 
+Junctions work through subscripting:
+
+    print if @foo[any(1,2,3)]
+
 =head1 Chained comparisons
 
 Perl 6 supports the natural extension to the comparison operators,
@@ -175,14 +182,43 @@ flattening operator.  It is used to "flatten" an array into a list,
 usually to allow the array's contents to be used as the arguments of a
 subroutine call.  Note that those arguments still must comply with the
 subroutine's signature, but the presence of C<*> defers that test until
-run time.
+run time for that argument (and for any subsequent arguments):
 
     my @args = (\@foo, @bar);
     push *@args;
 
-Is equivalent to:
+is equivalent to:
 
     push @foo, @bar;
+
+In list context, a scalar reference to an array does not flatten.  Hence
+
+    $bar = @bar;
+    push @foo, $bar;
+
+merely pushes a single scalar reference onto C<@foo>.  You can
+explicitly flatten it in any of these ways:
+
+    push @foo, *$bar;
+    push @foo, @$bar;
+    push @foo, $bar[];
+
+(The C<*> in list context doesn't change the call semantics as is
+does in scalar context.)  Note that these three forms also allow you
+to specify list context on assignment:
+
+    *$bar = (1,2,3);
+    @$bar = (1,2,3);
+    $bar[] = (1,2,3);
+
+The last is particularly useful at the end of a long name naming an
+array attribute:
+
+    $foo.bar.baz.bletch.whatever.attr[] = (1,2,3)
+
+The empty C<[]> and C<.[]> postfix operators are interpreted as zero-dimensional
+slices returning the entire array, not null slices returning no elements.
+Likewise for C<{}> and C<.{}> on hashes.
 
 =head1 Piping operators
 
@@ -226,7 +262,7 @@ a C<zip> function that interleaves the elements of two or more arrays.
         print "Name: $name;   Zip code: $zip\n";
     }
 
-C<zip> has an infix synonym, the Unicode operator C<E<brvbar>>.
+C<zip> has an infix synonym, the Unicode operator C<¥>.
 
 =head1 Minimal whitespace DWIMmery
 
@@ -251,3 +287,31 @@ operator:
      %monsters.{'cookie'} = Monster.new;
      %people  .{'john'}   = Person .new;
      %cats    .{'fluffy'} = Cat    .new;
+
+=head1 Precedence
+
+Perl 6 has 22 precedence levels (fewer than Perl 5):
+
+    terms		42 "eek" $x /abc/ (1+2) a(1) :by(2) .meth listop
+    method postfix	. .+ .? .* .+ .() .[] .{} .«» .=
+    autoincrement	++ --
+    exponentiation	**
+    symbolic unary	! + - ~ ? * ** +^ ~^ ?^ \
+    multiplicative	* / % x xx +& +<< +>> ~& ~<< ~>>
+    additive		+ - ~ +| +^ ~| ~^
+    junctive and (all)	&
+    junctive or	(any)	| ^
+    named unary		rand sleep abs etc.
+    nonchaining binary	=> but does cmp <=> .. ^.. ..^ ^..^
+    chaining binary	!= == < <= > >= ~~ !~ eq ne lt le gt ge =:=
+    tight and		&&
+    tight or		|| ^^ //
+    ternary		?? ::
+    assignment		= := ::= += **= xx=
+    list item separator	, ¥
+    list op (rightward)	<== print push any all true not etc.
+    pipe forward	==>
+    loose and		and
+    loose or		or xor err
+    expr terminator	; {} as control block, statement modifiers
+

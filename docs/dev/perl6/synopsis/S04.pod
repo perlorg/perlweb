@@ -710,3 +710,42 @@ standpoint of C<let>.  Backtracking over a closure in a rule is also
 considered failure, which is how hypothetical variables are managed
 by rules.  (And on the flip side, use of C<fail> within a rule closure
 initiates backtracking of the rule.)
+
+=head1 When is a closure not a closure
+
+Everything is conceptually a closure in Perl 6, but the optimizer
+is free to turn unreferenced closures into mere blocks of code.
+It is also free to turn referenced closures into mere anonymous
+subroutines if the block does not refer to any external lexicals that
+could themselves be cloned.  In particular, named subroutines in any
+scope do not consider themselves closures unless you take a reference
+to them.  So
+
+    sub foo {
+	my $x = 1;
+	my sub bar { print $x }		# not cloned yet
+	my &baz = { bar(); print $x };	# cloned immediately
+	my $barref = &bar;		# now bar is cloned
+	return &baz;
+    }
+
+When we say "clone", we mean the way the system takes a snapshot of the
+routine's lexical scope and binds it to the current instance of the routine
+so that if you ever use the current reference to the routine, it gets
+the current snapshot of its world, lexically speaking.
+
+Some closures produce references at compile time that cannot be
+cloned, because they're not attached to any runtime code that can
+actively clone them.  BEGIN, CHECK, INIT, and END blocks probably
+fall into this category.  Therefore you can't reliably refer to
+run-time variables from them even if they appear to be in scope.
+(The compile-time closure may, in fact, see a some kind of permanent
+copy of the variable for some storage classes, but the variable is
+likely to be undefined when the closure is run in any case.)  It's
+only safe to refer to package variables and file-scoped lexicals from
+such a routine.
+
+On the other hand, it is required that CATCH and LEAVE blocks be able
+to see transient variables in their current lexical scope, so their
+cloning status depends at least on the cloning status of the block
+they're in.

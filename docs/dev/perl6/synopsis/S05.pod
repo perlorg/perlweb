@@ -1,3 +1,5 @@
+=encoding utf8
+
 =head1 TITLE
 
 Synopsis 5: Rules
@@ -9,7 +11,7 @@ Allison Randal <al@shadowed.net>
 
 =head1 VERSION
 
-  Maintainer: Larry Wall
+  Maintainer: Larry Wall <larry@wall.org>
   Date: 24 Jun 2002
   Last Modified: 13 Sep 2004
   Number: 5
@@ -61,8 +63,9 @@ replace them - see below).
 
 =item *
 
-There is no C</e> evaluation modifier on substitutions; 
-use C<s/pattern/{ code() }/> instead.
+There is no C</e> evaluation modifier on substitutions; instead use:
+
+    s/pattern/{ code() }/
 
 =item *
 
@@ -115,7 +118,7 @@ is roughly equivalent to
 
 =item *
 
-The new C<:o> (C<:once>) modifier replaces the Perl 5 C<?...?> syntax:
+The new C<:once> modifier replaces the Perl 5 C<?...?> syntax:
 
     m:once/ pattern /    # only matches first time
 
@@ -143,7 +146,7 @@ or equivalently,
     m { (a|\*) <ws> (b|\+) }
 
 C<< <ws> >> can't decide what to do until it sees the data.  It still does
-the right thing.  If not, define your own C<ws> and C<:w> will use that.
+the right thing.  If not, define your own C<< <ws> >> and C<:w> will use that.
 
 =item *
 
@@ -192,8 +195,8 @@ from one to four matches.
 
 =item *
 
-If followed by an C<st>, C<nd>, C<rd>, or C<th>, it means find the
-I<N>th occurrence.  Use C<:nth(3)> for the general form.  So
+If the number is followed by an C<st>, C<nd>, C<rd>, or C<th>, it means
+find the I<N>th occurrence.  Use C<:nth(3)> for the general form.  So
 
     s:3rd/(\d+)/@data[$1]/;
 
@@ -334,13 +337,18 @@ and not matched literally (but see the C<:w> modifier described above).
 
 =item *
 
-C<^^> and C<$$> match line beginnings and endings. (The C</m> modifier
-is gone.)
+C<^^> and C<$$> match line beginnings and endings. (The C</m>
+modifier is gone.)  They are both zero-width assertions.  C<$$>
+matches before any C<\n> (logical newline), and also at the end of
+the string if the final character was I<not> a C<\n>.  C<^^> always
+matches the beginning of the string and after any C<\n> that is not
+the final character in the string.
 
 =item *
 
 C<.> matches an "anything", while C<\N> matches an "anything except
-newline". (The C</s> modifier is gone.)
+newline". (The C</s> modifier is gone.)  In particular, C<\N> matches
+neither carriage return nor line feed.
 
 =item *
 
@@ -393,16 +401,16 @@ the optimizer could prove that something after them can't match.
 
 The repetition specifier is now C<**{...}> for maximal matching,
 with a corresponding or C<**{...}?> for minimal matching.  Space is
-not allowed before the opening curly.  The curlies are taken to be
-a closure returning a number or a range.
+allowed on either side of the asterisks.  The curlies are taken to
+be a closure returning a number or a range.
 
-    / value was (\d **{1..6}) with (\w **{$m..$n}) /
+    / value was (\d ** {1..6}?) with ([\w]**{$m..$n}) /
 
 It is illegal to return a list, so this easy mistake fails:
 
     / [foo]**{1,3}
 
-(At least, it fails in the absence of "use rx :listquantifier",
+(At least, it fails in the absence of "C<use rx :listquantifier>",
 which is likely to be unimplemented in Perl 6.0.0 anyway).
 
 The optimizer will likely optimize away things like C<**{1...}>
@@ -435,16 +443,14 @@ how to handle them (more on that below).
 =item *
 
 The default way in which the engine handles a scalar is to match it
-as a <'...'> literal (i.e.it does not treat the interpolated string
-as a subpattern).
+as a C<< <'...'> >> literal (i.e.it does not treat the interpolated string
+as a subpattern).  In other words, a Perl 6:
 
-=item *
+    / $var /
 
-In other words, a Perl 6:    / $var /
+is like a Perl 5:
 
-is like a Perl 5:            / \Q$var\E /
-
-=item *
+    / \Q$var\E /
 
 (To get rule interpolation use an assertion - see below)
 
@@ -459,19 +465,34 @@ is matched as if it were an alternation of its elements:
     / [ @cmds[0] | @cmds[1] | @cmds[2] | ... ] /
 
 
-=item *
-
-And, of course, each one is matched as a literal.
+As with a scalar variable, each one is matched as a literal.
 
 =item *
 
 An interpolated hash matches the longest possible key of the hash
-as a literal, or fails if no key matches.  (If there is a null key
-it will match anywhere, provided no longer key matches.)  If the
-corresponding value of the hash element is a closure, it is executed.
+as a literal, or fails if no key matches.  (A C<""> key
+will match anywhere, provided no longer key matches.)
+
+=over 4
+
+=item *
+
+If the corresponding value of the hash element is a closure, it
+is executed.
+
+=item *
+
 If it is a string or rule object, it is executed as a subrule.
+
+=item *
+
 If it has the value 1, nothing special happens beyond the match.
+
+=item *
+
 Any other value causes the match to fail.
+
+=back
 
 =back
 
@@ -496,7 +517,6 @@ The special named assertions include:
 
     / <before pattern> /    # was /(?=pattern)/
     / <after pattern> /     # was /(?<pattern)/ 
-                            # but now a real pattern!    
 
     / <ws> /                # match whitespace by :w rules
 
@@ -554,7 +574,8 @@ time you use it unless the string changes.  (Any external lexical
 variable names must be rebound each time though.)  Rules may not be
 interpolated with unbalanced bracketing.  An interpolated subrule
 keeps its own inner C<$0>, so its parentheses never count toward the
-outer rules groupings.
+outer rules groupings.  (In other words, parenthesis numbering is always
+lexically scoped.)
 
 =item *
 
@@ -572,7 +593,7 @@ So you can sneak in a call to a non-canonical closure that way:
 
     /^foo .* <( do { say "Got here!" } or 1 )> .* bar$/
 
-That closure is unlikely to run if the string doesn't end with "bar".
+The C<do> block is unlikely to run unless the string ends with "C<bar>".
 
 =item *
 
@@ -640,7 +661,7 @@ The C<\p> and C<\P> properties become intrinsic grammar rules
 =item *
 
 The C<\L...\E>, C<\U...\E>, and C<\Q...\E> sequences are gone.  In the
-rare cases that needed them you can use C<< <{ lc $rule }> >> etc.
+rare cases that need them you can use C<< <{ lc $rule }> >> etc.
 
 =item *
 
@@ -649,7 +670,7 @@ The C<\G> sequence is gone.  Use C<< <( .pos == $oldpos )> >>.
 =item *
 
 Backreferences (e.g. C<\1>) are gone; C<$1> can be used instead,
-because it's no longer interpolated.
+because variables are no longer interpolated.
 
 =item *
 
@@ -769,15 +790,7 @@ in others).
 
 Specifically, a C</.../> matches immediately in a value context (void,
 Boolean, string, or numeric), or when it is an explicit argument of
-a C<~~>.
-
-=item *
-
-Otherwise it's a rule constructor.
-
-=item *
-
-So this:
+a C<~~>.  Otherwise it's a rule constructor.  So this:
 
     $var = /pattern/;
 
@@ -812,8 +825,6 @@ like C<grep>:
             # etc.
         }
     }
-
-=item *
 
 Using C<{...}> or C</.../> in the scalar context of the first argument
 causes it to produce a C<Code> or C<Rule> reference, which the switch
@@ -1063,7 +1074,7 @@ There is also a shorthand for binding to variables hypothetically:
 
     / [ $«num»  := (\d+)
       | $«alpha»:= (<alpha>+)
-      | $«other»:=(.)
+      | $«other»:= (.)
       ]
     /
 
@@ -1131,9 +1142,10 @@ Or just capture the keys (and leave the values undef):
 
 =item *
 
-As a general rule, if you capture anything repeating (even potentially)
-to a scalar location, you end up with a list reference as the scalar value.
-This always puts a list into the scalar:
+As a general rule, if you capture anything repeating with a scalar
+destination, you end up with a list reference as the scalar value
+(even if in the actual case only one thing matches).  This always
+puts a list into the scalar:
 
     / $«foo» := [ (.*?) , ]* /
 
@@ -1143,13 +1155,13 @@ And this puts a list of lists:
 
 =item *
 
-By default, subrules (e.g. C<< <rule> >>) do not capture
-their results.  To capture, use French quotes instead of angles (no
+By default, a subrule (e.g. C<< <rule> >>) does not capture
+its results.  To capture, use French quotes instead of angles (no
 pun intended):
 
     / «key» =\> «value» { %hash{$«key»} = $«value» } /
 
-The key is identical to whatever was within the naughty quotes.
+The key is identical to whatever was within the "naughty" quotes.
 So you can use the naughty quotes anywhere single angles would work,
 but be prepared to put up with strange keys in some cases:
 
@@ -1173,7 +1185,10 @@ parsed whitespace:
     / «key» <ws> =\> <ws> «value» { %hash{$«key»} = $«value» } /
 
 The two instances of C<< <ws> >> above would store an array of two
-values accessible as C<< @«<ws>» >>.
+values accessible as C<< @«<ws>» >>.  Just to make sure nothing is
+forgotten, under C<:keepall> any text not otherwise remembered is
+attached as an extra property on the subsequent node. (The name of
+that property is "C<pretext>".)
 
 =back
 
@@ -1240,13 +1255,14 @@ When used as a hash, C<$0> pretends to be a hash of all the named
 captures.  The keys do not include any sigils, so if you capture to
 variable C<@«foo»> its real name is C<$0{'foo'}> or C<$0«foo»>.
 However, you may still refer to it as C<@«foo»> anywhere C<$0>
-is visible.  (But it is illegal to use the same name for two different
+is visible.  (But it is erroneous to use the same name for two different
 capture datatypes.)
 
 =item *
 
 In ordinary code, variables C<$1>, C<$2>, etc. are just aliases into
-C<$0[0]>, C<$0[1]>, etc.
+C<$0[0]>, C<$0[1]>, etc.  Hence they will all be undefined if the
+last match failed.
 
 =back
 
@@ -1342,7 +1358,7 @@ Just as a class can collect named actions together:
         # etc.
     }
 
-So too a grammar can collect a set of named rules together:
+so too a grammar can collect a set of named rules together:
 
     grammar Identity {
         rule name :w { Name = (\N+) }
