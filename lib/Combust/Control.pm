@@ -7,6 +7,8 @@ use Apache::Constants qw(:common :response);
 use Apache::File;
 use Carp qw(confess cluck);
 
+use Apache::Util qw();
+
 use Template;
 use Template::Parser;
 use Template::Stash;
@@ -364,8 +366,21 @@ sub redirect {
   #use Carp qw(cluck);
   #cluck "redirecting to [$url]";
 
-  $self->r->header_out('Location', $url);
-  return $permanent ? MOVED : REDIRECT;
+  $self->r->header_out('Location' => $url);
+  $self->r->status($permanent ? MOVED : REDIRECT);
+
+  my $url_escaped = Apache::Util::escape_uri($url);
+
+  my $data = <<EOH;
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<HTML><HEAD><TITLE>302 Found</TITLE></HEAD><BODY><A HREF="$url_escaped">here</A>.<P></BODY></HTML>
+EOH
+
+  $self->r->header_out('Content-Length' => length($data));
+
+  $self->r->send_http_header("text/html");
+  print $data;
+  return OK;
 }
 
 sub cookie {

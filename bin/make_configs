@@ -22,7 +22,7 @@ my $apache_config = $config->apache_config;
 my $apxs = $apache_root;
 $apxs =~ s!/httpd!/apxs!;
 my $apache_libexec;
-$apache_libexec = `$apxs -q LIBEXECDIR`;
+$apache_libexec = (-x $apxs and !-d _) ? `$apxs -q LIBEXECDIR` : '';
 
 $apache_root =~ s!/s?bin/httpd$!!;
 $apache_libexec ||= $apache_root . "/libexec";
