@@ -51,9 +51,7 @@ sub db_open {
   unless ($dbh and $dbh->ping()) {
 	my ($host, @args) = read_db_connection_parameters();
 
-	my $class = $imadbi ? 'Ima::DBI' : 'DBI';
-
-	$dbh = $class->connect(@args, {
+	$dbh = DBI->connect(@args, {
 		%$attr,
 		RaiseError => 0,    # override RaiseError for connect
         AutoCommit => 1,    # make it explicit
