@@ -4,7 +4,6 @@
 
 <h1>What is kwalitee?</h1>
 
-
 Kwalitee is inexact quality.  We don't know exactly what it is, but we know it when we see it.
 
 <h2>What is a bug?</h2>
@@ -58,7 +57,7 @@ be checked that the object is of the expected type.
 unlink(), and then check that the file is actually gone.
 
 <PRE>
-ok( unlink $filename, "Remove $filename" );
+is( unlink( $filename ), 1, "Remove $filename" );
 ok( !-e $filename, "Actually gone" );
 </PRE>
 
