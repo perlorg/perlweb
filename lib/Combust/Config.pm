@@ -12,8 +12,8 @@ my $file = "$ENV{CBROOT}/combust.conf";
 my $cfg = new Config::Simple($file);
 
 my %Config = $cfg->vars();
-warn Data::Dumper->Dump([\$cfg],[qw(Config)]);
-warn Data::Dumper->Dump([\%Config],[qw(Config)]);
+#warn Data::Dumper->Dump([\$cfg],[qw(Config)]);
+#warn Data::Dumper->Dump([\%Config],[qw(Config)]);
 
 my $singleton;
 
