@@ -8,42 +8,42 @@
 
 <ul>
     <LI><A HREF="distros.html">The Phalanx 100</A>: The 100 modules we'll be focusing on</LI>
+    <!--
     <LI><A HREF="hoplite.html">The life of a hoplite</A></LI>
+    -->
     <LI><A HREF="kwalitee.html">What is kwalitee?</A></LI>
     <LI><A HREF="modules.html">Testing of modules</A></LI>
     <LI><A HREF="tasks.html">Tasks to be done</A></LI>
     <LI><A HREF="faq.html">The Phalanx FAQ</A></LI>
-    <LI><A HREF="history.html">A brief history of the hoplite phalanx</A></LI>
+    <LI><A HREF="history.html">A brief history of the hoplite phalanx</A>, as inspiration for the name</LI>
 </UL>
     
+<H2>About Phalanx</h2>
 
-<h2>Perl's tests</h2>
+The Phalanx project has three goals:
 
-Perl is treated as just another module to document.
+<OL>
+    <LI>Strengthen CPAN's tests, coverage and documentation
+    <LI>Strengthen Perl's tests and coverage
+    <LI>Bring in newcomers to the Perl development process
+</OL>
 
-Walk through the Camel and write a test for everything.
+When Ponie was announced in July 2003, we knew that it would require
+a regression test suite larger than Perl had ever had before.
+Fortunately, with the CPAN, we have a huge selection to choose
+from.  Based on the assumption that the 80/20 rule holds true for
+CPAN usage, we shifted it to the 98/2 rule.  We're hoping that the
+100 distributions we've selected, mostly on rough statistical
+analysis of usage, will cover a huge part of the CPAN that's used
+by the Perl community.
 
-<h2>CPAN tests</h2>
+<P>
 
-Top 100 modules from CPAN
+As the Phalanx project continues, we'll start looking at the modules
+distributed with Perl, as well as the tests that test Perl itself.
+For now, we're focusing on the modules in <A HREF="distros.html">The
+Phalanx 100</A>.
 
-How the list is determined doesn't really matter.
-
-The list will definitely be hand-tweaked.
-
-Separate into strata.
-
-Not strictly these 100 modules.  We welcome any improvements.
-
-Our goals may change over time as the needs of Perl and Ponie
-change.
-
-<h2>What we're avoiding</h2>
-
-<UL>
-<LI>sprintf() breaking in PHP
-<LI>(-3)**3 == 27
-</UL>
 
 <h2>What Phalanx will do</h2>
 
@@ -56,20 +56,24 @@ Bugs will be found.  They're out there.
 
 <h2>Author involvement</h2>
 
-Want to involve the authors.  It's good for everyone.
+<UL>
+<LI>Want to involve the authors.  It's good for everyone.
 
-If they refuse, that's OK.  We can go without them.
+<LI>If they refuse, that's OK.  We can go without them.
 
-We'll find some people who Get It, do their modules, and then make
+<LI>We'll find some people who Get It, do their modules, and then make
 it public what we've done.
+</UL>
 
 <h2>Creating testing guidelines</h2>
 
-Come up with good guidelines
+<UL>
+<LI>Come up with good guidelines
 
-Test the edge cases
+<LI>Test the edge cases
 
-Work it into the core.
+<LI>Work it into the core.
+</UL>
 
 <h2>Coordination</h2>
 
@@ -79,43 +83,25 @@ Work it into the core.
 <LI>IRC meetings at #phalanx on irc.perl.org
 </ul>
 
-<h2>misc</h2>
-
-We WILL find bugs.  They're there.
-
-Tests will get folded into the main distribution of the module.
-We'll create the patches and feed 'em back.
-
-We'll check documentation vs. tests vs. code, too.
-
-Need a central place for the musterers.
-
-The elf army slide is the key image.
-
-Doesn't rely on Ponie.  Testing will be critical with Ponie.  If DBI breaks under Ponie, it's no good for anyone.
-
-Need some sort of repository so people can collaborate
-
-Check module dependencies
-
-Need a tracking mechanism to track progress.  maybe an RT queue.
-
-CPAN is the standard library of Perl.
-
-Stats are approximate: Kwalitee
-
-Many modules may not need much help.
-
-Proactive defense
-
-Use Devel::Cover and gconv
-
-How much of the perl code and C code in the core is acutally covered by the core tests?
-
-<h2>Todo</h2>
-
-Questions to be answered
+<h2>Unfiled</h2>
 
 <UL>
-<LI>What if we can't contact an author?
+<LI>We WILL find bugs.  They're there.
+
+<LI>Tests will get folded into the main distribution of the module.
+We'll create the patches and feed 'em back.
+
+<LI>We'll check documentation vs. tests vs. code, too.
+
+<LI>Need a tracking mechanism to track progress.  maybe an RT queue.
+
+<LI>Stats are approximate: Kwalitee
+
+<LI>Many modules may not need much help.
+
+<LI>Proactive defense
+
+<LI>Use Devel::Cover and gconv
+
+<LI>How much of the perl code and C code in the core is acutally covered by the core tests?
 </UL>
