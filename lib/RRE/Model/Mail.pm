@@ -74,7 +74,10 @@ sub body_html {
 
   $url_finder->find(\$body);
 
-  $body =~ s!\n([^\n]{2,50})\n\n!\n<h3>$1</h3>\n\n!g;
+  # hack to not make the last "end" a link
+  $body =~ s!\n\nend\n!\n \nend\n!;
+
+  $body =~ s!\n\n([^\n]{2,50})\n\n!\n<h3>$1</h3>\n\n!mg;
 
   my $url = $self->fqdn_url;
 
