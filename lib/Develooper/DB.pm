@@ -2,20 +2,31 @@ package Develooper::DB;
 use strict;
 use DBI;
 use Carp;
+use Combust::Config;
 
 use Exporter;
 use vars qw(@ISA @EXPORT);
 @EXPORT = qw(db_open);
 @ISA = qw(Exporter);
 
+my $config = Combust::Config->new();
+
 my %dbh = ();
 
 sub read_db_connection_parameters {
-  # XXX should read from a file...
-  my $db = 'combust';
-  $db   .= '_test' if $ENV{TESTMODE};
-  return ("localhost",
-          "dbi:mysql:database=$db;host=localhost;user=combust;;mysql_read_default_file=$ENV{CBROOT}/.my.cnf");
+
+  # my $db = shift || 'combust';
+
+  # my $db = 'combust';
+  # $db   .= '_test' if $ENV{TESTMODE};
+  # return ("dbi:mysql:database=$db;host=localhost;user=combust;;mysql_read_default_file=$ENV{CBROOT}/.my.cnf");
+
+  my $data_source = $config->db_data_source;
+  my ($host) = ($data_source =~ m/host=([^;]+)/);
+
+  return ($host, $data_source, $config->db_user, $config->db_password);
+
+
 }
 
 sub db_open {

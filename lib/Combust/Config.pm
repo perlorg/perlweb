@@ -64,6 +64,18 @@ sub port {
   $cfg->param('port') || 8225;
 }
 
+sub db_data_source {
+  $cfg->param('db_data_source') || 'db_data_source not configured';
+}
+
+sub db_password {
+  $cfg->param('db_password') || undef;
+}
+
+sub db_user {
+  $cfg->param('db_user') || 'combust';
+}
+
 #sub config {
 #  $cfg;
 #}
