@@ -6,7 +6,11 @@
 
     page.banner_prefix = page.site;	
 
-    page.style = 'perl-directory.html';
+    page.style = 'default.html';
+
+    page.sidebar = BLOCK;
+      PROCESS tpl/navigation.html;
+    END;
 
     # don't include any whitespace from here...
  #   RETURN;

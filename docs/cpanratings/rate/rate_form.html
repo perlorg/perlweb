@@ -63,9 +63,11 @@ Version <select name="version_reviewed">
 <tr>
 <td><b>[% question.name %]</b></td>
 <td colspan="2">
-undef<input type="radio" name="[% question.field %]" [% checked.${question.field}.0 %] selected value="">&nbsp;
 [% FOR i = [ 1..5 ] %]
 [% i %]<input type="radio" name="[% question.field %]" [% checked.${question.field}.$i %] value="[%i%]">&nbsp;
+[% END %]
+[% IF question.field != 'rating_overall' %]
+undef<input type="radio" name="[% question.field %]" [% checked.${question.field}.0 %] selected value="">&nbsp;
 [% END %]
 [% IF errors.${question.field} %](<font class="error">[% errors.${question.field} %]</font>)[% END %]
 </td>
