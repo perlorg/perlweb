@@ -15,10 +15,10 @@ my $store = "store varchar(25) not null";
 my @tables = split /\n\s*\n/, <<EOT;
 
 create table combust_cache (
-  id varchar(250) not null,
-  type varchar(128) NOT NULL default '',
+  id varchar(250) binary not null,
+  type varchar(128) binary NOT NULL default '',
   created timestamp(14) not null,
-  purge_key varchar(64) null,
+  purge_key varchar(64) binary null,
   data mediumblob not null,
   metadata mediumblob null,
   serialized tinyint(1) NOT NULL default '0',

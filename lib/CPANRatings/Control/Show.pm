@@ -38,7 +38,8 @@ sub handler ($$) {
 
   my $reviews = CPANRatings::Model::Reviews->search(
 						    ($mode eq "author" ? "user_id" : $mode)
-						    => $id
+						    => $id,
+						    { order_by => 'updated desc' }
 						   );
 
 

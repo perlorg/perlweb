@@ -15,7 +15,7 @@ __PACKAGE__->set_sql(recent => qq{
                       SELECT __ESSENTIAL__
                       FROM __TABLE__
                       ORDER BY updated DESC
-                      LIMIT 10
+                      LIMIT 25
         });
 
 
