@@ -11,7 +11,7 @@ By
 
 <UL>
 **HEAD**
-for my $pod (sort <*/*.pod>) {
+for my $pod (sort {$b cmp $a} <*/*.pod>) {
     open my $fh, '<', $pod or die "Can't read $pod: $!\n";
     my $head = <$fh>;
     close $fh;
