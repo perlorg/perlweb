@@ -1,0 +1,20 @@
+[%-  page = {
+	    title = template.title,
+            style = template.style or 'perlbare.html'
+ 	    logobutton = { src = 'http://develooper.com/images/develooperbutton.gif',
+	                   alt = 'Develooper LLC logo', 
+                         }, 
+    };
+
+    page.footer = BLOCK -%]
+  <small>
+   &#169; Copyright 2002-2003 <a href="http://develooper.com/">Develooper LLC</a>.<BR>
+  </small>
+
+[% END;
+
+    # don't include any whitespace from here...
+ #   RETURN;
+-%]
+
+

@@ -75,7 +75,7 @@
 <BR>
 
 <DIV CLASS="FOOTER">
-[% UNLESS shortfooter %]
+[% UNLESS shortfooter || page.footer %]
     Perl.org sites
      : <!-- <A href="http://books.perl.org/" title="books.perl.org">books</a>
      | --> <A href="http://rt.perl.org/perlbug/">bugs</a>
@@ -90,13 +90,19 @@
    &#169; Copyright 2002-2003 <a href="http://www.perlfoundation.org">The&nbsp;Perl&nbsp;Foundation</a>.<BR>
    <A HREF="siteinfo.html">Site Information and Contacts</A>
   </small>
+[% ELSIF page.footer %]
+[% page.footer %]
 [% ELSE %]
 &nbsp;
 [% END %]
 </DIV>
 </TD>
 <TD>
-<img align="right" src="/images/lcamel.gif"  alt="a camel">
+[% IF page.logobutton %]
+<img align="right" src="[% page.logobutton.src %]" alt="[% page.logobutton.alt %]">
+[% ELSE %]
+<img align="right" src="/images/lcamel.gif" alt="[a camel]">
+[% END %]
 </TD>
 </TR>
 </TABLE>
