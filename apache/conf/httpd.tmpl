@@ -243,6 +243,7 @@ PerlPostReadRequestHandler ProxyIP
 
 NameVirtualHost *:{$port}
 
+
 <VirtualHost *:{$port}>
   ServerName tweb.x.perl.org
   DocumentRoot /tmp/
@@ -260,9 +261,10 @@ NameVirtualHost *:{$port}
      PerlHandler Combust::Control::Error->handler
   </Location>
 
-</VirtualHost>
-
-<Location /server-status>
+  <Location /server-status>
     SetHandler server-status
-</Location>
+  </Location>
+
+
+</VirtualHost>
 
