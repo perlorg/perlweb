@@ -52,7 +52,7 @@ sub parse_cookies {
  
     $cookie = check_cookie($cookie_name, $cookie);
 
-    warn "got cookie: [$cookie_name]=[$cookie]";
+    #warn "got cookie: [$cookie_name]=[$cookie]";
     
     # FIXME: we are unescaping the keys too... hmn 
     $parsed = { %$parsed, map { uri_unescape($_) } split /\/~/, $cookie } if $cookie;
@@ -141,7 +141,7 @@ sub bake_cookies {
 sub check_cookie {
   my ($cookie_name, $raw_id) = @_;
   my ($cookie_version, $cookie, $hex_cs) = $raw_id =~ m!^(.)/(.*?)/([^/]{8})$!;
-  warn "N: [$cookie_name]  C: [$cookie]  CS: [$hex_cs]\n";
+  #warn "N: [$cookie_name]  C: [$cookie]  CS: [$hex_cs]\n";
   
   unless ($cookie) { # regex didn't match, probably truncated
     # the empty id have a checksum too, but we will never allow that
