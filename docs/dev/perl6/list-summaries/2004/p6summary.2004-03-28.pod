@@ -1,0 +1,243 @@
+=head1 The Perl 6 Summary for the week ending 2004-03-28
+
+... and we're back! Another interesting week in Perl 6. Your Summarizer
+even wrote some [parrot] code and it's been simply ages since he did
+that. In accordance with ancient custom, we'll start the summary with
+perl6-internals.
+
+=head2 Building with miniparrot
+
+Back in the early days Dan proposed, and it was generally agreed that
+the Parrot build process wouldn't be Perl dependent, but instead there
+would be a few OS specific 'bootstrap' scripts, enough to get
+F<miniparrot> up and running. Miniparrot would have just enough smarts
+to be able to complete the configuration and build the final full
+parrot. 
+
+After last week's discussion about reinventing metaconfig, I wondered
+if the miniparrot plan was still in place. It seems I'd missed the
+discussion of C<stat> that ended up talking about how miniparrot would
+be able to do its job. I find myself wondering what else is needed to
+get miniparrot to the point where it can start doing configuration work.
+
+L<http://groups.google.com/groups?selm=a06010202bc74cd596e93@[10.0.1.2]>
+
+=head2 Continuations continued (and fun with stacks)
+
+Warning: The following discussion of the Continuation discussions is
+irrevocably biased; I find it very hard to be objective about discussions
+I participate in, and I was rather loud mouthed in this one.
+
+The previous discussions of the uses and semantics of continuations
+carried over into this week. Piers Cawley argued that the current stack
+architecture seemed to be optimized for the wrong thing, with the
+special case RetContinuations being symptoms. He argued that current
+architecture (where a single stack frame can accommodate multiple
+pushes, with copy on write semantics being used to handle full
+continuations) should be replaced with a 'naïve' architecture using
+linked lists of immutable, simple stack frames, one frame per
+push. Switching to this approach, he argued, would do away with a great
+deal of code complexity, and issues of high object creation overhead
+could be offset by using free lists and preallocation to reuse stack
+frames. Oh yes, and there'd be no difference between a RetContinuation
+and a full Continuation with this scheme.
+
+Leo Tötsch wasn't convinced. Dan was though, and made the decision to
+switch to single item per frame, immutable, non COW stacks. Leo
+implemented it. His first cut was rather slow; later refinements added
+freelists and other handy stuff to start pulling the performance back
+up. I'm sure there's more refinement to come though.
+
+L<http://groups.google.com/groups?selm=200403171746.i2HHkon26793@thu8.leo.home>
+
+L<http://groups.google.com/groups?selm=m2llluszax.fsf@obelisk.bofh.org.uk>
+
+L<http://groups.google.com/groups?selm=a0601024ebc84a9496605@[10.0.1.2]>
+
+L<http://groups.google.com/groups?selm=406020C3.9040904@toetsch.at>
+
+L<http://groups.google.com/groups?selm=rt-3.0.8-27904-82629.6.64105174468546@perl.org>
+
+=head2 Variadic functions
+
+Ilya Martynov had some questions about how to handle variadic
+functions. Leo clarified some things and pointed Ilya at the C<foldup>
+op. Jens Rieks suggested aliasing the registers C<I[1-4]> to
+C<argc[ISPN]>, which Leo liked. I'm not sure he's implemented it yet
+though. 
+
+L<http://groups.google.com/groups?selm=87zna9z04w.fsf@moto.localhost>
+
+=head2 GCC compiling to Parrot
+
+In previous weeks Gerard Butler had posted wondering about getting GCC
+to target Parrot. The initial response was rather negative, pointing
+out that GCC and Parrot saw memory I<very> differently, to the extent
+that there would probably be a need have special PMCs for GCC managed
+memory, which would make communication between GCC implemented
+languages and Parrot implemented ones rather tricky. 
+
+Undeterred, Gerald mapped out a way forward and asked for opinions. Dan
+thought the scheme looked reasonable, but fenced that with the caveat
+that he knows nothing about GCC's internals.
+
+L<http://groups.google.com/groups?selm=FE6307104985D611A92A0002A5F3AB00B9D867@exch1.Sterling.COM>
+
+=head2 Safe execution core and ops classification
+
+Leo checked in some patches from Jens Rieks to allow classification of
+ops. He thought that this meant we were a good way along the road to
+providing a 'Safe' run-core option, though there was still a lot to
+do. He outlined a road map and asked for comments (and
+implementations). Comments were forthcoming, and Dan eventually bundled
+his comments up into a single post with some design in it. For some
+reason this induced some industrial hand waving about Proof Carrying
+Code from Steve Fink (he accused himself of hand waving, not me).
+
+Jarkko Hietaniemi (Emacs' dynamic completion suggested 'Jarkko Himself'
+for that one. Well, it made I<me> smile) offered the pathological 
+
+    eval 'while(push@a,0){}'
+
+as an example of the kind of bad things that can happen if you allow
+C<eval EXPR> in your 'safe' code, even with strict rules on what it's
+allowed to compile (Dan pointed out that quotas would help in this
+particular case...)
+
+If there's one lesson to take from the discussion it's this: Code
+Safety is Hard. Whether it's AI Hard or not is left as an exercise for
+the interested reader.
+
+L<http://groups.google.com/groups?selm=405FE432.1010607@toetsch.at>
+
+L<http://groups.google.com/groups?selm=59D9DAFBB46CD51184170002A513650E0A23EF01@rosnt76.ets.org>
+
+L<http://groups.google.com/groups?selm=a06010200bc8638b16f58@[172.24.18.98]> -- Dan's big(gish) post
+
+=head2 UNO (Universal Network Objects) interface for Parrot?
+
+Tim Bunce pointed everyone at OpenOffice's Universal Network Objects
+and wondered if anyone had had a look to see what is needed to plug
+Parrot into them. And was promptly Warnocked.
+
+L<http://groups.google.com/groups?selm=20040324004749.GD26716@dansat.data-plan.com>
+
+L<http://udk.openoffice.org/> -- More on UNO
+
+=head2 Load paths
+
+In Perl, it's possible to write C<require Some::Module>, and Perl will
+go off and hunt for the appropriate file in the various directories in
+its C<@INC>. You can do something similar in most languages. 
+
+Right now, you can't do it in Parrot though; Parrot's C<load_bytecode>
+and other such ops take filesystem paths so, if things aren't set up
+exactly as the programmer expects, Bad Things can happen. 
+
+As Dan (and others on IRC and elsewhere I'm sure) points out, this is
+sub optimal. He posted an overview of the issue and a few possible ways
+forward and asked for comments. There were several. Mostly along the
+lines of 'core support for full over the net URIs for bytecode loading
+would be unutterably Bad'. 
+
+L<http://groups.google.com/groups?selm=a06010208bc87749f2ab5@[10.0.1.2]>
+
+=head2 Tcl, looking for a few good people
+
+Will Coleda's Tcl implementation has apparently reached the point where
+he'd appreciate assistance. He said as much on the list. If you're
+interested in helping getting a full Tcl implementation that targets
+Parrot up and running then drop him a line.
+
+L<http://groups.google.com/groups?selm=B74E9D35-7DF9-11D8-984D-000A95909DD0@coleda.com>
+
+=head2 Ulterior Reference Counting for DoD
+
+Andre Pang pointed the list at a paper on yet another Garbage
+Collection strategy called 'Ulterior Reference Counting' that looks
+potentially interesting. However, it turns out that it doesn't quite
+work that well with Parrot since Parrot guarantees that objects don't
+move around. 
+
+L<http://groups.google.com/groups?selm=3F38CC08-7E1F-11D8-AC03-000A95BAC4AE@algorithm.com.au>
+
+=head2 Multi Method Dispatch vtable functions in bytecode
+
+Dan announced that he'd started adding opcode support for multimethod
+dispatch. Leo had a bunch of questions with no answers so far.
+
+L<http://groups.google.com/groups?selm=a06010203bc88de42bcc6@[172.24.18.98]>
+
+=head2 So that's where Jürgen's been
+
+After a long absence, Jürgen Bömmels appeared on the list and explained
+that he'd got a new job, moved to a new town and had had no connection
+to the Internet. He's currently working through a huge backlog of mail
+and trying to get familiar with the current state of Parrot. It sounds
+like it might be a while before he starts contributing patches to
+ParrotIO again. Still, welcome back Jürgen.
+
+L<http://groups.google.com/groups?selm=m23c7vrh9p.fsf@helium.physik.uni-kl.de>
+
+=head2 ParrotUnit
+
+Piers Cawley posted his initial version of ParrotUnit, a port of the
+xUnit OO testing framework. Warnock applies.
+
+L<http://groups.google.com/groups?selm=m2vfksje9m.fsf@obelisk.bofh.org.uk> 
+
+=head2 Behaviour of PMCs on assignment
+
+Dan noted that, right now, binary vtable functions take three
+arguments, the destination, the left hand side and the right hand side,
+which allows them to either take the type of the destination into
+account, or simply to replace it with a new value. The advantage of
+this approach is that vtable functions have the potential to be more
+efficient when, say, the left hand side is the same as the
+destination.  The disadvantage is that you have to make a PMC to
+receive the results of the operation before you can actually do the
+operation, which can be a pain (and suboptimal). Dan offered 3
+different options and asked for opinions.
+
+TOGoS argued that the 3 argument form was actually the Wrong Thing in
+general and that vtable methods should simply create a new PMC and
+replace the destination with it. He argued that this behaviour is what
+most HLLs expect, and having it would make the compiler's life a great
+deal easier.
+
+L<http://groups.google.com/groups?selm=a0601021cbc8a43044906@[172.24.18.98]>
+
+=head1 Meanwhile, in perl6-language
+
+They talked about Unicode a good deal, but (per my announcement a few
+weeks back) I won't be covering those bits.
+
+=head2 Outer product considered useful
+
+Luke Palmer proposed an C<outer(*@ranges)> function to allow for what he
+called 'dynamically nested loops'. He even provided an implementation
+for it which used a coroutine. As Simon Cozens pointed out, the fact
+that something as powerful as Luke's proposal can be implemented in
+(initially buggy) pure Perl 6 with no need for any additions to the
+language itself is very nice, but really more of a side issue for the
+time being.
+
+L<http://groups.google.com/groups?selm=20040323000731.GA21533%luke@luqui.org>
+
+=head2 Announcements, Acknowledgements, Apologies
+
+No announcements (apart from "Look! ParrotUnit! It's jolly good! You
+should use it and send me patches!") this week. And if you think I'm
+apologizing... 
+
+If you find these summaries useful or enjoyable, please consider
+contributing to the Perl Foundation to help support the development of
+Perl. You might also like to send me feedback at
+L<mailto:p6summarizer@bofh.org.uk>, or drop by my website, maybe I'll
+I<really> add some content to it this week.
+
+L<http://donate.perl-foundation.org/> -- The Perl Foundation
+
+L<http://dev.perl.org/perl6/> -- Perl 6 Development site
+
+L<http://www.bofh.org.uk/> -- My website, "Just a Summary"
