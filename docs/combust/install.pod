@@ -63,7 +63,7 @@ server runs on port 8225 (configured in combust.conf).
   adduser combust
   su - combust
   rm .bashrc
-  svn co http://svn.develooper.com/combust/trunk .
+  svn co http://svn.develooper.com/combust/branches/stable .
   svn co http://svn.develooper.com/perl.org/docs    
 
   # setup configuration from the sample conf
@@ -78,6 +78,20 @@ In any case then it should be executed at least once.
 B<Note:> You don't have to run combust as a seperate user, but it
 helps keep things separate.  For development, you can stick it almost
 anywhere.. one install we know about lives in C<~/projects/newweb/>.
+
+=head3 Update Combust
+
+You should run "svn update" once in a while to update your copy of
+combust.  When you install you can install the latest development
+version instead of the latest stable version by using
+
+  svn co http://svn.develooper.com/combust/trunk .
+
+You can use "svn switch" to switch back and forth. For example to
+switch to the latest stable version you would use
+
+  svn switch http://svn.develooper.com/combust/branches/stable
+
 
 =head2 Use a different document root on the fly
 
@@ -122,6 +136,6 @@ some of the old site configurations for examples.
 
 =head2 Copyright
 
-Combust is Copyright 2003 Ask Bjoern Hansen.  See the LICENSE file.
- 
+Combust is copyright 2003 Ask Bjørn Hansen and Develooper LLC.  See
+the LICENSE file in the main combust directory for the full details.
 
