@@ -1,13 +1,13 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
 [%
-  title = title || template.title;
+  title = page.title || template.title;
 
   UNLESS page.banner;
     page.banner = 'The Perl Directory: <SPAN CLASS="title">' _ title _  "</span>";
   END;
 
-  IF page.title;
+  IF title;
     page.title = "$title - Perl.org";
   ELSE;
     page.title = "Perl.org"; 
@@ -69,8 +69,8 @@
 
 <TR>
   <TD CLASS="CR">
-   &#169; Copyright 2002-2003 <a href="http://www.perlfoundation.org">The&nbsp;Perl&nbsp;Foundation</a>.<BR>
-   <A HREF="siteinfo.html">Site Information and Contacts</A>
+   &#169; Copyright 2002-2003 <a href="http://www.perlfoundation.org/">The&nbsp;Perl&nbsp;Foundation</a>.<BR>
+   <A HREF="/siteinfo.html">Site Information and Contacts</A>
 </TD> 
 
 <td colspan=2 align="center" valign="bottom">
