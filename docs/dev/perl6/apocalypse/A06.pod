@@ -12,9 +12,9 @@ Larry Wall <larry@wall.org>
 
   Maintainer: Larry Wall <larry@wall.org>
   Date: 7 Mar 2003
-  Last Modified: 5 Nov 2004
+  Last Modified: 24 Nov 2004
   Number: 6
-  Version: 3
+  Version: 4
 
 This is the Apocalypse on Subroutines.  In Perl culture the term
 "subroutine" conveys the general notion of calling something that
@@ -2229,11 +2229,17 @@ an invocant, and it is always bound to the current parse tree object,
 known as C<$0> in Apocalypse 5.  (A macro is not a true method of that
 class, however, because its name is in your scope, not the class's.)
 
+[Update: That's now the C<$/> object.  C<$0> has been "demoted" to being
+the entire matched string.]
+
 Since the first parameter is treated as an invocant, you may either
 declare it or leave it implicit in the actual declaration.  In either
 case, the parse tree becomes the current topic for the macro.
 Hence you may refer to it as either C<$_> or C<$0>, even if you don't
 give it a name.
+
+[Update: C<$/> would return the parse tree.  C<$0> would only return
+the text matched.]
 
 Subsequent parameters may be specified, in which case they bind to
 internal values of C<$0> in whatever way makes sense.  Positional
@@ -2241,6 +2247,8 @@ parameters bind to C<$1>, C<$2>, etc.  Named parameters bind to named
 elements of C<$0>.  A slurpy hash is really the same as C<$0>, since
 C<$0> already behaves as a hash.  A slurpy array gets C<$1>, C<$2>,
 etc., even if already bound to a positional parameter.
+
+[Update: For C<$0> read C<$/> above.]
 
 A macro can do anything it likes with the parse tree, but the return
 value is treated specially by the parser.  You can return one of

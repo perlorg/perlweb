@@ -13,14 +13,22 @@ Allison Randal <al@shadowed.net>
 
   Maintainer: Larry Wall <larry@wall.org>
   Date: 24 Jun 2002
-  Last Modified: 20 Nov 2004
+  Last Modified: 24 Nov 2004
   Number: 5
-  Version: 4
+  Version: 5
 
 This document summarizes Apocalypse 5, which is about the new regex
 syntax.  We now try to call them "rules" because they haven't been
 regular expressions for a long time.  (The term "regex" is still
 acceptable.)
+
+=head1 New match state variable
+
+The underlying match state object is now available as the C<$/>
+variable, which is implicitly lexically scoped.  All access to the
+current (or most recent) match are through this variable, even when
+it doesn't look like it.  C<$1>, C<$2>, etc. are just elements of
+C<$/>, as is the entire matched string, which is available as C<$0>.
 
 =head1 Unchanged features
 
@@ -241,12 +249,12 @@ context, or a disjunction of matches in a scalar context.
 
 The new C<:rw> modifier causes this rule to "claim" the current
 string for modification rather than assuming copy-on-write semantics.
-All the bindings in C<$0> become lvalues into the string, such
+All the bindings in C<$/> become lvalues into the string, such
 that if you modify, say, C<$1>, the original string is modified in
 that location, and the positions of all the other fields modified
 accordingly (whatever that means).  In the absence of this modifier
 (especially if it isn't implemented yet, or is never implemented),
-all pieces of C<$0> are considered copy-on-write, if not read-only.
+all pieces of C<$/> are considered copy-on-write, if not read-only.
 
 =item *
 
@@ -579,7 +587,7 @@ form is cached with the string so that it is not recompiled next
 time you use it unless the string changes.  (Any external lexical
 variable names must be rebound each time though.)  Rules may not be
 interpolated with unbalanced bracketing.  An interpolated subrule
-keeps its own inner C<$0>, so its parentheses never count toward the
+keeps its own inner C<$/>, so its parentheses never count toward the
 outer rules groupings.  (In other words, parenthesis numbering is always
 lexically scoped.)
 
@@ -1008,19 +1016,19 @@ case matching the null string:
 
 =item *
 
-Within a rule, the current state of the match is called C<$0>.
+Within a rule, the current state of the match is called C<$/>.
 
 =item *
 
-The C<$0> object contains all the current bindings of any submatches,
-so it includes C<$1>, C<$2>, etc.
+The C<$/> object contains all the current bindings of any submatches,
+so it includes C<$0>, C<$1>, C<$2>, etc.
 
 =item *
 
-The C<$0> object also contains a hash of named variables lexically
+The C<$/> object also contains a hash of named variables lexically
 scoped to the current rule.  These may be named by hash subscripting:
-C<$0{'foo'}> or C<$0«foo»>.  For readability the latter form the
-C<$0> may be replaced with an appropriate sigil: C<$«foo»>.  For
+C<$/{'foo'}> or C<$/«foo»>.  For readability the latter form the
+C<$/> may be replaced with an appropriate sigil: C<$«foo»>.  For
 ASCII compatibility you may use Texan quotes: C<<< $<<foo>> >>>.
 
 =back
@@ -1058,7 +1066,7 @@ You may also set rule-scoped variables hypothetically:
 
     / (\d+) {let $«num» := $1} (<alpha>+)/
 
-In this case the variable lives in C<$0> rather than the surrounding
+In this case the variable lives in C<$/> rather than the surrounding
 lexical pad.
 
 =item *
@@ -1116,13 +1124,13 @@ If you explicitly say
 
 the variable is not bound hypothetically, so C<$1> persists as long as
 the current match object persists, even if this closure is backtracked
-over.  However, since C<$0> is itself a hypothetical numbered variable,
+over.  However, since C<$/> is itself a hypothetical variable,
 the lifetime of any numbered variable is somewhat hypothetical in
 any case, scoped to some outer calling context, either a calling
 pattern, or the current non-pattern scope that invoked this pattern.
-This implies that, outside the entire match, a failed, false C<$0>
+This implies that, outside the entire match, a failed, false C<$/>
 can return a defined, non-hypothetically bound C<$1>, up till the time
-the C<$0> object is itself destroyed.
+the C<$/> object is itself destroyed.
 
 =item *
 
@@ -1225,8 +1233,8 @@ that property is "C<pretext>".)
 =item *
 
 A match always returns a "match object", which is also available as
-(lexical) C<$0> (except within a closure lexically embedded in a rule,
-where C<$0> always refers to the current match, not any submatch done
+(lexical) C<$/> (except within a closure lexically embedded in a rule,
+where C<$/> always refers to the current match, not any submatch done
 within the closure).
 
 =item *
@@ -1242,7 +1250,7 @@ succeed?):
 
     if /pattern/ {...}
     # or:
-    /pattern/; if $0 {...}
+    /pattern/; if $/ {...}
 
 =item * 
 
@@ -1252,17 +1260,17 @@ In numeric context it evaluates to the number of matches:
 
 =item * 
 
-In string context it evaluates to C<$1>.  (If there were no explicit
-captures, the entire match is assumed to be a capture to C<$1>, as
-if there were parens around the entire match.)
+In string context it evaluates to C<$0>, the entire matched string:
 
-    print %hash{"{$text ~~ /,? (<ident>)/}"};
-    # or: 
-    $text ~~ /,? (<ident>)/  &&  print %hash{~$0};
+    print %hash{"{$text ~~ /<ident>/}"};
+    # or equivalently: 
+    $text ~~ /<ident>/  &&  print %hash{~$/};
+
+But generally you should say C<$0> if you mean C<$0>.
 
 =item *
 
-When used as an array, C<$0> pretends to be an array containing
+When used as an array, C<$/> pretends to be an array containing
 C<$1>, C<$2>, etc.  Hence
 
     ($key, $val) = m:w/ (\S+) => (\S+)/;
@@ -1272,36 +1280,52 @@ can also be written:
     $result = m:w/ (\S+) => (\S+)/;
     ($key, $val) = @$result;
 
-For this reason C<$0> is not considered part of the array.  But again,
-if there are no explicit capture parens, the entire match is considered
-a capture into $1.
+For this reason C<$0> is not returned as part of the list (unless there are
+no other captures).
+
+To get a single capture into a string, use a subscript:
+
+    $mystring = "{ m:w/ (\S+) => (\S+)/[0] }";
 
 To get all the captures into a string, use a "zen" slice:
 
     $mystring = "{ m:w/ (\S+) => (\S+)/[] }";
 
+Note that, as a scalar variable, C<$/> doesn't automatically flatten
+in list context.  Use C<@$/> or C<$/[]> to flatten as an array.
+
 =item *
 
-When used as a hash, C<$0> pretends to be a hash of all the named
+When used as a hash, C<$/> pretends to be a hash of all the named
 captures.  The keys do not include any sigils, so if you capture to
-variable C<@«foo»> its real name is C<$0{'foo'}> or C<$0«foo»>.
-However, you may still refer to it as C<@«foo»> anywhere C<$0>
+variable C<@«foo»> its real name is C<$/{'foo'}> or C<$/«foo»>.
+However, you may still refer to it as C<@«foo»> anywhere C<$/>
 is visible.  (But it is erroneous to use the same name for two different
 capture datatypes.)
 
-The I<string> matched by the entire pattern may always be named via the
-"MATCH" key, even if there are captures:
+Note that, as a scalar variable, C<$/> doesn't automatically flatten
+in list context.  Use C<%$/> or C<$/{}> to flatten as a hash.
 
-    $mystring = "{ m:w/ (\S+) => $1/«MATCH» }";
+=item *
 
-Note that C<$«MATCH»> is not merely a recursive reference to C<$0>.
-C<$«MATCH»> always returns the entire match in string context.  (C<$0>
-always returns C<$1> in string context.)
+The numbered captures may be treated as named, so C<$«1 2 3»>
+is equivalent to C<$/[0,1,2]>.  This allows you to write slices of
+intermixed named and numbered captures.  C<$0> and C<$«0»> are the
+same thing, but there is no way to get at C<$0> via the array subscript
+notation.  (Saying C<$/[-1]> returns the final capture, not
+C<$0>.)
+
+=item *
+
+Note that C<$«0»> is not merely a recursive reference to C<$/>,
+because they are of different types.  C<$/> is a polymorphic match
+object, while C<$0> is a string (presuming you're matching a string).
+The two objects take different sets of methods.
 
 =item *
 
 In ordinary code, variables C<$1>, C<$2>, etc. are just aliases into
-C<$0[0]>, C<$0[1]>, etc.  Hence they will all be undefined if the
+C<$/[0]>, C<$/[1]>, etc.  Hence they will all be undefined if the
 last match failed (unless they were explicitly bound in a closure without
 using the C<let> keyword).
 
@@ -1309,7 +1333,7 @@ using the C<let> keyword).
 
 =item *
 
-I<Within> a rule, C<$0> acts like a hypothetical variable.
+I<Within> a rule, C<$/> acts like a hypothetical variable.
 
 =item *
 
@@ -1333,12 +1357,10 @@ Use C<$0:=> to override the default return behaviour described above:
 
 This influences the string returned by C<$0>, as well as where the
 rule thinks it started and stopped matching.  (That is, C<.pos> is set
-to the right end of the "new" C<$0>.)  However, all the numbered and
-named fields are available just as if the entire match had been returned
-for C<$0>.  So the quote character still shows up in C<$1>.
-
-If you wish to rebind only the return string that will be returned in
-string context, rebind C<$1> rather than C<$0>.
+to the right end of the forced C<$0>.)  However, all the numbered and
+named fields are available through C<$/> just as if the entire match
+had been returned for C<$0>.  So the quote character still shows up
+in C<$1>.
 
 =item *
 
@@ -1348,6 +1370,8 @@ to anything that is not part of the string being matched, since it
 might confuse C<.pos> completely.  On the other hand, maybe that's
 a convenient way to redirect the match to continue in a different
 string entirely.
+
+The C<$/> variable may not be rebound within a rule.
 
 =back
 

@@ -12,9 +12,9 @@ Larry Wall <larry@wall.org>
 
   Maintainer: Larry Wall <larry@wall.org>
   Date: 10 Aug 2004
-  Last Modified: 27 Oct 2004
+  Last Modified: 24 Nov 2004
   Number: 2
-  Version: 1
+  Version: 2
 
 This document summarizes Apocalypse 2, which covers small-scale
 lexical items and typological issues.  (These Synopses also contain
@@ -162,9 +162,10 @@ on overflow.
 
 =item *
 
-A C<str> is always a byte buffer, whereas a C<Str> is a Unicode string
-object of some sort.  Untyped scalars use Str semantics rather than str
-(except under C<use bytes>).
+A C<Str> is a Unicode string object of some sort.  A C<str> is
+a stringish view of an array of integers, and has no Unicode or
+character properties without explicit conversion to some kind of C<Str>.
+Typically it's an array of bytes serving as a buffer.
 
 =back
 
@@ -312,9 +313,12 @@ global alphabetic names, such as C<$*PID> or C<@*ARGS>.
 =item *
 
 Any remaining special variables will be lexically scoped.
-This includes C<$_> and C<@_>.  As well as the new C<$0>, which
-is the return value of the last regex match.  C<$1>, C<$2>, etc.,
-are aliases into the C<$0> object.
+This includes C<$_> and C<@_>.  As well as the new C<$/>, which
+is the return value of the last regex match.  C<$0>, C<$1>, C<$2>, etc.,
+are aliases into the C<$/> object.
+
+[Update: The C<$0> object has been renamed to C<$/>, but it's
+still lexical.]
 
 =item *
 
