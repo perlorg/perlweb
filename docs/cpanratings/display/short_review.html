@@ -1,9 +1,9 @@
 
 <h3>
 [% IF review.module AND review.module != review.distribution %]
-[% review.module %] / 
+[% review.module | html %] / 
 [% END %]
-<a href="http://search.cpan.org/dist/[% review.distribution | uri %]">[% review.distribution %]</a> 
+<a href="http://search.cpan.org/dist/[% review.distribution | uri %]">[% review.distribution | html %]</a> 
 [% review.version_reviewed ? '(' _ review.version_reviewed _ ')' : '' %]
 
 [% IF review.rating_overall %]
@@ -11,7 +11,7 @@
 [% END %]
 </h3>
 <p>
-[% review.review %]
+[% review.review | html %]
 </p>
 <p>
 <a href="/a/[% review.user_id %]">[% review.user_name %]</a> - [% review.updated %]
