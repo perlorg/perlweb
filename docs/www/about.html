@@ -1,16 +1,20 @@
 [% META title = 'About Perl' %]
 
 [% page.sidebar = BLOCK %]
+
+
+
   <DIV class="NAVITEM">
    <H3>More about Perl</H3>
-    <a href="http://use.perl.org/">News</a> at use.perl.org 
+        <a href="/about/style-guide.html">Style Guide</A>
     <BR><a href="http://perl.oreilly.com/news/success_stories.html">Success stories</a>
     <BR><a href="http://history.perl.org/">Perl's history</a>
+    <BR><a href="/about/reduce-risks.html">Reducing Business Risks</A>
   </div>
   <DIV class="NAVITEM">
    <H3>Who uses Perl?</H3>
 The Perl Journal estimated that there are over 1,000,000 Perl users.  More than
-200 local Perl user groups exist on six continents.
+200 local <A HREF="http://www.pm.org">Perl user groups</A> exist on six continents.
    </div>
 
   <DIV class="NAVITEM">
@@ -40,21 +44,23 @@ GNU General Public License.
 <h3>Supported Operating Systems</h3>
 <ul>
 <li>Unix systems
-<li>Macintosh - see <a href="http://www.macperl.com">The MacPerl Pages</a>.
-<li>Windows - see <a href="http://www.activestate.com">ActiveState Tools Corp.</a>
+<li>Macintosh - (OS8, 9, and X)  see <a href="http://www.macperl.com">The MacPerl Pages</a>.
+<li>Windows - see <a href="http://www.activestate.com/Products/ActivePerl/">ActiveState Tools Corp.</a>
+<li>VMS
+<li><A HREF="http://www.cpan.org/ports/index.html">And many more...</A>
 </ul>
 
 <h3>Perl Features</h3>
 <ul>
 <li>Perl takes the best features from other languages, such as
 C, awk, sed, sh, and BASIC, among others.
-<li>Perls database integration interface (DBI) supports third-party databases like Oracle, Sybase, Postgres, and others.
+<li>Perls database integration interface (<A HREF="http://dbi.perl.org">DBI</A>) supports third-party databases including Oracle, Sybase, <A HREF="http://www.postgresql.org">Postgres</A>, <A HREF="http://www.mysql.com">MySQL</A> and others.
 <li>Perl works with HTML, XML, and other mark-up languages.
 <li>Perl supports Unicode.
-<li>Perl is Y2K compliant.
+<li>Perl is <A HREF="/about/y2k.html">Y2K compliant</A>.
 <li>Perl supports both procedural and object-oriented programming.
-<li>Perl interfaces with external C/C++ libraries through XS or SWIG.
-<LI>Perl is extensible. There are over 400 third party modules available
+<li>Perl interfaces with external C/C++ libraries through XS or <A HREF="http://www.swig.org">SWIG</A>.
+<LI>Perl is extensible. There are over 500 third party modules available
 from the Comprehensive Perl Archive Network (<a href="http://cpan.perl.org">CPAN</a>).
 <li>The Perl interpreter can be embedded into other systems.
 </ul>
@@ -68,10 +74,9 @@ text manipulation capabilities and rapid development cycle.
     HTML forms simple.
 <li>Perl can handle encrypted Web data, including e-commerce transactions.
 <li>Perl can be embedded into web servers to speed up processing by as much
-as 2000%.  See <a href="http://perl.apache.org">http://perl.apache.org</a>.  
-<li>mod_prl allows the Apache web server to embed a Perl interpreter.
-<li>nsapi_perl allows the Netscape web server to embed a Perl interpreter.
-<li>Perl's DBI package makes web-database integration easy.
+as 2000%. 
+<li><a href="http://perl.apache.org">mod_perl</A> allows the Apache web server to embed a Perl interpreter.
+<li>Perl's <A HREF="http://dbi.perl.org">DBI</A> package makes web-database integration easy.
 </ul>
 
 [% #PROCESS tpl/common/footer.html %]
