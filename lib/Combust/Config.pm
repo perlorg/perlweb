@@ -3,9 +3,9 @@ use strict;
 use Config::Simple;
 use Data::Dumper qw();
 use Sys::Hostname qw(hostname);
-use Carp qw(carp);
+use Carp qw(carp croak);
 
-my $file = "$ENV{CBROOT}/combust.conf";
+my $file = $ENV{CBCONFIG} || "$ENV{CBROOT}/combust.conf";
 $file = "$ENV{CBROOTLOCAL}/combust.conf" if $ENV{CBROOTLOCAL};
 
 my $cfg = new Config::Simple($file) or die Config::Simple->error();
@@ -13,6 +13,37 @@ my $cfg = new Config::Simple($file) or die Config::Simple->error();
 my %Config = $cfg->vars();
 #warn Data::Dumper->Dump([\$cfg],[qw(cfg)]);
 #warn Data::Dumper->Dump([\%Config],[qw(Config)]);
+
+my %dbs = _setup_dbs();  
+
+sub _setup_dbs {
+
+  croak "Old database configuration detected, you must update the syntax. See combust.conf.sample" 
+    if $cfg->param('db_data_source');
+
+  my %sections = map { $_ =~ s/^database-(.*?)\..*/$1/; $_ => 1 } grep { m/^database/ } keys %Config;
+  my $got_default = 0;
+  foreach my $section (keys %sections) {
+    my $db_name = $section; 
+    my $db_config  = $cfg->param(-block => "database-$section"); 
+    $dbs{default}  = $db_config and $got_default++ if $db_config->{default};
+    $dbs{$db_name} = $db_config;
+  }
+
+  warn Data::Dumper->Dump([\%dbs], [qw(dbs)]);
+
+  unless ($got_default) {
+    if (keys %dbs > 1) {
+      croak 'You defined more than one database but didn\'t mark one of them "default=1"';
+    }
+    elsif (keys %dbs == 1) {
+      my ($db_name) = keys %dbs;
+      $dbs{default} = $dbs{$db_name};
+    }
+  }
+
+  %dbs;
+}  
 
 my $singleton;
 
@@ -22,11 +53,8 @@ sub new {
 }
 
 sub _new {
-  my ($proto, %args) = (shift, @_);
-  my $class = ref $proto || $proto;
-  my $type  = $args{type}|| '';
-  my $self = { };
-  $self = bless( $self, $class);
+  my ($class, %args) = (shift, @_);
+  bless( {}, $class);
 }
 
 sub site {
@@ -49,8 +77,9 @@ sub sites_list {
 }
 
 sub sites {
-  #warn Data::Dumper->Dump([\$sites], [qw(sites)]);
-  +{ map { $_ => 1 } shift->sites_list };
+  my $self = shift;
+  # grep for non-configured sites?
+  +{ map { $_ => $self->site->{$_} } $self->sites_list };
 }
 
 sub servername {
@@ -62,6 +91,8 @@ sub port {
 }
 
 sub external_port {
+  # should we default to $self->port instead of undef (and then require port 80 to be 
+  # configured when you use a proxy?)
   $cfg->param('external_port') || undef;
 }
 
@@ -73,21 +104,22 @@ sub base_url {
   my $servername = $site->{servername};
   my $port = $self->external_port;
   my $base_url = "http://$servername" . ($port ? ":$port" : '');
-  warn $base_url;
   return $base_url;
 }
 
-sub db_data_source {
-  $cfg->param('db_data_source') || 'db_data_source not configured';
+sub database {
+  my ($self, $db_name) = @_;
+  carp "No databases configured in the combust configuration" and return unless %dbs; 
+  unless ($db_name and $dbs{$db_name}) {
+    carp "no database $db_name defined, using default" if $db_name;
+    $db_name = 'default';
+  }
+  $dbs{$db_name};
 }
 
-sub db_password {
-  $cfg->param('db_password') || undef;
-}
-
-sub db_user {
-  $cfg->param('db_user') || 'combust';
-}
+sub db_data_source { shift->database->{data_source}; }
+sub db_password    { shift->database->{password};    }
+sub db_user        { shift->database->{user};        }
 
 sub apache_reload {
   # maybe this should have been reversed

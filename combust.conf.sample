@@ -25,11 +25,6 @@ port = 8230
 # for external redirects (301's, 302's)
 external_port = 0
 
-# configure database access for use with the db_open() function
-db_data_source = dbi:mysql:database=combust;host=localhost
-db_user        = combust
-# db_password    = very.s3cret
-
 # docs_name specifies the default directory name for documents (under
 # ~user/ or $ENV{CBROOT}), defaults to "docs"
 # docs_name = docs
@@ -47,6 +42,22 @@ db_user        = combust
 #   access and errror will be substituted for LOGFILE in template and
 #   params.  LOGDIR is $CBROOT/apache/logs
 
+
+[database-combust]
+# configure database access for use with the db_open() function
+data_source = dbi:mysql:database=combust;host=localhost
+user        = combust
+# password    = very.s3cret
+default=1
+
+# configure "test" database - ($dbh = db_open('test'))
+# [database-test]
+# data_source = dbi:...
+# ...
+
+
+
+# Configure sites
 
 [www]
 servername = new.c.askask.com
