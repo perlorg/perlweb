@@ -25,6 +25,12 @@
        PerlHandler CPANRatings::Control::Show->super
     </LocationMatch>
 
+    <Location /csv/all_ratings.csv>
+       SetHandler perl-script
+       PerlHandler CPANRatings::Control::ShowAll->super
+    </Location>
+
+
     <Location /error/>
        SetHandler   perl-script
        PerlHandler Combust::Control::Error->super
