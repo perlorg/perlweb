@@ -1,0 +1,79 @@
+=head1 This Week on perl5-porters (26 July / 1st August 2004)
+
+Due to OSCON and other things, there wasn't much traffic on the
+perl 5 porters mailing list, but I bet that this wasn't a non-productive
+week in the Perl world.
+
+=head2 Optree
+
+Jim Cromie was looking at the basic OP structure, and wondered why there
+are always two fields C<op_sibling> and C<op_next> that seem to have the
+same purpose. He's willing to try to unify them. Dave Mitchell commented
+that the operation might be quite delicate (or in other words that dragons
+hide in the optree optimizer.)
+
+    http://groups.google.com/groups?selm=41092249.9030903%40divsol.com
+
+=head2 From the C lib
+
+Slaven Rezic proposed to use strlcpy() instead of strncpy() in the perl
+core, but that would need at least to add a Configure probe for it. (bug
+#30838).
+
+    http://groups.google.com/groups?selm=rt-3.0.11-30838-92699.13.8032172316222%40perl.org
+
+=head2 MakeMaker and rpaths
+
+Rafael provided a patch to remove the empty rpaths (runtime paths,
+searched to find dynamic shared librairies) that might be put by MakeMaker
+into the F<.so> files during the build process. Marcus Holland-Moritz came
+up with a small enhancement. Michael Schwern declined to comment yet.
+
+    http://groups.google.com/groups?selm=20040728105649.71714da0%40localhost
+
+=head2 Perl6-ish BEGIN
+
+Randal L. Schwartz proposed to enhance the syntax of BEGIN blocks so that
+it can return a value (at compile-time, being constant-folded). Rafael
+comments that it might not be very difficult, but that it looks like a
+feature for blead rathen than for maint. Mark Mielke pointed out a
+smallish backwards incompatibility with this idea.
+
+    http://groups.google.com/groups?selm=863c3651ch.fsf%40blue.stonehenge.com
+
+=head2 Mixed line endings
+
+Richard Jelinek reported that perl can't cope with UTF-8 encoded source
+files that mix different types of line endings. (Apparently there is some
+evil emacs extension that routinely produces such files.)
+
+    http://groups.google.com/groups?selm=20040729231153.A16115%40petamem.com
+
+=head2 In Brief
+
+Tels released Math::BigInt 1.71.
+
+In the process of doing so, he wonders what is the difference between
+overload::StrVal() and Scalar::Util::refaddr(). Apparently the later can
+be used in place of the former. Fergal Daly and Yitzchak Scott-Thoennes
+provide some historical explanations.
+
+    http://groups.google.com/groups?selm=200407301527.04010%40bloodgate.com
+
+Marcus is working towards Devel::PPPort 3.00.
+
+David Favor reports that I<the -w operator is broken for GSA directories>
+on AIX (bug #30885). Rafael has no idea what GSA directories are.
+
+Dave Mitchell added explicative comments at the top of each core F<.c>
+file. Yitzchak thought it was what the Tolkien quotes were for, actually.
+
+Dan Jacobson thinks that if B<-i> and B<-w> used on the command-line, but
+if no files are given, perl could emit a warning (bug #30858).
+
+=head2 About this summary
+
+This summary was written by Rafael Garcia-Suarez. Weekly summaries are
+published on F<http://use.perl.org/> and posted on a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. Comments and
+corrections welcome.
