@@ -1,8 +1,9 @@
 {$root_variable = 'CBROOT';
  $root = $ENV{$root_variable} or die "No $root_variable set!\n"; 
  $port = 8225;  
- "" 
-}ServerRoot "{$root}/apache/"
+ $dont_edit; 
+}
+ServerRoot "{$root}/apache/"
 LockFile {$root}/apache/logs/httpd.lock
 PidFile {$root}/apache/logs/httpd.pid
 ScoreBoardFile {$root}/apache/logs/httpd.scoreboard
