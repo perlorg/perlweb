@@ -16,13 +16,13 @@ sub is_directory {
     
     foreach my $dir (@$paths) {
       $path = "$dir/$name";
-      last INCPATH
-	if -d $path;
+
+      return 1 if -d $path;
     }
 
   }
 
-  return $path ? 1 : 0;
+  return 0;
 }
 
 sub expand_filename {
