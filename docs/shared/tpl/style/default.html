@@ -72,7 +72,7 @@
 
 <DIV CLASS="FOOTER">
 [% UNLESS shortfooter || page.footer %]
-    Perl.org sites
+    <A HREF="/">Perl.org</A> sites
      : <!-- <A href="http://books.perl.org/" title="books.perl.org">books</a>
      | --> <A href="http://rt.perl.org/perlbug/">bugs</a>
      | <A href="http://dev.perl.org/">dev</a>
@@ -83,7 +83,7 @@
      | <A href="http://use.perl.org/">use</a>
     <BR>
   <small>
-   &#169; Copyright 2002-2003 <a href="http://www.perlfoundation.org">The&nbsp;Perl&nbsp;Foundation</a>.<BR>
+   &#169; Copyright 2002-2003 <a href="http://www.perlfoundation.org">The&nbsp;Perl&nbsp;Foundation</a><BR>
    <A HREF="siteinfo.html">Site Information and Contacts</A>
   </small>
 [% ELSIF page.footer %]
@@ -100,11 +100,11 @@
 
 </DIV>
 </TD>
-<TD>
+<TD valign="middle" align="center">
 [% IF page.logobutton %]
-<img align="right" src="[% page.logobutton.src %]" alt="[% page.logobutton.alt %]">
+<img src="[% page.logobutton.src %]" alt="[% page.logobutton.alt %]">
 [% ELSE %]
-<img align="right" src="/simages/lcamel.gif" alt="[a camel]">
+<img src="/simages/lcamel.gif" alt="the camel">
 [% END %]
 </TD>
 </TR>

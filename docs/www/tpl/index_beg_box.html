@@ -11,22 +11,72 @@ Got Books?  &nbsp;<A HREF="http://books.perl.org">Visit our books site</A>
     h.jobs.data = BLOCK %]
 Need a Job?  &nbsp;<A HREF="http://jobs.perl.org/">jobs.perl.org has the job for you!</A>
 [%- END %]
-[%- h.oscon.weight = 10;
+[%- h.oscon.weight = 5;
     h.oscon.data = BLOCK %]
-Going to OSCON?  &nbsp;<A HREF="http://www.perl.org/oscon/2003/">July 7-11, 2003 - Portland, Oregon</A>
+At OSCON?  &nbsp;<A HREF="http://www.perl.org/oscon/2003/">July 7-11, 2003 - Portland, Oregon</A>
 [%- END %]
-[%- h.yapc.weight = 2;
-    h.yapc.data = BLOCK %]
-Going to YAPC?  &nbsp;<A HREF="http://www.yapc.org/America/">June 16-18, 2003 - Boca Raton, Florida</A>
+
+[%- h.yapce.weight = 5;
+    h.yapce.data = BLOCK %]
+Going to YAPC::Europe?  &nbsp;<A
+HREF="http://www.yapc.org/europe/">July 23-25, 2003 - Paris, France</A>
 [%- END %]
+
 [%- h.suggest.weight = 2;
     h.suggest.data = BLOCK %]
 Got Suggestions?  &nbsp; <A HREF="mailto:webmaster@perl.org">Email us ideas for the site!</A>
 [%- END %]
 [%- h.care.weight = 2;
     h.care.data = BLOCK %]
-Perl -- For when you care enough to program the very best!
+Perl -- For when you care enough<BR> to program the very best!
 [%- END %]
+
+[%- h.f1.weight = 2;
+    h.f1.data = BLOCK %]
+Perl -- When the best is good enough.
+[%- END %]
+
+[%- h.f2.weight = 2;
+    h.f2.data = BLOCK %]
+Perl -- It's like Java, only it lets you deliver<BR>
+on time and under budget.
+[%- END %]
+
+[%- h.f3.weight = 2;
+    h.f3.data = BLOCK %]
+Perl -- Because life's too short to code without punctuation.
+[%- END %]
+
+[%- h.f4.weight = 2;
+    h.f4.data = BLOCK %]
+"Programmers Wanted"
+[%- END %]
+
+
+[%- h.f5.weight = 2;
+    h.f5.data = BLOCK %]
+"Program <I>Different</I>"
+[%- END %]
+
+[%- h.f6.weight = 2;
+    h.f6.data = BLOCK %]
+"Something special in the code"
+[%- END %]
+
+[%- h.f6.weight = 2;
+    h.f6.data = BLOCK %]
+"Where do you want to go tomorrow?"
+[%- END %]
+
+
+
+
+
+
+
+
+
+
 [% # end of rotation %]
 [%- USE Rotato(h) %]
 [%- Rotato.pick(h) %]
