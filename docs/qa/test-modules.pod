@@ -31,6 +31,14 @@ L<http://perl.apache.org/docs/general/testing/testing.html>
 
 Assertion-like testing while your program runs.
 
+=head2 Test::Benchmark
+
+Compares two functions to ensure one is faster than another:
+
+    use Test::Benchmark;
+
+    is_faster(-10, sub {...}, sub {...}, "this is faster than that")
+
 =head2 Test::Class
 
 xUnit style testing that works well with C<Test::Builder> based modules
@@ -53,6 +61,17 @@ to test various boundaries and edge cases without writing much code.
 Given a DBI database handle, can test to see if the database contains
 tables with particular rows. Useful for testing that database
 modifications went well.
+
+    # SQL-based test
+    row_ok( sql   => "SELECT * FROM contacts WHERE cid = '123'",
+            tests => [ name => "trelane" ],
+            label => "contact 123's name is trelane");
+
+    # test with shortcuts
+    row_ok( table => "contacts",
+            where => [ cid => 123 ],
+            tests => [ name => "trelane" ],
+            label => "contact 123's name is trelane");
 
 =head2 Test::Debugger
 
@@ -183,8 +202,8 @@ Checks that your F<Makefile.PL> has the proper prerequisites specified.
 
 =head2 Test::Reporter
 
-Module to let you send F<make test> results to the CPAN testers.
-The real workhorse is the F<cpantest> program.
+Module to let you send F<make test> results to the CPAN testers.  Includes
+the handy F<cpantest> program to make command-line reporting easy.
 
 =head2 Test::Signature
 
