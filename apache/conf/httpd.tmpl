@@ -32,33 +32,38 @@ Listen [% config.port %]
 
 CoreDumpDirectory [% root_default %]/apache/
 
+[%# this should be a bit more sophisticated and check for each module,
+    but for now it'll do ... %]
+[% IF mod_so %]
+LoadModule env_module         [% apache_root %]/libexec/mod_env.so
+LoadModule config_log_module  [% apache_root %]/libexec/mod_log_config.so
+LoadModule mime_magic_module  [% apache_root %]/libexec/mod_mime_magic.so
+LoadModule mime_module        [% apache_root %]/libexec/mod_mime.so
+LoadModule negotiation_module [% apache_root %]/libexec/mod_negotiation.so
+LoadModule status_module      [% apache_root %]/libexec/mod_status.so
+#LoadModule info_module        [% apache_root %]/libexec/mod_info.so
+LoadModule autoindex_module   [% apache_root %]/libexec/mod_autoindex.so
+LoadModule dir_module         [% apache_root %]/libexec/mod_dir.so
+#LoadModule cgi_module         [% apache_root %]/libexec/mod_cgi.so
+#LoadModule action_module      [% apache_root %]/libexec/mod_actions.so
+#LoadModule userdir_module     [% apache_root %]/libexec/mod_userdir.so
+LoadModule alias_module       [% apache_root %]/libexec/mod_alias.so
+LoadModule rewrite_module     [% apache_root %]/libexec/mod_rewrite.so
+LoadModule access_module      [% apache_root %]/libexec/mod_access.so
+LoadModule auth_module        [% apache_root %]/libexec/mod_auth.so
+#LoadModule expires_module     [% apache_root %]/libexec/mod_expires.so
+#LoadModule headers_module     [% apache_root %]/libexec/mod_headers.so
+LoadModule unique_id_module   [% apache_root %]/libexec/mod_unique_id.so
+LoadModule setenvif_module    [% apache_root %]/libexec/mod_setenvif.so
+LoadModule perl_module        [% apache_root %]/libexec/libperl.so
+[% END %]
+
+
 PerlPassEnv CBROOT
 PassEnv     CBROOT
 PerlPassEnv CBROOTLOCAL
 PassEnv     CBROOTLOCAL
 PerlSetEnv  APACHEROOT [% apache_root %]
-
-#LoadModule env_module         libexec/apache/mod_env.so
-#LoadModule config_log_module  libexec/apache/mod_log_config.so
-#LoadModule mime_magic_module  libexec/apache/mod_mime_magic.so
-#LoadModule mime_module        libexec/apache/mod_mime.so
-#LoadModule negotiation_module libexec/apache/mod_negotiation.so
-#LoadModule status_module      libexec/apache/mod_status.so
-#LoadModule info_module        libexec/apache/mod_info.so
-#LoadModule autoindex_module   libexec/apache/mod_autoindex.so
-#LoadModule dir_module         libexec/apache/mod_dir.so
-#LoadModule cgi_module         libexec/apache/mod_cgi.so
-#LoadModule action_module      libexec/apache/mod_actions.so
-#LoadModule userdir_module     libexec/apache/mod_userdir.so
-#LoadModule alias_module       libexec/apache/mod_alias.so
-#LoadModule rewrite_module     libexec/apache/mod_rewrite.so
-#LoadModule access_module      libexec/apache/mod_access.so
-#LoadModule auth_module        libexec/apache/mod_auth.so
-#LoadModule expires_module     libexec/apache/mod_expires.so
-#LoadModule headers_module     libexec/apache/mod_headers.so
-#LoadModule unique_id_module   libexec/apache/mod_unique_id.so
-#LoadModule setenvif_module    libexec/apache/mod_setenvif.so
-#LoadModule perl_module        libexec/apache/libperl.so
 
 #MimeMagicFile [% apache_root %]/conf/magic
 

@@ -27,12 +27,18 @@ my $tt = new Template({ INCLUDE_PATH => $include_path,
 		      }) 
   or die "Error: $Template::ERROR\n"; $Template::ERROR = '' if 0;
 
+my @httpd_modules = split /\n/, `$ENV{CBROOT}/bin/httpd -l`;
+#print join "\n- ", @httpd_modules;
+my $mod_so = (grep {/mod_so/} @httpd_modules and ! grep { /mod_perl/ } @httpd_modules) 
+  ? 1 
+  : 0;
 
 my $params = { config => $config,
 	       root         => $ENV{CBROOT},
 	       root_local   => ($ENV{CBROOTLOCAL} || ''),
 	       root_default => ($ENV{CBROOTLOCAL} || $ENV{CBROOT}),
 	       apache_root  => $apache_root,
+	       mod_so       => $mod_so,
 	     };
 
 $params->{dont_edit} = <<EOT;
