@@ -295,7 +295,19 @@ NameVirtualHost *:[% config.port %]
 # Default first host (so an unconfigured vhost doesn't fall back to one of the following
 <VirtualHost *:[% config.port %]>
   ServerName combust-default
-  DocumentRoot [% root_default %]/tmp/htdocs/
+  DocumentRoot [% root %]/apache/root_templates/default_site/
+
+  <Location />
+    SetHandler perl-script
+    PerlSetVar UseDocumentRoot 1
+    PerlHandler Combust::Control::Basic->super
+  </Location>
+
+  <Location /error/>
+     SetHandler   perl-script
+     PerlHandler Combust::Control::Error->super
+  </Location>
+
 </VirtualHost>
 
 # FIXME|TODO: make the site variable be set by a transhandler;
@@ -303,9 +315,9 @@ NameVirtualHost *:[% config.port %]
 # be merged into one virtualhost block - maybe.
 
 [% MACRO expandServerAliases( aliasList ) BLOCK %]
-    [%- FOREACH v = aliasList.list %]
+    [%- FOREACH v = aliasList.list %][%- IF v -%]
     ServerAlias [% v %]
-    [%- END -%]
+    [%- END -%][%- END -%]
 [% END %]
 
 [% FOREACH site = config.sites_list %]

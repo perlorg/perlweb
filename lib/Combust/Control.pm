@@ -33,6 +33,8 @@ $Template::Stash::SCALAR_OPS->{ rand } = sub {
 
 my $parser = Template::Parser->new(); 
 
+my $root = $ENV{CBROOT};
+
 my %provider_config = (
 		       PARSER => $parser,
 		       COMPILE_EXT      => '.ttc',
@@ -156,7 +158,6 @@ sub get_include_path {
   my ($user, $dir);
   if (($user, $dir) = ($r->param('root') =~ m!^/?([a-zA-Z]+)/([^\.]+)$!)) {
     # FIXME|TODO: should expand on ~ instead of using /home
-    #$root = "/home/$user/docs/$dir/$site_dir";
     $cookies->cookie('root', "$user/$dir");
   } 
   elsif ($r->param('root') eq "/") {
@@ -164,8 +165,7 @@ sub get_include_path {
     $cookies->cookie('root', "/");
   }
   elsif (($user, $dir) = ($cookies->cookie('root') =~ m!^([a-zA-Z]+)/([^\.]+)$!)) {
-    #warn "got root cookie";
-    #$root = "/home/$user/docs/$dir/$site_dir";
+    # ...  why is this in an elsif?  :-)
   }
 
   $r->pnotes('combust_notes')->{include_root} = ($user and $dir) ? "/$user/$dir" : '/';
@@ -193,13 +193,15 @@ sub get_include_path {
 	    ];
   }
 
+
+  $path = [ $r->document_root ] if $r->dir_config('UseDocumentRoot');
+  push @$path, "$root/apache/root_templates/";
+
   #warn Data::Dumper->Dump([\$path], [qw(path)]);
   
   return $path;
 
 }
-
-my $root = $ENV{CBROOT};
 
 sub evaluate_template {
   my $self      = shift;
@@ -210,9 +212,11 @@ sub evaluate_template {
 
   $params{params}->{r} = $r; 
   $params{params}->{notes} = $r->pnotes('combust_notes'); 
-  $params{params}->{root} = $root;
+  $params{params}->{root} = $root;  # localroot anyone?
   # this is useful, is it dangerous too?  
   $params{params}->{combust} = $self;
+
+  $params{params}->{site} = $r->dir_config("site");
 
   my $user_agent = $r->header_in("User-Agent");
   $params{params}->{user_agent} = $user_agent;

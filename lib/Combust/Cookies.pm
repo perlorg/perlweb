@@ -149,12 +149,12 @@ sub check_cookie {
     # the empty id have a checksum too, but we will never allow that
     warn "No cookie";
     return '' unless wantarray;
-    return ('', "trunc", 0); # don't reset the user_id in this case
+    return ('', "trunc", 0); # don't reset the cookie in this case
   }
   unless ($cookie_version eq "2") { # corruption or a hacker
     warn "Combust::Cookies got cookie_version $cookie_version != 2 ($raw_id)";
     return 0 unless wantarray;
-    return ('', "vers",  (rand(100) < 0.1) );
+    return ('', "vers",  (rand(100) < 1) );
   }
   if ($hex_cs ne make_checksum($cookie_name, $cookie)) {
     warn "Failed checksum";
