@@ -3,7 +3,9 @@
 [% page.site = "perl.org" %]
 [% page.title = "The Perl Directory" %]
 [% page.description = 'The Perl Directory at perl.org.  Links and other helpful resources for new and experienced Perl programmers.' %]
-
+[% page.morecontacts = BLOCK%]
+<BR><A HREF="http://noc.perl.org">The Perl NOC</A>
+[% END %]
 [% page.sidebar = BLOCK%]
   <DIV class="MENU">
   <H3>Current Release: <a href="http://dev.perl.org/perl5/news/2004/perl-5.8.6.html">5.8.6</a></h3>
@@ -159,10 +161,6 @@
      <tr>
       <td><A HREF="http://www.perl-foundation.org/"><b>TPF</b></A></td>
       <td>[% quicknews ("perl-foundation") %]</td>
-     </tr>
-     <tr>
-      <td><A HREF="http://log.perl.org/"><b>perl.org updates</b></A></td>
-      <td>[% quicknews ("noc") %]</td>
      </tr>
      </table>
     </DIV>

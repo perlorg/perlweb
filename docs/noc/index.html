@@ -4,6 +4,22 @@
 [% page.title = "The Perl NOC" %]
 [% page.description = '' %]
 [% page.tagline = 'Suppliers of camel and parrot food' %]
+[% MACRO quicknews(shortname,count) BLOCK %]
+[%- IF count < 1 %]
+  [%  count = 2 %]
+[% END %]
+[%- TRY %]
+   [%- USE news = XML.RSS("${root}/var/rss/${shortname}.rss") %]
+   [% FOREACH item = news.items %]
+       <LI> <a href="[% item.link | html %]">[% item.title %]</a>
+       [% count = count - 1 %]
+       [% LAST IF count == 0 %]
+    [% END %]
+[%- CATCH %]
+    [Error Processing Directive]
+  [%- FILTER stderr %][% error.info %][% END %]
+[%- END %]
+[%- END %]
 [% page.sidebar = BLOCK %]
 
 [% ask = BLOCK %]
@@ -27,6 +43,19 @@
    "Confused Vulcan"
   </div>
 [% END %]
+
+<div style="padding: 4px;  border: 1px solid orange; margin-top: 10px;">
+ <div style="font-size: 120%; font-weight: 800; text-align: center;">
+  <i>the NOC Log</i><br>
+  <u>news and status</u><br>
+ </div>
+<UL>
+[% quicknews('noc',5) %]
+</UL>
+</div>
+<br>
+<br>
+
  
 <DIV ALIGN="center">
 
@@ -45,8 +74,8 @@ Your volunteer sysadmins:<BR>
 
 <p>
 The <tt>perl.org</tt> operations team maintains a slew of websites,
-services, and other neat things.  We fall under the umbrella of <A
-HREF="http://www.perlfoundation.org/">The Perl Foundation</A>.
+services, and other neat things.  We fall under the <A
+HREF="http://www.perlfoundation.org/">The Perl Foundation</A> umbrella.
 </p>
 
 [% MACRO site(s) BLOCK -%]
@@ -103,11 +132,6 @@ Some of the services we provide:
 </td>
 </tr>
 </table>
-
-<div class="orangebox">
-Coming Soon:<br>
-<i>the latest news and status from the NOC Log</i>
-</div>
 
 <p>
 We wouldn't be able to do any of this without our <A
