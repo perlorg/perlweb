@@ -140,21 +140,26 @@ cache".
 
 =over 4
 
-=item store( id => C<ID>, purge_key => C<PURGE_KEY>, data => C<DATA>, meta_data => C<METADATA> )
+=item store( id => C<ID>, expires => C<EXPIRES>, purge_key => C<PURGE_KEY>, data => C<DATA>, meta_data => C<METADATA> )
 
 Store data to the cache.
 
-C<DATA> is the data to be stored.  Only required field.  Will be
-serialized with Storable if it's a reference.
-
 C<ID> is the cache key.  Optional, will use the last id passed to the
 fetch method if not specified here.
+
+The number of seconds before the entry will expire is passed in as
+C<EXPIRES>. Defaults to 7200 (2 hours).
+
+C<DATA> is the data to be stored.  Only required field.  Will be
+serialized with Storable if it's a reference.
 
 C<META_DATA>: Hash reference to meta data stored with the data entry.
 Can for example contain the mime type of the data.
 
 The C<PURGE_KEY> is like C<ID> but only used for purging data.  Can be
 used to easily purge part of the cache when data is updated.
+
+
 
 =item fetch ( id => C<ID> )
 
@@ -187,6 +192,8 @@ When the cache entry was created; in MySQL datatime format.
 =over 4
 
 =item Method to purge entries with a certain purge_key and maybe force expire entries by id too.
+
+=item Support things like "3h" or "180m" for the expires parameter.  
 
 =back
 
