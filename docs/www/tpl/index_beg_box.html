@@ -1,0 +1,28 @@
+[% # define rotation for beginner box %]
+[%- h.newtoperl.weight = 5;
+    h.newtoperl.data = BLOCK %]
+New to Perl?   &nbsp;<A href="http://learn.perl.org">See our Resources for Perl Beginners</a>
+[%- END %]
+[%- h.gotbooks.weight = 3;
+   h.gotbooks.data = BLOCK %]
+Got Books?  &nbsp;<A HREF="http://books.perl.org">Visit our books site</A>
+[% END %]
+[%- h.jobs.weight = 5;
+    h.jobs.data = BLOCK %]
+Need a Job?  &nbsp;<A HREF="http://jobs.perl.org/">jobs.perl.org has the job for you!</A>
+[%- END %]
+[%- h.oscon.weight = 10;
+    h.oscon.data = BLOCK %]
+Going to OSCON?  &nbsp;<A HREF="http://www.perl.org/oscon/2003/">July 7-11, 2003 - Portland, Oregon</A>
+[%- END %]
+[%- h.yapc.weight = 2;
+    h.yapc.data = BLOCK %]
+Going to YAPC?  &nbsp;<A HREF="http://www.yapc.org/America/">June 16-18, 2003 - Boca Raton, Florida</A>
+[%- END %]
+[%- h.suggest.weight = 2;
+    h.suggest.data = BLOCK %]
+Got Suggestions?  &nbsp; <A HREF="mailto:webmaster@perl.org">Email us ideas for the site!</A>
+[%- END %]
+[% # end of rotation %]
+[%- USE Rotato(h) %]
+[%- Rotato.pick(h) %]
