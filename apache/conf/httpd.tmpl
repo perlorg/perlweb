@@ -15,6 +15,7 @@ Listen [% config.port %]
 CoreDumpDirectory [% root %]/apache/
 
 PerlPassEnv CBROOT
+PassEnv     CBROOT
 
 #LoadModule env_module         libexec/apache/mod_env.so
 #LoadModule config_log_module  libexec/apache/mod_log_config.so
