@@ -774,48 +774,48 @@ following code will print out all the numbers from 42 to 56:
 <table CELLPADDING="1" CELLSPACING="0" BORDER="0"
 bgcolor="#0000ff"><tr><td><table WIDTH="600" BORDER="0"
 CELLPADDING="0" CELLSPACING="0" bgcolor="#ccccff"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
-	set	I0, 1 # prototyped
-	set	I1, 0 # no items on the stack
-	set 	I5, 42
-	set     I6, 56
-	bsr	SPAN
-	ne	I0, 0, RETURNERROR # item on stack
-        # we don't know the number of integers values returned
-	ne	I2, 0, RETURNERROR # string return values
-	ne	I3, 0, RETURNERROR # PMC return values
-	ne	I4, 0, RETURNERROR # numeric return values
+        set     I0, 1 # prototyped
+        set     I1, 0 # no items on the stack
+        set     I5, 42
+        set     I6, 56
+        bsr     SPAN
+        # I0 contains the number of items on the stack
+        ne      I1, 0, RETURNERROR # integer return values
+        ne      I2, 0, RETURNERROR # string return values
+        ne      I3, 0, RETURNERROR # PMC return values
+        ne      I4, 0, RETURNERROR # numeric return values
 
 MORE:   restore I2
-	print   I2
-	print   &quot; &quot;
-	dec     I1
-	if      I1, MORE
-	print   &quot;\n&quot;
-	end
+        print   I2
+        print   " "
+        dec     I0
+        if      I0, MORE
+        print   "\n"
+        end
 
 RETURNERROR:
-	print	&quot;Error with return values from SPAN!\n&quot;
-	end
+        print   "Error with return values from SPAN!\n"
+        end
 
-SPAN:	ne	I0, 1, CALLERROR # not prototyped
-	ne	I1, 0, CALLERROR # items on stack
+SPAN:   ne      I0, 1, CALLERROR # not prototyped
+        ne      I1, 0, CALLERROR # items on stack
 
-	set     I7, 0 # count of integers
+        set     I7, 0 # count of integers
 REDO:   save    I6
-	dec     I6
-	inc     I7
-	le      I5, I6, REDO
+        dec     I6
+        inc     I7
+        le      I5, I6, REDO
 
-	set	I0, 0  # no items on the stack
-	set	I1, I7 # one integer return value
-	set	I2, 0  # no string return values
-	set	I3, 0  # no PMC return values
-	set	I4, 0  # no numeric return values
-	ret
+        set     I0, I7 # num of items on the stack
+        set     I1, 0  # no integer return value 
+        set     I2, 0  # no string return values
+        set     I3, 0  # no PMC return values
+        set     I4, 0  # no numeric return values
+        ret
 
 CALLERROR:
-	print	&quot;Error calling SPAN!\n&quot;
-	end
+        print   "Error calling SPAN!\n"
+        end
 </td></tr></table></td></tr></table></td></tr></table>
 
 <p>Prints:</p>
