@@ -3,22 +3,25 @@ use strict;
 use base 'Combust::Control';
 use Combust::Template::Provider;
 use RRE::Model;
-
+use Combust::Cache;
 
 sub handler($$) {
   my ($class, $r) = @_;
 
-  warn "RRE Handler!";
-  warn "RURI: ", $r->uri;
+  #warn "RRE Handler!";
+  #warn "RURI: ", $r->uri;
 
   my $template = '';
   my $content_type = 'text/html';
   my $uri = $r->uri;
-
- $r->update_mtime(time);
-
-
+  
   $uri =~ s!/$!/index.html!;
+
+  my $cache = Combust::Cache->new(type => 'rre');
+
+  if (my $d = $cache->fetch(id => "html;$uri" )) {
+    return $class->send_cached($r, $d, $content_type);
+  }
 
   my $rre = RRE::Model->new();
   my $params = { rre => $rre };
@@ -59,6 +62,14 @@ sub handler($$) {
     return 404 if $@ =~ m/not found$/;
     return 500; 
   }
+
+  $cache->store(data => $output,
+		meta_data => { content_type => $content_type },
+		expire => 86400*2,
+	       );
+
+  $r->update_mtime(time);
+
   $class->send_output($r, \$output, $content_type);
 }
 

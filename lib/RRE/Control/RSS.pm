@@ -17,6 +17,13 @@ sub handler($$) {
   my $rre = RRE::Model->new();
   my $params = { rre => $rre };
 
+  my $cache = Combust::Cache->new(type => 'rre');
+
+  if (my $d = $cache->fetch(id => "rss;$uri" )) {
+    return $class->send_cached($r, $d, $content_type);
+  }
+
+
   my @entries;
   if ($uri =~ m!^/rss/mails.xml$!) {
     @entries = $rre->get_mails({limit => 10});
@@ -64,6 +71,12 @@ sub handler($$) {
     return 404 if $@ =~ m/not found$/;
     return 500; 
   }
+
+  $cache->store(data => $output,
+		meta_data => { content_type => $content_type },
+		expire => 86400*2,
+	       );
+
   $class->send_output($r, \$output, $content_type);
 
 }

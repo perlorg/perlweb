@@ -40,7 +40,6 @@ sub get_mails {
   my $limit;
   #warn join " -> ", %args;
   if ($args->{limit}) {
-    warn "LIMIT!!";
     $limit = "LIMIT ?";
   } 
   return map { RRE::Model::Mail->new($_) } 

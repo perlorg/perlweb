@@ -92,6 +92,18 @@ sub evaluate_template {
 }
 
 
+sub send_cached {
+  my ($class, $r, $cache, $content_type) = @_;
+
+  $r->update_mtime($cache->{created_timestamp});
+
+  $content_type = $cache->{meta_data}->{content_type}
+      if $cache->{meta_data}->{content_type};
+
+  return $class->send_output($r, $cache->{data}, $content_type);
+
+}
+
 sub send_output {
   my $class   = shift;
   my $r       = shift;
@@ -100,17 +112,20 @@ sub send_output {
   
   $r->pnotes('combust_notes')->{cookies}->bake_cookies;
 
-  my $length = length($$routput);
+  $routput = $$routput if ref $routput;
+
+  my $length = length($routput);
   if ( $length == 0 ) {
     my $error = 'zero length output for request: ' . $r->uri . '?' .$r->args;
     warn( $error );
     return SERVER_ERROR;
   }
-  
-  #$r->headers_out->{'Content-Length'} = $length;
+
+  #warn "LENGTH: $length";
+
+  $r->headers_out->{'Content-Length'} = $length;
   $r->set_content_length($length);
   $r->set_last_modified();  # set's to whatever update_mtime told us..
-  #$r->set_last_modified($class->modified_time || time);
   #$r->header_out('Last-Modified', );
 
   # defining the character set helps in handling the CERT advisory
@@ -128,7 +143,7 @@ sub send_output {
   # don't send the body
   return OK if $r->header_only;
 
-  $r->print($$routput);
+  $r->print($routput);
   return OK;
 }
 

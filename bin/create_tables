@@ -46,6 +46,21 @@ create table rre_urls (
   key link_idx (link_id), 
 ) type=INNODB;
 
+
+create table combust_cache (
+  id varchar(250) not null,
+  type varchar(16) NOT NULL default '',
+  created timestamp(14) not null,
+  purge_key varchar(64) null,
+  data mediumblob not null,
+  metadata mediumblob null,
+  serialized tinyint(1) NOT NULL default '0',
+  expire datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (id, type),
+  KEY expire_idx (expire),
+  KEY purge_idx (purge_key)
+) TYPE=INNODB;
+
 EOT
 
 my @new_tables = qw(
