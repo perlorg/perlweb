@@ -1,0 +1,88 @@
+=head1 This Week on perl5-porters (19-25 January 2004)
+
+Another summary this week, not really different from the previous ones,
+as it contains the usual bug reports and other discussions. The bugs,
+however, are new. Read below.
+
+=head2 On the order of arguments to C<Exporter>
+
+Mark-Jason Dominus reports that you can't write
+
+    use Fcntl "O_RDONLY", ":flock";
+
+because C<Exporter> will think that C<:flock> is the name of a symbol to
+be imported, not of a group of symbols. (bug #25160.) H. Merijn Brand
+committed a patch to change this.
+
+    http://groups.google.com/groups?selm=rt-3.0.8-25160-71481.14.1614537314423%40perl.org
+
+=head2 The dor patch to 5.8.3
+
+H. Merijn Brand uploaded the defined-or patch against 5.8.3 to CPAN (which
+adds to it the C<//> and C<err> operators that exist in bleadperl).
+However, it contained a minor error, causing the output of C<perl -V>
+not to include the proper I<Locally applied patches> section. As PAUSE
+doesn't let people upload the same file twice, Merijn deleted the first
+patch and uploaded a new one under the name F<dor-5.8.3a.diff>, which can
+be found in his CPAN directory (HMBRAND).
+
+=head2 In Brief
+
+Leon Brocard released a snapshot of perl 5.005_04 :
+
+    http://groups.google.com/groups?selm=20040121100937.GA8793%40kanga.astray.com
+
+Some progress was made on the Storable module. Stas Bekman sent a patch to
+make it thread-safe. Moreover, Sam Vilain fixed a case of segmentation
+fault (bug #25145).
+
+Stas wants the strategies used to handle memory allocations on Windows to
+be improved, esp. where ithreads are involved. Jan Dubois is working on
+it, but issues are complex.
+
+    http://groups.google.com/groups?selm=400DEA8A.8020208%40stason.org
+
+Alan Burlison points out an error in the documentation of threads
+pertaining to the interaction of threading with forking. Also, he notes
+that an explicit unlock() would be more flexible than the implicit
+unlock-at-end-of-scope that happens currently.
+
+    http://groups.google.com/groups?selm=4013DFA9.5030008%40sun.com
+
+Steve Hay proposed a patch to add a camel icon to F<perl.exe> on Windows.
+
+David Jantzen reports (bug #25237) that perl leaks memory when recursively
+traversing circular datastructures. Dave Mitchell explains that he managed
+somehow to I<create a closure which closes over itself>. So leakage is to
+be expected.
+
+    http://groups.google.com/groups?selm=rt-3.0.8-25237-72009.6.72018147677328%40perl.org
+
+=head2 Bugs fixed
+
+Gisle Aas reported that the simple statement
+
+    print if foo
+
+doesn't die under strictures (bug #25147). This was fixed by Dave
+Mitchell.
+
+The constructs
+
+    sub foo : unique {}
+    my $x : unique;
+
+are now disallowed in bleadperl (until someone comes up with a
+sensible signification for them.)
+
+    http://groups.google.com/groups?selm=rt-3.0.8-24940-70133.7.7098418042744%40perl.org
+
+Detached threads now work on Windows, thanks to Jan Dubois. They used to
+crash on interpreter exit.
+
+=head2 About this summary
+
+This summary was written by Rafael Garcia-Suarez.  Weekly summaries are
+published on F<http://use.perl.org/> and posted on a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>.  Corrections
+and comments are welcome.
