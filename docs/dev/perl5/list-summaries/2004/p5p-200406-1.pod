@@ -1,0 +1,95 @@
+=head1 This Week on perl5-porters (31 May / 6 June 2004)
+
+As I've advertised the weekly P5P summaries during the French Perl
+Workshop, I feel compelled to continue to write them each week... Read on
+for the latest batch of commented links.
+
+=head2 Smaller tarball
+
+Nicholas Clark, enhancing Jeff "japhy" Pinyan's improvements to the
+Unicode data tables, makes them generated at perl compile time. This way,
+an unpacked clean source tree is 1.6 MB lighter.
+
+    http://groups.google.com/groups?selm=20040531151254.GX1147%40plum.flirble.org
+
+However, this produced some problems with builds on Windows using the
+C<dmake> utility: the build now works, thanks to Steve Hay, but C<dmake>
+tends to build things several times unnecessarily.
+
+=head2 Data::Dumper and hooks
+
+Gaal Yahas proposed to allow C<Data::Dumper> to call methods on objects it
+dumps, if these methods exists, to produce a class-specific customized
+dump. Comments were posted.
+
+    http://groups.google.com/groups?selm=20040604141439.GI647%40sike.forum2.org
+
+=head2 C<$SIG{FOO} = undef>
+
+Dave Mitchell proposed that assigning C<undef> to a signal handler does
+the same thing as assigning C<'DEFAULT'>: restore the default handler.
+Nick Ing-Simmons remembers that in the past, this question was discussed:
+shouldn't it set the signal handler to C<'IGNORE'> instead?
+
+    http://groups.google.com/groups?selm=20040604151423.GA1896%40iabyn.com
+
+=head2 fork() at compile-time
+
+Robin Barker reported that on Solaris, forking in a BEGIN block seems to
+repeat the remaining parts of the script twice, even though the child
+process exited immediately (bug #30040). Nicholas Clark's advice is to use
+POSIX::_exit() instead of perl's exit(). Ton Hospel suggests an
+explanation.
+
+    http://groups.google.com/groups?selm=c9sa2u$uk4$3%40post.home.lunix
+
+=head2 Thread leaks
+
+Two thread-related memory leaks were reported: one involving join(), by
+Andrew Savige (#30063), and one involving nested arrays, by Eric Garland
+(#30066).
+
+    http://groups.google.com/groups?selm=rt-3.0.9-30063-89801.3.14458478683115%40perl.org
+    http://groups.google.com/groups?selm=rt-3.0.9-30066-89809.5.74912811298226%40perl.org
+
+=head2 Double DESTROY
+
+Ton Hospel produces a small code snippet where an object, stored in a
+hash, is destroyed I<twice> -- that's certainly one time too many.
+(Bug #30061).
+
+    http://groups.google.com/groups?selm=rt-3.0.9-30061-89788.12.6990632560854%40perl.org
+
+=head2 Memory wrapping
+
+Calle Dybedahl finds that the new error messages emitted for large
+allocations of strings are not emitted in some cases. Jarkko Hietamieni
+provided patches.
+
+    http://groups.google.com/groups?selm=86smdb8y27.fsf%40ulthar.bisexualmenace.org
+
+=head2 In Brief
+
+Ken Williams announced a new beta of Module::Build on CPAN. Testers
+(and patches, but you know that) are welcome.
+
+    http://groups.google.com/groups?selm=F5F32715-B452-11D8-9FAD-000A95BD9874%40mathforum.org
+
+Sadahiro Tomoyuki fixed bug #29841 (see last week's summary), about the
+C<-T> taint checks flag modifying the behaviour of perl regarding
+utf8::decode(). This function, however, is considered as experimental and
+better suited for internal use.
+
+    http://groups.google.com/groups?selm=20040606003344.57B2.BQW10602%40nifty.com
+
+Oddly enough, this week there were several bugs reports concerning bugs
+that were already fixed, either in perl 5.8.4, in perl 5.8.5-to-be, or
+bleadperl.
+
+=head2 About this summary
+
+This summary was written by Rafael Garcia-Suarez, from the French Perl
+Workshop, a.k.a I<JournE<eacute>es Perl 2004>. Weekly summaries are
+published on F<http://use.perl.org/> and posted on a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. Comments and
+corrections welcome.
