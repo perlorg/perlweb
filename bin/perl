@@ -1,0 +1,21 @@
+#!/bin/sh
+if [ -z $CBROOT ]; then
+  echo CBROOT environment variable not set
+  exit 
+fi
+
+if [ ! -f $CBROOT/combust.conf ]; then
+  echo Could not find configuration file $CBROOT/combust.conf
+  exit
+fi
+
+MYPERL=`grep ^perl $CBROOT/combust.conf | cut -d= -f2 | sed 's/[[:space:]]//g'`
+
+if [ -z $MYPERL ]; then
+  echo Could not find "perl =" line in the combust.conf
+  exit
+fi
+
+$MYPERL ${1+"$@"} 
+
+
