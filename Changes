@@ -1,0 +1,37 @@
+1.1  - April 26, 2004
+  - Now licensed under the Apache License, version 2.0 
+  - Better documentation of configuration
+  - new configuration directives
+     apache_root
+     apache_config
+     apache_reload
+     external_port
+     use_cronolog, cronolog_template, cronolog_params, cronolog_path
+     - site configuration
+       - site_dir
+       - site aliases now work
+  - mime types update
+  - more flexible apache dso configuration (the configuration will
+    autodetect if modules needs to be loaded or not)
+  - process apache/conf/local.tmpl if it exists
+  - Combust::Control::Redirect module for redirecting to external
+    URL's.  Currently implemented for bookstores.
+  - Don't serve .svn directories
+  - CacheLWPSimple plugin for displaying URL's inline
+  - Mac OS X compatibility (now works with the OS X perl and httpd
+    install)
+  - added bin/cmysql - script to start mysql with the database
+    specified in combust.conf
+  - various cleanups and minor improvements
+
+
+1.0.1 - October 6, 2003
+  - Fix hardcoded paths (thanks to Allison) 
+
+
+1.0   - October 2, 2003
+  - Hundreds of improvements and fixes :-)
+
+
+0.1   - March 17, 2003
+  - First working version (revision #29)

@@ -97,6 +97,7 @@ sub param {
 sub params {
   my $self = shift;
   cluck("params called with [$self] as self.  Did you configure the handler to call ->handler instead of ->super?") unless ref $self;
+  cluck('Combust::Control->params called with parameters, did you mean to call "param"?') if @_;
   $self->{params};
 }
 
@@ -107,7 +108,7 @@ sub _init {
   return $class if ref $class;
   
   # pass $r as an Apache::Request
-  $r = Apache::Request->new($r);
+  $r = Apache::Request->instance($r);
 
   my $self = bless( { _r => $r } , $class);
   
@@ -124,7 +125,7 @@ sub super ($$) {
 
   confess(__PACKAGE__ . '->super got called without $r') unless $r;
   return unless $r;
-  
+
   my $self = $class->_init;
 
   my $status;
@@ -204,6 +205,8 @@ sub evaluate_template {
   my $self      = shift;
   my $r         = shift;
   my %params    = @_;
+
+  $params{params} ||= $self->params;
 
   $params{params}->{r} = $r; 
   $params{params}->{notes} = $r->pnotes('combust_notes'); 
