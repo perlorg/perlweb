@@ -31,11 +31,9 @@ sub handler($$) {
 
   # TODO|FIXME: set last_modified_date properly!  
 
-  warn "foo!";
-
   if ($uri =~ m!/(.*\.(gif|jpe?g|png|css))$!) {
     my $file = $1;
-    warn "going to load $file";
+    #warn "going to load $file";
     my ($data, $error) = $class->provider->load($file);
     if ($data and !$error) {
       $content_type = guess_media_type($file);
