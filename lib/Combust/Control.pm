@@ -126,6 +126,8 @@ sub get_include_path {
 
 }
 
+my $root = $ENV{CBROOT};
+
 sub evaluate_template {
   my $class     = shift;
   my $r         = shift;
@@ -133,6 +135,7 @@ sub evaluate_template {
 
   $params{params}->{r} = $r; 
   $params{params}->{notes} = $r->pnotes('combust_notes'); 
+  $params{params}->{root} = $root;
 
   #$params{params}->{statistics}    = XRL::Statistics->new();
   #$params{params}->{advertisement} = XRL::Advertisement->new();

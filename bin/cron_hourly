@@ -1,10 +1,13 @@
 #!/bin/sh
 
-targetpath=/home/newweb/var/rss/
+targetpath=$CBROOT/var/rss/
+
+# should probably be tmp/ ... or we should change all the tmp/ stuff to be var/
+mkdir -p $targetpath
 
 function getrss () {
     target="$1.rss"
-    targettemp="/tmp/${target}.new"
+    targettemp="$CBROOT/tmp/${target}.new"
     url=$2
 
     /usr/bin/lwp-request \
