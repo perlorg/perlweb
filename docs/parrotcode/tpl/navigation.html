@@ -1,0 +1,27 @@
+[% 
+   links = [
+            [ "Docs",     "/docs.html" ],
+	    [ "FAQ",      "/faq.html" ],
+            [ "Examples", "/examples.html" ],
+            [ "Talks",    "/talks.html" ],
+	    [ "Resources","/resources.html" ],
+            [ "Perl6",    "http://dev.perl.org/perl6/" ],
+           ]
+%]
+
+
+
+
+
+[% IF page.style == "perl-directory.html" %]
+<DIV class="MENU">
+[% r_now = r.main || r.prev || r;
+  FILTER navigation(r_now.uri) %]
+[%   FOREACH link = links %]
+<br>&nbsp;&nbsp; <a href="[% link.1 %]">[% link.0 %]</a> 
+[%  END %]
+[%   END %]
+</DIV>
+[% ELSE %]
+
+[% END %]

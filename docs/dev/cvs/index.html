@@ -1,10 +1,8 @@
 
-[% USE CGI ;
-   module = CGI.param('module')  || "parrot";
-   USE HTML;
-   module = HTML.escape(module);
-%]
-[% page.title = "cvs: " _ module %]
+[% module = r.param('module')  || "parrot";
+   page.title = "cvs for " _ module | html 
+   page.site = "cvs.perl.org"
+%] 
 
 <BR><BR>
 
