@@ -115,11 +115,11 @@ sub get_versions {
 
   my @rel;
 
-  ($data =~ s!.*?Latest Release.*?cell><.*?>([^<]+)!!s);
-  push @rel, $1 if $1;
-
   ($data =~ s!.*?This Release.*?cell>([^<]+)!!s);
   push @rel, $1 if $1;
+
+  ($data =~ s!.*?Latest Release.*?cell><.*?>([^<]+)!!s);
+  unshift @rel, $1 if $1;
 
   while ($data =~ s!<option value="/author/[^>]+>([^\&]+)!!s) {
     push @rel, $1 if $1;
