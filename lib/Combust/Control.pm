@@ -141,6 +141,8 @@ sub get_include_path {
 
   my $site = $r->dir_config("site");
 
+  my $site_dir = $config->site->{$site}->{docs_site} || $site;
+
   #warn Data::Dumper->Dump([\$r], [qw(r)]);
 
   my $cookies = $r->pnotes('combust_notes')->{cookies};
@@ -151,7 +153,7 @@ sub get_include_path {
   my ($user, $dir);
   if (($user, $dir) = ($r->param('root') =~ m!^/?([a-zA-Z]+)/([^\.]+)$!)) {
     # FIXME|TODO: should expand on ~ instead of using /home
-    #$root = "/home/$user/docs/$dir/$site";
+    #$root = "/home/$user/docs/$dir/$site_dir";
     $cookies->cookie('root', "$user/$dir");
   } 
   elsif ($r->param('root') eq "/") {
@@ -160,7 +162,7 @@ sub get_include_path {
   }
   elsif (($user, $dir) = ($cookies->cookie('root') =~ m!^([a-zA-Z]+)/([^\.]+)$!)) {
     #warn "got root cookie";
-    #$root = "/home/$user/docs/$dir/$site";
+    #$root = "/home/$user/docs/$dir/$site_dir";
   }
 
   $r->pnotes('combust_notes')->{include_root} = ($user and $dir) ? "/$user/$dir" : '/';
@@ -172,7 +174,7 @@ sub get_include_path {
   if ($user and $dir) {
     $user = "/home/$user";
     $path = [
-	     "$user/$docs/$dir/$site/",
+	     "$user/$docs/$dir/$site_dir/",
 	     "$user/$docs/$dir/shared/",
 	     "$user/$docs/$dir/",
 	    ];
@@ -182,7 +184,7 @@ sub get_include_path {
     # TODO: root=/something should set dir to 'something'
     $dir = 'live';
     $path = [
-	     "$root_docs/$dir/$site/",
+	     "$root_docs/$dir/$site_dir/",
 	     "$root_docs/$dir/shared/",
 	     "$root_docs/$dir/",
 	    ];

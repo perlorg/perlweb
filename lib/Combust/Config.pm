@@ -10,7 +10,7 @@ $file = "$ENV{CBROOTLOCAL}/combust.conf" if $ENV{CBROOTLOCAL};
 my $cfg = new Config::Simple($file) or die Config::Simple->error();
 
 my %Config = $cfg->vars();
-#warn Data::Dumper->Dump([\$cfg],[qw(Config)]);
+#warn Data::Dumper->Dump([\$cfg],[qw(cfg)]);
 #warn Data::Dumper->Dump([\%Config],[qw(Config)]);
 
 my $singleton;
