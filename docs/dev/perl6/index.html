@@ -1,83 +1,60 @@
 [% page.title ="Perl 6" %]
 
-<p>Perl6 is the next version of the Perl programming
-language.&nbsp;&nbsp; The project attempts to address the interpreter,
-the language, and the culture.&nbsp; The internals of the version 5 interpreter
-are so tangled that they hinder maintenance, thwart some new feature efforts,
-and scare off potential internals hackers.&nbsp; The language as of version
-5 has some misfeatures that are a hassle to ongoing maintenance of the
-interpreter and of programs written in Perl.&nbsp; And finally, the entire
-Perl community is invited to participate in the design and implementation
-of perl6.
+<p class=fancyp><B>Perl 6</B> is the next version of the Perl programming language.<BR>
+The project attempts to address the interpreter, the language, and the
+culture. The internals of the version 5 interpreter are so tangled
+that they hinder maintenance, thwart some new feature efforts, and
+scare off potential internals hackers.&nbsp; The language as of
+version 5 has some misfeatures that are a hassle to ongoing
+maintenance of the interpreter and of programs written in Perl.&nbsp;
+And finally, the entire Perl community is invited to participate in
+the design and implementation of Perl 6.
 </p>
 
+<blockquote>"Perl 5 was my rewrite of Perl.&nbsp; I want Perl 6 to be
+the community's rewrite of Perl and of the community."
+</blockquote>
+<div align=right><i>--<A 
+HREF="http://www.spidereyeballs.com/os5/perl/small_os5_r23_1542.html"
+>Larry Wall</A>, <A
+HREF="http://www.perl.com/pub/a/2000/10/23/soto2000.html"
+>State of the Onion speech, TPC4</A></i></div>
 
-<p>"Perl 5 was my rewrite of Perl.&nbsp; I want Perl 6 to be the community's
-rewrite of Perl and of the community."
-
-<div align=right><i>--Larry Wall, State of the Onion speech, TPC4</i></div>
-
-<p>"When it comes to Perl 6 I'm no longer sure what's obvious and what
-isn't. ;-)"
-
-<div align=right><i>--Damian Conway, <A
-HREF="http://groups.google.com/groups?as_umsgid=3D6A32FC.5030405%40conway.org">&lt;3D6A32FC.5030405@conway.org&gt;</A>
-
-
-<p><br>The vision for perl6 is more than simply a rewrite of perl5.&nbsp;
-By separating the parsing from the compilation and the runtime, we're opening
-the doors for multiple languages to cooperate.&nbsp; You'll be able to
-write your program in perl6, or perl5, or any other language that there's
-a parser written for.&nbsp; Interchangable runtime engines let you
-interpret your bytecode or convert it to something else (e.g., Java, C,
-or even back to Perl).
-<br>
-<br>
-
-<table width="100%" bgcolor="#eeeeee">
-<tr>
-<td>
-<div style="background: #eeeeee"> <!-- this is redundant -->
-<p>
-The perl6 runtime is called <B>Parrot</B>, and is available at
-<a href="http://www.parrotcode.org">www.parrotcode.org</a>.
-</p>
-
-[% comment = BLOCK %]
-<U>Latest News</U><BR>
-
-<p> <i>Jan 4, 2004</i> - <A 
-  HREF="list-summaries/2004/p6summary.2004-01-04.html"
-  >The Perl 6 Summary</A>: The first summary of the year, on threads
-and the road ahead. 
-</p>
-
-<p> <i>Nov 23, 2003</i> - <A
-HREF="list-summaries/2003/p6summary.2003-11-23.html" 
->The Perl 6 Summary</A>: Unifying call and return; VM books; IMCC
-improvements and issues; Parrot Doc Review; Freeze; Warning Patrol;
-PIR; fun with multi; The perl 6 process; Control Flow Variables.
-
-<p> <i>Oct 31, 2003</i> - <A
-HREF="http://use.perl.org/article.pl?sid=03/10/31/1520257&mode=nested&tid=33"
->Parrot 0.0.13 "Screaming Pumpkin" Released.</A>.  Lots of little
-things that make a big difference.
-
-<p> <i>Sep 22, 2003</i> - <A
-HREF="http://use.perl.org/article.pl?sid=03/09/22/1533246&mode=nested&tid=33"
->Parrot 0.0.11 released.</A> Direct generation of executable binaries,
-dramatically improved documentation, and a built-in bread maker!
-
-<p> <i>Mar 18 2003 </i>- Parrot 0.0.10 released. IMCC integration and
-test speedup, eval"", cgp core, improved native function calls.
-</p>
-
-[% END # block comment%]
-
+<blockquote>
+"The Perl 6 design process is about keeping what works in Perl 5,
+fixing what doesn't, and adding what's missing. That means there will
+be a few fundamental changes to the language, a large number of
+extensions to existing features, and a handful of completely new
+ideas. These modifications, enhancements, and innovations will work
+together to make the future Perl even more insanely great -- without,
+we hope, making it even more greatly insane."
+</blockquote>
+<div align=right><i>--<A 
+HREF="http://www.spidereyeballs.com/os5/perl/small_os5_r08_9753.html"
+>Damian Conway</A>, <A
+HREF="http://www.linux-mag.com/2003-04/perl_6_01.html"
+>Linux Magazine, April 2003</A>
+</i>
 </div>
-</td>
-</tr>
-</table>
+
+<p class=fancyp><B>The</B> vision for Perl 6 is more than simply a
+rewrite of Perl 5.  By separating the parsing from the compilation and
+the runtime, we're opening the doors for multiple languages to
+cooperate. You'll be able to write your program in Perl 6, Perl 5,
+TCL, Python, or any other language that there's a parser written for.
+Interchangable runtime engines let you interpret your bytecode or
+convert it to something else (e.g., Java, C, or even back to Perl).
+<br>
+<br>
+
+<div class=orangebox style="background: #eeeeee;">
+For the latest news on Perl 6, read the <A HREF="list-summaries">list summaries.</A>
+</div>
+
+<div class=orangebox style="background: #eedddd;">
+<A HREF="http://www.parrotcode.org">Get Parrot!</A>
+</div>
+
 
 [% sidebar = BLOCK %]
 <p>
@@ -112,14 +89,6 @@ test speedup, eval"", cgp core, improved native function calls.
 <a target="_blank" href="http://dev.x.perl.org/redirect?url=book;bookstore=powells;bookisbn=059600737X">Powells</a> -
 <a target="_blank" href="http://dev.x.perl.org/redirect?url=book;bookstore=amazonuk;bookisbn=059600737X">Amazon UK</a> -
 <a target="_blank" href="http://dev.x.perl.org/redirect?url=book;bookstore=bookpool;bookisbn=059600737X">Bookpool</a>
-<p>
-
-<p>
-
-
-
-
-</p>
 
 </div>
 [% END %]
