@@ -1,4 +1,5 @@
 [% page.banner = BLOCK %]The Perl Directory at <SPAN CLASS="title">Perl.org</span>[% END %]
+[% page.style = "perl-directory.html" %]
 
 [% page.sidebar = BLOCK%]
   <DIV class="MENU">
@@ -81,7 +82,7 @@
     <a href="http://dev.perl.org/perl5/">Perl 5</a>,
     <a href="http://dev.perl.org/perl6/">Perl 6</a>, 
     <a href="http://www.parrotcode.org/">Parrot</a>, 
-    <a href="http://rt.perl.org/perlbug/">bugs</a>
+    <a href="http://bugs.perl.org/">bugs</a>
     <P>
     </div>
     
@@ -139,29 +140,18 @@
 
     </div>
 
-<!--
-    [% USE news = XML.RSS("${root}/var/rss/useperl.rss") %]
-    <a href="news.html" CLASS="TOPIC">News</a>
-    <DIV CLASS="ITEMS">
-    [% FOREACH item = news.items %]
-        [%- LAST IF loop.count() > 3 %]
-        [%- "," UNLESS loop.count() == 1 %]
-       <a href="[% item.link %]">[%- FILTER truncate %]
-           [%- item.title %]
-          [%- END%]</a>
-    [%- END %]
-   <P>
-   </DIV>
--->
-
-
   </td>
  </tr>
 
 [% MACRO quicknews(shortname) BLOCK %]
+[%- TRY %]
     [%- USE news = XML.RSS("${root}/var/rss/${shortname}.rss") %]
     [%- item = news.items.first %]
     <A HREF="[% item.link %]">[%- item.title %]</A>
+[%- CATCH %]
+    [Error Processing Directive]
+  [%- FILTER stderr %][% error.info %][% END %]
+[%- END %]
 [%- END %]
 
 
