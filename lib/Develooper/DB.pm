@@ -36,6 +36,8 @@ sub db_open {
 
   carp "$$ Develooper::DB::open_db called during server startup" if $Apache::Server::Starting;
 
+  my $imadbi       = delete $attr->{imadbi} ? '-ima' : '';
+
   my $lock         = delete $attr->{lock};
   my $lock_timeout = delete $attr->{lock_timeout};
   my $lock_name    = delete $attr->{lock_name};
@@ -44,12 +46,14 @@ sub db_open {
   my $RaiseError = $attr->{RaiseError};
   $RaiseError = (defined $RaiseError) ? $RaiseError : 1;  
 
-  my $dbh = $dbh{$db};
+  my $dbh = $dbh{$db . $imadbi};
   
   unless ($dbh and $dbh->ping()) {
 	my ($host, @args) = read_db_connection_parameters();
-	
-	$dbh = DBI->connect(@args, {
+
+	my $class = $imadbi ? 'Ima::DBI' : 'DBI';
+
+	$dbh = $class->connect(@args, {
 		%$attr,
 		RaiseError => 0,    # override RaiseError for connect
         AutoCommit => 1,    # make it explicit
@@ -57,7 +61,7 @@ sub db_open {
 
 	if ($dbh) {
 	  $dbh->{RaiseError} = $RaiseError;
-	  $dbh{$db} = $dbh;
+	  $dbh{$db . $imadbi} = $dbh;
 	}
 	else {
 	  carp "Could not open $args[0] on $host: $DBI::errstr" if $RaiseError;
@@ -81,7 +85,7 @@ END {
     while (my ($db, $handle) = each %dbh) {
         $handle->disconnect() if $handle->{Active};
         delete $dbh{$db};
-	  }
+    }
 }
 
 1;
