@@ -94,6 +94,11 @@ sub external_port {
   $cfg->param('external_port') || undef;
 }
 
+sub proxyip_forwarders {
+  my $allow = $cfg->param('proxyip_forwarders') || "127.0.0.1";
+  ref $allow ? @$allow : ($allow);
+}
+
 sub base_url {
   my $self = shift;
   my $sitename = shift or carp "sitename parameter required" and return;

@@ -3,8 +3,14 @@ eval 'exec $CBROOT/bin/perl $0 ${1+"$@"}'
   unless $running_under_some_shell;
 use strict;
 use warnings;
-BEGIN { die "CBROOT required" unless $ENV{CBROOT}; }
-BEGIN { if ($ENV{CBROOTLOCAL}) { use lib "$ENV{CBROOTLOCAL}/lib" } }
+BEGIN {
+  die "CBROOT required" unless $ENV{CBROOT};
+  if (defined $ENV{CBROOTLOCAL}) {
+    use lib;
+    import lib "$ENV{CBROOTLOCAL}/lib";
+  }
+}
+
 use lib "$ENV{CBROOT}/lib";
 use Getopt::Long;
 use Combust::Config;
@@ -19,7 +25,7 @@ my $local_dir = $ENV{CBROOTLOCAL} ? "$ENV{CBROOTLOCAL}/apache/conf" : '';
 my $apache_root = $config->apache_root;
 my $apache_config = $config->apache_config;
 
-my $apxs = $apache_root;
+my $apxs = $config->httpd;
 $apxs =~ s!/httpd!/apxs!;
 my $apache_libexec;
 $apache_libexec = (-x $apxs and !-d _) ? `$apxs -q LIBEXECDIR` : '';

@@ -25,6 +25,10 @@ port = 8230
 # for external redirects (301's, 302's)
 external_port = 0
 
+# source ip's allowed to be frontend proxies, where the X-Forwarded-For
+# header is honored.  Defaults to 127.0.0.1
+# proxyip_allowed = 127.0.0.1, 10.15.0.10, 10.15.0.11, 
+
 # docs_name specifies the default directory name for documents (under
 # ~user/ or $ENV{CBROOT}), defaults to "docs"
 # docs_name = docs

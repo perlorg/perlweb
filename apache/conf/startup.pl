@@ -9,6 +9,7 @@ use Combust::Control::Basic;
 use Combust::Control::Error;
 use Combust::Notes;
 use Combust::Redirect;
+use Combust::Config;
 
 use Apache::Constants qw(OK);
 
@@ -21,7 +22,9 @@ BEGIN {
 
 sub ProxyIP::handler {
     my $r = shift;
-    return OK unless $r->connection->remote_ip =~ m/^(127\.0\.0\.1)$/;
+    my $config = new Combust::Config;
+    return OK
+     unless grep {$_ == $r->connection->remote_ip} $config->proxyip_forwarders;
 
     my @ip = split(/,\s*/, ($r->header_in('X-Forwarded-For')||''));
     if (my $ip = pop(@ip)) {
