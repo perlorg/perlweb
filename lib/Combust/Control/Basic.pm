@@ -81,7 +81,7 @@ sub handler ($$) {
   my $output = $self->evaluate_template($template);
   if ($@) {
     $r->pnotes('error', $@);
-    return 404 if $@ =~ m/not found$/;
+    return 404 if $@ =~ m/: not found/;
     return 500; 
   }
   $self->send_output($output, $content_type);
