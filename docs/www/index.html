@@ -98,7 +98,29 @@
     <a href="http://www.perlfoundation.org/index.cgi?page=contrib">contribute</a>
     <P>
     </div>
+
+    [% USE news = XML.RSS('/home/newweb/var/rss/useperl.rss') %]
+    <a href="news.html"><DIV CLASS="TOPIC">News</DIV></a>
+    <DIV CLASS="ITEMS">
+    [% FOREACH item = news.items %]
+        [%- LAST IF loop.count() > 3 %]
+        [%- "," UNLESS loop.count() == 1 %]
+       <a href="[% item.link %]">[%- FILTER truncate %]
+           [%- item.title %]
+          [%- END%]</a>
+    [%- END %]
+   <P>
+   </DIV>
+
+
+
   </td>
+
+  </tr>
+
+  <tr>
+   <td colspan=2>
+   </DIV>
   </tr>
 
 <!--

@@ -1,0 +1,51 @@
+[% META title = 'News' %]
+
+[% page.sidebar = BLOCK %]
+  <DIV class="NAVITEM">
+    <H3>News</H3>
+    <a href="#useperl">Headlines from use.perl</a>
+    <BR><a href="#perlcom">Stories from perl.com</a>
+    <BR><a href="#cpanrecent">Recent CPAN Uploads</a>
+  </DIV>
+[% END %]
+
+[%# PROCESS tpl/common/header.html %]
+
+<A NAME="useperl"></A>
+<P>
+<h3>Headlines from use.perl</H3>
+
+    [% USE news = XML.RSS('/home/newweb/var/rss/useperl.rss') %]
+    <UL>
+    [% FOREACH item = news.items %]
+ <LI><a href="[% item.link %]">[% item.title %]</a>
+    [%- END %]
+    </UL>
+
+<A NAME="perlcom"></A>
+<h3>Recent perl.com Articles</H3>
+    [% USE news = XML.RSS('/home/newweb/var/rss/perlcom.rss') %]
+    <UL>
+    [% FOREACH item = news.items %]
+ <LI><a href="[% item.link %]" title="[%item.description%]">[% item.title %]</a><BR>
+     [% FILTER truncate(60) %][% item.description %][%END%]
+    [%- END %]
+    </UL>
+
+<A NAME="cpanrecent"></A>
+<h3>Recent CPAN Uploads</H3>
+
+    [% USE news = XML.RSS('/home/newweb/var/rss/cpanrecent.rss') %]
+    <UL>
+    [% FOREACH item = news.items %]
+ <LI><a href="[% item.link %]">[% item.title %]</a>
+    [%- END %]
+    </UL>
+
+
+
+
+
+[% #PROCESS tpl/common/footer.html %]
+
+

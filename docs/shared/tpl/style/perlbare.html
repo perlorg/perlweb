@@ -4,7 +4,8 @@
   title = title || template.title;
 
   UNLESS page.banner;
-    page.banner = 'The Perl Directory: <SPAN CLASS="title">' _ title _  "</span>";
+    # should we make use of page.site here?  i.e. "dbi.perl.org: "
+    page.banner = '<SPAN CLASS="title">' _ title _  "</span>";
   END;
 
   IF page.title;
@@ -26,40 +27,27 @@
 </head>
 <body>
 
-<TABLE CELLSPACING="0">
+<TABLE CELLSPACING="0" WIDTH="730">
 <TR>
-<TD COLSPAN="2" class="BANNER">[% page.banner %]</TD>
+<TD WIDTH="100%" COLSPAN="2" class="BANNER">[% page.banner %]</TD>
+</TR>
 
-<TR VALIGN="TOP">
-<TD ID="NAV" WIDTH="180" HEIGHT="<% $isindex ? 350 : 500 %>">
-<DIV CLASS="SIDE">
-
-[% IF !isindex %] 
-
-[% TRY %]
-  [% PROCESS tpl/navigation.html %]
-[% CATCH %]
-  [% # no navigation %]
-[% END %]
-
-[% END %]
-
+[% IF page.sidebar %]
+<TR>
+<TD WIDTH="100%" COLSPAN="2"  ID="NAV" style="border-bottom: 1px solid #191970;">
 [% page.sidebar %]
-
-</DIV>
-
 </TD>
+</TR>
+[% END %]
+</TABLE>
 
-<TD>
-
-[% IF !isindex or notes.site != 'www' %]
+[% IF isindex %]
 <DIV ID="MAIN">
 [% END %]
-<!-- end header.html -->
 
 [% content %]
 
-[% IF !isindex or notes.site != 'www' %]
+[% UNLESS !isindex %]
 </DIV>
 [% END %]
 
@@ -67,44 +55,31 @@
 </TR>
 
 <TR>
-  <TD CLASS="CR">
-   &#169; Copyright 2002-2003 <a href="http://www.perlfoundation.org">The&nbsp;Perl&nbsp;Foundation</a>.<BR>
-   <A HREF="siteinfo.html">Site Information and Contacts</A>
-</TD> 
 
-<td colspan=2 align="center" valign="bottom">
-[% IF isindex and notes.site == 'www' %]
-   <!-- this cell sits at the bottom of the content area -->
-   <H3 class="BEGINNER">New to Perl?
-   &nbsp;<A href="http://learn.perl.org">See our Resources for Perl Beginners</a></h3>
-[% END %]
 </td>
 
-
-</TR>
-</TABLE>
 
 <P>
 <TABLE border="0" WIDTH="730" CELLSPACING="0" CELLPADDING="0">
 <TR ALIGN="RIGHT">
 
-<TD WIDTH="110" ALIGN="left">
+<TD WIDTH="110" ALIGN="left" VALIGN="TOP">
 <BR>
- 
+
+[% UNLESS nofooter %] 
 <DIV CLASS="FOOTER">
 &nbsp;<small>
-[% UNLESS notes.include_root == "/" %]
 <a href="[% r.uri | uri %]?root=/">root</a>: [% notes.include_root %]
-[% END %]
 </small>
+
 </DIV>
 </TD>
 
-<TD WIDTH="480">
+<TD WIDTH="480" VALIGN="TOP">
 <BR>
 
 <DIV CLASS="FOOTER">
-
+[% UNLESS shortfooter %]
     Perl.org sites
      : <!-- <A href="http://books.perl.org/" title="books.perl.org">books</a>
      | --> <A href="http://rt.perl.org/perlbug/">bugs</a>
@@ -114,13 +89,23 @@
      | <A href="http://learn.perl.org/">learn</a>
      | <A href="http://lists.perl.org/">lists</a>
      | <A href="http://use.perl.org/">use</a>
-    </DIV>
+    <BR>
+  <small>
+   &#169; Copyright 2002-2003 <a href="http://www.perlfoundation.org">The&nbsp;Perl&nbsp;Foundation</a>.<BR>
+   <A HREF="siteinfo.html">Site Information and Contacts</A>
+  </small>
+[% ELSE %]
+&nbsp;
+[% END %]
+</DIV>
 </TD>
 <TD>
 <img align="right" src="/images/lcamel.gif"  alt="a camel">
 </TD>
 </TR>
 </TABLE>
+
+[% END %]
 
 </body>
 </html>
