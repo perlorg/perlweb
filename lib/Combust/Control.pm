@@ -72,7 +72,7 @@ $Combust::Control::tt = Template->new
     'PROCESS'        => 'tpl/wrapper' ,
     'PLUGIN_BASE'    => 'Combust::Template::Plugin',
     #'DEBUG'  => DEBUG_VARS|DEBUG_DIRS|DEBUG_STASH|DEBUG_PARSER|DEBUG_PROVIDER|DEBUG_SERVICE|DEBUG_CONTEXT,
-   });
+  }) or die "Could not initialize Template object: $Template::ERROR";
 
 sub provider {
   $Combust::Control::provider;
