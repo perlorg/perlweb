@@ -1,6 +1,8 @@
   <VirtualHost *:[% config.port %]>
     ServerName [% config.site.foundation.servername %]
     PerlSetVar site foundation
+    PerlTransHandler Combust::Redirect
+
     <Location />
        SetHandler perl-script
        PerlHandler Combust::Control::Basic->super
