@@ -39,8 +39,6 @@ sub site {
     $h->{$site} = $sd;
   }
 
-  warn Data::Dumper->Dump([\$h], [qw(x)]);
-
   $self->{_site} = $h; 
 }
 

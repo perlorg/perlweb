@@ -5,6 +5,7 @@ use Apache::Request;
 use Apache::Cookie;
 use Apache::Constants qw(:common :response);
 use Apache::File;
+use Carp qw(confess cluck);
 
 use Template;
 use Template::Parser;
@@ -94,7 +95,9 @@ sub param {
 }
 
 sub params {
-  shift->{params};
+  my $self = shift;
+  cluck("params called with [$self] as self.  Did you configure the handler to call ->handler instead of ->super?") unless ref $self;
+  $self->{params};
 }
 
 sub _init {
@@ -119,7 +122,6 @@ sub super ($$) {
   my $class   = shift;
   my $r = shift;
 
-  use Carp qw(confess);
   confess(__PACKAGE__ . '->super got called without $r') unless $r;
   return unless $r;
   
@@ -311,7 +313,9 @@ sub redirect {
   $r->pnotes('combust_notes')->{cookies}->bake_cookies
     if $r->pnotes('combust_notes')->{cookies};
 
-  unless ($url =~ m!^http://!) {
+  # this should really check for a complete URI or some such; we'll do
+  # that when it breaks on a ftp:// or whatever redirect :-)
+  unless ($url =~ m!^https?://!) {
     $url = "http://" . $r->hostname . $url; 
   }
 
