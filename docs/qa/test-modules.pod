@@ -55,10 +55,6 @@ query has well formed records).
 Tests long strings and data structures, giving a readable output (unlike
 testing long strings with C<Test::More>'s C<is> function).
 
-=head2 Test::Env
-
-Tests that one's environment has appropriate data.
-
 =head2 Test::Extreme
 
 Another xUnit-ish testing framework. Very easy to use.  Able to output
@@ -73,28 +69,29 @@ Provides a CGI interface to writing and running test suites.
 Tests file attributes (empty, of particular sizes, readable, executable,
 writeable, etc.).
 
-=head2 Test::Files
-
-Tests files and directories have particular contents.
-
-=head2 Test::ISBN
-
-Verify ISBNs and parts of ISBNs against C<Business::ISBN>.
-
 =head2 Test::Inline
 
 Allows you to embed your tests in your POD in your program file, thus
 allowing you to test while you document, or test while you code, or
 both. One sideeffect is that your sample code can be test code.
 
+=head2 Test::LectroTest
+
+LectroTest is an automatic, specification-based testing tool for Perl.
+The project was inspired by Koen Claessen and John Hughes's QuickCheck
+for the Haskell programming language.
+
+Testing a hypothetical square function:
+
+    Property {
+          ##[ x <- Int #]##
+          square( $x ) == $x * $x;
+    }, name => "Finding $x's square";
+
 =head2 Test::LongString
 
 Testing of long strings, allowing one to see precisely where the
 inequality, or non-match, is with ease.
-
-=head2 Test::Mail
-
-Testing that email is sent and received properly.
 
 =head2 Test::ManyParams
 
@@ -121,11 +118,6 @@ majority of test cases and now standard in Perl (from 5.6.2 and 5.8.0).
 Module to let you send F<make test> results to the CPAN testers.  Includes
 the handy F<cpantest> program to make command-line reporting easy.
 
-=head2 Test::Signature
-
-Verifies that the signature of a module, as created by
-C<Module::Signature>. is correct.
-
 =head2 Test::Simple
 
 The basic testing module, which you'll rarely want to use on its own,
@@ -150,11 +142,6 @@ JUnit testing for Perl.
 
 Runs verbose tests on a test file.  Seems to be obviated by the F<prove>
 program now included with C<Test::Harness>.
-
-=head2 Test::XML
-
-Helper functions for testing XML for syntactic equivalency, even if the
-strings themselves are different.
 
 =head1 Database testing modules
 
@@ -197,6 +184,29 @@ modifications went well.
             where => [ cid => 123 ],
             tests => [ name => "trelane" ],
             label => "contact 123's name is trelane");
+
+=head1 Data-specific testing modules
+
+=head2 Test::Env
+
+Tests that one's environment has appropriate data.
+
+=head2 Test::Files
+
+Tests files and directories have particular contents.
+
+=head2 Test::ISBN
+
+Verify ISBNs and parts of ISBNs against C<Business::ISBN>.
+
+=head2 Test::Mail
+
+Testing that email is sent and received properly.
+
+=head2 Test::XML
+
+Helper functions for testing XML for syntactic equivalency, even if the
+strings themselves are different.
 
 =head1 Web testing modules
 
@@ -290,6 +300,11 @@ Filesystems".
 
 Checks that your F<Makefile.PL> has the proper prerequisites specified.
 
+=head2 Test::Signature
+
+Verifies that the signature of a module, as created by
+C<Module::Signature>, is correct.
+
 =head2 Test::Tester
 
 Runs tests on other C<Test::> modules based on C<Test::Builder>.
@@ -326,5 +341,7 @@ The following people have helped contribute to this page:
 Andy Lester,
 Dominic Mitchell
 Philipe 'BooK' Bruhat,
-Chris Winters
+Chris Winters,
+Per Christian Nødtved,
 and the late, great Iain Truskett.
+
