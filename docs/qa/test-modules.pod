@@ -139,6 +139,10 @@ C<Test:HTML::Lint>).
 
 Checks that HTML is well formed as per C<HTML::Lint>.
 
+=head2 Test::HTML::Tidy
+
+Checks that HTML is well formed as per C<HTML::Tidy>.
+
 =head2 Test::HTTPStatus
 
 Ensures HTTP responses have appropriate values.
@@ -192,6 +196,11 @@ majority of test cases and now standard in Perl (from 5.6.2 and 5.8.0).
 Test for making sure that your test didn't emit any warnings.
 
 =head2 Test::Pod
+
+Checks a given POD or Perl file for syntactic validity.  Also has a
+function to let you easily check all files in your distribution at once.
+
+=head2 Test::Pod::Coverage
 
 Checks a given POD or Perl file for syntactic validity.  Also has a
 function to let you easily check all files in your distribution at once.
@@ -255,9 +264,9 @@ does indeed throw a warning.
     isa_ok( $m, 'WWW::Mechanize' );
 
     warning_like {
-	$m->warn( "Something bad" );
+        $m->warn( "Something bad" );
     } qr/Something bad.+line \d+/, 
-	"Passes the message, and includes the line number";
+        "Passes the message, and includes the line number";
 
 =head2 Test::Without::Module
 
