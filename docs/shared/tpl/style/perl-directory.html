@@ -13,9 +13,9 @@
     
 
   IF title;
-    page.title = "$title - $site";
+    page.title = "$title - ${page.site}";
   ELSE;
-    page.title = "$site"; 
+    page.title = "${page.site}"; 
   END;  
 
   # is this intentionally all indexes or should it just be the most
