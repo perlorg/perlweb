@@ -15,6 +15,10 @@ use Combust::Template::Filters;
 
 use Combust::Template::Translator::POD;
 
+use Combust::Config;
+
+my $config = Combust::Config->new();
+
 #use HTTP::Date qw(time2str); 
 
 $Template::Config::STASH = 'Template::Stash::XS';
@@ -29,7 +33,7 @@ my $parser = Template::Parser->new();
 my %provider_config = (
 		       PARSER => $parser,
 		       COMPILE_EXT      => '.ttc',
-		       COMPILE_DIR      => "$ENV{CBROOT}/tmp/ctpl",
+		       COMPILE_DIR      => $config->root_local . "/tmp/ctpl",
 		       #TOLERANT => 1,
 		       #RELATIVE => 1,
 		       CACHE_SIZE       => 128,  # cache 128 templates
@@ -76,6 +80,36 @@ sub tt {
   $Combust::Control::tt
 }
 
+sub param {
+  my ($self, $key) = (shift, shift);
+  return unless $key;
+  $self->{params}->{$key} = shift if @_;
+  return $self->{params}->{$key};
+}
+
+sub params {
+  shift->{params};
+}
+
+sub super ($$) {
+  my $class   = shift;
+  # pass $r as an Apache::Request
+  my $r       = Apache::Request->new(shift);
+
+  my $self = bless( { } , $class);
+  
+  $self->{params} = {};
+  
+  my $status;
+  eval {
+    $status = $self->handler($r);
+  };
+  warn "Combust::Control: oops, class handler died with $@" if $@;
+  
+  return $status;
+}
+
+
 sub get_include_path {
   my $r = Apache->request;
 
@@ -107,19 +141,32 @@ sub get_include_path {
 
   $r->pnotes('combust_notes')->{include_root} = ($user and $dir) ? "/$user/$dir" : '/';
 
+  my $path;
+
+  my $docs = $config->docs_name;
+
   if ($user and $dir) {
     $user = "/home/$user";
+    $path = [
+	     "$user/$docs/$dir/$site/",
+	     "$user/$docs/$dir/shared/",
+	     "$user/$docs/$dir/",
+	    ];
   }
   else {
-    $user = "$ENV{CBROOT}";
+    my $root_docs = $config->root_docs,
+    # TODO: root=/something should set dir to 'something'
     $dir = 'live';
+    $path = [
+	     "$root_docs/$dir/$site/",
+	     "$root_docs/$dir/shared/",
+	     "$root_docs/$dir/",
+	    ];
   }
 
-  return [
-	  "$user/docs/$dir/$site/",
-	  "$user/docs/$dir/shared/",
-	  "$user/docs/$dir/",
-	 ];
+  #warn Data::Dumper->Dump([\$path], [qw(path)]);
+  
+  return $path;
 
 }
 
@@ -140,7 +187,7 @@ sub evaluate_template {
   my $rc = $class->tt->process( $params{'template'},
                          $params{'params'},
                          $params{'output'} )
-    or warn( "$class - ". $r->uri . '?' .$r->args
+    or warn( "$class - ". $r->uri . ($r->args ? '?' .$r->args : '')
 	     . ' - error processing template ' . $params{'template'} . ': '
 	     . $class->tt->error )
       and eval {

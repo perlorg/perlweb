@@ -78,4 +78,22 @@ sub db_user {
 #  $cfg;
 #}
 
+sub root {
+  $ENV{CBROOT};
+}
+
+sub root_local {
+  $ENV{CBROOTLOCAL} || $ENV{CBROOT};
+}
+
+sub root_docs {
+  my $self = shift;
+  $ENV{CBDOCS} || $cfg->param('docs') || ($self->root_local . "/" . $self->docs_name);
+}
+
+sub docs_name {
+  $cfg->param('docs_name') || 'docs';
+}
+
+
 1;

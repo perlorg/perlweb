@@ -18,9 +18,9 @@ use LWP::MediaTypes qw(guess_media_type);;
 
 LWP::MediaTypes::read_media_types("/home/perl/apache1/conf/mime.types");
 
-sub handler($$) {
-  my ($class, $r) = @_;
-
+sub handler ($$) {
+  my ($self, $r) = @_;
+  
   my $template = '';
   my $content_type = 'text/html';
   my $uri = $r->uri;
@@ -38,18 +38,18 @@ sub handler($$) {
     #warn "going to load $file";
     # use sendfile to ship the data instead of loading everything first ...
 
-    my $data = $class->provider->expand_filename($file);
+    my $data = $self->provider->expand_filename($file);
     #warn Data::Dumper->Dump([\$data],[qw(data)]);
     if ($data->{path}) {
       $r->update_mtime($data->{time} || time);
       $content_type = guess_media_type($file);
       my $fh;
       open $fh, $data->{path} or warn "Could not open $data->{path}: $!" and return 403;
-      return $class->send_output($r, \$fh, $content_type);
+      return $self->send_output($r, \$fh, $content_type);
     }
     else {
-      if ($class->provider->is_directory($file)) {
-	return $class->redirect($r, $uri . "/", 1);
+      if ($self->provider->is_directory($file)) {
+	return $self->redirect($r, $uri . "/", 1);
       }
       else {
 	return 404;
@@ -66,13 +66,13 @@ sub handler($$) {
   }    
 
   my $output;
-  my $rv = $class->evaluate_template($r, output => \$output, template => $template, params => {});
+  my $rv = $self->evaluate_template($r, output => \$output, template => $template, params => $self->params);
   if ($@) {
     $r->pnotes('error', $@);
     return 404 if $@ =~ m/not found$/;
     return 500; 
   }
-  $class->send_output($r, \$output, $content_type);
+  $self->send_output($r, \$output, $content_type);
 }
 
 

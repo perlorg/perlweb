@@ -231,6 +231,10 @@ ErrorDocument 500 /error/500.html
 
 </IfModule>
 
+[% TRY %]
+[% PROCESS local.tmpl %]
+[% END %]
+
 PerlModule Apache::Reload
 PerlInitHandler Apache::Reload
 
