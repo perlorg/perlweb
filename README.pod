@@ -55,11 +55,19 @@ Contact ask@perl.org or robert@perl.org for rsync instructions.
 /home/perl/bin/perl -MCPAN -e shell
 
 install Date::Parse DBI Exception::Class Bundle::LWP Text::Template
-install Mail::Internet Time::HiRes URI::Find DBD::mysql Template 
+install Config::Simple Mail::Internet Time::HiRes 
+install URI::Find DBD::mysql Template Apache::Reload
 
 We will make a Bundle to be installed at some point.  
 
 =head3 Proxy setup
+
+The most common mod_perl setup is to have a light proxy in front of
+the mod_perl setup.  Using Apache 2.x for the proxy is somewhat
+simpler than using 1.3 because 2.0 has the "ProxyPreserveHost"
+feature.  If for development you just want to run Combust on a high
+port and not have it available via port 80 you can skip the proxy
+setup.
 
 Add something like the following to your Apache 2.0 httpd.conf file:
 
@@ -92,6 +100,8 @@ server runs on port 8225 (configured in combust.conf).
 
   ./bin/run_httpd
 
+You might want to put bin/cron_hourly into the combust users crontab.
+In any case then it should be executed at least once.
 
 =head2 Use a different document root on the fly
 

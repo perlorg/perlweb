@@ -30,17 +30,8 @@ my %provider_config = (
 		       'COMPILE_DIR'    => "$ENV{CBROOT}/tmp/ctpl",
 		       #TOLERANT => 1,
 		       RELATIVE => 1,
-		       'CACHE_SIZE'     => 128,  # cache all templates
+		       'CACHE_SIZE'     => 128,  # cache 128 templates
 		      );
-
-#my $file = Template::Provider->new(%provider_config, 
-#				   INCLUDE_PATH => "$ENV{CBROOT}/docs/www/live", 
-#				  );
-
-#my $http = Combust::Template::Provider::SVN->new(
-#				      %provider_config,
-#				      INCLUDE_PATH => ['http://svn.develooper.com/perl.org/docs/www'],
-#				     );
 
 my $combust_provider = Combust::Template::Provider->new
   (
