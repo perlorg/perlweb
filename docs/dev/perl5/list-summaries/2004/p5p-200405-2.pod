@@ -1,0 +1,76 @@
+=head1 This Week on perl5-porters (10-16 May 2004)
+
+Welcome to our latest edition of the P5P summary, for which I'm sure you
+have been waiting. This week, you'll read about considerations on
+Storable, nice improvements to the debugger, bugs, and other interesting
+subjects.
+
+=head2 Storable and memory usage
+
+Richard Jelinek was wondering about the reason why the C<Storable> module
+sometimes uses so much memory when large hashes are stored. Nicholas Clark
+explained some of the inner workings of Storable, which needs to keep
+track of every element it stores, in order to avoid duplicates; and he
+suggests that maybe using a DB file would be a better idea. Mark-Jason
+Dominus suggests to add an option to C<Storable> to avoid the duplicate
+check; this would reduce memory consumption, at the expense of cloning the
+data structures at retrieval-time.
+
+    http://groups.google.com/groups?selm=20040514211002.A21640%40petamem.com
+
+=head2 Stepping backwards
+
+Richard Foley sent a patch to implement backwards stepping in the perl
+debugger. He explains: I<Stepping backwards is made possible by using a
+true history (earlier save command), and rerunning the debugger to the
+indicated command, or to so-many steps backwards, or to the current
+position.>
+
+    http://groups.google.com/groups?selm=200405111104.11484.richard.foley%40rfi.net
+
+=head2 Command-line options
+
+Jim Cromie supplied a patch to provide an explanation for the C<-D>
+debugging command-line switch, when it's invoked with wrong suboptions.
+
+He also added some search options for the C<-V:> option, which enables to
+search through perl's configuration variables.
+
+    http://groups.google.com/groups?selm=40A06F92.1070607%40divsol.com
+
+=head2 Regexp bug
+
+Til Schubbe found a regexp bug (#29538). He provides the example of a
+regular expression that behaves correctly with C</i>, but not without,
+even though there is no letter in the regexp. Jeff Pinyan provided some
+technical analysis, but no fix (yet).
+
+    http://groups.google.com/groups?selm=rt-3.0.9-29538-87310.6.72801110403121%40perl.org
+
+=head2 Encoding and CRLF files on windows
+
+Jan Dubois notices that one cannot write a file in some encodings on
+Windows (with the example of C<ucs2le>) because the output file will be
+corrupted by spurious CRLF end-of-line conversions. (The C<:crlf> layer is
+present by default under Windows.) Adding a C<:raw> PerlIO layer is
+necessary to get the correct final encoding.
+
+Dan Kogai comments that UCS-2 should always be treated as binary, which
+sounds like a sane idea.
+
+    http://groups.google.com/groups?selm=200405150041.i4F0fQjh003739%40smtp3.ActiveState.com
+
+=head2 In Brief
+
+Rafael patched XSLoader to record the paths of loaded F<.so> files in
+C<@DynaLoader::dl_shared_objects>.
+
+Encode 2.00 was released by Dan Kogai. In spite of the name, that's not a
+new major version release, that's only 1.99++ :)
+
+=head2 About this summary
+
+This summary was written by Rafael Garcia-Suarez. Weekly summaries are
+published on F<http://use.perl.org/> and posted on a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. Comments and
+corrections welcome.
