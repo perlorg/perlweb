@@ -1,0 +1,61 @@
+=head1 This Week on perl5-porters (14-20 June 2004)
+
+Maybe it's due to the conferences, but this week was a low-traffic one.
+
+=head2 When tieing doesn't return a tied
+
+Peter Scott asks: if a tie constructor doesn't return a blessed reference,
+the resulting object is not tied, but perl doesn't produce any warning. Is
+this behaviour deliberate? Or, in other words, is there useful (and
+documented) cases where a tie constructor would like to decline the
+construction of a tied object.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-06/msg00379.html
+
+=head2 Taint things
+
+Ton Hospel asks whether C<SvPOK> should return I<true> on tainted strings.
+Nicholas Clark answers negatively, arguing that tainted strings have taint
+magic, meaning that their string value shouldn't be accessed directly.
+Paul Fenwick further comments on the handling on tainted scalars through C
+code.
+
+    http://groups.google.com/groups?selm=caibs1$elq$1%40post.home.lunix
+
+Meanwhile, Tim Bunce suggests that adding a mechanism to taint everything
+would be a good way to flush out magic-related bugs (more precisely,
+missing C<SvGETMAGIC> calls to get string values).
+
+    http://groups.google.com/groups?selm=20040618170806.GB476%40dansat.data-plan.com
+
+=head2 Peculiar locale failures
+
+Some regression tests for the newest versions of C<I18N::LangInfo> are
+failing for Rafael. Besides some corrections that have been made by Sean
+Burke to the tests, tests keeps failing, and a system problem is
+suspected.
+
+=head2 In Brief
+
+Andrew Savige reports a case of random crash when sort() with a named
+subroutine is invoked from different threads. (Bug #30333.) I imagine that
+the implementation of sort() calling subroutines must be reviewed for
+thread-safety.
+
+Paul Johnson wonders whether the I<deep recursion> warning could be issued
+only for deeper recursions than currently. There is no compelling reason
+to so this, however.
+
+    http://groups.google.com/groups?selm=20040618161310.GA5773%40pjcj.net
+
+Colin Watson reports that localising the C<$?> variable looses the exit
+value from the C<perl> command. This shouldn't occur, since C<$?> is
+documented to affect the exit status of C<perl> only within END blocks.
+(Bug #30296.)
+
+=head2 About this summary
+
+This summary was written by Rafael Garcia-Suarez. Weekly summaries are
+published on F<http://use.perl.org/> and posted on a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. Comments and
+corrections welcome.
