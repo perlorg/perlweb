@@ -10,7 +10,8 @@ my %bookstores =
     'amazonuk' => 'http://www.amazon.co.uk/exec/obidos/ASIN/#ISBN#/develooper-21',
     'fatbrain' => 'http://www1.fatbrain.com/asp/bookinfo/bookinfo.asp?theisbn=#ISBN#&from=VFK102',
     'bn' => 'http://service.bfast.com/bfast/click?bfmid=2181&sourceid=38537477&bfpid=#ISBN#&bfmtype=book',
-    'powells' => 'http://www.powells.com/cgi-bin/partner?partner_id=25774&cgi=search/search&searchtype=isbn&searchfor=#ISBN#'
+    'powells' => 'http://www.powells.com/cgi-bin/partner?partner_id=25774&cgi=search/search&searchtype=isbn&searchfor=#ISBN#',
+    'bookpool' => 'http://www.bookpool.com/.x/SSSSSS_C200/sm/#ISBN#',
   );
 
 my %sites =
