@@ -6,14 +6,14 @@
 <B>PLACEHOLDER</B><BR>
 POD comes from 
 
-<tt>http://cvs.perl.org/cvsweb/parrot/docs/pdd04_datatypes.pod?rev=HEAD&content-type=text/plain</tt>
+<tt>http://cvs.perl.org/cvsweb/parrot/docs/pdds/pdd04_datatypes.pod?rev=HEAD&content-type=text/plain</tt>
 
 and cache for 24 hours.
 %]
 
 [% USE ua = CacheLWPSimple %]
 [% data = ua.get( 'url' =>
-      'http://cvs.perl.org/cvsweb/parrot/docs/pdd04_datatypes.pod?rev=HEAD&content-type=text/plain'
+      'http://cvs.perl.org/cvsweb/parrot/docs/pdds/pdd04_datatypes.pod?rev=HEAD&content-type=text/plain'
            'ttl' => 1*60*60 ) %]
 [% USE PodSimple %]
 [% PodSimple.parse('html', data ) %]
