@@ -1,0 +1,152 @@
+
+=head1 TITLE
+
+Now What?
+
+=head1 AUTHOR
+
+Robert
+
+=head1 SUMMARY
+
+So you've installed combust, and now you want to make or modify some
+websites.  How do you start?
+
+=head1 BASICS
+
+Combust is based on Template Toolkit
+(L<http://www.template-toolkit.org>).  All TT directives can be used
+in Combust.  (With the exception of any that have been disabled for
+security purposes.)
+
+The TT language has basic flow control and the ability to modify and process data.  
+
+=head2 Page Concepts
+
+There are three different kinds of document in Combust.
+
+=over 4
+
+=item *
+
+page
+
+pages are where the content lives.  they contain HTML and TT
+directives.  Some of these directives may set variables that are used
+by the style document
+
+=item *
+
+style
+
+style documents are the outer templates.  they generally contain the
+<html> </html> tags, the <head> block, a page header and footer.  They
+control the macro-layout of a page.  they often use variables set on
+the page.
+
+style documents live in the $SITE/tpl/style/ directory
+
+they are specified by C<[% page.style = "stylename.html" %]>
+
+global styles live in shared/tpl/style
+
+=item *
+
+component
+
+a component is to a page as a page is to a style.  Generally it's
+something like a navigation bar, or something else that is used in
+multiple places.  (Kind of like a subroutine.)
+
+component documents generally live in the tpl/ directory
+
+=back
+
+  ----------------------------
+  | <title>[%page.title%]    |
+  |   </title>               |    --- page style (template) document
+  |                          |     
+  | #####   ***************  |    ### sidebar component
+  | #####   *             *  |
+  | #####   *             *  |    *** actual page ("foo.html")
+  | #####   *             *  |
+  | #####   *             *  |
+  | #####   *             *  |
+  | #####   *             *  |
+  | #####   *             *  |
+  | #####   *             *  |
+  | #####   *             *  |
+  | #####   *             *  |
+  | #####   *             *  |
+  | #####   *             *  |
+  | #####   *             *  |
+  | #####   ***************  |
+  |                          |
+  |                          |
+  |   footer                 |
+  ----------------------------
+
+The default page style for a site can be set in C<$SITE/tpl/defaults>.
+That file also contains variables that will be set on every page.
+
+=head1 Default Styles
+
+=over 4
+
+=item *
+
+bare.html
+
+This style doesn't actually do anything.  Nothing will be added,
+subtracted, or removed from the page.
+
+=item *
+
+default.html
+
+This style is used by many perl.org pages.
+
+Important variables are page.title, page.site, page.sidebar, page.footer
+
+=item *
+
+perl-directory.html
+
+This style is used for index pages on www.perl.org
+
+=back
+
+You can also create your own custom styles.  Base them off an existing one.
+
+=head1 On Style
+
+Please keep your HTML as simple as possible and use the style-template
+for as much of the layout as possible.  You can use TT variables ane
+BLOCKs to position things.  (See how C<page.sidebar> works.)
+
+Eliminate redundancy in the content pages.
+
+Use CSS as much as possible.  If the perl.org stylesheet doesn't work
+for you, you can create your own or extend the perl.org one by
+including it into your own.
+
+Avoid C<FONT> tags and embedded C<STYLE=> attributes.  Do not use
+excessive tables.  Use semantic tags when possible.  Aim for content
+over pretty.
+
+Remember that pages named C<something.pod> are accessible as C<something.html> which can simplify things.
+
+=head1 On Development and Comitting...
+
+Combust is hosted out of Subversion (L<http://subversion.tigris.org>).
+We like subversion, but we're not as used to it as we are CVS.  The
+concept behind the Combust working model is you make and test changes
+in your local development copy on your local server.  When you're
+ready (and satisfied that they have been tested), you check it in and
+it propogates to the live site.  
+
+Do not check in every single one word change, to see it on the live
+site.  This will make us very unhappy.
+
+Right now, the documentation is a little weak.  The best way to learn
+is to look at examples.
