@@ -95,14 +95,12 @@ sub params {
   shift->{params};
 }
 
-sub super($$) {
-  my $class   = shift;
-  my $r = shift;
+sub _init {
+  my ($class, $r) = @_;
 
-  use Carp qw(confess);
-  confess(__PACKAGE__ . '->super got called without $r') unless $r;
-  return unless $r;
-
+  # return if we are already blessed
+  return $class if ref $class;
+  
   # pass $r as an Apache::Request
   $r = Apache::Request->new($r);
 
@@ -112,9 +110,22 @@ sub super($$) {
     config => $config,
   };
 
+  $self;
+}
+
+sub super ($$) {
+  my $class   = shift;
+  my $r = shift;
+
+  use Carp qw(confess);
+  confess(__PACKAGE__ . '->super got called without $r') unless $r;
+  return unless $r;
+  
+  my $self = $class->_init;
+
   my $status;
   eval {
-    $status = $self->handler($r);
+    $status = $self->handler($self->r);
   };
   warn "Combust::Control: oops, class handler died with $@" if $@;
   

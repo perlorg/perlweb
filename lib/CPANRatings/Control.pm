@@ -8,7 +8,14 @@ use Combust::Cache;
 use Apache::Util qw();
 use CPANRatings::Model::Reviews;
 
-#use base qw(Combust::Control);
+sub super ($$) {
+ 
+  my $self = shift->SUPER::_init(@_);
+
+  $self->param('user_info', $self->user_info);
+
+  $self->SUPER::super(@_);
+}
 
 sub is_logged_in {
   my $self = shift;
