@@ -11,13 +11,13 @@
 <B>PLACEHOLDER</B><BR>
 
 POD source from 
-<tt>http://cvs.perl.org/cgi/cvsweb.cgi/%7echeckout%7e/parrot/docs/faq.pod</tt>
+<tt>http://svn.perl.org/viewcvs/viewcvs.py/cvs-public/parrot/docs/faq.pod?view=co</tt>
 and cache for 24 hours.
 %]
 
 [% USE ua = CacheLWPSimple %]
 [% data = ua.get( 'url' =>
-      'http://cvs.perl.org/cgi/cvsweb.cgi/%7echeckout%7e/parrot/docs/faq.pod',
+      'http://svn.perl.org/viewcvs/viewcvs.py/cvs-public/parrot/docs/faq.pod?view=co',
            'ttl' => 1*60*60 ) %]
 [% USE PodSimple %]
 [% PodSimple.parse('html', data ) %]
