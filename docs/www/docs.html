@@ -9,7 +9,7 @@
   Perl question, there's a good chance its answered somewhere in
   there.  Good places to start looking are the <A
   HREF="http://faq.perl.org">Perl FAQ</A> and the main <A
-  HREF="http://www.perldoc.com/perl5.8.0/pod/perl.html">Perl manual
+  HREF="http://search.cpan.org/dist/perl/">Perl manual
   page</A>.
 
 </div>
@@ -24,13 +24,21 @@ On-site and open-enrollment options are available.
 [% END %]
 
 <P>
-    <H3>Documentation at <a href="http://www.perldoc.com">perldoc.com</a></h3>
-	<UL>
-	<LI><A href="http://www.perldoc.com/perl5.8.0/pod/perl.html">Manual Pages</a>
-	<LI><a href="http://www.perldoc.com/perl5.8.0/lib.html">Core Modules</a>
-	<LI><a href="http://www.perldoc.com/perl5.8.0/pod/perlfaq.html">The Perl FAQs</a>
-	 <LI><a href="http://www.perldoc.com/perl5.8.0/pod.html">Additional Documentation</a>
-	</UL>
+[%
+# Perldoc is down.  
+#    <H3>Documentation at <a href="http://www.perldoc.com">perldoc.com</a></h3>
+#	<UL>
+#	<LI><A href="http://www.perldoc.com/perl5.8.0/pod/perl.html">Manual Pages</a>
+#	<LI><a href="http://www.perldoc.com/perl5.8.0/lib.html">Core Modules</a>
+#	<LI><a href="http://www.perldoc.com/perl5.8.0/pod/perlfaq.html">The Perl FAQs</a>
+#	 <LI><a href="http://www.perldoc.com/perl5.8.0/pod.html">Additional Documentation</a>
+#	</UL>
+%]
+
+    <H3>Core Documentation</H3>
+    <UL>
+       <LI><A HREF="http://search.cpan.org/dist/perl/">Latest Perl Release</A> 
+    </UL>
 
     <H3>Module Documentation</h3>
 	Perl modules come with their own documentation.  On UNIX systems, 
