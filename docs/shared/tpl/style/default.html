@@ -22,7 +22,7 @@
 <html>
 <head>
   <title>[% page.title %]</title>
-  <link rel="stylesheet" type="text/css" href="/css/perl.css" title="Default CSS2" media="screen">
+  <link rel="stylesheet" type="text/css" href="[% page.css || "/css/perl.css" %]" title="Default CSS2" media="screen">
 </head>
 <body>
 
@@ -35,10 +35,19 @@
 <DIV CLASS="SIDE">
 
 [% IF !isindex %] 
-[% PROCESS tpl/navigation.html %]
+
+[% TRY %]
+  [% PROCESS tpl/navigation.html %]
+[% CATCH %]
+  [% # no navigation %]
+[% END %]
+
 [% END %]
 
 [% page.sidebar %]
+
+</DIV>
+
 </TD>
 
 <TD>
@@ -63,7 +72,7 @@
 </TD> 
 
 <td colspan=22 align="center" valign="bottom">
-[% IF isindex %]
+[% IF isindex and notes.site == 'www' %]
    <!-- this cell sits at the bottom of the content area -->
    <H3 class="BEGINNER">New to Perl?
    &nbsp;<A href="http://learn.perl.org">See our Resources for Perl Beginners</a></h3>
