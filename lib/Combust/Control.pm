@@ -92,6 +92,7 @@ sub r {
 sub param {
   my ($self, $key) = (shift, shift);
   return unless $key;
+  Carp::cluck "param('$key' ...) called" if $key eq "user";
   $self->{params}->{$key} = shift if @_;
   return $self->{params}->{$key};
 }
@@ -100,7 +101,7 @@ sub params {
   my $self = shift;
   cluck("params called with [$self] as self.  Did you configure the handler to call ->handler instead of ->super?") unless ref $self;
   cluck('Combust::Control->params called with parameters, did you mean to call "param"?') if @_;
-  $self->{params};
+  $self->{params} || {};
 }
 
 sub _init {
@@ -136,8 +137,18 @@ sub super ($$) {
   };
   warn "Combust::Control: oops, class handler died with $@" if $@;
   return 500 if $@;
-  
+
+  # should we do this to make it harder for people to shoot themselves in the foot?
+  # $self->_cleanup_params;
+
   return $status;
+}
+
+sub _cleanup_params {
+  my $self = shift;
+  for my $param (keys %{$self->{params}}) {
+    delete $self->{params}->{$param};
+  }
 }
 
 sub get_include_path {
@@ -223,7 +234,7 @@ sub evaluate_template {
   $params{params}->{r} = $r; 
   $params{params}->{notes} = $r->pnotes('combust_notes'); 
   $params{params}->{root} = $root;  # localroot anyone?
-  # this is useful, is it dangerous too?  
+
   $params{params}->{combust} = $self;
 
   $params{params}->{site} = $r->dir_config("site");
@@ -247,6 +258,8 @@ sub evaluate_template {
 	# TODO: throw a "proper" exception?
         die( 'error' => $@ . " " . $self->tt->error );
       };
+
+  delete $params{params}->{combust};
 
   return ($rc, $params{output}) if $new_mode and wantarray;
   return $params{output} if $new_mode;
