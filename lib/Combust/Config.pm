@@ -5,11 +5,9 @@ use Data::Dumper qw();
 use Sys::Hostname qw(hostname);
 
 my $file = "$ENV{CBROOT}/combust.conf";
+$file = "$ENV{CBROOTLOCAL}/combust.conf" if $ENV{CBROOTLOCAL};
 
-#my %Config;
-#Config::Simple->import_from($file, \%Config);
-
-my $cfg = new Config::Simple($file)  or die Config::Simple->error();
+my $cfg = new Config::Simple($file) or die Config::Simple->error();
 
 my %Config = $cfg->vars();
 #warn Data::Dumper->Dump([\$cfg],[qw(Config)]);

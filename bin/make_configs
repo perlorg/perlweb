@@ -3,6 +3,7 @@ eval 'exec $CBROOT/bin/perl $0 -w ${1+"$@"}'
   unless $running_under_some_shell;
 use strict;
 BEGIN { die "CBROOT required" unless $ENV{CBROOT}; }
+BEGIN { if ($ENV{CBROOTLOCAL}) { use lib "$ENV{CBROOTLOCAL}/lib" } }
 use lib "$ENV{CBROOT}/lib";
 use Getopt::Long;
 use Combust::Config;
@@ -13,15 +14,22 @@ my $config = Combust::Config->new();
 #exit;
 
 my $dir = "$ENV{CBROOT}/apache/conf/";
+my $local_dir = "$ENV{CBROOTLOCAL}/apache/conf" || '';
 
-my $tt = new Template({ INCLUDE_PATH => $dir,
+my $include_path = []; 
+push @$include_path, $local_dir if $local_dir;
+push @$include_path, $dir;
+
+my $tt = new Template({ INCLUDE_PATH => $include_path,
                         RELATIVE => 0 
 		      }) 
   or die "Error: $Template::ERROR\n"; $Template::ERROR = '' if 0;
 
 
 my $params = { config => $config,
-	       root   => $ENV{CBROOT},
+	       root         => $ENV{CBROOT},
+	       root_local   => ($ENV{CBROOTLOCAL} || ''),
+	       root_default => ($ENV{CBROOTLOCAL} || $ENV{CBROOT}),
 	     };
 
 $params->{dont_edit} = <<EOT;
@@ -32,6 +40,6 @@ EOT
 
 # setup $conf/$params for the template
 
-$tt->process("httpd.tmpl", $params, "$dir/httpd.conf")
+$tt->process("httpd.tmpl", $params, $local_dir ? "$local_dir/httpd.conf" : "$dir/httpd.conf")
   or die "Template Error: " . $tt->error();
 

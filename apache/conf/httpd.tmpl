@@ -1,5 +1,4 @@
 [% dont_edit # add warning; do edit *THIS* file.. ;-) %]
-[% root_default = root %]
 ServerRoot "[% root_default %]/apache/"
 LockFile [% root_default %]/apache/logs/httpd.lock
 PidFile [% root_default %]/apache/logs/httpd.pid
@@ -248,7 +247,7 @@ NameVirtualHost *:[% config.port %]
 
 # Default first host (so an unconfigured vhost doesn't fall back to one of the following
 <VirtualHost *:[% config.port %]>
-  ServerName tweb.x.perl.org
+  ServerName combust-default
   DocumentRoot [% root_default %]/tmp/htdocs/
 </VirtualHost>
 
@@ -259,7 +258,7 @@ NameVirtualHost *:[% config.port %]
 [% FOREACH site = config.sites_list %]
   # [% site %] 
 [% IF config.site.$site.servername;
-     PROCESS "sites/qa.tmpl";
+     PROCESS "sites/${site}.tmpl";
    ELSE %] 
     # ServerName for [% site %] not configured in combust.conf!
 [% END;

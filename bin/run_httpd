@@ -6,9 +6,12 @@ if test -z $CBROOT
   exit 
 fi
 
-# $CBROOT/bin/template_filler < $CBROOT/apache/conf/httpd.tmpl > $CBROOT/apache/conf/httpd.conf && \
-
-cd $CBROOT
+if test ! -z $CBROOTLOCAL 
+ then
+   cd $CBROOTLOCAL
+else
+   cd $CBROOT
+fi
 
 mkdir -p tmp/htdocs && mkdir -p tmp/ctpl && mkdir -p apache/logs && \
 $CBROOT/bin/make_configs && \

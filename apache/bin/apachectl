@@ -22,11 +22,12 @@
 # --------------------                              --------------------
 # 
 # the path to your PID file
-PIDFILE=$CBROOT/apache/logs/httpd.pid
+ROOT=$CBROOTLOCAL || $CBROOT
+PIDFILE=$ROOT/apache/logs/httpd.pid
 #
 # the path to your httpd binary, including options if necessary
 #HTTPD="/usr/local/sbin/httpd -d /home/perlweb/apache -f /home/perlweb/apache/conf/httpd.conf"
-HTTPD="$CBROOT/bin/httpd -d $CBROOT/apache -f $CBROOT/apache/conf/httpd.conf"
+HTTPD="$CBROOT/bin/httpd -d $ROOT/apache -f $ROOT/apache/conf/httpd.conf"
 #
 # a command that outputs a formatted text version of the HTML at the
 # url given on the command line.  Designed for lynx, however other
