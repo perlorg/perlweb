@@ -1,11 +1,12 @@
 [% page.style = "bare.html";
    rotato_image_base = "http://www.perl.org";
    content = BLOCK %]
-<DIV STYLE="text-align: center; font-family: arial;sans-serif;
-font-size: 80%; width: 180px;">
-site hosting<BR>
-provided by <A HREF="http://www.perl.org">perl.org</A><BR>
-and <A HREF="http://www.perl.org/siteinfo.html#sponsors">supported</A> by:<BR>
+<DIV ID="site-sponsor-js"
+     STYLE="text-align: center; font-family: arial;sans-serif;
+            font-size: 80%; width: 180px;"
+>site hosting<BR>
+ provided by <A HREF="http://www.perl.org">perl.org</A><BR>
+ and <A HREF="http://www.perl.org/siteinfo.html#sponsors">supported</A> by:<BR>
 [% INCLUDE "tpl/sponsor-rotato.html" %]
 </DIV>
 [% END %]
