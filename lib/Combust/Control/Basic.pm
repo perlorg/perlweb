@@ -2,18 +2,21 @@ package Combust::Control::Basic;
 use strict;
 use base 'Combust::Control';
 use Combust::Template::Provider;
+use LWP::MediaTypes qw(guess_media_type);;
 
 # FIXME|TODO  
 #   - sub class Template::Service to do the branch magic etc?
 #   - use/take code from Apache::Template? (probably not)
 
 # FIXME|TODO use setup_provider or some such to set this up. 
-my $provider = Combust::Template::Provider->new(
-   INCLUDE_PATH => [
-		    "$ENV{CBROOT}/docs/www/live",
-		    'http://svn.develooper.com/perl.org/docs/www/live',
-		   ],
-);
+#my $provider = Combust::Template::Provider->new(
+#   INCLUDE_PATH => [
+#		    "$ENV{CBROOT}/docs/www/live",
+#		    'http://svn.develooper.com/perl.org/docs/www/live',
+#		   ],
+#);
+
+LWP::MediaTypes::read_media_types("/home/perl/apache1/conf/mime.types");
 
 sub handler($$) {
   my ($class, $r) = @_;
@@ -27,14 +30,16 @@ sub handler($$) {
   $uri =~ s!/$!/index.html!;
 
   # TODO|FIXME: set last_modified_date properly!  
- 
+
+  warn "foo!";
+
   if ($uri =~ m!/(.*\.(gif|jpe?g|png|css))$!) {
     my $file = $1;
-    #warn "going to load $file";
-    my ($data, $error) = $provider->load($file);
+    warn "going to load $file";
+    my ($data, $error) = $class->provider->load($file);
     if ($data and !$error) {
-      # Set the right content type (!)
-      return $class->send_output($r, \$data->{text}, 'image/gif');
+      $content_type = guess_media_type($file);
+      return $class->send_output($r, $data, $content_type);
     }
     else {
       return 404;

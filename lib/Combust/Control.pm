@@ -42,8 +42,7 @@ my $combust_provider = Template::Provider->new
    %provider_config,
    INCLUDE_PATH => [
 		    sub {
-                      my $r = Apache->request;
- 		      [ "$ENV{CBROOT}/docs/live/" . $r->dir_config("site") ];
+		      &get_include_path()
 		    },
 		    "$ENV{CBROOT}/docs/live/shared/",
 		    "$ENV{CBROOT}/docs/live/",
@@ -66,6 +65,44 @@ my $tt = Template->new
     'PRE_PROCESS'    => 'tpl/defaults',
     'PROCESS'        => 'tpl/wrapper' ,
    });
+
+sub provider {
+  $combust_provider;
+}
+
+sub tt {
+  $tt
+}
+
+sub get_include_path {
+  my $r = Apache->request;
+
+  $r = Apache::Request->instance($r);
+
+  my $site = $r->dir_config("site");
+  my $default_root = "$ENV{CBROOT}/docs/live/$site";
+  #return [$default_root];
+  my $root = $default_root;
+
+  #warn Data::Dumper->Dump([\$r], [qw(r)]);
+
+  warn "param:root: ", $r->param('root');
+
+  # MAGIC LINE!
+  if (my ($user, $dir) = ($r->param('root') =~ m!^([a-zA-Z]+)/([^\.]+)$!)) {
+    warn "martched: USER:$user DIR:$dir";
+    # FIXME|TODO: should expand on ~ instead of using /home
+    $root = "/home/$user/docs/$dir/$site";
+    warn "XOOT: $root";
+  } 
+
+  warn "ROOT: [$root]";
+  warn "DOOT: [$default_root]";
+
+  # return [ $root || $default_root ];
+  #$return [$root];
+  return [$default_root];
+}
 
 sub evaluate_template {
   my $class     = shift;
@@ -101,7 +138,6 @@ sub send_cached {
       if $cache->{meta_data}->{content_type};
 
   return $class->send_output($r, $cache->{data}, $content_type);
-
 }
 
 sub send_output {
@@ -131,7 +167,8 @@ sub send_output {
   # defining the character set helps in handling the CERT advisory
   # regarding  "cross site scripting vulnerabilities" 
   #   http://www.cert.org/tech_tips/malicious_code_mitigation.html
-  $r->content_type("$content_type; charset=iso-8859-1");
+  $content_type .= "; charset=iso-8859-1" if $content_type =~ m/^text/ and $content_type !~ m/charset=/;
+  $r->content_type($content_type);
 
   if ((my $rc = $r->meets_conditions) != OK) {
     return $rc;
