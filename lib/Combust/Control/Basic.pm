@@ -36,18 +36,24 @@ sub handler($$) {
     my $file = $uri;
     substr($file,0,1) = ""; # trim leading slash
     #warn "going to load $file";
+    # use sendfile to ship the data instead of loading everything first ...
     my ($data, $error) = $class->provider->load($file);
     if ($data and !$error) {
       $content_type = guess_media_type($file);
       return $class->send_output($r, $data, $content_type);
     }
     else {
-      return 404;
+      if ($class->provider->is_directory($file)) {
+	return $class->redirect($r, $uri . "/", 1);
+      }
+      else {
+	return 404;
+      }
     }
   }
 
-  if ($uri =~ m!^/([^/]+)$!) {
-    # FIXME|TODO: clean up url? 
+  # FIXME|TODO: disallow nasty characters here, in particular double dots...
+  if ($uri =~ m!^/((?:[^/]+/)*[^/]+)$!) {
     $template = $1; 
   }
   else {

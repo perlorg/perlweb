@@ -42,8 +42,7 @@ my %provider_config = (
 #				      INCLUDE_PATH => ['http://svn.develooper.com/perl.org/docs/www'],
 #				     );
 
-# use Combust::Template::Provider some day ...
-my $combust_provider = Template::Provider->new
+my $combust_provider = Combust::Template::Provider->new
   (
    %provider_config,
    INCLUDE_PATH => [
@@ -213,9 +212,10 @@ sub redirect {
   my $self = shift;
   my $r   = shift;
   my $url = shift;
+  my $permanent = shift;
   $r->pnotes('combust_notes')->{cookies}->bake_cookies;
   $r->header_out('Location', $url);
-  return REDIRECT;
+  return $permanent ? MOVED : REDIRECT;
 }
 
 #sub modified_time {
