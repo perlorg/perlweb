@@ -1,24 +1,9 @@
+[% page.banner = BLOCK %]<SPAN CLASS="title">Perl DBI</span>[% END %]
+[% page.style = "perl-directory.html" %]
+[% page.site = "dbi.perl.org" %]
+[% page.title = "Perl DBI" %]
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-
-
-
-<html><!-- InstanceBegin template="/Templates/main2.dwt" codeOutsideHTMLIsLocked="false" -->
-<head>
-<!-- InstanceBeginEditable name="doctitle" -->
-<title>The Perl Directory - perl.org</title>
-<!-- InstanceEndEditable --> 
-<link rel="stylesheet" type="text/css" href="/perl.css" title="Default CSS2" media="screen">
-  <link rel="shortcut icon" href="/favicon.ico">
-<!-- InstanceBeginEditable name="head" --><!-- InstanceEndEditable -->
-</head>
-<body>
-<TABLE CELLSPACING="0" WIDTH="690">
-  <TR> 
-    <TD COLSPAN="2" class="BANNER">Perl DBI</TD>
-  <TR VALIGN="TOP"> <!-- InstanceBeginEditable name="Left" -->
-    <td id="NAV" width="180" height="350"> <div class="SIDE"> 
-        <div class="MENU"> 
+[% page.sidebar = BLOCK%]
           <div class="MENU">
             <h3>Current Release: 1.38</h3>
             <a href="/get.html">Download DBI</a> </div>
@@ -31,12 +16,13 @@
               database interface independent of the actual database being used.&quot;</p>
             <p align="center">-- Tim Bunce</p>
           </div>
-        </div>
-      </div></td>
-    <!-- InstanceEndEditable -->
-    <TD> 
-      <!-- end header.html -->
-      <!-- InstanceBeginEditable name="Middle" -->
+
+        <div class="NAVITEM"></div>
+        <div class="NAVITEM" align=CENTER> <a href="http://www.citysearch.com/"> 
+          </a> </div>
+        &nbsp; </div>
+[% END %]        
+
       <table width="530" cellspacing="10" cellpadding="5" border="0">
         <tr valign="TOP"> 
           <td  valign="top"  class="NOVERTPAD"> <p> The DBI module enables your 
@@ -58,57 +44,4 @@
           <td colspan=21 valign="BOTTOM" align="center"> </td>
         </tr>
       </table>
-      <!-- InstanceEndEditable --></TD>
-  </TR>
-  <TR> 
-    <TD CLASS="CR"> <p>&#169; Copyright 2002-2003<br>
-        Tim Bunce</p>
-      <p>Site Maintained by Ilya Sterin (isterin at cpan dot org)</p></TD>
-    <td colspan=2 align="center" valign="bottom"> 
-      <!-- this cell sits at the bottom of the content area -->
-    </td>
-  </TR>
-</TABLE>
-
-<TABLE border="0" WIDTH="730" CELLSPACING="0" CELLPADDING="0">
-<TR ALIGN="RIGHT">
-
-<TD WIDTH="590" VALIGN="MIDDLE">
-
-
-<DIV CLASS="PDFOOTER">
-
-    Perl.org sites
-     : <A href="http://books.perl.org/" title="books.perl.org">books</a>
-     | <!-- <A href="http://rt.perl.org/perlbug/">bugs</a>
-     | --> <A href="http://dev.perl.org/">dev</a>
-     | <A href="http://history.perl.org/">history</a>
-     | <A href="http://jobs.perl.org/">jobs</a>
-     | <A href="http://learn.perl.org/">learn</a>
-     | <A href="http://lists.perl.org/">lists</a>
-     | <A href="http://use.perl.org/">use</a>
-    &nbsp;&nbsp;
-    </DIV>
-
-<DIV CLASS="TAGLINE">
-When you need perl, think perl.org
-    &nbsp;
-</DIV>
-
-
-<DIV ALIGN="LEFT">
-
-</DIV>
-
-</TD>
-    <TD valign="middle" align="center"> <A HREF="http://www.perl.org/camel.html"> 
-      &nbsp;&nbsp;&nbsp;&nbsp; </A> </TD>
-</TR>
-</TABLE>
-
-</body>
-<!-- InstanceEnd --></html>
-
-
-  
-
+      
