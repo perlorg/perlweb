@@ -84,6 +84,9 @@ server runs on port 8225 (configured in combust.conf).
 
   ./bin/run_httpd
 
+The read-only username and password for the svn server are both
+"guest".
+
 You might want to put bin/cron_hourly into the combust users crontab.
 In any case then it should be executed at least once.
 
