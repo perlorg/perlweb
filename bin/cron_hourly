@@ -1,5 +1,11 @@
 #!/bin/sh
 
+# grr.  argh 
+if [ -z $CBROOT ];
+then
+    CBROOT=/home/newweb
+fi
+
 targetpath=$CBROOT/var/rss/
 
 # should probably be tmp/ ... or we should change all the tmp/ stuff to be var/

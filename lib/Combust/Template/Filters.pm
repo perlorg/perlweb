@@ -13,7 +13,7 @@ sub navigation_filter_factory {
     #warn "URI1: $uri";
     $uri  =~ s!(/?index(?:\.html)?|/)$!!;
     #warn "URI2: $uri";
-    $text =~ s{&nbsp;&nbsp;\s+<a href="\Q$uri\E">(.+?)</a>}{&raquo; $1 &laquo;}i;
+    $text =~ s{&nbsp;&nbsp;\s*<a href="\Q$uri\E">(.+?)</a>}{&raquo; $1 &laquo;}i;
     return $text;
   }
 }

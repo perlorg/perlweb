@@ -287,6 +287,7 @@ NameVirtualHost *:[% config.port %]
 [% IF config.sites.ponie %]
   <VirtualHost *:[% config.port %]>
     ServerName [% config.site.ponie.servername %]
+
     PerlSetVar site ponie
     <Location />
        SetHandler perl-script
@@ -304,6 +305,7 @@ NameVirtualHost *:[% config.port %]
 [% IF config.sites.www %]
   <VirtualHost *:[% config.port %]>
     ServerName [% config.site.www.servername %]
+	ServerAlias  new.x.perl.org 
     PerlSetVar site www
 PerlTransHandler Combust::Redirect
 
