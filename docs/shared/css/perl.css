@@ -32,7 +32,13 @@ A:visited {
 	color: #663399;
 	}
 
-A:hover {
+/* specify link and visited so the 'hover' style doesn't apply to
+   other links, like those which are just NAME anchors. */
+A:link:hover {
+        text-decoration: underline;
+        color: #8B0000; /* dark red */
+        }
+A:visited:hover {
         text-decoration: underline;
         color: #8B0000; /* dark red */
         }
