@@ -3,7 +3,8 @@ httpd = /home/perl/apache1/bin/httpd
 
 servername = combust.c.askask.com
 
-#sites = www, qa, noc
+# list of active sites.  the individual site configuration is below in
+# [] blocks and in apache/conf/sites/
 sites = www, qa
 
 # default port is 8225
@@ -17,7 +18,7 @@ db_user        = combust
 # docs_name docs
 
 # add Apache::Reload to the httpd configuration; good for development!
-# apache_reload 1
+# apache_reload = 1
 
 # cronolog:
 # use_cronolog = 1 
@@ -28,7 +29,6 @@ db_user        = combust
 # cronolog_params   = -l LOGDIR/LOGFILE.latest
 #   access and errror will be substituted for LOGFILE in template and
 #   params.  LOGDIR is $CBROOT/apache/logs
-
 
 
 [www]
