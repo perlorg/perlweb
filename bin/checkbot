@@ -1,0 +1,1513 @@
+#!/usr/bin/perl -w
+#
+# checkbot - A perl5 script to check validity of links in www document trees
+#
+# Hans de Graaff <hans@degraaff.org>, 1994-2002.
+# Based on Dimitri Tischenko, Delft University of Technology, 1994
+# Based on the testlinks script by Roy Fielding
+# With contributions from Bruce Speyer <bruce.speyer@elecomm.com>
+#
+# This application is free software; you can redistribute it and/or
+# modify it under the same terms as Perl itself.
+#
+# Info-URL: http://degraaff.org/checkbot/
+# Comments to: checkbot@degraaff.org
+#
+# $Id: checkbot,v 1.71 2002/12/29 14:41:33 graaff Exp $
+# (Log information can be found at the end of the script)
+
+require 5.004;
+use strict;
+
+require LWP;
+
+use File::Basename;
+
+=head1 NAME
+
+Checkbot - WWW Link Verifier
+
+=head1 SYNOPSIS
+
+checkbot [B<--debug>] [B<--help>] [B<--verbose>] [B<--url> start URL] 
+         [B<--match> match string] [B<--exclude> exclude string]
+         [B<--proxy> proxy URL] [B<--internal-only>]
+         [B<--ignore> ignore string] [B<--file> file name]
+         [B<--filter> substitution regular expression]
+         [B<--style> style file URL]
+         [B<--mailto> email address]
+         [B<--note> note] [B<--sleep> seconds] [B<--timeout> timeout]
+         [B<--interval> seconds] [B<--dontwarn> HTTP responde codes]
+         [B<--enable-virtual>]
+         [B<--allow-simple-hosts>]
+         [B<--language> language code]
+         [start URLs]
+
+=head1 DESCRIPTION
+
+Checkbot verifies the links in a specific portion of the World Wide
+Web. It creates HTML pages with diagnostics.
+
+Checkbot uses LWP to find URLs on pages and to check them. It supports
+the same schemes as LWP does, and find the same links that
+HTML::LinkExtor will find.
+
+Checkbot considers links to be either 'internal' or
+'external'. Internal links are links within the web space that needs
+to be checked. If an internal link points to a web document this
+document is retrieved, and its links are extracted and
+processed. External links are only checked to be working.  Checkbot
+checks links as it finds them, so internal and external links are
+checked at the same time, even though they are treated differently.
+
+Options for Checkbot are:
+
+=over 4
+
+=item --url <start URL>
+
+Set the start URL. Checkbot starts checking at this URL, and then
+recursively checks all links found on this page. The start URL takes
+precedence over additional URLs specified on the command line.
+
+If no scheme is protocol for the URL, the file protocol is assumed.
+
+=item --match <match string>
+
+This option selects which pages Checkbot considers local. If the
+I<match string> is contained within the URL, then Checkbot considers
+the page local, retrieves it, and will check all the links contained
+on it. Otherwise the page is considered external and it is only
+checked with a HEAD request.
+
+If no explicit I<match string> is given, the start URLs (See option
+C<--url>) will be used as a match string instead. In this case the
+last page name, if any, will be trimmed. For example, a start URL like
+C<http://some.site/index.html> will result in a default I<match
+string> of C<http://some.site/>.
+
+The I<match string> can be a perl regular expression.  For example, to
+check the main server page and all HTML pages directly underneath it,
+but not the HTML pages in the subdirectories of the server, the
+I<match string> would be C<www.someserver.xyz/($|[^/]+.html)>.
+
+=item --exclude <exclude string>
+
+URLs matching the I<exclude string> are considered to be external,
+even if they happen to match the I<match string> (See option C<--match>).
+
+The I<exclude string> can be a perl regular expression.
+
+=item --filter <filter string>
+
+This options defines a I<filter string>, which is a perl regular
+expression. This filter is run on each URL found, thus rewriting the
+URL before it enters the queue to be checked. It can be used to remove
+elements from a URL. This option can be useful when symbolic links
+point to the same directory, or when a content management system adds
+session IDs to URLs.
+
+For example C</old/new/> would replace occurances of 'old' with 'new'
+in each URL.
+
+=item --ignore <ignore string>
+
+If a URL has an error, and matches the I<ignore string>, its error
+will not be listed. This can be useful to stop certain errors from
+being listed.
+
+The I<ignore string> can be a perl regular expression.
+
+=item --proxy <proxy URL>
+
+This attribute specifies the URL for a proxy server.  Only external URLs 
+are queried through this proxy server, because Checkbot assumes all 
+internal URLs can be accessed directly.  Currently only the HTTP and FTP 
+protocols will be send to the proxy server.
+
+=item --internal-only 
+
+Skip the checking of external links at the end of the Checkbot
+run. Only matching links are checked. Not that some redirections may
+still cause external links to be checked.
+
+=item --mailto <email address>
+
+Send mail to the I<email address> when Checkbot is done
+checking. Includes a small summary of the results.
+
+=item --note <note>
+
+The I<note> is included verbatim in the mail message (See option
+C<--mailto>). This can be useful to include the URL of the summary HTML page
+for easy reference, for instance.
+
+Only meaningful in combination with the C<--mailto> option.
+
+=item --help
+
+Shows brief help message on the standard output.
+
+=item --verbose
+
+Show verbose output while running. Includes all links checked, results
+from the checks, etc.
+
+=item --debug
+
+Enable debugging mode. Not really supported anymore, but it will keep
+some files around that otherwise would be deleted.
+
+=item --sleep <seconds>
+
+Number of I<seconds> to sleep in between requests. Default is 0
+seconds, i.e. do not sleep at all between requests. Setting this
+option can be useful to keep the load on the web server down while
+running Checkbot. This option can also be set to a fractional number,
+i.e. a value of 0.1 will sleep one tenth of a second between requests.
+
+=item --timeout <timeout>
+
+Default timeout for the requests, specified in seconds. The default is
+2 minutes.
+
+=item --interval <seconds>
+
+The maximum interval between updates in seconds. Default is 3 hours
+(10800 seconds). Checkbot will start the intervale at one minute, and
+gradually extend it towards the maximum interval.
+
+=item --file <file name>
+
+Write the summary pages into file I<file name>. Default is C<checkbot.html>.
+
+=item --style <URL of style file>
+
+When this option is used, Checkbot embeds this URL as a link to a
+style file on each page it writes. This makes it easy to customize the
+layout of pages generated by Checkbot.
+
+=item --dontwarn <HTTP response codes regular expression>
+
+Do not include warnings on the result pages for those HTTP response
+codes which match the regular expression. For instance, --dontwarn
+"(301|404)" would not include 301 and 404 response codes.
+
+=item --enable-virtual
+
+This option enables dealing with virtual servers. Checkbot then
+assumes that all hostnames for internal servers are unique, even
+though their IP addresses may be the same. Normally Checkbot uses the
+IP address to distinguish servers. This has the advantage that if a
+server has two names (e.g. www and bamboozle) its pages only get
+checked once. When you want to check multiple virtual servers this
+causes problems, which this feature work around by using the hostname
+to distinguish the server.
+
+=item --allow-simple-hosts
+
+This option turns off warnings about URLs which contain unqualified
+host names. This is useful for intranet sites which often use just a
+simple hostname or even C<localhost> in their links. 
+
+=item --language
+
+The argument for this option is a two-letter language code. Checkbot
+will use language negotiation to request files in that language. The
+default is to request English language (language code 'en').
+
+=back
+
+=head1 HINTS AND TIPS
+
+=over
+
+=item Problems with checking FTP links
+
+Some users may experience consistent problems with checking FTP
+links. In these cases it may be useful to instruct Net::FTP to use
+passive FTP mode to check files. This can be done by setting the
+environment variable FTP_PASSIVE to 1. For example, using the bash
+shell: C<FTP_PASSIVE=1 checkbot ...>. See the Net::FTP documentation
+for more details.
+
+=item Run-away Checkbot 
+
+In some cases Checkbot literaly takes forever to finish. There are two
+common causes for this problem. First, there might be a database
+application as part of the website which generates a new page based on
+links on another page. Since Checkbot tries to travel through all
+links this will create an infinite number of pages. Second, a server
+configuration problem can causes a loop in generating URLs for pages
+that really do not exist. This will result in URLs of the form
+http://some.server/images/images/images/logo.png, with ever more
+'images' included. Checkbot cannot check for this because the server
+should have indicated that the requested pages do not exist.
+
+=back
+
+=head1 PREREQUISITES
+
+This script uses the C<LWP> modules.
+
+=head1 COREQUISITES
+
+This script can send mail when C<Mail::Send> is present.
+
+=head1 AUTHOR
+
+Hans de Graaff <hans@degraaff.org>
+
+=pod OSNAMES 
+
+any
+
+=cut
+
+# Declare some global variables, avoids ugly use of main:: all around
+my @starturls = ();
+# A hash of warnings generated by Checkbot apart from HTTP responses
+my %warning = ();
+
+# Two hashes to store the response to a URL, and all the parents of the URL
+my %url_error = ();
+my %url_parent = ();
+
+# Hash to store statistics on link checking
+my %stats = ();
+
+# Options hash (to be filled by GetOptions)
+my %options = ();
+
+# Version information
+my $VERSION;
+( $VERSION ) = sprintf("%d.%02d", q$Revision: 1.71 $ =~ /(\d+)\.(\d+)/);
+
+# If on a Mac we should ask for the arguments through some MacPerl stuff
+if ($^O eq 'MacOS') {
+  $main::mac_answer = eval "MacPerl::Ask('Enter Command-Line Options')";
+  push(@ARGV, split(' ', $main::mac_answer));
+}
+
+# Prepare
+check_options();
+init_modules();
+init_globals();
+
+# Start actual application
+check_links();
+
+# Finish up
+create_page(1);
+send_mail() if defined $main::opt_mailto;
+
+exit 0;
+
+# output prints stuff on stderr if --verbose, and takes care of proper
+# indentation
+sub output {
+  my ($line, $level) = @_;
+
+  return unless defined $main::opt_verbose;
+
+  chomp $line;
+
+  my $indent = '';
+
+  if (defined $level) {
+    while ($level-- > 0) {
+    $indent .= '    ';
+    }
+  }
+
+  print STDERR $indent, $line, "\n";
+}
+
+### Initialization and setup routines
+
+sub check_options {
+
+  # Get command-line arguments
+  use Getopt::Long;
+  my $result = GetOptions(qw(debug help verbose url=s match=s exclude|x=s file=s filter=s style=s ignore|z=s mailto|M=s note|N=s proxy=s internal-only sleep=f timeout=i interval=i dontwarn=s enable-virtual language=s allow-simple-hosts));
+
+  # Handle arguments, some are mandatory, some have defaults
+  &print_help if (($main::opt_help && $main::opt_help) 
+                  || (!$main::opt_url && $#ARGV == -1));
+  $main::opt_timeout = 120 unless defined($main::opt_timeout) && length($main::opt_timeout);
+  $main::opt_verbose = 0 unless $main::opt_verbose;
+  $main::opt_sleep = 0 unless defined($main::opt_sleep) && length($main::opt_sleep);
+  $main::opt_interval = 10800 unless defined $main::opt_interval and length $main::opt_interval;
+  $main::opt_dontwarn = "xxx" unless defined $main::opt_dontwarn and length $main::opt_dontwarn;
+  $main::opt_enable_virtual = 0 unless defined $main::opt_enable_virtual;
+  # Set the default language and make sure it is a two letter, lowercase code
+  $main::opt_language = 'en' unless defined $main::opt_language;
+  $main::opt_language = lc(substr($main::opt_language, 0, 2));
+  $main::opt_language =~ tr/a-z//cd;
+  if ($main::opt_language !~ /[a-z][a-z]/) {
+    warn "Argument --language $main::opt_language is not a valid language code\nUsing English as a default.\n";
+    $main::opt_language = 'en';
+  }
+  $main::opt_allow_simple_hosts = 0
+	  unless $main::opt_allow_simple_hosts;
+
+  # The default for opt_match will be set later, because we might want
+  # to muck with opt_url first.
+
+  # Display messages about the options
+  output "*** Starting Checkbot $VERSION in verbose mode";
+  output 'Will skip checking of external links', 1
+    if $main::opt_internal_only;
+  output "Allowing unqualified host names", 1
+    if $main::opt_allow_simple_hosts;
+}
+
+sub init_modules {
+
+# Using keep-alive from HTTP 1.1 will be a great efficiency
+# improvement, but it wont be available until libwww-perl 5.54. This
+# code hints at what should be done, but it's not an actual
+# implementation.
+
+#      if ( $server->{keep_alive} ) {
+#           eval {
+#               require LWP::Protocol::http11;
+#               LWP::Protocol::implementor('http', 'LWP::Protocol::http11');
+#           };
+#           warn "Cannot use keep alives, please upgrade LWP -- $@\n" if $@;
+#      }
+
+  use URI;
+  # Prepare the user agent to be used:
+  use LWP::UserAgent;
+  use LWP::MediaTypes;
+  #use LWP::Debug qw(- +debug);
+  use HTML::LinkExtor;
+  $main::ua = new LWP::UserAgent;
+  $main::ua->agent("Checkbot/$VERSION LWP/" . LWP::Version);
+  $main::ua->timeout($main::opt_timeout);
+  # TODO: we have this option for a proxy for the external pages....
+  # should probably be changed to be a proxy for all pages...
+  # Add a proxy to the user agent, if defined
+  #$main::ua->proxy(['http', 'ftp'], $main::opt_proxy) 
+  #  if defined($main::opt_proxy);
+
+  require Mail::Send if defined $main::opt_mailto;
+
+  use HTTP::Status;
+}
+
+sub init_globals {
+  my $url;
+
+  # Remember start time
+  $main::start_time = localtime();
+
+  # Directory and files for output
+  if ($main::opt_file) {
+    $main::file = $main::opt_file;
+    $main::file =~ /(.*)\./;
+    $main::server_prefix = $1;
+  } else { 
+    $main::file = "checkbot.html";
+    $main::server_prefix = "checkbot";
+  }
+  $main::tmpdir = ($ENV{'TMPDIR'} or $ENV{'TMP'} or $ENV{'TEMP'} or "/tmp") . "/Checkbot.$$";
+
+  $main::cur_queue  = $main::tmpdir . "/queue";
+  $main::new_queue  = $main::tmpdir . "/queue-new";
+
+  # Set up hashes to be used
+  %main::checked = ();
+  %main::servers = ();
+  %main::servers_get_only = ();
+
+  # Initialize the start URLs. --url takes precedence. Otherwise
+  # just process URLs in order as they appear on the command line.
+  unshift(@ARGV, $main::opt_url) if $main::opt_url;
+  foreach (@ARGV) {
+    $url = URI->new($_);
+    # If no scheme is defined we will assume file is used, so that
+    # it becomes easy to check a single file.
+    $url->scheme('file') unless defined $url->scheme;
+    $url->host('localhost') if $url->scheme eq 'file';
+    if (!defined $url->host) {
+      warn "No host specified in URL $url, ignoring it.\n";
+      next;
+    }
+    push(@starturls, $url);
+  }
+  die "There are no valid starting URLs to begin checking with!\n"
+    if scalar(@starturls) == -1;
+
+  # Set the automatic matching expression to a concatenation of the starturls
+  if (!defined $main::opt_match) {
+    my @matchurls;
+    foreach my $url (@starturls) {
+      # Remove trailing files from the match, e.g. remove index.html
+      # stuff so that we match on the host and/or directory instead.
+      my $matchurl = $url->as_string;
+      $matchurl =~ s!/[^/]+$!/!;
+      push(@matchurls, quotemeta $matchurl);
+    }
+    $main::opt_match = '^(' . join('|', @matchurls) . ')';
+    output "--match defaults to $main::opt_match";
+  }
+
+  # Initialize statistics hash with number of start URLs
+  $stats{'todo'} = scalar(@starturls);
+
+  # We write out our status every now and then.
+  $main::cp_int = 1;
+  $main::cp_last = 0;
+}
+
+### Main application code
+
+sub check_links {
+  my $line;
+
+  mkdir $main::tmpdir, 0755
+    || die "$0: unable to create directory $main::tmpdir: $!\n";
+
+  # Explicitly set the record separator. I had the problem that this
+  # was not defined under my perl 5.00502. This should fix that, and
+  # not cause problems for older versions of perl.
+  $/ = "\n";
+
+  open(CURRENT, ">$main::cur_queue")
+    || die "$0: Unable to open CURRENT $main::cur_queue for writing: $!\n";
+  open(QUEUE, ">$main::new_queue")
+    || die "$0: Unable to open QUEUE $main::new_queue for writing: $!\n";
+
+  # Prepare CURRENT queue with starting URLs
+  foreach (@starturls) {
+    print CURRENT $_->as_string . "|\n";
+  }
+  close CURRENT;
+
+  open(CURRENT, $main::cur_queue)
+    || die "$0: Unable to open CURRENT $main::cur_queue for reading: $!\n";
+
+  do {
+    # Read a line from the queue, and process it
+    while (defined ($line = <CURRENT>) ) {
+      chomp($line);
+      &handle_url($line);
+      &check_point();
+    }
+
+    # Move queues around, and try again, but only if there are still
+    # things to do
+    output "*** Moving queues around, " . $stats{'todo'} . " links to do.";
+    close CURRENT
+      or warn "Error while closing CURRENT filehandle: $!\n";
+    close QUEUE;
+
+    # TODO: should check whether these succeed
+    unlink($main::cur_queue);
+    rename($main::new_queue, $main::cur_queue);
+
+    open(CURRENT, "$main::cur_queue") 
+      || die "$0: Unable to open $main::cur_queue for reading: $!\n";
+    open(QUEUE, ">$main::new_queue") 
+      || die "$0: Unable to open $main::new_queue for writing: $!\n";
+
+  } while (not -z $main::cur_queue);
+
+  close CURRENT;
+  close QUEUE;
+
+  unless (defined($main::opt_debug)) {
+    unlink $main::cur_queue, $main::new_queue;
+    rmdir $main::tmpdir;
+  }
+}
+
+# Whether URL is 'internal' or 'external'
+sub is_internal ($) {
+  my ($url) = @_;
+
+  return ( $url =~ /$main::opt_match/o
+	   and not (defined $main::opt_exclude and $url =~ /$main::opt_exclude/o));
+}
+
+
+sub handle_url {
+  my ($line) = @_;
+  my ($urlstr, $urlparent) = split(/\|/, $line);
+
+  my $reqtype;
+  my $response;
+  my $type;
+
+  $stats{'todo'}--;
+
+  # Add this URL to the ones we've seen already, return if it is a
+  # duplicate.
+  return if add_checked($urlstr);
+
+  $stats{'link'}++;
+
+  # Is this an external URL and we only check internal stuff?
+  return if defined $main::opt_internal_only
+    and not is_internal($urlstr);
+
+  my $url = URI->new($urlstr);
+
+  # Perhaps this is a URL we are not interested in checking...
+  if (not defined($url->scheme) 
+      or $url->scheme !~ /^(https?|file|ftp|gopher|nntp)$/o
+      or $url->path =~ /[=\?]/o ) {
+    output "Ignore $url", 1;
+    return;
+  }
+
+  # Guess/determine the type of document we might retrieve from this
+  # URL. We do this because we only want to use a full GET for HTML
+  # document. No need to retrieve images, etc.
+  if ($url->path =~ /\/$/o || $url->path eq "") {
+    $type = 'text/html';
+  } else {
+    $type = guess_media_type($url->path);
+  }
+  # application/octet-stream is the fallback of LWP's guess stuff, so
+  # if we get this then we ask the server what we got just to be sure.
+  if ($type eq 'application/octet-stream') {
+    $response = performRequest('HEAD', $url, $urlparent, $type, $main::opt_language);
+    $type = $response->content_type;
+  }
+
+  # Determine if this is a URL we should GET fully or partially (using HEAD)
+  if ($type =~ /html/o 
+      && $url->scheme =~ /^(https?|file|ftp|gopher)$/o
+      and is_internal($url->as_string)
+      && (!defined $main::opt_exclude || $url !~ /$main::opt_exclude/o)) {
+    $reqtype = 'GET';
+  } else {
+    $reqtype = 'HEAD';
+  }
+
+  # Get the document, unless we already did while determining the type
+  $response = performRequest($reqtype, $url, $urlparent, $type, $main::opt_language)
+    unless defined($response) and $reqtype eq 'HEAD';
+
+  # Ok, we got something back from checking, let's see what it is
+  if ($response->is_success) {
+    select(undef, undef, undef, $main::opt_sleep)
+      unless $main::opt_debug || $url->scheme eq 'file';
+
+    # Internal HTML documents need to be given to handle_doc for processing
+    handle_doc($response) if $reqtype eq 'GET' and is_internal($url->as_string);
+  } else {
+
+    # Right, so it wasn't the smashing succes we hoped for, perhaps we
+    # can just ignore the bad news
+    if (defined $main::opt_ignore && $url =~ /$main::opt_ignore/o) {
+      output "Ignore $url";
+    } else {
+      # We should bring the bad news
+      output $response->status_line, 2;
+      # and store the pertinent information for later
+      unless ($response->code =~ /$main::opt_dontwarn/o) {
+	$url_error{$url}{'code'} = $response->code;
+	$url_error{$url}{'status'} = $response->message;
+	push @{$url_parent{$url}}, $urlparent;
+	$stats{'problem'}++;
+      }
+    }
+
+    if ($response->is_redirect and is_internal($url->as_string)) {
+      if ($response->code == 300) {  # multiple choices, but no redirection available
+	output 'Multiple choices', 2;
+      } else {
+	my $baseURI = URI->new($url);
+	if (defined $response->header('Location')) {
+	  my $redir_url = URI->new_abs($response->header('Location'), $baseURI);
+	  output "Redirected to $redir_url", 2;
+	  add_to_queue($redir_url, $urlparent);
+	  $stats{'todo'}++;
+	} else {
+	  output 'Location header missing from redirect response', 2;
+	}
+      }
+    }
+  }
+  # Done with this URL
+}
+
+sub performRequest {
+  my ($reqtype, $url, $urlparent, $type, $language) = @_;
+
+  my ($response);
+
+  # A better solution here would be to use GET exclusively. Here is how
+  # to do that. We would have to set this max_size thing in
+  # check_external, I guess...
+  # Set $ua->max_size(1) and then try a normal GET request.
+
+  # Normally, we would only need to do a HEAD, but given the way LWP
+  # handles gopher requests, we need to do a GET on those to get at
+  # least a 500 and 501 error. We would need to parse the document
+  # returned by LWP to find out if we had problems finding the
+  # file. -- Patch by Bruce Speyer <bspeyer@texas-one.org>
+
+  # We also need to do GET instead of HEAD if we know the remote
+  # server won't accept it.  The standard way for an HTTP server to
+  # indicate this is by returning a 405 ("Method Not Allowed") or 501
+  # ("Not Implemented").  Other circumstances may also require sending
+  # GETs instead of HEADs to a server.  Details are documented below.
+  # -- Larry Gilbert <larry@n2h2.com>
+
+  # Normally we try a HEAD request first, then a GET request if
+  # needed. There may be circumstances in which we skip doing a HEAD
+  # (e.g. when we should be getting the whole document).
+  foreach my $try ('HEAD', 'GET') {
+
+    # Skip trying HEAD when we know we need to do a GET or when we
+    # know only a GET will work anyway.
+    next if $try eq 'HEAD' and
+      ($reqtype eq 'GET'
+       or $url->scheme eq 'gopher'
+       or $main::servers_get_only{$url->authority});
+
+    # Output what we are going to do with this link
+    output(sprintf("%4s %s (%s)\n", $try, $url, $type), 1);
+
+    # Create the request with all appropriate headers
+    my %header_hash = ( 'Referer' => $urlparent );
+    if (defined($language) && ($language ne '')) {
+      $header_hash{'Accept-Language'} = $language;
+    }
+    my $ref_header = new HTTP::Headers(%header_hash);
+    my $request = new HTTP::Request($try, $url, $ref_header);
+    $response = $main::ua->simple_request($request);
+
+    # If we are doing a HEAD request we need to make sure nothing
+    # fishy happened. we use some heuristics to see if we are ok, or
+    # if we should try again with a GET request.
+    if ($try eq 'HEAD') {
+
+      # 403, 405, 406 and 501 are standard indications that HEAD
+      # shouldn't be used
+      if ($response->code =~ /^(403|405|406|501)$/o) {
+	output "Server does not seem to like HEAD requests; retrying", 2;
+	$main::servers_get_only{$url->authority}++;
+	next;
+      };
+
+      # Microsoft IIS has been seen dropping the connection prematurely
+      # when it should be returning 405 instead
+      if ($response->status_line =~ /^500 unexpected EOF/o) {
+	output "Server hung up on HEAD request; retrying", 2;
+	$main::servers_get_only{$url->authority}++;
+	next;
+      };
+
+      # If we know the server we can try some specific heuristics
+      if (defined $response->server) {
+
+	# Netscape Enterprise has been seen returning 500 and even 404
+	# (yes, 404!!) in response to HEAD requests
+	if ($response->server =~ /^Netscape-Enterprise/o
+	    and $response->code =~ /^(404|500)$/o) {
+	  output "Unreliable Netscape-Enterprise response to HEAD request; retrying", 2;
+	  $main::servers_get_only{$url->authority}++;
+	  next;
+	};
+
+	# JavaWebServer/1.1.3 has been seen returning 500
+	if ($response->server =~ /^JavaWebServer/o 
+	    and $response->code =~ /^500$/o) {
+	  output "Unreliable JavaWebServer response to HEAD request; retrying", 2;
+	  $main::servers_get_only{$url->authority}++;
+	  next;
+	};
+
+	# ALEPH has been seen returning 500
+	if ($response->server =~ /^ALEPH/o and $response->code =~ /^500$/o) {
+	  output "Unreliable response to HEAD request; retrying", 2;
+	  $main::servers_get_only{$url->authority}++;
+	  next;
+	};
+      }
+
+      # If a HEAD request resulted in nothing noteworthy, no need for
+      # any further attempts using GET, we are done.
+      last;
+    }
+  }
+
+  return $response;
+}
+
+
+# This routine creates a (temporary) WWW page based on the current
+# findings This allows somebody to monitor the process, but is also
+# convenient when this program crashes or waits because of diskspace
+# or memory problems
+
+sub create_page {
+    my($final_page) = @_;
+
+    my $path = "";
+    my $prevpath = "";
+    my $prevcode = 0;
+    my $prevmessage = "";
+
+    output "*** Start writing results page";
+
+    open(OUT, ">$main::file.new") 
+	|| die "$0: Unable to open $main::file.new for writing:\n";
+    print OUT "<html><head>\n";
+    if (!$final_page) {
+      printf OUT "<META HTTP-EQUIV=\"Refresh\" CONTENT = %d>\n",
+      int($main::cp_int * 60 / 2 - 5);
+    }
+
+    print OUT "<title>Checkbot report</title>\n";
+    print OUT "<link rel=\"StyleSheet\" type=\"text/css\" href=\"$main::opt_style\">\n" if defined $main::opt_style;
+    print OUT "</head>\n";
+    print OUT "<body>\n";
+    print OUT "<h1><em>Checkbot</em>: main report</h1>\n";
+
+    # Show the status of this checkbot session
+    print OUT "<table><tr><th>Status:</th><td>";
+    if ($final_page) {
+      print OUT "Done.\n"
+    } else {
+      print OUT "Running since $main::start_time.<br>\n";
+      print OUT "Last update at ". localtime() . ".<br>\n";
+      print OUT "Next update in <b>", int($main::cp_int), "</b> minutes.\n";
+    }
+    print OUT "</td></tr></table>\n\n";
+
+    # Summary (very brief overview of key statistics)
+    print OUT "<hr><h2>Report summary</h2>\n";
+
+    print OUT "<table>\n";
+    print OUT "<tr><th>Links checked</th><td>", $stats{'link'}, "</td></tr>\n";
+    print OUT "<tr><th>Problems so far</th><td>", $stats{'problem'}, "</td></tr>\n";
+    print OUT "<tr><th>Links to do</th><td>", $stats{'todo'}, "</td></tr>\n";
+    print OUT "</table>\n";
+
+    # Server information
+    printAllServers($final_page);
+
+    # Checkbot session parameters
+    print OUT "<hr><h2>Checkbot session parameters</h2>\n";
+    print OUT "<table>\n";
+    print OUT "<tr><th align=left>--url</th><td>Start URL(s)</td><td>",
+              join(',', @starturls), "</td></tr>\n";
+    print OUT "<tr><th align=left>--match</th><td>Match regular expression</td><td>$main::opt_match</td></tr>\n";
+    print OUT "<tr><th align=left>--exclude</th><td>Exclude regular expression</td><td>$main::opt_exclude</td></tr>\n" if defined $main::opt_exclude;
+    print OUT "<tr><th align=left>--filter</th><td>Filter regular expression</td><td>$main::opt_filter</td></tr>\n" if defined $main::opt_filter;
+    print OUT "<tr><th align=left>--ignore</th><td>Ignore regular expression</td><td>$main::opt_ignore</td></tr>\n" if defined $main::opt_ignore;
+    print OUT "<tr><th align=left>--dontwarn</th><td>Don't warn for these codes</td><td>$main::opt_dontwarn</td></tr>\n" if $main::opt_dontwarn ne 'xxx';
+    print OUT "<tr><th align=left>--enable-virtual</th><td>Use virtual names only</td><td>yes</td></tr>\n" if $main::opt_enable_virtual;
+    print OUT "<tr><th align=left>--internal-only</th><td>Check only internal links</td><td>yes</td></tr>\n" if defined $main::opt_internal_only;
+
+    print OUT "</table>\n";
+
+    # Statistics for types of links
+
+    print OUT signature();
+
+    close(OUT);
+
+    rename($main::file, $main::file . ".bak");
+    rename($main::file . ".new", $main::file);
+
+    unlink $main::file . ".bak" unless $main::opt_debug;
+
+    output "*** Done writing result page";
+}
+
+# Create a list of all the servers, and create the corresponding table
+# and subpages. We use the servers overview for this. This can result
+# in strange effects when the same server (e.g. IP address) has
+# several names, because several entries will appear. However, when
+# using the IP address there are also a number of tricky situations,
+# e.g. with virtual hosting. Given that likely the servers have
+# different names for a reasons, I think it is better to have
+# duplicate entries in some cases, instead of working off of the IP
+# addresses.
+
+sub printAllServers {
+  my ($finalPage) = @_;
+
+  my $server;
+  print OUT "<hr><h2>Overview per server</h2>\n";
+  print OUT "<table> <tr> <th>Server</th><th>Server<br>Type</th><th>Unique<br>links</th><th>Problem<br>links</th><th>Ratio</th></tr>\n";
+
+  foreach $server (sort keys %main::servers) {
+    print_server($server, $finalPage);
+  }
+  print OUT "</table>\n\n";
+}
+
+sub get_server_type {
+  my($server) = @_;
+
+  my $result;
+
+  if ( ! defined($main::server_type{$server})) {
+    if ($server eq 'localhost') {
+      $result = 'Direct access through filesystem';
+    } else {
+      my $request = new HTTP::Request('HEAD', "http://$server/");
+      my $response = $main::ua->simple_request($request);
+      $result = $response->header('Server');
+    }
+    $result = "Unknown server type" if ! defined $result or $result eq "";
+    output "=== Server $server is a $result";
+    $main::server_type{$server} = $result;
+  }
+  $main::server_type{$server};
+}
+
+sub add_checked {
+  my($urlstr) = @_;
+  my $item;
+  my $result = 0;
+
+  if (is_internal($urlstr) and not $main::opt_enable_virtual) {
+    # Substitute hostname with IP-address. This keeps us from checking
+    # the same pages for each name of the server, wasting time & resources.
+    # Only do this if we are not dealing with virtual servers. Also, we
+    # only do this for internal servers, because it makes no sense for
+    # external links.
+    my $url = URI->new($urlstr);
+    $url->host(ip_address($url->host)) if $url->can('host');
+    $urlstr = $url->as_string;
+  }
+
+  if (defined $main::checked{$urlstr}) {
+    $result = 1;
+    $main::checked{$urlstr}++;
+  } else {
+    $main::checked{$urlstr} = 1;
+  }
+
+  return $result;
+}
+
+# Has this URL already been checked?
+sub is_checked {
+  my ($urlstr) = @_;
+
+  if (is_internal($urlstr) and not $main::opt_enable_virtual) {
+    # Substitute hostname with IP-address. This keeps us from checking
+    # the same pages for each name of the server, wasting time & resources.
+    # Only do this if we are not dealing with virtual servers. Also, we
+    # only do this for internal servers, because it makes no sense for
+    # external links.
+    my $url = URI->new($urlstr);
+    $url->host(ip_address($url->host)) if $url->can('host');
+    $urlstr = $url->as_string;
+  }
+
+  return defined $main::checked{$urlstr};
+}
+
+# Parse document, and get the links
+sub handle_doc {
+  my ($response) = @_;
+
+  my $num_links = 0;
+
+  # TODO: we are making an assumption here that the $reponse->base is
+  # valid, which might not always be true! This needs to be fixed, but
+  # first let's try to find out why this stuff is sometimes not
+  # valid...
+
+  # TODO: $response->base might not be the page we checked, so it is
+  # not the proper measurement to count the server hits. Conceivably
+  # the base might point to a different server altogether.
+
+  # When we received the document we can add a notch to its server
+  $main::servers{$response->base->authority}++;
+
+  # Parse the document just downloaded
+  my $p = HTML::LinkExtor->new(undef, $response->base);
+  $p->parse($response->content);
+  $p->eof;
+
+  # Deal with the links we found in this document
+  my @links = $p->links();
+  foreach (@links) {
+    my ($tag, %l) = @{$_};
+    foreach (keys %l) {
+      # Get the canonical URL, so we don't need to worry about base, case, etc.
+      my $url = $l{$_}->canonical;
+
+      # Remove fragments, if any
+      $url->fragment(undef);
+
+      # Determine in which tag this URL was found
+      # Ignore <base> tags because they need not point to a valid URL
+      # in order to work (e.g. when directory indexing is turned off).
+      next if $tag eq 'base';
+
+      # Run filter on the URL if defined
+      if (defined $main::opt_filter) {
+	die "Filter supplied with --filter option contains errors!\n$@\n"
+	  unless defined eval '$url =~ s' . $main::opt_filter
+      }
+
+      # Check whether URL has fully-qualified hostname
+      if ($url->can('host')) {
+        if (! defined $url->host) {
+          output "--> No host name found in URL: $url";
+          $warning{'No host name found in URL'}{$url} .= $response->base->as_string . "\n";
+          next;
+        } elsif (!$main::opt_allow_simple_hosts && $url->host !~ /\./) {
+          output "--> Unqualified host name: $url\n";
+          $warning{'Unqualified host name in URL'}{$url} .= $response->base->as_string . "\n";
+        }
+      }
+
+      # We add all URLs found to the queue, unless we already checked
+      # it earlier
+      if (is_checked($url)) {
+
+	# If an error has already been logged for this URL we add the
+	# current parent to the list of parents on which this URL
+	# appears.
+	if (defined $url_error{$url}) {
+	  push @{$url_parent{$url}}, $response->base->as_string;
+	  $stats{'problem'}++;
+	}
+	
+	$stats{'link'}++;
+      } else {
+	add_to_queue($url, $response->base);
+	$stats{'todo'}++;
+      }
+      $num_links++;
+    }
+  }
+  output "Got $num_links links from document", 2;
+}
+
+
+sub add_to_queue {
+  my ($url, $parent) = @_;
+
+  # Some servers do not process // correctly in requests for relative
+  # URLs. We should flag them here. Note that // in a URL path is
+  # actually valid per RFC 2396, and that they should not be removed
+  # when processing relative URLs as per RFC 1808. See
+  # e.g. <http://deesse.univ-lemans.fr:8003/Connected/RFC/1808/18.html>.
+  # Thanks to Randal Schwartz and Reinier Post for their explanations.
+  warn "!!!! URL contains double slash in path which may cause runaway Checkbot run\n     link to $url\n     on $parent\n" if $url =~ /http:\/\/.*\/\//;
+  # TODO: generate a warning to be put on the results page.
+
+  print QUEUE $url . '|' . $parent . "\n";
+}
+
+sub print_server {
+  my($server, $final_page) = @_;
+
+  my $host = $server;
+  $host =~ s/(.*):\d+/$1/;
+
+  output "Writing server $server (really " . ip_address($host) . ")", 1;
+
+  my $server_problem = count_problems($server);
+  my $filename = "$main::server_prefix-$server.html";
+  $filename =~ s/:/-/o;
+
+  print OUT "<tr> <td>";
+  print OUT "<a href=\"@{[ (fileparse($filename))[0] ]}\">" if $server_problem > 0;
+  print OUT "$server";
+  print OUT "</a>" if $server_problem > 0;
+  print OUT "</td>";
+  print OUT "<td>" . get_server_type($server) . "</td>";
+  printf OUT "<td align=right>%d</td> <td align=right>%d</td>",
+  $main::servers{$server} + $server_problem,
+  $server_problem;
+  my $ratio = $server_problem / ($main::servers{$server} + $server_problem) * 100;
+  print OUT "<td align=right>";
+  print OUT "<b>" unless $ratio < 0.5;
+  printf OUT "%4d%%", $ratio;
+  print OUT "</b>" unless $ratio < 0.5;
+  print OUT "</td>";
+  print OUT "</tr>\n";
+
+  # Create this server file
+  open(SERVER, ">$filename")
+    || die "Unable to open server file $filename for writing: $!";
+  print SERVER "<html><head>\n";
+  if (!$final_page) {
+    printf SERVER "<META HTTP-EQUIV=\"Refresh\" CONTENT = %d>\n",
+      int($main::cp_int * 60 / 2 - 5);
+  }
+  print SERVER "<link rel=\"StyleSheet\" type=\"text/css\" href=\"$main::opt_style\">\n" if defined $main::opt_style;
+  print SERVER "<title>Checkbot: output for server $server</title></head>\n";
+  print SERVER "<body><h2><em>Checkbot</em>: report for server <tt>$server</tt></h2>\n";
+  print SERVER "Go To: <a href=\"@{[ (fileparse($main::file))[0] ]}\">Main report page</a>.\n";
+
+  printServerProblems($server, $final_page);
+  printServerWarnings($server, $final_page);
+
+  print SERVER "\n";
+  print SERVER signature();
+
+  close SERVER;
+}
+
+# Return a string containing Checkbot's signature for HTML pages
+sub signature {
+  return "<hr>\nPage created by <a href=\"http://degraaff.org/checkbot/\">Checkbot $VERSION</a> on <em>" . localtime() . "</em>.\n</body></html>";
+}
+
+# Loop through all possible problems, select relevant ones for this server
+# and display them in a meaningful way.
+sub printServerProblems {
+  my ($server) = @_;
+  $server = quotemeta $server;
+
+  my $separator = "<hr>\n";
+
+  my %thisServerList = ();
+
+  # First we find all the problems for this particular server
+  foreach my $url (keys %url_parent) {
+    foreach my $parent (@{$url_parent{$url}}) {
+      next if $parent !~ $server;
+      chomp $parent;
+      $thisServerList{$url_error{$url}{'code'}}{$parent}{$url} 
+	= $url_error{$url}{'status'};
+    }
+  }
+
+  # Now run through this list and print the errors
+  foreach my $code (sort keys %thisServerList) {
+    my $codeOut = '';
+
+    foreach my $parent (sort keys %{ $thisServerList{$code} }) {
+      my $urlOut = '';
+      foreach my $url (sort keys %{ $thisServerList{$code}{$parent} }) {
+	my $status = $thisServerList{$code}{$parent}{$url};
+	$urlOut .= "<li><a href=\"$url\">$url</a><br>\n";
+	$urlOut .= "$status\n"
+	  if $status ne status_message($code);
+      }
+      if ($urlOut ne '') {
+	$codeOut .= "<dt><a href=\"$parent\">$parent</a>\n<dd>\n";
+	$codeOut .= "<ul>\n$urlOut\n</ul>\n\n";
+      }
+    }
+
+    if ($codeOut ne '') {
+      print SERVER $separator if $separator;
+      $separator = '';
+      print SERVER "<h4>$code ", status_message($code), "</h4>\n";
+      print SERVER "<dl>\n$codeOut\n</dl>\n";
+    }
+  }
+}
+
+sub printServerWarnings {
+  my ($server,$finalPage) = @_;
+
+  my $warningType;
+  my $oldWarningType = '';
+  my $url;
+  my $parent;
+  my $separator = "<hr>\n";
+
+  foreach $warningType (sort keys %warning) {
+    my %thisServerList = ();
+
+    foreach $url (sort keys %{$warning{$warningType}}) {
+      # Get only those parent URLs that match this server
+      my @parents = grep(/$server/, split(/\n/, $warning{$warningType}{$url}));
+      if ($#parents >= 0) {
+	foreach my $parent (@parents) {
+	  $thisServerList{$parent}{$url} = 1;
+	}
+      }
+    }
+
+    next if ! keys %thisServerList;
+
+    print SERVER $separator if $separator;
+    $separator = '';
+    print SERVER "<h4>$warningType</h4>\n<dl>\n" unless $oldWarningType eq $warningType;
+    $oldWarningType = $warningType;
+
+    foreach my $parent (sort keys %thisServerList) {
+      print SERVER "<dt><a href=\"$parent\">$parent</a>\n<dd>\n";
+      foreach my $url (sort keys %{ $thisServerList{$parent} }) {
+	print SERVER "<a href=\"$url\">$url</a><br>";
+      }
+    }
+    print SERVER "</dl>\n";
+  }
+}
+
+sub check_point {
+    if ( ($main::cp_last + 60 * $main::cp_int < time()) 
+	 || ($main::opt_debug && $main::opt_verbose)) {
+	&create_page(0);
+	$main::cp_last = time();
+	$main::cp_int = $main::cp_int * 1.25 unless $main::opt_debug;
+        $main::cp_int = $main::cp_int > $main::opt_interval ? $main::opt_interval : $main::cp_int;
+    }
+}
+
+sub send_mail {
+  my $msg = new Mail::Send;
+  my $sub = 'Checkbot results for ';
+  $sub .= join(', ', @starturls);
+
+  $msg->to($main::opt_mailto);
+  $msg->subject($sub);
+
+  my $fh = $msg->open;
+
+  print $fh "Checkbot results for:\n  " . join("\n  ", @starturls) . "\n\n";
+  print $fh "User-supplied note: $main::opt_note\n\n"
+    if defined $main::opt_note;
+
+  print $fh $stats{'link'}, " links were checked, and ";
+  print $fh $stats{'problem'}, " problems were detected.\n";
+
+  print $fh "\n-- \nCheckbot $VERSION\n";
+  print $fh "<URL:http://degraaff.org/checkbot/>\n";
+
+  $fh->close;
+}
+
+sub print_help {
+  print "Checkbot $VERSION command line options:\n\n";
+  print "  --debug            Debugging mode: No pauses, stop after 25 links.\n";
+  print "  --verbose          Verbose mode: display many messages about progress.\n";
+  print "  --url url          Start URL\n";
+  print "  --match match      Check pages only if URL matches `match'\n";
+  print "                     If no match is given, the start URL is used as a match\n";
+  print "  --exclude exclude  Exclude pages if the URL matches 'exclude'\n";
+  print "  --filter regexp    Run regexp on each URL found\n";
+  print "  --ignore ignore    Do not list error messages for pages that the\n";
+  print "                     URL matches 'ignore'\n";
+  print "  --file file        Write results to file, default is checkbot.html\n";
+  print "  --mailto address   Mail brief synopsis to address when done.\n";
+  print "  --note note        Include Note (e.g. URL to report) along with Mail message.\n";
+  print "  --proxy URL        URL of proxy server for external http and ftp requests.\n";
+  print "  --internal-only    Only check internal links, skip checking external links.\n";
+  print "  --sleep seconds    Sleep this many seconds between requests (default 0)\n";
+  print "  --style url        Reference the style sheet at this URL.\n";
+  print "  --timeout seconds  Timeout for http requests in seconds (default 120)\n";
+  print "  --interval seconds Maximum time interval between updates (default 10800)\n";
+  print "  --dontwarn codes   Do not write warnings for these HTTP response codes\n";
+  print "  --enable-virtual   Use only virtual names, not IP numbers for servers\n";
+  print "  --allow-simple-hosts  Do not warn about unqualified host names\n";
+  print "  --language         Specify 2-letter language code for language negotiation\n";
+  print "\n";
+  print "Options --match, --exclude, and --ignore can take a perl regular expression\nas their argument\n\n";
+  print "Use 'perldoc checkbot' for more verbose documentation.\n\n";
+  print "Checkbot WWW page     : http://degraaff.org/checkbot/\n";
+  print "Mail bugs and problems: checkbot\@degraaff.org\n";
+
+  exit 0;
+}
+
+sub ip_address {
+  my($host) = @_;
+
+  return $main::ip_cache{$host} if defined $main::ip_cache{$host};
+
+  my($name,$aliases,$adrtype,$length,@addrs) = gethostbyname($host);
+  if (defined $addrs[0]) {
+    my($n1,$n2,$n3,$n4) = unpack ('C4',$addrs[0]);
+    $main::ip_cache{$host} = "$n1.$n2.$n3.$n4";
+  } else {
+    # Whee! No IP-address found for this host. Just keep whatever we
+    # got for the host. If this really is some kind of error it will
+    # be found later on.
+    $main::ip_cache{$host} = $host;
+   }
+}
+
+sub count_problems {
+  my ($server) = @_;
+  $server = quotemeta $server;
+  my $count = 0;
+
+  foreach my $url (sort keys %url_parent) {
+    foreach my $parent (@{ $url_parent{$url} }) {
+	$count++ if $parent =~ m/$server/;
+    }
+  }
+  return $count;
+}
+
+
+# $Log: checkbot,v $
+# Revision 1.71  2002/12/29 14:41:33  graaff
+# Two remaining bugs in new implementation fixed.
+#
+# Revision 1.70  2002/12/29 13:47:06  graaff
+# New --filter option allows rewriting of URLs before they will be
+# checked; Problematic links are now reported for each page on which
+# they occur; New statistics which should work correctly; Much
+# simplified storage of information on problem links; Duplicate links
+# are now properly detected and not checked twice; Rewritten internals
+# for link checking, as a consequence internal and external links are checked at the same time now, not in two passes like before; Rewritten internals for message output; A simple test case for 'make test'; Minor cleanups of the code.
+#
+# Revision 1.69  2002/12/25 14:53:30  graaff
+# Improved makefile and packaging, Better default for --match argument,
+# Additional instance of using GET instead of HEAD added,
+# Bug fixes in printing of web server feedback
+#
+# Revision 1.68  2002/09/28 21:02:45  graaff
+# Version 1.68
+#
+# Revision 1.67  2001/12/16 16:15:55  graaff
+#  * A --language option to ask the server for pages in other languages
+#  * Bug fixes related to URI package and non-standard server names
+#  * Some other minor bugfixes detailed in the ChangeLog
+#  * Added example for use of the --match argument
+#
+# Revision 1.66  2001/10/25 19:46:42  graaff
+# Fixed two bugs introduced in 1.65 related to using URI.
+#
+# Revision 1.65  2001/10/21 08:07:19  graaff
+#  * Move to URI from URI::URL
+#  * Start writing results pages right at the start
+#  * A few small bugs fixed (see ChangeLog)
+#
+# Revision 1.64  2001/04/15 19:34:30  graaff
+# Fix printing of starting URLs in email, removed duplicate header in
+# report, try more environment variables to set temporary directory,
+# avoid using printf on pipes, and fix silly typo.
+#
+# Revision 1.63  2001/01/14 15:25:52  graaff
+#  * Require LWP 5.50. A bug fix was introduced in LWP 5.49 which solves
+#    problems with relative Location: headers for Checkbot.
+#  * Create a defaults --match argument based on all the start URLs, not
+#    just the first one.
+#  * Remove .bak files when the new files are written correctly.
+#  * Create correct URLs when --file argument also contains directories.
+#  * Deal with redirects without a Location: header.
+#  * Don't exclude checkbot's own pages automagically.
+#  * Always ask server about file type for HTTP requests when uncertain.
+#  * Make output well-formed HTML.
+#  * Several typo's and other output fixes.
+#
+# Revision 1.62  2000/09/24 13:51:46  graaff
+# Checkbot 1.62.
+#
+# Revision 1.61  2000/06/29 19:56:48  graaff
+# Updated Makefile.PL
+# Use GET instead of HEAD for confused servers.
+# Update email and web address.
+#
+# Revision 1.60  2000/04/30 13:34:32  graaff
+# Add option --dontwarn to avoid listing certain HTTP responses. Deal
+# with 300 Multiple Choices HTTP Response. Fix warning with
+# --internal-only option and add message when used. Use MacPerl stuff to
+# get command line options on a Mac. Check whether URLs on command line
+# have a proper host.
+#
+# Revision 1.59  2000/01/30 20:23:32  graaff
+# --internal-only option, hide some warnings when not running verbose,
+# and fixed a warning.
+#
+# Revision 1.58  2000/01/02 15:39:59  graaff
+# Deal with hostnameless URIs, use TMPDIR where available, and work
+# nicely with the new HTML::LinkExtor.
+#
+# Revision 1.57  1999/10/24 16:11:00  graaff
+# Added URI check.
+#
+# Revision 1.56  1999/07/31 14:52:17  graaff
+# Fixed redirection URL's, deal with new URI way of handling
+# hostname-less URI's.
+#
+# Revision 1.55  1999/05/09 15:30:34  graaff
+# List broken links under the pages that contain them, instead of the
+# other way around, reverting back to the way things are in 1.53 and
+# earlier.
+# Handle redirected, but unqualified links.
+# Only print each warning header once.
+# Documentation fixes.
+#
+# Revision 1.54  1999/01/18 22:22:29  graaff
+# Fixed counting of problem links to correct checkbot.html results page.
+#
+# Revision 1.53  1999/01/17 20:59:14  graaff
+# Fixed internal problem storage.
+# Changed report to collate HTTP response codes.
+# Added warning section to pages with additional warnings.
+# Hammered out bug with record separator in perl 5.005.
+#
+# Revision 1.52  1998/10/10 08:41:50  graaff
+# new version, some documentation work, and the HTML::Parse problem fixed.
+#
+# Revision 1.51  1997/09/06 14:01:58  graaff
+# per 5.004 changes and address changes
+#
+# Revision 1.50  1997/04/28 07:10:26  graaff
+# Fixed small problem with VERSION
+#
+# Revision 1.49  1997/04/27 19:24:22  graaff
+# A bunch of smaller stuff
+#
+# Revision 1.48  1997/04/05 15:28:35  graaff
+# Small fixes
+#
+# Revision 1.47  1997/01/28 13:48:00  graaff
+# Protect against corrupted todo link count
+#
+# Revision 1.46  1996/12/30 15:27:11  graaff
+# Several bugs fixed and features added, see changelog
+#
+# Revision 1.45  1996/12/24 13:59:15  graaff
+# Deal with IP address not found.
+#
+# Revision 1.44  1996/12/11 16:16:07  graaff
+# Proxy support, small bugs fixed.
+#
+# Revision 1.43  1996/12/05 12:35:41  graaff
+# Checked URLs indexed with IP address, small changes to layout etc.
+#
+# Revision 1.42  1996/11/04 13:21:07  graaff
+# Fixed several small problems. See ChangeLog.
+#
+# Revision 1.41  1996/10/04 15:15:35  graaff
+# use long option names now
+#
+# Revision 1.40  1996/09/28 08:18:14  graaff
+# updated, see ChangeLog
+#
+# Revision 1.39  1996/09/25 13:25:48  graaff
+# update rev
+#
+# Revision 1.4  1996/09/25 12:53:04  graaff
+# Moved checkbot back to checkbot.pl so that we can substitute some
+# variables upon installation.
+#
+# Revision 1.37  1996/09/12 13:12:05  graaff
+# Updates, and checkbot now requires LWP 5.02, which fixes some bugs.
+#
+# Revision 1.36  1996/09/05 14:13:58  graaff
+# Mainly documentation fixes. Also fixed comparison.
+#
+# Revision 1.35  1996/09/01 19:39:24  graaff
+# Small stuff. See Changelog.
+#
+# Revision 1.34  1996/08/07 08:10:18  graaff
+# Stupid bug in parsing the LinkExtor output fixed.
+#
+# Revision 1.33  1996/08/05 06:47:43  graaff
+# Fixed silly bug in calculation of percentage for each server.
+#
+# Revision 1.32  1996/08/02 21:51:18  graaff
+# Use the new LinkExtor to retrieve links from a document. Uses less
+# memory, and should be quicker.
+#
+# Revision 1.31  1996/08/02 21:38:39  graaff
+# Added a number of patches by Bruce Speyer.
+# Added POD documentation.
+# Added summary to mail message.
+#
+# Revision 1.30  1996/08/02 11:11:09  graaff
+# See ChangeLog
+#
+# Revision 1.29  1996/07/27 20:28:35  graaff
+# See Changelog
+#
+# Revision 1.28  1996/07/23 12:32:09  graaff
+# See ChangeLog
+#
+# Revision 1.27  1996/07/22 20:34:44  graaff
+# Fixed silly bug in columns printf
+#
+# Revision 1.26  1996/06/22 12:52:57  graaff
+# redirection, optimization, correct base url
+#
+# Revision 1.25  1996/06/20 14:13:52  graaff
+# Major rewrite of initialization. Fixed todo links indicators.
+#
+# Revision 1.24  1996/06/19 15:49:38  graaff
+# added -M option, fixed division by 0 bug
+#
+# Revision 1.23  1996/06/01 17:33:40  graaff
+# lwp-win32 changes, and counting cleanup
+#
+# Revision 1.22  1996/05/29 18:36:37  graaff
+# Fixed error in regexp, small bugs
+#
+# Revision 1.21  1996/05/26 08:06:13  graaff
+# Possibly add ending slash to URL's
+#
+# Revision 1.20  1996/05/13 17:01:17  graaff
+# hide messages behind verbose flag
+#
+# Revision 1.19  1996/05/13 13:05:53  graaff
+# See ChangeLog
+#
+# Revision 1.18  1996/05/05 07:25:38  graaff
+# see changelog
+#
+# Revision 1.17  1996/04/29 16:23:11  graaff
+# Updated, see Changelog for details.
+#
+# Revision 1.16  1996/04/29 06:43:57  graaff
+# Updated
+#
+# Revision 1.15  1996/04/28 19:42:11  graaff
+# See Changelog
+#
+# Revision 1.14  1996/03/29 10:09:36  graaff
+# See ChangeLog
+#
+# Revision 1.13  1996/03/24 19:16:23  graaff
+# See Changelog
+#
+# Revision 1.12  1996/03/22 13:10:03  graaff
+# *** empty log message ***
+#
+# Revision 1.11  1996/03/17 09:33:26  graaff
+# See ChangeLog
+#
+# Revision 1.10  1996/02/27 09:05:22  graaff
+# See ChangeLog
+#
+# Revision 1.9  1996/02/26 14:47:31  graaff
+# Fixed bug with referer field, added -x option to help, make server
+# page auto-refresh.
+#
+# Revision 1.8  1996/02/24 12:14:48  graaff
+# Added -x option
+#
+# Revision 1.7  1995/12/08 12:44:33  graaff
+# Major rewrite of internals
+# Changed the way the checked links are kept
+#
+# Revision 1.6  1995/11/29 07:52:10  graaff
+# Small fixes to verbose layout.
+#
+# Revision 1.5  1995/11/27 08:50:46  graaff
+# stupid bug in calling sort
+#
+# Revision 1.4  1995/11/24 15:48:34  graaff
+# Fixed numerous small problems, mostly in the output.
+# Fixed checking of external links (each link now gets checked only once)
+# Sorting of errors is now done by error code, by error text, by page.
+#
+# Revision 1.3  1995/11/22 09:51:58  graaff
+# Last part of major revision towards Perl 5 and libwww5. Checkbot now
+# seems to work again, and at least generates the proper reports.
+# However, more work, in particular cleanups, is needed.
+#
+# Revision 1.2  1995/08/25 11:28:57  graaff
+# First rewrite towards perl 5, most stuff done in a crude way.
+#
+# Revision 1.1  1995/08/25 09:16:29  graaff
+# First version is identical to the perl4 version. I will change it
+# gradually.
+#
