@@ -1,7 +1,11 @@
-ServerRoot "/home/newweb/apache/"
-LockFile /home/newweb/apache/logs/httpd.lock
-PidFile /home/newweb/apache/logs/httpd.pid
-ScoreBoardFile /home/newweb/apache/logs/httpd.scoreboard
+{$root_variable = 'CBROOT';
+ $root = $ENV{$root_variable} or die "No $root_variable set!\n"; 
+ $port = 8225;  
+ "" 
+}ServerRoot "{$root}/apache/"
+LockFile {$root}/apache/logs/httpd.lock
+PidFile {$root}/apache/logs/httpd.pid
+ScoreBoardFile {$root}/apache/logs/httpd.scoreboard
 Timeout 300
 KeepAlive Off
 MinSpareServers 1
@@ -9,11 +13,11 @@ MaxSpareServers 5
 StartServers 3
 MaxClients 5
 MaxRequestsPerChild 500
-Listen 8225
+Listen {$port}
 
-CoreDumpDirectory /home/newweb/apache/
+CoreDumpDirectory {$root}/apache/
 
-PerlPassEnv CBROOT
+PerlPassEnv {$root_variable}
 
 #LoadModule env_module         libexec/apache/mod_env.so
 #LoadModule config_log_module  libexec/apache/mod_log_config.so
@@ -38,20 +42,19 @@ PerlPassEnv CBROOT
 #LoadModule perl_module        libexec/apache/libperl.so
 
 
-
-#Listen 12.34.56.78:80
 ExtendedStatus On
 Port 80
 serveradmin ask@perl.org
 ServerName new.x.perl.org
+
 # valid empty directory
-DocumentRoot "/home/newweb/tmp/htdocs"  
+DocumentRoot "{$root}/tmp/htdocs"  
 <Directory />
     Options FollowSymLinks 
     AllowOverride None
 </Directory>
 
-#<Directory "/home/newweb/htdocs">
+#<Directory "{$root}/htdocs">
 #    Options Indexes FollowSymLinks MultiViews
 #    AllowOverride none
 #    Order allow,deny
@@ -74,13 +77,13 @@ UseCanonicalName Off
 DefaultType text/html
 HostnameLookups Off
 
-ErrorLog /home/newweb/apache/logs/error_log
+ErrorLog {$root}/apache/logs/error_log
 LogLevel warn
 
-LogFormat "%h %V %u %t %{site}n \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
+LogFormat "%h %V %u %t %\{site\}n \"%r\" %>s %b \"%\{Referer\}i\" \"%\{User-Agent\}i\"" combined
 LogFormat "%h %V %u %t \"%r\" %>s %b" common
 
-CustomLog /home/newweb/apache/logs/access_log combined
+CustomLog {$root}/apache/logs/access_log combined
 ServerSignature Off
 
  # <IfModule mod_alias.c>
@@ -92,8 +95,8 @@ ServerSignature Off
         Allow from all
     </Directory>
 
-    ScriptAlias /cgi-bin/ "/home/newweb/apache/cgi-bin/"
-    <Directory "/home/newweb/apache/cgi-bin">
+    ScriptAlias /cgi-bin/ "{$root}/apache/cgi-bin/"
+    <Directory "{$root}/apache/cgi-bin">
         AllowOverride None
         Options None
         Order allow,deny
@@ -230,7 +233,7 @@ ErrorDocument 500 /error/500.html
 PerlModule Apache::Reload
 PerlInitHandler Apache::Reload
 
-PerlRequire /home/newweb/apache/conf/startup.pl
+PerlRequire {$root}/apache/conf/startup.pl
 
 PerlHeaderParserHandler Combust::Notes
 # Combust::UserID
@@ -238,14 +241,14 @@ PerlHeaderParserHandler Combust::Notes
 PerlPostReadRequestHandler ProxyIP
 #PerlTransHandler Combust::Trans
 
-NameVirtualHost *:8225
+NameVirtualHost *:{$port}
 
-<VirtualHost *:8225>
+<VirtualHost *:{$port}>
   ServerName tweb.x.perl.org
   DocumentRoot /tmp/
 </VirtualHost>
 
-<VirtualHost *:8225>
+<VirtualHost *:{$port}>
   ServerName new.x.perl.org
   <Location />
      SetHandler perl-script

@@ -1,0 +1,38 @@
+#!/home/perl/bin/perl -w
+use strict;
+BEGIN { die "CBROOT required" unless $ENV{CBROOT}; }
+use lib "$ENV{CBROOT}/lib";
+use Getopt::Long;
+use Develooper::TemplateFiller;
+my %opts = ();
+GetOptions (\%opts,
+            "delimiters=s");  
+
+my $filename = shift;
+
+#my @delimiters = ("DELIMITERS", [qw([ ])]);
+my @delimiters = ();
+if ($opts{delimiters}) {
+  @delimiters = ("DELIMITERS", [split (/\s+/, $opts{delimiters})]);
+  die qq[Wrong --delimiters syntax: --delimiters="open close"\n] unless $delimiters[1]->[1];
+}
+
+#use Data::Dumper;
+#print Data::Dumper->Dump([\@delimiters], [qw(del)]);
+
+my %text_template_options = (TYPE   => 'FILEHANDLE',
+                             SOURCE => \*STDIN
+                            );
+
+if ($filename) {
+  warn "$$ $0 $filename doesn't exist!" unless -f $filename;
+  $text_template_options{TYPE} = 'FILE';
+  $text_template_options{SOURCE} = $filename;
+}
+
+template_filler(new => { %text_template_options,
+                         @delimiters }
+               )
+    or die "Could not do the template filling.\n$Text::Template::ERROR";
+
+
