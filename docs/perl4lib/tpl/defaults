@@ -7,3 +7,15 @@
     # don't include any whitespace from here...
  #   RETURN;
 -%]
+
+[% MACRO quicknews(shortname) BLOCK %]
+[%- TRY %]
+    [%- USE news = XML.RSS("${root_default}/rss/${shortname}.rss") %]
+    [%- item = news.items.first %]
+    <A HREF="[% item.link %]">[%- item.title %]</A>
+[%- CATCH %]
+    [Error Processing Directive]
+  [%- FILTER stderr %][% error.info %][% END %]
+[%- END %]
+[%- END %]
+
