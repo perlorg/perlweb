@@ -74,6 +74,11 @@ sub db_user {
   $cfg->param('db_user') || 'combust';
 }
 
+sub apache_reload {
+  # maybe this should have been reversed
+  $cfg->param('apache_reload') || 0;
+}
+
 #sub config {
 #  $cfg;
 #}

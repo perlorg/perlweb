@@ -16,7 +16,7 @@ my @tables = split /\n\s*\n/, <<EOT;
 
 create table combust_cache (
   id varchar(250) not null,
-  type varchar(16) NOT NULL default '',
+  type varchar(128) NOT NULL default '',
   created timestamp(14) not null,
   purge_key varchar(64) null,
   data mediumblob not null,

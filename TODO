@@ -2,7 +2,14 @@
 In rough order of priority
 ==========================
 
-Add the include_root to the Etag
+Make the cookie validation code not be hardcoded in Combust::Cookie (!)
+
+Read the subversion version at startup time
+
+/combust-status
+
+Add the include_root and combust revision to the Etag.  If it wasn't
+so expensive we could add docs revision as well.  Hmn.  Maybe not useful. 
 
 Make the controller set the INCLUDE_PATH depending on the vhost (or document root?)
   - maybe use a separate configuration file so it's easy to specify
@@ -13,6 +20,8 @@ Make the controller set the INCLUDE_PATH depending on the vhost (or document roo
 Cache full html outputs?  Use master svn revision in the cache key. Or
 maybe use svn revision for perl.org/backend/ combined with svn
 revision for perl.org/docs/[site]/.
+
+Set Last-Updated properly.
 
 Handle If-Modified-Since requests.
 
