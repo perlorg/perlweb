@@ -16,8 +16,13 @@ specify your plan.
 Wrap your C<use> statements in a C<use_ok()> inside a C<BEGIN> block.
 
     BEGIN {
-        use_ok( "MARC::Batch" );
+        use_ok( "MARC::Batch" ) or die;
     }
+
+The C<or die;> modifier is not required but it can help avoid comfusion if a
+module only partially compiles and some tests fail even though the code is
+correct.  Besides, if the module won't even compile, there's no point in
+testing it, right?
 
 =head2 All object creation is checked with C<isa_ok()>.
 
