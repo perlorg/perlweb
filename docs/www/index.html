@@ -11,33 +11,34 @@
    It is used for mission critical 
    projects in the public and private sectors and is widely used to 
    program web applications of all needs.  
-   </div>
+   </DIV>
   <DIV class="NAVITEM">
   <H3>Got suggestions?</h3>
    This site is the first place to look for Perl resources.  
    To add a resource, send
    suggestions to the <a href="mailto:webmaster@perl.org">webmaster</a>. 
+  </DIV>
 [% END %]
 
 
 <table width="530" cellspacing="10" cellpadding="5" border="0">
   <tr valign="TOP">
     <td  valign="top" width="265">
-    <A href="about.html"><DIV CLASS="TOPIC">About Perl</DIV></a>
+    <A href="about.html" CLASS="TOPIC">About Perl</a>
     <DIV CLASS="ITEMS">
     <a href="http://use.perl.org/">news</a>, <a href="http://perl.oreilly.com/news/success_stories.html">success stories</a>, 
     <a href="http://history.perl.org/">history</a>
     <P>
     </div>
 
-    <a href="get.html"><DIV CLASS="TOPIC">Get Perl</DIV></a>
+    <a href="get.html" CLASS="TOPIC">Get Perl</a>
     <DIV CLASS="ITEMS">
     <a href="http://www.cpan.org/src/README.html">download Perl</a>, 
     <a href="">Install modules</a> 
     <P>
     </div>
 
-    <a href="http://dev.perl.org/"><DIV CLASS="TOPIC">Perl core development</DIV></a>
+    <a href="http://dev.perl.org/" CLASS="TOPIC">Perl core development</a>
     <DIV CLASS="ITEMS">
     <a href="http://dev.perl.org/perl5/">Perl 5</a>,
     <a href="http://dev.perl.org/perl6/">Perl 6</a>, 
@@ -46,7 +47,7 @@
     <P>
     </div>
     
-    <a href="app.html"><DIV CLASS="TOPIC">Application programming</DIV></a>
+    <a href="app.html" CLASS="TOPIC">Application programming</a>
     <DIV CLASS="ITEMS">
     <a href="http://search.cpan.org/modlist/World_Wide_Web/">cgi</a>, 
     <a href="http://dbi.perl.org">database</a>, 
@@ -55,7 +56,7 @@
     <P>
     </div>
     
-    <a href="events.html"><DIV CLASS="TOPIC">Events</DIV></a>
+    <a href="events.html" CLASS="TOPIC">Events</a>
     <DIV CLASS="ITEMS">
     <a href="http://www.yapc.org/">YAPCs</a>, 
     <a href="http://www.perlworkshop.de/">the German Perl Workshop</a>, 
@@ -66,7 +67,7 @@
     </td>
     
     <td width="265">
-    <a href="docs.html"><DIV CLASS="TOPIC">Online documentation</DIV></a>
+    <a href="docs.html" CLASS="TOPIC">Online documentation</a>
     <DIV CLASS="ITEMS">
     <a href="http://www.perldoc.com/perl5.8.0/pod/perl.html">manual pages</a>, 
     <a href="http://www.perldoc.com/perl5.8.0/pod/perlfaq.html">perlfaqs</a>, 
@@ -74,24 +75,24 @@
     <P>
     </div>
     
-    <a href="community.html"><DIV CLASS="TOPIC">The Perl Community</DIV></a>
+    <a href="community.html" CLASS="TOPIC">The Perl Community</a>
     <DIV CLASS="ITEMS">
     <a href="http://www.perlmonks.org/">Perl Monks</a>, <a href="http://www.pm.org/">Perl Mongers</a>, 
     <a href="http://lists.perl.org/">mail lists</a>
     <P>
     </div>
 
-    <a href="books.html"><DIV CLASS="TOPIC">Books and articles</DIV></a>
+    <a href="books.html" CLASS="TOPIC">Books and articles</a>
     <DIV CLASS="ITEMS">
     <a href="http://www.theperlreview.com/">the Perl Review</a>, 
     <a href="http://www.tpj.com/">the Perl Journal</a>, 
     <a href="http://www.perl.com">Perl.com</a>,
-    <a href=http://use.perl.org/search.pl?topic=29"">books</a>
+    <a href="http://use.perl.org/search.pl?topic=29">books</a>
     <P>
     </div>
     
     
-    <a href="http://perlfoundation.org"><DIV CLASS="TOPIC">The Perl Foundation</DIV></a>
+    <a href="http://perlfoundation.org" CLASS="TOPIC">The Perl Foundation</a>
     <DIV CLASS="ITEMS">
     <a href="http://www.perlfoundation.org/pr/TPFPK.pdf">press kit (pdf)</a>,
     <a href="http://www.perlfoundation.org/index.cgi?page=grants">grants</a>,
@@ -100,7 +101,7 @@
     </div>
 
     [% USE news = XML.RSS('/home/newweb/var/rss/useperl.rss') %]
-    <a href="news.html"><DIV CLASS="TOPIC">News</DIV></a>
+    <a href="news.html" CLASS="TOPIC">News</a>
     <DIV CLASS="ITEMS">
     [% FOREACH item = news.items %]
         [%- LAST IF loop.count() > 3 %]
@@ -118,10 +119,13 @@
 
   </tr>
 
+[%#  
   <tr>
    <td colspan=2>
-   </DIV>
+         &nbsp;
+   </td>
   </tr>
+%]
 
 <!--
   <tr>

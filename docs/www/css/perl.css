@@ -1,6 +1,6 @@
 
 BODY {
-        font-family:helvetica,san-serif;
+        font-family:helvetica,sans-serif;
         font-size:14px;
   	font-weight:normal;
 	width: 730px;
@@ -34,7 +34,7 @@ A:visited {
 
 A:hover {
         text-decoration: underline;
-        color:darkred;
+        color: #8B0000; /* dark red */
         }
 
 TD	{
@@ -45,7 +45,7 @@ TD	{
         background-color: #d2b48c;
         font-size:14px;
         font-weight: bold;
-        font-family:helvetica,san-serif;
+        font-family:helvetica,sans-serif;
         }
 
 /* Header */
@@ -53,12 +53,13 @@ TD	{
         font-weight: bold;
         font-size:18px;
 	color: #fff;
-        font-family:helvetica,san-serif;
+        font-family:helvetica,sans-serif;
         background-color:#191970;
         padding-top: .5em;
         padding-left:.5em;
         padding-bottom:.5em;
-	line-spacing: 2px;
+	/* not valid CSS
+ 	line-spacing: 2px; */
         }
 
 /* Navigation */
@@ -104,12 +105,12 @@ TD	{
         padding-left:2px;
         padding-bottom:1em;
         padding-top:1em;
-	width: 180;
+	width: 180px;
 	}
 
 .MENU  {
         padding-bottom:1em;
-	width: 180;
+	width: 180px;
         border-bottom:1px solid #191970;
 	}
 
@@ -117,7 +118,7 @@ TD	{
         font-weight: bolder;
         font-size: 16px;
 	color: #191970;
-        font-family:helvetica,san-serif;
+        font-family:helvetica,sans-serif;
         text-decoration: underline;
 	padding-bottom: 4px;
         }
@@ -163,7 +164,7 @@ TD	{
 
 HR      {
 	color: #191970;
-	align: center;
+	text-align: center;  /* what does this do on a HR? */
         padding-top: .5em;
         padding-bottom:.5em;
 	}
@@ -176,11 +177,11 @@ HR      {
 H3     {
 	color: #000;
         font-size: 14px;
-        font-family:verdana,helvetica,san-serif;
+        font-family:verdana,helvetica,sans-serif;
         font-weight: bolder;
 	}
 	
-TR	(
+TR      {
 	vertical-align: top;
 	}
 

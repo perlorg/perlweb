@@ -3,49 +3,45 @@
 [% page.sidebar = BLOCK %]
   <DIV class="NAVITEM">
     <H3>News</H3>
-    <a href="#useperl">Headlines from use.perl</a>
-    <BR><a href="#perlcom">Stories from perl.com</a>
+    <a href="#useperl">use.perl</a>
+    <BR><a href="#perlcom">perl.com</a>
     <BR><a href="#cpanrecent">Recent CPAN Uploads</a>
   </DIV>
 [% END %]
 
-[%# PROCESS tpl/common/header.html %]
+[%# 
+    Start of Main Content Section ------------------------
+%] 
 
-<A NAME="useperl"></A>
+[% USE HTML %]
+
+[% MACRO newsitem(item) BLOCK %]
+ <a href="[% item.link %]"><B>[% item.title %]</b></a>
+   <div style="width: 80%; text-align: justify">[% item.description %]</div>
+   <br>
+[% END %]
+
+[% MACRO newsentry(shortname,longname,limit,url) BLOCK %]
+<A NAME="[% shortname %]"></A>
+<h3><A HREF="[% url %] ">[% longname %]</A></H3>
+    [% USE news = XML.RSS("/home/newweb/var/rss/${shortname}.rss") %]
+    <UL>
+    [% FOREACH item = news.items %]
+       [%- LAST IF loop.count() > limit %]
+       <LI>[% newsitem(item) %]
+    [%- END %]
+    </UL>
+[% END %]
+
 <P>
-<h3>Headlines from use.perl</H3>
-
-    [% USE news = XML.RSS('/home/newweb/var/rss/useperl.rss') %]
+<A NAME="releases"></A>
+<h3>Release Announcements</h3>
     <UL>
-    [% FOREACH item = news.items %]
- <LI><a href="[% item.link %]">[% item.title %]</a>
-    [%- END %]
+      <LI><A HREF="http://dev.perl.org/perl5/news/2002/07/18/580ann/"
+           >perl5.8.0</A>
     </UL>
 
-<A NAME="perlcom"></A>
-<h3>Recent perl.com Articles</H3>
-    [% USE news = XML.RSS('/home/newweb/var/rss/perlcom.rss') %]
-    <UL>
-    [% FOREACH item = news.items %]
- <LI><a href="[% item.link %]" title="[%item.description%]">[% item.title %]</a><BR>
-     [% FILTER truncate(60) %][% item.description %][%END%]
-    [%- END %]
-    </UL>
-
-<A NAME="cpanrecent"></A>
-<h3>Recent CPAN Uploads</H3>
-
-    [% USE news = XML.RSS('/home/newweb/var/rss/cpanrecent.rss') %]
-    <UL>
-    [% FOREACH item = news.items %]
- <LI><a href="[% item.link %]">[% item.title %]</a>
-    [%- END %]
-    </UL>
-
-
-
-
-
-[% #PROCESS tpl/common/footer.html %]
-
+[% newsentry('useperl','use.perl', '5', 'http://use.perl.org') %]
+[% newsentry('perlcom','perl.com', '5', 'http://www.perl.com') %]
+[% newsentry('cpanrecent','Recent CPAN Uploads',10,'http://www.cpan.org/recent') %]
 
