@@ -9,7 +9,7 @@ demonstrated on several systems. People blahed at the idea of an
 argument to IO::File->new to specify the behavior of reading from
 a directory, though a note in the docs might be okay.
 
-  L<http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-09/msg00384.html>
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-09/msg00384.html
 
 =head2 eval {} in XS
 
@@ -19,14 +19,14 @@ Nick Ing-Simmons explained how in Tk he does eval { &foo } by making a CV
 for the contents of {} then calling call_sv(cv, G_EVAL). (Note: examine
 btkGlue.c -- Lang_catch, Tcl_GetRegExpFromObj, and do_comp in the Tk source).
 
-  L<http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-09/msg00381.html>
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-09/msg00381.html
 
 =head2 Why do coderefs in @INC clear IoIFP?
 
 Nobody knows apparently. Steve Hay tried not clearing C<IoIFP>,
 but it caused a test to break.
 
-  L<http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-09/msg00426.html>
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-09/msg00426.html
 
 =head2 require Carp; vs use Carp; in warnings.pm
 
@@ -36,7 +36,7 @@ in turn does C<use Carp>! So he submitted a patch for C<warnings>. Then
 Vadim Konovalov noted how he always optimizes C<Dynaloader> locally,
 so he also submitted a patch.
 
-  L<http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-09/msg00373.html>
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-09/msg00373.html
 
 =head2 Cannot build bleadperl on OpenVMS
 
@@ -49,7 +49,7 @@ problems with 8-level directory names like
 If that didn't trigger your VMS allergies, you might try the rest
 of the thread:
 
-  L<http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00020.html>
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00020.html
 
 =head2 Bug fixes
 
@@ -60,7 +60,7 @@ Chris Kelly was vivified enough to report (bug #31767) that
 doesn't die. Dave Mitchell fixed it by making open croak if the first
 argument is read-only.
 
-  L<http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-09/msg00429.html>
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-09/msg00429.html
 
 perl@pythontech.co.uk found (bug #31767) that printing from an undef
 variable prints out junk instead of nothing in perl 5.8.3:
@@ -71,19 +71,19 @@ variable prints out junk instead of nothing in perl 5.8.3:
 
 Rafael Garcia-Suarez fixed this in the development branch.
 
-  L<http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-09/msg00345.html>
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-09/msg00345.html
 
 Zefram (bug #31793) found that C<use overload> wouldn't work when setting
 the C<$Data::Dumper::Useqq> variable. Rick Delaney provided a patch to fix
 C<overload.pm> (with Tels independently arriving at the same conclusion,
 apparently).
 
-  L<http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00008.html>
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00008.html
 
 Craig Berry made at least two VMS test fixes:
 
-  L<http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00015.html>
-  L<http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00014.html>
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00015.html
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00014.html
 
 =head2 Reference
 
@@ -93,7 +93,7 @@ http://rt.perl.org/rt3/Ticket/Display.html?id=$BUGNUM
 =head2 About this summary
 
 This summary was written by Scott Lanning. Summaries are published
-weekly at L<http://use.perl.org/> and posted to a mailing list whose
+weekly at http://use.perl.org/ and posted to a mailing list whose
 subscription address is perl5-summary-subscribe@perl.org. The archive
-is at L<http://dev.perl.org/perl5/list-summaries/>. Comments and
+is at http://dev.perl.org/perl5/list-summaries/. Comments and
 corrections welcome.
