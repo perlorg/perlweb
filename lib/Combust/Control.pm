@@ -172,19 +172,24 @@ sub send_output {
 
   $routput = $$routput if ref $routput;
 
-  my $length = length($routput);
+  my $length;
+  if (ref $routput eq "GLOB") {
+    $length = (stat($routput))[7];
+  }
+  else {
+    $length = length($routput);
+  }
+
   if ( $length == 0 ) {
     my $error = 'zero length output for request: ' . $r->uri . '?' .$r->args;
     warn( $error );
     return SERVER_ERROR;
   }
 
-  #warn "LENGTH: $length";
-
-  $r->headers_out->{'Content-Length'} = $length;
+  #$r->headers_out->{'Content-Length'} = $length;
+  
   $r->set_content_length($length);
   $r->set_last_modified();  # set's to whatever update_mtime told us..
-  #$r->header_out('Last-Modified', );
 
   # defining the character set helps in handling the CERT advisory
   # regarding  "cross site scripting vulnerabilities" 
@@ -202,7 +207,13 @@ sub send_output {
   # don't send the body
   return OK if $r->header_only;
 
-  $r->print($routput);
+  if (ref $routput eq "GLOB") {
+    $r->send_fd($routput);
+  }
+  else {
+    $r->print($routput);
+  }
+
   return OK;
 }
 

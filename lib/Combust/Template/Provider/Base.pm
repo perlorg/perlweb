@@ -182,8 +182,7 @@ sub load {
 
           foreach my $dir (@$paths) {
               $path = "$dir/$name";
-              last INCPATH
-                  if -f $path;
+              last INCPATH if -f $path;
           }
           undef $path;      # not found
       }

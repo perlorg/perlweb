@@ -37,10 +37,15 @@ sub handler($$) {
     substr($file,0,1) = ""; # trim leading slash
     #warn "going to load $file";
     # use sendfile to ship the data instead of loading everything first ...
-    my ($data, $error) = $class->provider->load($file);
-    if ($data and !$error) {
+
+    my $data = $class->provider->expand_filename($file);
+    #warn Data::Dumper->Dump([\$data],[qw(data)]);
+    if ($data->{path}) {
+      $r->update_mtime($data->{time} || time);
       $content_type = guess_media_type($file);
-      return $class->send_output($r, $data, $content_type);
+      my $fh;
+      open $fh, $data->{path} or warn "Could not open $data->{path}: $!" and return 403;
+      return $class->send_output($r, \$fh, $content_type);
     }
     else {
       if ($class->provider->is_directory($file)) {
