@@ -5,7 +5,10 @@
   <H3>New release!</h3>
   <a href="http://www.cpan.org/src/README.html">Download Perl 5.8.0</a>
   </DIV>
-  <DIV class="NAVITEM">
+<DIV class="NAVITEM">
+<H3>New to Perl?</H3>
+<A href="http://learn.perl.org">See our Resources for Perl Beginners</a>
+
   <H3>What is Perl?</h3>
    Perl is a stable, cross platform programming language. 
    It is used for mission critical 
@@ -111,7 +114,7 @@
     
     <a href="community.html" CLASS="TOPIC">The Perl Community</a>
     <DIV CLASS="ITEMS">
-    <a href="http://www.pm.org/">Perl Mongers</a>, 
+    <a href="http://www.pm.org/">Perl Mongers, user groups</a>, 
     <a href="http://www.perlmonks.org/">Perl Monks</a>,
     <a href="http://lists.perl.org/">mail lists</a>,
     <a href="http://nntp.perl.org/">nntp</a>
@@ -160,16 +163,16 @@
     [%- USE news = XML.RSS("${root}/var/rss/${shortname}.rss") %]
     [%- item = news.items.first %]
     <A HREF="[% item.link %]">[%- item.title %]</A>
-[% END %]
+[%- END %]
 
 
   <tr>
    <td colspan=2  class="NOVERTPAD">
     <a href="news.html" CLASS="TOPIC">News</a>
     <DIV CLASS="ITEMS">
-      <A HREF="http://use.perl.org/">use.perl</A> - [% quicknews ("useperl") %]<BR>
-      <A HREF="http://www.perl.com/">perl.com</A> - [% quicknews ("perlcom") %]<BR>
-      <A HREF="http://search.cpan.org/recent/">cpan.org</A> - latest upload: [% quicknews ("cpanrecent") %]<BR>
+     [% quicknews ("useperl") %], at <A HREF="http://use.perl.org/"><b>use.perl</b></A> <BR>
+     [% quicknews ("perlcom") %], at <A HREF="http://www.perl.com/"><b>perl.com</b></A><BR>
+     [% quicknews ("cpanrecent") %], is the latest upload to <A HREF="http://search.cpan.org/recent/"><b>cpan.org</b></A><BR>
 
     </DIV>
    </td>
