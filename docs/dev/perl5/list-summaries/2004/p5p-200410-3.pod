@@ -1,0 +1,90 @@
+=head1 This Week on perl5-porters (Oct 11-17 2004)
+
+"This Week on perl5-porters" was started by Mark-Jason Dominus five
+years ago on October 17, exactly five years after the release of
+perl 5.000.
+
+=head2 Debugger handles threads
+
+Richard Foley and Yitzchak Scott-Thoennes added support for debugging
+programs using C<ithreads>. This added the C<e> and C<E> commands for
+displaying the current thread ID and list of thread IDs, respectively,
+when -dt is specified on the command-line or C<$ENV{PERL5DB_THREADED}>
+is set.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00187.html
+
+=head2 Handling failure in source code filters
+
+Steve Hay wondered what Perl source code filters should do on failure.
+Perl isn't aware that there was a failure, so it's necessary to C<croak>
+from the filter. A C<Perl_filter_read> comment suggests that it should
+return a negative number on failure, whereas C<S_filter_gets> just
+returns null, so it's not clear which should be correct.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00202.html
+
+=head2 %INC caching failure-case problem
+
+Nicholas Clark found a problem (#31924) in bleadperl:
+
+  $ echo die >fail.pm
+  $ ./perl -Ilib -e 'eval "use fail q{:std};"; $INC{"fail.pm"} = "fail.pm"'
+  Modification of non-creatable hash value attempted, subscript "fail.pm"
+    at -e line 1.
+
+Rick Delaney said this is because of compile failures being cached wrongly,
+and he submitted a patch to make C<keys %INC> only return names of files
+successfully loaded. Yitzchak Scott-Thoennes objected to having hidden
+entries in C<%INC>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00142.html
+
+=head2 Exporting constants
+
+David Radunz offered a patch to Exporter so that it would declare constants.
+Michael Schwern fears that this will make Exporter much slower and that
+it might not be that useful anyway because not all constants are declared
+with C<constant.pm>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00064.html
+
+=head2 Pod::Man =head1 capitalization
+
+David Wheeler proposed having Pod::Man force uppercasing of C<=head1>
+headings. Russ Allbery resisted this, because Pod::Man doesn't
+necessarily only generate regular man pages, though he'd be open
+to an option.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00230.html
+
+=head2 ETA for 5.8.6
+
+Nicholas Clark mentioned that he plans to go to a four month release
+schedule (previously it was three months), which means a code freeze
+on Halloween for 5.8.6.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00248.html
+
+=head2 In brief
+
+Craig Berry fixed a Devel::PPPort test on VMS.
+
+Moshe Kaminsky fixed C<warnings::warn($obj, $msg)> where $obj has
+overloaded stringification.
+
+Tels made C<warnings.pm> not load C<Carp.pm> unnecessarily, saving a bit
+of memory.
+
+=head2 Reference
+
+The thread for bug number $BUGNUM can be found at
+http://rt.perl.org/rt3/Ticket/Display.html?id=$BUGNUM
+
+=head2 About this summary
+
+This summary was written by Scott Lanning. Summaries are published
+weekly at http://use.perl.org/ and posted to a mailing list whose
+subscription address is perl5-summary-subscribe@perl.org. The archive
+is at http://dev.perl.org/perl5/list-summaries/. Comments and
+corrections welcome.
