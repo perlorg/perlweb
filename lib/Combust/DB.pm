@@ -5,8 +5,8 @@ use Carp;
 use Combust::Config;
 
 use Exporter;
-use vars qw(@ISA @EXPORT);
-@EXPORT = qw(db_open);
+use vars qw(@ISA @EXPORT_OK);
+@EXPORT_OK = qw(db_open);
 @ISA = qw(Exporter);
 
 my $config = Combust::Config->new();
