@@ -1,0 +1,166 @@
+=head1 These Weeks on perl5-porters (9-29 August 2004)
+
+This is an olympic summary: it jumps over three full weeks!
+
+=head2 Tainting PATH on Windows
+
+Discussing about a new test failing in the smoke tests for Windows, Steve
+Hay found that the following one-liner:
+
+    perl -T -e "qx(unqualified)"
+
+doesn't produce the familiar error I<Insecure $ENV{PATH} while running
+with -T switch>; and all perls since 5.6.0 behave similarly on Windows.
+This is probably a bug, although an old one (and the failing test was
+marked TODO).
+
+=head2 Delenda est the module list
+
+What should be done with the CPAN module list? This discussion is perhaps
+a bit off-topic for p5p, but anyway; Andy Lester began to suggest that the
+document known as the Long Module List
+(F<http://www.cpan.org/modules/00modlist.long.html>) is obsolescent and
+should be suppressed, and explained why. Various opinions where then
+expressed, more or less vocally. Graham Barr (who wrote and runs
+F<http://search.cpan.org/>), at least, has no objection.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-08/msg00434.html
+
+=head2 Optrees
+
+James Mastros plays with the idea of optimising accesses to the @_ array,
+maybe by introducing a new opcode for it. Commenters make good points and
+raise difficulties.
+
+    http://groups.google.com/groups?selm=20040809110050.29817.qmail%40onion.perl.org
+
+Meanwhile, Jim Cromie is digging optrees. For example, he suggested to
+remove some of the null ops that serve no purpose in optimized optrees;
+but this doesn't raise performance significatively.
+
+=head2 The speed of BigInt
+
+Tels, who maintains Math::BigInt, says that it's too slow, because it's
+implemented in pure perl. He proposes several solutions: either add a
+replacement library to the core, or add an optional XS part to
+Math::BigInt. Of course, benchmarks are needed.
+
+=head2 perlbug
+
+It was proposed to make C<perlbug> capable of sending mail directly
+(mostly for Windows users), maybe by opening a direct connection to some
+known SMTP server, of by using LWP to post something on perl's bug
+tracking system F<http://rt.perl.org/>. Robert Spier, grand sysadmin,
+disliked both ideas, so they're not going to be implemented. As he says,
+sending the perlbug-generated report by email directly to the perlbug
+adress at perl dot org works very well.
+
+=head2 Ternary conditional and tainting
+
+Andy Lester added various regression tests to the core test suite for
+features that were neither documented nor tested. Notably, he remarked
+that the expression
+
+    $x = $tainted_data ? "Foo" : "Bar";
+
+never results in C<$x> being tainted. The general opinion being that this
+is the right behaviour, Andy wrote a test and doc patch for it.
+
+=head2 fields
+
+Yuval Kogman noted that the C<fields> and C<base> pragma don't allow
+multiple inheritence of fields. Discussion follows; Yuval sent a patch to
+fix this situation (against the CPAN version of C<base>). Nicholas Clark
+pointed out that the divergence of the core and CPAN versions of C<base>
+really ought to be fixed some day.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-08/msg00462.html
+
+Meanwhile, Rick Delaney sent a patch to optimize the C<fields> pragma in
+bleadperl (the no-pseudo-hash implementation of it.)
+
+=head2 exec and die warnings
+
+Stas Bekman notes that:
+
+    exec "echo OK"; die "shouldn't be reached";
+
+doesn't produce a warning I<Statement unlikely to be reached>, since die()
+is allowed in this position. However, if die() is overriden, the warning
+is still produced. This effect is a bit annoying.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-08/msg00629.html
+
+=head2 In Brief
+
+Alan Burlison discovered a small scoping issue with C<my> used in a
+C<while> condition, where the C<while> loop has a C<redo>. Dave Mitchell
+says it's a known issue, and that it's on his long to-do list.
+
+    http://groups.google.com/groups?selm=4117A6A1.3060106%40sun.com
+
+Dave Mitchell seems to have understood, for a limited period of time,
+perl's internal exception handling mechanism (and used this knowledge to
+produce a patch.) See for yourself:
+
+    http://groups.google.com/groups?selm=20040809202354.GD1955%40iabyn.com
+
+Dave also fixed a case of segmentation fault with UNIVERSAL::AUTOLOAD()
+(yes, it's evil), regular expressions and threads.
+
+Hugo found a case of deep recursion involving the C<goto &function>
+construct. This was fixed by Dave (again).
+
+Yitzchak Scott-Thoennes wants a method to tell whether fork() is supported
+(by the system or via perl's emulation).
+
+Todd C. Miller says that perl should be built on OpenBSD for the ppc and
+arm architectures with the gcc flag -fno-delete-null-pointer-checks, when
+using gcc 3. If not, perl segfaults randomly (and for a reason that hasn't
+been tracked down).
+
+Dan Jacobson complains that perl has no no-op. It turns out that it does:
+C<0> and C<1>, used in void contect, don't generate warnings as other
+numerical constants do. Long thread ensues.
+
+Eventually this long thread leads to other subjects: should the C<..> and
+C<...> be overloadable, and how to achieve this?
+
+Pavel Fedin is porting perl 5.6.1 to MorphOS.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-08/msg00506.html
+
+=head2 Selected doc patches
+
+Kirrily "Skud" Robert sent a patch to update the F<perlnewmod> manpage to
+the current CPAN module authoring best practices.
+
+Jos Boumans proposed a patch to document some of the global configuration
+variables of C<Carp>.
+
+Steve Hay updated the F<README.win32> document with information about
+building perl with the MS VC++ Toolkit 2003.
+
+=head2 Patches that are in the queue
+
+Welcome to the new section of the P5P summary, where the summarizer tells
+everything about the patches he lets shamefully sleep in his mailbox
+because he says he's running out of tuits.
+
+Jarkko Hietaniemi sent a patch that I<fixes two problems in the encoding
+pragma and the open pragma>, notably with the C<open ':locale'> subpragma.
+
+=head2 Releases
+
+Tels pre-released Math::BigInt 1.72.
+
+Marcus Holland-Moritz released new alphas of Devel::PPPort, culminating in
+version 3.00, with I<90 new API functions and macros supported>.
+
+=head2 About this summary
+
+This summary was written by Rafael Garcia-Suarez. Summaries are published
+at irregular intervals on F<http://use.perl.org/> and posted on a mailing
+list, which subscription address is F<perl5-summary-subscribe@perl.org>.
+Comments and corrections welcome. Oh, and google groups are breaking,
+apparently.
