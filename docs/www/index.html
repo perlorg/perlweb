@@ -12,21 +12,56 @@
    projects in the public and private sectors and is widely used to 
    program web applications of all needs.  
    </DIV>
-  <DIV class="NAVITEM">
-  <H3>Got suggestions?</h3>
-   This site is the first place to look for Perl resources.  
-   To add a resource, send
-   suggestions to the <a href="mailto:webmaster@perl.org">webmaster</a>. 
+  <DIV class="NAVITEM" ALIGN=CENTER>
+
+<u>sponsor</u><br>
+[%- i.internap.weight=5;
+   i.internap.data = BLOCK %]
+<a href="http://www.internap.com">
+  <img border="0" src="images/friends/internap.gif" alt="Internap">
+  </a>
+[%- END %]
+[%- i.develooper.weight=1;
+   i.develooper.data = BLOCK %]
+ <a href="http://develooper.com">
+  <img border="0" src="images/friends/develooperlogo.gif" width=160 alt="Develooper">
+  </a>
+[%- END %]
+[%- i.tmcs.weight=1;
+   i.tmcs.data = BLOCK %]
+ <a href="http://www.ticketmaster.com/">
+   <img border="0" src="images/friends/tmlogo_rgb.gif" height="24" alt="Ticketmaster">
+   </a>
+   <a href="http://www.citysearch.com/">
+   <img border="0" src="images/friends/citysearch.gif" height="24" alt="Citysearch">
+   </a>
+[%- END %]
+[%- i.ix2.weight=1;
+    i.ix2.data = BLOCK %]
+<a href="http://www.ix2.net">
+  <img border="0" src="images/friends/IX2logo2.jpg" height="72" alt="IX2">
+  </a>
+[%- END %]
+[%- i.ora.weight=1;
+    i.ora.data = BLOCK %]
+<a href="http://www.oreilly.com/">
+ <img border="0" src="images/friends/oreilly_header2.gif" width="170" alt="O'Reilly and Associates">
+  </a>
+[%- END %]
+[%- USE Rotato(i) %]
+[%- Rotato.pick(h) %]
+
   </DIV>
 [% END %]
 
 
 <table width="530" cellspacing="10" cellpadding="5" border="0">
   <tr valign="TOP">
-    <td  valign="top" width="265">
+    <td  valign="top" width="265"  class="NOVERTPAD">
     <A href="about.html" CLASS="TOPIC">About Perl</a>
     <DIV CLASS="ITEMS">
-    <a href="http://use.perl.org/">news</a>, <a href="http://perl.oreilly.com/news/success_stories.html">success stories</a>, 
+    <a href="http://learn.perl.org/">learn</a>, 
+    <a href="http://perl.oreilly.com/news/success_stories.html">success stories</a>, 
     <a href="http://history.perl.org/">history</a>
     <P>
     </div>
@@ -34,7 +69,7 @@
     <a href="get.html" CLASS="TOPIC">Get Perl</a>
     <DIV CLASS="ITEMS">
     <a href="http://www.cpan.org/src/README.html">download Perl</a>, 
-    <a href="">Install modules</a> 
+    <a href="http://www.cpan.org/modules/">Install modules</a> 
     <P>
     </div>
 
@@ -42,7 +77,7 @@
     <DIV CLASS="ITEMS">
     <a href="http://dev.perl.org/perl5/">Perl 5</a>,
     <a href="http://dev.perl.org/perl6/">Perl 6</a>, 
-    <a href="http://www.parrotcode.org">Parrot</a>, 
+    <a href="http://www.parrotcode.org/">Parrot</a>, 
     <a href="http://rt.perl.org/perlbug/">bugs</a>
     <P>
     </div>
@@ -50,9 +85,9 @@
     <a href="app.html" CLASS="TOPIC">Application programming</a>
     <DIV CLASS="ITEMS">
     <a href="http://search.cpan.org/modlist/World_Wide_Web/">cgi</a>, 
-    <a href="http://dbi.perl.org">database</a>, 
+    <a href="http://dbi.perl.org/">database</a>, 
     <a href="http://search.cpan.org/modlist/Graphics/">graphics</a>, 
-    <a href="http://perl.apache.org">mod_perl</a>
+    <a href="http://perl.apache.org/">mod_perl</a>
     <P>
     </div>
     
@@ -62,11 +97,10 @@
     <a href="http://www.perlworkshop.de/">the German Perl Workshop</a>, 
     <a href="http://conferences.oreillynet.com/">the Perl Conference</a>,
     <a href="http://www.pm.org">local meetings</a>
-    <P>
     </div>
     </td>
     
-    <td width="265">
+    <td class="NOVERTPAD" width="265">
     <a href="docs.html" CLASS="TOPIC">Online documentation</a>
     <DIV CLASS="ITEMS">
     <a href="http://www.perldoc.com/perl5.8.0/pod/perl.html">manual pages</a>, 
@@ -77,8 +111,10 @@
     
     <a href="community.html" CLASS="TOPIC">The Perl Community</a>
     <DIV CLASS="ITEMS">
-    <a href="http://www.perlmonks.org/">Perl Monks</a>, <a href="http://www.pm.org/">Perl Mongers</a>, 
-    <a href="http://lists.perl.org/">mail lists</a>
+    <a href="http://www.pm.org/">Perl Mongers</a>, 
+    <a href="http://www.perlmonks.org/">Perl Monks</a>,
+    <a href="http://lists.perl.org/">mail lists</a>,
+    <a href="http://nntp.perl.org/">nntp</a>
     <P>
     </div>
 
@@ -98,8 +134,10 @@
     <a href="http://www.perlfoundation.org/index.cgi?page=grants">grants</a>,
     <a href="http://www.perlfoundation.org/index.cgi?page=contrib">contribute</a>
     <P>
+
     </div>
 
+<!--
     [% USE news = XML.RSS('/home/newweb/var/rss/useperl.rss') %]
     <a href="news.html" CLASS="TOPIC">News</a>
     <DIV CLASS="ITEMS">
@@ -112,20 +150,31 @@
     [%- END %]
    <P>
    </DIV>
-
+-->
 
 
   </td>
+ </tr>
 
-  </tr>
+[% MACRO quicknews(shortname) BLOCK %]
+    [%- USE news = XML.RSS("/home/newweb/var/rss/${shortname}.rss") %]
+    [%- item = news.items.first %]
+    <A HREF="[% item.link %]">[%- item.title %]</A>
+[% END %]
 
-[%#  
+
   <tr>
-   <td colspan=2>
-         &nbsp;
+   <td colspan=2  class="NOVERTPAD">
+    <a href="news.html" CLASS="TOPIC">News</a>
+    <DIV CLASS="ITEMS">
+      <A HREF="http://use.perl.org/">use.perl</A> - [% quicknews ("useperl") %]<BR>
+      <A HREF="http://www.perl.com/">perl.com</A> - [% quicknews ("perlcom") %]<BR>
+      <A HREF="http://search.cpan.org/recent/">cpan.org</A> - latest upload: [% quicknews ("cpanrecent") %]<BR>
+
+    </DIV>
    </td>
   </tr>
-%]
+
 
 <!--
   <tr>
@@ -139,3 +188,32 @@
 
 
 
+[% # define rotation for beginner box %]
+[%- h.newtoperl.weight = 5;
+    h.newtoperl.data = BLOCK %]
+New to Perl?   &nbsp;<A href="http://learn.perl.org">See our Resources for Perl Beginners</a>
+[%- END %]
+[%- h.gotbooks.weight = 3;
+   h.gotbooks.data = BLOCK %]
+Got Books?  &nbsp;<A HREF="http://books.perl.org">Visit our books site</A>
+[% END %]
+[%- h.jobs.weight = 5;
+    h.jobs.data = BLOCK %]
+Need a Job?  &nbsp;<A HREF="http://jobs.perl.org/">jobs.perl.org has the job for you!</A>
+[%- END %]
+[%- h.oscon.weight = 10;
+    h.oscon.data = BLOCK %]
+Going to OSCON?  &nbsp;<A HREF="http://www.perl.org/oscon/2003/">July 7-11, 2003 - Portland, Oregon</A>
+[%- END %]
+[%- h.yapc.weight = 2;
+    h.yapc.data = BLOCK %]
+Going to YAPC?  &nbsp;<A HREF="http://www.yapc.org/America/">June 16-18, 2003 - Boca Raton, Florida</A>
+[%- END %]
+[%- h.suggest.weight = 2;
+    h.suggest.data = BLOCK %]
+Got Suggestions?  &nbsp; <A HREF="mailto:webmaster@perl.org">Email us ideas for the site!</A>
+[%- END %]
+[% # end of rotation %]
+
+[%- USE Rotato(h) %]
+[%- page.beginner = Rotato.pick(h) %]

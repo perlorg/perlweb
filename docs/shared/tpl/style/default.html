@@ -76,8 +76,13 @@
 <td colspan=2 align="center" valign="bottom">
 [% IF isindex and notes.site == 'www' %]
    <!-- this cell sits at the bottom of the content area -->
-   <H3 class="BEGINNER">New to Perl?
-   &nbsp;<A href="http://learn.perl.org">See our Resources for Perl Beginners</a></h3>
+  <H3 class="BEGINNER">
+  [% IF page.beginner %]
+    [% page.beginner %]
+  [% ELSE %]
+  New to Perl?   &nbsp;<A href="http://learn.perl.org">See our Resources for Perl Beginners</a>
+  [% END %]
+ </h3>
 [% END %]
 </td>
 
