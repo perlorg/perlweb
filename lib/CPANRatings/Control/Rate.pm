@@ -48,7 +48,8 @@ sub handler($$) {
 
     unless (%$errors) {
 
-      $data{updated} = strftime "%Y-%m-%d %T", localtime;
+      $data{updated} = strftime "%Y-%m-%d %T", localtime
+	unless $r->param('minor_edit');
 
       my $review;
       if (($review) = CPANRatings::Model::Reviews->search(distribution => $data{distribution},

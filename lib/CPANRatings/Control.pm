@@ -26,7 +26,7 @@ sub send_output {
   $routput = $$routput if ref $routput;
 
   return $class->SUPER::send_output($r, \$routput, @_)
-    if (ref $routput eq "GLOB");
+    if (ref $routput eq "GLOB" or $class->{utf8});
 
 #  binmode STDOUT, ':utf8';
 

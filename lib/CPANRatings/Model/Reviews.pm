@@ -35,8 +35,13 @@ sub checked_rating {
   $checked;
 }
 
-sub author_id_to_name {
-  
+sub review_html {
+  my $self = shift;
+  my $review = $self->review;
+  $review =~ s/^\s+//s;
+  $review =~ s/\s+$//s;
+  $review =~ s!\n!<br />!g;
+  $review;
 }
 
 
