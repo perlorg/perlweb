@@ -1,0 +1,39 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use CGI qw( :standard );
+
+my $tier = "";
+my $n = 0;
+my @rows;
+
+while ( <> ) {
+    chomp;
+    next unless /./;
+
+    if ( /^=head1 (.+)/ ) {
+        $tier = $1;
+        push( @rows, Tr( td( {class=>"banner", colspan=>3}, span( {class=>"title"}, $tier ) ) ) );
+        next;
+    }
+    my ($dist,$author) = split;
+    $author = "some author";
+    ++$n;
+
+    push( @rows,
+        Tr(
+            td( $dist ),
+            td( a( { href => "http://search.cpan.org/author/$author" } ), $author ),
+            td( join( " | ",
+                a( { href => "http://search.cpan.org/dist/$dist" }, "Docs" ),
+                a( { href => "http://rt.cpan.org/NoAuth/Bugs.html?Dist=$dist" }, "Bugs" ),
+                a( { href => "http://testers.cpan.org/show/$dist.html" }, "Testers" ),
+                a( { href => "http://cpanratings.perl.org/d/$dist" }, "Ratings" ),
+            ) ),
+        )
+    );
+}
+
+@rows = map { "$_\n" } @rows;
+print table( {border=>0, cellspacing=>0, cellpadding=>5}, @rows );
