@@ -208,6 +208,15 @@ sub evaluate_template {
   my $r         = shift;
   my %params    = @_;
 
+  my $new_mode = 0;
+  unless (ref $r) {
+    $new_mode = 1;
+    $params{template} = $r;
+    $r = $self->r;
+    my $output;
+    $params{output} = \$output;
+  }
+
   $params{params} ||= $self->params;
 
   $params{params}->{r} = $r; 
@@ -227,9 +236,6 @@ sub evaluate_template {
       : 0
     );
 
-  #$params{params}->{statistics}    = XRL::Statistics->new();
-  #$params{params}->{advertisement} = XRL::Advertisement->new();
-
   my $rc = $self->tt->process( $params{'template'},
                          $params{'params'},
                          $params{'output'} )
@@ -237,9 +243,12 @@ sub evaluate_template {
 	     . ' - error processing template ' . $params{'template'} . ': '
 	     . $self->tt->error )
       and eval {
-        ControllerException->throw( 'error' => $self->tt->error );
+	# TODO: throw a "proper" exception?
+        die( 'error' => $@ . " " . $self->tt->error );
       };
-  
+
+  return ($rc, $params{output}) if $new_mode and wantarray;
+  return $params{output} if $new_mode;
   $rc;
 }
 
@@ -252,15 +261,20 @@ sub send_cached {
   $content_type = $cache->{meta_data}->{content_type}
       if $cache->{meta_data}->{content_type};
 
-  return $class->send_output($r, $cache->{data}, $content_type);
+  return $class->send_output($cache->{data}, $content_type);
 }
 
 sub send_output {
-  my $class   = shift;
-  my $r       = shift;
+  my $self = shift;
+  
+  # we used to take $r as the first parameter
+  shift @_ if ref $_[0] eq "Apache::Request";
+
   my $routput = shift;
   my $content_type = shift || 'text/html';
-  
+
+  my $r = $self->r;
+
   $r->pnotes('combust_notes')->{cookies}->bake_cookies;
 
   $routput = $$routput if ref $routput;
