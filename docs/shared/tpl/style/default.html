@@ -9,11 +9,15 @@
 
   IF !page.site;
     page.site = "perl.org";
+  ELSE;
+    page.site = page.site || ":";
   END;
+
+  page.site = "" IF page.nosite;
 
   UNLESS page.banner;
     # should we make use of page.site here?  i.e. "dbi.perl.org: "
-    page.banner = page.site _ ': <SPAN CLASS="title">' _ title _  "</span>";
+    page.banner = page.site _ '<SPAN CLASS="title">' _ title _  "</span>";
   END;
 
 
