@@ -12,9 +12,9 @@ Larry Wall <larry@wall.org>
 
   Maintainer: Larry Wall <larry@wall.org>
   Date: 4 Jun 2002
-  Last Modified: 24 Nov 2004
+  Last Modified: 4 Dec 2004
   Number: 5
-  Version: 3
+  Version: 4
 
 This is the Apocalypse on Pattern Matching, generally having to do with
 what we call "regular expressions", which are only marginally related
@@ -586,7 +586,7 @@ simplifying. We now have the following regex invariants:
 (Note that we're using "assertion" here in the broad sense of anything
 that either matches or fails, whether or not it has a width.)
 
-[Update: We now also have C<«...»> for capturing assertions.]
+[Update: We now also have C<«...»> for non-capturing assertions.]
 
 The nature of the angle assertion is controlled by the first character
 inside it. If the first character is alphabetic, it's a grammatical
@@ -905,7 +905,7 @@ Single character modifiers may be bundled like this:
 
     s:wie /foo/bar/             # :words :ignorecase :each
 
-[Update: Bundling is no longer allowed.]
+[Update: Bundling is no longer allowed. Whitespace is allowed.]
 
 ...but only if the sequence as a whole is not already defined as a long
 modifier, since ambiguity will be resolved in favor of the long
@@ -983,7 +983,7 @@ really means (expressed in Perl 5 form):
 
     m:p5/\s*foo\s+bar\s*:(\s*baz\s*)*/
 
-[Update: The optional whitespace is actually matched by the C<< <ws> >>
+[Update: The optional whitespace is actually matched by the C<< «ws» >>
 rule, which you can redefine to change the semantics of C<:words>.]
 
 You can still control the handling of whitespace under C<:w>, since we
@@ -1308,8 +1308,8 @@ treated as a subrule, and any captures it does are invisible to the
 outer regex unless the outer regex takes steps to retrieve them. In any
 event, subrule parens never change the paren count of the outer rule.
 
-[Update: Use C<«$rule»> to turn any non-capturing rule into a capturing
-rule.  Or say C<(<$rule>)> if you only want to capture the string.]
+[Update: Use C<«$rule»> to turn any capturing rule into a non-capturing
+rule.  Or say C<(«$rule»)> if you only want to capture the string.]
 
 The C<{code}> form doesn't return anything meaningful--it is used for
 its side effects. Any such closure may behave as an assertion. It
@@ -1601,8 +1601,9 @@ either implicitly generated from the name of the rule, or explicitly
 bound using C<:=>. Through that variable you can get at anything
 captured by the subrule. (That is what C<$expr> was doing earlier.)
 
-[Update: Rules are not captured by default.  You can use C<:=> or
-use C<«...»> instead of angles to force capture.]
+[Update: Only rules of the form C<< <ident> >> are captured by default.
+You can use C<:=> to force capture of anything else, or the C<:keepall>
+adverb to capture everything else.]
 
 When the entire match succeeds, the top-level node is returned as a
 result object that has various values in various contexts, whether
@@ -1612,10 +1613,11 @@ C<$1>, C<$2>, etc. Unlike C<$&> in Perl 5, C<$0> is lexically scoped to
 the enclosing block. By extension, C<$1>, etc. are also lexically
 scoped.
 
-[Update: The C<$0> variable is split up into a C<$/> variable that represents
-the match state object, and a C<$0> variable that represents the capture
-of the entire pattern.  In other words, C<$0> is exactly like a C<$1>
-capture, only with assumed parens around the entire pattern.]
+[Update: The C<$0> variable's functionality is now split up into a
+C<$/> variable that represents the match state object, and a C<$0>
+variable that represents the capture of the entire pattern.  In other
+words, C<$0> is exactly like a C<$1> capture, only with assumed parens
+around the entire pattern.]
 
 As a kind of iterator, a regex stored in a variable doesn't expand in
 list context unless you put angles around it or use it with C<m//>:
@@ -1686,10 +1688,11 @@ an argument, C<$rx_state>. It suffices to say:
 
     given $rx_state { let $x = .pos }
 
-[Update: This restriction is no longer in effect.  Any variable may
-be treated hypothetically, not just variables stored in C<$/>.
-The C<$/> variables are now syntactically distinguished from ordinary
-variables.  Hypotheticality is more or less orthogonal to that.]
+[Update: This restriction is no longer in effect.  Any variable
+may be treated hypothetically, not just variables stored in C<$/>.
+The capture variables in C<$/> are now syntactically distinguished
+from ordinary variables.  Hypotheticality is orthogonal to that,
+except insofar as C<$/> is somewhat hypothetical as a whole.]
 
 As it happens, C<$1> and friends are all simply hypothetical variables.
 When we say "hypothetical variable", we aren't speaking of where the
@@ -1708,7 +1711,7 @@ named C<$maybe>, its external name is C<$0._var_{'maybe'}>. The C<$0>
 object can behave as a hash, so C<$0{maybe}> is the short way to say
 that.
 
-[Update: Nowadays the short name of that variable is C<$«maybe»>.
+[Update: Nowadays the short name of that variable is C<< $<maybe> >>.
 And the match variable is named C<$/> instead of C<$0>.]
 
 All other variable names are stored with their sigil, so the external
@@ -1716,7 +1719,8 @@ name for C<@maybe> is C<$0{'@maybe'}>, and for C<%maybe> is
 C<$0{'%maybe'}>.
 
 [Update: None of these are stored with their sigil, which means
-you can't store two different types under the same name.]
+you can't store two different types under the same name unless you
+explicitly bind to a name like C<< $<@maybe> >>.]
 
 C<$1> is a special case--it's visible outside the regex, not because
 it's predeclared, but because Perl already knows that the numbered
@@ -1725,7 +1729,7 @@ C<$0[1]>. The numbered variables are available only through the array,
 not the hash.
 
 [Update: the number variables are also available through the hash, so
-C<$1> is the same as either C<$/«1»> or C<$/[0]>.]
+C<$1> is the same as either C<< $/<1> >> or C<$/[0]>.]
 
 Since C<$0> represents the state of the currently executing regex, you
 can't use it within a rule to get at the result of a completed subrule.
@@ -1735,14 +1739,14 @@ C<$somerule>. (Rules accessed indirectly must be captured explicitly,
 or they won't have a name by which you can get to them. More on that in
 the next section.)
 
-[Update: Any subrule may be captured with French quotes.]
+[Update: Any subrule's capture may be suppressed with French quotes.]
 
 As the current recursive regex executes, it automatically builds a tree
 of hashes corresponding to all captured hypothetical variables. So from
 outside the regex, you could get at the C<$1> of the subrule
 C<< <somerule> >> by saying C<$0{somerule}[1]>.
 
-[Update: These days that's C<$/{'somerule'}[0]> or C<$«somerule»«1»>.]
+[Update: These days that's C<$/{'somerule'}[0]> or C<< $<somerule><1> >>.]
 
 =head2 Named Captures
 
@@ -1822,7 +1826,7 @@ than once. So, presuming you have grammar rules defining "key" and
 
 [Update: That is now written:
 
-    / «key» \: «value» { let %hash{$«key»} = $«value» } /
+    / <key> \: <value> { let %hash{$<key>} = $<value> } /
 
 ]
 
@@ -1872,7 +1876,7 @@ done.
 =item 2. Next we look for C<@foo> in the current regex's name table.
 The name of the variable is really C<$0{'@foo'}>.
 
-[Update: These C<$/> variables now have names like C<@«foo»>, so skip
+[Update: These C<$/> variables now have names like C<< @<foo> >>, so skip
 this step.]
 
 =item 3. If the regex belongs to a grammar, we next look for C<@foo> in
@@ -2143,11 +2147,12 @@ C<@$0^.beg> and C<@$0^.end> if you want a list of beginnings and
 endings. Did I mention that the magical C<@+> and C<@-> arrays are
 gonna be real dead? Never could remember which one was which anyway...
 
-[Update: C<$0> is still the entire match, but the match object is now
-C<$/>, and a list of all beginnings is returned by the hyperoperator
-C<$/».beg>.  But note that string positions are not necessarily integers
-in Perl 6.  They are tagged with the units of the string, so that you
-can't inadvertently mix byte, codepoint, or grapheme offsets.]
+[Update: C<$0> still represents the entire matched string, but the
+match object is now C<$/>, and a list of all beginnings is returned
+by the hyperoperator C<$/».beg>.  But note that string positions are
+not necessarily integers in Perl 6.  They are tagged with the units
+of the string, so that you can't inadvertently mix byte, codepoint,
+or grapheme offsets.]
 
 =head2 RFC 093: Regex: Support for incremental pattern matching
 
@@ -2327,7 +2332,7 @@ might be C<(?\$foo)>.>
 Backrefs are now unified with hypothetical variables, so the issue
 doesn't arise. Just use C<$foo>.
 
-[Update: Now C<$«foo»>, short for C<$/{'foo'}>.]
+[Update: Now C<< $<foo> >>, short for C<$/{'foo'}>.]
 
 =over
 
@@ -2480,7 +2485,7 @@ recognized subscripts:
     %hash{"foo"}        # scalar literal
     %hash{bar}          # scalar literal
 
-[Update: Now C<%hash«bar»> instead.]
+[Update: Now C<< %hash<bar> >> instead.]
 
     %hash{1}            # scalar literal
     %hash{$x}           # scalar variable

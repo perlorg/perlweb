@@ -12,9 +12,9 @@ Luke Palmer <luke@luqui.org>
 
   Maintainer: Larry Wall <larry@wall.org>
   Date: 8 Mar 2004
-  Last Modified: 2 Dec 2004
+  Last Modified: 4 Dec 2004
   Number: 3
-  Version: 4
+  Version: 5
 
 =head1 Operator renaming
 
@@ -95,6 +95,9 @@ bitterly if it is ever executed.
 variants C<.*>, C<.?>, and C<.+> to control how multiple parent methods
 of the same name are handled.  The C<.=> operator does inplace modification
 of the object on the left.
+
+=item * Unary C<=> reads lines from a filehandle or filename, or in general
+iterates an iterator.
 
 =back
 

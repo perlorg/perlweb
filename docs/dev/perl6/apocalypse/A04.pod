@@ -12,9 +12,9 @@ Larry Wall <larry@wall.org>
 
   Maintainer: Larry Wall <larry@wall.org>
   Date: 18 Jan 2002
-  Last Modified: 27 Oct 2004
+  Last Modified: 4 Dec 2004
   Number: 4
-  Version: 3
+  Version: 4
 
 This Apocalypse is all about syntax in the large. The corresponding
 chapter in the Camel book is entitled "Statements and Declarations",
@@ -354,7 +354,7 @@ any C<Class::Name> known at compile time, and force it to call
 C<$!.isa(Class::Name)>.
 
 [Update: Actually, it just follows from how smart matching works.  But
-in actual fact, smart match calls the C<.does> method, which is more
+in fact, smart match calls the C<.does> method, which is more
 general than the C<.isa> method, insofar as C<.does> can check both
 roles and inheritance.  See A12 for more.]
 
@@ -541,7 +541,7 @@ it's equivalent to saying this:
     expr    expr      run-time guessing        match if ($a =~ $b) at runtime
 
 [Update: This is inaccurate in several ways; see the most recent
-table in the Synopsis.]
+table in S4.]
 
 In order to facilitate optimizations, these distinctions are made
 syntactically at compile time whenever possible. For each comparison,
@@ -573,7 +573,8 @@ are ways to force the arguments to be treated as you intend:
     boolean     $a == $b          ?expr or true expr or { expr }
 
 [Update: C<qr//> is now spelled C<rx//>.  String context is forced C<~>.
-A regex is interpolated with C</<$expr>/>.]
+A regex is "interpolated" with C</<$expr>/>, but it's not interpolated
+as a separate pass as in Perl 5.]
 
 A method must be written with a unary dot to distinguish it from other
 forms. The method may have arguments. In essence, when you write
@@ -2479,7 +2480,7 @@ We'll solve the C<;> problem by jiggering the definition of C<{...}>,
 not by fiddling with C<do>.
 
 [Update: Bare blocks are still legal, and always execute immediately
-as expected.  To return a closure you must be more explicit.]
+as expected.  To return a closure you should use an explicit C<return>.]
 
 =head2 RFC 209: Fuller integer support in Perl.
 
@@ -2626,7 +2627,7 @@ explicit:
     }
 
 [Update: We'll also allow the C<<loop {...} while CONDITION;>> form to mean
-execute once first.]
+execute once first. Loop C<until> also works, of course.]
 
 =head2 Bare blocks
 

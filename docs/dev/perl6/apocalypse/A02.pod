@@ -12,9 +12,9 @@ Larry Wall <larry@wall.org>
 
   Maintainer: Larry Wall <larry@wall.org>
   Date: 3 May 2001
-  Last Modified: 27 Oct 2004
+  Last Modified: 4 Dec 2004
   Number: 2
-  Version: 3
+  Version: 4
 
 
 Here's Apocalypse 2, meant to be read in conjunction with Chapter 2 of
@@ -823,7 +823,7 @@ I think hyperquotes will be possible with a declaration of your quoting
 rules, so we're not going to change the basic single-quote rules
 (except for supporting C<\q>).
 
-[Update: There are adverbial modifiers now that can do hyperquoting.]
+[Update: There are adverbial modifiers now that can do hyperquoting. See S2.]
 
 =head2 Other Decisions About Literals
 
@@ -886,7 +886,7 @@ OO methods under the C<MY> pseudo-package:
     __DATA__            =begin DATA
 
 [Update: The first three are now C<$?LINE>, C<$?FILE>, and C<$?PACKAGE>.
-There are other such variables too.]
+There are other such variables too.  See S2.]
 
 =head3 Heredoc Syntax
 
@@ -977,7 +977,7 @@ But we're getting ahead of ourselves.
 
 [Update: Indeed, methods are declared with a C<method> keyword, and
 without the dot.  Also the built-in class is C<Array>, not C<ARRAY>.
-See A12 for much more about classes and methods.]
+See A12 and S12 for much more about classes and methods.]
 
 By the way, all function and method parameters (other than the object
 itself) will be considered read-only unless declared with the C<rw>
@@ -1106,8 +1106,8 @@ But in hashlist context, it might be equivalent to this:
     %list = < foo $bar %baz blurch($x) >;
     %list = (foo => 1, '$bar' => 1, '%baz' = 1, blurch => $x);  # same as this
 
-[Update: instead of swiping C<< <> >> from iterators, we've used the
-French quotes C<«»> for a C<qw//> replacement.]
+[Update: There is also a version with French quotes C<«»> that does
+interpolation before splitting into words.]
 
 =head1 Files
 
@@ -1119,9 +1119,10 @@ and don't belong in this chapter anymore.
 Indeed, they won't be. In fact, angle brackets won't be used for input
 at all, I suspect. See below. Er, above.
 
-[Update: Belay that order.  Angle brackets still do iteration on any
-iterator, including filehandles.  There's also a corresponding C<< .<> >>
-method.]
+[Update: Angle brackets don't directly do input.  There is a unary C<=>
+that does the equivalent.  For an argument it takes a filehandle,
+interator, filename, or list of any of those, and returns lines.
+There is a corresponding C<lines> list operator.]
 
 =head2 RFC 051: Angle Brackets Should Accept Filenames and Lists
 
@@ -1137,7 +1138,8 @@ from standard input, it will suffice to say
 and the iterator will know it should assign to C<$_>, because it's in a
 Boolean context.
 
-[Update: No, this confuses two different meanings of boolean.]
+[Update: No, this confuses two different meanings of boolean. Use
+C<for =$IN {...}> instead.]
 
 I read this RFC more as requesting a generic way to initialize an
 iterator according to the type of the iterator. The trick in this case
@@ -1371,7 +1373,7 @@ run-time property only if a method can't be found, so it shouldn't
 impact ordinary method call overhead.)
 
 [Update: No, that's always an ordinary method call now.  Use
-C<tied($foo).bar> to get at a property of the variable, or to call
+C<var($foo).bar> to get at a property of the variable, or to call
 any other method on the variable object rather than the referent
 of C<$foo>.]
 

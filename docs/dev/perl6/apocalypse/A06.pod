@@ -12,9 +12,9 @@ Larry Wall <larry@wall.org>
 
   Maintainer: Larry Wall <larry@wall.org>
   Date: 7 Mar 2003
-  Last Modified: 24 Nov 2004
+  Last Modified: 4 Dec 2004
   Number: 6
-  Version: 4
+  Version: 5
 
 This is the Apocalypse on Subroutines.  In Perl culture the term
 "subroutine" conveys the general notion of calling something that
@@ -2691,7 +2691,7 @@ and C<$y>).
 
 [Update: We now use hash subscript syntax for quoting:
 
-    my &prefix:«½» ::= &infix:«/».assuming(y => 2);
+    my &prefix:<½> ::= &infix:</>.assuming(y => 2);
     my &prefix:{'½'} ::= &infix:{'/'}.assuming(y => 2);
 
 .]
@@ -2886,7 +2886,7 @@ you're really doing this internally:
 
 [Update: That's now
 
-    infix:«+»( prefix:-($a), $b)
+    infix:<+>( prefix:-($a), $b)
 
 .]
 
@@ -2913,7 +2913,7 @@ You can make your own lexically scoped operators like this:
     my sub postfix:! (Int $x) { return factorial($x) }
     print 5!, "\n";	# print 120
 
-[Update: That's C<postfix:«!»> now.]
+[Update: That's C<< postfix:<!> >> now.]
 
 You can use a newly declared operator recursively as soon as its name
 is introduced, including in its own definition:
@@ -2936,7 +2936,7 @@ some existing operator:
     multi infix:poach    (PDL $a, PDL $b) is looser(&infix:+) { ... }
     multi infix:scramble (PDL $a, PDL $b) is tighter(&infix:+) { ... }
 
-[Update: Now C<infix:«coddle»> etc.]
+[Update: Now C<< infix:<coddle> >> etc.]
 
 If you base a tighter operator on a looser one, or a looser one on
 a tighter one, you don't get back to where you were.  It always goes
@@ -2996,7 +2996,7 @@ closure just as a macro would:
     macro circumfix:(**) () is parsed(/.*?/ { "" }
 				# "Comment? What comment?"
 
-[Update: That'd be C<circumfix:«(* *)»> nowadays.]
+[Update: That'd be C<< circumfix:<(* *)> >> nowadays.]
 
 A circumfix operator is assumed to be split symmetrically between
 prefix and postfix.  In this case the circumfix of four characters
@@ -3010,7 +3010,7 @@ of the name:
 
 [Update: That's now solved by use of existing slice syntax:
 
-    macro circumfix:«(* *)» () is parsed(/.*?/ { "" }
+    macro circumfix:<(* *)> () is parsed(/.*?/ { "" }
     macro circumfix:{'(*', '*)'} () is parsed(/.*?/ { "" }
 
 That's so convenient that we'll discard the special rule about
@@ -3035,7 +3035,7 @@ Apocalypse is already late enough.
 [Update: I suppose it could now be solved by feeding a slice to the
 infix category:
 
-    our sub infix:«?? ::» ($a, $b, $c) {...}
+    our sub infix:<?? ::> ($a, $b, $c) {...}
 
 But maybe not...]
 
