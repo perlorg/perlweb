@@ -48,7 +48,7 @@ statically linked in /home/perl/apache1/bin/httpd and perl in
 
 If you run a Linux installation not unlike RedHat 7.x you might be
 able to use our perl/apache/subversion installation from perl.org.
-Contact ask@perl.org or robert@perl.org for rsync instructions.
+Contact ask or robert @ perl.org for rsync instructions.
 
 =head3 Install modules from CPAN
 
@@ -59,6 +59,8 @@ C<install Date::Parse DBI Exception::Class Bundle::LWP Text::Template>
 C<install Config::Simple Mail::Internet Time::HiRes>
 
 C<install URI::Find DBD::mysql Template Apache::Reload>
+
+C<install Pod::Simple>
 
 We will make a Bundle to be installed at some point.  
 
@@ -104,6 +106,10 @@ server runs on port 8225 (configured in combust.conf).
 
 You might want to put bin/cron_hourly into the combust users crontab.
 In any case then it should be executed at least once.
+
+B<Note:> You don't have to run combust as a seperate user, but it
+helps keep things separate.  For development, you can stick it almost
+anywhere.. one install we know about lives in C<~/projects/newweb/>.
 
 =head2 Use a different document root on the fly
 
