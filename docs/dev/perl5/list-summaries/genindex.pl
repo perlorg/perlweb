@@ -6,7 +6,9 @@ open my $index, '>', 'index.html' or die "Can't open index.html: $!\n";
 print $index <<'**HEAD**';
 [% page.title = "Perl5 List Summaries" %]
 
-By Scott Lanning
+By 
+<!--<A HREF="mailto:rgarciasuarez@free.fr">Rafael Garcia-Suarez</A>-->
+<A HREF="mailto:lannings@who.int">Scott Lanning</A>
 
 <UL>
 **HEAD**
