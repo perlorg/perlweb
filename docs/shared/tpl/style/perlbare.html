@@ -1,22 +1,26 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
 [%
-  title = title || template.title;
+  title = page.title || template.title;
+
+  IF page.bhead;
+   page.banner = page.bhead _ '<SPAN CLASS="title">' _ page.banner _  "</span>";
+  END;
 
   UNLESS page.banner;
     # should we make use of page.site here?  i.e. "dbi.perl.org: "
     page.banner = '<SPAN CLASS="title">' _ title _  "</span>";
   END;
 
-  IF page.title;
-    page.title = "$title - Perl.org";
+  IF title;
+    page.title = "${title} - Perl.org";
   ELSE;
     page.title = "Perl.org"; 
   END;  
 
   # is this intentionally all indexes or should it just be the most
   # top level one?
-  isindex = r.uri.match('/(index.html)?$');
+  isindex = r.uri.match('^/(index.html)?$');
 
 %]
 

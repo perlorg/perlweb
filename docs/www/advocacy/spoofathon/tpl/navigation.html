@@ -1,0 +1,14 @@
+[% page.bhead = "Perl Spoofathon: ";
+   page.banner = page.title
+   page.title = page.bhead _  page.banner %]
+[% r_now = r.main || r.prev || r; 
+   page.sidebar = FILTER navigation(r_now.uri) %]
+[%# FIXME: spoofathon/ breaks the navigation code, but TT/apache
+doesn't know how to automagically jump into directories %]
+&nbsp;&nbsp;<A HREF="/advocacy/spoofathon/">Home</A> &nbsp;|
+&nbsp;&nbsp; <A HREF="/advocacy/spoofathon/rules.html">Rules</A> &nbsp;&nbsp;|
+&nbsp;&nbsp; <A HREF="/advocacy/spoofathon/why.html">Why</A> &nbsp;|
+&nbsp;&nbsp; <A HREF="/advocacy/spoofathon/FAQ.html">FAQ</A> &nbsp;|
+&nbsp;&nbsp; <A HREF="/advocacy/spoofathon/ideas.html">Ideas</A>
+[% END %]
+[% page.style = "perlbare.html" %]

@@ -15,7 +15,7 @@
 
   # is this intentionally all indexes or should it just be the most
   # top level one?
-  isindex = r.uri.match('/(index.html)?$');
+  isindex = r.uri.match('^/(index.html)?$');
 
 %]
 
@@ -46,7 +46,7 @@
 [% END %]
 
 [% page.sidebar %]
-
+&nbsp;
 </DIV>
 
 </TD>
