@@ -75,6 +75,7 @@ sub handler($$) {
   $cache->store(data => $output,
 		meta_data => { content_type => $content_type },
 		expire => 86400*2,
+		purge_key => "rre",
 	       );
 
   $class->send_output($r, \$output, $content_type);

@@ -8,6 +8,8 @@ use Combust::Cache;
 sub handler($$) {
   my ($class, $r) = @_;
 
+  $r = Apache::Request->instance($r);
+
   #warn "RRE Handler!";
   #warn "RURI: ", $r->uri;
 
@@ -20,7 +22,8 @@ sub handler($$) {
   my $cache = Combust::Cache->new(type => 'rre');
 
   if (my $d = $cache->fetch(id => "html;$uri" )) {
-    return $class->send_cached($r, $d, $content_type);
+    return $class->send_cached($r, $d, $content_type)
+      unless $r->param('cache_bypass');
   }
 
   my $rre = RRE::Model->new();
@@ -66,6 +69,7 @@ sub handler($$) {
   $cache->store(data => $output,
 		meta_data => { content_type => $content_type },
 		expire => 86400*2,
+		purge_key => "rre",
 	       );
 
   $r->update_mtime(time);
