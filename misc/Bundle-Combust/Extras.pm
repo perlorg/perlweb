@@ -20,9 +20,15 @@ Class::DBI::Untaint
 
 Class::DBI::FromCGI
 
+Class::DBI::AbstractSearch
+
 Mail::Sendmail
 
 Digest::SHA1
+
+Time::Piece
+
+Time::Piece::MySQL
 
 =cut
 

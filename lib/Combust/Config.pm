@@ -3,6 +3,7 @@ use strict;
 use Config::Simple;
 use Data::Dumper qw();
 use Sys::Hostname qw(hostname);
+use Carp qw(carp);
 
 my $file = "$ENV{CBROOT}/combust.conf";
 $file = "$ENV{CBROOTLOCAL}/combust.conf" if $ENV{CBROOTLOCAL};
@@ -62,6 +63,18 @@ sub port {
 
 sub external_port {
   $cfg->param('external_port') || undef;
+}
+
+sub base_url {
+  my $self = shift;
+  my $sitename = shift or carp "sitename parameter required" and return;
+  carp "no [$sitename] site configured" and return unless $self->site->{$sitename};
+  my $site = $self->site->{$sitename};
+  my $servername = $site->{servername};
+  my $port = $self->external_port;
+  my $base_url = "http://$servername" . ($port ? ":$port" : '');
+  warn $base_url;
+  return $base_url;
 }
 
 sub db_data_source {

@@ -13,7 +13,9 @@ else
    cd $CBROOT
 fi
 
+# TODO: change this to check if the httpd is still running every second
+
 mkdir -p tmp/htdocs && mkdir -p tmp/ctpl && mkdir -p apache/logs && \
 $CBROOT/bin/make_configs && \
 $CBROOT/apache/bin/apachectl configtest && \
-$CBROOT/apache/bin/apachectl stop && sleep 3 && $CBROOT/apache/bin/apachectl start
+$CBROOT/apache/bin/apachectl stop && sleep 6 && $CBROOT/apache/bin/apachectl start
