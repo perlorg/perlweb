@@ -1,0 +1,13 @@
+[%-  page = {
+            title = template.title,
+            style = template.style or 'default.html',
+	    site  = "CPAN Ratings (BETA)"
+    };
+
+    page.banner_prefix = page.site;	
+
+    page.style = 'perl-directory.html';
+
+    # don't include any whitespace from here...
+ #   RETURN;
+-%]

@@ -1,0 +1,12 @@
+
+
+Find a distribution or module you would like to review:
+
+<form action="/search">
+<input type="text" name="q" value="[% search.query | html %]">
+<select name="t">
+<option value="distribution" [% search.search_type == 'distribution' ? 'SELECTED' : '' %]>Distribution
+<option value="module" [% search.search_type == 'module' ? 'SELECTED' : '' %]>Module
+</select>
+<input type="submit" name="s" value="Search">
+</form>

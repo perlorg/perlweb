@@ -1,0 +1,21 @@
+
+[% page.title = 'Ratings and Reviews for CPAN';
+   page.forcenavigation = 1;
+  %]
+
+<h2>Rate a module</h2>
+
+[% PROCESS search/search_form.html %]
+
+<h2>Browse reviews</h2>
+
+Browing via search.cpan.org will be available soon.
+
+<h2>Recent reviews</h2>
+ 
+[% FOR review = reviews.search_recent %]
+
+[% PROCESS display/short_review.html, review => review %]
+
+[% END %]
+

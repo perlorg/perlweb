@@ -1,0 +1,94 @@
+[% page.title = 'Rate ' _ distribution.name; 
+   IF module;
+     page.title = 'Rate ' _ module _ '.pm';
+   END;
+ %]
+
+<p>
+
+<b>Hi [% user.name %]</b> (If you are not [% user.name %],
+<a href="http://auth.perl.org/auth/logout?redirect=http://[%
+   xurl =  config.site.cpanratings.servername _ r.uri _ '?' _ r.query_string;
+   xurl | uri 
+%]">click here</a>)
+
+</p>
+
+<form action="/rate/submit" method="GET">
+
+<table border="0">
+
+[% IF module %]
+<tr>
+<td>
+<b>Module name</b>
+</td>
+<td colspan="2">
+[%# UNLESS module 
+  # <input type="text" name="module" value="">
+  # ELSE %]
+[% module | html %]
+<input type="hidden" name="module" value="[% module | html %]">
+[%# END %]
+</td>
+</tr>
+[% END %]
+
+
+<tr>
+<td>
+<b>Distribution</b>
+</td>
+<td>
+[% distribution.name | html %]
+<input type="hidden" name="distribution" value="[% distribution.name | html %]">
+</td>
+<td>
+Version <select name="version_reviewed">
+[% FOR version = distribution.versions %]
+<option value="[% version %]">[% version %]
+[% END %]
+</select>
+</td>
+
+</tr>
+
+<tr><td colspan="3" style="background-color:#ccc"></td></tr>
+
+[% checked = review.checked_rating %]
+
+<!-- <pre>[% USE Dumper; Dumper.dump(checked) %]</pre> -->
+
+[% FOR question = questions %]
+<tr>
+<td><b>[% question.name %]</b></td>
+<td colspan="2">
+undef<input type="radio" name="[% question.field %]" [% checked.${question.field}.0 %] selected value="">&nbsp;
+[% FOR i = [ 1..5 ] %]
+[% i %]<input type="radio" name="[% question.field %]" [% checked.${question.field}.$i %] value="[%i%]">&nbsp;
+[% END %]
+[% IF errors.${question.field} %](<font class="error">[% errors.${question.field} %]</font>)[% END %]
+</td>
+</tr>
+<tr><td colspan="3" style="background-color:#ccc"></td></tr>
+[% END %]
+
+<tr><td colspan="3">&nbsp;</td></tr>
+
+
+<!--<tr> <td><b>Title</b>
+<td colspan="2"><input type="text" size="50" name="title"></td> </tr>-->
+
+<tr>
+<td colspan="3">
+<b>Review</b> [% IF errors.review %](<font class="error">[% errors.review %]</font>)[% END %] <br />
+<textarea name="review" cols="70" rows="12">[% review.review %]</textarea>
+<br />
+<input type="submit" name="submit" value="Submit">
+</td></tr>
+
+
+
+</table>
+
+</form>

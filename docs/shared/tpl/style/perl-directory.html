@@ -4,7 +4,8 @@
   title = page.title || template.title;
 
   UNLESS page.banner;
-    page.banner = 'The Perl Directory: <SPAN CLASS="title">' _ title _  "</span>";
+    prefix = page.banner_prefix || 'The Perl Directory';
+    page.banner = prefix _': <SPAN CLASS="title">' _ title _  "</span>";
   END;
 
   IF !page.site;
