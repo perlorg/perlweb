@@ -22,15 +22,21 @@
   # top level one?
   isindex = r.uri.match('^/(index.html)?$');
 
+  UNLESS page.css;
+    page.css = ns4_flag && "/css/perl-ns4.css" || "/css/perl.css";
+  END;
+
 %]
 
 <html>
 <head>
   <title>[% page.title %]</title>
-  <link rel="stylesheet" type="text/css" href="[% page.css || "/css/perl.css" %]" title="Default CSS2" media="screen">
+  <link rel="stylesheet" type="text/css" href="[% page.css %]" title="Default CSS2" media="screen">
   <link rel="shortcut icon" href="[% page.favicon || "/favicon.ico" %]">
 </head>
 <body>
+
+[% IF ns4_flag; INCLUDE "tpl/ns4warning.html"; END %]
 
 <TABLE CELLSPACING="0" WIDTH="690">
 <TR>

@@ -23,6 +23,10 @@
   # top level one?
   isindex = r.uri.match('^/(index.html)?$');
 
+  UNLESS page.css;
+    page.css = ns4_flag && "/css/perl-ns4.css" || "/css/perl.css";
+  END;
+
 %]
 
 <html>

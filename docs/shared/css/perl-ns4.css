@@ -1,18 +1,21 @@
-/* CSS File for Modern Browsers */
 
-/* also, perl-ns4.css stops ns4 from crashing. */
+/* CSS File for Netscape 4 */
+
+/* based on main perl.css, with some slight tweaks to prevent
+crashers, and 10 minutes of time to make it look a little nicer on one
+particular machine. */
 
 BODY {
-        font-family:helvetica,sans-serif;
+        font-family: sans-serif;
         font-size:14px;
   	font-weight:normal;
 	width: 730px;
 	background-color: #FFF;
-        
         }
 
 UL	{
 	list-style-type: square;
+        font-family: sans-serif;
 	}
 
 
@@ -58,7 +61,8 @@ TD	{
         background-color: #d2b48c;
         font-size:14px;
         font-weight: bold;
-        font-family:helvetica,sans-serif;
+        font-family: Verdana, Sans-Serif;
+/*        font-family:helvetica,sans-serif; */
         }
 
 /* Header */
@@ -118,25 +122,29 @@ aaxSIDE   {
         padding:10px;
 	width: 400px;
         margin-top: 1.5em;
+        text-align: center;
 	}
 
 .NAVITEM  {
         padding-bottom:.5em;
-        padding-top:1em;
-	width: 180px;
+      font-family:  sans-serif;
+        padding-top:1em; 
+/*	width: 180px;*/
 	}
 
 .MENU  {
-        padding-bottom:1em;
-	width: 180px;
-        border-bottom:1px solid #191970;
+      font-family:  sans-serif;
+      padding-bottom:1em;
+/*	width: 180px;*/
+        border-bottom:1px solid #FF0000;
 	}
 
 .TOPIC {
         font-weight: bolder;
         font-size: 16px;
 	color: #191970;
-        font-family:helvetica,sans-serif;
+        font-family: Verdana, Sans-Serif;
+/*        font-family:helvetica,sans-serif;*/
         text-decoration: underline;
 	padding-bottom: 4px;
         }
@@ -157,6 +165,7 @@ aaxSIDE   {
         }
 
 .CR  {
+  font-family: sans-serif;
         border-left: 1px solid #191970;
         border-right: 1px solid #191970;
         border-bottom: 1px solid #191970;
@@ -190,7 +199,9 @@ aaxSIDE   {
         font-size: 12px;
         padding-top: 0px;
         padding-bottom: 2px;
-	margin-bottom: 12px
+	margin-bottom: 12px;
+        background-color: #ddeeee;
+  font-family: sans-serif;
         }
 
 /* for default style */
@@ -198,7 +209,10 @@ aaxSIDE   {
         font-size: 12px;
         padding-top: 3px;
         border-top:2px solid #191970;
-	margin-top: -10px
+	margin-top: -10px;
+        background-color: #ddeeee;
+        
+  font-family: sans-serif;
         }
 
 
@@ -233,15 +247,9 @@ TD.NOVERTPAD {
 	}
 
 IMG.border {
-        border-width: 1px;
-        border-color: #191970;
-        border-style: solid;
-        padding: 4px;
-        margin: 2px;
         background: white;
         }
 
 .newsitem { 
-  width: 80%;
   text-align: justify;
 }
