@@ -16,6 +16,9 @@ db_user        = combust
 # docs_name specifies the default directory name for documents (under ~user/ or $ENV{CBROOT})
 # docs_name docs
 
+# add Apache::Reload to the httpd configuration; good for development!
+# apache_reload 1
+
 [www]
 servername = new.c.askask.com
 aliases    = w.c.askask.com

@@ -237,8 +237,10 @@ ErrorDocument 500 /error/500.html
      # no local.tmpl found
 [% END;  %]
 
+[% IF config.apache_reload %]
 PerlModule Apache::Reload
 PerlInitHandler Apache::Reload
+[% END %]
 
 PerlRequire [% root %]/apache/conf/startup.pl
 

@@ -14,7 +14,7 @@ my $config = Combust::Config->new();
 #exit;
 
 my $dir = "$ENV{CBROOT}/apache/conf/";
-my $local_dir = "$ENV{CBROOTLOCAL}/apache/conf" || '';
+my $local_dir = $ENV{CBROOTLOCAL} ? "$ENV{CBROOTLOCAL}/apache/conf" : '';
 
 my $include_path = []; 
 push @$include_path, $local_dir if $local_dir;
@@ -40,6 +40,7 @@ EOT
 
 # setup $conf/$params for the template
 
-$tt->process("httpd.tmpl", $params, $local_dir ? "$local_dir/httpd.conf" : "$dir/httpd.conf")
+$tt->process("httpd.tmpl", $params, 
+	     ($local_dir ? "$local_dir/httpd.conf" : "$dir/httpd.conf"))
   or die "Template Error: " . $tt->error();
 

@@ -22,7 +22,7 @@
 # --------------------                              --------------------
 # 
 # the path to your PID file
-ROOT=$CBROOTLOCAL || $CBROOT
+ROOT=${CBROOTLOCAL:-$CBROOT}
 PIDFILE=$ROOT/apache/logs/httpd.pid
 #
 # the path to your httpd binary, including options if necessary

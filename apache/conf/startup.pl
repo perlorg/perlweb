@@ -1,4 +1,4 @@
-BEGIN { if ($ENV{CBROOTLOCAL}) { use lib "$ENV{CBROOTLOCAL}/lib" } }
+BEGIN { if ($ENV{CBROOTLOCAL}) { unshift(@INC, "$ENV{CBROOTLOCAL}/lib") } }
 use lib "$ENV{CBROOT}/lib";
 
 use Apache::DBI;

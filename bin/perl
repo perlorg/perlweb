@@ -7,8 +7,6 @@ fi
 # funny bash syntax for setting ROOT to one or the other if the one isn't set
 ROOT=${CBROOTLOCAL:-$CBROOT}
 
-echo ROOT: $ROOT
-
 if [ ! -f $ROOT/combust.conf ]; then
   echo Could not find configuration file $ROOT/combust.conf
   exit

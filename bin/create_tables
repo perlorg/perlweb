@@ -14,6 +14,20 @@ my $store = "store varchar(25) not null";
 
 my @tables = split /\n\s*\n/, <<EOT;
 
+create table combust_cache (
+  id varchar(250) not null,
+  type varchar(16) NOT NULL default '',
+  created timestamp(14) not null,
+  purge_key varchar(64) null,
+  data mediumblob not null,
+  metadata mediumblob null,
+  serialized tinyint(1) NOT NULL default '0',
+  expire datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (id, type),
+  KEY expire_idx (expire),
+  KEY purge_idx (purge_key)
+) TYPE=INNODB;
+
 create table rre_mails (
   mail_id mediumint unsigned not null primary key auto_increment, 
   message_id varchar(200) not null,
@@ -46,20 +60,6 @@ create table rre_urls (
   key link_idx (link_id), 
 ) type=INNODB;
 
-
-create table combust_cache (
-  id varchar(250) not null,
-  type varchar(16) NOT NULL default '',
-  created timestamp(14) not null,
-  purge_key varchar(64) null,
-  data mediumblob not null,
-  metadata mediumblob null,
-  serialized tinyint(1) NOT NULL default '0',
-  expire datetime NOT NULL default '0000-00-00 00:00:00',
-  PRIMARY KEY  (id, type),
-  KEY expire_idx (expire),
-  KEY purge_idx (purge_key)
-) TYPE=INNODB;
 
 EOT
 
