@@ -1,0 +1,17 @@
+[%-  page = {
+            title = template.title,
+            style = template.style or 'default.html'
+	    site  = "Perl-LDAP"
+	    css   = "/site.css"
+    };
+
+    ldap = {
+      version  = "0.31"
+      released = "January 2004"
+    };
+
+    nofooter = 1;
+
+    # don't include any whitespace from here...
+ #   RETURN;
+-%]
