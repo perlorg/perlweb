@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+[%
+  title = page.title || template.title;
+
+  UNLESS page.banner;
+    page.banner = 'Perl Development: <SPAN CLASS="title">' _ title _  "</span>";
+  END;
+
+  IF !page.site;
+    page.site = "perl.org";
+  END;
+    
+
+  IF title;
+    page.title = "$title - ${page.site}";
+  ELSE;
+    page.title = "${page.site}"; 
+  END;  
+
+  # is this intentionally all indexes or should it just be the most
+  # top level one?
+  isindex = r.uri.match('^/(index.html)?$');
+
+%]
+
+<html>
+<head>
+  <title>[% page.title %]</title>
+  <link rel="stylesheet" type="text/css" href="[% page.css || "/css/perl.css" %]" title="Default CSS2" media="screen">
+  <link rel="shortcut icon" href="[% page.favicon || "/favicon.ico" %]">
+</head>
+<body>
+
+<TABLE CELLSPACING="0" WIDTH="690">
+<TR>
+<TD COLSPAN="2" class="BANNER">[% page.banner %]</TD>
+
+<TR VALIGN="TOP">
+<TD ID="NAV" WIDTH="180" HEIGHT="<% $isindex ? 350 : 500 %>">
+<DIV CLASS="SIDE">
+
+[% IF !isindex OR page.forcenavigation%] 
+
+[% TRY %]
+  [% PROCESS tpl/navigation.html %]
+[% CATCH %]
+  [% # no navigation %]
+[% END %]
+
+[% END %]
+
+[% page.sidebar %]
+&nbsp;
+</DIV>
+
+</TD>
+
+<TD>
+
+[% IF !isindex or notes.site != 'www' %]
+<DIV ID="MAIN">
+[% END %]
+<!-- end header.html -->
+
+[% content %]
+
+[% IF !isindex or notes.site != 'www' %]
+</DIV>
+[% END %]
+
+</TD>
+</TR>
+
+<TR>
+  <TD CLASS="CR">
+   &#169; Copyright 2002-2003 <a href="http://www.perlfoundation.org/">The&nbsp;Perl&nbsp;Foundation</a><BR>
+   <A HREF="[% page.siteinfo || "http://www.perl.org/siteinfo.html" %]"
+    >Site Information and Contacts</A>
+</TD> 
+
+<td colspan=2 align="center" valign="bottom">
+[% IF isindex and notes.site == 'www' %]
+   <!-- this cell sits at the bottom of the content area -->
+  [% IF page.beginner %]
+  <H3 class="BEGINNER">
+    [% page.beginner %]
+ </h3>
+  [% END %]
+[% END %]
+</td>
+
+
+</TR>
+</TABLE>
+
+<TABLE border="0" WIDTH="730" CELLSPACING="0" CELLPADDING="0">
+<TR ALIGN="RIGHT">
+
+<TD WIDTH="590" VALIGN="MIDDLE">
+
+
+<DIV CLASS="PDFOOTER">
+
+    Perl.org sites
+     : <A href="http://books.perl.org/" title="books.perl.org">books</a>
+     | <!-- <A href="http://rt.perl.org/perlbug/">bugs</a>
+     | --> <A href="http://dev.perl.org/">dev</a>
+     | <A href="http://history.perl.org/">history</a>
+     | <A href="http://jobs.perl.org/">jobs</a>
+     | <A href="http://learn.perl.org/">learn</a>
+     | <A href="http://lists.perl.org/">lists</a>
+     | <A href="http://use.perl.org/">use</a>
+    &nbsp;&nbsp;
+    </DIV>
+
+<DIV CLASS="TAGLINE">
+When you need perl, think perl.org
+    &nbsp;
+</DIV>
+
+
+<DIV ALIGN="LEFT">
+[% UNLESS notes.include_root == "/" %]
+[% PROCESS tpl/root_info.html %]
+[% END %]
+</DIV>
+
+</TD>
+<TD valign="middle" align="center">
+<A HREF="/camel.html">
+<img border=0
+     src="/simages/lcamel.gif"  
+     alt="the camel">&nbsp;&nbsp;&nbsp;&nbsp;
+</A>
+</TD>
+</TR>
+</TABLE>
+
+</body>
+</html>
+
+
+  

@@ -7,7 +7,7 @@
      page.site = "perl6";
      SET slashes = r.path_info.split("(/)");
      IF slashes.size < 5;
-         page.style = "dev-perl6.html";
+         page.style = "dev-nav.html";
      END ;
     END;
 
@@ -15,7 +15,7 @@
      page.site = "perl5";
      SET slashes = r.path_info.split("(/)");
      IF slashes.size < 5;
-         page.style = "dev-perl5.html";
+         page.style = "dev-nav.html";
      END ;
     END;
 
