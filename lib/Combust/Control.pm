@@ -106,7 +106,7 @@ sub _init {
 
   # return if we are already blessed
   return $class if ref $class;
-  
+
   # pass $r as an Apache::Request
   $r = Apache::Request->instance($r);
 
@@ -126,7 +126,7 @@ sub super ($$) {
   confess(__PACKAGE__ . '->super got called without $r') unless $r;
   return unless $r;
 
-  my $self = $class->_init;
+  my $self = $class->_init($r);
 
   my $status;
   eval {
@@ -310,23 +310,30 @@ sub send_output {
 
 sub redirect {
   my $self = shift;
-  my $r   = shift;
   my $url = shift;
+  $url = shift if ref $url;  # if we got passed an $r as the first parameter
   my $permanent = shift;
-  $r->pnotes('combust_notes')->{cookies}->bake_cookies
-    if $r->pnotes('combust_notes')->{cookies};
+  $self->r->pnotes('combust_notes')->{cookies}->bake_cookies
+    if $self->r->pnotes('combust_notes')->{cookies};
 
   # this should really check for a complete URI or some such; we'll do
   # that when it breaks on a ftp:// or whatever redirect :-)
   unless ($url =~ m!^https?://!) {
-    $url = "http://" . $r->hostname .
+    $url = "http://" . $self->r->hostname .
 	  ( $self->config->external_port 
 		? ":" . $self->config->external_port
 		: ""  )	. $url;
   }
 
-  $r->header_out('Location', $url);
+  $self->r->header_out('Location', $url);
   return $permanent ? MOVED : REDIRECT;
+}
+
+sub cookie {
+  my $self = shift;
+  my $r = $self->r;
+  my $cookies = $r->pnotes('combust_notes')->{cookies};
+  $cookies->cookie(@_);
 }
 
 #sub modified_time {

@@ -36,8 +36,6 @@ sub db_open {
 
   carp "$$ Develooper::DB::open_db called during server startup" if $Apache::Server::Starting;
 
-  my $imadbi       = delete $attr->{imadbi} ? '-ima' : '';
-
   my $lock         = delete $attr->{lock};
   my $lock_timeout = delete $attr->{lock_timeout};
   my $lock_name    = delete $attr->{lock_name};
@@ -46,7 +44,8 @@ sub db_open {
   my $RaiseError = $attr->{RaiseError};
   $RaiseError = (defined $RaiseError) ? $RaiseError : 1;  
 
-  my $dbh = $dbh{$db . $imadbi};
+  # TODO: cache attributes too, maybe subclass or use Apache::DBI somehow?
+  my $dbh = $dbh{$db};
   
   unless ($dbh and $dbh->ping()) {
 	my ($host, @args) = read_db_connection_parameters();
@@ -59,7 +58,7 @@ sub db_open {
 
 	if ($dbh) {
 	  $dbh->{RaiseError} = $RaiseError;
-	  $dbh{$db . $imadbi} = $dbh;
+	  $dbh{$db} = $dbh;
 	}
 	else {
 	  carp "Could not open $args[0] on $host: $DBI::errstr" if $RaiseError;

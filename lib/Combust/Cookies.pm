@@ -38,7 +38,7 @@ sub parse_cookies {
   my ($self) = @_;
 
   return $self->{_parsed} if $self->{_parsed};
-  my $cookies = Apache::Cookie->new($self->{r})->parse || {};
+  my $cookies = Apache::Cookie->fetch;
 
   my $parsed = {};
  
@@ -72,9 +72,11 @@ sub cookie {
   #warn Data::Dumper->Dump([\$self], [qw(cookie_self)]);
 
   my $cookies = $self->parse_cookies;
-  if ($val and (!$cookies->{$cookie} or $cookies->{$cookie} ne $val)) {
+
+  if (defined $val and (!$cookies->{$cookie} or $cookies->{$cookie} ne $val)) {
     #warn "Setting $cookie to [$val]\n";
     $cookies->{$cookie} = $val;
+    delete $cookies->{$cookie} if $val eq '';
     $self->changed($special_cookies_reverse{$cookie} || $default_cookie_name, 1);
   }
   $cookies->{$cookie} || '';
