@@ -4,6 +4,11 @@
     PerlSetVar site parrotcode
     PerlTransHandler Combust::Redirect
 
+    <Location /redirect/>
+       SetHandler   perl-script
+       PerlHandler Combust::Control::Redirect->super
+    </Location>
+
     <Location />
        SetHandler perl-script
        PerlHandler Combust::Control::Basic->super

@@ -75,7 +75,6 @@ sub get {
     if (!$result) {
       $result = $self->{UA}->get( $params->{url} );
       $result = $result->content if $result;
-      print STDERR "got result" . scalar localtime() . "\n";
       # $result = $self->{CONTEXT}->$action($params->{template});
       $self->{CACHE}->set($key, $result, $params->{ttl});
     }
