@@ -1,0 +1,167 @@
+=head1 This Month on perl5-porters (1-24 September 2004)
+
+A new summarizer.
+
+=head2 || and && returning lvalues
+
+Japhy wondered if || and && might be made to return lvalues,
+so that you could do
+
+  ($name && $age && $gender) = $_;
+
+Tassilo von Parseval noted a trick with anonymous refs:
+
+  ${\($name && $age && $gender)} = $_;
+
+However, Yitzchak Scott-Thoennes warned that this bit of magic
+shouldn't be relied on, because it only works with simple scalars
+by chance.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-08/msg00739.html
+
+=head2 Assignments inside lists misbehave
+
+Emil Jerabek reported this bug (#31403):
+
+  perl -e '@a = (1, 2, 3, 4, 5); @b = (@a, (@a = (8, 9))); print "@b\n"'
+  8 9 8 9 8 8 9
+
+Dave Mitchell said this is unfixable due to the "for efficiency,
+Perl does not reference count items pushed on the stack" problem.
+Yitzchak Scott-Thoennes wondered, on the other hand, if refcounting
+the stack might actually increase efficiency.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-09/msg00020.html
+
+=head2 += and ++ do different things under 'use integer' (bug #6021)
+
+  use integer;
+  $i = 0xffffffff; $i++;     # $i == 4294967296
+  $i = 0xffffffff; $i += 1;  # $i == 0
+
+Dave Mitchell said that pre/post ++ ops upgrade to NV, whereas +=
+remains an IV. He proposed adding integer-specific ++/-- ops, which
+everyone agreed wasn't appropriate for maint, with Nicolas Clark
+adding that "0x7fffffff + 1 under use integer is nasal demons".
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-09/msg00023.html
+
+=head2 Fields mishandling private attributes
+
+Jean Flouret noticed (bug #31078) that C<fields> ignores private fields
+that are declared after public ones. While Dave Mitchell fixed this
+in 5.8.X, he found that "the 5.9.X restricted hash technique" causes
+run-time errors when manipulating private fields.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-09/msg00071.html
+
+=head2 Named anonymous subroutines
+
+Ovid pointed out a trick to name anonymous subroutines:
+
+  my $method = sub { local *__ANON__ = '__ANON__method'; ... };
+
+There wasn't really a concensus on whether or not it should even be
+documented, as it doesn't always work and likely won't exist in perl6.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-09/msg00154.html
+
+=head2 Matching of backreferences to non-matched captures
+
+Hugo highlighted the following problem (bug #3589). Whereas
+
+  /^((.?)a\2)+$/
+
+necessarily matches 'a' or 'XaX' (for all X matching like '.'), when
+you move the '?' outside of the inner parentheses,
+
+  /^((.)?a\2)+$/
+
+it's not clear what \2 should match when (.)? doesn't match:
+
+=over 4
+
+=item empty string (as when ? is inside the parens)
+
+=item last-captured value (as in 5.6.0)
+
+=item nothing  (5.6.1 onward)
+
+=back
+
+though people seemed to lean toward the 3rd one.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-09/msg00263.html
+
+=head2 In brief
+
+Nathan Zook identified a bug (#31421) with leap years in Time::Local.
+There was discussion about the _nocheck versions of C<timelocal> and
+C<timegm>, their intent being to improve performance, not to make
+C<Time::Local> a date math module (for which, see CPAN).
+
+Steve Hay, Artiom, and Ken Fox negotiated to add an environment
+variable, C<PERL_ALLOW_NON_IFS_LSP>, to work around a conflict between
+a McAfee firewall and an LSP patch to win32 sockets.
+
+Steve Hay was lost in a forest of #defines but managed to produce
+a patch to fix chsize/ftruncate configuration on systems with no
+chsize (or ftruncate), such as Cygwin.
+
+Craig Berry added configuration support on VMS to allow C<unlink>
+to delete all versions of a file.
+
+Tels followed up with benchmarks of C<Math::BigInt> which show that
+it's about two orders of magnitude slower than Perl. Still needs
+to benchmark it with XS.
+
+Yves Orton illustrated (see bug #30966) how C<File::Spec::Win32>'s
+path function should handle quotes in PATH strings.
+
+skv@protey.ru reported (bug #31521) that passing a '%.2f' format to
+C<sv_vcatpvfn> gives a bogus result. Hugo (hv@crypt.org) found that the
+problem occurs due to the 'special-case "%.<number>[gf]"' section in
+C<sv_vcatpvfn>, and manifests itself from C code but not from Perl
+code, and he recommended that the special case be removed.
+
+Marcus Holland-Moritz analyzed C<SvOK_off>'s return value and simplified
+by putting a void cast in S<SvOOK_off> rather than the 38 places where
+it's called from.
+
+Yitzchak Scott-Thoennes submitted a patch to avoid unneeded C<lstat>s
+in C<glob>.
+
+Dan Kogai noticed that multiline UTF-16 scripts are broken, prompting
+Jarkko Hietaniemi to quote a story from gnat about yylex, tattoos,
+lipstick, and someone named Yuri.
+
+Dave Mitchell made an executive decision to fix sv_upgrade so that it
+sets the C<AVf_REAL> flag. In this case, bug #30066, it fixed a memory
+leak with nested shared data structures in threads, but not setting
+the flag had also caused other problems in the past.
+
+YAPC::EU took place in Belfast, Ireland. (Among other things, I heard
+that they had an auction to decide that next year's hosts' tshirt
+"color" be fishnet.)
+
+=head2 Releases
+
+Dan Kogai released Encode 2.02 (upgrade of big5-hkscs).
+
+Ken Williams released Module::Build 0.25_3 beta, File::Spec 0.90,
+and Cwd 2.21.
+
+Pavel Fedin ported Perl 5.6.1 to MorphOS.
+
+=head2 Reference
+
+The thread for bug number $BUGNUM can be found at
+http://rt.perl.org/rt3/Ticket/Display.html?id=$BUGNUM
+
+=head2 About this summary
+
+This summary was written by Scott Lanning as Rafael taught him
+des gros mots on #perlfr. Summaries are published at irregular
+intervals on http://use.perl.org/ and posted on a mailing list
+whose subscription address is perl5-summary-subscribe@perl.org.
+Comments and corrections welcome.
