@@ -57,6 +57,18 @@ sub get_title_aside {
   return $title;
 }
 
+sub resolve_pod_page_link {
+  my($self, $to, $section) = @_;
+  # section shouldn't be used here
+
+  # this mostly works, but Pod::Simple doesn't think a pod_page_link
+  # is absolute.  Probably a bug.
+  #if ($to =~ /^perl/) {
+  #  return 'http://www.perldoc.com/perl5.8.4/pod/' . $to;
+  #}
+
+  return undef;                 # the default returning TODO sucks
+}
 
 package Combust::Template::Translator::POD;
 use strict;
