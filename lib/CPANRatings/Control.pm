@@ -7,6 +7,7 @@ use LWP::Simple qw(get);
 use Combust::Cache;
 use Apache::Util qw();
 use CPANRatings::Model::Reviews;
+use Encode qw();
 
 sub super ($$) {
  
@@ -15,6 +16,23 @@ sub super ($$) {
   $self->param('user_info', $self->user_info);
 
   $self->SUPER::super(@_);
+}
+
+sub send_output {
+  my $class   = shift;
+  my $r       = shift;
+  my $routput = shift;
+
+  $routput = $$routput if ref $routput;
+
+  return $class->SUPER::send_output($r, \$routput, @_)
+    if (ref $routput eq "GLOB");
+
+#  binmode STDOUT, ':utf8';
+
+  my $str = Encode::encode('iso-8859-1', $routput, Encode::FB_HTMLCREF);
+
+  $class->SUPER::send_output($r, \$str, @_);
 }
 
 sub is_logged_in {
