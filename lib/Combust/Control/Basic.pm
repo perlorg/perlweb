@@ -27,6 +27,14 @@ sub handler ($$) {
 
   # TODO|FIXME: get branch etc from a cookie and/or query args.
 
+  # Don't serve special files:
+  #    Normally, we want to use DirectoryMatch for this, but URI->File
+  #    mapping is handled in this controller and parents.
+  return 404
+    if $uri =~ m!/\.svn/!;
+  # we don't need /\.ht.* here, because they aren't special in
+  # combust.
+
   # Some special handlers
   return $self->deadlink_handler($r)
     if $uri =~ m{^/!dl/.*};
