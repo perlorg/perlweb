@@ -1,0 +1,99 @@
+=head1 This Week on perl5-porters (5-11 July 2004)
+
+Perl 5.8.5 approaches, and the two release candidates of this week prove
+it.
+
+=head2 Release candidates
+
+Nicholas Clark released the first release candidate of 5.8.5 on Wednesday.
+Rafael noticed that the regression tests of Gtk2 weren't passing. This was
+because Gtk2 converts every string to UTF-8 internally, and the internal
+function to upgrade an SV to UTF-8 was no longer accepting C<undef> as an
+argument. Rafael provided a patch, which promptly led to RC2 (on Friday).
+Later, it was found that RC2 caused problems with Tk, for more or less the
+same reasons; Nick Ing-Simmons was working on this second problem.
+
+    RC1: http://groups.google.com/groups?selm=20040707103215.GT784%40plum.flirble.org
+    RC2: http://groups.google.com/groups?selm=20040709104542.GA1424%40plum.flirble.org
+
+=head2 Bad warning
+
+Yves Orton noticed the relatively new warning, I<Newline in left-justified
+string for sprintf>, and disapproves it, arguing that it is of little
+value for developers and forces to disable the C<printf> warning category
+only to silence it. However, it won't be removed from the upcoming 5.8.5,
+since code is frozen. Hugo van der Sanden posted some remarks on revamping
+the way warning categories work on perlmonks.
+
+    http://groups.google.com/groups?selm=E471ED2DFD9353458E8B75FD6D6B03071ADE9A%40defra1ex4.wcom.de
+    http://perlmonks.org/index.pl?node_id=373005
+
+=head2 Debugger restart
+
+Tim Bunce and Andrew Pimlott report that the C<R> command of the debugger
+(restart) leaves filehandles open, and this causes problems with databases
+connections. Andrew sent a patch to fix the problem.
+
+    http://groups.google.com/groups?selm=20040709095854.GC2215%40dansat.data-plan.com
+
+=head2 Some sort stuff
+
+Perl had an optimization for reverse sort, i.e. this kind of block:
+
+    @x = sort { $b cmp $a } @y;
+
+John P. Linderman noticed that this optimization breaks sort stability.
+Nicholas removed it.
+
+    http://groups.google.com/groups?selm=200407091710.NAA48941%40raptor.research.att.com
+
+Meanwhile, Michael Schwern noted that sort subroutines are not autoloaded
+(bug #30661).
+
+=head2 Selected bugs and fixes
+
+Dave Rolsky found a bug with NEXT and eval(), and (impressively) fixed it.
+
+    http://groups.google.com/groups?selm=Pine.LNX.4.58.0407091703010.4578%40urth.org
+
+Steve Hay worked with Ken Williams at improving Cwd's Windows support (bug
+#30132).
+
+Wolfgang Laun provided a fix for the splice() bug reported last week (bug
+#30568).
+
+Jeff Pinyan remarks that $1 et alii are not properly set in C<(?{...})>
+blocks in regular expressions during backtracking. (Bug #30608.) He tried
+to debug it, without success so far.
+
+Tassilo von Parseval asks whether it would be a good idea to backport a
+dummy version of the C<bytes> pragma to CPAN, so it can be used in pre-5.6
+perls. Robert Spiers remarks that using the C<if> pragma is a better
+alternative.
+
+Peter J. Acklam reported a bug (#30609) on Math::BigFloat, regarding the
+assignment operators (C<+=> etc.) Tels investigated.
+
+Andy Lester proposed to remove references to the idiom
+
+    sub new {
+	my $proto = shift;
+	my $class = ref($proto) || $proto;
+	...
+    }
+
+from the perl docs, as it is unnecessary in most cases (bug #30663).
+
+=head2 Help needed
+
+Nicholas rewrote the perltodo manpage, with lots of things that would be
+cool to have. In addition to fixing bugs, you know.
+
+    http://groups.google.com/groups?selm=20040711194958.GI784%40plum.flirble.org
+
+=head2 About this summary
+
+This summary was written by Rafael Garcia-Suarez. Weekly summaries are
+published on F<http://use.perl.org/> and posted on a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. Comments and
+corrections welcome.
