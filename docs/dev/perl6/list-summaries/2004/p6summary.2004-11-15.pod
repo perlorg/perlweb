@@ -1,0 +1,311 @@
+Perl 6 Summary for 2004-11-08 through 2004-11-15
+    All~
+
+    Welcome to yet another Monday summary. This would have been a Sunday
+    summary, but Avernum (from Spiderweb Software) forcibly prevented it. As
+    usual, we will start out with Perl 6 Language.
+
+  Perl 6 Language
+   modules and exports
+    Aaron Sherman wanted to know some specifics about exporting things from
+    modules. In particular, he did not want to have to retype a whole bunch
+    of things. Larry gave an answer indicating that some of what Aaron wants
+    should occur, but some things are difficult for good reason.
+
+    <http://xrl.us/dy47>
+
+   AUTOCLASS(DEF)? hooks
+    Rod Adams wanted to know if he could get AUTOCLASS and AUTOCLASSDEF
+    hooks. Larry told him that he probably could. Rod also wanted module
+    name aliasing. Larry told him that he could. Rod wanted to have module
+    names with arbitrary strings. Larry told him that he could. Rod wanted
+    to be able to load multiple version of the same module. Larry told him
+    that he could. The summarizer wanted each question of different focus to
+    be in a different message. Hopefully, Larry will tell him that they
+    should...
+
+    <http://xrl.us/dy48>
+
+   matching the nth occurrences
+    Sudarshan Gaikaiwari wanted to know how to match the "2nd last" last
+    occurrence in Perl6 rules. I think the message might have been posted
+    directly to google groups, as I did not get it in my email and nobody
+    replied. The example given matches the 2nd occurrence. As I am not sure
+    what is meant by "2nd last", I will answer the question I do know.
+    "m:2nd/foo/" will match the second occurrence of foo. The nth occurrence
+    can be accessed similarly.
+
+    <http://xrl.us/dy49>
+
+  Perl6 Compilers
+    Once again it is a race to see whether someone posts a comment to or
+    google picks up Perl6 Compilers first.
+
+  Parrot
+    Welcome to the week of the continuation. If continuations make your head
+    hurt overly, I advise taking a few Advil's before continuing. If
+    continuations are the way you naturally think, I would advise you to
+    stop playing with LISP compilers.
+
+   string pinning
+    Bernhard Schmalhofer wanted to pass the same C-string into to different
+    external functions so that the first could do things to it that the
+    second required. However, the solution that he found kept eating his
+    string after the first invocation. Dan and Leo came to the conclusion
+    that the 'd' parameter for NCI was the correct thing to use in this
+    situation.
+
+    <http://xrl.us/dy5a>
+
+   GC invocation
+    Last week Leo posted a radical idea about GC invocation, and I decided
+    not to invoke Warnock's Dilemma too soon. This week, I invoke it.
+
+    <http://xrl.us/dy5b>
+
+   perl vs /usr/bin/perl
+    Gerd Pokorra requested that "#! perl" be changed to "#! /usr/bin/perl".
+    Although Warnock applied, I think that this will likely not happen as
+    perl in not necessarily installed in user bin and people might want to
+    change which perl is invoked by changing there path.
+
+    <http://xrl.us/dy5c>
+
+   Command line support for various compilers
+    Will Coleda added a TODO item so that parrot can take various compiler
+    arguments on the command line. What are you waiting for?
+
+    <http://xrl.us/dy5d>
+
+   Register Stomping
+    Matt Diephouse was having troubles with his newly updated forth
+    compiler. The verdict seems to be that he has uncovered a bug. To quote
+    Matt, "*sigh*".
+
+    <http://xrl.us/dy5e>
+
+   Calling Continuations, Basic Blocks, and Register Allocation
+    Either Leo or Jeff Clites (I don't recall who) started what is probably
+    the largest thread for this week, whose focus is register allocation and
+    continuation troubles. Apparently the presence of continuations can
+    unduly extend the life time of registers (as can try-catch things, but
+    they seem less important. The suggested sollutions all have some
+    shortcomings, although it appears that only using lexicals is winning.
+
+    <http://xrl.us/dy5f>
+
+    <http://xrl.us/dy5g>
+
+   basic compilation example
+    Jeff Clites wondered how something like (a + b) would compile. The
+    answer is that intermediate PMC should be initialized to Undef which
+    will morph as appropriate.
+
+    <http://xrl.us/dy5h>
+
+   eval changes
+    Leo updated the implementation of eval to make it even cooler or
+    possibly just clean it up and fix some bugs.... I forget.
+
+    <http://xrl.us/dy5i>
+
+   Basic operations for MMD
+    Dan asked for volunteers to speck out the basic vtable and MMD functions
+    for CLS (common language something-or-other). Sam Ruby said he would be
+    willing to take a stabe at it in a few weeks. One week has gone by, and
+    Sam grows ever closer to stabbing things.
+
+    <http://xrl.us/dy5j>
+
+   no limit on imcc identifier length
+    Will Coleda noted that there was no limit on the length of imcc
+    identifiers. Here come the eval buffer overflow attacks...
+
+    <http://xrl.us/dy5k>
+
+   Duplicate local labels break PASM
+    Will noticed that duplicate local labels cause IMCC to output broken
+    PASM. I could be mistaken, but I though that IMCC -> PASM has been
+    broken for a while...
+
+    <http://xrl.us/dy5m>
+
+   Parrot API
+    Leo wondered if the parrot_api.pl could be less strict about what it
+    thought was public and what was not. Jarkko Hietaniemi responded that
+    that was not his call to make, and silence reigned supreme.
+
+    <http://xrl.us/dy5n>
+
+   Empty Sub troubles
+    Will Colleda posted a bug for empty subs in IMCC. Stéphane Payrard
+    provided a fix. Leo applied it.
+
+    <http://xrl.us/dy5o>
+
+   Languages with Object Support?
+    Jeff Horwitz wondered if there were any languages with object support
+    that he could bend to the evil ends of mod_parrot. While no one
+    answered, I think Parakeet might be such a language...
+
+    <http://xrl.us/dy5p>
+
+   WinXP problems
+    Christian Lott has been having troubles with WinXP. In particular
+    problems with ops2vim.pl. Read on for the blow by blow.
+
+    <http://xrl.us/dy5q>
+
+   Strings + Woking Correctly = Pain
+    In his noble efforts to make Parrot respect foreign languages and
+    cultures, while not necessitating ICU. Dan has been doing massive
+    reworkings of strings. He reports... progress... He also posed a
+    question for all to ponder: "How global should the defaults be?"
+
+    <http://xrl.us/dy5r>
+
+    <http://xrl.us/dy5s>
+
+    <http://xrl.us/dy5t>
+
+    <http://xrl.us/dy5u>
+
+   runtime/parrot/library/config.pbc
+    Nicholas Clark wondered what would generate this file. Leo answered.
+    Nicholas tracked his problem down to a quirk in FreeBSD make and fixed
+    it.
+
+    <http://xrl.us/dy5v>
+
+   #line directives from PMC files
+    Nicholas Clark announced his triumph over #line directives in pmc2c2.pl.
+    People were impressed, but promptly asked how to turn it off. Kids these
+    days don't appreciate what they got ;-)
+
+    <http://xrl.us/dy5w>
+
+   Tail Calls
+    Jeff Clites asked about tails calls in the pressence of continuations.
+    After much debate, the concensus seems to be that they don't effect
+    eachother much at all. In fact continuations make tail calls easier.
+    However, the topic of whether these were an optiization that IMCC should
+    detect or they should be explicitly generated by the compiler also came
+    up. I think the final decision was compiler generated, although I doubt
+    I would be alone in not minding if IMCC had a flag to allow it to add
+    them as it saw fit...
+
+    <http://xrl.us/dy5x>
+
+   Character Classes
+    Patrick R. Michaud wanted to know if Parrot had character class support
+    (i.e. checking membership). Leo responded that it would after Dan's
+    aforementioned string stuff.
+
+    <http://xrl.us/dy5y>
+
+   POSTCOMP vs LOAD
+    Leo asked what the differences between POSTCOMP and LOAD are. Dan
+    provided the answer: POSTCOMP is run only when (and as soon as) the sub
+    is compiled. LOAD is run when the sub is loaded. This need not be the
+    same time if the source is used to generate bytecode which is later
+    executed.
+
+    <http://xrl.us/dy5z>
+
+   Register allocation/spilling/volatitlity
+    Jeff Clites suggested using variable size register frames with explicit
+    volatile and non-volatile sections. Leo responded that this would cause
+    serious code bloat, and pointed him to his and Miroslav Silovic's
+    "watermark" scheme. Others voiced support for this as well as removing
+    the implicit operands. Dan said no.
+
+    <http://xrl.us/dy52>
+
+   AIX JIT gnomes
+    Adam Thomason observed that the AIX JIT problems have gone away and
+    thanked the gnomes responsible. Remember, the proper sacrifice for
+    little people like gnomes are mini-Milanos or other reduced size cookies
+    (nothing from Keebler as the gnomes and elves have long unresolved
+    issues).
+
+    <http://xrl.us/dy53>
+
+   Register Allocation for Fun and Profit
+    Bill Coffman's register allocator (or should I say his implementation of
+    the Matula/Chaitin/Briggs algorithm) grows ever closer to being commited
+    (although my initial prediction of two weeks ago was clearly wrong). In
+    fact, his algorithm is so good that it even turned up bugs from other
+    peices of the code. Dan started a test run on his evil code, so we
+    should have truly stressed performance numbers within the next several
+    fortnights.
+
+    <http://xrl.us/dy54>
+
+    <http://xrl.us/dy55>
+
+   imcc segfault on bad if
+    Gopal V found a way to make imcc segfault. I think it is still waiting
+    for a fix...
+
+    <http://xrl.us/dy56>
+
+   no perldoc == BIG FAT WARNING
+    James deBoer submitted a patch to fail if config did not find perldoc
+    last week. This week the request has gone out to modify it to warn in a
+    big and preferably fat way. No answer yet.
+
+    <http://xrl.us/dy57>
+
+   RT clean up
+    Will Coleda, whose dilligent minding of the RT queue is much
+    appreciated, closed a few tickets which no longer applies.
+
+    <http://xrl.us/dy58>
+
+    <http://xrl.us/dy59>
+
+   BASIC compiler
+    Will "Dr. Frankenstein" Coleda has attempted to resurrect the basic
+    compiler with some major surgery. He is making progress. Joshua Gatcomb
+    put out a request for a new maintainer.
+
+    <http://xrl.us/dy6a>
+
+    <http://xrl.us/dy6b>
+
+   Config provides slightly more info
+    Luke Palmer provided a patch for making Configure.pl slightly more
+    informative. Brent 'Dax' Royal-Gordon applied it.
+
+    <http://xrl.us/dy6c>
+
+   find-method inheritence
+    Sam Ruby asked for comment before committing a patch to allow calling of
+    attributes as methods and to allow inheritence of attributes. When no
+    one commented, he committed.
+
+    <http://xrl.us/dy6d>
+
+   Threads, Events, Win32
+    Gabe Schaffer pointed out some issues with threads and events from a
+    Win32 perspective. Leo pointed out that this has not yet been fully
+    implemented/abstracted/documented and observed that Gabe would be a
+    welcome volunteer.
+
+    <http://xrl.us/dy6e>
+
+   core dump on japh16
+    Bernhard Schmalhofer noticed that japh16 coredumps. He also submitted a
+    simplistic fix.
+
+    <http://xrl.us/dy6f>
+
+  The usual footer
+    If you find these summaries useful or enjoyable, please consider
+    contributing to the Perl Foundation to help support the development of
+    Perl. You might also like to send feedback to ubermatt@gmail.com
+    http://donate.perl-foundation.org/ -- The Perl Foundation
+    http://dev.perl.org/perl6/ -- Perl 6 Development site
+    http://planet.parrotcode.org/ -- Parrot Blog aggregator
+
+
