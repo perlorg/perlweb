@@ -1,0 +1,118 @@
+[% page.style = "default.html" %]
+[% page.title = 'The Phalanx Project' %]
+[% page.footer = 'You carry your helmet for you, but you carry your shield for the entire line.' %]
+[% page.sidebar = BLOCK %]
+
+<a href="http://testers.cpan.org/">CPAN testers</a><br />
+
+[% END %]
+
+<CENTER>
+<img alt="[KWALITEE!]" src="../images/phalanx-kwalitee.jpg" width="520" height="232" align="center">
+</CENTER>
+<h2>Phalanx</h2>
+
+<pre>
+=head1 Top 100 modules from CPAN
+
+How the list is determined doesn't really matter.
+
+The list will definitely be hand-tweaked.
+
+Separate into strata.
+
+=head1 What to avoid
+
+sprintf() breaking in PHP
+
+(-3)**3 == 27
+
+=head1 The improvements
+
+The muster tests are not "extra" tests.  We're adding to the distros.
+
+We will check against docs and code and tests.  All should be in sync.
+
+=head1 Author involvement
+
+Want to involve the authors.  It's good for everyone.
+
+If they refuse, that's OK.  We can go without them.
+
+We'll find some people who Get It, do their modules, and then make
+it public what we've done.
+
+=head1 Testing guidelines
+
+Come up with good guidelines
+
+Test the edge cases
+
+Work it into the core.
+
+=head1 Test::Harness improvements
+
+Improve the protocol
+
+Add randomizing.
+
+Add stats
+
+=head1 Stats
+
+Need to keep track of what the improvements to the distros are.
+If we add tests, we need to track that.
+
+=head1 Interested parties
+
+Testing cabal
+
+acme
+
+Autrijus
+
+cogent
+
+Fox
+
+=head1 Stuff to add/drop
+
+Sky says: No Tk, no libnet
+
+=head1 misc
+
+We WILL find bugs.  They're there.
+
+Tests will get folded into the main distribution of the module.
+We'll create the patches and feed 'em back.
+
+We'll check documentation vs. tests vs. code, too.
+
+Need a central place for the musterers.
+
+The elf army slide is the key image.
+
+Doesn't rely on Ponie.  Testing will be critical with Ponie.  If DBI breaks under Ponie, it's no good for anyone.
+
+Perl core will be part of it.
+
+Need some sort of repository so people can collaborate
+
+Check module dependencies
+
+Test all pod against Test::Pod
+
+Need a tracking mechanism to track progress.  maybe an RT queue.
+
+CPAN is the standard library of Perl.
+
+Stats are approximate: Kwalitee
+
+Many modules may not need much help.
+
+Proactive defense
+
+Use Devel::Cover and gconv
+
+How much of the perl code and C code in the core is acutally covered by the core tests?
+</pRE>
