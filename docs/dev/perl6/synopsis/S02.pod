@@ -12,7 +12,7 @@ Larry Wall <larry@wall.org>
 
   Maintainer: Luke Palmer <luke@luqui.org>
   Date: 10 Aug 2004
-  Last Modified: 18 Aug 2004
+  Last Modified: 16 Sep 2004
   Number: 2
   Version: 0
 
@@ -332,7 +332,10 @@ expressions, but these have been replaced with interpolation of curlies
 =item *
 
 The current lexical symbol table may now be referenced through the
-pseudo-package C<MY>.
+pseudo-package C<MY>, or the corresponding variable C<%MY::>:
+
+    my $foo = 42;
+    say %MY::«$foo»;	# prints "42"
 
 =item *
 
@@ -356,8 +359,48 @@ is C<$*ERR>.
 
 =item *
 
-Magical file-scoped lexicals live in the C<=> package.  C<@=DATA> is
-the name of your DATA filehandle, for instance.
+Magical file-scoped values live in variables with a C<=> secondary
+sigil.  C<@=DATA> is the name of your C<DATA> filehandle, for instance.
+As with C<*>, the C<=> may also be used as a package name: C<$=::DATA>.
+
+=item *
+
+Magical lexically scoped values live in variables with a C<?>
+secondary sigil.  These are all values that are known to the compiler.
+(Run-time values go into the C<*> namespace.)  C<$?FILE> and C<$?LINE>
+are your current file and line number, for instance.  As with C<*>,
+the C<?> may also be used as a package name: C<$?::SUB>.  Here are some
+possibilities:
+
+    $?OS        Which os am I compiled for?
+    $?OSVER     Which os version am I compiled for?
+    $?PERLVER   Which Perl version am I compiled for?
+    $?FILE      Which file am I in?
+    $?LINE      Which line am I at?
+    $?PACKAGE   Which package am I in?
+    @?PACKAGE   Which packages am I in?
+    $?MODULE    Which module am I in?
+    @?MODULE    Which modules am I in?
+    $?CLASS     Which class am I in?
+    @?CLASS     Which classes am I in?
+    $?ROLE      Which role am I in?
+    @?ROLE      Which roles am I in?
+    $?GRAMMAR   Which grammar am I in?
+    @?GRAMMAR   Which grammars am I in?
+    &?SUB       Which sub am I in?
+    @?SUB       Which subs am I in?
+    $?SUBNAME   Which sub name am I in?
+    @?SUBNAME   Which sub names am I in?
+    &?BLOCK     Which block am I in?
+    @?BLOCK     Which blocks am I in?
+    $?LABEL	Which block label am I in?
+    @?LABEL	Which block labels am I in?
+
+Note that some of these things have parallels in the * space:
+
+    $*OS	Which OS I'm running under
+    $*OSVER	Which OS version I'm running under
+    $*PERLVER	Which Perl version I'm running under
 
 =back
 
@@ -510,7 +553,7 @@ split on whitespace still works out.
 
 Secondary sigils have no influence over whether the primary sigil
 interpolates.  That is, if C<$a> interpolates, so do C<$^a>, C<$*a>,
-C<$=a>, C<$.a>, and C<$:a>.  It only depends on the C<$>.
+C<$=a>, C<$?a>, C<$.a>, and C<$:a>.  It only depends on the C<$>.
 
 =item *
 
@@ -599,9 +642,9 @@ The double-underscore forms are going away:
 
     Old                 New
     ---                 ---
-    __LINE__            $=line
-    __FILE__            $=file
-    __PACKAGE__         $=package
+    __LINE__            $?LINE
+    __FILE__            $?FILE
+    __PACKAGE__         $?PACKAGE
     __END__             =begin END
     __DATA__            =begin DATA
 
@@ -611,9 +654,14 @@ stream is no longer special--any POD stream in the current file
 can be accessed via a filehandle, named as C<%=«DATA»> and such.
 Alternately, you can treat a pod stream as a scalar via C<$=DATA>
 or as an array via C<@=DATA>.  Presumably a module could read all
-its COMMENT blocks from C<@=COMMENT>, for instance.
+its COMMENT blocks from C<@=COMMENT>, for instance.  Each chunk of
+pod comes as a separate array element.  You have to split it into lines
+yourself.  Each chunk has a C<.linenum> property that indicates its
+starting line within the source file.
 
-There is also a new C<$=sub> variable containing the current lexical sub.
+There is also a new C<$?SUBNAME> variable containing the name of current
+lexical sub.  The lexical sub itself is C<&?SUB>.  The current block
+is C<&?BLOCK>.  If the block has a label, that shows up in C<$?BLOCKLABEL>.
 
 =item *
 

@@ -1,6 +1,8 @@
+=encoding utf8
+
 =head1 TITLE
 
-Synopsis 6: A Summary of Apocalypse 6
+Synopsis 6: Subroutines
 
 =head1 AUTHOR
 
@@ -11,9 +13,9 @@ Allison Randal <al@shadowed.net>
 
   Maintainer: Allison Randal <al@shadowed.net>
   Date: 21 Mar 2003
-  Last Modified: 12 Apr 2003
+  Last Modified: 15 Sep 2004
   Number: 6
-  Version: 1
+  Version: 2
 
 
 This document summarizes Apocalypse 6, which covers subroutines and the
@@ -32,8 +34,8 @@ B<Submethods> (keyword: C<submethod>) are non-inheritable methods, or
 subroutines masquerading as methods. They have an invocant and belong to
 a particular class.
 
-B<Multimethods> (keyword: C<multi>) are routines that do not belong to a
-particular class, but which have one or more invocants. 
+B<Multimethods> (keyword: C<multi>) are routines that transcend class
+boundaries, and can have one or more invocants. 
 
 B<Rules> (keyword: C<rule>) are methods (of a grammar) that perform
 pattern matching. Their associated block has a special syntax (see
@@ -76,7 +78,7 @@ aliases to actual arguments:
 If you need to modify the elements of C<@_>, declare it with the C<is rw>
 trait:
 
-    sub swap (*@_ is rw) { @[0,1] = @_[1,0] }
+    sub swap (*@_ is rw) { @_[0,1] = @_[1,0] }
 
 
 =head2 Blocks
@@ -105,7 +107,7 @@ parentheses and a pointy sub may not be given traits.
 
 To predeclare a subroutine without actually defining it, use a "stub block":
 
-    sub foo {...};     # Yes, those three dots are part of the actual syntax
+    sub foo {...}     # Yes, those three dots are part of the actual syntax
 
 The old Perl 5 form:
 
@@ -158,16 +160,14 @@ or a specially tied proxy object, with suitably programmed
 C<FETCH> and C<STORE> methods:
 
     sub checklastval ($passwd) is rw {
-        my $proxy is Proxy(
+        return new Proxy:
                 FETCH => sub ($self) {
                             return lastval();
                          },
                 STORE => sub ($self, $val) {
                             die unless check($passwd);
                             lastval() = $val;
-                         },
-        );
-        return $proxy;
+                         };
     }
 
 
@@ -197,27 +197,32 @@ the closing.
 
 Operator names can be any sequence of Unicode characters. For example:
 
-    sub infix:(c)        ($text, $owner) { return $text but Copyright($owner) }
-    method prefix:E<plusmn> (Num $x) returns Num { return +$x | -$x }
-    multi postfix:!             (Int $n) { $n<2 ?? 1 :: $n*($n-1)! }
-    macro circumfix:<!--...-->   ($text) { "" }
+    sub infix:\(c\) ($text, $owner) { return $text but Copyright($owner) }
+    method prefix:± (Num $x) returns Num { return +$x | -$x }
+    multi sub postfix:! (Int $n) { $n < 2 ?? 1 :: $n*($n-1)! }
+    macro circumfix:\<!--...--\> ($text) is parsed / .*? / { "" }
 
     my $document = $text (c) $me;
 
-    my $tolerance = E<plusmn>7!;
+    my $tolerance = ±7!;
 
     <!-- This is now a comment -->
 
+Parentheses, square brackets, curlies, angle brackets, semicolons,
+commas, and backslashes may be part of the name only if backslashed.
+Whitespace may never be part of the name.  A null operator name does
+not define a null or whitespace operator, but a default matching rule
+for that syntactic category.
 
 =head1 Parameters and arguments
 
 Perl 6 subroutines may be declared with parameter lists.
 
 By default, all parameters are constant aliases to their corresponding
-arguments -- the parameter is just another name for the original
+arguments--the parameter is just another name for the original
 argument, but the argument can't be modified through it. To allow
-modification, use the C<is rw> trait. To pass-by-copy, use the C<is
-copy> trait.
+modification, use the C<is rw> trait. To pass-by-copy, use the C<is copy>
+trait.
 
 Parameters may be required or optional. They may be passed by position,
 or by name. Individual parameters may confer a scalar or list context
@@ -242,13 +247,14 @@ and is passed as the left operand of the method call operator:
     print $obj.get_name();
     $obj.set_name("Sam");
 
-Multimethod invocants are specified at the start of the parameter
+Multimethod and multisub invocants are specified at the start of the parameter
 list, with a colon terminating the list of invocants:
 
-    multi handle_event ($window, $event: $mode) {...}    # two invocants
+    multi sub handle_event ($window, $event: $mode) {...}    # two invocants
 
-Multimethod invocant arguments are passed positionally, though the first
-invocant can be passed via the method call syntax:
+Multi invocant arguments are passed positionally, though the first
+invocant can be passed via the method call syntax if the multi happens
+to be defined as a multi method within the class of the first invocant.
 
     # Multimethod calls...
     handle_event($w, $e, $m);
@@ -267,7 +273,7 @@ same precedence:
 Passing too many or too few invocants is a fatal error.
 
 The first invocant is always the topic of the corresponding method
-or multimethod.
+or multi.
 
 
 =head2 Required parameters
@@ -284,6 +290,11 @@ specify it as a pair: C<< I<parameter_name> => I<argument_value> >>.
     $comparison = numcmp(2,7);
     $comparison = numcmp(x=>2, y=>7);
     $comparison = numcmp(y=>7, x=>2);
+
+Pairs may also be passed in adverbial pair notation:
+
+    $comparison = numcmp(:x(2), :y(7));
+    $comparison = numcmp(:y(7), :x(2));
 
 Passing the wrong number of required arguments is a fatal error.
 
@@ -304,7 +315,7 @@ The C<=> sign introduces a default value:
 
     sub my_substr ($str, ?$from = 0, ?$len = Inf) {...}
 
-Default values can be calculated at run-time. They can even use the values of
+Default values can be calculated at run-time. They may even use the values of
 preceding parameters:
 
     sub xml_tag ($tag, ?$endtag = matching_tag($tag) ) {...}
@@ -335,39 +346,54 @@ order you pass them in, so long as they follow any positional arguments:
 
     $formal = formalize($title, case=>'upper');
     $formal = formalize($title, justify=>'left');
-    $formal = formalize($title, justify=>'right', case=>'title');
+    $formal = formalize($title, :justify«right», :case«title»);
 
 Named parameters are always optional. Default values for named
 parameters are defined in the same way as for optional parameters. Named
 parameters default to C<undef> if they have no default.
 
+Again, note the use of adverbial pairs in the argument list.  The following
+table shows the correspondence:
+
+    Fat arrow		Adverbial pair
+    =========		==============
+    a => 1		:a
+    a => 0		:a(0)
+    a => $x		:a($x)
+    a => "foo"		:a«foo»
+    a => «foo bar»	:a«foo bar»
+    a => {...}		:a{...}
+    a => [...]		:a[...]
+    "" => {...}		:{...}
 
 =head2 List parameters
 
 List parameters capture a variable length list of data. They're used
 in subroutines like C<print>, where the number of arguments needs to be
 flexible. They're also called "variadic parameters", because they take a
-I<variable> number of arguments.
+I<variable> number of arguments.  But generally we call them "slurpy"
+parameters because they slurp up arguments.
 
-Variadic parameters follow any required or optional parameters. They are
+Slurpy parameters follow any required or optional parameters. They are
 marked by a C<*> before the parameter:
 
-    sub duplicate($n, *@data, *%flag) {...}
+    sub duplicate($n, *%flag, *@data) {...}
 
-Named variadic arguments are bound to the variadic hash (C<*%flag>
+Named arguments are bound to the slurpy hash (C<*%flag>
 in the above example). Such arguments are evaluated in scalar context.
 Any remaining variadic arguments at the end of the argument list
-are bound to the variadic array (C<*@data> above) and are evaluated
+are bound to the slurpy array (C<*@data> above) and are evaluated
 in list context.
 
 For example:
 
-    duplicate(3, reverse=>1, collate=>0, 2, 3, 5, 7, 11, 14);
+    duplicate(3, reverse => 1, collate => 0, 2, 3, 5, 7, 11, 14);
+    duplicate(3, :reverse, :collate(0), 2, 3, 5, 7, 11, 14);  # same
 
     # The @data parameter receives [2, 3, 5, 7, 11, 14]
-    # The %flag parameter receives { reverse=>1, collate=>0 }
+    # The %flag parameter receives { reverse => 1, collate => 0 }
 
-Variadic scalar parameters capture what would otherwise be the first
+Slurpy scalar parameters capture what would otherwise be the first
 elements of the variadic array:
 
     sub head(*$head, *@tail)         { return $head }
@@ -381,13 +407,18 @@ elements of the variadic array:
                                 # $neck parameter receives 2
                                 # @tail parameter receives [3, 4, 5]
 
-Variadic scalars still impose list context on their arguments.
+Slurpy scalars still impose list context on their arguments.
 
-Variadic parameters are treated lazily -- the list is only flattened
+Slurpy parameters are treated lazily -- the list is only flattened
 into an array when individual elements are actually accessed:
 
         @fromtwo = tail(1..Inf);        # @fromtwo contains a lazy [2..Inf]
 
+=head2
+
+It's also possible to declare a slurpy block: C<*&block>.  It slurps
+up any nameless block, specified by C<:{...}>.  This will turn out
+useful when we discuss adverbs below.
 
 =head2 Flattening argument lists
 
@@ -424,11 +455,11 @@ Each operator expects to find a call to a variadic subroutine on its
 
     @data ==> grep { $_ % 2 };
 
-It first flattens the list of values on the blunt side. Then it binds
-that flattened list to the variadic parameter(s) of the subroutine on
-the sharp side. So both of the calls above are equivalent to:
+It binds the (potentially lazy) list from the blunt end to the slurpy
+parameter(s) of the subroutine on the sharp end. So both of the calls
+above are equivalent to:
 
-    grep { $_ % 2 } *@data;
+    grep { $_ % 2 } @data;
 
 Leftward pipes are a convenient way of explicitly indicating the typical
 right-to-left flow of data through a chain of operations:
@@ -443,10 +474,12 @@ Rightward pipes are a convenient way of reversing the normal data flow in a
 chain of operations, to make it read left-to-right:
 
     @oddsquares =
-            @nums ==> grep { $_ % 2 } ==> sort ==> map { $_**2 };
+            (@nums ==> grep { $_ % 2 } ==> sort ==> map { $_**2 });
+
+Note that the parens are necessary there due to precedence.
 
 If the operand on the sharp end of a pipe is not a call to a variadic
-operation, it must be a variable, in which case the list operand is
+operation, it must be a variable, in which case the list value is
 assigned to the variable. This special case allows for "pure" processing
 chains:
 
@@ -459,7 +492,7 @@ chains:
 
 Parameters declared with the C<&> sigil take blocks, closures, or
 subroutines as their arguments. Closure parameters can be required,
-optional, or named.
+optional, named, or slurpy.
 
     sub limited_grep (Int $count, &block, *@list) {...}
 
@@ -476,14 +509,14 @@ lexically scoped subroutine:
         ...
     }
 
-The closure parameter can have its own signature (from which the
-parameter names may be omitted):
+The closure parameter can have its own signature in angles (from which the
+parameter names should be omitted):
 
-    sub limited_Dog_grep ($count, &block(Dog), Dog *@list) {...}
+    sub limited_Dog_grep ($count, &block<Dog>, Dog *@list) {...}
 
 and even a return type:
 
-    sub limited_Dog_grep ($count, &block(Dog) returns Bool, Dog *@list) {...}
+    sub limited_Dog_grep ($count, &block<Dog> returns Bool, Dog *@list) {...}
 
 When an argument is passed to a closure parameter that has this kind of
 signature, the argument must be a C<Code> object with a compatible
@@ -906,7 +939,7 @@ To return from other types of code structures, the C<leave> funtion is used:
 
     leave;                      # return from innermost block of any kind
     leave Method;               # return from innermost calling method
-    leave &_ <== 1,2,3;         # Return from current sub. Same as: return 1,2,3
+    leave &=sub <== 1,2,3;      # Return from current sub. Same as: return 1,2,3
     leave &foo <== 1,2,3;       # Return from innermost surrounding call to &foo
     leave Loop, label=>'COUNT'; # Same as: last COUNT;
 

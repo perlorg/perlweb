@@ -12,9 +12,9 @@ Luke Palmer <luke@luqui.org>
 
   Maintainer: Luke Palmer <luke@luqui.org>
   Date: 8 Mar 2004
-  Last Modified: 13 Sep 2004
+  Last Modified: 14 Sep 2004
   Number: 3
-  Version: 2
+  Version: 3
 
 =head1 Operator renaming
 
@@ -28,9 +28,10 @@ Huffman-code the language:
 =item * The string concatenation C<.> becomes C<~>.  Think of it as
 "stitching" the two ends of its arguments together.
 
-=item * Unary C<~> now imposes a string context on its argument, and
-C<+> imposes a numeric context (as opposed to being a no-op in Perl 5).
-Along the same lines, C<?> imposes a boolean context.
+=item * Unary C<~> now imposes a string context on its argument,
+and C<+> imposes a numeric context (as opposed to being a no-op
+in Perl 5).  Along the same lines, C<?> imposes a boolean context,
+and C<*> imposes a list context.
 
 =item * Bitwise operators get a data type prefix: C<+>, C<~>, or C<?>.
 For example, C<|> becomes either C<+|> or C<~|> or C<?|>, depending on
@@ -49,7 +50,7 @@ repetitions of a list or scalar).
 
 =item * Trinary C<? :> becomes C<?? ::>.
 
-=item * C<qw{ ... }> gets a synonym: C< E<laquo> ... E<raquo> >.
+=item * C<qw{ ... }> gets a synonym: C< « ... » >.
 For those still living without the blessings of Unicode, that can also be
 written: C<<< << ... >> >>>.
 
@@ -68,9 +69,13 @@ too: C<err>.
 
 =item * Binary C<< => >> is no longer just a "fancy comma."  It now
 constructs a C<Pair> object that can, among other things, be used to
-pass named arguments to functions.  
+pass named arguments to functions.  It provides scalar context to both sides.
 
 =item * C<^^> is the high-precedence version of C<xor>.
+
+=item * C<=~> becomes the "smart match" operator C<~~>, with a whole new
+set of semantics.  Anywhere you used C<=~> before you now use C<~~>, but 
+C<~~> is much more general now.  See L<Synopsis 4> for details.
 
 =item * Unary C<.> calls its single argument (which must be a method, or an
 dereferencer for a hash or array) on C<$_>.
@@ -85,36 +90,37 @@ end to indicate exclusion of that endpoint from the range.
 which is used as the body in function prototypes.  It complains
 bitterly if it is ever executed.
 
-=item * C<$(...)> imposes a scalar context on whatever it encloses.
-C<*(...)> imposes a list context.
+=item * In addition, to the ordinary C<.> method invocation, there are
+variants C<.*>, C<.?>, and C<.+> to control how multiple parent methods
+of the same name are handled.  The C<.=> operator does inplace modification
+of the object on the left.
 
 =back
 
 =head1 Hyper operators
 
-The Unicode characters C<E<raquo>> (C<\x[BB]>) and C<E<laquo>>
+The Unicode characters C<»> (C<\x[BB]>) and C<«>
 (C<\x[BB]>) and their ASCII digraphs C<<< >> >>> and C<<< << >>> are
 used to denote "list operations", which operate on each element of two
 lists (or arrays) and return a list (or array) of the results.  For
 example:
 
-     (1,1,2,3,5) E<raquo>+E<laquo> (1,2,3,5,8);  # (2,3,5,8,13)
+     (1,1,2,3,5) »+« (1,2,3,5,8);  # (2,3,5,8,13)
 
 If one argument is insufficiently dimensioned, Perl "upgrades" it:
 
      (3,8,2,9,3,8) >>-<< 1;          # (2,7,1,8,2,7)
 
-This can even be done with method calls:
-
-     ("f","oo","bar")E<raquo>.E<laquo>length;   # (1,2,3)
-
 When using a unary operator, only put it on the operand's side:
 
-     @negatives = -E<laquo> @positives;
+     @negatives = -« @positives;
      
-     @positionsZ<>E<raquo>++;            # Increment all positions
+     @positions »++;            # Increment all positions
      
-     @objectsZ<>E<raquo>.run();
+     @objects ».run();
+     ("f","oo","bar")».length;   # (1,2,3)
+
+Note that method calls are really postfix operators, not infix.
 
 =head1 Junctive operators
 
@@ -177,7 +183,7 @@ true in the above example.
 
 =head1 List flattening
 
-Since typeglobs are being removed, unary C<*> may now serve as a list
+Since typeglobs are being removed, unary C<*> may now serve as a lazy list
 flattening operator.  It is used to "flatten" an array into a list,
 usually to allow the array's contents to be used as the arguments of a
 subroutine call.  Note that those arguments still must comply with the
@@ -219,6 +225,9 @@ array attribute:
 The empty C<[]> and C<.[]> postfix operators are interpreted as zero-dimensional
 slices returning the entire array, not null slices returning no elements.
 Likewise for C<{}> and C<.{}> on hashes.
+
+The C<*> operator flattens lazily.  To get an immediate flattening like
+Perl 5 does, use unary C<**> instead.
 
 =head1 Piping operators
 

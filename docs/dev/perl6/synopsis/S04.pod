@@ -1,3 +1,5 @@
+=encoding utf8
+
 =head1 TITLE
 
 Synopsis 4: Blocks and Statements
@@ -170,7 +172,7 @@ To process two arrays in parallel, use either the C<zip> function:
 
 or the "zipper" operator to interleave them:
 
-    for @a ¥ @b ¥ @c -> $a, $b, $c { print "[$a, $b, $c]\n" }
+    for @a Â¥ @b Â¥ @c -> $a, $b, $c { print "[$a, $b, $c]\n" }
 
 That's equivalent to
 
@@ -352,7 +354,7 @@ just mention the value last that you want to return, or you can
 use C<leave>.  A C<leave> by default exits from the innermost block.
 But you may change the behavior of C<leave> with selector adverbs:
 
-    leave :from(Loop) :label«LINE» <== 1,2,3;
+    leave :from(Loop) :labelÂ«LINEÂ» <== 1,2,3;
 
 The innermost block matching the selection criteria will be exited.
 The return value, if any, must be passed as a list.  To return pairs
@@ -602,7 +604,7 @@ separate entries for lists.
     $_      $x        Type of Match Implied    Matching Code
     ======  =====     =====================    =============
     Any     Code<$>   scalar sub truth         match if $x($_)
-    Hash    Hash      hash keys identical      match if $_.keys.sort »eq« $x.keys.sort
+    Hash    Hash      hash keys identical      match if $_.keys.sort Â»eqÂ« $x.keys.sort
     Hash    any(Hash) hash key intersection    match if $_{any(Hash.keys)}
     Hash    Array     hash value slice truth   match if $_{any(@$x)}
     Hash    any(list) hash key slice existence match if exists $_{any(list)}
@@ -610,8 +612,8 @@ separate entries for lists.
     Hash    Rule      hash key grep            match if any($_.keys) ~~ /$x/
     Hash    Any       hash entry existence     match if exists $_{$x}
     Hash    .{Any}    hash element truth*      match if $_{Any}
-    Hash    .«string» hash element truth*      match if $_«string»
-    Array   Array     arrays are identical     match if $_ »~~« $x
+    Hash    .Â«stringÂ» hash element truth*      match if $_Â«stringÂ»
+    Array   Array     arrays are identical     match if $_ Â»~~Â« $x
     Array   any(list) list intersection        match if any(@$_) ~~ any(list)
     Array   Rule      array grep               match if any(@$_) ~~ /$x/
     Array   Num       array contains number    match if any($_) == $x
