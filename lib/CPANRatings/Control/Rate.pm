@@ -23,6 +23,9 @@ sub handler($$) {
 
   return $self->error('Distribution name required')
     unless $distribution;
+
+  return $self->error('No such distribution: ' . $distribution)
+    unless CPANRatings::Model::SearchCPAN->valid_distribution($distribution);
   
   $self->params->{distribution} = { name => $distribution,
 				    versions => [ CPANRatings::Model::SearchCPAN->get_versions($distribution) ],

@@ -76,6 +76,31 @@ sub _search {
   $data;
 }
 
+sub _distribution_page {
+  my ($self, $distribution) = @_;
+  my $cache = Combust::Cache->new('CR.search');
+
+  my $data;
+  if ($data = $cache->fetch(id => "dist-page;d:$distribution")) {
+    return $data->{data};
+  }
+
+  $data = get "http://search.cpan.org/dist/$distribution/";
+
+  my $ttl = $data =~ m/cannot be found, did you mean one of these/ ? 3 * 3600 : 24 * 3600;
+
+  $cache->store(data => $data, expires => 24 * 3600);
+
+  $data;
+}
+
+sub valid_distribution {
+  my ($self, $distribution) = @_; 
+  my $page = $self->_distribution_page($distribution);
+  return 0 if $page =~ m/cannot be found, did you mean one of these/;
+  return 1;
+}
+
 sub get_versions {
   my ($self, $distribution) = @_; 
 
@@ -86,14 +111,14 @@ sub get_versions {
     return @{ $data->{data} };
   }
 
-  $data = get "http://search.cpan.org/dist/$distribution/";
+  $data = $self->_distribution_page($distribution);
 
   my @rel;
 
-  ($data =~ s!.*?This Release.*?cell>([^<]+)!!s);
+  ($data =~ s!.*?Latest Release.*?cell><.*?>([^<]+)!!s);
   push @rel, $1 if $1;
 
-  ($data =~ s!.*?Latest Release.*?cell>([^<]+)!!s);
+  ($data =~ s!.*?This Release.*?cell>([^<]+)!!s);
   push @rel, $1 if $1;
 
   while ($data =~ s!<option value="/author/[^>]+>([^\&]+)!!s) {

@@ -2,6 +2,7 @@ package CPANRatings::Control::Show;
 use strict;
 use base qw(CPANRatings::Control);
 use CPANRatings::Model::Reviews;
+use CPANRatings::Model::SearchCPAN qw();
 use XML::RSS qw();
 
 sub handler ($$) {
@@ -18,15 +19,7 @@ sub handler ($$) {
 
   my $template = 'display/list.html';
 
-  my $reviews = CPANRatings::Model::Reviews->search(
-						    ($mode eq "author" ? "user_id" : $mode)
-						    => $id
-						   );
-
   $self->param('mode' => $mode);
-
-  $self->param('reviews' => $reviews); 
-
   $self->param('header' => "$id reviews" ) if $mode eq "distribution";
 
   if ($mode eq "author") {
@@ -34,9 +27,23 @@ sub handler ($$) {
     $self->param('header' => "Reviews by " . $first_review->user_name) if $first_review;
   }
   else {
+
+    unless (CPANRatings::Model::SearchCPAN->valid_distribution($id)) {
+      return 404;
+    }
     my ($first_review) = CPANRatings::Model::Reviews->search(distribution => $id);
     $self->param('distribution' => $first_review->distribution) if $first_review;
+    $self->param('distribution' => $id) unless $first_review;
   }
+
+  my $reviews = CPANRatings::Model::Reviews->search(
+						    ($mode eq "author" ? "user_id" : $mode)
+						    => $id
+						   );
+
+
+  $self->param('reviews' => $reviews); 
+
 
   my $output;
 
