@@ -1,0 +1,91 @@
+=head1 This Week on perl5-porters (26 January / 8 February 2004)
+
+This week, a very special summary indeed, because it actually covers two
+weeks. Two quiet weeks, that is. Read below for new proposals to the Perl
+5 language, to its packaging, and for selected bugs and fixes.
+
+=head2 Sort in place
+
+After some long discussion on whether adding an UNIX-like C<sort -u>
+function to perl (return only unique elements), Tels suggested that sort()
+could be optimized to sort in place in statements like:
+
+    @a = sort @a;
+
+Dave Mitchell is working on this optimization.
+
+=head2 C<my()> in conditional
+
+The construct
+
+    my $variable = $value if condition();
+
+is documented to be unsafe and unsupported (and moreover it doesn't
+currently do what most people expect). Dave Mitchell suggested to
+deprecate it and is working on a patch to produce a warning in the most
+common cases where it's used. However, he notices that lots of code in the
+test suite become noisy with this new warning turned on, notably in perl's
+own test suite.
+
+    http://groups.google.com/groups?selm=20040201015900.GD20819%40fdisolutions.com
+
+=head2 Lexical C<$_>
+
+Rafael checked in bleadperl support for a lexically scoped version of
+C<$_>, that was proposed last month.
+
+    http://groups.google.com/groups?selm=20040203213457.4a32a88c.rgarciasuarez%40free.fr
+
+Juerd then remarks that, if developers want to provide functions that
+default to C<$_>, we need a way to get at the caller's lexical C<$_>, and
+he proposes to implement the perl 6 pseudo-namespace C<%CALLER::>. This
+may well end on the to-do list.
+
+    http://groups.google.com/groups?selm=20040206164438.GK19932%40c3.convolution.nl
+
+=head2 Core modules and distributions
+
+Xavier Noria proposed to include a templating module in the core perl
+distribution. Michael Schwern points out that I<the unofficial policy on
+new modules is that if it doesn't help to build, test or document Perl or
+if it doesn't help to install more modules, it's not likely to get in>, as
+the perl distribution is quite large already.
+
+However Tim Bunce proposed (again) to restructure perl into a minimal core
+(with a trimmed-down set of modules) and one or several SDKs. This task
+needs a champion.
+
+    http://groups.google.com/groups?selm=B531BD75-57C7-11D8-AF6D-000A95A4E370%40hashref.com
+
+=head2 Selected Bugs
+
+Bug #25824 describe a way to make perl's parser segfault on a nasty syntax
+error. Dave Mitchell found a way to fix it, not too dissimilar to an older
+bug.
+
+    http://groups.google.com/groups?selm=rt-3.0.8-25824-73708.15.8676530450102%40perl.org
+
+Michael Yount reported a potential overzealous taint problem in AutoLoader
+(bug #25267). Dave Mitchell noted that this bug was already fixed in perl
+5.8.3.
+
+Manuel Valente added a new option to the C<Shell> module,
+C<$Shell::capture_stderr=-1>, to discard the standard error of the shell
+process.
+
+Bart Schuller shows (bug #26073) that sprintf(), with a C<%s> length
+format, doesn't handle correctly UTF-8 strings.
+
+=head2 Releases
+
+Leon Brocard released perl 5.005_04 RC1.
+John Peacock released version.pm 0.36.
+Alan Burlison integrated perl 5.8.3 in the upcoming release of Solaris 10.
+
+=head2 About this summary
+
+This summary, which exceptionally covers two weeks, was written by Rafael
+Garcia-Suarez.  Weekly summaries are published on F<http://use.perl.org/>
+and posted on a mailing list, which subscription address is
+F<perl5-summary-subscribe@perl.org>.  Corrections and comments are
+welcome.
