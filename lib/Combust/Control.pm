@@ -207,6 +207,15 @@ sub evaluate_template {
   # this is useful, is it dangerous too?  
   $params{params}->{combust} = $self;
 
+  my $user_agent = $r->header_in("User-Agent");
+  $params{params}->{user_agent} = $user_agent;
+  $params{params}->{ns4_flag} =
+    ( $user_agent =~ m!^Mozilla/4!
+      && $user_agent !~ m!compatible!
+      ? 1
+      : 0
+    );
+
   #$params{params}->{statistics}    = XRL::Statistics->new();
   #$params{params}->{advertisement} = XRL::Advertisement->new();
 
