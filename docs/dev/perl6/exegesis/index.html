@@ -61,17 +61,12 @@ wrappers.
 
 Formats are Perl 5's mechanism for creating text templates with
 fixed-width fields. Those fields are then filled in using values from
-prespecified package variables. They're a useful tool for
-generating many types of plaintext reports E<ndash> the I<r> in I<Perl>,
-if you will. <br>
-
-Unlike Perl 5, Perl 6 doesn't have a C<format> keyword. Or the
-associated built-in formatting mechanism. Instead it has a Form.pm
-module. And a C<form> function.<br>
-
-Like a Perl 5 C<format> statement, the C<form> function takes a series
-of format (or "picture") strings, each of which is immediately
-followed by a suitable set of replacement values. It interpolates
-those values into the placeholders specified within each picture string,
-and returns the result.<br>
+prespecified package variables. Unlike Perl 5, Perl 6 doesn't have a
+format keyword. Or the associated built-in formatting
+mechanism. Instead it has a Form.pm module. And a form function.  Like
+a Perl 5 format statement, the form function takes a series of format
+(or "picture") strings, each of which is immediately followed by a
+suitable set of replacement values. It interpolates those values into
+the placeholders specified within each picture string, and returns the
+result.
 </p>
