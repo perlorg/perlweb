@@ -8,7 +8,7 @@ use XML::RSS qw();
 sub handler ($$) {
   my ($self, $r) = @_;
 
-  my ($mode, $id, $format) = ($r->uri =~ m!^/([ad])/([^/]+?)(?:\.([a-z]+))?$!); 
+  my ($mode, $id, $format) = ($r->uri =~ m!^/([ad])/([^/]+?)(?:\.(html|rss))?$!);
   return 404 unless $mode and $id;
 
   $mode = "author" if $mode eq "a";
