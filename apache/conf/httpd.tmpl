@@ -284,6 +284,23 @@ NameVirtualHost *:[% config.port %]
   </VirtualHost>
 [% END %]
 
+[% IF config.sites.ponie %]
+  <VirtualHost *:[% config.port %]>
+    ServerName [% config.site.ponie.servername %]
+    PerlSetVar site ponie
+    <Location />
+       SetHandler perl-script
+       PerlHandler Combust::Control::Basic->handler
+    </Location>
+
+    <Location /error/>
+       SetHandler   perl-script
+       PerlHandler Combust::Control::Error->handler
+    </Location>
+  </VirtualHost>
+[% END %]
+
+
 [% IF config.sites.www %]
   <VirtualHost *:[% config.port %]>
     ServerName [% config.site.www.servername %]
