@@ -1,0 +1,147 @@
+=head1 This Week on perl5-porters (28 June / 4 July 2004)
+
+This was a week rich in discussion. Read about programming with threads,
+UTF-8 crashes and leaks (and fixes), parsing, globbing, deparsing, and
+other things.
+
+=head2 Destructors and ithreads
+
+Eric Garland shares his thoughts about how destructors work with ithreads.
+Destructors are mostly used to free some external resources (managed by a
+library) and thus should be run in most cases at application exit time
+(and not at thread destruction time). Thus, with the current
+implementation of desctructors (where objects are cloned among threads and
+destroyed when the thread ends), destructors should refcount external
+resources by hand and free them only at appropriately late times.
+
+Elizabeth Mattijsen submits a pure perl solution, that uses CLONE() (and
+says that it's probably too late to change the meaning of destructors in
+perl.) Eric proposes to make variables selectively cloneable. Dave
+Mitchell points out that it would be impractical.
+
+    http://groups.google.com/groups?selm=40E31208.5020506%40ericgarland.com
+
+Stas Bekman wishes that, in addition of being a class method, CLONE()
+could be also called on each object that can() CLONE() at thread creation
+time. This would be easier than maintaining by hand a list of weak
+references to each object created. Nicholas Clark proposes to call the
+class method CLONE() with all objects into @_, which could be cumbersome
+if there are lots of objects. Dave wonders about the potential problems
+that would be caused by inheritance.
+
+    http://groups.google.com/groups?selm=40E5A3BE.30302%40stason.org
+
+=head2 B::Deparse and postponed for() scoping
+
+Torsten Hofmann reports that the following construct is not handled
+correctly by B::Deparse, due to the scoping of the lexicals : (bug #30504)
+
+    do_something() for my ($foo, $bar, $baz);
+
+Stephen McCamant sent a proof-of-concept patch. Yves Orton asked about the
+deparsing of C<my $foo if 0>, to which Rafael answered that B::Deparse had
+no easy way to reconstruct the original code -- which corresponds to a
+deprecated construct anyway.
+
+    http://groups.google.com/groups?selm=rt-3.0.11-30504-91514.16.8566653002298%40perl.org
+
+=head2 Memory leak with C<eq> and UTF-8
+
+Bug #30509, about the string comparison operator C<eq> leaking memory with
+UTF-8 strings in a function defined before the C<encoding> module is
+loaded, was promptly fixed by Dave Mitchell.
+
+=head2 UTF8 stack crash in Safe compartments
+
+Dave also fixed bug #30258, which was reported a couple of weeks ago: perl
+panics when one tries to use split() on an UTF-8 string from an Safe
+compartment.
+
+    http://groups.google.com/groups?selm=20040702022315.GD1941%40iabyn.com
+
+=head2 Parser corruption
+
+Andrew Pimlott produced a malformed program that causes memory corruption
+in the parser. This doesn't happen in bleadperl, since byacc has been
+replaced by bison in it. (Bug #30518.)
+
+=head2 More parsing
+
+Peter Dintelmann finds out that C<keys %!> produces a warning, I<Use of
+"keys" without parentheses is ambiguous>. Rafael says that this kind of
+warning is implemented by heuristics that only try to be accurate in most
+cases. Nicholas finds that the C<%> is optional for the argument of
+keys().
+
+    http://groups.google.com/groups?selm=8FD9B6A658383E468B55D364D1A99516018571F1%40ffz00zm6.ffz00e.mail.dresdner.net
+
+=head2 File::Glob and shell idioms
+
+Jaap Karssenberg reports (bug #30553) some oddities about the behavior of
+File::Glob regarding brace expansion (C<th{is,at}>), existing files, and
+options; notably when there is only one item between the braces. Rafael
+points out that the underlying implementation conforms to BSD standards
+(in fact it's ripped from OpenBSD) and that he's not very surprised by the
+current behaviour (see the mails for details.)
+
+    http://groups.google.com/groups?selm=rt-3.0.11-30553-91751.1.29752801968813%40perl.org
+
+=head2 Magic and lvalues
+
+Bug #30582 demonstrates that you can't return an hash element from an
+lvalue subroutine when the hash has magic attached to it.
+
+    http://groups.google.com/groups?selm=rt-3.0.11-30582-91886.18.5112021131844%40perl.org
+
+=head2 Splicing oneself
+
+Glenn Linderman provided an example of splice() that doesn't produce the
+intuitive result (bug #30568) :
+
+    @stk = ( 1, 2, 3 ); splice @stk, -2, 2, $stk[ -2 ];
+
+Dave Mitchell explains what happens behind the scenes. Ton Hospel comments
+that it maybe hasn't to be fixed, I<since strictly speaking it's
+like using $i + $i++>. Wolfgang Laun tweaks the above code so that it
+produces a segfault.
+
+    http://groups.google.com/groups?selm=rt-3.0.11-30568-91811.14.57126175291%40perl.org
+
+=head2 Dup'ing PerlIO handles between different layers
+
+Stas Bekman says that he's I<unable to convert an existing perlio handle
+into one that is handled by a different perlio layer which requires extra
+arguments to open.> More precisely,
+
+    open my $fh2, "<&:crlf", $fh or die $!;
+
+works, whereas
+
+    open my $fh2, "<&:APR", $fh, $p;
+
+doesn't (note the extra argument.) Nick Ing-Simmons suggests another way
+to do it, more correct regarding the language, but this other way is yet
+to be implemented.
+
+    http://groups.google.com/groups?selm=40E4A33A.3010406%40stason.org
+
+=head2 Stabilisation
+
+Nicholas Clark posted a first draft of the perldelta for perl 5.8.5.
+
+Rafael uploaded a new version of C<Safe> to the CPAN, incorporating the
+latest fixes in bleadperl.
+
+Marcus Holland-Moritz glanced at microperl.
+
+    http://groups.google.com/groups?selm=20040702052538.7286dd33%40r2d2
+
+Uri Azoulay is trying to build perl on some more or less exotic systems
+(HP-UX 11.00, AIX, OSF).
+
+=head2 About this summary
+
+This summary was written by Rafael Garcia-Suarez. Weekly summaries are
+published on F<http://use.perl.org/> and posted on a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. Comments and
+corrections welcome.
