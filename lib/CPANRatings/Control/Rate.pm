@@ -17,12 +17,6 @@ sub handler($$) {
 
   $self->param('user' => $self->user_info);
 
-  my $x = $r->parms;
-  for my $f (keys %$x) {
-    warn "$f -> $x->{$f}";
-  }
-
-
   $self->params->{module} = $r->param('module');
 
   my $distribution = $r->param('distribution');
@@ -82,7 +76,7 @@ sub handler($$) {
   else {
 
     my ($review) = CPANRatings::Model::Reviews->search(distribution => $distribution,
-						       module       => $self->param('module'),
+						       module       => $self->param('module') || '',
 						       user_id      => $self->user_info->{user_id},
 						      );
 
