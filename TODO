@@ -1,4 +1,10 @@
 
+In no particular order
+======================
+
+Order this list so more important issues are closer to the top.  :^)
+
+
 Make the controller set the INCLUDE_PATH depending on the vhost (or document root?)
   - maybe use a separate configuration file so it's easy to specify
     pulling from svn or from a directory
@@ -8,13 +14,32 @@ Move urls to /about/ instead of /about.html
 
 Map old urls to new
 
-Make the siteinfo page not look like ass.
+Make the siteinfo page not look like ass.  =^) Make sponsor list a
+"friends of perl.org" thing.
 
-Get content type from svn?
+Get content type from svn?  In any case: Handle .tar.gz files etc in
+some way.
+
+Cache data from the svn server; refresh when svn version goes up.
+Cache .tar.gz files on disk or in mysql?
+
+Cache full html outputs?  Use master svn revision in the cache key. Or
+maybe use svn revision for perl.org/backend/ combined with svn
+revision for perl.org/docs/[site]/.
 
 We really don't want to use xhtml?  :-)  Maybe in a year or two I guess.
 
 Lowercase all the html?
+
+Set default style in the httpd.conf or in a combust.conf file.
+
+Make the default.html style non-perl.org specific; use perl.html style
+(maybe in turn calling default.html?) for the perl.org sites.
+
+Handle If-Modified-Since requests.
+
+Format POD as html when foo.html is requested and doesn't exist, but
+foo.pod does.  Format POD as html when foo.pod.html is requested too.
 
 
 Magic menus / breadcrumbs:
