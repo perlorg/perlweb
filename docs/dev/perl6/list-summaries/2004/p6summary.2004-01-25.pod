@@ -1,0 +1,334 @@
+=head1 The Perl 6 Summary for the week ending 20040125
+
+Welcome to the first summary from my new home in Gateshead. The same
+old wibble, with a different view from its window and fewer trips to
+London. Right, time to see what's been going on in perl6-internals
+this week.
+
+=head2 Global labels in IMCC
+
+The cryptically named TOGoS wondered how to get the address of a label
+in a different IMCC compilation unit. According to Dan there's no way
+to do that, and you didn't want to do that anyway.
+
+L<http://groups.google.com/groups?selm=20040119201611.71859.qmail@web41408.mail.yahoo.com>
+
+=head2 Dan's threads proposal
+
+After a few weeks of everyone else's proposals, Dan started to outline
+the design of Parrot's threading capabilities. He started by defining
+his terms (a useful thing to do in a field where there seem to me
+multiple competing definitions of various terms) and guaranteeing that
+user code wouldn't crash the interpreter (subject to the assumption
+that system level memory allocation was thread safe) before getting
+into the meat of his proposal. Which you're probably best reading for
+yourself; it's a long document but there's very little flab and any
+attempt of mine to summarize it would probably end up being at least
+as long as and a good deal less lucid than the original.
+
+Of course, this sparked a ton of discussion, generally positive, as
+people asked for various clarifications and made suggestions. Gordon
+Henriksen pointed out a nasty race condition that means that the
+garbage collector can't be made as thread safe as Dan had hoped. 
+
+Summarizer Barbie says "Threads are hard!"
+
+On Thursday, Dan posted a last call for comments and objections before
+he went on to the detailed design. This time there were some
+objections, but I don't think any of 'em are going to stop
+Dan. 
+
+L<http://groups.google.com/groups?selm=a0601020dbc31eb8d1b67@[10.0.1.2]>
+
+L<http://groups.google.com/groups?selm=a06010210bc35dbe3d5bf@[10.0.1.4]>
+
+=head2 Vtables organization
+
+Last week Dan had outlined an approach to organizing PMC vtables using
+a chaining approach; this week saw the discussion of that proposal
+with Benjamin K. Stuhl asking the hard questions.
+
+L<http://groups.google.com/groups?selm=400BDD81.1060909@cornell.edu>
+
+=head2 Benchmark suite
+
+Matt Fowles suggested that it might make sense to create a canonical
+suite of benchmarks to exercise Parrot well. His idea being that, if
+we have a standard suite of Parrot benchmarks, then potential
+performance affecting changes could be tested against that, rather
+than having custom benchmarks rolled each time. Luke Palmer pointed to
+F<examples/benchmarks> and noted that it's hard to create benchmarks
+that test everything. However, he hoped that any good benchmark that
+gets posted to the list would get added to this suite, along with some
+documentation describing what is being tested.
+
+L<http://groups.google.com/groups?selm=40144AE1.9050205@softhome.net>
+
+=head2 Number formatting
+
+Dan did some more designing, this time mandating that Parrot will,
+eventually adopt ICU's formatting template for numeric templates but,
+to start with, we'll be rolling our own. The new op will be C<format
+Sx, [INP]y, [SP]z>.
+
+L<http://groups.google.com/groups?selm=a06010210bc31f337e755@[10.0.1.2]>
+
+=head2 Base string transforms
+
+Dan announced that he would be adding C<upcase>, C<downcase>,
+C<titlecase> and C<to_chartype> to the various chartype vtables. He
+also noted that he'd like to get some alternative chartypes and
+encodings into Parrot as soon as possible to make sure we can actually
+handle things without having to use Unicode all the time.
+
+L<http://groups.google.com/groups?selm=a06010211bc31f77ae6da@[10.0.1.2]>
+
+=head2 Calling conventions in IMCC
+
+Will Coleda had some problems with IMCC's handling of the parrot
+calling conventions when he found that code that worked a couple of
+months ago had stopped working in the current Parrot (A month is a
+*very* long time in Parrot development though.) The problem took a
+fair bit of tracking down and I'm not entirely sure it's entirely
+fixed yet; Will had reached the point where the code would compile,
+but it still wouldn't actually run.
+
+L<http://groups.google.com/groups?selm=B8548E4C-4AA8-11D8-95BB-000A95909DD0@coleda.com>
+
+=head2 Steve Fink's obnoxious test case
+
+Steve Fink posted an obnoxious test case that generated memory
+corruption. The test case is obnoxious because it's 56KB of IMCC source
+code, and Steve had been unable to reduce it. This didn't discourage
+Leo TE<ouml>tsch though, who set about tracking the bug to its
+lair. It's not fixed yet, but with the Patchmonster on the case it can
+only be a matter of time.
+
+There were several other GC related issues that cropped up over the
+week; I wonder if they're all aspects of a single lurking bug.
+
+L<http://groups.google.com/groups?selm=20040120004855.GA28881@foxglove>
+
+=head2 IMCC returning ints
+
+Steve Fink also found a problem with IMCC failing to properly return
+integers from unprototyped routines and posted an appropriate patch
+to the test suite. It turns out that the problem is that IMCC doesn't
+quite implement the full Parrot Calling Conventions, especially the
+return convention, but it's getting there.
+
+L<http://groups.google.com/groups?selm=20040120015843.GC27636@foxglove>
+
+=head2 The costs of sharing
+
+Leo TE<ouml>posted a test program and some results for timing the
+difference between using shared and unshared PMCs. The shared versions
+are (not surprisingly) slower than the unshared ones; the question is
+whether the difference between the two can be improved. Hopefully the
+benchmark will get checked into F<examples/benchmarks> as suggested by
+Luke earlier.
+
+L<http://groups.google.com/groups?selm=400D5BD3.1020409@toetsch.at>
+
+=head2 An array of array types
+
+Dan noted that we have "a pile of different array classes with fuzzy
+requirements and specified behaviours which sort of inherit from each
+other except when they don't." He suggested that the time had come to
+work out what we actually I<want> in the way of array classes, compare
+our requirements with what we have, and then to do something about
+making what was available match what was required. I'm not sure that
+the resulting discussion has finalized the set of array types needed,
+but it's getting there. (Does anyone else think 'FixedMixedArray' is
+awfully clumsy as names go?).
+
+L<http://groups.google.com/groups?selm=a0601020ebc3350821beb@[10.0.1.2]>
+
+=head2 Remember to nag Robert Spier
+
+Robert Spier announced that repairing the web accessible TODO list was
+on his personal TODO list and asked to be nagged about it
+periodically. 
+
+Robert, remember you need to fix the web accessible TODO list.
+
+L<http://groups.google.com/groups?selm=m3k73mw9fa.wl_rspier@pobox.com>
+
+=head2 Churchill's parrot still swearing
+
+Effortlessly Godwinning himself, Uri Guttman pointed to a press
+release which stated that Winston Churchill's parrot, Charlie, is now
+104 years old and can still be coaxed into squawking "Fuck Hitler" and
+"Fuck the Nazis" which had apparently made it rather unsuitable for
+keeping at its owner's pet shop due to its habit of swearing at children.
+
+L<http://groups.google.com/groups?selm=x7d69eey3y.fsf@mail.sysarch.com>
+
+=head2 Updated documentation in Perl scripts
+
+Michael Scott continued his sterling work of updating and generally
+improving Parrot's documentation. This week his attention fell upon:
+the Perl scripts found in F<build_tools>, F<classes> and
+F<tools/dev>. Top man that he is, he's currently working on the
+documentation embedded in C code.
+
+L<http://groups.google.com/groups?selm=051BEB2F-4B99-11D8-86A0-000A95C50226@mac.com>
+
+L<http://groups.google.com/groups?selm=a0601021fbc36e6903a5c@[10.0.1.4]>
+
+=head2 Open issue review
+
+Robert Spier (don't forget the web accessible todo list Robert) posted
+a list of the 177 currently outstanding Parrot issues in the RT
+system and asked for volunteers to go through them to help weed out
+those issues that were no longer current. So people did. Which is nice.
+
+L<http://groups.google.com/groups?selm=m3isj6w7c0.wl_rspier@pobox.com>
+
+=head2 How to subclass dynamic PMCs
+
+Michal Wallace is trying to make a dynamically loaded PMC that
+subclasses another dynamically loaded PMC and he can't work out how
+to do it. Leo TE<ouml>tsch had the answer.
+
+L<http://groups.google.com/groups?selm=Pine.LNX.4.58.0401211335500.19552@hydrogen.sabren.com>
+
+=head2 How does Parrot handle High Level Language eval
+
+Nigel Sandever wondered how Parrot would handle C<eval> opcodes for
+multiple different languages. Leo pointed him at the C<compile> op,
+which (while it isn't fully implemented yet) will address this issue.
+Dan noted that it's currently working for PIR and PASM code but that
+it should be able to work eventually with any compiler that generates
+standard bytecode. 
+
+L<http://groups.google.com/groups?selm=1103_1074823506@nntp.perl.org>
+
+=head2 Signals and events
+
+Leo is working on turning OS level signals into Parrot level events,
+and he's not having an easy time of it. He posted a summary of the
+issues and asked for comments. Discussion continues.
+
+L<http://groups.google.com/groups?selm=4010EB5B.1040608@toetsch.at>
+
+=head2 Threading again
+
+Gordon Henriksen worries that Parrot's current architecture is
+actively thread hostile. He also accepted that trying to change it now
+wasn't really possible. So he outlined various ways in which the need
+for locking could be reduced, which should help speed things up. The
+big problem, as Gordon sees it, is that so many Parrot data structures
+are mutable, and mutable data structures require locks. And having
+PMCs that can morph from one type to another is... well, Gordon claims
+that C<morph> must die, though he later modified this claim. He and
+Leo batted this back and forth for a while; I'm not sure either side
+is convinced.
+
+L<http://groups.google.com/groups?selm=8A1B28F4-4E28-11D8-85AB-000502994722@mac.com>
+
+=head2 Embedding vs. extending interface types
+
+Mattia Barbon noted that the embedding and extending interfaces were
+still using different names for C<Parrot_Interp> and
+C<Parrot_INTERP>. He wondered which was correct. It turns out that
+nobody's quite sure, but the person who can make the decision -- Dan
+-- was en route to Copenhagen when this came up, so there's no answer
+yet.
+
+L<http://groups.google.com/groups?selm=Mahogany-0.66.0-920-20040124-172842.00@rbnet.it>
+
+=head1 Meanwhile in perl6-language
+
+=head2 Semantics of Vector operations
+
+Determined to test everyone's Unicode readiness, Luke Palmer kicked
+off a discussion of the semantics of C<[1,2,3] »+«
+[4,5,6]>. At first glance it looks like the result should be
+C<[5,7,9]>, but Luke argued that actually, the code was trying to add
+two lists, each containing a single scalar, that just happened to be
+listrefs. Larry pointed out that "Doing what you expect at first
+glance is also called 'not violating the principle of least
+surprise'", before going on to surprise us all with 'lopsided' vector
+ops, which would allow the programmer to specify when a value was
+expected to be treated as a scalar:
+
+    $a   »+« $b     # Treat $a and $b as lists
+    $x    +« $y     # Treat $x as a scalar and $b as a list
+          -« @bar   # Return a list of every element of @bar, negated
+    @foo »+  @bar   # Add the length of @bar to every element of @foo
+
+Then he scared me with C<@foo »+= @foo>. He noted that it might take
+some getting used to, but that it helped if you pronounce C<»> and
+C<«> as 'each'. Austin Hastings didn't like it (from a syntax
+highlighting point of view), but he appeared to be outvoted. Larry
+pointed out that C<«»> etc were the least of a syntax highlighters
+worries given that any C<use>, C<eval> or operator
+declaration had the potential to morph any subsequent syntax. Piers
+Cawley thought that truly accurate syntax highlighting would have
+to be done in an image based IDE implemented in Perl because such an
+editor would always know what rules were in scope for a given chunk of
+code. A. Pagaltzis thought that this would definitely increment the
+Smalltalkometer for Perl 6. 
+
+As discussion and exploration of this idea continued it became
+apparent that people seem to like this particular weirding of the
+language, and it certainly allows the programmer to disambiguate
+things rather neatly. Luke even pointed out that this new approach
+allows for calling a method on a list of values: C<@list ».method>,
+and to call a list of methods on a value: C<$value.« @methods>. 
+
+Then the fun began. The issue is that C<»> and C<«> can also be
+written C<< << >> and C<E<gt>E<gt>> (but your POD processor hates you
+for it). This leads to ambiguities like
+C<E<gt>E<gt>+E<lt>E<lt>=E<lt>E<lt>> (which are even harder to type in
+a Pod escape) which can be parsed as C<»+E<lt>E<lt>=«> or
+C<»+«=«>. Larry wondered if the problem arose because of trying to
+make the C<E<lt>C<lt>> and C<E<gt>E<gt>> alternatives look too similar
+to the Unicode glyphs.
+
+You know, looking at that last paragraph I can see why people think
+Perl 6 is horribly scary. The thing is, you're not expected to use
+constructions like that in real world programs all the time; but when
+you're working out what a grammar should be you I<have> to think of
+all the nasty edge cases to see where things break.
+
+Anyway, such nastiness led to the possibility of introducing a
+'whitespace eating' macro which would allow for the introduction of
+disambiguating whitespace. The front runner for this macro is C<_>. 
+
+L<http://groups.google.com/groups?selm=20040120085433.GA23075@babylonia.flatirons.org>
+
+=head2 Comma operator
+
+Remember a few months ago when there was some discussion of replacing
+the C style comma with some other glyph? If that were done, one of the
+consequences would be that 
+
+   @foo = 1,2,3;
+
+would fill C<@foo> with three elements instead of just the one as it
+does in Perl 5. Joe Gottman had a few questions about the implications
+of that, and wondered if Larry had actually ruled on it. Larry ruled
+that list construction would continue to require brackets (or, if
+you're American, parentheses) and went on to discuss some further
+implications of that.
+
+L<http://groups.google.com/groups?selm=000b01c3dfc4$bab7d620$e58f8445@carolina.rr.com>
+
+=head1 Acknowledgements, Apologies, Announcements
+
+Thankfully, this section's normal service is resumed this week. The
+only catch is, I can't think of anything to say.
+
+However, if you find these summaries useful or enjoyable, please
+consider contributing to the Perl Foundation to help support the
+development of Perl. You might also like to send me feedback at
+L<p6summarizer@bofh.org.uk>, or drop by my website (New! Improved!
+listening on port 80! Still sadly lacking in desperately new content!)
+
+L<http://donate.perl-foundation.org/> -- The Perl Foundation
+
+L<http://dev.perl.org/perl6/> -- Perl 6 Development site
+
+L<http://www.bofh.org.uk/> -- My website, "Just a Summary"
