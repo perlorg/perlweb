@@ -1,0 +1,153 @@
+=head1 An overview of the Test::* modules
+
+CPAN is filled with great modules to help you test your code.  Here's a
+short list of what's available, so you don't reinvent the wheel.
+
+If you have a module to add to the list, please email C<andy@petdance.com>.
+
+=head2 Test::AtRuntime
+
+Assertion-like testing while your program runs.
+
+=head2 Test::Class
+
+xUnit style testing that works well with Test::Builder based
+modules (the majority of other testing modules). This means
+it can integrate into an existing setup relatively easily.
+
+=head2 Test::Cmd
+
+Testing of scripts/programs by their external interface
+rather than innards.
+
+=head2 Test::Data
+
+Comprises 4 submodules that provide a number of functions to
+test the contents of arrays, hashes, scalars and functions.
+These make it easy to test various boundaries and edge cases
+without writing much code.
+
+=head2 Test::DatabaseRow
+
+Given a DBI database handle, can test to see if the database
+contains tables with particular rows. Useful for testing
+that database modifications went well.
+
+=head2 Test::Debugger
+
+Emits a trace of the test script to file, for perusal in the
+event of failures.
+
+=head2 Test::Deep
+
+Extremely flexible and powerful deep comparisons of data
+structures. Ideal for testing that a given structure not
+only is equal to an ideal model, but also for determining
+whether they are similar. Also good for checking lightly
+nested structures (e.g. that a response from an address book
+query has well formed records).
+
+=head2 Test::Differences
+
+Tests long strings and data structures, giving a readable
+output (unlike testing long strings with Test::More's C<is>
+function).
+
+=head2 Test::Distribution
+
+Performs basic Kwalitee checking on modules: checks that
+they have well formed POD, they compile, they all define the
+same C<$VERSION>, they have their prerequisites in the
+F<Makefile.PL> and that some standard files exist.
+
+=head2 Test::Easy
+
+Allegedly easier to use than Test::Simple. For simple cases.
+
+=head2 Test::Env
+
+Tests that one's environment has appropriate data.
+
+=head2 Test::Exception
+
+Testing that bits of code die or don't die appropriately,
+and with the right errors.
+
+=head2 Test::Extreme
+
+Another xUnit-ish testing framework. Very easy to use.  Able
+to output both xUnit style and traditional Perl style.
+
+=head2 Test::FIT
+
+Provides a CGI interface to writing and running test suites.
+
+=head2 Test::File
+
+Tests file attributes (empty, of particular sizes, readable,
+executable, writeable, etc.).
+
+=head2 Test::Files
+
+Tests files and directories have particular contents.
+
+=head2 Test::HTML::Content
+
+Tests HTML has (or hasn't) particular links, text, tags,
+comments and such. Very useful for testing websites (see
+also WWW::Mechanize and Test:HTML::Lint).
+
+=head2 Test::HTML::Lint
+
+Checks that HTML is well formed as per HTML::Lint.
+
+=head2 Test::HTTPStatus
+
+Ensures HTTP responses have appropriate values.
+
+=head2 Test::Helper
+
+Provides slightly less punctuated syntax for writing tests.
+
+=head2 Test::ISBN
+
+Verify ISBNs and parts of ISBNs against Business::ISBN.
+
+=head2 Test::Inline
+
+Allows you to embed your tests in your POD in your program
+file, thus allowing you to test while you document, or test
+while you code, or both. One sideeffect is that your sample
+code can be test code.
+
+=head2 Test::LongString
+
+Testing of long strings, allowing one to see precisely where
+the inequality, or non-match, is with ease.
+
+=head2 Test::Mail
+
+Testing that email is sent and received properly.
+
+=head2 Test::Manifest
+
+Executes your tests in a particular non-alphabetic order
+without having to name them with numeric prefixes.
+
+=head2 Test::ManyParams
+
+Combinatorial subroutine argument testing. Lets you test
+every combination of arguments to a function.
+
+=head2 Test::MockObject
+
+Lets you create objects that respond to methods in
+particular ways, thus letting you test how your own code
+handles objects with such return values.
+
+=head2 Test::More
+
+The most common testing module to use. Appropriate feature
+set for the majority of test cases and now standard in Perl
+(from 5.6.2 and 5.8.0).
+
