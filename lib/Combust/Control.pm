@@ -19,6 +19,8 @@ use Combust::Config;
 
 my $config = Combust::Config->new();
 
+sub config { $config }
+
 #use HTTP::Date qw(time2str); 
 
 $Template::Config::STASH = 'Template::Stash::XS';
@@ -26,7 +28,6 @@ $Template::Config::STASH = 'Template::Stash::XS';
 $Template::Stash::SCALAR_OPS->{ rand } = sub {
   return int(rand(shift));
     };
-
 
 my $parser = Template::Parser->new(); 
 
@@ -55,7 +56,6 @@ $Combust::Control::provider ||= Combust::Template::Provider->new
 		   ],
   );
 
-
 $Combust::Control::tt = Template->new
   ({
     FILTERS => { 'navigation' => [ \&Combust::Template::Filters::navigation_filter_factory, 1 ] },
@@ -80,6 +80,10 @@ sub tt {
   $Combust::Control::tt
 }
 
+sub r {
+  shift->{_r};
+}
+
 sub param {
   my ($self, $key) = (shift, shift);
   return unless $key;
@@ -91,15 +95,23 @@ sub params {
   shift->{params};
 }
 
-sub super ($$) {
+sub super($$) {
   my $class   = shift;
-  # pass $r as an Apache::Request
-  my $r       = Apache::Request->new(shift);
+  my $r = shift;
 
-  my $self = bless( { } , $class);
+  use Carp qw(confess);
+  confess(__PACKAGE__ . '->super got called without $r') unless $r;
+  return unless $r;
+
+  # pass $r as an Apache::Request
+  $r = Apache::Request->new($r);
+
+  my $self = bless( { _r => $r } , $class);
   
-  $self->{params} = {};
-  
+  $self->{params} = {
+    config => $config,
+  };
+
   my $status;
   eval {
     $status = $self->handler($r);
@@ -108,7 +120,6 @@ sub super ($$) {
   
   return $status;
 }
-
 
 sub get_include_path {
   my $r = Apache->request;

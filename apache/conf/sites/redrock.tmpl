@@ -6,17 +6,17 @@
 
     <Location />
        SetHandler perl-script
-       PerlHandler RRE::Control->handler
+       PerlHandler RRE::Control->super
     </Location>
 
     <LocationMatch "/rss/.*\.xml">
        SetHandler perl-script
-       PerlHandler RRE::Control::RSS->handler
+       PerlHandler RRE::Control::RSS->super
     </LocationMatch>
 
     <Location /error/>
        SetHandler   perl-script
-       PerlHandler Combust::Control::Error->handler
+       PerlHandler Combust::Control::Error->super
     </Location>
 
     <Location /images/>

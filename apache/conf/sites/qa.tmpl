@@ -4,12 +4,12 @@
     PerlSetVar site qa
     <Location />
        SetHandler perl-script
-       PerlHandler Combust::Control::Basic->handler
+       PerlHandler Combust::Control::Basic->super
     </Location>
 
     <Location /error/>
        SetHandler   perl-script
-       PerlHandler Combust::Control::Error->handler
+       PerlHandler Combust::Control::Error->super
     </Location>
   </VirtualHost>
 
