@@ -5,7 +5,6 @@ use warnings;
 use CGI qw( :standard );
 
 my $tier = "";
-my $n = 0;
 my @rows;
 
 while ( <> ) {
@@ -18,8 +17,6 @@ while ( <> ) {
         next;
     }
     my ($dist,$author) = split;
-    $author = "some author";
-    ++$n;
 
     push( @rows,
         Tr(
