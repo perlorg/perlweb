@@ -17,7 +17,7 @@
    </DIV>
   <DIV class="NAVITEM" ALIGN=CENTER>
 
-<u><a href="siteinfo.html#sponsors">sponsor</a></u><br>
+<a href="siteinfo.html#sponsors">Sponsor:</a><br>
 [%- i.internap.weight=5;
    i.internap.data = BLOCK %]
 <a href="http://www.internap.com">
@@ -112,15 +112,6 @@
     <P>
     </div>
     
-    <a href="community.html" CLASS="TOPIC">The Perl Community</a>
-    <DIV CLASS="ITEMS">
-    <a href="http://www.pm.org/">Perl Mongers, user groups</a>, 
-    <a href="http://www.perlmonks.org/">Perl Monks</a>,
-    <a href="http://lists.perl.org/">mail lists</a>,
-    <a href="http://nntp.perl.org/">nntp</a>
-    <P>
-    </div>
-
     <a href="books.html" CLASS="TOPIC">Books and Articles</a>
     <DIV CLASS="ITEMS">
     <a href="http://www.theperlreview.com/">the Perl Review</a>, 
@@ -129,7 +120,15 @@
     <a href="http://use.perl.org/search.pl?topic=29">books</a>
     <P>
     </div>
-    
+
+    <a href="community.html" CLASS="TOPIC">The Perl Community</a>
+    <DIV CLASS="ITEMS">
+    <a href="http://www.pm.org/">Perl Mongers, user groups</a>, 
+    <a href="http://www.perlmonks.org/">Perl Monks</a>,
+    <a href="http://lists.perl.org/">mail lists</a>,
+    <a href="http://nntp.perl.org/">nntp</a>
+    <P>
+    </div>
     
     <a href="http://perlfoundation.org" CLASS="TOPIC">The Perl Foundation</a>
     <DIV CLASS="ITEMS">
@@ -170,9 +169,24 @@
    <td colspan=2  class="NOVERTPAD">
     <a href="news.html" CLASS="TOPIC">News</a>
     <DIV CLASS="ITEMS">
-     [% quicknews ("useperl") %] [<A HREF="http://use.perl.org/"><b>use.perl</b></A>]<BR>
-     [% quicknews ("perlcom") %] [<A HREF="http://www.perl.com/"><b>perl.com</b></A>]<BR>
-     [% quicknews ("cpanrecent") %] [<A HREF="http://www.cpan.org/"><b>CPAN</b></A>]<BR>
+     <table cellspacing=0 border=0 width="100%">
+      <tr>
+       <td width="15%"><A HREF="http://use.perl.org/"><b>use.perl</b></A></td>
+       <td>[% quicknews ("useperl") %]</td> 
+     </tr>
+     <tr>
+       <td><A HREF="http://www.perl.com/"><b>perl.com</b></A></td>
+       <td>[% quicknews ("perlcom") %]</td>
+     </tr>
+     <tr>
+      <td><A HREF="http://www.cpan.org/"><b>CPAN</b></A></td>
+      <td>[% quicknews ("cpanrecent") %]</td>
+      </td>
+    </tr>
+   
+    </table>
+
+    
 
     </DIV>
    </td>
