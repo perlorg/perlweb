@@ -1,0 +1,35 @@
+[% page.bhead = "Dead Link" %]
+[% page.title = "Dead Link" %]
+[% shortfooter = 1 %]
+[%# page.footer = "Lost Camel!" %]
+
+[% IF url  %]
+
+<DIV ALIGN="CENTER" STYLE="margin: 3%; border: solid black;">
+<P>
+The off-site URL <u><tt>[% url %]</tt></u> is no longer accessible.
+</P>
+
+<P>
+
+You may be able to 
+<A HREF="http://web.archive.org/web/*/[% url %]">access it</A> through the <A
+   HREF="http://www.archive.org/web/web.php">Wayback Machine</A>
+<BR>
+
+<A HREF="http://www.archive.org/web/web.php">
+  <IMG BORDER=0 SRC="http://www.archive.org/images/wayback.gif" 
+  ALT="Internet Archive Wayback Machine"></A>.
+</P>
+<P>
+<A HREF="http://web.archive.org/web/*/[% url %]">
+<TT>http://web.archive.org/web/*/[% url %]</TT>
+</A>
+</P>
+
+</DIV>
+
+[% ELSE %]
+Invalid Link
+[% END %]
+
