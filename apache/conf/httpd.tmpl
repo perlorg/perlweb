@@ -243,14 +243,16 @@ PerlPostReadRequestHandler ProxyIP
 
 NameVirtualHost *:{$port}
 
-
 <VirtualHost *:{$port}>
   ServerName tweb.x.perl.org
-  DocumentRoot /tmp/
+  DocumentRoot {$root}/tmp/htdocs/
 </VirtualHost>
 
 <VirtualHost *:{$port}>
   ServerName new.x.perl.org
+
+  PerlSetVar site www
+
   <Location />
      SetHandler perl-script
      PerlHandler Combust::Control::Basic->handler
@@ -266,5 +268,38 @@ NameVirtualHost *:{$port}
   </Location>
 
 
+</VirtualHost>
+
+
+
+# need to make some way of making these conditional
+<VirtualHost *:{$port}>
+  ServerName www.redrockeater.org
+  ServerAlias redrockeater.org
+  PerlSetVar site rre
+  DocumentRoot {$root}/docs/live/rre/
+
+  <Location />
+     SetHandler perl-script
+     PerlHandler RRE::Control->handler
+  </Location>
+
+  <LocationMatch "/rss/.*\.xml">
+     SetHandler perl-script
+     PerlHandler RRE::Control::RSS->handler
+  </LocationMatch>
+
+  <Location /error/>
+     SetHandler   perl-script
+     PerlHandler Combust::Control::Error->handler
+  </Location>
+
+  <Location /images/>
+    SetHandler default
+  </Location>
+
+  <Location /server-status>
+    SetHandler server-status
+  </Location>
 </VirtualHost>
 

@@ -36,12 +36,18 @@ my %provider_config = (
 #				      INCLUDE_PATH => ['http://svn.develooper.com/perl.org/docs/www'],
 #				     );
 
-my $combust_provider = Combust::Template::Provider->new
+# use Combust::Template::Provider some day ...
+my $combust_provider = Template::Provider->new
   (
    %provider_config,
    INCLUDE_PATH => [
-		    "$ENV{CBROOT}/docs/www/live",
-		    'http://svn.develooper.com/perl.org/docs/www/live',
+		    sub {
+                      my $r = Apache->request;
+ 		      [ "$ENV{CBROOT}/docs/live/" . $r->dir_config("site") ];
+		    },
+		    "$ENV{CBROOT}/docs/live/shared/",
+		    "$ENV{CBROOT}/docs/live/",
+		    #'http://svn.develooper.com/perl.org/docs/www/live',
 		   ],
   );
 

@@ -7,6 +7,13 @@ use Combust::Notes;
 
 #use Combust::UserID;
 
+BEGIN {
+  if ($ENV{CBROOT} =~ m/redrock/) {
+    require RRE::Control;
+    require RRE::Control::RSS;
+  }
+}
+
 sub ProxyIP::handler {
     my $r = shift;
     return OK unless $r->connection->remote_ip =~ m/^(127\.0\.0\.1)$/;

@@ -1,0 +1,84 @@
+#!/home/perl/bin/perl -w
+use strict;
+use lib "$ENV{CBROOT}/lib";
+use Mail::Internet;
+use URI::Find;
+use Date::Parse;
+
+use Develooper::DB;
+use RRE;
+
+my $mail = Mail::Internet->new(\*STDIN);
+
+my $msg_id = $mail->head->get('Message-ID');
+chomp $msg_id;
+
+my $date = $mail->head->get('Date');
+my $time = str2time($date);
+print "$date\n", scalar localtime $time;
+
+my $body = join "", @{$mail->body};
+
+my $dbh = db_open();
+$dbh->do(q[replace into rre_mails (message_id, date, subject, header, body)
+           VALUES (?,FROM_UNIXTIME(?),?,?,?)], {},
+         $msg_id, $time, 
+	 $mail->head->get('Subject'),
+	 $mail->head->as_string, $body);
+
+my $mail_id = $dbh->{mysql_insertid};
+
+my @blocks = split /\n\n+/, $body;
+
+my $category_id = RRE::get_category_id('', 1);
+
+my @urls;
+
+my $url_finder = URI::Find->new(
+        sub {
+          my ($uri, $orig_uri) = @_;
+          push @urls, $orig_uri;
+          return "";
+        }
+);
+
+for (@blocks) {
+  next if m/^Here are some more URL's./;
+  next if m/^(RRE home page:|As a periodic reminder, instructions for)/;
+  print "[$_]\n";
+
+  last if m/^end\n$/;
+
+  @urls = ();
+
+  my $urls_found = $url_finder->find(\$_);
+
+  unless ($urls_found or m/\n/) { 
+    chomp;
+    $category_id = RRE::get_category_id($_, 1);
+    next; 
+  }
+
+  if ($urls_found) {
+    my $comment = $_;
+    $comment =~ s/\s+$//s;
+
+    $dbh->do(q[insert into rre_links (mail_id, category_id, comment)
+               VALUES (?,?,?)], {},
+               $mail_id, $category_id, $comment);
+    my $link_id = $dbh->{mysql_insertid};
+
+    for my $url (@urls) {
+      $dbh->do(q[insert into rre_urls (link_id, url)
+                 VALUES (?,?)], {},
+                 $link_id, $url);
+
+    }
+  }
+  else {
+    warn "Could not parse $_! ";
+    next;
+  }
+}
+
+1;
