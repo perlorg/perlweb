@@ -1,0 +1,35 @@
+[% page.title = "Patch Submission Instructions" %]
+[% page.style = "default.html" %]
+[% page.sidebar = INCLUDE "tpl/navigation.html" %]
+
+<OL>
+<LI> do a diff -u of the file(s) you want to patch
+   (note: Win32 users will probably need -ub)
+
+<LI> redirect the output to a file (any name will
+   do, .patch extension is conventional)
+
+<LI> create a new email message
+
+<LI> set the recipient to: bugs-parrot  at  bugs6.perl.org
+   (note there's no need to CC the mailing list,
+   it will find its way to it)
+
+<LI> prepend [PATCH] to the subject
+
+<LI> be very, very informative about what you're
+   doing, both in the subject line and the message
+   body
+
+<LI> attach the patch file you generated in step 2
+   (DON'T paste the content in the body, attach the
+   file!)
+
+<LI> send and wait patiently.
+</OL>
+
+
+
+<H5>Author</H5>
+Aldo Calpini at <a href="mailto:aldo@alos.it">aldo@alos.it</a>
+
