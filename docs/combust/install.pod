@@ -76,7 +76,13 @@ server runs on port 8225 (configured in combust.conf).
   adduser combust
   su - combust
   rm .bashrc
-  svn co http://svn.develooper.com/combust/branches/stable .
+
+    svn co http://svn.develooper.com/combust/branches/stable .
+
+  __OR__
+
+    svn co http://svn.develooper.com/combust/trunk .
+
   svn co http://svn.develooper.com/perl.org/docs    
 
   # setup configuration from the sample conf
@@ -87,6 +93,11 @@ server runs on port 8225 (configured in combust.conf).
 
 The read-only username and password for the svn server are both
 "guest".
+
+/combust/branches/stable is usually an older version of Combust in
+less flux.  The /combust/trunk version is the one currently in
+development, often with new features, support for more platforms and
+so on, but also with newer and more interesting bugs.
 
 You might want to put bin/cron_hourly into the combust users crontab.
 In any case then it should be executed at least once.
