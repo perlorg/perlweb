@@ -370,6 +370,22 @@ PerlTransHandler Combust::Redirect
   </VirtualHost>
 [% END %]
 
+[% IF config.sites.dbi %]
+  <VirtualHost *:[% config.port %]>
+    ServerName [% config.site.dbi.servername %]
+    PerlSetVar site dbi
+    <Location />
+       SetHandler perl-script
+       PerlHandler Combust::Control::Basic->handler
+    </Location>
+
+    <Location /error/>
+       SetHandler   perl-script
+       PerlHandler Combust::Control::Error->handler
+    </Location>
+  </VirtualHost>
+[% END %]
+
 
 [% IF config.sites.redrock %]
   <VirtualHost *:[% config.port %]>
