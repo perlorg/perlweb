@@ -35,27 +35,27 @@ CoreDumpDirectory [% root_default %]/apache/
 [%# this should be a bit more sophisticated and check for each module,
     but for now it'll do ... %]
 [% IF mod_so %]
-LoadModule env_module         [% apache_root %]/libexec/mod_env.so
-LoadModule config_log_module  [% apache_root %]/libexec/mod_log_config.so
-LoadModule mime_magic_module  [% apache_root %]/libexec/mod_mime_magic.so
-LoadModule mime_module        [% apache_root %]/libexec/mod_mime.so
-LoadModule negotiation_module [% apache_root %]/libexec/mod_negotiation.so
-LoadModule status_module      [% apache_root %]/libexec/mod_status.so
-#LoadModule info_module        [% apache_root %]/libexec/mod_info.so
-LoadModule autoindex_module   [% apache_root %]/libexec/mod_autoindex.so
-LoadModule dir_module         [% apache_root %]/libexec/mod_dir.so
-#LoadModule cgi_module         [% apache_root %]/libexec/mod_cgi.so
-#LoadModule action_module      [% apache_root %]/libexec/mod_actions.so
-#LoadModule userdir_module     [% apache_root %]/libexec/mod_userdir.so
-LoadModule alias_module       [% apache_root %]/libexec/mod_alias.so
-LoadModule rewrite_module     [% apache_root %]/libexec/mod_rewrite.so
-LoadModule access_module      [% apache_root %]/libexec/mod_access.so
-LoadModule auth_module        [% apache_root %]/libexec/mod_auth.so
-#LoadModule expires_module     [% apache_root %]/libexec/mod_expires.so
-#LoadModule headers_module     [% apache_root %]/libexec/mod_headers.so
-LoadModule unique_id_module   [% apache_root %]/libexec/mod_unique_id.so
-LoadModule setenvif_module    [% apache_root %]/libexec/mod_setenvif.so
-LoadModule perl_module        [% apache_root %]/libexec/libperl.so
+LoadModule env_module         [% apache_libexec %]/mod_env.so
+LoadModule config_log_module  [% apache_libexec %]/mod_log_config.so
+LoadModule mime_magic_module  [% apache_libexec %]/mod_mime_magic.so
+LoadModule mime_module        [% apache_libexec %]/mod_mime.so
+LoadModule negotiation_module [% apache_libexec %]/mod_negotiation.so
+LoadModule status_module      [% apache_libexec %]/mod_status.so
+#LoadModule info_module        [% apache_libexec %]/mod_info.so
+LoadModule autoindex_module   [% apache_libexec %]/mod_autoindex.so
+LoadModule dir_module         [% apache_libexec %]/mod_dir.so
+#LoadModule cgi_module         [% apache_libexec %]/mod_cgi.so
+#LoadModule action_module      [% apache_libexec %]/mod_actions.so
+#LoadModule userdir_module     [% apache_libexec %]/mod_userdir.so
+LoadModule alias_module       [% apache_libexec %]/mod_alias.so
+LoadModule rewrite_module     [% apache_libexec %]/mod_rewrite.so
+LoadModule access_module      [% apache_libexec %]/mod_access.so
+LoadModule auth_module        [% apache_libexec %]/mod_auth.so
+#LoadModule expires_module     [% apache_libexec %]/mod_expires.so
+#LoadModule headers_module     [% apache_libexec %]/mod_headers.so
+LoadModule unique_id_module   [% apache_libexec %]/mod_unique_id.so
+LoadModule setenvif_module    [% apache_libexec %]/mod_setenvif.so
+LoadModule perl_module        [% apache_libexec %]/libperl.so
 [% END %]
 
 
@@ -228,7 +228,7 @@ ServerSignature Off
         LanguagePriority en da nl et fr de el it ja kr no pl pt pt-br ru ltz ca es sv tw
     </IfModule>
 
-    TypesConfig [% apache_root %]/conf/mime.types
+    #TypesConfig [% apache_root %]/conf/mime.types
 
     #AddType application/x-httpd-php .php
     #AddType application/x-httpd-php-source .phps

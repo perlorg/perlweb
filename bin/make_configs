@@ -16,7 +16,14 @@ my $config = Combust::Config->new();
 my $dir = "$ENV{CBROOT}/apache/conf/";
 my $local_dir = $ENV{CBROOTLOCAL} ? "$ENV{CBROOTLOCAL}/apache/conf" : '';
 my $apache_root = $config->httpd;
-$apache_root =~ s!/bin/httpd$!!;
+
+my $apxs = $apache_root;
+$apxs =~ s!/httpd!/apxs!;
+my $apache_libexec;
+$apache_libexec = `$apxs -q LIBEXECDIR`;
+
+$apache_root =~ s!/s?bin/httpd$!!;
+$apache_libexec ||= $apache_root . "/libexec";
 
 my $include_path = []; 
 push @$include_path, $local_dir if $local_dir;
@@ -38,6 +45,7 @@ my $params = { config => $config,
 	       root_local   => ($ENV{CBROOTLOCAL} || ''),
 	       root_default => ($ENV{CBROOTLOCAL} || $ENV{CBROOT}),
 	       apache_root  => $apache_root,
+	       apache_libexec => $apache_libexec,
 	       mod_so       => $mod_so,
 	     };
 
