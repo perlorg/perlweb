@@ -1,0 +1,327 @@
+[% page.title = "Parrot examples" %]
+[% page.style = "default.html" %]
+[% page.sidebar = INCLUDE "tpl/navigation.html" %]
+
+Before reading these examples, we recommend you read the 
+<a href="pasm.html">PASM Examples</a>.
+
+<h2>Hello world!</h2>
+
+<p>
+The first example clearly has to be an example that prints out <tt>&quot;Hello
+world!&quot;</tt>.
+</p>
+
+<!-- CSS? -->
+
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#0000ff"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccccff"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+.sub foo
+        # Trivial example
+        print &quot;Hello world!\n&quot;
+        end
+.end
+</td></tr></table></td></tr></table></td></tr></table>
+
+<p>
+If you save this small file as &quot;hello.pir&quot;, you can assemble 
+and execute it in one pass with <tt>./parrot hello.pir</tt>
+</p>
+
+<p>
+If you would rather assemble separately, you can first generate a bytecode
+file with <tt>./parrot -o hello.pbc hello.pir</tt>. Then, you can run the
+pre-assembled bytecode with: <tt>./parrot hello.pbc</tt>. Either way, you'll
+get:
+</p>
+
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+Hello world!
+</td></tr></table></td></tr></table></td></tr></table>
+
+<p>
+First, <tt>.sub foo</tt> tells the compiler that we are beginning a subroutine 
+called foo. In this case, the name of the sub isn't important, only it's
+position - unless you tell it otherwise, parrot will execute the first
+subroutine that's defined. The <tt>.end</tt> at the end tells parrot 
+that our sub definition is complete.
+</p>
+
+<p>
+Next, we have the contents of the PASM example. <tt>#</tt> indicates a
+comment, a fairly obvious <tt>print</tt> opcode, and an <tt>end</tt>
+opcode. Without the end, we'd walk off the end of the bytecode during
+execution, so don't leave it off.
+</p>
+
+<p>
+<a name="footnote_1">
+Note that PIR requires that any code you give it must be placed in a
+subroutine.</a>
+<sup><a href="#footnote1">1</a></sup>
+</p>
+
+<h2>Temporary Registers</h2>
+
+<p>
+In PASM, you're required to keep track of all your registers. PIR lets you
+use &quot;temporary&quot; registers, so you no longer have to worry about
+register lifetimes, or spilling.
+</p>
+
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#0000ff"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccccff"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+.sub temps
+        $I99 = 1
+        $N64 = 4.2
+	$S71 = &quot;Resting&quot;
+	print $I99
+	print &quot;, &quot;
+	print $N64
+	print &quot;, &quot;
+	print $S71
+	print &quot;\n&quot;
+        end
+.end
+</td></tr></table></td></tr></table></td></tr></table>
+
+<p>Prints:</p>
+
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+1, 4.200000, Resting
+</td></tr></table></td></tr></table></td></tr></table>
+
+<p>
+Note that by specifying a <tt>$</tt> in front of a register, we don't know 
+which of the &quot;physical&quot; registers that's being used, just the type.
+A trace of this program (<tt>./parrot -t temps.pir</tt>) shows:
+</p>
+
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#ff0000"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ffcccc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+     0 set I30, 1       - I30=0, 
+     3 set N30, 4.2     - N30=0.000000, 
+     6 set S30, &quot;Resting&quot;       - , 
+     9 print I30        - I30=1
+    11 print &quot;, &quot;
+    13 print N30        - N30=4.200000
+    15 print &quot;, &quot;
+    17 print S30        - S30=&quot;Resting&quot;
+    19 print &quot;\n&quot; 1, 4.200000, Resting
+    21 end
+</td></tr></table></td></tr></table></td></tr></table>
+
+<p>
+The trace shows you the offset in the bytecode (useful for telling when
+you've branched somewhere), the actual opcode used (our simple assignment
+has been mapped to a <tt>set</tt> opcode, e.g.), as well as the values
+of any of the registers (from <i>before</i> the opcode is executed).
+</p>
+
+<p>
+So, these temporary registers map to actual registers in the PVM, but 
+using them frees
+the compiler writer from dealing with the details. Parrot's
+PIR assembler will automatically handle variable lifetimes, and reuse 
+actual registers when necessary. You can also use more than 32 registers of
+a single type - if there aren't enough physical registers, Parrot will
+create a container PMC and spill values into and out of the container as 
+necessary.
+</p>
+
+<h2>Named Registers</h2>
+
+<p>
+In addition to temporary registers, you can declare named registers,
+which are effectively subroutine-specific variables. They don't
+necessarily correspond to high level language variables.  (Those are
+more likely to be declared as lexicals or globals.)
+</p>
+
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#0000ff"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccccff"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+.sub pie
+        .local num almost_pi
+        almost_pi = 22/7.0
+	print almost_pi
+	print &quot;\n&quot;
+        end
+.end
+</td></tr></table></td></tr></table></td></tr></table>
+
+<p>Prints:</p>
+
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+3.142857
+</td></tr></table></td></tr></table></td></tr></table>
+
+<p>
+If you examine the trace for this code, you'll see that there's no
+corresponding line for the <tt>.local</tt> directive above - parrot again
+picks a register for us.
+</p>
+
+<p>
+Another interesting note from the trace: our variable assignment is
+converted to the appropriate <tt>div</tt> opcode. PIR provides syntactic
+sugar for most of the arithmetic and comparative operators.
+<p>
+
+<h2>Branching and conditionals</h2>
+
+<p>
+Labels are presented at the start of the line with a colon. While PIR
+does not provide high level language constructs like loops, with its
+conditional handling, it's very easy to generate them.
+</p>
+
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#0000ff"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccccff"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+.sub loopy
+        .local int counter
+        counter = 0
+LOOP:   if counter > 10 goto DONE
+        print counter
+        print &quot; &quot;
+        inc counter
+        goto LOOP
+DONE:
+        print &quot;\n&quot;
+        end
+.end
+</td></tr></table></td></tr></table></td></tr></table>
+
+<p>Prints:</p>
+
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+0 1 2 3 4 5 6 7 8 9 10 
+</td></tr></table></td></tr></table></td></tr></table>
+
+<h2>Subroutines</h2>
+
+<p>
+One of the strengths of PIR is its syntax for both defining and calling
+subroutines that support
+the Parrot Calling Conventions. Here's a simpler version of the double
+subroutine that we created in the PASM examples.
+</p>
+
+
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#0000ff"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccccff"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+.sub double
+        .param int arg
+        arg *=  2
+        .return(arg)
+.end
+
+.sub main @MAIN
+        .local int result
+        result = double(42)
+        print result
+        print " was returned\n"
+        end
+.end
+</td></tr></table></td></tr></table></td></tr></table>
+
+<p>Prints:</p>
+
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+84 was returned
+</td></tr></table></td></tr></table></td></tr></table>
+
+<p>
+If you trace this program, you can see that it's handling the calling
+conventions for us, setting up the number of arguments of each type,
+setting the appropriate registers to the arguments. PIR will also
+transparently handle saving registers around subroutine calls if
+necessary.
+</p>
+
+<p>
+Notice the <tt>@MAIN</tt> directive on the <tt>main</tt> subroutine? This
+tells parrot that when running this file, <i>this</i> subroutine should be
+run first. Otherwise, the first subroutine we defined (<tt>double</tt>),
+would be run instead. This bears repeating: The <i>directive</i> is what
+makes this the main routine, <i>not</i> the name.
+</p>
+
+<p>
+To get arguments for your subroutine, you can use the <tt>.param</tt>
+directive to get named arguments, or manage things yourself, as you did in 
+PASM.
+</p>
+
+<p>
+When calling a subroutine from PIR, you can either use the name of another
+local subroutine, as we have above, or you can use a PMC register that
+contains an invokable PMC. For example, if you wanted to use a subroutine
+from parrot's standard library:
+</p>
+
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#0000ff"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccccff"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+.sub main @MAIN
+        load_bytecode "library/Data/Escape.pbc"
+        .local pmc escaper
+        .local string result
+
+        escaper = find_global "Data::Escape", "String"
+        result = escaper( "This is an embedded newline:\n", "'")
+        print "result of '"
+        print result
+        print "'\n"
+        end
+.end
+</td></tr></table></td></tr></table></td></tr></table>
+
+<p>Prints:</p>
+
+<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
+bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
+CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
+result of 'This is an embedded newline: \n'
+</td></tr></table></td></tr></table></td></tr></table>
+
+<p>
+One more PIR convenience you can see above.
+Since most opcodes that have an out parameter have
+that as a the first parameter, PIR lets you specify it as a left hand of
+an assignment. So, the PIR above:
+</p>
+
+<pre>
+escaper = find_global "Data::Escape", "String"
+</pre>
+
+is syntactic sugar for
+
+<pre>
+find_global escaper, "Data::Escape", "String"
+</pre>
+
+
+<hr>
+
+<sup><a href="#footnote_1">1</a></sup>
+<a name="footnote1">
+This is only mostly true. You can also use an <tt>.emit</tt>, 
+<tt>.eom</tt> pair, but this is beyond the scope of our examples.
+</a>
