@@ -13,7 +13,7 @@ sub fetch {
 
   $self->{fetched_id} = $id;
 
-  my $dbh = db_open;
+  my $dbh = db_open('geourl');
 
   my $row = $dbh->selectrow_hashref
     (
@@ -72,7 +72,7 @@ sub store {
   $metadata = nfreeze($metadata)
     if (defined $metadata);
 
-  my $dbh = db_open;
+  my $dbh = db_open('geourl');
   $dbh->do(q[replace into combust_cache
 	     (id, type, purge_key, data, metadata, serialized, expire)
 	     VALUES (?,?,?,?,?,?,FROM_UNIXTIME(?))],

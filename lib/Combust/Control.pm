@@ -6,6 +6,7 @@ use Apache::Cookie;
 use Apache::Constants qw(:common :response);
 use Apache::File;
 use Carp qw(confess cluck);
+use Encode qw(encode_utf8);
 
 use Apache::Util qw();
 
@@ -89,6 +90,11 @@ sub tt {
 
 sub r {
   shift->{_r};
+}
+
+sub req_param {
+  my $self = shift;
+  $self->r->param(@_);
 }
 
 sub param {
@@ -242,7 +248,7 @@ sub evaluate_template {
 
   $params{params}->{site} = $r->dir_config("site");
 
-  my $user_agent = $r->header_in("User-Agent");
+  my $user_agent = $r->header_in("User-Agent") || '';
   $params{params}->{user_agent} = $user_agent;
   $params{params}->{ns4_flag} =
     ( $user_agent =~ m!^Mozilla/4!
@@ -271,14 +277,14 @@ sub evaluate_template {
 
 
 sub send_cached {
-  my ($class, $r, $cache, $content_type) = @_;
+  my ($self, $cache, $content_type) = @_;
 
-  $r->update_mtime($cache->{created_timestamp});
+  $self->r->update_mtime($cache->{created_timestamp});
 
   $content_type = $cache->{meta_data}->{content_type}
       if $cache->{meta_data}->{content_type};
 
-  return $class->send_output($cache->{data}, $content_type);
+  return $self->send_output($cache->{data}, $content_type);
 }
 
 sub send_output {
@@ -301,6 +307,10 @@ sub send_output {
     $length = (stat($routput))[7];
   }
   else {
+    #warn $routput;
+    #$routput = encode_utf8($routput);
+    #warn "=================================";
+    #warn $routput;
     $length = length($routput);
   }
 
@@ -320,7 +330,7 @@ sub send_output {
   # defining the character set helps in handling the CERT advisory
   # regarding  "cross site scripting vulnerabilities" 
   #   http://www.cert.org/tech_tips/malicious_code_mitigation.html
-  $content_type .= "; charset=iso-8859-1" if $content_type =~ m/^text/ and $content_type !~ m/charset=/;
+  $content_type .= "; charset=utf-8" if $content_type =~ m/^text/ and $content_type !~ m/charset=/;
   $r->content_type($content_type);
 
   if ((my $rc = $r->meets_conditions) != OK) {

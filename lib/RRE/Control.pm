@@ -22,7 +22,7 @@ sub handler($$) {
   my $cache = Combust::Cache->new(type => 'rre');
 
   if (my $d = $cache->fetch(id => "html;$uri" )) {
-    return $class->send_cached($r, $d, $content_type)
+    return $class->send_cached($d, $content_type)
       unless $r->param('cache_bypass');
   }
 
