@@ -19,6 +19,11 @@
      END ;
     END;
 
+    IF r.uri.match("^/perl1/") ;
+     page.site = "perl1";
+    END;
+
+
 
     # don't include any whitespace from here...
  #   RETURN;
