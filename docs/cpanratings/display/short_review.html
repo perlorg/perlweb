@@ -1,10 +1,11 @@
 
 <h3>
 [% IF review.module AND review.module != review.distribution %]
-<a href="/m/[% review.module | uri %]">[% review.module %]</a> / 
+[% review.module %] / 
 [% END %]
-<a href="/d/[% review.distribution | uri %]">[% review.distribution %]</a> 
+<a href="http://search.cpan.org/dist/[% review.distribution | uri %]">[% review.distribution %]</a> 
 [% review.version_reviewed ? '(' _ review.version_reviewed _ ')' : '' %]
+
 [% IF review.rating_overall %]
 <img src="/images/stars-[% review.rating_overall %].0.png">
 [% END %]
@@ -13,11 +14,17 @@
 [% review.review %]
 </p>
 <p>
--- by <a href="/a/[% review.user_id %]">[% review.user_name %]</a> - [% review.updated %]
+<a href="/a/[% review.user_id %]">[% review.user_name %]</a> - [% review.updated %]
 [% IF review.user_id == user_info.user_id %]
   - <a href="/rate/?distribution=[% review.distribution | uri %][% 
   module_param = review.module ? ";module=" _ review.module : ""; 
   module_param | uri %]">edit</a>
+[% END %]
+
+[% UNLESS no_more %]
+[% # this should be conditional on having more reviews %]
+<br />
+(<a href="/d/[% review.distribution | uri %]">more reviews of [% review.distribution | html %]</a>)
 [% END %]
 
 </p>

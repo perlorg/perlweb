@@ -1,5 +1,5 @@
 [% page.title = header %]
 
 [% WHILE (review = reviews.next) %]
-[% PROCESS display/short_review.html, review => review %]
+[% PROCESS display/short_review.html, review => review, no_more => 1 %]
 [% END %]
