@@ -2,34 +2,17 @@
 In rough order of priority
 ==========================
 
-Move urls to /about/ instead of /about.html
-
-Map old urls to new
-
 Add the include_root to the Etag
-
-Make the siteinfo page look nicer.  =^) Make sponsor list a
-"friends of perl.org" thing.
-
-Set default style in the httpd.conf or in a combust.conf file.
 
 Make the controller set the INCLUDE_PATH depending on the vhost (or document root?)
   - maybe use a separate configuration file so it's easy to specify
     pulling from svn or from a directory
     - possibly configured per branch?
 
-Make the default.html style non-perl.org specific; use perl.html style
-(maybe in turn calling default.html?) for the perl.org sites.
-
-
 
 Cache full html outputs?  Use master svn revision in the cache key. Or
 maybe use svn revision for perl.org/backend/ combined with svn
 revision for perl.org/docs/[site]/.
-
-We really don't want to use xhtml?  :-)  Maybe in a year or two I guess.
-
-Lowercase all the html?
 
 Handle If-Modified-Since requests.
 
@@ -37,13 +20,13 @@ Format POD as html when foo.html is requested and doesn't exist, but
 foo.pod does.  Format POD as html when foo.pod.html is requested too.
 
 
+In a year or three or maybe never
+=================================
 
-Cache data from the svn server; refresh when svn version goes up.
-Cache .tar.gz files on disk or in mysql?
+Migrate to XHTML and get all that <B>UPPERCASE</B> html lowercased.
 
+Get content type from svn?
 
-Get content type from svn?  In any case: Handle .tar.gz files etc in
-some way.
 
 
 Notes
