@@ -83,7 +83,7 @@ server runs on port 8225 (configured in combust.conf).
   cp combust.conf.sample combust.conf
   emacs combust.conf  
 
-  ./bin/run_httpd
+  CBROOT=`pwd` ./bin/run_httpd
 
 The read-only username and password for the svn server are both
 "guest".
