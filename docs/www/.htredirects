@@ -1,16 +1,23 @@
 # syntax:
 #   regexp  url  option
 #
+
 # the regular expression is always anchored at the start and the end.
-# the option is one of "permanent" or "internal".  It defaults to "temporary".
+# (so unless you use .*, the order doesn't matter.)  the option is one
+# of "permanent" or "internal".  It defaults to "temporary".
 # Permanent gives a 301 response, the default gives a 302 response and
 # the temporary just silently changes the request URL.
 
+
+# Ask likes short names like this
 /docs/      /docs.html   internal
 /about/     /about.html  perm
+/press/     /about.html  perm
 
+# Personal coolness
 /ask(/.*)?  http://www.askbjoernhansen.com/
 
+# Things from the previous incarnation of perl.org
 /advocacy/white_camels.shtml /advocacy/white_camel/  perm
 /books/          http://books.perl.org/ perm
 /CPAN/           http://www.cpan.org/   perm
@@ -21,6 +28,14 @@
 /jobs/          http://jobs.perl.org/          perm
 /perl6/         http://dev.perl.org/perl6/     perm
 /ThePerlReview/ http://www.theperlreview.com/  perm
-/CGI_MetaFAQ.html  http://xrl.us/CGIMetaFAQ  perm 
+/vendors.html           http://www.cpan.org/ports/      perm
+/reduce-risks.html      /about/reduce-risks.html        perm
+/phbs/y2k.html          /about/y2k.html                 perm
+/support/.*             /docs.html                      perm
 
+# Redirect BDF things to his CVS on sf
+/CGI_MetaFAQ.html  http://xrl.us/CGIMetaFAQ  perm 
+/troubleshooting_CGI.html  http://xrl.us/troubleshootingCGI  perm 
+
+# Freak people out
 /index.php  /  internal

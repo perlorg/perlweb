@@ -1,0 +1,38 @@
+[% page.title = "Error " _ error %]
+[% shortfooter = 1 %]
+[% page.style = "perlbare.html" %]
+<h3>[% error %] - [% error_header %]</h3>
+
+<p>
+[% IF error == 404 %]
+
+<P>Sorry, we looked high and low and just could not find the file <tt>[%
+error_uri | uri %]</tt>. </P>
+
+<P>We've recently reorganized <tt>www.perl.org</tt>, and some pages no longer
+exist.  This may be one of them.</P>
+
+
+<P>Go to <a href="/">the front page</a> or <a
+href="mailto:ask@develooper.com">send mail to the staff</a>.</P>
+
+[% ELSIF error == 500 %]
+
+[% IF error_text %]
+<i>[% error_text %]</i></p><p>
+[% END %]
+
+Ouch!  The server made a boo-boo.  In other words: We #$%^#$ up!
+Sincere apologies all around.  The server has already sent angry mails
+to the staff, so please be kind if you also choose to <a
+href="mailto:ask@develooper.com">send a mail</a>.
+
+[% ELSE %]
+
+It's a bird!  It's a plane!  No, it's a flying camel!  Unhandled
+error!  UFO's in the sky?  Call the X-Files!  Or <a
+href="mailto:ask@develooper.com">send a mail</a>.
+
+[% END %]
+</p>
+
