@@ -13,6 +13,8 @@ use Template::Stash;
 use Combust::Template::Provider;
 use Combust::Template::Filters;
 
+use Combust::Template::Translator::POD;
+
 #use HTTP::Date qw(time2str); 
 
 $Template::Config::STASH = 'Template::Stash::XS';
@@ -26,11 +28,16 @@ my $parser = Template::Parser->new();
 
 my %provider_config = (
 		       PARSER => $parser,
-		       'COMPILE_EXT'    => '.ttc',
-		       'COMPILE_DIR'    => "$ENV{CBROOT}/tmp/ctpl",
+		       COMPILE_EXT      => '.ttc',
+		       COMPILE_DIR      => "$ENV{CBROOT}/tmp/ctpl",
 		       #TOLERANT => 1,
-		       RELATIVE => 1,
-		       'CACHE_SIZE'     => 128,  # cache 128 templates
+		       #RELATIVE => 1,
+		       CACHE_SIZE       => 128,  # cache 128 templates
+		       EXTENSIONS       => [ { extension => "pod",
+					       translator => Combust::Template::Translator::POD->new()
+					     },
+					   ],
+					     
 		      );
 
 my $combust_provider = Combust::Template::Provider->new

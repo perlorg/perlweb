@@ -1,6 +1,6 @@
 package Combust::Template::Provider;
 use strict;
-use base qw(Template::Provider);
+use base qw(Combust::Template::Provider::Base);
 
 sub is_directory {
   my ($self, $name) = @_;
@@ -24,5 +24,7 @@ sub is_directory {
 
   return $path ? 1 : 0;
 }
+
+
 
 1;

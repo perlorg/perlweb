@@ -1,18 +1,7 @@
 #============================================================= -*-Perl-*-
 #
-# Template::Provider
-#
-# DESCRIPTION
-#   This module implements a class which handles the loading, compiling
-#   and caching of templates.  Multiple Template::Provider objects can
-#   be stacked and queried in turn to effect a Chain-of-Command between 
-#   them.  A provider will attempt to return the requested template,
-#   an error (STATUS_ERROR) or decline to provide the template 
-#   (STATUS_DECLINE), allowing subsequent providers to attempt to 
-#   deliver it.   See 'Design Patterns' for further details.
-#
-# AUTHOR
-#   Andy Wardley   <abw@kfs.org>
+# Combust::Template::Provider::Base - Originated as Template::Provider
+# (from TT 2.09)
 #
 # COPYRIGHT
 #   Copyright (C) 1996-2000 Andy Wardley.  All Rights Reserved.
@@ -21,17 +10,9 @@
 #   This module is free software; you can redistribute it and/or
 #   modify it under the same terms as Perl itself.
 #
-# TODO:
-#   * optional provider prefix (e.g. 'http:')
-#   * fold ABSOLUTE and RELATIVE test cases into one regex?
-#
-#----------------------------------------------------------------------------
-#
-# $Id: Provider.pm,v 2.67 2003/03/18 13:09:23 abw Exp $
-#
 #============================================================================
 
-package Template::Provider;
+package Combust::Template::Provider::Base;
 
 require 5.004;
 
@@ -122,10 +103,30 @@ sub fetch {
 		   Template::Constants::STATUS_ERROR);
     }
     else {
-	# otherwise, it's a file name relative to INCLUDE_PATH
-	($data, $error) = $self->{ INCLUDE_PATH } 
-	    ? $self->_fetch_path($name) 
-	    : (undef, Template::Constants::STATUS_DECLINED);
+      # otherwise, it's a file name relative to INCLUDE_PATH
+      ($data, $error) = $self->{ INCLUDE_PATH } 
+	? $self->_fetch_path($name) 
+	  : (undef, Template::Constants::STATUS_DECLINED);
+
+      if ($error) {
+	# no extension to rip off ...
+	return ($data, $error) unless $name =~ s/\.[^.]+$//;
+
+	for my $ext (@{$self->{EXTENSIONS}}) {
+	  #warn Data::Dumper->Dump([\$ext], [qw(ext)]);
+	  my $newname = "$name." . $ext->{extension};
+	  #warn "looking for newname: $newname";
+	  ($data, $error) = $self->{ INCLUDE_PATH } 
+	    ? $self->load($newname) 
+	      : (undef, Template::Constants::STATUS_DECLINED);
+
+	  if (defined $data) {
+	    $data = {text => $data };
+	    ($data, $error) = $ext->{translator}->translate($data);
+	    last;
+	  }
+	}
+      }
     }
 
 #    $self->_dump_cache() 
@@ -321,6 +322,8 @@ sub _init {
     my $path = $params->{ INCLUDE_PATH } || '.';
     my $cdir = $params->{ COMPILE_DIR  } || '';
     my $dlim = $params->{ DELIMITER    };
+    my $exts = $params->{ EXTENSIONS   } || [];
+
     my $debug;
 
     # tweak delim to ignore C:/
@@ -337,13 +340,14 @@ sub _init {
     $size = 2 
 	if defined $size && ($size == 1 || $size < 0);
 
-    if (defined ($debug = $params->{ DEBUG })) {
-        $self->{ DEBUG } = $debug & ( Template::Constants::DEBUG_PROVIDER
-                                    | Template::Constants::DEBUG_FLAGS );
-    }
-    else {
+    # FIXME - TT 2.09 only -
+    #if (defined ($debug = $params->{ DEBUG })) {
+      #$self->{ DEBUG } = $debug & ( Template::Constants::DEBUG_PROVIDER
+      #                              | Template::Constants::DEBUG_FLAGS );
+    #}
+    #else {
         $self->{ DEBUG } = $DEBUG;
-    }
+    #}
 
     if ($self->{ DEBUG }) {
 	local $" = ', ';
@@ -384,6 +388,7 @@ sub _init {
     $self->{ INCLUDE_PATH } = $path;
     $self->{ DELIMITER    } = $dlim;
     $self->{ COMPILE_DIR  } = $cdir;
+    $self->{ EXTENSIONS   } = $exts;
     $self->{ COMPILE_EXT  } = $params->{ COMPILE_EXT } || '';
     $self->{ ABSOLUTE     } = $params->{ ABSOLUTE } || 0;
     $self->{ RELATIVE     } = $params->{ RELATIVE } || 0;
@@ -965,469 +970,3 @@ sub _dump_cache {
 
 __END__
 
-
-#------------------------------------------------------------------------
-# IMPORTANT NOTE
-#   This documentation is generated automatically from source
-#   templates.  Any changes you make here may be lost.
-# 
-#   The 'docsrc' documentation source bundle is available for download
-#   from http://www.template-toolkit.org/docs.html and contains all
-#   the source templates, XML files, scripts, etc., from which the
-#   documentation for the Template Toolkit is built.
-#------------------------------------------------------------------------
-
-=head1 NAME
-
-Template::Provider - Provider module for loading/compiling templates
-
-=head1 SYNOPSIS
-
-    $provider = Template::Provider->new(\%options);
-
-    ($template, $error) = $provider->fetch($name);
-
-=head1 DESCRIPTION
-
-The Template::Provider is used to load, parse, compile and cache template
-documents.  This object may be sub-classed to provide more specific 
-facilities for loading, or otherwise providing access to templates.
-
-The Template::Context objects maintain a list of Template::Provider 
-objects which are polled in turn (via fetch()) to return a requested
-template.  Each may return a compiled template, raise an error, or 
-decline to serve the reqest, giving subsequent providers a chance to
-do so.
-
-This is the "Chain of Responsiblity" pattern.  See 'Design Patterns' for
-further information.
-
-This documentation needs work.
-
-=head1 PUBLIC METHODS
-
-=head2 new(\%options) 
-
-Constructor method which instantiates and returns a new Template::Provider
-object.  The optional parameter may be a hash reference containing any of
-the following items:
-
-=over 4
-
-
-
-
-=item INCLUDE_PATH
-
-The INCLUDE_PATH is used to specify one or more directories in which
-template files are located.  When a template is requested that isn't
-defined locally as a BLOCK, each of the INCLUDE_PATH directories is
-searched in turn to locate the template file.  Multiple directories
-can be specified as a reference to a list or as a single string where
-each directory is delimited by ':'.
-
-    my $provider = Template::Provider->new({
-        INCLUDE_PATH => '/usr/local/templates',
-    });
-  
-    my $provider = Template::Provider->new({
-        INCLUDE_PATH => '/usr/local/templates:/tmp/my/templates',
-    });
-  
-    my $provider = Template::Provider->new({
-        INCLUDE_PATH => [ '/usr/local/templates', 
-                          '/tmp/my/templates' ],
-    });
-
-On Win32 systems, a little extra magic is invoked, ignoring delimiters
-that have ':' followed by a '/' or '\'.  This avoids confusion when using
-directory names like 'C:\Blah Blah'.
-
-When specified as a list, the INCLUDE_PATH path can contain elements 
-which dynamically generate a list of INCLUDE_PATH directories.  These 
-generator elements can be specified as a reference to a subroutine or 
-an object which implements a paths() method.
-
-    my $provider = Template::Provider->new({
-        INCLUDE_PATH => [ '/usr/local/templates', 
-                          \&incpath_generator, 
-			  My::IncPath::Generator->new( ... ) ],
-    });
-
-Each time a template is requested and the INCLUDE_PATH examined, the
-subroutine or object method will be called.  A reference to a list of
-directories should be returned.  Generator subroutines should report
-errors using die().  Generator objects should return undef and make an
-error available via its error() method.
-
-For example:
-
-    sub incpath_generator {
-
-	# ...some code...
-	
-	if ($all_is_well) {
-	    return \@list_of_directories;
-	}
-	else {
-	    die "cannot generate INCLUDE_PATH...\n";
-	}
-    }
-
-or:
-
-    package My::IncPath::Generator;
-
-    # Template::Base (or Class::Base) provides error() method
-    use Template::Base;
-    use base qw( Template::Base );
-
-    sub paths {
-	my $self = shift;
-
-	# ...some code...
-
-        if ($all_is_well) {
-	    return \@list_of_directories;
-	}
-	else {
-	    return $self->error("cannot generate INCLUDE_PATH...\n");
-	}
-    }
-
-    1;
-
-
-
-
-
-=item DELIMITER
-
-Used to provide an alternative delimiter character sequence for 
-separating paths specified in the INCLUDE_PATH.  The default
-value for DELIMITER is ':'.
-
-    # tolerate Silly Billy's file system conventions
-    my $provider = Template::Provider->new({
-	DELIMITER    => '; ',
-        INCLUDE_PATH => 'C:/HERE/NOW; D:/THERE/THEN',
-    });
-
-    # better solution: install Linux!  :-)
-
-On Win32 systems, the default delimiter is a little more intelligent,
-splitting paths only on ':' characters that aren't followed by a '/'.
-This means that the following should work as planned, splitting the 
-INCLUDE_PATH into 2 separate directories, C:/foo and C:/bar.
-
-    # on Win32 only
-    my $provider = Template::Provider->new({
-	INCLUDE_PATH => 'C:/Foo:C:/Bar'
-    });
-
-However, if you're using Win32 then it's recommended that you
-explicitly set the DELIMITER character to something else (e.g. ';')
-rather than rely on this subtle magic.
-
-
-
-
-=item ABSOLUTE
-
-The ABSOLUTE flag is used to indicate if templates specified with
-absolute filenames (e.g. '/foo/bar') should be processed.  It is
-disabled by default and any attempt to load a template by such a
-name will cause a 'file' exception to be raised.
-
-    my $provider = Template::Provider->new({
-	ABSOLUTE => 1,
-    });
-
-    # this is why it's disabled by default
-    [% INSERT /etc/passwd %]
-
-On Win32 systems, the regular expression for matching absolute 
-pathnames is tweaked slightly to also detect filenames that start
-with a driver letter and colon, such as:
-
-    C:/Foo/Bar
-
-
-
-
-
-
-=item RELATIVE
-
-The RELATIVE flag is used to indicate if templates specified with
-filenames relative to the current directory (e.g. './foo/bar' or
-'../../some/where/else') should be loaded.  It is also disabled by
-default, and will raise a 'file' error if such template names are
-encountered.  
-
-    my $provider = Template::Provider->new({
-	RELATIVE => 1,
-    });
-
-    [% INCLUDE ../logs/error.log %]
-
-
-
-
-
-=item DEFAULT
-
-The DEFAULT option can be used to specify a default template which should 
-be used whenever a specified template can't be found in the INCLUDE_PATH.
-
-    my $provider = Template::Provider->new({
-	DEFAULT => 'notfound.html',
-    });
-
-If a non-existant template is requested through the Template process()
-method, or by an INCLUDE, PROCESS or WRAPPER directive, then the
-DEFAULT template will instead be processed, if defined.  Note that the
-DEFAULT template is not used when templates are specified with
-absolute or relative filenames, or as a reference to a input file
-handle or text string.
-
-
-
-
-
-=item CACHE_SIZE
-
-The Template::Provider module caches compiled templates to avoid the need
-to re-parse template files or blocks each time they are used.  The CACHE_SIZE
-option is used to limit the number of compiled templates that the module
-should cache.
-
-By default, the CACHE_SIZE is undefined and all compiled templates are
-cached.  When set to any positive value, the cache will be limited to
-storing no more than that number of compiled templates.  When a new
-template is loaded and compiled and the cache is full (i.e. the number
-of entries == CACHE_SIZE), the least recently used compiled template
-is discarded to make room for the new one.
-
-The CACHE_SIZE can be set to 0 to disable caching altogether.
-
-    my $provider = Template::Provider->new({
-	CACHE_SIZE => 64,   # only cache 64 compiled templates
-    });
-
-    my $provider = Template::Provider->new({
-	CACHE_SIZE => 0,   # don't cache any compiled templates
-    });
-
-
-
-
-
-
-=item COMPILE_EXT
-
-From version 2 onwards, the Template Toolkit has the ability to
-compile templates to Perl code and save them to disk for subsequent
-use (i.e. cache persistence).  The COMPILE_EXT option may be
-provided to specify a filename extension for compiled template files.
-It is undefined by default and no attempt will be made to read or write 
-any compiled template files.
-
-    my $provider = Template::Provider->new({
-	COMPILE_EXT => '.ttc',
-    });
-
-If COMPILE_EXT is defined (and COMPILE_DIR isn't, see below) then compiled
-template files with the COMPILE_EXT extension will be written to the same
-directory from which the source template files were loaded.
-
-Compiling and subsequent reuse of templates happens automatically
-whenever the COMPILE_EXT or COMPILE_DIR options are set.  The Template
-Toolkit will automatically reload and reuse compiled files when it 
-finds them on disk.  If the corresponding source file has been modified
-since the compiled version as written, then it will load and re-compile
-the source and write a new compiled version to disk.  
-
-This form of cache persistence offers significant benefits in terms of 
-time and resources required to reload templates.  Compiled templates can
-be reloaded by a simple call to Perl's require(), leaving Perl to handle
-all the parsing and compilation.  This is a Good Thing.
-
-=item COMPILE_DIR
-
-The COMPILE_DIR option is used to specify an alternate directory root
-under which compiled template files should be saved.  
-
-    my $provider = Template::Provider->new({
-	COMPILE_DIR => '/tmp/ttc',
-    });
-
-The COMPILE_EXT option may also be specified to have a consistent file
-extension added to these files.  
-
-    my $provider1 = Template::Provider->new({
-	COMPILE_DIR => '/tmp/ttc',
-	COMPILE_EXT => '.ttc1',
-    });
-
-    my $provider2 = Template::Provider->new({
-	COMPILE_DIR => '/tmp/ttc',
-	COMPILE_EXT => '.ttc2',
-    });
-
-
-When COMPILE_EXT is undefined, the compiled template files have the
-same name as the original template files, but reside in a different
-directory tree.
-
-Each directory in the INCLUDE_PATH is replicated in full beneath the 
-COMPILE_DIR directory.  This example:
-
-    my $provider = Template::Provider->new({
-	COMPILE_DIR  => '/tmp/ttc',
-	INCLUDE_PATH => '/home/abw/templates:/usr/share/templates',
-    });
-
-would create the following directory structure:
-
-    /tmp/ttc/home/abw/templates/
-    /tmp/ttc/usr/share/templates/
-
-Files loaded from different INCLUDE_PATH directories will have their
-compiled forms save in the relevant COMPILE_DIR directory.
-
-On Win32 platforms a filename may by prefixed by a drive letter and
-colon.  e.g.
-
-    C:/My Templates/header
-
-The colon will be silently stripped from the filename when it is added
-to the COMPILE_DIR value(s) to prevent illegal filename being generated.
-Any colon in COMPILE_DIR elements will be left intact.  For example:
-
-    # Win32 only
-    my $provider = Template::Provider->new({
-	DELIMITER    => ';',
-	COMPILE_DIR  => 'C:/TT2/Cache',
-	INCLUDE_PATH => 'C:/TT2/Templates;D:/My Templates',
-    });
-
-This would create the following cache directories:
-
-    C:/TT2/Cache/C/TT2/Templates
-    C:/TT2/Cache/D/My Templates
-
-
-
-
-=item TOLERANT
-
-The TOLERANT flag is used by the various Template Toolkit provider
-modules (Template::Provider, Template::Plugins, Template::Filters) to
-control their behaviour when errors are encountered.  By default, any
-errors are reported as such, with the request for the particular
-resource (template, plugin, filter) being denied and an exception
-raised.  When the TOLERANT flag is set to any true values, errors will
-be silently ignored and the provider will instead return
-STATUS_DECLINED.  This allows a subsequent provider to take
-responsibility for providing the resource, rather than failing the
-request outright.  If all providers decline to service the request,
-either through tolerated failure or a genuine disinclination to
-comply, then a 'E<lt>resourceE<gt> not found' exception is raised.
-
-
-
-
-
-
-=item PARSER
-
-The Template::Parser module implements a parser object for compiling
-templates into Perl code which can then be executed.  A default object
-of this class is created automatically and then used by the
-Template::Provider whenever a template is loaded and requires 
-compilation.  The PARSER option can be used to provide a reference to 
-an alternate parser object.
-
-    my $provider = Template::Provider->new({
-	PARSER => MyOrg::Template::Parser->new({ ... }),
-    });
-
-
-
-=item DEBUG
-
-The DEBUG option can be used to enable debugging messages from the
-Template::Provider module by setting it to include the DEBUG_PROVIDER
-value.
-
-    use Template::Constants qw( :debug );
-
-    my $template = Template->new({
-	DEBUG => DEBUG_PROVIDER,
-    });
-
-
-
-=back
-
-=head2 fetch($name)
-
-Returns a compiled template for the name specified.  If the template 
-cannot be found then (undef, STATUS_DECLINED) is returned.  If an error
-occurs (e.g. read error, parse error) then ($error, STATUS_ERROR) is 
-returned, where $error is the error message generated.  If the TOLERANT
-flag is set the the method returns (undef, STATUS_DECLINED) instead of
-returning an error.
-
-=head2 store($name, $template)
-
-Stores the compiled template, $template, in the cache under the name, 
-$name.  Susbequent calls to fetch($name) will return this template in
-preference to any disk-based file.
-
-=head2 include_path(\@newpath))
-
-Accessor method for the INCLUDE_PATH setting.  If called with an
-argument, this method will replace the existing INCLUDE_PATH with
-the new value.
-
-=head2 paths()
-
-This method generates a copy of the INCLUDE_PATH list.  Any elements in the
-list which are dynamic generators (e.g. references to subroutines or objects
-implementing a paths() method) will be called and the list of directories 
-returned merged into the output list.
-
-It is possible to provide a generator which returns itself, thus sending
-this method into an infinite loop.  To detect and prevent this from happening,
-the C<$MAX_DIRS> package variable, set to 64 by default, limits the maximum
-number of paths that can be added to, or generated for the output list.  If
-this number is exceeded then the method will immediately return an error 
-reporting as much.
-
-=head1 AUTHOR
-
-Andy Wardley E<lt>abw@andywardley.comE<gt>
-
-L<http://www.andywardley.com/|http://www.andywardley.com/>
-
-
-
-
-=head1 VERSION
-
-2.67, distributed as part of the
-Template Toolkit version 2.09, released on 23 April 2003.
-
-=head1 COPYRIGHT
-
-  Copyright (C) 1996-2002 Andy Wardley.  All Rights Reserved.
-  Copyright (C) 1998-2002 Canon Research Centre Europe Ltd.
-
-This module is free software; you can redistribute it and/or
-modify it under the same terms as Perl itself.
-
-=head1 SEE ALSO
-
-L<Template|Template>, L<Template::Parser|Template::Parser>, L<Template::Context|Template::Context>
