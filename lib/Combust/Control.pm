@@ -343,7 +343,8 @@ sub send_output {
 sub redirect {
   my $self = shift;
   my $url = shift;
-  $url = shift if ref $url and ref =~ m/^Apache/;  # if we got passed an $r as the first parameter
+  my $ref_url = ref $url || '';
+  $url = shift if $ref_url =~ m/^Apache/;  # if we got passed an $r as the first parameter
   my $permanent = shift;
   $self->r->pnotes('combust_notes')->{cookies}->bake_cookies
     if $self->r->pnotes('combust_notes')->{cookies};

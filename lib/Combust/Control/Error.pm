@@ -1,13 +1,9 @@
 package Combust::Control::Error;
 use strict;
 use base 'Combust::Control';
-#use Develooper::SendMail qw(sendmail);
 
 sub handler ($$) {
-  my ($class, $r) = @_;
-
-  # should use notes->param maybe ... hmn.
-  $r = Apache::Request->instance($r);
+  my ($self, $r) = @_;
 
   $r->uri =~ m!^/error/(\d+)!;
   my $error = $1 || 404;
@@ -20,27 +16,17 @@ sub handler ($$) {
 
   my $error_text = $r->pnotes('error') || '';
 
-  my $params = { error        => $error,
-		 error_header => $error_header,
-		 error_text   => $error_text, 
-	       };
+  $self->param('error'        => $error);
+  $self->param('error_header' => $error_header);
+  $self->param('error_text'   => $error_text);
 
   # is this right?  
   my $r_err = $r->main || $r->prev || $r;
-  $params->{error_uri} = $r_err->uri;
+  $self->param('error_url', $r_err->uri);
 
-#  if ($error == 500) {
-#    sendmail(to => 'ask@develooper.com',
-#	     from => 'ask-metamark-errors@develooper.com',
-#	     subject => 'Metamark server error - ' . $params->{error_uri},
-#	     body => "Who knows what the error was by now?  Check the log!",
-#	    );
-#  }
+  warn "self: $self / ref class: ", ref $self;
 
-  my $output;
-  $class->evaluate_template($r, output => \$output, template => $template, params => $params);
-  $r->update_mtime(time);
-  $class->send_output($r, \$output);
+  $self->send_output(scalar $self->evaluate_template($template));
 }
 
 1;
