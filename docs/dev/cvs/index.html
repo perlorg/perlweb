@@ -1,6 +1,6 @@
 
 [% module = r.param('module')  || "parrot";
-   page.title = "cvs for " _ module | html 
+   page.title = "cvs for " _ module | html;
    page.site = "cvs.perl.org"
 %] 
 
@@ -30,8 +30,10 @@ going on.
 
 <h2>Web interface to the CVS repository</h2>
 
-Available at <a
-href="http://cvs.perl.org/cvsweb/[% module %]/">http://cvs.perl.org/cvsweb/[% module %]/</a> and <a href="http://cvs.perl.org/viewcvs/[% module %]">http://cvs.perl.org/viewcvs/[% module %]</a>.
+<A HREF="http://viewcvs.sf.net">ViewCVS</A> is available at <a
+href="http://cvs.perl.org/viewcvs/[% module %]"
+>http://cvs.perl.org/viewcvs/[% module %]</a>.
+
 
 <h2>For registered developers</h2>
 
