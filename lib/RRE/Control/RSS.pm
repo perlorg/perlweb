@@ -7,8 +7,8 @@ sub handler($$) {
 
   my ($class, $r) = @_;
 
-  warn "RSS RRE Handler!";
-  warn "RSS URI: ", $r->uri;
+  #warn "RSS RRE Handler!";
+  #warn "RSS URI: ", $r->uri;
 
   my $template = 'rss.xml';
   my $content_type = 'application/rss+xml';
