@@ -22,15 +22,27 @@ Contact ask or robert @ perl.org for rsync instructions.
 
 /home/perl/bin/perl -MCPAN -e shell
 
-C<install Date::Parse DBI Exception::Class Bundle::LWP Text::Template>
+	Apache::DBI
+	Apache::Reload
+	Apache::Request
+	Bundle::LWP
+	Config::Simple
+	DBD::mysql
+	DBI
+	Date::Parse
+	Exception::Class
+	Mail::Internet
+	Pod::Simple
+	Template
+	Text::Template
+	Time::HiRes
+	URI::Find
 
-C<install Config::Simple Mail::Internet Time::HiRes>
+Not all sites require all the above modules, but its easier for us to
+list the superset.
 
-C<install URI::Find DBD::mysql Template Apache::Reload>
-
-C<install Pod::Simple>
-
-We will make a Bundle to be installed at some point.  
+You can also C<install Bundle::Combust> to get a bundle that contains
+all the necessary modules.
 
 =head3 Apache2 Proxy setup
 
@@ -74,6 +86,9 @@ server runs on port 8225 (configured in combust.conf).
 
 You might want to put bin/cron_hourly into the combust users crontab.
 In any case then it should be executed at least once.
+
+You can test the validity of your combust.conf, httpd.tmpl, and site
+templates by running C<bin/make_configs>
 
 B<Note:> You don't have to run combust as a seperate user, but it
 helps keep things separate.  For development, you can stick it almost
