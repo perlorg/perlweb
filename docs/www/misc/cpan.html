@@ -1,0 +1,207 @@
+<!-- 
+[% page.title = "The Comprehensive Perl Archive Network";
+   page.site = "CPAN";
+   page.bhead = page.site _ ": ";
+   page.banner = page.title;
+   page.style = "bare.html";
+   page.css   = "http://www.perl.org/css/perl.css";
+
+# everything on this page must be an absolute URL, because of how it's
+# proxied from cpan.org
+
+%]
+-->
+
+<HTML>
+  <HEAD>
+    <TITLE>The Comprehensive Perl Archive Network</TITLE>
+    <!-- Changed by: Robert, 27-May-2004 -->
+    <link rel="stylesheet" type="text/css" 
+          href="[% page.css || '/css/perl.css' %]" 
+          title="Default CSS2" media="screen"></link>
+    <STYLE type="text/css">
+BODY { width: 99%;
+  margin: auto; 
+}
+h1 { color: black;
+  text-align: left;
+  margin-bottom: 1px;
+  margin-top: 1px;
+  font-size: 115%;
+}
+.big { 
+  font-size: 200%;
+  font-family: Times;
+}
+TABLE { margin: auto; }
+IMG.border { border: none }
+TD#search { 
+  text-align: center;
+  padding-bottom: 20px;
+}
+TD      { padding: 4px;  }
+TD#left { 
+  border-right: solid #777777 2px;
+}
+TD#middle { 
+  border-right: solid #777777 2px;
+}
+#quote { 
+  font-size: 90%;
+}
+.menubar {
+  background: #006699;
+  margin: 1ex 0;
+  padding: 1px;
+  color: #FFF;
+} 
+.menubar A {
+  padding: 0.8ex;
+  font: bold 10pt Arial,Helvetica,sans-serif;
+}
+.menubar A:link, .menubar A:visited {
+  color: white;
+  text-decoration: none;
+}
+.menubar A:hover {
+  color: #ff6600;
+  text-decoration: underline;
+}
+    </STYLE>
+  </HEAD>
+<BODY>
+
+  <BR>
+  <TABLE COLUMNS=3 BORDER=0 WIDTH="90%" 
+         CELLSPACING=0 CELLPADDING=1
+         ALIGN=CENTER
+  >
+    <TR>
+      <TD COLSPAN=3>
+        <DIV ALIGN="CENTER">
+          <IMG SRC="http://search.cpan.org/s/img/cpan_banner.png"><BR>
+          <SPAN CLASS=big>The Comprehensive Perl Archive Network</SPAN>
+        </DIV>
+
+        <div class="menubar" align="center">
+          <a href="http://www.cpan.org/modules/">Modules</a>
+          &middot; <a href="http://www.cpan.org/scripts/">Scripts</a>
+          &middot; <a href="http://www.cpan.org/ports/">Ports</a>
+          &middot; <a href="http://www.cpan.org/src/README.html">Perl Source</a>
+          &middot; <a href="http://www.cpan.org/misc/cpan-faq.html">FAQ</a>
+          &middot; <a href="http://mirrors.cpan.org/">Mirrors</a>
+        </div>
+      </TD>
+    </TR>
+    <TR>
+      <TD id="search" COLSPAN=3>
+        <H1>Search CPAN</H1>
+        <form method="get" action="http://search.cpan.org/search" 
+              name="f" class="searchbox">
+          <input type="text" name="query" value="" size="35">
+          in <select name="mode">
+               <option value="all">All</option>
+               <option value="module" >Modules</option>
+               <option value="dist" >Distributions</option>
+               <option value="author" >Authors</option>
+             </select>&nbsp;<input type="submit" value="CPAN Search">
+        </form>
+      </TD>
+    </TR>
+
+    <TR>
+      <TD WIDTH="30%" id="left">
+        <H1>Recent Uploads</H1>
+        <!-- 
+[% MACRO quicknews(shortname,count) BLOCK %]
+[%- IF count < 1 %]
+  [%  count = 2 %]
+[% END %]
+[%- TRY %]
+  [%- USE news = XML.RSS("${root}/var/rss/${shortname}.rss") %]
+  [% FOREACH item = news.items %]
+     - <a href="[% item.link %]">[% item.title %]</a><BR>
+     [% count = count - 1 %]
+     [% LAST IF count == 0 %]
+  [% END %]
+[%- CATCH %]
+  [Error Processing Directive]
+[%- FILTER stderr %][% error.info %][% END %]
+[%- END %]
+[%- END %]
+-->
+       <DIV style="margin-left: 10px">
+         [% quicknews ("cpanrecent",12) %]
+       </DIV>
+      </TD>
+
+      <TD  WIDTH="30%" ID="middle">
+        <H1>Welcome to CPAN!</H1>
+        <DIV id="quote" ALIGN="CENTER">
+          <P>
+            Here you will find <i>All Things Perl</i>.
+          </P>
+          <P>Yours Eclectically, The Self-Appointed Master Librarian
+            (OOK!) of the CPAN<BR>
+            Jarkko Hietaniemi 
+            &lt;<A HREF="mailto:cpan@perl.org">cpan at perl.org</A>&gt;<BR>
+            <A HREF="http://www.cpan.org/disclaimer.html">[Disclaimer]</A> 2001-04-01
+        </DIV>
+        
+        <DIV id="stats" ALIGN="CENTER">
+          <H1>Statistics</H1>
+          online since 1995-10-26<BR>
+          2390 MB 243 mirrors<BR>
+          3643 authors 6431 modules<BR>
+        </DIV>
+      </TD>
+
+      <TD  WIDTH="30%" >
+        <DIV ID="sponsor" ALIGN=CENTER>
+          <H1>Hosted By</H1>
+          <A HREF="http://www.perl.org">
+            <IMG SRC="http://www.perl.org/simages/lcamel.gif" BORDER=0><BR>
+            perl.org</A><BR>
+          <H1>Sponsor</H1>
+          [% INCLUDE "tpl/sponsor-rotato.html" 
+             rotato_image_base = 'http://www.perl.org/'
+          %]
+        </DIV>
+        
+        <H1>Master Site Hosted by</H1>
+        <DIV ALIGN="CENTER">
+          <a href="http://www.csc.fi/suomi/funet/verkko.html.en/"><img src="http://www.cpan.org/misc/gif/funet.gif" alt="FUNET" height="25" width="88" BORDER=0></a>
+        </DIV>
+      </TD>
+    </TR>
+
+    <TR>
+      <TD ID="left">
+        <H1>Searching</H1>
+        <DIV style="margin-left: 10px">
+          - <A HREF="http://cpan.uwinnipeg.ca/htdocs/cpan-search.html"
+            >Kobesearch</A><BR>
+          - <A HREF="http://www.perldoc.com/">Perldoc.com</A><BR>
+          - <A HREF="http://search.cpan.org">CPAN Search</A><BR>
+        </DIV>
+      </TD>
+
+      <TD ID="middle">
+        <H1>Perl Links</H1>
+        <DIV style="margin-left: 10px">
+          - <A HREF="http://faq.perl.org/">Perl FAQ</A><BR>
+          - <A HREF="http://lists.perl.org/">Mailing Lists</A><BR>
+          - <A HREF="http://www.perl.org/">The Perl Directory</A><BR>
+        </DIV>
+      </TD>
+
+      <TD ID="right" ALIGN="CENTER" VALIGN="MIDDLE">
+        <A HREF="http://www.cpan.org/index.html"
+        >the real CPAN front page</A><BR>
+        <BR>
+        <A HREF="http://www.cpan.org/SITES.html">other CPAN mirrors</A><BR>
+      </TD>
+    </TR>
+  </TABLE>
+</BODY>
+</HTML>
