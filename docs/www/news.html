@@ -18,8 +18,8 @@
 [% USE HTML %]
 
 [% MACRO newsitem(item) BLOCK %]
- <a href="[% item.link %]"><B>[% item.title %]</b></a>
-   <div id="newsitem">[% item.description %]</div>
+ <a href="[% item.link | html%]"><B>[% item.title %]</b></a>
+   <div class="newsitem">[% item.description %]</div>
    <br>
 [% END %]
 
