@@ -92,7 +92,7 @@ sub r {
 sub param {
   my ($self, $key) = (shift, shift);
   return unless $key;
-  Carp::cluck "param('$key' ...) called" if $key eq "user";
+  #Carp::cluck "param('$key' ...) called" if $key eq "user";
   $self->{params}->{$key} = shift if @_;
   return $self->{params}->{$key};
 }
@@ -168,15 +168,16 @@ sub get_include_path {
   #warn "root coookie : ", $cookies->cookie('root');
 
   my ($user, $dir);
-  if (($user, $dir) = ($r->param('root') =~ m!^/?([a-zA-Z]+)/([^\.]+)$!)) {
+  my $root_param = $r->param('root') || '';
+  if (($user, $dir) = ($root_param =~ m!^/?([a-zA-Z]+)/([^\.]+)$!)) {
     # FIXME|TODO: should expand on ~ instead of using /home
     $cookies->cookie('root', "$user/$dir");
   } 
-  elsif ($r->param('root') eq "/") {
+  elsif ($root_param eq "/") {
     # don't set user and dir, reset the cookie
     $cookies->cookie('root', "/");
   }
-  elsif (($user, $dir) = ($cookies->cookie('root') =~ m!^([a-zA-Z]+)/([^\.]+)$!)) {
+  elsif (($user, $dir) = (($cookies->cookie('root')||'') =~ m!^([a-zA-Z]+)/([^\.]+)$!)) {
     # ...  why is this in an elsif?  :-)
   }
 
@@ -301,11 +302,11 @@ sub send_output {
     $length = length($routput);
   }
 
-  if ( $length == 0 ) {
-    my $error = 'zero length output for request: ' . $r->uri . '?' .$r->args;
-    warn( $error );
-    return SERVER_ERROR;
-  }
+#  if ( $length == 0 ) {
+#    my $error = 'zero length output for request: ' . $r->uri . '?' .$r->args;
+#    warn( $error );
+#    return SERVER_ERROR;
+#  }
 
   #$r->headers_out->{'Content-Length'} = $length;
 

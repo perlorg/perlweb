@@ -23,7 +23,7 @@ sub ProxyIP::handler {
     my $r = shift;
     return OK unless $r->connection->remote_ip =~ m/^(127\.0\.0\.1)$/;
 
-    my @ip = split(/,\s*/, $r->header_in('X-Forwarded-For'));
+    my @ip = split(/,\s*/, ($r->header_in('X-Forwarded-For')||''));
     if (my $ip = pop(@ip)) {
 	$r->connection->remote_ip($ip);
     }
