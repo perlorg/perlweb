@@ -29,6 +29,23 @@ getrss "useperl" "http://use.perl.org/index.rss";
 getrss "cpanrecent" "http://search.cpan.org/recent.rdf?desc=1";
 getrss "perlcom" "http://www.perl.com/pace/perlnews.rdf";
 getrss "perl-foundation" "http://perl-foundation.org/perl-foundation.rdf"
+
+function getcpanstats () {
+    target="cpan.dat"
+    targettemp="$CBROOT/tmp/cpan.dat.new"
+
+    echo "mb : mirrors : authors : modules" > $targettemp
+    
+    /usr/bin/lwp-request http://www.cpan.org/index.html |
+    perl -ne 'm!(\d+) MB (\d+) mirrors<br/>(\d+) authors (\d+) modules!i && print qq!$1 : $2 : $3 : $4\n!' >> $targettemp
+
+    if [ $? -eq 0 ]; then
+      mv $targettemp $targetpath/$target
+    fi
+}
+
+getcpanstats
+
 echo 'delete from combust_cache where expire < NOW();' | $CBROOT/bin/cmysql combust
 
 
