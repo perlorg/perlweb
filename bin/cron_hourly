@@ -29,4 +29,6 @@ getrss "useperl" "http://use.perl.org/index.rss";
 getrss "cpanrecent" "http://search.cpan.org/recent.rdf?desc=1";
 getrss "perlcom" "http://www.perl.com/pace/perlnews.rdf";
 
+echo 'delete from combust_cache where expire < NOW();' | $CBROOT/bin/cmysql combust
+
 
