@@ -14,19 +14,11 @@ my $config = Combust::Config->new();
 my %dbh = ();
 
 sub read_db_connection_parameters {
-
-  # my $db = shift || 'combust';
-
-  # my $db = 'combust';
-  # $db   .= '_test' if $ENV{TESTMODE};
-  # return ("dbi:mysql:database=$db;host=localhost;user=combust;;mysql_read_default_file=$ENV{CBROOT}/.my.cnf");
-
-  my $data_source = $config->db_data_source;
-  my ($host) = ($data_source =~ m/host=([^;]+)/);
-
-  return ($host, $data_source, $config->db_user, $config->db_password);
-
-
+  my $db_name = shift;
+  my $db = $config->database($db_name);
+  $db and $db->{data_source} or croak "no data_source configured";
+  my ($host) = ($db->{data_source} =~ m/host=([^;]+)/);
+  return ($host, $db->{data_source}, $db->{user}, $db->{password});
 }
 
 sub db_open {
@@ -50,7 +42,7 @@ sub db_open {
   my $dbh = $dbh{$cache_key};
 
   unless ($dbh and $dbh->ping()) {
-	my ($host, @args) = read_db_connection_parameters();
+	my ($host, @args) = read_db_connection_parameters($db);
 
 	$dbh = DBI->connect(@args, {
 		%$attr,

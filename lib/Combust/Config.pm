@@ -3,7 +3,7 @@ use strict;
 use Config::Simple;
 use Data::Dumper qw();
 use Sys::Hostname qw(hostname);
-use Carp qw(carp croak);
+use Carp qw(carp croak cluck);
 
 my $file = $ENV{CBCONFIG} || "$ENV{CBROOT}/combust.conf";
 $file = "$ENV{CBROOTLOCAL}/combust.conf" if $ENV{CBROOTLOCAL};
@@ -109,7 +109,7 @@ sub database {
   my ($self, $db_name) = @_;
   carp "No databases configured in the combust configuration" and return unless %dbs; 
   unless ($db_name and $dbs{$db_name}) {
-    carp "no database $db_name defined, using default" if $db_name;
+    cluck "no database $db_name defined, using default" if $db_name;
     $db_name = 'default';
   }
   $dbs{$db_name};

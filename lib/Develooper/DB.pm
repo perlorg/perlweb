@@ -1,9 +1,11 @@
 package Develooper::DB;
-use base qw(Combust::DB);
-use Exporter;
-use vars qw(@ISA @EXPORT);
+use Combust::DB;
+use Exporter::Lite;
 @EXPORT = qw(db_open);
-@ISA = qw(Exporter);
+use strict;
 
+sub db_open {
+  Combust::DB::db_open(@_);
+}
 
 1;
