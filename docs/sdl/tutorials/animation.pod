@@ -103,8 +103,8 @@ As before, the loop to call C<undraw_redraw_rect()> would look something like:
 		$rect->x( $x );
 
 		undraw_redraw_rect( $app,
-			rect => $rect,  old_rect => $old_rect,
-			rect => $color, bg_color => $bgcolor,
+			rect       => $rect,  old_rect => $old_rect,
+			rect_color => $color, bg_color => $bgcolor,
 		);
 
 		$old_rect->x( $x );
