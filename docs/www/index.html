@@ -164,11 +164,17 @@
   </td>
  </tr>
 
-[% MACRO quicknews(shortname) BLOCK %]
+[% MACRO quicknews(shortname,count) BLOCK %]
+[%- IF count < 1 %]
+  [%  count = 2 %]
+[% END %]
 [%- TRY %]
-    [%- USE news = XML.RSS("${root}/var/rss/${shortname}.rss") %]
-    [%- item = news.items.first %]
-    <A HREF="[% item.link %]">[%- item.title %]</A>
+   [%- USE news = XML.RSS("${root}/var/rss/${shortname}.rss") %]
+   [% FOREACH item = news.items %]
+       - <a href="[% item.link %]">[% item.title %]</a><BR>
+       [% count = count - 1 %]
+       [% LAST IF count == 0 %]
+    [% END %]
 [%- CATCH %]
     [Error Processing Directive]
   [%- FILTER stderr %][% error.info %][% END %]
@@ -192,6 +198,10 @@
      <tr>
       <td><A HREF="http://www.cpan.org/"><b>CPAN</b></A></td>
       <td>[% quicknews ("cpanrecent") %]</td>
+     </tr>
+     <tr>
+      <td><A HREF="http://www.perl-foundation.org/"><b>TPF</b></A></td>
+      <td>[% quicknews ("perl-foundation") %]</td>
      </tr>
      </table>
     </DIV>
