@@ -27,12 +27,17 @@ sub handler ($$) {
 
   # TODO|FIXME: get branch etc from a cookie and/or query args.
 
+  # Some special handlers
+  return $self->deadlink_handler($r)
+    if $uri =~ m{^/!dl/.*};
+
   $uri =~ s!/$!/index.html!;
 
   # TODO|FIXME: set last_modified_date properly!  
 
   if ($uri !~ m!/(.*\.(?:html?))$!) {
-    # not a html (TT) file
+    # if the filename does not end in .html, then do not process it
+    # with TT and just send it.
     my $file = $uri;
     substr($file,0,1) = ""; # trim leading slash
     #warn "going to load $file";
@@ -75,6 +80,30 @@ sub handler ($$) {
   $self->send_output($r, \$output, $content_type);
 }
 
+sub deadlink_handler {
+  my ($self, $r) = @_;
 
+  # it's possible this should be an entirely seperate handler, but
+  # that seems like overkill.
+  $r->uri =~ m{^/!dl/(.*)$};
+  my $url = $1;
+
+  # some simple validation
+  return 500
+    unless $url =~ m{^https?://};
+
+  my $template = "error/deadlink.html";
+
+  my $params = {
+		url => $url,
+	       };
+
+  my $output;
+  $self->evaluate_template($r, output => \$output, template => $template, params => $params);
+  $r->update_mtime(time);
+  $self->send_output($r, \$output, "text/html");
+
+  return 404;
+}
 
 1;
