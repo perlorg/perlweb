@@ -1,0 +1,789 @@
+=head1 TITLE
+
+Synopsis 2: Bits and Pieces
+
+=head1 AUTHOR
+
+Larry Wall <larry@wall.org>
+
+=head1 VERSION
+
+  Maintainer: Luke Palmer <luke@luqui.org>
+  Date: 10 Aug 2004
+  Last Modified: 18 Aug 2004
+  Number: 2
+  Version: 0
+
+This document summarizes Apocalypse 2, which covers small-scale
+lexical items and typological issues.  (These Synopses also contain
+updates to reflect the evolving design of Perl 6 over time, unlike the
+Apocalypses, which are frozen in time as "historical documents".
+These updates are not marked--if a Synopsis disagrees with its
+Apocalypse, assume the Synopsis is correct.)
+
+=head1 Atoms
+
+=over 4
+
+=item *
+
+In the abstract, Perl is written in Unicode, and has consistent Unicode
+semantics regardless of the underlying text representations.
+
+=item *
+
+Perl can count Unicode line and paragraph separators as line markers,
+but that behavior had better be configurable so that Perl's idea of
+line numbers matches what your editor thinks about Unicode lines.
+
+=back
+
+=head1 Molecules
+
+=over 4
+
+=item *
+
+Multiline comments will be provided by extending the syntax of POD
+to nest C<=begin COMMENT>/C<=end COMMENT> correctly without the need
+for C<=cut>.  (Doesn't have to be "COMMENT"--any unrecognized POD
+stream will do to make it a comment.  Bare C<=begin> and C<=end>
+probably aren't good enough though, unless you want all your comments
+to end up in the manpage...)
+
+Probably we could have single paragraph comments with C<=for COMMENT>
+as well.  That would let C<=for> keep its meaning as the equivalent
+of a C<=begin> and C<=end> combined.
+
+=item *
+
+Intra-line comments will not be supported in standard Perl (but it would
+be trivial to declare them as a macro).
+
+=back
+
+=head1 Built-In Data Types
+
+=over 4
+
+=item *
+
+In support of OO encapsulation, there is a new fundamental datatype:
+"opaque".  External access to opaque objects is always through method
+calls, even for attributes.
+
+=item *
+
+Perl 6 will have an optional type system that helps you write safer
+code that performs better.
+
+=item *
+
+Perl 6 will support the notion of "properties" on various kinds of
+objects.  Properties are like object attributes, except that they're
+managed by the individual object rather than by the object's class.
+According to A12, properties are actually implemented by a
+kind of mixin mechanism.
+
+=item *
+
+Properties applied to compile-time objects such as variables and
+classes are also called "traits".  Traits are not expected to change
+at run time.
+
+=item *
+
+Perl 6 is an OO engine, but you're not generally required to think
+in OO when that's inconvenient.  However, some built-in concepts such
+as filehandles will be more object-oriented in a user-visible way.
+
+=item *
+
+A variable's type is an interface contract indicating what sorts
+of values the variable may contain. More precisely, it's a promise
+that the object or objects contained in the variable are capable of
+responding to the methods of the indicated "role".  See A12 for more
+about roles.  A variable object may itself be bound to a container
+type that specifies how the container works without necessarily
+specifying what kinds of things it contains.
+
+=item *
+
+You'll be able to ask for the length of an array, but it won't be
+called that, because "length" does not specify units.  So
+C<.elems> is the number of array elements.  (You can also
+ask for the length of an array in bytes or codepoints or graphemes.
+Same for strings.)
+
+=item *
+
+C<my Dog $spot> by itself does not automatically call a C<Dog> constructor.
+The actual constructor syntax turns out to be C<my Dog $spot.=new;>,
+making use of the C<.=> mutator method-call syntax.
+
+=item *
+
+If you say
+
+    my int @array is MyArray;
+
+you are declaring that the elements of C<@array> are integers,
+but that the array itself is implemented by the C<MyArray> class.
+Untyped arrays and hashes are still perfectly acceptable, but have
+the same performance issues they have in Perl 5.
+
+=item *
+
+Built-in object types start with an uppercase letter: Int, Num, Str,
+Bit, Ref, Scalar, Array, Hash, Rule and Code.  Non-object (value) types
+are lowercase: int, num, str, bit, and ref.  Value types are primarily
+intended for declaring compact array storage.  However, Perl will
+try to make those look like their corresponding uppercase types if
+you treat them that way.
+
+=item *
+
+Perl 6 will intrinsically support big integers and rationals through
+its system of type declarations.  C<Int> automatically supports
+promotion to arbitrary precision.  C<Rat> supports arbitrary precision
+rational arithmetic.  Value types like C<int> and C<num> imply
+the natural machine representation for integers and floating-point
+numbers, respectively, and do not promote to arbitrary precision.
+Untyped scalars use Int semantics rather than int.
+
+=item *
+
+Perl 6 should by default make standard IEEE floating point concepts
+visible, such as C<Inf> (infinity) and C<NaN> (not a number).
+It should also be at least pragmatically possible to throw exceptions
+on overflow.
+
+=item *
+
+A C<str> is always a byte buffer, whereas a C<Str> is a Unicode string
+object of some sort.  Untyped scalars use Str semantics rather than str
+(except under C<use bytes>).
+
+=back
+
+=head1 Names and Variables
+
+=item *
+
+The C<$pkg'var> syntax is dead.  Use C<$pkg::var> instead.
+
+=item *
+
+You may interpolate a string into a package or variable name using
+C<::{$expr}> where you'd ordinarily put a package or variable name.
+The string is allowed to contain additional instances of C<::>, which
+will be interpreted as package nesting.  You may only interpolate
+entire names, since the construct starts with C<::>, and either ends
+immediately or is continued with another C<::> outside the curlies.
+All symbolic references are done with this notation:
+
+    $foo = "Foo";
+    $foobar = "Foo::Bar";
+    $::{$foo}		# package-scoped $Foo
+    $::{"MY::$foo"}	# lexically-scoped $Foo
+    $::{"*::$foo"}	# global $Foo
+    $::{$foobar}	# $Foo::Bar
+    $::{$foobar}::baz	# $Foo::Bar::baz
+    $::{$foo}::Bar::baz	# $Foo::Bar::baz
+    $::{$foobar}baz	# ILLEGAL at compile time (no operator baz)
+    ${$foobar}::baz	# ILLEGAL at run time (no hard ref in $foobar)
+
+Note that unlike in Perl 5, initial C<::> doesn't imply global.
+Package names are searched for from inner lexical scopes to outer,
+then from inner packages to outer.  The global namespace is the last
+place it looks.  You must use the C<*> package to force the search
+to start in the global namespace.
+
+=item *
+
+Sigils are now invariant.  C<$> always means a scalar variable, C<@>
+an array variable, and C<%> a hash variable, even when subscripting.
+Array and hash variable names in scalar context automatically produce
+references.
+
+=item *
+
+In string contexts these container references automatically dereference
+to appropriate (white-space separated) string values.  In numeric
+contexts, the number of elements in the container is returned.
+In boolean contexts, a true value is returned if and only if there
+are any elements in the container.
+
+=item *
+
+To get a Perlish representation of any data value, use the C<.perl>
+method.  This will put quotes around strings, square brackets around
+list values, curlies around hash values, etc., such that standard
+Perl could reparse the result.
+
+=item *
+
+To get a formatted representation of any scalar data value, use
+the C<.as('%03d')> method to do an implicit sprintf on the value.
+To format an array value separated by commas, supply a second argument:
+C<.as('%03d', ', ')>.  To format a hash value or list of pairs, include
+formats for both key and value in the first string: C<< .as('%s: %s', "\n") >>.
+
+=item *
+
+Subscripts now consistently dereference the reference produced by
+whatever was to their left.  Whitespace is not allowed between a
+variable name and its subscript.  However, there is a corresponding
+"dot" form of each subscript (C<@foo.[1]> and C<%bar.{'a'}>) which
+allows optional whitespace before the dot (except when interpolating).
+
+=item *
+
+Slicing will be specified by the nature of the subscript, not by
+the sigil.
+
+=item *
+
+The context in which a subscript is evaluated is no longer controlled
+by the sigil either.  The inner context turns out to be whatever
+the outer context was, since we now have convenient single-character
+context specifiers to force either scalar or list context.
+
+=item *
+
+There is a need to distinguish list assignment from list binding.
+List assignment works exactly as it does in Perl 5, copying the
+values.  There's a new C<:=> binding operator that lets you bind
+names to array and hash references without copying, just as function
+arguments are bound to formal parameters.  See A6.
+
+=item *
+
+Unlike in Perl 5, the notation C<&foo> merely creates a reference
+to function "foo" without calling it.  Any function reference may
+be dereferenced and called using parens (which may, of course,
+contain arguments).  Whitespace is not allowed before the parens,
+but there is a corresponding C<.()> operator, which allows you to
+insert optional whitespace before the dot.
+
+=item *
+
+With multis, C<&foo> may not be sufficient to uniquely name a specific
+function.  In that case, a type signature may also be included in angles:
+C<< &foo<int,num> >>.  It still just returns a function reference.
+
+=item *
+
+Slicing syntax will be covered in S9.  But we know that multidimensional
+slices will be done with semicolons between individual slice subscripts.
+
+=item *
+
+Slicing hashes to return pairs rather than values should probably
+be done with an optional argument to C<.pairs()> or C<.kv()>.
+
+=item *
+
+A hash reference in numeric context returns the number of pairs
+contained in the hash.  A hash reference in a boolean context returns
+true if there are any pairs in the hash.  In either case, any intrinsic
+iterator would be reset.  (If hashes do carry an intrinsic iterator
+(as they do in Perl 5), there will be a C<.reset> method on the hash
+object to reset the iterator explicitly.)
+
+=item *
+
+Sorting a list of pairs should sort on their keys by default.  For
+more on C<sort> see S29.  (If there is no S29 yet, write one.)
+
+=item *
+
+Many of the special variables of Perl 5 are going away.  Those that
+apply to some object such as a filehandle will instead be attributes
+of the appropriate object.  Those that are truly global will have
+global alphabetic names, such as C<$*PID> or C<@*ARGS>.
+
+=item *
+
+Any remaining special variables will be lexically scoped.
+This includes C<$_> and C<@_>.  As well as the new C<$0>, which
+is the return value of the last regex match.  C<$1>, C<$2>, etc.,
+are aliases into the C<$0> object.
+
+=item *
+
+The C<$#foo> notation is dead.  Use C<@foo.end> or C<[-1]> instead.
+(Or maybe C<@foo.dim> for multidimensional arrays.)
+
+=item *
+
+A2 proposes C<$(...)> and C<@(...)> to interpolate arbitrary
+expressions, but these have been replaced with interpolation of curlies
+(closures).
+
+=back
+
+=head1 Names
+
+=over 4
+
+=item *
+
+The current lexical symbol table may now be referenced through the
+pseudo-package C<MY>.
+
+=item *
+
+Typeglobs are gone.  Use binding (C<:=> or C<::=>) to do aliasing.
+Individual variable objects are still accessible through the
+hash representing each symbol table, but you have to include the
+sigil in the variable name now: %MyPackage::{'$foo'} (or also
+%MyPackage::«$foo» these days).
+
+=item *
+
+Truly global variables live in the C<*> package: C<$*UID>, C<%*ENV>.
+(The C<*> may generally be omitted if there is no inner declaration
+hiding the global name.)  C<$*foo> is short for C<$*::foo>, suggesting
+that the variable is "wild carded" into every package.
+
+=item *
+
+Standard input is C<$*IN>, standard output is C<$*OUT>, and standard error
+is C<$*ERR>.
+
+=back
+
+=head1 Literals
+
+=over 4
+
+=item *
+
+Underscores are allowed between any two digits in a literal number.
+
+=item *
+
+New quoting constructs may be declared as macros:
+
+    macro quote:qX (AST $quoted, *%adverbs) {...}
+
+Note: macro adverbs are not automatically evaluated at macro call
+time.  You must either evaluate them explicitly or arrange for them
+to be evaluated later. (But sub adverbs automatically evaluate at
+call time.)
+
+=item *
+
+You may interpolate double-quotish text into a single-quoted string
+using the C<\qq[...]> construct.  Other "q" forms also work, including
+user-defined ones, as long as they start with "q".  Otherwise you'll
+just have to embed your construct inside a C<\qq[...]>.
+
+=item *
+
+Bare scalar variables always interpolate in double-quotish strings.
+Bare array, hash, and subroutine variables may I<not> be interpolated.
+However, any sigiled variable may start an interpolation if it is
+followed by a sequence of one or more bracketed dereferencers: that
+is, any of 1) an array subscript, 2) a hash subscript, 3) a set of
+parentheses indicating a function call, 4) any of 1 through 3 in their
+"dot" form, or 5) a dot-form method call that includes parentheses.
+
+=item *
+
+In order to interpolate an entire array, it's necessary now to subscript
+with empty brackets:
+
+    print "The answers are @foo[]\n"
+
+As with Perl 5 array interpolation, the elements are separated by a space.
+(Except that a space is not added if the element already ends in some kind
+of whitespace.  In particular, a list of pairs will interpolate with a
+tab between the key and value, and a newline after the pair.)
+
+Note that this fixes the spurious "@" problem in double-quoted email addresses.
+
+=item *
+
+In order to interpolate an entire hash, it's necessary to subscript
+with empty braces:
+
+    print "The associations are:\n%bar{}"
+
+By default, keys and values are separated by tab characters, and pairs
+are terminated by newlines.  (This is almost never what you want, but
+if you want something polished, you can be more specific.)
+
+Note that this avoids the spurious "%" problem in double-quoted printf formats.
+
+=item *
+
+In order to interpolate the result of a sub call, it's necessary to include
+parentheses:
+
+    print "The results are &baz().\n"
+
+The function is called in scalar context.  (If it returns a list,
+that list is interpolated as if it were an array.)
+
+=item *
+
+In order to interpolate the result of a method call without arguments,
+it's necessary to include parentheses:
+
+    print "The attribute is $obj.attr().\n"
+
+The method is called in scalar context.  (If it returns a list,
+that list is interpolated as if it were an array.)
+
+It is allowed to have a cascade of argumentless methods as long as
+the last one ends with parens:
+
+    print "The attribute is %obj.keys.sort.reverse().\n"
+
+(The cascade is basically counted as a single method call for the
+end-bracket rule.)
+
+=item *
+
+Multiple dereferencers may be stacked as long as each one ends in
+some kind of bracket:
+
+    print "The attribute is @baz[3](1,2,3){$xyz}«blurfl».attr().\n"
+
+Note that the final period above is not taken as part of the expression since
+it doesn't introduce a bracketed dereferencer.  Spaces are not allowed
+between the dereferencers even when you use the dotted forms.
+
+=item *
+
+A bare closure also interpolates in double-quotish context.  It may
+not be followed by any dereferencers, since you can always put them
+inside the closure.  The expression inside is evaluated in scalar
+(string) context.  You can force list context on the expression using
+either the C<*> or C<list> operator if necessary.
+
+The following means the same as the previous example.
+
+    print "The attribute is { @baz[3](1,2,3){$xyz}«blurfl».attr }.\n"
+
+The final parens are unnecessary since we're providing "real" code in
+the curlies.  If you need to have double quotes that don't interpolate
+curlies, you can explicitly remove the capability:
+
+    qq:c(0) "Here are { $two uninterpolated } curlies";
+
+Alternately, you can build up capabilities from single quote to tell
+it exactly what you I<do> want to interpolate:
+
+    q:s 'Here are { $two uninterpolated } curlies';
+
+The C<:s>, C<:a>, C<:h>, C<:f>, and C<:c> modifiers are short for the
+C<:scalar>, C<:array>, C<:hash>, C<:function>, and C<:closure> adverbs.
+If this is too much of a hardship, you can define your own quote
+operators, such as this one that does only Ruby-style interpolation:
+
+    macro term:qc () { "q:closure()" }
+
+And if that's too much of a hardship, we could define a standard "quote"
+pragma to set the default meaning of double quotes.
+
+=item *
+
+A consequence of the previous item is that we can now say:
+
+    %hash = qw:c/a b c d {@array} {%hash}/;
+
+to interpolate items into a qw.  Conveniently, arrays and hashes
+interpolate with only whitespace separators by default, so the subsequent
+split on whitespace still works out.
+
+=item *
+
+Secondary sigils have no influence over whether the primary sigil
+interpolates.  That is, if C<$a> interpolates, so do C<$^a>, C<$*a>,
+C<$?a>, C<$.a>, and C<$:a>.  It only depends on the C<$>.
+
+=item *
+
+No other expressions interpolate.  Use curlies.
+
+=item *
+
+The old disambiguation syntax:
+
+    ${foo[$bar]}
+    ${foo}[$bar]
+
+is dead.  Use closure curlies instead:
+
+    {$foo[$bar]}
+    {$foo}[$bar]
+
+(You may be detecting a trend here...)
+
+=item *
+
+To interpolate a class method, use curlies: C<"{Dog.bark}">.
+
+=item *
+
+To interpolate a topical method, use curlies: C<"{.bark}">.
+
+=item *
+
+To interpolate a function call without a sigil, use curlies: C<"{abs $var}">.
+
+=item *
+
+And so on.
+
+=item *
+
+Backslash sequences still interpolate, but there's no longer any C<\v>
+to mean "vertical tab", whatever that is...
+
+=item *
+
+There's also no longer any C<\L>, C<\U>, C<\l>, C<\u>, or C<\Q>.
+Use curlies with the appropriate function instead: C<"{ucfirst $word}">.
+
+=item *
+
+There are no barewords in Perl 6.  An undeclared bare identifier will
+always be taken to mean a subroutine or method name.  (Class names
+are predeclared, or prefixed with the C<::> sigil.)  A consequence of
+this is that there's no longer any "use strict subs".  There's also no
+"use strict refs" because symbolic dereferences are now syntactically
+distinguished from hard dereferences.  C<@{$arrayref}> must now be a
+hard reference, while @::{$string} is explicitly a symbolic reference.
+(Yes, this may give fits to the P5-to-P6 translator, but I think it's
+worth it to separate the concepts.)
+
+=item *
+
+There is no hash subscript autoquoting in Perl 6.  Use C<%x«foo»>
+or C<<< %x<<foo>> >>> for constant hash subscripts, or the old standby
+C<< %x{'foo'} >>.
+
+But C<< => >> still autoquotes any bare identifier to its immediate
+left (horizontal whitespace allowed but not comments).  The identifier is not
+subject to keyword or even macro interpretation.  If you say
+
+    $x = do {
+	call_something();
+	if => 1;
+    }
+
+then C<$x> ends up containing the pair ("if" => 1).  Always.
+
+You can also use the :key($value) form to quote the keys of option
+pairs.  To align values of option pairs, you may use the dot postfix
+forms:
+
+    :longkey  .($value)
+    :shortkey .«string»
+    :fookey   .{ $^a <=> $^b }
+
+=item *
+
+The double-underscore forms are going away:
+
+    Old                 New
+    ---                 ---
+    __LINE__            MY.line
+    __FILE__            MY.file
+    __PACKAGE__         MY.package
+    __END__             =begin END
+    __DATA__            =begin DATA
+
+The C<=begin END> pod stream is special in that it assumes there's
+no corresponding C<=end END> before end of file.  The C<DATA> stream
+is not special--any POD stream in the current file can be accessed
+via a filehandle.  Presumably a module could read all its COMMENT
+blocks, for instance.
+
+=item *
+
+In a heredoc, the terminating string after C<<< << >>> must be quoted
+(though custom quotes are permissible).  Since "q" forms of quote are
+allowed, adverbs are automatically also allowed:
+
+    print <<q:c/END/
+	Give $100 to the man behind curtain number {$curtain}.
+    END
+
+=item *
+
+Here docs allow optional whitespace both before and after terminating
+delimiter.  Leading whitespace equivalent to the indentation of the
+delimiter will be removed from all preceding lines.  If a line is
+deemed to have less whitespace than the terminator, only whitespace
+is removed, and a warning may be issued.  (Hard tabs will be assumed
+to be 8 spaces, but as long as tabs and spaces are used consistently
+that doesn't matter.)  A null terminating delimiter terminates on
+the next line consisting only of whitespace, but such a terminator
+will be assumed to have no indentation.  (That is, it's assumed to
+match at the beginning of any whitespace.)
+
+=back
+
+=head1 Context
+
+=over 4
+
+=item *
+
+Perl still has the three main contexts: void, scalar, and list.
+
+=item *
+
+In addition to undifferentiated scalars, we also have these scalar contexts:
+
+    Context	Type	OOtype	Operator
+    -------	----	------	--------
+    boolean	bit	Bit	?
+    integer	int	Int	int
+    numeric	num	Num	+
+    string	str	Str	~
+
+There are also various reference contexts that require particular kinds of
+container references.
+
+=item *
+
+Unlike in Perl 5, references are no longer always considered true.
+It depends on the state of their .bit property.  Classes get to decide
+which of their values are true and which are false.  Individual objects
+can override the class definition:
+
+    return 0 but true;
+
+=back
+
+=head1 Lists
+
+=over 4
+
+=item *
+
+List context in Perl 6 is by default lazy.  This means a list can
+contain infinite generators without blowing up.  No flattening happens
+to a lazy list until it is bound to the signature of a function or
+method at call time (and maybe not even then).  We say that such
+an argument list is "lazily flattened", meaning that we promise to
+flatten the list on demand, but not before.
+
+=item *
+
+There is a "C<list>" operator which imposes a list context on
+its arguments even if C<list> itself occurs in a scalar context.
+In list context, it flattens lazily.  In a scalar context, it returns
+a reference to the resulting list.  (So the C<list> operator really
+does exactly the same thing as putting a list in parentheses.  But
+it's more readable in some situations.)
+
+=item *
+
+The C<*> unary operator may be used to force list context on its
+argument and I<also> defeat any scalar argument checking imposed by
+subroutine signature declarations.  This list flattens lazily.
+
+=item *
+
+To force non-lazy list flattening, use the C<**> unary operator.
+Don't use it on an infinite generator unless you have a machine with
+infinite memory, and are willing to wait a long time.
+
+=item *
+
+Signatures on non-multi subs can be checked at compile time, whereas
+multi sub and method call signatures can only be checked at run time.
+This is not a problem for arguments that are arrays or hashes,
+since they don't have to care about their context, but just return
+a reference in any event, which may or may not be lazily flattened.
+However, function calls in the argument list can't know their eventual
+context because the method hasn't been dispatched yet, so we don't
+know which signature to check against.  As in Perl 5, list context
+is assumed unless you explicitly qualify the argument with a scalar
+context operator.
+
+=item *
+
+The C<< => >> operator now constructs Pair objects rather than merely
+functioning as a comma.
+
+=item *
+
+There is no such thing as a hash list context.  Assignment to a hash
+produces an ordinary list context.  You may assign alternating keys
+and values just as in Perl 5.  You may also assign lists of Pair objects, in
+which case each pair provides a key and a value.  You may, in fact,
+mix the two forms, as long as the pairs come when a key is expected.
+If you wish to supply a Pair as a key, you must compose an outer Pair
+in which the key is the inner Pair:
+
+    %hash = (($keykey => $keyval) => $value);
+
+=item *
+
+In contrast to assignment, binding to a hash requires a Hash (or
+Pair) reference.  Binding to a "splat" hash requires a list of pairs
+or hashes, and stops processing the argument list when it runs out
+of pairs or hashes.  See S6 for much more about parameter binding.
+
+=item *
+
+The C<qw/foo bar/> quote operator now has a bracketed form: C<«foo bar»>
+(or C<<< <<foo bar>> >>> as the ASCII workaround).
+
+=back
+
+=head1 Files
+
+=over 4
+
+=item *
+
+Filename globs are no longer done with angle brackets.  Use the C<glob>
+function.
+
+=item *
+
+Input from a filehandle is still done with angle brackets, but a
+variable is required inside, since there are no bareword filehandles
+any more.  Angle brackets are not just for filehandles anymore--they
+actually cause any iterator to iterate (either once or many times,
+according to context).
+
+There is a corresponding method, C<< .<> >>.  So, for instance,
+you can write C<< $*IN.<> >> to force iteration of standard input.
+Iterator adverbs can go inside:
+
+    for $handle.<:prompt('$ ')> { say $_ + 1 }
+
+=back
+
+=head1 Properties
+
+=over 4
+
+=item *
+
+Properties work as detailed in A12.  They're actually object
+attributes provided by role mixins.  Compile-time properties applied
+to containers and such still use the C<is> keyword, but are now called
+"traits".  On the other hand, run-time properties are attached to
+individual objects using the C<but> keyword instead, but are still
+called "properties".
+
+=item *
+
+Properties are accessed just like attributes because they are in fact
+attributes of some class or other, even if it's an anonymous singleton
+class generated on the fly for that purpose.  Since "rw" attributes
+behave in all respects as variables, properties may therefore also
+be temporized with C<temp>, or hypotheticalized with C<let>.
+
+=back
