@@ -249,11 +249,28 @@ NameVirtualHost *:{$port}
   DocumentRoot {$root}/tmp/htdocs/
 </VirtualHost>
 
+# FIXME|TODO: make the site variable be set by a transhandler;
+# likewise dispatch to /error/ - that way most site configurations can
+# be merged into one virtualhost block - maybe.
+
+<VirtualHost *:{$port}>
+  ServerName qa.x.perl.org
+  PerlSetVar site qa
+  <Location />
+     SetHandler perl-script
+     PerlHandler Combust::Control::Basic->handler
+  </Location>
+
+  <Location /error/>
+     SetHandler   perl-script
+     PerlHandler Combust::Control::Error->handler
+  </Location>
+</VirtualHost>
+
+
 <VirtualHost *:{$port}>
   ServerName new.x.perl.org
-
   PerlSetVar site www
-
   <Location />
      SetHandler perl-script
      PerlHandler Combust::Control::Basic->handler
@@ -267,8 +284,6 @@ NameVirtualHost *:{$port}
   <Location /server-status>
     SetHandler server-status
   </Location>
-
-
 </VirtualHost>
 
 
