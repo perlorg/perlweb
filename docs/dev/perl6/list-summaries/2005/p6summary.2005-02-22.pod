@@ -1,0 +1,350 @@
+=head1 Perl 6 Summary for 2005-02-08 through 2005-02-22
+
+All~
+
+Welcome to yet another fortnight summary.  Lately p6l has been out stripping p6i in volume.  While this used to be the norm, lately it has become a rare occurrence.  Strange...  Anyway, this summary would be brought to you buy cookies, but I ate them all.  So instead this summary is brought to you by the remaining chocolate chips.  In other news, Autrijus Tang has just officially been promoted to first name only status in the summaries based on both his stellar work with Pugs and his highly identifiable name.  He now joins the ranks of Larry, Dan, Madonna, and Leo.
+
+=head2 Perl 6 Language
+
+=head3 do { } while?
+
+David Storrs wanted to know what the best way to say C< do { } while($foo); > was.  Larry told him that C< s/do/loop/ > would suffice.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/c9f1db8d113c08d7/027f23343c652443?_done=%2Fgroup%2Fperl.perl6.language%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#027f23343c652443>
+
+
+
+=head3 nest as a primitive looping operation
+
+Timothy Nelson gets credit for resurrecting the oldest thread I have seen brought back recently.  Over two years ago, he mentioned a powerful looping structure that allowed for recursion.  Now he has found a use for it.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/32db8717ba0e550d/ac779781875c86f0?_done=%2Fgroup%2Fperl.perl6.language%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#ac779781875c86f0>
+
+
+
+=head3 Loop Entry
+
+Joe Gottman wanted to execute a closure every time a loop was entered, not upon every iteration.  He thought ENTER happened only once ever, but it turns out that it will do what he wants.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/b35c605369380b56/f4fa6b3ece451d3a?_done=%2Fgroup%2Fperl.perl6.language%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#f4fa6b3ece451d3a>
+
+
+
+=head3 pop %hash
+
+Rod Adams wants to be able to pop a key value pair our of a hash.  Others wondered what it would be used for.  Someone mentioned an OrderedHash...
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/5b644ba7bf32ee8b/2ef0d824408271ad?_done=%2Fgroup%2Fperl.perl6.language%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#2ef0d824408271ad>
+
+
+
+=head3 higher order operators
+
+Timothy Nelson wanted to have meta-operators.  Larry gave him the full unicode character set with which to define them.  Tim was happy.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/1a81badb5e7d23e1/3350855574037772?_done=%2Fgroup%2Fperl.perl6.language%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#3350855574037772>
+
+
+
+=head3 none and nor delimiter
+
+Thomas Sandlaﬂ suggests using C< \ > as a none junction delimiter.  He then extended this idea to provide a logical nor, C< \\ >.  Autrijus suggested C< ! > for none.  There was some argument about whether nor deserved such huffmanization.  Also, I think that the difference between C< // > and C< \\ > would continually escape me.  I have enough troubles writing code to deal with windows filesystems.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/f9fce475f19a5353/2b9ded586f3b69a4?_done=%2Fgroup%2Fperl.perl6.language%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#2b9ded586f3b69a4>
+
+
+
+=head3 Kudos to Autrijus
+
+Damian proudly welcomed Autrijus to the ranks of the last-nameless-ones.  He also lauded his amazing work at forcing a lazy language to pull a lazier one.  I think we all agree.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/9e827e4150cbb3b6/204b4e76d72484ed?_done=%2Fgroup%2Fperl.perl6.language%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#204b4e76d72484ed>
+
+
+
+=head3 containers vs object references
+
+Rod Adams wondered whether there was a litmus test that could determine if something deserved its own sigil.  The answer appears to be mostly history.  Larry suggested a simplistic way to create new sigils, although it would not provide interoplation.  I think a blessed method for defining new sigils which do interpolate and provide some sort of type constraint and context would be really nifty.  Also I want a million dollars in small, non-consecutive, unmarked bills.  If you have either of these please mail it to me.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/2d48d854b9cbe1a8/6c319c910f835318?_done=%2Fgroup%2Fperl.perl6.language%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#6c319c910f835318>
+
+
+
+=head3 printing true
+
+Autrijus wondered about true and fasle.  Are they just 1 and 0?  #t and #f?  Larry answered bool::true and bool::false, but true and false would suffice when there was no ambiguity.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/a2a26b0100a72e7a/f34c506880675af8?_done=%2Fgroup%2Fperl.perl6.language%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#f34c506880675af8>
+
+
+
+=head3 quoted => LHS
+
+Juerd wondered if C< => > auto-quoted its left hand side.  Yes.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/8ce3c96d680b43fd/c95c3599e4ec1bb5?_done=%2Fgroup%2Fperl.perl6.language%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#c95c3599e4ec1bb5>
+
+
+
+=head3 "@" x 75 ~ $zap =?= ("@" x 75) ~ $zap
+
+Juerd mistakenly thought that ~ bound tighter than x.  Only unary ~ binds that tightly, so he is safe.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/ede7a284fa3de442/6846196d7b25e342?_done=%2Fgroup%2Fperl.perl6.language%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#6846196d7b25e342>
+
+
+
+=head3 getting the key|value of a pair
+
+Steve Peters wondered how he could get the key or value from a pair.  It turns out that the .key and .value method will do what he wants until some twisted soul overrides them...
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/15b8cd859be7f54f/b6a226dcb9efa426?_done=%2Fgroup%2Fperl.perl6.language%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#b6a226dcb9efa426>
+
+
+
+=head3 Junctiuons and Autothreading
+
+By far the longest topic this week was junctions.  Some people worry that their autothreaded behavior will cause plagues to ravage the earth and novices programmers to go blind.  Others feel that without it Perl6 will be a language suitable only to pond scum and cobol programmers.  While one side believes that autothreading repition of sid effects will  crash any database that interacts with Perl6, the other side believes that requiring extra pragmas to unlock their full power will prevent junctions from curing cancer.  Either way someone is going to be unhappy.  It looked like the pendulum was swinging towards autothreading, but its chief proponenet will be away next week, so who knows if it can survive undefended.  My favorite suggestion in all of this was to make Perl6 a pure functional language and introduce monads.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/868ab2f20deb00d8/1036a84d6d4f1bc7?_done=%2Fgroup%2Fperl.perl6.language%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#1036a84d6d4f1bc7>
+
+
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/f62bb112f93f360a/f3e8fc833e5a3950?_done=%2Fgroup%2Fperl.perl6.language%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#f3e8fc833e5a3950>
+
+
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/9b872c9ed83288e0/4fc9f6c5097e60e5?_done=%2Fgroup%2Fperl.perl6.language%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#4fc9f6c5097e60e5>
+
+
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/dc72f01f5027f048/4ecfe1dd404b4acd?_done=%2Fgroup%2Fperl.perl6.language%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#4ecfe1dd404b4acd>
+
+
+
+=head3 nullary vs nonslurpy
+
+Autrijus found it distressing that to get his quicksort to sort quickly he had to make an empty signature slurpy.  Larry assured him that it was OK.  This also led to a question of MMD tiebreaking.  Remember to attach an is default if you want your ties broken!
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/d794435fc53aeeb4/3d546e5dcdcbcbe9?_done=%2Fgroup%2Fperl.perl6.language%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#3d546e5dcdcbcbe9>
+
+
+
+=head3 pairs
+
+Steve Peters had a few more questions about pairs, which made Osfameron notice that he could use pairs like lisp's dotted pairs.  Larry admit that he could and was hoping that no one would notice.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/e375876af57e5ad7/17172a371838d9c7?_done=%2Fgroup%2Fperl.perl6.language%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#17172a371838d9c7>
+
+
+
+=head3 octal strings
+
+Luke Palmer wondered what strings would change radix and to what.  The concensus was that something needed to change but they were not exactly sure what...
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/3630972c1f5fe7c3/150340a8a903ede8?_done=%2Fgroup%2Fperl.perl6.language%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#150340a8a903ede8>
+
+
+
+=head2 Perl 6 Compilers
+
+=head3 Pugs 6.0.8
+
+Pugs continues to approach 2 * \pi with the release of 6.0.5 and later he decided that he should release more stuff and put out 6.0.8.  It has many new features and a much improved test suite.  You should contribute tests.  All the cool people are.
+
+L<http://groups-beta.google.com/group/perl.perl6.compiler/browse_frm/thread/8edbef4e7c155c76/155ff69eab6c65ea?_done=%2Fgroup%2Fperl.perl6.compiler%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#155ff69eab6c65ea> -- 6.0.5
+
+
+L<http://groups-beta.google.com/group/perl.perl6.compiler/browse_frm/thread/160da4b6afe8cff6/b7b6510ff0759f7e?_done=%2Fgroup%2Fperl.perl6.compiler%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#b7b6510ff0759f7e> -- 6.0.8
+
+
+
+=head3 list of builtins
+
+Autrijus wondered if there was a list of builtins anywhere.  Patrick pointed him to his start.
+
+L<http://groups-beta.google.com/group/perl.perl6.compiler/browse_frm/thread/fd1eab71f4989384/c4121f7ec106c925?_done=%2Fgroup%2Fperl.perl6.compiler%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#c4121f7ec106c925>
+
+
+
+=head3 Perl 6 Now
+
+Autrijus wondered if the unit tests for Perl 6 Now where available.  Scott Walters told him that they were public domain.  Autrijus gleefully sicked a small, ugly dog on them...
+
+L<http://groups-beta.google.com/group/perl.perl6.compiler/browse_frm/thread/496f6f549a052253/67611a8b0bd750b5?_done=%2Fgroup%2Fperl.perl6.compiler%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#67611a8b0bd750b5>
+
+
+
+=head3 pugs tests
+
+??? proved that he was cool by providing pugs tests.  So did Steve Peters, Benjamin Smith, and Stevan Little.  I bet you wished you were cool too.
+
+L<http://groups-beta.google.com/group/perl.perl6.compiler/browse_frm/thread/cf1fb64a97586be3/3e1cb81a3e282bf4?_done=%2Fgroup%2Fperl.perl6.compiler%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#3e1cb81a3e282bf4> -- ??? 
+
+
+L<http://groups-beta.google.com/group/perl.perl6.compiler/browse_frm/thread/a02f28ad5a1a4109/781c0d6e092ad718?_done=%2Fgroup%2Fperl.perl6.compiler%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#781c0d6e092ad718> -- Steve
+
+
+L<http://groups-beta.google.com/group/perl.perl6.compiler/browse_frm/thread/ffb637727347a7ab/19f46916c942883e?_done=%2Fgroup%2Fperl.perl6.compiler%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#19f46916c942883e> -- Benjamin
+
+
+L<http://groups-beta.google.com/group/perl.perl6.compiler/browse_frm/thread/83a37a5a08e90017/f4f98b978914173b?_done=%2Fgroup%2Fperl.perl6.compiler%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#f4f98b978914173b> -- Stevan
+
+
+
+=head3 pugscode.org
+
+Autrijus registered L<http://pugscode.org/> and populated it.
+
+L<http://groups-beta.google.com/group/perl.perl6.compiler/browse_frm/thread/fda6e0e3d06d9b81/36168631eb11950d?_done=%2Fgroup%2Fperl.perl6.compiler%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#36168631eb11950d>
+
+
+
+=head3 %*ENV in pugs
+
+Rafael Garcia-Suarez wanted access to %*ENV.  So he added it with tests.
+
+L<http://groups-beta.google.com/group/perl.perl6.compiler/browse_frm/thread/fa51e00fc3e32be7/54d4a42ff2abd895?_done=%2Fgroup%2Fperl.perl6.compiler%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#54d4a42ff2abd895>
+
+
+
+=head2 Parrot
+
+=head3 GNU R
+
+Yves Breitmoser wants to improve the support for GNU R in perl.  Aaron Sherman suggested using parrot asa a back-end for Parrot which would allow any language that target parrot to use R.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/e0e9845d7619554f/797b41e7df0af799?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#797b41e7df0af799>
+
+
+
+=head3 make html
+
+Markus Amslser submitted a patch to fix make html.  Leo applied it.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/6c14fd2b66c449d3/da930957ecaf740a?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#da930957ecaf740a>
+
+
+
+=head3 Win32 bind(accept(listen()))
+
+Markus Amslser submitted a patch adding bind, listen, and accept on win32.  Leo applied it.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/f21946c947860f10/e3f73f70cc579f81?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#e3f73f70cc579f81>
+
+
+
+=head3 commit priveldges
+
+Bernhard Schmalhofer received commit priveledges in recognition of his many high quality patches.  Congrats Bernhard!
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/4d8c764063f50446/743fe0d97af8fb20?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#743fe0d97af8fb20>
+
+
+
+=head3 tiny webserver
+ 	
+Markus Amslser also provided a patch to allow his tiny webserver to run on linux.  Leo applied it.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/28d2209f38dd22a8/1f3c3a31d79b71f7?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#1f3c3a31d79b71f7>
+
+
+
+=head3 FreeBSD build failure
+
+Adriano Ferreira fixed some problems with the FreeBSD build.  Leo applied the patch.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/0249207572737092/dd04c9970791c4a0?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#dd04c9970791c4a0>
+
+
+
+=head3 Parrot 0.1.2
+
+Will Coleda continued pushing for a 0.1.2 release.  Leo told him that there would be a release after the German Perl Workshop which should be ending soon...
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/f3fab2ac907655ca/217c973cc03ce324?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#217c973cc03ce324>
+
+
+
+=head3 Linux PPC
+
+Leo attempted to fix the longstanding issues with linux PPC configure.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/33d379077b32a52a/5b13e8374e061881?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#5b13e8374e061881>
+
+
+
+=head3 failing python tests
+
+Andy Dougherty notices that some of the dynclasses/py*.t tests were ailing.  He is working with Leo on providing enough information to solve the problem.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/e7aaad0dcfe9205c/f4b32479194a9920?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#f4b32479194a9920>
+
+
+
+=head3 PyPy
+
+Christian Tismer posted to the list informing everyone about the PyPy sprint at Washington DC's PyCon 2005.  As they are eager to compare notes with other developers.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/f27777feb08ea5aa/7a88d1ce65b07f90?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#7a88d1ce65b07f90>
+
+
+
+=head3 string_init and ICU data dir
+
+Ron Blaschke noticed that Parrot would choke on an empty ICU data dir.  Leo fixed it.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/113ba6bba4850f21/37c99776d01d9c17?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#37c99776d01d9c17>
+
+
+
+=head3 Win32 parrot
+
+Ron Blaschke wants to try and get Parrot building on Win32 better.  He has offered to add the necessary PARROT_API macros and do other footwork.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/abac320f8dc6d90d/9130bd5912878379?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#9130bd5912878379> -- PARROT_API
+
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/b63bab9684650c32/c4bc15f10e8f7d60?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#c4bc15f10e8f7d60> -- gdbm linkage
+
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/eda36ef909e84317/4db270db2ebb7561?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#4db270db2ebb7561> -- outdated rt ticket
+
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/eb464ab13c6dc054/eadab236b54d5de7?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#eadab236b54d5de7> -- old rt ticket
+
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/cee1de139ac3da71/d79538b415443c79?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#d79538b415443c79> -- fix libnci_test
+
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/c1cfed051524da21/fc47832e8ad8d9da?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#fc47832e8ad8d9da> -- old ticket
+
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/7af573280e794bd1/dbf4ab93a9b7d19c?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#dbf4ab93a9b7d19c> -- out of date ticket
+
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/3e814abbed111af7/4c67e51a63a4c90d?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#4c67e51a63a4c90d> --gdbm troubles
+
+
+
+=head3 tailcalls
+
+Bob Rogers wants to make tailcalls without knowing the last calls return values.  Currently he just lies to imcc to make it work.  Leo pointed him to C< interpinfo .INTERPINFO_CURRENT_CONT > and also suggested that adding a tail_call op would be a good idea.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/f81a7fdd8efff573/ab739e5ea1d1cc0f?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#ab739e5ea1d1cc0f>
+
+
+
+
+=head2 The usual footer
+
+Posting via the google groups interface does not work.  To post to any of these mailing lists please subscribe by sending email to <perl6-internals-subscribe@perl.org>, <perl6-language-subscribe@perl.org>,  or <perl6-compiler-subscribe@perl.org>.  If you find these summaries useful or enjoyable, please consider contributing to the Perl Foundation to help support the development of Perl. You might also like to send feedback to ubermatt@gmail.com
+
+L<http://donate.perl-foundation.org/> -- The Perl Foundation
+L<http://dev.perl.org/perl6/> -- Perl 6 Development site
+L<http://planet.parrotcode.org/> -- Parrot Blog aggregator
+
+
+
+
+
