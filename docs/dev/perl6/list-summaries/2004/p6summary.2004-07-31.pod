@@ -1,0 +1,129 @@
+=head1 The Perl 6 Summary for the six days ending 2004-07-31
+
+As I threatened last week, I'm moving the rollover point for these
+summaries from midnight on Sunday/Monday to midnight on
+Friday/Saturday, but rather than do it in one swell foop I'm doing a
+couple of six day weeks. The theory is that, once I become a student
+teacher I'll be rather busy during the week, but I should still be able
+to make time to write the summaries at the weekend. 
+
+That's the theory at least. You'll note that this didn't get posted to
+the mailing lists on a Sunday. Blame my cousin for getting married. It
+won't happen again.
+
+=head2 Pie-thon
+
+Good news! Guido is a gentleman and declined to throw a pie at Dan.
+
+Bad news! The Perl Community is a bunch of savages, and they paid $520
+to be able to throw pie at Dan.
+
+Good news! There are photos.
+
+L<http://www.sidhe.org/~dan/blog/archives/000372.html>
+
+L<http://www.oreillynet.com/pub/a/oscon2004/friday/>
+
+=head2 Notes to self
+
+=over
+
+=item 1
+
+American's pronounce 'maths' as 'math'. 
+
+=item 2
+
+Don't make silly cracks about American rectitude
+
+=item 3
+
+Oops.
+
+=back
+
+=head2 Leo's proposed calling conventions
+
+It's been apparent for a while now that Leo Tötsch isn't happy with
+Parrot's current calling conventions. This week he posted a proof of
+concept patch implementing a proposed new scheme. Luke Palmer agreed
+that it was probably worth consideration. We'll see what Dan has to say
+when he gets back from OSCON.
+
+M<41063ACB.2040208@toetsch.at>
+
+=head2 Stack based language
+
+RaghavendraK asked about the difference between stack and register
+based virtual machines. Brent Royal-Gordon gave good advice.
+
+M<13d2515bd8.15bd813d25@huawei.com>
+
+=head2 ICU outdated
+
+Joshua Gatcomb noted that the ICU that comes with Parrot is, not to put
+too fine a point on it, old and buggy. The ICU developers have
+suggested that Parrot move to version 3.0. Josh proposed various ways
+of doing this. Leo wants ICU out of the Parrot CVS, but Dan's argued in
+the past that it should be in there because he doesn't want to force
+people to chase round fetching a raft of required libraries before they
+can build parrot. 
+
+M<20040730183121.54027.qmail@web60804.mail.yahoo.com>
+
+=head2 Jarkko proposed for a CVS checkin rights
+
+Following a raft of high quality patches from Jarkko Hietaniemi, Leo
+proposed him for membership of the C<cvs ci> club.
+
+M<410BE8B4.7030103@toetsch.at>
+
+=head1 Meanwhile, in perl6-language
+
+=head2 What's core?
+
+Larry and Dan Hursh discussed what would be going in the standard Perl
+6 distribution. Dan argued that we should be concentrating on producing
+a distribution akin to the current Perl 5 distribution, but with a few
+fewer kitchen sinks. Larry argued that we should concentrate on two
+distributions: 
+
+=over
+
+=item 1
+
+Bare bones, just able to build itself and with enough capability to
+bootstrap everything else.
+
+=item 2
+
+Extended. The barebones system + a set of libraries fetchable from
+CP6AN that constitute the Perl 6 'supported' library; modules that are
+maintained by the Perl 6 equivalent of perl5-porters and which will be
+supported over a long time frame.
+
+=back
+
+I don't think Dan's been convinced yet. Elsewhere in the thread Luke
+Palmer coined the delightful acronym 'EYEWTIBWATA' -- Everything You
+Ever Wanted To Install But Were Afraid To Ask -- or
+eye-witty-bwattle. I'm unsure about whether it's going to rank up there
+with Tim-toe-tidy though.
+
+M<20040725063231.33578.qmail@onion.perl.org>
+
+=head1 Announcements, Apologies, Acknowledgements
+
+I'm getting bored of typing 'Palmer' and 'Tötsch' once a week, so I'm
+considering treating Luke and Leo like Larry, Dan, Damian and, if you
+insist, chromatic.
+
+So, if you find these summaries useful or enjoyable, please
+consider contributing to the Perl Foundation to help support the
+development of Perl. You might also like to send feedback or
+contributions to a 'getting Piers to OSCON 2005' fund to
+L<mailto:pdcawley@bofh.org.uk>
+
+L<http://donate.perl-foundation.org/> -- The Perl Foundation
+
+L<http://dev.perl.org/perl6/> -- Perl 6 Development site
