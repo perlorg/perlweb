@@ -319,6 +319,38 @@ PerlTransHandler Combust::Redirect
 
 [% END %]
 
+[% IF config.sites.dev %]
+  <VirtualHost *:[% config.port %]>
+    ServerName [% config.site.dev.servername %]
+    PerlSetVar site dev
+    <Location />
+       SetHandler perl-script
+       PerlHandler Combust::Control::Basic->handler
+    </Location>
+
+    <Location /error/>
+       SetHandler   perl-script
+       PerlHandler Combust::Control::Error->handler
+    </Location>
+  </VirtualHost>
+[% END %]
+
+[% IF config.sites.foundation %]
+  <VirtualHost *:[% config.port %]>
+    ServerName [% config.site.foundation.servername %]
+    PerlSetVar site foundation
+    <Location />
+       SetHandler perl-script
+       PerlHandler Combust::Control::Basic->handler
+    </Location>
+
+    <Location /error/>
+       SetHandler   perl-script
+       PerlHandler Combust::Control::Error->handler
+    </Location>
+  </VirtualHost>
+[% END %]
+
 
 [% IF config.sites.redrock %]
   <VirtualHost *:[% config.port %]>
