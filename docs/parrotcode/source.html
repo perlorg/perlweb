@@ -1,0 +1,127 @@
+[% page.title = "Parrot Source Code" %]
+[% page.sidebar = BLOCK %]
+<UL>
+  <LI><A HREF="#Releases">Releases</A>
+  <LI><A HREF="#VersionControl">Version Control</A>
+  <UL>
+    <LI><A HREF="#Subversion">Subversion</A>
+    <LI><A HREF="#SVK">SVK</A>
+  </UL>
+  <LI><A HREF="#Snapshots">Snapshots</A>
+</UL>
+
+[% END %]
+
+<A NAME="Releases"></A>
+<H1>Releases</H1>
+
+<p>Parrot releases are collected into tarballs and are available for
+download.  The most recent release is available here:</p>
+
+<UL>
+  <LI><A
+   HREF="http://www.cpan.org/authors/id/L/LT/LTOETSCH/parrot-0.1.2.tar.gz"
+   >parrot 0.1.2</A>
+</UL>
+
+<A NAME="VersionControl"></A>
+<H1>Version Control</H1>
+
+<A NAME="Subversion"></A>
+<H2>Subversion</H2>
+
+<P><A HREF="http://subversion.tigris.org/">Subversion</A> aims is to
+be a version control system that is a compelling replacement for <A
+HREF="http://cvshome.org">CVS</A>.  The definitive reference is <A
+HREF="http://svnbook.red-bean.com/">Version Control with
+Subversion</A> published by <A
+HREF="http://www.oreilly.com/catalog/0596004486/">O'Reilly Media</A>.
+The <A HREF="http://subversion.tigris.org/faq.html">FAQ</A> is also
+useful.
+</P>
+
+<P>
+Our subversion repositorly lives at <tt><A
+HREF="https://svn.perl.org/parrot">https://svn.perl.org/parrot</A></tt>.
+</P>
+
+<P>A <A HREF="http://viewcvs.sf.net">ViewCVS</A> (ViewSVN) interface
+is available at <tt><A HREF="http://svn.perl.org/viewcvs/parrot"
+>http://svn.perl.org/viewcvs/parrot</A></tt>.</P>
+
+<P>
+To check out a local copy, use:<BR>
+<pre>
+  svn co https://svn.perl.org/parrot
+</pre>
+</P>
+
+<P>The SSL certificate is from the <A
+HREF="http://ca.develooper.com/">Develooper Certificate Authority</A>.
+</P>
+
+<P>Subversion clients are available for most operating systems.  For
+the subversion source code, visit <A
+HREF="http://subversion.tigris.org/">the Subversion project home</A>.
+If you use Windows, try <A
+HREF="http://tortoisesvn.tigris.org/">TortoiseSVN</A>.  Binary
+packages are available for most Linux distributions.  Subversion is
+also in BSD Ports and in Fink for Mac OSX.</P>
+
+<P>If you are a comitter, you will use your <A
+HREF="http://auth.perl.org/">auth.perl.org</A> username.</P>
+
+<A NAME="SVK"></A>
+<H2>SVK</H2>
+
+<P>
+<A HREF="http://svk.elixus.org">SVK</A> is a decentralized version
+control system written in Perl. It uses the Subversion filesystem but
+provides additional, powerful features.
+</P>
+
+<P>Please <b>do not</b> mirror the entire parrot repository.  You will
+suck up huge amounts of bandwidth and CPU on our servers for lots of
+data you will never look at.</P>
+
+<P>The easiest thing to do is to just synchronize the head of the tree
+and pull changes forward from there.</p>
+
+<pre>
+  svk mirror //parrot/remote https://svn.perl.org/parrot
+  svk sync -s HEAD //parrot/remote
+</pre>
+
+<p>If you really need a local copy of all historical revisions on your
+local machine, please use the following process to bootstrap your
+local mirror:</p>
+
+<pre>
+  svk depotmap parrot ~/.svk/parrot
+  wget http://www.parrotcode.org/svk-bootstrap-dump.gz
+  zcat svk-mirror-dump | svnadmin load --ignore-uuid ~/.svk/parrot
+</pre>
+
+<p>This will be the equivalent of mirroring and syncing the entire
+repository up to the date of the dump.  (Which will mean you'll only
+need to update your local copy with the remaining revisions.)</p>
+
+<p><A
+HREF="http://www.parrotcode.org/svk-bootstrap-dump.gz">svk-bootstrap-dump</A>
+was last updated on April 10th, 2005 to revision 7798</p>  
+  
+
+<A NAME="Snapshots"></A>
+<H1>Snapshots</H1>
+
+<p>
+Three times a day, snapshots of the svn repository are taken.  They
+are available at <tt><A
+HREF="http://svn.perl.org/snapshots/parrot/">http://svn.perl.org/snapshots/parrot/</A></tt>.
+</p>
+<p> For automatic <a href="http://qa.perl.org/">smoke testing</a> you
+can use rsync to synchronize with the latest snapshot:
+</p>
+<pre>
+  rsync -av --delete cvs.perl.org::parrot-HEAD parrot
+</pre>
