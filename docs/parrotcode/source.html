@@ -132,7 +132,7 @@ local mirror:</p>
 <pre>
   svk depotmap parrot ~/.svk/parrot
   wget http://www.parrotcode.org/svk-bootstrap-dump.bz2
-  bzcat svk-mirror-dump.bz2 | svnadmin load --ignore-uuid ~/.svk/parrot
+  bzcat svk-bootstrap-dump.bz2 | svnadmin load --ignore-uuid ~/.svk/parrot
   svk sync /parrot/mirror
 </pre>
 
