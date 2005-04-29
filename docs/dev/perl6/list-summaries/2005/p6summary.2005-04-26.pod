@@ -1,0 +1,379 @@
+=head1 The Perl 6 Summary for the week ending 2005-04-26
+
+It's my turn again. What fun.
+
+"What," I hear you all ask, "has been going on in the crazy mixed up world of
+Perl 6 design and development"? Read this summary and, beginning with
+perl6-compiler, I shall tell you.
+
+=head1 This week in perl6-compiler
+
+=head2 Refactoring Test.pm
+
+Stevan Little had an idea while he was refactoring Test.pm. He wondered whether
+to get rid of the various C<todo_*> functions in favour of just using a
+F<t/force_todo> file. Which led him to wonder about doing away with
+F<t/force_todo> in favour of a C<force_todo()> function. He asked for opinions
+before he started making the change (which isn't exactly a refactoring). 
+
+General opinion seemed favourable, though I confess I am perturbed by the
+proposed release trick of proclaiming all failures, whether expected or not, to
+be TODOs. The current system generates an explicit list of tests that are
+failing on 'core' systems. The proposed solution would seem to make all
+failures equal, so even unexpected 'platform' failures wouldn't be caught. 
+
+L<http://groups.google.com/groups?threadm=ffec23e5c25f0424eb0e39e9005d8169@iinteractive.com>
+
+=head2 Weird thing with say ++$
+
+What do you know, C<say $i++, ++$i> behaves weirdly.
+
+L<http://groups.google.com/groups?threadm=20050421083227.27464.qmail@lists.develooper.com>
+
+=head2 Pugs 6.2.1 released
+
+Autrijus announced the availability of Pugs 6.2.1 which comes complete with
+much shininess. 
+
+L<http://groups.google.com/groups?threadm=20050423225546.GA26560@aut.dyndns.org>
+
+=head1 This week in perl6-language
+
+=head2 Parrot Common Lisp
+
+Cory Spencer's port of Common Lisp to Parrot was much admired (it's got some
+way to go before it's I<really> Common Lisp, but it's a cracking start). Uwe
+Volker suggested porting emacs to it and was promptly accused of being Erik
+Naggum by Lars Balker Rasmussen. 
+
+Cory acquired (or is acquiring) a committer bit.
+
+L<http://groups.google.com/groups?threadm=Pine.LNX.4.62.0504141459030.32167@okcomputer.antiflux.org>
+
+=head2 State of the Tcl
+
+Will Coleda gave the list a heads up on the state of ParTCL, the Parrot TCL
+port. It's still failing some tests, apparently because of GC issues. 
+
+A few days later, these problems went away (we're not quite sure how though).
+
+L<http://groups.google.com/groups?threadm=4265DCD4.5060708@coleda.com>
+
+L<http://groups.google.com/groups?threadm=426D8EFD.1020201@coleda.com>
+
+=head2 C<alarm()> and C<later()>
+
+Leo stated that Parrot provides subsecond timer resolution as well as alarm
+callbacks and multiple timers. Hurrah!
+
+L<http://groups.google.com/groups?threadm=200504200620.j3K6K4T02837@thu8.leo.home>
+
+=head2 RFC C<assign Px, Py>
+
+Leo posted a discussion of the semantics of C<assign> and C<set>, with a
+proposed change to PIR syntax. Warnock applies.
+
+L<http://groups.google.com/groups?threadm=4268AD4F.2030708@toetsch.at>
+
+=head2 RFC unary operations
+
+In another RFC, Leo discussed changes to Parrot's unary operators and proposed
+other changes. 
+
+L<http://groups.google.com/groups?threadm=42691D77.6060808@toetsch.at>
+
+=head2 One more MMD -- assignment
+
+Dan noted that he was writing a great deal of code in his C<set_pmc> vtable
+methods that looked very MMD-like. He suggested that adding assignment to the
+list of MMD functions might be a good idea. Leo pointed him at his assignment
+RFC. 
+
+L<http://groups.google.com/groups?threadm=a06210215be8ed35f7f36@[172.24.18.155]>
+
+=head2 Fun with C<morph()>
+
+Nicholas Clark wondered about the responsibilities of the C<morph> method with
+respect to handling C<PMC_struct_val>. In the subsequent discussion it became
+apparent that C<morph> can get complicated. Bob Rogers supplied a bunch of
+extra complications and wondered about the feasibility of making Parrot
+morph-free. Leo agreed that it seemed feasible and is probably a good idea.
+Another subthread made my head hurt -- I can understand this stuff much better
+when I'm sat 'round a table with people and we're kept supplied with drinks,
+notepaper and, in Leo's case, industrial quantities of
+tobacco. (Ah... YAPC::Paris!) 
+
+L<http://groups.google.com/groups?threadm=20050423220805.GQ57402@plum.flirble.org>
+
+=head2 Building an incomplete code generator into Parrot
+
+rocko@adampreble.com (that's the only name I have) has started work on
+implementing a JIT backend for the AMD64 processor. He asked a few questions
+and Leo provided answers.
+
+L<http://groups.google.com/groups?threadm=20050424011934.ey5ch49tavo08k0o@www.adampreble.com>
+
+=head2 Calling Convention Abstraction
+
+This thread continues to rumble on. Leo said that what he wants is for
+the HLL folks to create a workable scheme for abstract and extendable calling
+conventions that could express all the various HLL specific semantics of
+function calling, pointing out that, unless we have this we can forget
+interoperability (or at least, easy interop).
+
+L<http://groups.google.com/groups?threadm=426B5794.9010101@toetsch.at>
+
+=head2 Alpha development Box
+
+Bob Rogers 'has' an Alpha development box that can be used for open source
+projects. He wondered if the Parrot project could make use of it, and if so
+what was the best way of doing this. Some discussion occurred on the list, but
+I assume (hope) more happened offline.
+
+L<http://groups.google.com/groups?threadm=17004.19419.780341.502435@rgrjr.dyndns.org>
+
+=head1 Meanwhile, in perl6-language
+
+=head2 Calling junctions of closures
+
+Brad Bowman wondered about calling junctions of closures. He guessed that the
+rule is "call 'em all and return a similarly structured junction." but wasn't
+sure. Thomas Sandlaß wasn't so sure. 
+
+My head hurts.
+
+L<http://groups.google.com/groups?threadm=1113985623.1088.170.camel@oxum>
+
+=head2 C<< { => } >> autocomposition
+
+Autrijus asked about the following fragment:
+
+    %ret = map { $_ => uc $_ }, split '', $text;
+
+which gives Pugs a massive headache.
+
+>From the ensuing discussion, it appears to cause Larry and Autrijus headaches
+too. Also, it turns out that Larry's Perl 5 to Perl 5 translator has both
+madprops and madskills. Hurrah! Darren Duncan suggested that 
+
+    %ret = map:{ $_ => uc $_ }, split '', $text;
+
+should serve to say that the block is to be treated as a block rather than a
+hash constructor. He thought that that came from one of the synopses, but
+couldn't remember which.
+
+I wonder if 
+
+    %ret = map -> {$_ => uc $_}, split '', $text; 
+
+wouldn't do the job. (Or did the syntax change on me when I wasn't looking?)
+
+L<http://groups.google.com/groups?threadm=20050420143834.GA15699@aut.dyndns.org>
+
+=head2 Embedding languages in Perl 6
+
+BÁRTHÁZI András had some questions about introducing different parsing rules in
+the middle of a Perl 6 program. Larry's answer was, essentially "All's fair if
+you predeclare", but with an interesting idea about using C<`> as a way of
+introducing a 'self-terminating construct', so one could do:
+
+   use XML;
+
+   $a = `<elems><elem>Content #1</elem><elem>Content #2</elem></elems>;
+
+or 
+
+   use SQL;
+
+   $a = `select * from table`;
+
+Various possibilities were discussed, but nothing got set in stone.
+
+L<http://groups.google.com/groups?threadm=42667083.8060706@barthazi.hu>
+
+=head2 Closure/block/sub multiplier
+
+Matt Creenan wondered about doing C<@names = &get_next(...) XX 5;> (which,
+obviously, would call C<&get_next> five times and shove the results into
+C<@names>). Juerd pointed out some subtleties to do with functions that return
+closures. Later in the thread he decided that he controlled both the horizontal
+and the vertical, with particular reference to redefining true, false and
+undef. 
+
+L<http://groups.google.com/groups?threadm=op.spjiubnq8hsiyb@codeslut>
+
+=head2 C<alarm()> and C<later()>
+
+Remember the discussion of C<alarm> and C<later> in perl6-internals? It moved
+over to perl6-language. Larry agreed that Perl 6's time interfaces would
+favour floating point time values, but he wasn't quite sure if any of them
+would be called C<alarm>. Discussion ensued, both on the topic and matters of
+naming style.
+
+L<http://groups.google.com/groups?threadm=20050420171135.GD29671@wall.org>
+
+=head2 $?OS globals, etc
+
+Scott McWhirter proposed making the various $?OS etc variables into attributes
+of some GLOBAL class. Larry thought it was a good idea, but wasn't sure it was
+entirely right as proposed; this area is still being designed.
+
+L<http://groups.google.com/groups?threadm=4266B13E.7030106@kungfuftr.com>
+
+=head2 Parens vs. subroutine parameter
+
+Autrijus had a question about how function signatures and various forms of
+paren magic interacted. He, Juerd and Larry thrashed things out.
+
+L<http://groups.google.com/groups?threadm=20050420201951.GA22262@aut.dyndns.org>
+
+=head2 C<-X>s auto-(un)quoting
+
+Michele Dondi had some questions/suggestions about the various file test
+operators. Larry answered and the thread spun off into a discussion of all
+sorts of aspects of these handy operators. Well, that was before it turned into
+a discussion of the semantic of <.foo>, or was that C<^foo>, or maybe C<_foo>,
+or possibly C<....foo>. At this point, things got a little heated. There's no
+decision as yet (personally I'm a fan of the scheme as originally proposed;
+C<.foo> calls the method foo on the current topic, whatever that may be. If you
+need to hang onto old topics, give them a name. I appear to be in something of
+a minority).
+
+L<http://groups.google.com/groups?threadm=Pine.LNX.4.61.0504210953250.4902@rhum.pcteor1.mi.infn.it>
+
+=head2 Unify cwd
+
+It turns out that the 'current working directory' isn't as obvious as it
+sounds. It also turns out that Larry would like to be able to pretend that it
+is until it turns out not to be.
+
+L<http://groups.google.com/groups?threadm=m27jiw4pju.fsf@phoenix.squirrel.nl>
+
+=head2 Blocks, continuations and C<eval>
+
+When last we saw this thread, Larry had said that continuations would be
+available in Perl for people who ask specially, but wouldn't be left lying
+around in the open where 'some poor benighted pilgrim might trip over them
+unaware'. Wolverian asked what the interface would be. Larry thought it would
+probably start C<use Continuations;>, or possibly C<use CONTINUATIONS;>.
+
+The thread prompted Stéphane Payrard to ask about the possibility of some of
+the more 'out there' functional programming tricks making it into Perl 6. Once
+again, all's fair if you predeclare, but it looks like Perl 6 already has core
+access to some pretty out there stuff.
+
+L<http://groups.google.com/groups?threadm=20050421133007.GA13496@sci.fi>
+
+=head2 Accepted abbreviations
+
+Juerd wondered if we could compile a list of standard abbreviations for various
+terms so that they can be consistently applied. He kicked off with a list of
+his own. There was some discussion but I somehow doubt his list will be used
+rigorously. 
+
+L<http://groups.google.com/groups?threadm=20050422114626.GT19716@c4.convolution.nl>
+
+=head2 Thunking semantics of C<:=> 
+
+Once someone starts to implement a language, you get a wonderful driver for
+design decisions that need to be made and ambiguities to be ironed out. On this
+occasion, Autrijus needed some clarification of the semantics of the binding
+operator, C<:=>. Ambiguities were ironed, and implementations were written (and
+yes, I I<do> mean implementations).
+
+L<http://groups.google.com/groups?threadm=20050423105104.GA18812@aut.dyndns.org>
+
+=head2 C<for all(@foo) {...}>
+
+Brad Bowman had questions about the workings of C<for all(@foo) {...}> based on
+S03. It turns out that the synopsis is wrong. Larry explained how it's supposed
+to work (which is how it already works in Pugs). 
+
+L<http://groups.google.com/groups?threadm=1114318936.4176.21.camel@oxum>
+
+=head2 Lazy Lists + Mutable Arrays + Garbage Collection
+
+Brad also had questions about the workings of lazy lists. In particular, he
+wondered about treating streams as mutable arrays. Warnock applies.
+
+L<http://groups.google.com/groups?threadm=1114330227.4176.83.camel@oxum>
+
+=head2 C<< map { $_ => uc $_ }, @foo  >> again
+
+Autrijus proposed a cunning plan to deal with the ambiguities inherent in:
+
+    map { $_ => uc $_ }, @foo;
+
+by suggesting that using a block without the comma should force said block to
+be interpreted as a block rather than a hash constructor. Larry wasn't sure,
+arguing that it were best to disambiguate with something just before, or just
+inside the block (in the same way that pattern modifiers now go before the
+pattern).
+
+L<http://groups.google.com/groups?threadm=20050424181326.GA41163@aut.dyndns.org>
+
+=head2 Passing hash to a sub expecting named params
+
+Carl Franks wondered if he could pass a splatted hash (C<*%hash>) to a function
+that expects named arguments. Answer, yep.
+
+L<http://groups.google.com/groups?threadm=4f352aae05042501144507f8ec@mail.gmail.com>
+
+=head2 Turning off warnings for a function's params?
+
+David Storrs wanted to be able to turn off selectively turn off some warnings
+when he's testing. He asked how to go about doing it. Luke and Juerd provided
+some answers.
+
+L<http://groups.google.com/groups?threadm=20050425025001.GA48670@megazone.bigpanda.com>
+
+=head2 How do I... tie hashes/arrays
+
+Discussion of how to tie hashes and arrays continued. 
+
+L<http://groups.google.com/groups?threadm=426D1CF1.7070902@orthogon.com>
+
+=head2 Surprising consequences
+
+Juerd worried that code like C<if($foo) { say 'foo'}> would throw syntax
+errors. It turns out that one of his givens wasn't quite as given as he
+though. So it's not a syntax error.
+
+L<http://groups.google.com/groups?threadm=20050425190549.GO26732@c4.convolution.nl>
+
+=head2 Calls and parens
+
+Juerd posted a set of examples of the new rules for parsing parentheses in
+function calls and asked which of his assumptions were wrong. Luke Palmer
+reassured him.
+
+L<http://groups.google.com/groups?threadm=20050425193338.GQ26732@c4.convolution.nl>
+
+=head2 Context and index expressions
+
+Autrijus posted a set of examples of array indexes and asked if he'd got all
+the contexts right. There was no answer at the time of writing.
+
+L<http://groups.google.com/groups?threadm=20050425193344.GA62148@aut.dyndns.org>
+
+=head1 Hmm... still fun. I could get used to this.
+
+If you find these summaries useful or enjoyable, please consider
+contributing to the Perl Foundation to help support the development of
+Perl. 
+
+L<http://donate.perl-foundation.org/> -- The Perl Foundation
+
+L<http://dev.perl.org/perl6/> -- Perl 6 Development site
+
+Or, you can check out my website. Maybe now I'm back writing stuff I'll start
+updating it.
+
+L<http://www.bofh.org.uk/>
+
+Vaguely pretty photos by me can be found at:
+
+L<http://www.flickr.com/photos/pdcawley>
+
+See you all in a fortnight.
+
