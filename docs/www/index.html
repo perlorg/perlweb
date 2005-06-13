@@ -124,7 +124,7 @@
  </tr>
 
 [% MACRO quicknews(shortname,count) BLOCK %]
-[%- IF count < 1 %]
+[%- UNLESS count %]
   [%  count = 2 %]
 [% END %]
 [%- TRY %]
