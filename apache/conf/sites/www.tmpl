@@ -4,6 +4,8 @@
     PerlSetVar site www
     PerlTransHandler Combust::Redirect->super
 
+    PerlRequire [% root %]/apache/conf/sites/www.pl
+
     <Location />
        SetHandler perl-script
        PerlHandler Combust::Control::Basic->super
@@ -17,6 +19,11 @@
     <Location /redirect/>
        SetHandler   perl-script
        PerlHandler Combust::Control::Redirect->super
+    </Location>
+
+    <Location /search>
+       SetHandler  perl-script
+       PerlHandler PerlOrg::Control::Search->super
     </Location>
 
     <Location /server-status>
