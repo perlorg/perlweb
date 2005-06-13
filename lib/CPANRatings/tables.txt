@@ -15,12 +15,12 @@ create table reviews (
   KEY module_idx (module),
   KEY user_id_idx (user_id),
   UNIQUE KEY (user_id, distribution, module)
-) TYPE=INNODB;
+) ENGINE=INNODB;
 
 create table reviews_helpful (
   review_id  mediumint unsigned not null, 
   user_id    mediumint unsigned not null,
   helpful    enum('1','0') not null,
   primary key (review_id, user_id)
-) type=INNODB;
+) ENGINE=INNODB;
 

@@ -26,7 +26,7 @@ sub handler($$) {
 
   return $self->error('No such distribution: ' . $distribution)
     unless CPANRatings::Model::SearchCPAN->valid_distribution($distribution);
-  
+
   $self->params->{distribution} = { name => $distribution,
 				    versions => [ CPANRatings::Model::SearchCPAN->get_versions($distribution) ],
 				  };
@@ -86,16 +86,14 @@ sub handler($$) {
 
     if ($review) {
       $self->param('review', $review);
-      warn $review->rating_overall;
+      #warn $review->rating_overall;
     }
 
     $self->setup_rate_form;
   }
 
-  my $output;
-  $self->evaluate_template($r, output => \$output, template => $template, params => $self->params);
+  my $output = $self->evaluate_template($template);
   $r->update_mtime(time);
-  #$self->send_output($r, \$output);
   $self->send_output(\$output);
 }
 
@@ -125,11 +123,9 @@ sub error {
 
   my $r = $self->r;
 
-  my $output;
-  $self->evaluate_template($r, output => \$output, template => 'rate/rate_error.html', params => $self->params);
+  my $output = $self->evaluate_template('rate/rate_error.html');
   $r->update_mtime(time);
-  $self->send_output($r, \$output);
-
+  $self->send_output(\$output);
 }
 
 1;

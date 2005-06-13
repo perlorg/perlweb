@@ -32,7 +32,7 @@ sub _search {
   }
   else {
     my $url = "http://search.cpan.org/search?query=$query&mode=$mode&format=xml";
-    warn "fetching $url from search.cpan";
+    #warn "fetching $url from search.cpan";
     $data = get $url;
     my @results;
     if ($data) {
@@ -78,7 +78,7 @@ sub _search {
 
 sub _distribution_page {
   my ($self, $distribution) = @_;
-  my $cache = Combust::Cache->new('CR.search');
+  my $cache = Combust::Cache->new(type => 'CR.search');
 
   my $data;
   if ($data = $cache->fetch(id => "dist-page;d:$distribution")) {
