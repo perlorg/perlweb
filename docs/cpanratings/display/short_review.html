@@ -3,12 +3,11 @@
 [% IF review.module AND review.module != review.distribution %]
 [% review.module | html %] / 
 [% END %]
-<a href="http://search.cpan.org/dist/[% review.distribution | uri %]">[% review.distribution | html %]</a> 
+<a href="http://search.cpan.org/dist/[% review.distribution | uri %]/">[% review.distribution | html %]</a> 
 [% review.version_reviewed ? '(' _ review.version_reviewed _ ')' : '' %]
 
 [% IF review.rating_overall %]
-<img src="/images/stars-[% review.rating_overall %].0.png" alt="[% review.rating_overall %] stars">
-[% END %]
+<img src="/images/stars-[% review.rating_overall %].0.png" alt="[% star = '*'; star.repeat(review.rating_overall) %]">
 </h3>
 <p>
 [% review.review_html %]

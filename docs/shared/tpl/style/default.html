@@ -35,7 +35,6 @@
     page.css = ns4_flag && "/css/perl-ns4.css" || "/css/perl.css";
   END;
 
-
 %]
 
 <html>
@@ -44,6 +43,11 @@
   <link rel="stylesheet" type="text/css" 
         href="[% page.css || "/css/perl.css" %]" 
         title="Default CSS2" media="screen">
+  [% FOR css = page.css_more %]
+  <link rel="stylesheet" type="text/css" 
+        href="[% css %]" 
+        title="Default CSS2" media="screen">
+  [% END %]
   <link rel="shortcut icon" href="[% page.favicon || "/favicon.ico" %]">
   [% IF page.description;
      '<META name="description" content="' _ page.description _ '">';

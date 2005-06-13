@@ -1,4 +1,7 @@
-[%- content = PROCESS $template;
+[%-
+   page.css_more = [];
+
+    content = PROCESS $template;
 
    #USE Dumper; Dumper.dump_html(page template)
 
