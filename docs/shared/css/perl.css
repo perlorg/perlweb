@@ -8,6 +8,7 @@ BODY {
   font-weight:normal;
   width: 730px;
   background-color: #FFF;
+  color: black;
 }
 
 UL{
@@ -76,10 +77,15 @@ TD {
      line-spacing: 2px; */
 }
 
+@media print { #nav { display: none; } } 
+
+@media print { .noprint { display: none; } }
+
 /* Navigation */
 #NAV {
   width: 180px;
-  font-size:12px;
+  /* don't use an absolute font size here */
+  /* font-size:12px; */
   margin:0em; 
   margin-top: -1px; 
   padding:7px;
@@ -98,7 +104,8 @@ TD {
 }
 
 #MAIN {
-  font-size:12px;
+  /* don't use an absolute font size here */
+  /* font-size:12px; */
   margin-top:1em;
   margin-left:1em;
 }
