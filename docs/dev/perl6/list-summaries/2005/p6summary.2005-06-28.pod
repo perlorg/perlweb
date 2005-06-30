@@ -1,0 +1,188 @@
+=head1 Perl 6 Summary for 2005-06-21 through 2005-06-28
+
+All~
+
+Long time no see... err, write... uh, read... um... this.  Yeah, long time no this.  As Piers hinted, two weeks ago I moved.  Moving sucks.  For those of you who care, I am still in Cambridge, for those of you who care more, I think you misunderstand the summarizer/summary reader relationship.  Essentially it revolves around summaries, and the summary of my move is Cambridge to Cambridge.
+
+As Piers noted last week, this is a low volume high action week.  In no small part do to the hack-a-thons.  Last week's was in Austria, this week's is near Toronto.  Perhaps some nice soul who was actually at these hack-a-thons will summarize it when it is over.
+
+=head2 Perl 6 Compiler
+
+Patrick announced that PGE now supports grammars and more built-in rules.  He even offered to field requests for built-in rules (although he would prefer patches).
+
+L<http://groups-beta.google.com/group/perl.perl6.compiler/browse_frm/thread/abfc8d43c0030ae2/db08ca00d5df5bad#db08ca00d5df5bad>
+
+
+
+=head3 Caller's Context
+
+Gerd Pokorra wanted to know how to determine if his sub is called in void context.  He conjectured that want might fill his wants.  No response yet.
+
+L<http://groups-beta.google.com/group/perl.perl6.compiler/browse_frm/thread/f26c2b6b94f58bec/4f9964a9246294c5#4f9964a9246294c5>
+
+
+
+=head3 Self Hosting Goals
+ 	
+Millsa Erlas explained that one good reason for Perl6 to be self hosting is that it would allow the people who love it most (Perl hackers) to hack on it.  The theory being that low level languages like C unnecessarily narrow the field of contributors (especially those that only know perl).  Some concerns were expressed over confusion about the language Ponie should be written in.  No one disputes this... C.
+
+L<http://groups-beta.google.com/group/perl.perl6.compiler/browse_frm/thread/a7006466f65ed918/649a0c2ebdc39551#649a0c2ebdc39551>
+
+
+
+=head2 Parrot
+
+=head3 Indexing Hashtables
+
+Klaas-Jan Stol asked for a clue bat with respect to indexing hash tables in PIR.  Joshua Juran and Leo each took a swing.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/47fabb48ef7956e8/b0617764c7f5cf9d#b0617764c7f5cf9d>
+
+
+
+=head3 Parrot Loses with Fedora Core 4
+
+Patrick reported that Fedora Core 4 and Parrot don't get along well.  Leo suggested a possible solution.  No response from Patrick.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/1d557b9589f65929/f387af585e3cea74#f387af585e3cea74>
+
+
+
+=head3 Default Method Resolution Order
+
+Roger Browne wondered what the default MRO order was.  Leo provided the answer: left-to-right, depth-first, discard all but the last occurrence of duplicates, divine intervention.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/95280ad597d4790d/d5dc071ccab92032#d5dc071ccab92032>
+
+
+
+=head3 Win32 Tests Failing
+
+Craig the Last-Nameless-One posted a list of failing tests and problems on Windows.  Leo provided a few answers.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/30bae80d039db434/38e92b8e886cb1a9#38e92b8e886cb1a9>
+
+
+
+=head3 Method Inheritance Needs Perl Loving
+
+Leo announced a perl job for the interested: method inheritance in the PMC compiler.  This naturally led to discussion of numerical hierarchies.  I was a little disappointed the quaternions got mentioned, but Hamiltonian and Surreal Numbers were left out.  Honestly, where are our priorities.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/a0dd2cb3fefa091b/1f5a59bc9780dd12#1f5a59bc9780dd12>
+
+
+
+=head3 Tracing and Debugging Pain
+
+Matt Diephouse posted a general description of the problems he was having with tracing, debugging, and GC.  Warnock might apply in a day or two.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/63231fc4b4354b74/8308d6a82a7391ee#8308d6a82a7391ee>
+
+
+
+=head3 Segmented Context and Register Memory
+
+Chip posted a partial reply to Leo's context and register overhaul patch.  Andy Dougherty responded to some of Chip's finer points.  If you are interested in the nuances of C's pointer pain, this thread makes an interesting read.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/aac073aea211da64/3eb0faddd82cf78f#3eb0faddd82cf78f>
+
+
+
+=head3 Improving Parrot's Test Framework
+
+chromatic wants to improve parrots test framework by stealing ideas from Test::Class.  He wants to know if anyone else is interested in this.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/d9c6844fdd0370dd/89aeb7672bec78f4#89aeb7672bec78f4>
+
+
+
+=head3 setattribute Fails with Multi-level Inheritance
+
+Roger Browne opened a ticket describing an error with setattribute when several layers of inheritance are used.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/aa53a7af485b291f/7063cd92d09e5fa0#7063cd92d09e5fa0>
+
+
+
+=head3 Register Allocation Bug
+
+Leo opened a ticket for a problem with improper control flow tracking.  Bill Coffman wondered whether the new register design had been implemented yet.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/6c5863248089d19c/a86685a0a333ba85#a86685a0a333ba85>
+
+
+
+=head3 Pass by Value PMCs
+
+Klaas-Jan Stol mused that the new calling conventions could be leveraged to allow passing PMCs by value.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/a3e7c1a8234ed020/e249e566eb001b7b#e249e566eb001b7b>
+
+
+
+=head3 Parrot Fall Down Go Boom
+
+Matt Fowles reported a segfaulting parrot that passes its tests.  Sadly, no one solved his problem in the 4 hours between his posting it and writing the summary.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/a49d5b1ae8374fc1/844cb69766ad6b3e#844cb69766ad6b3e>
+
+
+
+=head2 Perl 6 Language
+
+=head3 You Know That, But You Go On 
+
+As Piers noted, arguments about C< ./method > vs C< .method > continue.  Like Piers, I don't like "./".  I guess I was the only person who did like $^ as the invocant.  Ah well, I guess I will just go on summarizing...
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/792e4adc208c9568/f4ca247b7b29cf04#f4ca247b7b29cf04>
+
+
+
+=head3 Binding Functions
+
+Piers wanted to use a Ruby idiom involving rebinding functions.  Damian told him that he could, but also pointed him to C< wrap >.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/257b160616561992/d396c7a60a1d47a7#d396c7a60a1d47a7>
+
+
+
+=head3 OO Questions
+
+BÁRTHÁZI András posted a question about method calls in Perl 6.  Juerd and Piers provided answers.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/caf03c9ef13ce6e5/8b7df20d9c8e6aab#8b7df20d9c8e6aab>
+
+
+
+=head3 Autoload and $_
+
+Last week's thread about AUTOLOAD continued.  It still seems to be fishing for some official decision.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/69acf71fe3cc023e/01dcb95c7294c925#01dcb95c7294c925>
+
+
+
+=head3 Magic Mutators and Proxies
+
+Sam Vilain wondered if he could make proxies behave like he wanted to.  Luke Palmer explained, yes, but he would need to use binding instead of assignment.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/5196c30a34c9d60a/87bf624ff2f251be#87bf624ff2f251be>
+
+
+
+=head3 Quasiquoting and PPI
+
+Brad Bowman asked how Quasiquoting and PPI would interact with the AST.  Autrijus posted a some explanation, and Adam Kennedy cleared up some terminology.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/d1335f4b4c548a25/f4ab8859af6f2269#f4ab8859af6f2269>
+
+
+
+=head2 The usual footer
+
+To post to any of these mailing lists please subscribe by sending email to <perl6-internals-subscribe@perl.org>, <perl6-language-subscribe@perl.org>,  or <perl6-compiler-subscribe@perl.org>.  If you find these summaries useful or enjoyable, please consider contributing to the Perl Foundation to help support the development of Perl. You might also like to send feedback to ubermatt@gmail.com
+
+L<http://donate.perl-foundation.org/> -- The Perl Foundation
+L<http://dev.perl.org/perl6/> -- Perl 6 Development site
+L<http://planet.parrotcode.org/> -- Parrot Blog aggregator
+
