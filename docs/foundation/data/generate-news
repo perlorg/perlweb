@@ -239,7 +239,7 @@ sub generate_rss {
 
     my $t = localtime;
     my %rss_common = (
-	title          => 'perlfoundation.org',
+	title          => 'The Perl Foundation',
 	link           => 'http://www.perlfoundation.org',
     );
 
@@ -264,16 +264,15 @@ sub generate_rss {
 	$rss_20->add_item(%entry);
     }
 
-    my $depends = [ map { $_->{file} } @$rss_entries ];
-
+    my @depends = map { $_->{file} } @$rss_entries;
     my $rss_10_file = $WEB_DIR . 'news/tpf_rss_10.rss';
-    if (regen_check($rss_10_file, $depends)) {
+    if (regen_check($rss_10_file, @depends)) {
 	print STDERR "[GENERATE] $rss_10_file\n" if $VERBOSE;
 	$rss_10->save($rss_10_file);
     }
 
     my $rss_20_file = $WEB_DIR . 'news/tpf_rss_20.rss';
-    if (regen_check($rss_20_file, $depends)) {
+    if (regen_check($rss_20_file, @depends)) {
 	print STDERR "[GENERATE] $rss_20_file\n" if $VERBOSE;
 	$rss_20->save($rss_20_file);
     }
@@ -318,7 +317,7 @@ sub regen_check {
     for my $file (@files_to_check) {
 	my $compare_mtime = file_mtime($file);
 	$regenerate = 1 if $mtime_output < $compare_mtime;
-	print STDERR "[REGEN   ] $output ($mtime_output) < $file ($compare_mtime)\n" if $regenerate;
+	#print STDERR "[REGEN   ] $output ($mtime_output) < $file ($compare_mtime)\n" if $regenerate;
     }
 
     return $regenerate;
