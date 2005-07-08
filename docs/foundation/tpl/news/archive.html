@@ -1,0 +1,6 @@
+[% SET percent = '%' %]
+[[% percent %] page.banner = "[% year %] News Archive" [% percent %]]
+[[% percent %] page.title = page.banner [% percent %]]
+
+[% INCLUDE news/archive_year_list.html %]
+[% INCLUDE news/list.html %]

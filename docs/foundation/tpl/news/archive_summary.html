@@ -1,0 +1,6 @@
+[% SET percent = '%' %]
+[[% percent %] page.banner = "Archived News" [% percent %]]
+[[% percent %] page.title = page.banner [% percent %]]
+
+<p>Old news items are archived by year:</p>
+[% INCLUDE news/archive_year_list.html %]
