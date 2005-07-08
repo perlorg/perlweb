@@ -76,9 +76,12 @@ my $template = Template->new({
     POST_CHOMP   => 1,
 });
 
-generate_current($template,$current_entries,$rss_entries,\@news_data);
+my $rss_entries_index = $rss_entries - 1;
+my @rss = @news_data[0 .. $rss_entries_index];
+my @current = splice(@news_data,0,$current_entries);
+generate_current($template,\@current,\@rss,\@news_data);
 generate_archive($template,\@news_data);
-generate_individual($template,\@news_data);
+generate_individual($template,[@current,@news_data]);
 
 sub load_news_data {
     my ($data_dir) = @_;
@@ -184,17 +187,11 @@ sub parse_body {
 # OUT:  /current_news.html
 sub generate_current {
     print STDERR "[SECTION ] current\n" if $VERBOSE;
-    my ($template, $current_entries, $rss_entries, $news_data) = @_;
-    my $rss_entries_index = $rss_entries - 1;
-    my @rss = @$news_data[0 .. $rss_entries_index];
-
-    my @current = splice(@$news_data,0,$current_entries);
-    #my $current_entries_index = $current_entries - 1;
-    #my @current = @$news_data[0 .. $current_entries_index];
-    my $vars = { news_data => \@current, max_year => $current[0]->{year}};
-    my $depends = [ map { $_->{file} } @current ];
+    my ($template, $current, $rss, $news_data) = @_;
+    my $vars = { news_data => $current, max_year => $current->[0]{year}};
+    my $depends = [ map { $_->{file} } @$current ];
     process($template,'current',$vars,undef,$depends);
-    generate_rss(\@rss);
+    generate_rss($rss);
 }
 
 # IN:  /tpl/news/archive.html
