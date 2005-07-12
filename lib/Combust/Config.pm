@@ -106,7 +106,9 @@ sub base_url {
   my $site = $self->site->{$sitename};
   my $servername = $site->{servername};
   my $port = $self->external_port;
-  my $base_url = "http://$servername" . ($port ? ":$port" : '');
+  my $protocol = 'http';
+  $protocol = 'https' if $self->external_port and $self->external_port == 443;
+  my $base_url = "$protocol://$servername" . ($port ? ":$port" : '');
   return $base_url;
 }
 
