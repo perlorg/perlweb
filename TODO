@@ -5,9 +5,12 @@ In rough order of priority
 Sort out where mime.types is being found.  Is what it says in the
 sample configuration right?  What is apache_config used for anyway?
 
+Make sure If-Modified-Since requests are working
+
 None of the internal methods should require $r to be passed
 
-Make the cookie validation code not be hardcoded in Combust::Cookie (!)
+Make the cookie validation code not be hardcoded in Combust::Cookie
+(!) (maybe make a Combust::Ticket type thing?)
 
 Make an API to access the notes...
 
@@ -30,14 +33,12 @@ Make the controller set the INCLUDE_PATH depending on the vhost (or document roo
 
 Cache full html outputs?  Use master svn revision in the cache key. Or
 maybe use svn revision for perl.org/backend/ combined with svn
-revision for perl.org/docs/[site]/.
+revision for perl.org/docs/[site]/.  (are we providing enough options
+for this now?)
 
-Set Last-Updated properly.
+Set Last-Updated properly.  (did we do this?)
 
 Handle If-Modified-Since requests.
-
-Format POD as html when foo.html is requested and doesn't exist, but
-foo.pod does.  Format POD as html when foo.pod.html is requested too.
 
 
 

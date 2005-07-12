@@ -13,7 +13,7 @@ sub fetch {
 
   $self->{fetched_id} = $id;
 
-  my $dbh = db_open();
+  my $dbh = db_open('combust');
 
   my $row = $dbh->selectrow_hashref
     (

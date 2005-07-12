@@ -5,7 +5,7 @@ use Apache::Request;
 use Apache::Cookie;
 use Apache::Constants qw(:common :response);
 use Apache::File;
-use Carp qw(confess cluck);
+use Carp qw(confess cluck carp);
 use Encode qw(encode_utf8);
 
 use Apache::Util qw();
@@ -19,6 +19,9 @@ use Combust::Template::Provider;
 use Combust::Template::Filters;
 
 use Combust::Template::Translator::POD;
+
+use Combust::Cache;
+
 
 use Combust::Config;
 
@@ -97,7 +100,10 @@ sub req_param {
   $self->r->param(@_);
 }
 
-sub param {
+sub param  { cluck "param() deprecated; use tpl_param()"; tpl_param(@_) }
+sub params { cluck "params() deprecated; use tpl_params()"; tpl_params(@_) }
+
+sub tpl_param {
   my ($self, $key) = (shift, shift);
   return unless $key;
   #Carp::cluck "param('$key' ...) called" if $key eq "user";
@@ -105,10 +111,10 @@ sub param {
   return $self->{params}->{$key};
 }
 
-sub params {
+sub tpl_params {
   my $self = shift;
-  cluck("params called with [$self] as self.  Did you configure the handler to call ->handler instead of ->super?") unless ref $self;
-  cluck('Combust::Control->params called with parameters, did you mean to call "param"?') if @_;
+  cluck("tpl_params called with [$self] as self.  Did you configure the handler to call ->handler instead of ->super?") unless ref $self;
+  cluck('Combust::Control->tpl_params called with parameters, did you mean to call "param"?') if @_;
   $self->{params} || {};
 }
 
@@ -143,7 +149,7 @@ sub super ($$) {
   eval {
     $status = $self->handler($self->r);
   };
-  warn "Combust::Control: oops, class handler died with $@" if $@;
+  cluck "Combust::Control: oops, class handler died with $@" if $@;
   return 500 if $@;
 
   # should we do this to make it harder for people to shoot themselves in the foot?
@@ -151,6 +157,44 @@ sub super ($$) {
 
   return $status;
 }
+
+sub handler {
+  my $self = shift;
+  my ($status, $output, $content_type) = $self->do_request();
+  $self->r->status($status);
+  return $self->send_output($output, $content_type);
+}
+
+sub do_request {
+  my $self = shift;
+
+  my $cache_info = $self->cache_info || {};
+
+  my ($status, $output, $cache);
+
+  if ($cache_info->{id} 
+      && ($cache = Combust::Cache->new( type => ($cache_info->{type} || '') ))
+     ) {
+    my $cache_data = $cache->fetch(id => $cache_info->{id});
+    if ($cache_data) {
+      $self->post_process($cache_data->{data});
+      return $self->send_cached($cache_data);
+    }
+  }
+
+  ($status, $output, my $content_type) = $self->render;
+  return $status unless $status == OK;
+
+  $cache_info->{meta_data}->{content_type} = $content_type if $content_type;
+  $cache->store( %$cache_info, data => $output ) if $cache; 
+  
+  $status = $self->post_process($output);
+
+  return ($status, $output, $content_type);
+}
+
+sub cache_info {}
+sub post_process { OK }
 
 sub _cleanup_params {
   my $self = shift;
@@ -165,6 +209,12 @@ sub get_include_path {
   $r = Apache::Request->instance($r);
 
   my $site = $r->dir_config("site");
+  unless ($site) {
+    my $path = [ $r->document_root ] if $r->dir_config('UseDocumentRoot');
+    push @$path, "$root/apache/root_templates/";
+    return $path;
+  }
+
 
   my $site_dir = $config->site->{$site}->{docs_site} || $site;
 
@@ -226,19 +276,14 @@ sub get_include_path {
 
 sub evaluate_template {
   my $self      = shift;
-  my $r         = shift;
+  my $template  = shift;
+
   my %params    = @_;
 
-  my $new_mode = 0;
-  unless (ref $r) {
-    $new_mode = 1;
-    $params{template} = $r;
-    $r = $self->r;
-    my $output;
-    $params{output} = \$output;
-  }
+  my $r = $self->r;
+  my $output;
 
-  $params{params} ||= $self->params;
+  $params{params} ||= $self->tpl_params;
 
   $params{params}->{r} = $r; 
   $params{params}->{notes} = $r->pnotes('combust_notes'); 
@@ -257,9 +302,9 @@ sub evaluate_template {
       : 0
     );
 
-  my $rc = $self->tt->process( $params{'template'},
-                         $params{'params'},
-                         $params{'output'} )
+  my $rc = $self->tt->process( $template,
+			       $params{'params'},
+			       \$output )
     or warn( (ref $self ? ref $self : $self) . "  - ". $r->uri . ($r->args ? '?' .$r->args : '')
 	     . ' - error processing template ' . $params{'template'} . ': '
 	     . $self->tt->error )
@@ -270,9 +315,7 @@ sub evaluate_template {
 
   delete $params{params}->{combust};
 
-  return ($rc, $params{output}) if $new_mode and wantarray;
-  return $params{output} if $new_mode;
-  $rc;
+  return \$output;
 }
 
 sub content_type {
@@ -303,11 +346,11 @@ sub send_output {
   my $routput = shift;
   my $content_type = shift || $self->content_type || 'text/html';
 
+  $routput = \$routput unless ref $routput;
+
   my $r = $self->r;
 
   $r->pnotes('combust_notes')->{cookies}->bake_cookies;
-
-  $routput = $$routput if ref $routput;
 
   my $length;
   if (ref $routput eq "GLOB") {
@@ -318,7 +361,7 @@ sub send_output {
     #$routput = encode_utf8($routput);
     #warn "=================================";
     #warn $routput;
-    $length = length($routput);
+    $length = length($$routput);
   }
 
 #  if ( $length == 0 ) {
@@ -341,6 +384,8 @@ sub send_output {
   $r->content_type($content_type);
 
   if ((my $rc = $r->meets_conditions) != OK) {
+    # this didn't work with just returning $rc -- need to check if it works now.
+    $r->status($rc);
     return $rc;
   }
 
