@@ -11,13 +11,14 @@ sub navigation_filter_factory {
 
   return sub {
     my $text = shift;
-    #warn "FILTER called!";
     return $text unless $uri;
-    #warn "URI1: $uri";
     $uri  =~ s!/?index(?:\.html)?$!/!;
-    $uri  =~ s!/$!!;
-    #warn "URI2: $uri";
-    $text =~ s{(?:&nbsp;&nbsp;)?\s*<a href="\Q$uri\E">(.+?)</a>}{$pre$1$post}i;
+
+    # why is this here? -- need to write some tests for this... made
+    # it work by adding a /? below.
+    $uri  =~ s!/$!!; 
+
+    $text =~ s{(?:&nbsp;&nbsp;)?\s*<a href="\Q$uri\E/?">(.+?)</a>}{$pre$1$post}i;
     return $text;
   }
 }
