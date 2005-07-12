@@ -31,11 +31,11 @@ sub _setup_dbs {
   }
 
   unless ($got_default) {
-    if (keys %dbs > 1) {
+    if (scalar (grep { !$dbs{$_}->{alias} } keys %dbs) > 1) {
       croak 'You defined more than one database but didn\'t mark one of them "default=1"';
     }
-    elsif (keys %dbs == 1) {
-      my ($db_name) = keys %dbs;
+    else {
+      my ($db_name) = grep { !$dbs{$_}->{alias} } keys %dbs;
       $dbs{default} = $dbs{$db_name};
     }
   }
@@ -115,11 +115,25 @@ sub base_url {
 sub database {
   my ($self, $db_name) = @_;
   carp "No databases configured in the combust configuration" and return unless %dbs; 
+
+  $db_name ||= 'default';
+
+  $db_name = $self->_resolve_db_alias($db_name);
+  
   unless ($db_name and $dbs{$db_name}) {
     cluck "no database $db_name defined, using default" if $db_name;
     $db_name = 'default';
+    $db_name = $self->_resolve_db_alias($db_name);
   }
   $dbs{$db_name};
+}
+
+sub _resolve_db_alias {
+  my ($self, $db_name) = @_;
+  if ($dbs{$db_name} and $dbs{$db_name}->{alias}) {
+    return $dbs{$db_name}->{alias};
+  }
+  return $db_name;
 }
 
 sub db_data_source { shift->database->{data_source}; }
