@@ -148,6 +148,7 @@ sub super ($$) {
   my $status;
 
   eval {
+    $status = OK;
     $status = $self->init if $self->can('init');
   };
   return $status unless $status == OK;
