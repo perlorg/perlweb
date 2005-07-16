@@ -48,7 +48,7 @@ if ($opt_lock) {
 }
 
 
-die "$0: No database name specified.\n" unless $dbname;
+#die "$0: No database name specified.\n" unless $dbname;
 
 my $cmd = ($opt_vc) ? $opt_vc
 		    : ($0 =~ m/(my\w+)$/g)[0] || die "Can't determine command name to use from $0\n";
@@ -76,8 +76,8 @@ else {
     # extract the port number from the dsn, if present, for non-standard ports
     unshift @opts, "--port=$1" if $dbi_dsn =~ /\bport=(\d+)/;
     if ($dbi_dsn =~ /\bdatabase=(\w+)/ && $1 ne $dbname) {
-	warn "Using database name '$1' from dsn instead of '$dbname'\n";
-        $ARGV[0] = $dbname = $1;
+      #warn "Using database name '$1' from dsn instead of '$dbname'\n";
+      $ARGV[0] = $dbname = $1;
     }
 
     $ENV{PAGER} = $ENV{MYSQL_PAGER} if $ENV{MYSQL_PAGER};

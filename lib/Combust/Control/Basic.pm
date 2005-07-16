@@ -47,21 +47,20 @@ sub handler ($$) {
     # with TT and just send it.
     my $file = $uri;
     substr($file,0,1) = ""; # trim leading slash
-    #warn "going to load $file";
-    # use sendfile to ship the data instead of loading everything first ...
 
     my $data = $self->provider->expand_filename($file);
     #warn Data::Dumper->Dump([\$data],[qw(data)]);
     if ($data->{path}) {
       $r->update_mtime($data->{time} || time);
-      $content_type = guess_media_type($file);
+      $content_type = guess_media_type($data->{path});
+      $content_type = 'text/css' if $file =~ m/\.css$/;
       my $fh;
       open $fh, $data->{path} or warn "Could not open $data->{path}: $!" and return 403;
-      return $self->send_output(\$fh, $content_type);
+      return $self->send_output($fh, $content_type);
     }
     else {
       if ($self->provider->is_directory($file)) {
-		warn "URI is $uri\n";
+	  warn "URI is $uri\n";
 	return $self->redirect($uri . "/", 1);
       }
       else {
@@ -73,6 +72,8 @@ sub handler ($$) {
   # FIXME|TODO: disallow nasty characters here, in particular double dots...
   if ($uri =~ m!^/((?:[^/]+/)*[^/]+)$!) {
     $template = $1; 
+    $template =~ s/\.\.+//g;
+    warn "TEMPLATE: $template";
   }
   else {
     return 404;

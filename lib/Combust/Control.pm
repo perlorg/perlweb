@@ -146,10 +146,16 @@ sub super ($$) {
   my $self = $class->_init($r);
 
   my $status;
+
+  eval {
+    $status = $self->init if $self->can('init');
+  };
+  return $status unless $status == OK;
+
   eval {
     $status = $self->handler($self->r);
   };
-  cluck "Combust::Control: oops, class handler died with $@" if $@;
+  cluck "Combust::Control: oops, class handler died with: $@" if $@;
   return 500 if $@;
 
   # should we do this to make it harder for people to shoot themselves in the foot?
@@ -160,6 +166,11 @@ sub super ($$) {
 
 sub handler {
   my $self = shift;
+  unless ($self->can('render')) {
+    my $msg = "$self doesn't have a render method";
+    warn $msg;
+    die $msg;
+  }
   my ($status, $output, $content_type) = $self->do_request();
   $self->r->status($status);
   return $self->send_output($output, $content_type);

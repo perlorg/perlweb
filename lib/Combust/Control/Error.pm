@@ -1,9 +1,12 @@
 package Combust::Control::Error;
 use strict;
+use Apache::Constants qw(OK);
 use base 'Combust::Control';
 
-sub handler ($$) {
-  my ($self, $r) = @_;
+sub render {
+  my $self = shift;
+
+  my $r = $self->r;
 
   $r->uri =~ m!^/error/(\d+)!;
   my $error = $1 || 404;
@@ -16,17 +19,17 @@ sub handler ($$) {
 
   my $error_text = $r->pnotes('error') || '';
 
-  $self->param('error'        => $error);
-  $self->param('error_header' => $error_header);
-  $self->param('error_text'   => $error_text);
+  $self->tpl_param('error'        => $error);
+  $self->tpl_param('error_header' => $error_header);
+  $self->tpl_param('error_text'   => $error_text);
 
   # is this right?  
   my $r_err = $r->main || $r->prev || $r;
-  $self->param('error_url', $r_err->uri);
+  $self->tpl_param('error_url', $r_err->uri);
 
   warn "self: $self / ref class: ", ref $self;
 
-  $self->send_output(scalar $self->evaluate_template($template));
+  return OK, $self->evaluate_template($template);
 }
 
 1;
