@@ -3,9 +3,12 @@ use strict;
 use base qw(CPANRatings::Control);
 use CPANRatings::Model::Reviews;
 use CPANRatings::Model::SearchCPAN qw();
+use Apache::Constants qw(OK);
 
-sub handler ($$) {
-  my ($self, $r) = @_;
+sub render {
+  my $self = shift;
+
+  my $r = $self->r;
 
   my ($mode, $id, $format) = ($r->uri =~ m!^/([ad])/([^/]+?)(?:\.(html|rss))?$!);
   return 404 unless $mode and $id;
@@ -13,17 +16,17 @@ sub handler ($$) {
   $mode = "author" if $mode eq "a";
   $mode = "distribution" if $mode eq "d";
 
-  $format = $r->param('format') || $format || 'html';
+  $format = $self->req_param('format') || $format || 'html';
   $format = 'html' unless $format eq "rss";
 
   my $template = 'display/list.html';
 
-  $self->param('mode' => $mode);
-  $self->param('header' => "$id reviews" ) if $mode eq "distribution";
+  $self->tpl_param('mode' => $mode);
+  $self->tpl_param('header' => "$id reviews" ) if $mode eq "distribution";
 
   if ($mode eq "author") {
     my ($first_review) = CPANRatings::Model::Reviews->search_author($id);
-    $self->param('header' => "Reviews by " . $first_review->user_name) if $first_review;
+    $self->tpl_param('header' => "Reviews by " . $first_review->user_name) if $first_review;
   }
   else {
 
@@ -31,8 +34,8 @@ sub handler ($$) {
       return 404;
     }
     my ($first_review) = CPANRatings::Model::Reviews->search(distribution => $id);
-    $self->param('distribution' => $first_review->distribution) if $first_review;
-    $self->param('distribution' => $id) unless $first_review;
+    $self->tpl_param('distribution' => $first_review->distribution) if $first_review;
+    $self->tpl_param('distribution' => $id) unless $first_review;
   }
 
   my $reviews = CPANRatings::Model::Reviews->search(
@@ -42,23 +45,21 @@ sub handler ($$) {
 						   );
 
 
-  $self->param('reviews' => $reviews); 
-
+  $self->tpl_param('reviews' => $reviews); 
 
   my $output;
 
   my $content_type = '';
 
   if ($format eq "html") {
-    $content_type = 'text/html';
-    $self->evaluate_template($r, output => \$output, template => $template, params => $self->params);
+    return OK, $self->evaluate_template($template), 'text/html';
   }
   elsif ($format eq "rss") {
     $output = $self->as_rss($r, $reviews, $mode, $id);
-    $content_type = 'application/rdf+rss';
+    return OK, $output, 'application/rdf+rss';
   }
 
-  $self->send_output(\$output, $content_type);
+  return OK, 'huh? unknown output format', 'text/plain';
 }
 
 1;

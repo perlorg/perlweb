@@ -4,9 +4,13 @@ use base qw(CPANRatings::Control);
 use CPANRatings::Model::Reviews;
 use POSIX qw(strftime);
 use Apache::Util qw();
+use Apache::Constants qw(OK);
 
-sub handler($$) {
-  my ($self, $r) = @_;
+sub render {
+
+  my $self = shift;
+
+  my $r = $self->r;
 
   my ($submit) = $r->uri =~ m!^/rate/submit!;
 
@@ -15,11 +19,11 @@ sub handler($$) {
   return $self->login
     unless $self->is_logged_in; 
 
-  $self->param('user' => $self->user_info);
+  $self->tpl_param('user' => $self->user_info);
 
-  $self->params->{module} = $r->param('module');
+  $self->tpl_params->{module} = $self->req_param('module');
 
-  my $distribution = $r->param('distribution');
+  my $distribution = $self->req_param('distribution');
 
   return $self->error('Distribution name required')
     unless $distribution;
@@ -27,9 +31,9 @@ sub handler($$) {
   return $self->error('No such distribution: ' . $distribution)
     unless CPANRatings::Model::SearchCPAN->valid_distribution($distribution);
 
-  $self->params->{distribution} = { name => $distribution,
-				    versions => [ CPANRatings::Model::SearchCPAN->get_versions($distribution) ],
-				  };
+  $self->tpl_params->{distribution} = { name => $distribution,
+					versions => [ CPANRatings::Model::SearchCPAN->get_versions($distribution) ],
+				      };
 
   if ($submit) {
     my $errors = {};
@@ -46,13 +50,13 @@ sub handler($$) {
       }
     }
 
-    $data{user_id} = $self->user_info->{user_id};
-    $data{user_name} = $self->user_info->{name} || $self->user_info->{login};
+    $data{user_id} = $self->user_info->id;
+    $data{user_name} = $self->user_info->name || $self->user_info->username;
 
     unless (%$errors) {
 
       $data{updated} = strftime "%Y-%m-%d %T", localtime
-	unless $r->param('minor_edit');
+	unless $self->req_param('minor_edit');
 
       my $review;
       if (($review) = CPANRatings::Model::Reviews->search(distribution => $data{distribution},
@@ -68,39 +72,37 @@ sub handler($$) {
 	$review = CPANRatings::Model::Reviews->create(\%data);
       }
 
-      $self->param('review', $review);
+      $self->tpl_param('review', $review);
 
       $template = 'rate/rate_submitted.html';
     } 
     else {
       $self->setup_rate_form;
-      $self->param(errors => $errors);
+      $self->tpl_param(errors => $errors);
     }
   }
   else {
 
     my ($review) = CPANRatings::Model::Reviews->search(distribution => $distribution,
-						       module       => $self->param('module') || '',
-						       user_id      => $self->user_info->{user_id},
+						       module       => $self->tpl_param('module') || '',
+						       user_id      => $self->user_info->id,
 						      );
 
     if ($review) {
-      $self->param('review', $review);
+      $self->tpl_param('review', $review);
       #warn $review->rating_overall;
     }
 
     $self->setup_rate_form;
   }
 
-  my $output = $self->evaluate_template($template);
-  $r->update_mtime(time);
-  $self->send_output(\$output);
+  return OK, $self->evaluate_template($template);
 }
 
 sub setup_rate_form {
   my $self = shift;
 
-  $self->params->{questions} = 
+  $self->tpl_params->{questions} = 
     [{field => 'rating_1',
       name  => 'Documentation'
      },
@@ -119,13 +121,11 @@ sub setup_rate_form {
 sub error {
   my ($self, $message) = @_;
 
-  $self->param(error => {message => $message});
+  $self->tpl_param(error => {message => $message});
 
-  my $r = $self->r;
+  $self->r->update_mtime(time);
 
-  my $output = $self->evaluate_template('rate/rate_error.html');
-  $r->update_mtime(time);
-  $self->send_output(\$output);
+  return OK, $self->evaluate_template('rate/rate_error.html');
 }
 
 1;

@@ -2,35 +2,30 @@ package CPANRatings::Control::Search;
 use strict;
 use base qw(CPANRatings::Control);
 use CPANRatings::Model::SearchCPAN;
+use Apache::Constants qw(OK);
 
-sub handler ($$) {
-  my ($self, $r) = @_;
+sub render {
+  my $self = shift;
 
   my $template = 'search/search_results.html';
 
   my $search = CPANRatings::Model::SearchCPAN->new();
+  
+  my $query = $self->req_param('q');
 
-  my $query = $r->param('q');
-
-  warn "QUERY1: $query";
-
-  my $search_type = $r->param('t') || 'distribution';
+  my $search_type = $self->req_param('t') || 'distribution';
   $search_type = 'module' unless $search_type eq "distribution";
-
+  
   my $results;
   $results = $search->search_distribution($query) if $search_type eq "distribution";
   $results = $search->search_module($query) if $search_type eq "module";
   
-  $self->param('search' => { query   => $query,
-			     results => $results,
-			     search_type => $search_type,
-			   });
+  $self->tpl_param('search' => { query   => $query,
+				 results => $results,
+				 search_type => $search_type,
+			       });
 
-  my $output;
-  $self->evaluate_template($r, output => \$output, template => $template, params => $self->params);
-  $r->update_mtime(time);
-  #$self->send_output($r, \$output);
-  $self->send_output(\$output);
+  return OK, $self->evaluate_template($template);
 }
 
 1;

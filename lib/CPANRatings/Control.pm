@@ -1,24 +1,42 @@
 package CPANRatings::Control;
-use Combust::Control;
-@ISA = qw(Combust::Control);
 use strict;
+use base qw(Combust::Control);
 use Apache::Cookie;
 use LWP::Simple qw(get);
-use Combust::Cache;
 use Apache::Util qw();
 use CPANRatings::Model::Reviews;
+use CPANRatings::Model::User;
 use Encode qw();
 
-sub super ($$) {
- 
-  my $self = shift->SUPER::_init(@_);
+my $cookie_name = 'cpruid';
 
-  $self->param('user_info', $self->user_info);
+sub init {
+ 
+  my $self = shift;
+
+  warn "in init...";
+
+  if (1 or $self->req_param('id') and $self->req_param('sig')) {
+    warn "checking user";
+    my $bc_user = $self->bitcard->verify($self->r);
+    if ($bc_user and $bc_user->{id}) {
+      warn "got user and storing it!";
+      my $user = CPANRatings::Model::User->find_or_create({ username => $bc_user->{username} });
+      my $uid = $user->id;
+      $user->name($bc_user->{name});
+      $user->bitcard_id($bc_user->{id});
+      $user->update;
+      $self->cookie($cookie_name, $uid);
+      $self->user_info($user);
+    }
+  }
+
+  $self->tpl_param('user_info', $self->user_info);
 
   $self->SUPER::super(@_);
 }
 
-sub send_output {
+sub ___no___send_output {
   my $class   = shift;
   my $routput = shift;
 
@@ -37,43 +55,42 @@ sub send_output {
 sub is_logged_in {
   my $self = shift;
   my $user_info = $self->user_info;
-  return 1 if $user_info and $user_info->{user_id};
+  warn "in is_logged_in!";
+  return 1 if $user_info and $user_info->username;
+  warn "returning false!";
   return 0;
 }
 
 sub user_info {
   my $self = shift;
-  my $cookies = Apache::Cookie->new($self->{r})->parse || {};
-  return {} unless $cookies->{ducttape};
-  my $cookie = $cookies->{ducttape}->value;
 
-  my $cache = Combust::Cache->new( type => 'auth' );
+  return $self->{_user} if $self->{_user};
 
-  my $data = $cache->fetch(id => "ducttape=$cookie");
-  return $data->{data} if $data;
+  if (@_) {
+    return $self->{_user} = $_[0];
+  }
 
-  warn "has ducttape cookie: ", $cookie;
-  $cookie =~ s/[^a-z0-9]//g;
-  $data = get("http://auth.perl.org/dbgw/cookie_validate?sid=$cookie");
-  warn "Data: $data";
-  return {} unless $data =~ s/^OK\n//s;
-  my $user_data = +{ map { split /\t/ } split /\n/, $data };
-  #warn Data::Dumper->Dump([\$user_data, \@x], [qw(user_data x)]);
-
-  $cache->store(data => $user_data, expires => 5*60 );
-
-  $user_data;
+  my $uid = $self->cookie($cookie_name) or return;
+  my $user = CPANRatings::Model::User->retrieve($uid);
+  return $self->{_user} = $user if $user;
+  $self->cookie($cookie_name, '0');
+  return;
 }
 
 sub login {
   my $self = shift;
-  my $r = $self->r;
-  return $self->redirect($r,
-			 "http://auth.perl.org/login?redirect=http://"
-			 . $self->config->site->{cpanratings}->{servername}
-			 . $self->r->uri 
-			 . ($r->query_string ? Apache::Util::escape_uri("?" . $r->query_string) : '')
-			); 
+
+  my $bc = $self->bitcard;
+  $bc->info_required('username');
+
+  my $here = URI->new($self->config->base_url('cpanratings')
+		      . $self->r->uri 
+		      . '?' . $self->r->query_string 
+		     );
+
+  warn "setting r to ", $here->as_string;
+
+  return $self->redirect($bc->login_url( r => $here->as_string ));
 }
 
 sub as_rss {
@@ -87,9 +104,9 @@ sub as_rss {
   }
 
   $rss->channel(
-                title        => "CPAN Ratings: " . $self->param('header'),
+                title        => "CPAN Ratings: " . $self->tpl_param('header'),
                 link         => $link, 
-                description  => "CPAN Ratings: " . $self->param('header'),
+                description  => "CPAN Ratings: " . $self->tpl_param('header'),
                 dc => {
                        date       => '2000-08-23T07:00+00:00',
                        subject    => "Perl",

@@ -104,7 +104,7 @@ sub valid_distribution {
 sub get_versions {
   my ($self, $distribution) = @_; 
 
-  my $cache = Combust::Cache->new('CR.search');
+  my $cache = Combust::Cache->new(type => 'CR.search');
 
   my $data;
   if ($data = $cache->fetch(id => "versions;d:$distribution")) {

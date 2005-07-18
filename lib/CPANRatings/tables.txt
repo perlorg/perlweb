@@ -15,7 +15,7 @@ create table reviews (
   KEY module_idx (module),
   KEY user_id_idx (user_id),
   UNIQUE KEY (user_id, distribution, module)
-) ENGINE=INNODB;
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 create table reviews_helpful (
   review_id  mediumint unsigned not null, 
@@ -24,3 +24,11 @@ create table reviews_helpful (
   primary key (review_id, user_id)
 ) ENGINE=INNODB;
 
+CREATE TABLE `review_users` (
+  `id` mediumint(8) unsigned NOT NULL auto_increment,
+  `bitcard_id` char(40) default NULL,
+  `username` varchar(128) default NULL,
+  `name` varchar(128) default NULL,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `username` (`username`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
