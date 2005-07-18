@@ -403,6 +403,8 @@ sub send_output {
 
   $r->send_http_header;
 
+  #warn Data::Dumper->Dump([\$routput], [qw(routput)]);
+
   # if all that is requested is HEAD
   # don't send the body
   return OK if $r->header_only;
@@ -462,6 +464,22 @@ sub cookie {
   my $r = $self->r;
   my $cookies = $r->pnotes('combust_notes')->{cookies};
   $cookies->cookie(@_);
+}
+
+sub bitcard {
+  my $self = shift;
+  my $site = $self->r->dir_config("site");
+  require Authen::Bitcard;
+  import Authen::Bitcard;
+  my $bitcard_token = $self->config->site->{$site}->{bitcard_token};
+  my $bitcard_url   = $self->config->site->{$site}->{bitcard_url};
+  unless ($bitcard_token) {
+    cluck "No bitcard_token configured in combust.conf for $site";
+    return;
+  }
+  my $bc = Authen::Bitcard->new(token => $bitcard_token);
+  $bc->bitcard_url($bitcard_url) if $bitcard_url;
+  $bc;
 }
 
 #sub modified_time {
