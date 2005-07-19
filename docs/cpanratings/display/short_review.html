@@ -1,5 +1,19 @@
 
-<h3>
+[% UNLESS page.added_helpful_js;
+    page.added_helpful_js = 1;
+    page.morehead = page.morehead _ ' 
+<script language="Javascript1.1" type="text/javascript" src="/js/helpful.js"></script>
+';
+  END;
+  page.css_more.push('/css/cpanratings.css');
+%]
+
+
+[% IF review.helpful_total %]
+<i>[% review.helpful_yes %] out of [% review.helpful_total %] found this review helpful:<br /></i>
+[% END %]
+
+<h3 class="review_header">
 [% IF review.module AND review.module != review.distribution %]
 [% review.module | html %] / 
 [% END %]
@@ -10,15 +24,38 @@
 <img src="/images/stars-[% review.rating_overall %].0.png" alt="[% star = '*'; star.repeat(review.rating_overall) %]">
 </h3>
 <p>
+<blockquote class="review">
 [% review.review_html %]
+</blockquote>
 </p>
 <p>
 <a href="/a/[% review.user_id %]">[% review.user_name %]</a> - [% review.updated %]
-[% IF review.user_id == user_info.user_id %]
+[% IF review.user_id == user_info.id %]
   - <a href="/rate/?distribution=[% review.distribution | uri %][% 
   module_param = review.module ? ";module=" _ review.module : ""; 
   module_param | uri %]">edit</a>
 [% END %]
+
+<br /><span class="helpfulq">Was this review helpful to you?&nbsp;
+
+<iframe name="YesNoVotingFrame" id="YesNoVotingFrame" height=0 width=0 style="visibility:hidden;"></iframe>
+<script language="Javascript1.1" type="text/javascript">
+<!--
+var uId = '[% review.review_id %]';
+var vUrl = '/rate/helpful?review_id=[% review.review_id %]';
+showYesButton(vUrl,uId);
+showNoButton(vUrl,uId);
+showYesNoDefaultMessage(uId);
+//-->
+</script>
+<noscript>
+<!-- we need to add a non-js link to rate stuff helpful/not helpful here... -->
+</noscript>
+</span>
+
+</p>
+
+
 
 [% UNLESS no_more %]
 [% # this should be conditional on having more reviews %]

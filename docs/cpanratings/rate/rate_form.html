@@ -52,8 +52,8 @@ Except for "overall rating", all ratings are optional.  Higher number is better.
 </td>
 <td>
 Version <select name="version_reviewed">
-[% FOR version = distribution.versions %]
-<option value="[% version %]">[% version %]
+[% FOR release = distribution.releases %]
+<option [% release.latest ? 'selected="selected"' : '' %] value="[% release.version %]">[% release.version %] [% IF release.beta %](beta)[% END %]
 [% END %]
 </select>
 </td>

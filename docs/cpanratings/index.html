@@ -7,11 +7,9 @@
 
 [% PROCESS search/search_form.html %]
 
-<p>To write a review you'll need an account on <a
-href="http://auth.perl.org/">auth.perl.org</a>.
-
-</p>
-
+[% UNLESS combust.user_info.id %]
+<p>To write a review you'll need a <a href="[% combust.login_url %]">Bitcard account</a>.</p>
+[% END %]
 
 <h2>Browse reviews</h2>
 
