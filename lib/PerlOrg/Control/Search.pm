@@ -50,6 +50,8 @@ sub handler {
 	push @{$cpan->{results}}, @{$cpan->{$type}}
 	  if $cpan->{$type};
       }
+      warn Data::Dumper->Dump([\$cpan], [qw(cpan)]);
+	
       $self->param('cpan', $cpan);
     }
   }

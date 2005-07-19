@@ -101,35 +101,25 @@ sub valid_distribution {
   return 1;
 }
 
-sub get_versions {
+sub get_releases {
   my ($self, $distribution) = @_; 
 
   my $cache = Combust::Cache->new(type => 'CR.search');
 
-  my $data;
-  if ($data = $cache->fetch(id => "versions;d:$distribution")) {
-    return @{ $data->{data} };
+  if (my $data = $cache->fetch(id => "releases;d:$distribution")) {
+    return $data->{data};
   }
 
-  $data = $self->_distribution_page($distribution);
+  
+  my $xml = get "http://search-dev.mutatus.co.uk/ask/$distribution";
 
-  my @rel;
+  use XML::Simple;
+  my $data = XMLin($xml, ForceArray => ['release']);
+  warn Data::Dumper->Dump([\$data], [qw(data)]);
 
-  ($data =~ s!.*?This Release.*?cell>([^<]+)!!s);
-  push @rel, $1 if $1;
+  $cache->store(data => $data->{release}, expires => 9 * 3600);
 
-  ($data =~ s!.*?Latest Release.*?cell><.*?>([^<]+)!!s);
-  unshift @rel, $1 if $1;
-
-  while ($data =~ s!<option value="/author/[^>]+>([^\&]+)!!s) {
-    push @rel, $1 if $1;
-  } 
-
-  @rel = map { s/^\Q$distribution\E-//; $_ } @rel;
-
-  $cache->store(data => \@rel, expires => 9 * 3600);
-
-  @rel;
+  $data->{release};
 
 }
 

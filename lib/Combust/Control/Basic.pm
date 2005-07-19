@@ -3,6 +3,7 @@ use strict;
 use base 'Combust::Control';
 use Combust::Template::Provider;
 use LWP::MediaTypes qw(guess_media_type);;
+use Apache::Constants qw(OK);
 
 # FIXME|TODO  
 #   - sub class Template::Service to do the branch magic etc?
@@ -18,8 +19,10 @@ use LWP::MediaTypes qw(guess_media_type);;
 
 LWP::MediaTypes::read_media_types("$ENV{APACHEROOT}/conf/mime.types");
 
-sub handler ($$) {
-  my ($self, $r) = @_;
+sub render {
+  my $self = shift;
+
+  my $r = $self->r;
   
   my $template = '';
   my $content_type = 'text/html';
@@ -56,7 +59,7 @@ sub handler ($$) {
       $content_type = 'text/css' if $file =~ m/\.css$/;
       my $fh;
       open $fh, $data->{path} or warn "Could not open $data->{path}: $!" and return 403;
-      return $self->send_output($fh, $content_type);
+      return OK, $fh, $content_type;
     }
     else {
       if ($self->provider->is_directory($file)) {
@@ -73,7 +76,7 @@ sub handler ($$) {
   if ($uri =~ m!^/((?:[^/]+/)*[^/]+)$!) {
     $template = $1; 
     $template =~ s/\.\.+//g;
-    warn "TEMPLATE: $template";
+    #warn "TEMPLATE: $template";
   }
   else {
     return 404;
@@ -85,7 +88,7 @@ sub handler ($$) {
     return 404 if $@ =~ m/: not found/;
     return 500; 
   }
-  $self->send_output($output, $content_type);
+  return OK, $output, $content_type;
 }
 
 sub deadlink_handler {

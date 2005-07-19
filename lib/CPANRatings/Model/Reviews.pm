@@ -7,6 +7,8 @@ __PACKAGE__->table('reviews');
 __PACKAGE__->columns(All => qw/review_id user_id user_name module distribution version_reviewed updated 
 			review rating_overall rating_1 rating_2 rating_3 rating_4/);
 
+__PACKAGE__->columns(TEMP => qw/_helpful_total _helpful_yes/);
+
 __PACKAGE__->add_constructor(search_review => 'distribution = ? AND module = ? AND user_id = ?');
 
 __PACKAGE__->add_constructor(search_author => 'user_id=?', { order_by => 'updated' });
@@ -19,10 +21,37 @@ __PACKAGE__->set_sql(recent => qq{
         });
 
 
-
+# we have this so we can have a reviews class to call "search_foo" on in the template (how php-esqe!)
 sub new {
   bless {}, shift;
 }
+
+sub add_helpful {
+  my $self = shift;
+  my $args = shift;
+  $self->dbh->do(q[replace into reviews_helpful (review_id, user_id, helpful) values (?,?,?)], undef,
+		 $self->id, $args->{user}->id, $args->{helpful}
+		);
+
+  
+}
+
+sub helpful_total {
+  my $self = shift;
+  return $self->_helpful_total if defined $self->_helpful_total;
+  my ($count) = $self->db_Main->selectrow_array(q[select count(*) from reviews_helpful where review_id=?], undef, $self->id);
+  $self->_helpful_total($count);  
+  $count;
+}
+
+sub helpful_yes {
+  my $self = shift;
+  return $self->_helpful_yes if defined $self->_helpful_yes;
+  my ($count) = $self->db_Main->selectrow_array(q[select count(*) from reviews_helpful where review_id=? and helpful='1'], undef, $self->id);
+  $self->_helpful_yes($count); 
+  $count;
+}
+
 
 sub checked_rating {
   my $self = shift;

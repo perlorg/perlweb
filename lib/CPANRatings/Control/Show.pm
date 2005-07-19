@@ -10,26 +10,37 @@ sub render {
 
   my $r = $self->r;
 
-  my ($mode, $id, $format) = ($r->uri =~ m!^/([ad])/([^/]+?)(?:\.(html|rss))?$!);
+  my ($mode, $id, $format) = ($r->uri =~ m!^/([ad]|user|dist)/([^/]+?)(?:\.(html|rss))?$!);
   return 404 unless $mode and $id;
-
-  $mode = "author" if $mode eq "a";
-  $mode = "distribution" if $mode eq "d";
 
   $format = $self->req_param('format') || $format || 'html';
   $format = 'html' unless $format eq "rss";
+
+  if ($mode eq 'a') {
+    my $user = CPANRatings::Model::User->retrieve($id) or return 404;
+    return $self->redirect("/user/" . $user->username . ($format ne "html" ? ".$format" : ''));
+  }
+  elsif ($mode eq 'd') {
+    return $self->redirect("/dist/$id" . ($format ne "html" ? ".$format" : ''));
+  }
+
+  $mode = "distribution" if $mode eq "dist";
+
+  my $user;
+  if ($mode eq 'user') {
+    ($user) = CPANRatings::Model::User->search(username => $id) or return 404;
+    $id = $user->id;
+  }
 
   my $template = 'display/list.html';
 
   $self->tpl_param('mode' => $mode);
   $self->tpl_param('header' => "$id reviews" ) if $mode eq "distribution";
 
-  if ($mode eq "author") {
-    my ($first_review) = CPANRatings::Model::Reviews->search_author($id);
-    $self->tpl_param('header' => "Reviews by " . $first_review->user_name) if $first_review;
+  if ($mode eq "user") {
+    $self->tpl_param('header' => "Reviews by " . $user->name);
   }
   else {
-
     unless (CPANRatings::Model::SearchCPAN->valid_distribution($id)) {
       return 404;
     }
@@ -39,7 +50,7 @@ sub render {
   }
 
   my $reviews = CPANRatings::Model::Reviews->search(
-						    ($mode eq "author" ? "user_id" : $mode)
+						    ($mode eq "user" ? "user_id" : $mode)
 						    => $id,
 						    { order_by => 'updated desc' }
 						   );

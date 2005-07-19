@@ -12,6 +12,8 @@ sub render {
 
   my $r = $self->r;
 
+  return $self->render_helpful_vote if $r->uri =~ m!^/rate/helpful!; 
+
   my ($submit) = $r->uri =~ m!^/rate/submit!;
 
   my $template = 'rate/rate_form.html';
@@ -32,7 +34,7 @@ sub render {
     unless CPANRatings::Model::SearchCPAN->valid_distribution($distribution);
 
   $self->tpl_params->{distribution} = { name => $distribution,
-					versions => [ CPANRatings::Model::SearchCPAN->get_versions($distribution) ],
+					releases => CPANRatings::Model::SearchCPAN->get_releases($distribution),
 				      };
 
   if ($submit) {
@@ -128,4 +130,58 @@ sub error {
   return OK, $self->evaluate_template('rate/rate_error.html');
 }
 
+sub render_helpful_vote {
+  my $self = shift;
+
+  my $review_id = $self->req_param('review_id') || '';
+  my $vote      = $self->req_param('v') || '';
+
+  $review_id = ''  unless $review_id =~ m/^\d+$/;
+
+  $vote =~ m/^[yn]$/ or return $self->_return_helpful_vote($review_id, 'BADVOTE');
+
+  my $user = $self->user_info or return $self->_return_helpful_vote($review_id, 'UNRECOGNIZED');
+
+  my $review = CPANRatings::Model::Reviews->retrieve($review_id)
+    or return $self->_return_helpful_vote($review_id, 'SERVICE-FAILURE');
+
+  return $self->_return_helpful_vote($review_id, 'ILLEGAL') if $review->user_id == $user->id;
+
+  $review->add_helpful({ user => $user, helpful => $vote eq 'y' ? 1 : 0 });
+
+  $self->_return_helpful_vote($review_id, 'SUCCESS');
+
+}
+
+sub _return_helpful_vote {
+  my ($self, $review_id, $code) = @_;
+  
+  # SUCCESS 
+  # BADVOTE
+  # UNRECOGNIZED
+  # SERVICE-FAILURE
+  # ILLEGAL
+ 
+  my $msg = <<EOV;
+<html>
+<head><title>CPAN Ratings</title>
+
+<script language="Javascript1.1" type="text/javascript">
+<!--
+parent.showYesNoCommunityResponse("$review_id","$code","");
+//-->
+</script>
+</head>
+</html>
+
+
+EOV
+
+  return OK, \$msg;
+
+}
+
 1;
+
+__END__
+

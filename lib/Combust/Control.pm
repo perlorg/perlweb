@@ -168,12 +168,12 @@ sub super ($$) {
 sub handler {
   my $self = shift;
   unless ($self->can('render')) {
-    my $msg = "$self doesn't have a render method";
+    my $msg = "$self doesn't have a render method; you probably got the inheritance order messed up somewhere.";
     warn $msg;
     die $msg;
   }
   my ($status, $output, $content_type) = $self->do_request();
-  $self->r->status($status);
+  #$self->r->status($status);
   return $self->send_output($output, $content_type);
 }
 
@@ -353,7 +353,10 @@ sub send_output {
   my $self = shift;
   
   # we used to take $r as the first parameter
-  shift @_ if ref $_[0] eq "Apache::Request";
+  if (ref $_[0] eq "Apache::Request") {
+    cluck "send_output doesn't need \$r passed anymore"; 
+    shift @_;
+  }
 
   my $routput = shift;
   my $content_type = shift || $self->content_type || 'text/html';
@@ -369,10 +372,6 @@ sub send_output {
     $length = (stat($routput))[7];
   }
   else {
-    #warn $routput;
-    #$routput = encode_utf8($routput);
-    #warn "=================================";
-    #warn $routput;
     $length = length($$routput);
   }
 
@@ -413,9 +412,11 @@ sub send_output {
     $r->send_fd($routput);
   }
   else {
-    $r->print($routput);
+    # for some reason mod_perl will sometimes forget to dereference the scalar; so we'll just do it here (grumble)
+    $r->print($$routput);
   }
 
+  # TODO: need to get the status from further up the chain and return it correctly here.
   return OK;
 }
 

@@ -8,21 +8,20 @@ use CPANRatings::Model::Reviews;
 use CPANRatings::Model::User;
 use Encode qw();
 
-my $cookie_name = 'cpruid';
+our $cookie_name = 'cpruid';
 
 sub init {
- 
   my $self = shift;
 
-  warn "in init...";
-
-  if (1 or $self->req_param('id') and $self->req_param('sig')) {
-    warn "checking user";
+  if ($self->req_param('id') and $self->req_param('sig')) {
     my $bc_user = $self->bitcard->verify($self->r);
-    if ($bc_user and $bc_user->{id}) {
-      warn "got user and storing it!";
-      my $user = CPANRatings::Model::User->find_or_create({ username => $bc_user->{username} });
+    if ($bc_user and $bc_user->{id} and $bc_user->{username}) {
+      my ($user) = CPANRatings::Model::User->search({ bitcard_id => $bc_user->{id} });
+      unless ($user) {
+	$user = CPANRatings::Model::User->find_or_create({ username  => $bc_user->{username} });
+      }
       my $uid = $user->id;
+      $user->username($bc_user->{username});
       $user->name($bc_user->{name});
       $user->bitcard_id($bc_user->{id});
       $user->update;
@@ -55,9 +54,7 @@ sub ___no___send_output {
 sub is_logged_in {
   my $self = shift;
   my $user_info = $self->user_info;
-  warn "in is_logged_in!";
   return 1 if $user_info and $user_info->username;
-  warn "returning false!";
   return 0;
 }
 
@@ -77,24 +74,31 @@ sub user_info {
   return;
 }
 
-sub login {
+sub bitcard {
   my $self = shift;
-
-  my $bc = $self->bitcard;
+  my $bc = $self->SUPER::bitcard(@_);
   $bc->info_required('username');
+  $bc;
+}
 
+sub login_url {
+  my $self = shift;
   my $here = URI->new($self->config->base_url('cpanratings')
 		      . $self->r->uri 
 		      . '?' . $self->r->query_string 
 		     );
+  my $bc = $self->bitcard;
+  $bc->login_url( r => $here->as_string )
+}
 
-  warn "setting r to ", $here->as_string;
+sub login {
+  my $self = shift;
 
-  return $self->redirect($bc->login_url( r => $here->as_string ));
+  return $self->redirect($self->login_url);
 }
 
 sub as_rss {
-  my ($self, $r, $reviews, $mode, $id) = @_;
+  my ($self, $reviews, $mode, $id) = @_;
 
   require XML::RSS;
   my $rss = new XML::RSS (version => '1.0');

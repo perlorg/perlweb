@@ -12,6 +12,11 @@
        PerlHandler CPANRatings::Control::Basic->super
     </Location>
 
+    <Location /logout>
+       SetHandler perl-script
+       PerlHandler CPANRatings::Control::Logout->super
+    </Location>
+
     <Location /rate>
        SetHandler perl-script
        PerlHandler CPANRatings::Control::Rate->super
@@ -22,7 +27,7 @@
        PerlHandler CPANRatings::Control::Search->super
     </Location>
 
-    <LocationMatch ^/[da]/>
+    <LocationMatch ^/([da]|dist|user)/>
        SetHandler perl-script
        PerlHandler CPANRatings::Control::Show->super
     </LocationMatch>
