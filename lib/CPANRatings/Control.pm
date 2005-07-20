@@ -88,14 +88,25 @@ sub bitcard {
   $bc;
 }
 
-sub login_url {
+sub _here_url {
   my $self = shift;
   my $here = URI->new($self->config->base_url('cpanratings')
 		      . $self->r->uri 
 		      . '?' . $self->r->query_string 
 		     );
+  $here->as_string;
+}
+
+sub login_url {
+  my $self = shift;
   my $bc = $self->bitcard;
-  $bc->login_url( r => $here->as_string )
+  $bc->login_url( r => $self->_here_url )
+}
+
+sub account_url {
+  my $self = shift;
+  my $bc = $self->bitcard;
+  $bc->account_url( r => $self->_here_url )
 }
 
 sub login {
