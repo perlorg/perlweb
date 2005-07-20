@@ -110,12 +110,11 @@ sub get_releases {
     return $data->{data};
   }
 
-  
-  my $xml = get "http://search-dev.mutatus.co.uk/ask/$distribution";
+  my $xml = get "http://search.cpan.org/ask/$distribution";
 
   use XML::Simple;
   my $data = XMLin($xml, ForceArray => ['release']);
-  warn Data::Dumper->Dump([\$data], [qw(data)]);
+  #warn Data::Dumper->Dump([\$data], [qw(data)]);
 
   $cache->store(data => $data->{release}, expires => 9 * 3600);
 
