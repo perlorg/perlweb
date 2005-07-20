@@ -7,14 +7,21 @@ use Apache::Util qw();
 use CPANRatings::Model::Reviews;
 use CPANRatings::Model::User;
 use Encode qw();
+use Apache::Constants qw(OK);
 
 our $cookie_name = 'cpruid';
 
 sub init {
   my $self = shift;
 
-  if ($self->req_param('id') and $self->req_param('sig')) {
-    my $bc_user = $self->bitcard->verify($self->r);
+  # $self->req_param('id') and 
+  if ($self->req_param('sig')) {
+    my $bc = $self->bitcard;
+    my $bc_user = eval { $bc->verify($self->r) };
+    warn $@ if $@;
+    unless ($bc_user) {
+      warn $bc->errstr;
+    }
     if ($bc_user and $bc_user->{id} and $bc_user->{username}) {
       my ($user) = CPANRatings::Model::User->search({ bitcard_id => $bc_user->{id} });
       unless ($user) {
@@ -32,7 +39,7 @@ sub init {
 
   $self->tpl_param('user_info', $self->user_info);
 
-  $self->SUPER::super(@_);
+  return OK;
 }
 
 sub ___no___send_output {

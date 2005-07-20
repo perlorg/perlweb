@@ -80,22 +80,31 @@ sub _distribution_page {
   my ($self, $distribution) = @_;
   my $cache = Combust::Cache->new(type => 'CR.search');
 
+  warn "$$ dist page1";
+
   my $data;
   if ($data = $cache->fetch(id => "dist-page;d:$distribution")) {
     return $data->{data};
   }
 
-  $data = get "http://search.cpan.org/dist/$distribution/";
+  warn "$$ dist page2";
+
+  $data = get("http://cpansearch.perl.org/dist/$distribution/");
 
   my $ttl = $data =~ m/cannot be found, did you mean one of these/ ? 3 * 3600 : 24 * 3600;
 
+  warn "$$ dist page3";
+
   $cache->store(data => $data, expires => 24 * 3600);
+
+  warn "$$ dist page4";
 
   $data;
 }
 
 sub valid_distribution {
   my ($self, $distribution) = @_; 
+  return 1;
   my $page = $self->_distribution_page($distribution);
   return 0 if $page =~ m/cannot be found, did you mean one of these/;
   return 1;

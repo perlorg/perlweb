@@ -3,7 +3,7 @@ use strict;
 use base 'Combust::Control';
 use Combust::Template::Provider;
 use LWP::MediaTypes qw(guess_media_type);;
-use Apache::Constants qw(OK);
+use Apache::Constants qw(OK DONE);
 
 # FIXME|TODO  
 #   - sub class Template::Service to do the branch magic etc?
@@ -105,7 +105,7 @@ sub deadlink_handler {
 
   my $template = "error/deadlink.html";
 
-  $self->param(url => $url);
+  $self->tpl_param(url => $url);
 
   if ($r->header_in("User-Agent") =~ /nodeworks/i) {
     # link checkers get 200s
@@ -118,7 +118,7 @@ sub deadlink_handler {
   my $output = $self->evaluate_template($template);
   $r->update_mtime(time);
   $self->send_output($output, "text/html");
-
+  return DONE;
 }
 
 1;

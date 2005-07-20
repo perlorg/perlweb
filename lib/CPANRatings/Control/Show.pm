@@ -58,15 +58,12 @@ sub render {
 
   $self->tpl_param('reviews' => $reviews); 
 
-  my $output;
-
-  my $content_type = '';
 
   if ($format eq "html") {
     return OK, $self->evaluate_template($template), 'text/html';
   }
   elsif ($format eq "rss") {
-    $output = $self->as_rss($r, $reviews, $mode, $id);
+    my $output = $self->as_rss($r, $reviews, $mode, $id);
     return OK, $output, 'application/rdf+rss';
   }
 
