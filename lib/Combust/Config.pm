@@ -36,7 +36,7 @@ sub _setup_dbs {
     }
     else {
       my ($db_name) = grep { !$dbs{$_}->{alias} } keys %dbs;
-      $dbs{default} = $dbs{$db_name};
+      $dbs{default} = $dbs{$db_name} if $db_name;
     }
   }
 
