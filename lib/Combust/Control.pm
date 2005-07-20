@@ -173,7 +173,8 @@ sub handler {
     die $msg;
   }
   my ($status, $output, $content_type) = $self->do_request();
-  #$self->r->status($status);
+  # have to return 'OK' and fake it with r->status or some such to make a custom 404 easily
+  return $status unless $status == OK;
   return $self->send_output($output, $content_type);
 }
 
@@ -322,7 +323,7 @@ sub evaluate_template {
 	     . $self->tt->error )
       and eval {
 	# TODO: throw a "proper" exception?
-        die( 'error' => $@ . " " . $self->tt->error );
+        die( 'error' => ($@ ? $@ : '') . " " . $self->tt->error );
       };
 
   delete $params{params}->{combust};
@@ -360,6 +361,11 @@ sub send_output {
 
   my $routput = shift;
   my $content_type = shift || $self->content_type || 'text/html';
+
+  unless (defined $routput) {
+    cluck "send_output called with undefined routput";
+    return 404;
+  }
 
   $routput = \$routput unless ref $routput;
 
@@ -402,7 +408,7 @@ sub send_output {
 
   $r->send_http_header;
 
-  #warn Data::Dumper->Dump([\$routput], [qw(routput)]);
+  #warn Data::Dumper->Dump([\$routput], [qw(routput)]) if $r->dir_config('site') eq 'cpanratings';
 
   # if all that is requested is HEAD
   # don't send the body
@@ -426,8 +432,9 @@ sub redirect {
   my $ref_url = ref $url || '';
   $url = shift if $ref_url =~ m/^Apache/;  # if we got passed an $r as the first parameter
   my $permanent = shift;
+  # we shouldn't get here without combust_notes, but apparently we do sometimes.
   $self->r->pnotes('combust_notes')->{cookies}->bake_cookies
-    if $self->r->pnotes('combust_notes')->{cookies};
+    if ($self->r->pnotes('combust_notes') and $self->r->pnotes('combust_notes')->{cookies});
 
   $url = $url->abs if ref $url =~ m/^URI/;
 
@@ -457,7 +464,7 @@ EOH
 
   $self->r->send_http_header("text/html");
   print $data;
-  return OK;
+  return DONE;
 }
 
 sub cookie {

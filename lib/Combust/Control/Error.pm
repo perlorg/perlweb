@@ -27,8 +27,6 @@ sub render {
   my $r_err = $r->main || $r->prev || $r;
   $self->tpl_param('error_url', $r_err->uri);
 
-  warn "self: $self / ref class: ", ref $self;
-
   return OK, $self->evaluate_template($template);
 }
 

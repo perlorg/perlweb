@@ -44,7 +44,7 @@ sub expand_filename {
 
   return +{
 	   path => ($path || undef),
-	   time => ((stat $path)[9] || 0),
+	   time => ($path ? ((stat $path)[9] || 0) : 0),
 	  };
 }
 

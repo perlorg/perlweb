@@ -3,7 +3,7 @@ use strict;
 use base qw(CPANRatings::Control);
 use CPANRatings::Model::Reviews;
 use CPANRatings::Model::SearchCPAN qw();
-use Apache::Constants qw(OK);
+use Apache::Constants qw(OK NOT_FOUND);
 
 sub render {
   my $self = shift;
@@ -17,7 +17,7 @@ sub render {
   $format = 'html' unless $format eq "rss";
 
   if ($mode eq 'a') {
-    my $user = CPANRatings::Model::User->retrieve($id) or return 404;
+    my $user = CPANRatings::Model::User->retrieve($id) or return NOT_FOUND;
     return $self->redirect("/user/" . $user->username . ($format ne "html" ? ".$format" : ''));
   }
   elsif ($mode eq 'd') {
@@ -28,7 +28,7 @@ sub render {
 
   my $user;
   if ($mode eq 'user') {
-    ($user) = CPANRatings::Model::User->search(username => $id) or return 404;
+    ($user) = CPANRatings::Model::User->search(username => $id) or return NOT_FOUND;
     $id = $user->id;
   }
 
@@ -42,7 +42,7 @@ sub render {
   }
   else {
     unless (CPANRatings::Model::SearchCPAN->valid_distribution($id)) {
-      return 404;
+      return NOT_FOUND;
     }
     my ($first_review) = CPANRatings::Model::Reviews->search(distribution => $id);
     $self->tpl_param('distribution' => $first_review->distribution) if $first_review;
