@@ -21,48 +21,44 @@ my %sites =
   );
 
 sub find_url {
-  my ($r) = @_;
-  if ($r->param('type') eq "book") {
-    die "Invalid ISBN" unless $r->param('isbn') =~ /^[A-Z0-9]+$/;
-    my $shop = $r->param('shop');
+  my $self = shift;
+
+  if ($self->req_param('type') eq "book") {
+    die "Invalid ISBN" unless $self->req_param('isbn') =~ /^[A-Z0-9]+$/;
+    my $shop = $self->req_param('shop');
     die "Unknown Bookstore: $shop"
       unless exists $bookstores{ $shop };
     my $url = $bookstores{ $shop };
-    $url =~ s/\#ISBN\#/$r->param('isbn')/e;
+    $url =~ s/\#ISBN\#/$self->req_param('isbn')/e;
     return $url;
   }
-  elsif ($r->param('type') eq "site") {
+  elsif ($self->req_param('type') eq "site") {
     # can't use straight URLs, because they let us become an open
     # bouncepoint for things.  So.. we've got to code sites.
     # Eventually this should be in a .ht file or something.
     die "Uniknown Site"
-      unless exists $sites{ $r->param('id') };
-    return $sites{ $r->param('id') };
+      unless exists $sites{ $self->req_param('id') };
+    return $sites{ $self->req_param('id') };
   }
   return "";
 }
 
 
-sub handler ($$) {
-  my ($class, $r) = @_;
+sub render ($$) {
+  my ($self) = @_;
 
-  $r = Apache::Request->instance($r);
   my $url;
-
-  eval { $url = find_url($r) };
-  $r->pnotes(error => "$@") if $@;
+  eval { $url = $self->find_url() };
+  $self->notes(error => "$@") if $@;
   die $@ if $@;
   if ($url) {
-    $r->status(302);
-    $r->header_out("Location",$url);
-    my $output = qq[
-    You will be redirected to <A HREF="$url">$url</A> now.
-		   ];
-    $class->send_output($r,\$output);
-  } else {
+    return $self->redirect($url);
+  }
+  else {
     # If we can't handle it, pass it to CC::Error, which will default
     # to a 404.
-    return Combust::Control::Error->handler($r);
+    return 404;
+    # return $self->Combust::Control::Error::render();
   }
 
 }
