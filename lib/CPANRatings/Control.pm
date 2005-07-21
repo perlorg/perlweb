@@ -14,8 +14,7 @@ our $cookie_name = 'cpruid';
 sub init {
   my $self = shift;
 
-  # $self->req_param('id') and 
-  if ($self->req_param('sig')) {
+  if ($self->req_param('sig') or $self->req_param('bc_id')) {
     my $bc = $self->bitcard;
     my $bc_user = eval { $bc->verify($self->r) };
     warn $@ if $@;

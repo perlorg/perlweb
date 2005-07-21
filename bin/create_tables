@@ -2,7 +2,7 @@
 use strict;
 use DBI;
 use lib "$ENV{CBROOT}/lib";
-use Develooper::DB qw(db_open);
+use Combust::DB qw(db_open);
 
 my $db_name = 'combust';
 
@@ -27,38 +27,6 @@ create table combust_cache (
   KEY expire_idx (expire),
   KEY purge_idx (purge_key)
 ) TYPE=INNODB;
-
-create table rre_mails (
-  mail_id mediumint unsigned not null primary key auto_increment, 
-  message_id varchar(200) not null,
-  date datetime not null,
-  subject varchar(200) not null,
-  header  text not null, 
-  body    text not null,
-  unique message_id_idx (message_id) 
-) type=INNODB;
-
-create table rre_categories (
-  category_id mediumint unsigned not null primary key auto_increment,
-  category_name varchar(40) not null,
-  unique name_idx (category_name)
-) type=INNODB;
-
-create table rre_links (
-  link_id int unsigned not null primary key auto_increment,  
-  mail_id mediumint not null,
-  category_id mediumint not null,
-  comment text not null,
-  key mail_idx (mail_id),
-  key category_idx (category_id) 
-) type=INNODB;
-
-create table rre_urls (
-  url_id int unsigned not null primary key auto_increment,  
-  link_id int unsigned not null,
-  url varchar(250) not null,
-  key link_idx (link_id), 
-) type=INNODB;
 
 
 EOT
@@ -95,5 +63,41 @@ if (grep { $_ =~ m/create table urls/i } @tables) {
 
 
 $dbh->disconnect;
+
+
+__END__
+
+create table rre_mails (
+  mail_id mediumint unsigned not null primary key auto_increment, 
+  message_id varchar(200) not null,
+  date datetime not null,
+  subject varchar(200) not null,
+  header  text not null, 
+  body    text not null,
+  unique message_id_idx (message_id) 
+) type=INNODB;
+
+create table rre_categories (
+  category_id mediumint unsigned not null primary key auto_increment,
+  category_name varchar(40) not null,
+  unique name_idx (category_name)
+) type=INNODB;
+
+create table rre_links (
+  link_id int unsigned not null primary key auto_increment,  
+  mail_id mediumint not null,
+  category_id mediumint not null,
+  comment text not null,
+  key mail_idx (mail_id),
+  key category_idx (category_id) 
+) type=INNODB;
+
+create table rre_urls (
+  url_id int unsigned not null primary key auto_increment,  
+  link_id int unsigned not null,
+  url varchar(250) not null,
+  key link_idx (link_id), 
+) type=INNODB;
+
 
 

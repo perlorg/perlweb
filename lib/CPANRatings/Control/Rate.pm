@@ -147,15 +147,25 @@ sub render_helpful_vote {
 
   return $self->_return_helpful_vote($review_id, 'ILLEGAL') if $review->user_id == $user->id;
 
-  $review->add_helpful({ user => $user, helpful => $vote eq 'y' ? 1 : 0 });
+  my $updated = $review->add_helpful({ user => $user, helpful => $vote eq 'y' ? 1 : 0 });
 
-  $self->_return_helpful_vote($review_id, 'SUCCESS');
+  $self->_return_helpful_vote($review_id, 'SERVICE-FAILURE')
+    unless $updated;
+  
+  $self->_return_helpful_vote($review_id, 'SUCCESS',
+                              ($updated == 2 
+                                 ? "We'll update your vote." 
+                                 : 'Your vote will be counted within a couple of hours.'
+                              )
+                             );
 
 }
 
 sub _return_helpful_vote {
-  my ($self, $review_id, $code) = @_;
-  
+  my ($self, $review_id, $code, $value) = @_;
+
+  $value = $value || '';
+
   # SUCCESS 
   # BADVOTE
   # UNRECOGNIZED
@@ -168,7 +178,7 @@ sub _return_helpful_vote {
 
 <script language="Javascript1.1" type="text/javascript">
 <!--
-parent.showYesNoCommunityResponse("$review_id","$code","");
+parent.showYesNoCommunityResponse("$review_id","$code","$value");
 //-->
 </script>
 </head>

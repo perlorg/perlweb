@@ -7,7 +7,6 @@ my $default_cookie_name  = 'c';
 
 my %special_cookies = (
   r => [qw(root)],
-  #svd => [qw(s)],
 );
 
 my %special_cookies_reverse;

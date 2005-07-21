@@ -29,11 +29,10 @@ sub new {
 sub add_helpful {
   my $self = shift;
   my $args = shift;
+  # 2: updated, 1: insert, 0: something went wrong.
   $self->dbh->do(q[replace into reviews_helpful (review_id, user_id, helpful) values (?,?,?)], undef,
 		 $self->id, $args->{user}->id, $args->{helpful}
 		);
-
-  
 }
 
 sub helpful_total {

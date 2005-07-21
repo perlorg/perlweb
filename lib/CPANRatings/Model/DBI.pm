@@ -1,7 +1,7 @@
 package CPANRatings::Model::DBI;
 use strict;
 use base qw(Class::DBI::mysql);
-use Develooper::DB qw(db_open);
+use Combust::DB qw(db_open);
 
 sub dbh {
   shift->db_Main;

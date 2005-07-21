@@ -314,7 +314,8 @@ sub evaluate_template {
 
   $params{params}->{combust} = $self;
 
-  $params{params}->{site} = $r->dir_config("site");
+  $params{params}->{site} = $r->dir_config("site")
+    unless $params{params}->{site};
 
   my $user_agent = $r->header_in("User-Agent") || '';
   $params{params}->{user_agent} = $user_agent;
@@ -341,6 +342,11 @@ sub evaluate_template {
   return \$output;
 }
 
+sub site {
+  my $self = shift;
+  $self->r->dir_config("site")
+}
+
 sub content_type {
   shift->request->content_type(@_);
 }
@@ -354,6 +360,10 @@ sub send_cached {
       if $cache->{meta_data}->{content_type};
 
   return $self->send_output($cache->{data}, $content_type);
+}
+
+sub default_character_set {
+  'iso-8859-1'
 }
 
 sub send_output {
@@ -406,8 +416,11 @@ sub send_output {
   # defining the character set helps in handling the CERT advisory
   # regarding  "cross site scripting vulnerabilities" 
   #   http://www.cert.org/tech_tips/malicious_code_mitigation.html
+#  $content_type .= "; charset=" . $self->default_character_set
+#    if $content_type =~ m/^text/ and $content_type !~ m/charset=/;
   $content_type .= "; charset=utf-8" if $content_type =~ m/^text/ and $content_type !~ m/charset=/;
   $r->content_type($content_type);
+  #warn "content_type: $content_type";
 
   if ((my $rc = $r->meets_conditions) != OK) {
     # this didn't work with just returning $rc -- need to check if it works now.
