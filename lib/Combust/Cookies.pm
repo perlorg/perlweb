@@ -132,7 +132,7 @@ sub bake_cookies {
 sub check_cookie {
   my ($cookie_name, $raw_id) = @_;
   my ($cookie_version, $cookie, $hex_cs) = $raw_id =~ m!^(.)/(.*?)/([^/]{8})$!;
-  #warn "N: [$cookie_name]  C: [$cookie]  CS: [$hex_cs]\n";
+  #warn "R: $raw_id N: [$cookie_name]  C: [$cookie]  CS: [$hex_cs]\n";
   
   unless ($cookie) { # regex didn't match, probably truncated
     # the empty id have a checksum too, but we will never allow that
@@ -159,8 +159,15 @@ sub check_cookie {
 sub make_checksum {
   my ($key, $value) = @_;
   my $pad = "~#[d0oODxz\001>~\250as\250d75~\%,";  # TODO|FIXME: this should be picked up from a local file
-  my $cs = DBI::hash("$pad/$key^/$key/$pad/$value/$key\L//$pad/$value");
+  my $x = "$pad/$key^/$key/$pad/$value/$key\L//$pad/$value";
+
+  #warn "UTF8: ", utf8::is_utf8($x);
+  $x = Encode::encode_utf8($x);
+
+  my $cs = DBI::hash($x);
   my $hex_cs = unpack("H8", pack("L",$cs));
+  # warn "K: $key / V: $value / $cs / HCS: ", uc $hex_cs;
+
   return uc $hex_cs;
 }
 

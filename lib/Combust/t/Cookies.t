@@ -1,4 +1,4 @@
-use Test::More tests => 15;
+use Test::More tests => 21;
 use strict;
 
 use_ok('Combust::Control');
@@ -41,5 +41,20 @@ $ENV{COOKIE} = join " ", map { my $v = $_->value; $v =~ s/.$/x/; $_->name . "=" 
 
 ok(my $request = Combust::Control->new->request, 'new request');
 ok(my $cookies = Combust::Cookies->new($request), 'new cookies');
-is($cookies->cookie('foo'), '', 'get cpruid cookie (bad checksum)');
+is($cookies->cookie('foo'), '', 'should not get foo cookie (bad checksum)');
 
+use Encode;
+
+my $cookie_string = 'c=2/cpruid/~1/~LRc/~1121942997/EF8739AB';
+Encode::_utf8_off($cookie_string);
+$ENV{COOKIE} = $cookie_string;
+
+ok(my $request = Combust::Control->new->request, 'new request');
+ok(my $cookies = Combust::Cookies->new($request), 'new cookies');
+is($cookies->cookie('cpruid'), 1, 'get cpruid cookie');
+
+Encode::_utf8_on($cookie_string);
+$ENV{COOKIE} = $cookie_string;
+ok(my $request = Combust::Control->new->request, 'new request');
+ok(my $cookies = Combust::Cookies->new($request), 'new cookies');
+is($cookies->cookie('cpruid'), 1, 'get cpruid cookie');
