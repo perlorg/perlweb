@@ -1,6 +1,6 @@
 package CPANRatings::Model::SearchCPAN;
 use strict;
-use LWP::Simple;
+use LWP::Simple qw(get);
 #use XML::Simple;
 use XML::XPath;
 use Combust::Cache;
@@ -106,7 +106,6 @@ sub _distribution_page {
 
 sub valid_distribution {
   my ($self, $distribution) = @_; 
-  return 1;
   my $page = $self->_distribution_page($distribution);
   return 0 if $page =~ m/cannot be found, did you mean one of these/;
   return 1;

@@ -3,7 +3,7 @@ use strict;
 use Apache::Cookie;
 use URI::Escape qw(uri_escape uri_unescape);
 
-my $default_cookie_name  = 'p';
+my $default_cookie_name  = 'c';
 
 my %special_cookies = (
   r => [qw(root)],

@@ -22,3 +22,8 @@ for branch in $AUTO_UPDATE
 do
   cd $CBROOT/docs/$branch && /usr/local/bin/svn update
 done
+
+if [ -d $CBROOT/planets/ ]
+then
+  cd $CBROOT/planets/sites/ && /usr/local/bin/svn update
+fi
