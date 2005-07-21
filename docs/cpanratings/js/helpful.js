@@ -2,7 +2,7 @@
 function showYesNoCommunityResponse(uId,result,value) {
     var msgLayer = getElement("thanks" + uId);
     if ( result == "SUCCESS" ) {
-	msgLayer.innerHTML = "Thanks! We'll count your vote within the next few hours.";
+	msgLayer.innerHTML = "Thanks! " + value;
     } else {
 	showYesNoErrorResponse(uId,result,value);
     }

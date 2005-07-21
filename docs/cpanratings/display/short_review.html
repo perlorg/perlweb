@@ -36,7 +36,7 @@
 </p>
 <p>
 <a href="/a/[% review.user_id %]">[% review.user_name %]</a> - [% review.updated %]
-[% IF review.user_id == user_info.id %]
+[% IF review.user_id == combust.user_info.id %]
   - <a href="/rate/?distribution=[% review.distribution | uri %][% 
   module_param = review.module ? ";module=" _ review.module : ""; 
   module_param | uri %]">edit</a>
