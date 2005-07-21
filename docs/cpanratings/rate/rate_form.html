@@ -13,11 +13,13 @@
 %]">click here</a>)
 
 </p>
+
 <p>
 
-Except for "overall rating", all ratings are optional.  Higher number is better.
+All ratings are optional.  Higher numbers are better.
 
-<br />If you rate your own module, please at least say as much in the review.  :-)
+<br />If you are commenting on your own module, please don't give it
+any ratings but just leave the review as a comment.
 
 </p>
 
@@ -51,6 +53,7 @@ Except for "overall rating", all ratings are optional.  Higher number is better.
 <input type="hidden" name="distribution" value="[% distribution.name | html %]">
 </td>
 <td>
+
 Version <select name="version_reviewed">
 [% FOR release = distribution.releases %]
 <option [% release.latest ? 'selected="selected"' : '' %] value="[% release.version %]">[% release.version %] [% IF release.beta %](beta)[% END %]
@@ -64,7 +67,7 @@ Version <select name="version_reviewed">
 
 [% checked = review.checked_rating %]
 
-<!-- <pre>[% USE Dumper; Dumper.dump(checked) %]</pre> -->
+
 
 [% FOR question = questions %]
 <tr>
@@ -73,7 +76,7 @@ Version <select name="version_reviewed">
 [% FOR i = [ 1..5 ] %]
 [% i %]<input type="radio" name="[% question.field %]" [% checked.${question.field}.$i %] value="[%i%]">&nbsp;
 [% END %]
-[% IF question.field != 'rating_overall' %]
+[% IF  1 OR question.field != 'rating_overall' %]
 undef<input type="radio" name="[% question.field %]" [% checked.${question.field}.0 %] selected value="">&nbsp;
 [% END %]
 [% IF errors.${question.field} %](<font class="error">[% errors.${question.field} %]</font>)[% END %]
@@ -104,3 +107,5 @@ undef<input type="radio" name="[% question.field %]" [% checked.${question.field
 </table>
 
 </form>
+
+

@@ -22,8 +22,14 @@
 
 [% IF review.rating_overall %]
 <img src="/images/stars-[% review.rating_overall %].0.png" alt="[% star = '*'; star.repeat(review.rating_overall) %]">
+[% END %]
 </h3>
 <p>
+
+[% IF review_has_detail_ratings %]
+<!-- should post the detailed ratings here... -->
+[% END %]
+
 <blockquote class="review">
 [% review.review_html %]
 </blockquote>
@@ -60,9 +66,8 @@ showYesNoDefaultMessage(uId);
 [% UNLESS no_more %]
 [% # this should be conditional on having more reviews %]
 <br />
-(<a href="/d/[% review.distribution | uri %]">more reviews of [% review.distribution | html %]</a>)
+(<a href="/dist/[% review.distribution | uri %]">more reviews of [% review.distribution | html %]</a>)
 [% END %]
 
-[% END %]
 
 </p>

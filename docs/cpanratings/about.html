@@ -3,10 +3,30 @@
 <h3>News</h3>
 <p>
 
-<b>Adding reviews is currently broken!</b>. (see the <a href="http://log.perl.org/2005/07/cpan_ratings.html">noc weblog post</a> for more details).
+[% MACRO quicknews(shortname,count) BLOCK %]
+[%- IF count < 1 %]
+  [%  count = 2 %]
+[% END %]
+[%- TRY %]
+   [%- USE news = XML.RSS("${root}/var/rss/${shortname}.rss") %]
+   [% FOREACH item = news.items %]
+       <LI> <a href="[% item.link | html %]">[% item.title %]</a>
+       [% count = count - 1 %]
+       [% LAST IF count == 0 %]
+    [% END %]
+[%- CATCH %]
+    [Error Processing Directive]
+  [%- FILTER stderr %][% error.info %][% END %]
+[%- END %]
+[%- END %]
+
+[% quicknews('cpanratings',5) %]
+
+
+<h3>Release Notes</h3>
 
 <ul>
-<li>July 20, 2005: Changed to use <a href="http://www.bitcard.org/">Bitcard</a> for authentication.  Added "was this review helpful" votes.  Also changed the URLs to be a little nicer (we couldn't do that while using the old auth server (don't ask)).
+<li>July 20, 2005: Changed to use <a href="http://www.bitcard.org/">Bitcard</a> for authentication.  Added "was this review helpful" votes.  Also changed the URLs to be a little nicer (we couldn't do that while using the old auth server (don't ask)).  You can now add a review without giving it any ratings.
 <li>September 28, 2004: Bugfix to the "show reviews" page by Ivan Tubert-Brohman.
 <li>August 13, 2003: RSS finished, validating distribution names now, lots of other tweaks.
 <li>August 11, 2003: Very much a beta.  Comments to <a href="mailto:ask@perl.org">ask@perl.org</a>.
