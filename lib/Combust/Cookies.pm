@@ -17,7 +17,6 @@ for my $cookie_name (keys %special_cookies) {
   }
 } 
 
-
 sub new {
   my $proto = shift;
   my $class = ref $proto || $proto;
@@ -38,15 +37,13 @@ sub parse_cookies {
   my ($self) = @_;
 
   return $self->{_parsed} if $self->{_parsed};
-  my $cookies = Apache::Cookie->fetch;
 
   my $parsed = {};
- 
 
   for my $cookie_name ($default_cookie_name, keys %special_cookies) {
-    my $cookie = $cookies->{$cookie_name} ? $cookies->{$cookie_name}->value : "";
- 
+    my $cookie = $self->{r}->cookie($cookie_name);
     next unless $cookie;
+    $cookie = $cookie;
     
     $cookie =~ s/\r$// if $cookie;  # remove occasional trailing ^M
  
@@ -86,29 +83,25 @@ sub bake_cookies {
   my $self = shift;
 
   my $r = $self->{r};
-  my $notes  = $r->pnotes('combust_notes') or die "No combust_notes, configuration error?";
   my $domain = $r->hostname;
-
-  #warn "\n\n\nBAKING COOKIES\n\n";
 
   #warn Data::Dumper->Dump([\$self], [qw(self)]);
 
+  my %cookies_out;
+
   for my $cookie_name (keys %special_cookies, $default_cookie_name) {
-
     #warn " bake cookies for cookie $cookie_name: ", ref $self;
-
     next unless $self->changed($cookie_name);
 
     my $cookies = $self->parse_cookies;
 
-    use Data::Dumper;
     #warn Data::Dumper->Dump([\$cookies], [qw(cookies)]);
     
     my @keys = $special_cookies{$cookie_name} ? @{ $special_cookies{$cookie_name} } : (keys %$cookies);
     
     push @keys, "LR" . $cookie_name unless $cookie_name eq $default_cookie_name;
 
-    #warn "KEYS for $cookie_name: ", join "!", @keys;
+    #warn "KEYS for $cookie_name: ", join "::", @keys;
 
     my $encoded = join('/~', map { $_ => (uri_escape(delete $cookies->{$_} || '', "^A-Za-z0-9\-_.!*'()")) }
 		       grep { $cookies->{$_} } @keys);
@@ -124,19 +117,9 @@ sub bake_cookies {
 
     #warn "[$cookie_name] encoded: [$encoded]";
 
-    # not that we actually have the /w3c/p3p.xml document
-    $r->header_out('P3P',qq[CP="NOI DEVo TAIo PSAo PSDo OUR IND UNI NAV", policyref="/w3c/p3p.xml"]);
-
-    my $cookie = Apache::Cookie->new(
-				     $self->{r},
-				     -name	=> $cookie_name,
-				     -value	=> $encoded,
-				     -domain	=>  "$domain",
-				     -expires	=> '+180d',
-				     -path	=> '/',
-				    );
-    $cookie->bake;
+    $self->{r}->cookie($cookie_name, $encoded, { expires => '+180d' });
   }
+  $self->{r}->bake_cookies;
 }
 
 

@@ -92,12 +92,15 @@ sub tt {
 }
 
 sub r {
-  shift->{_r};
+  my $self = shift;
+  return $self->{_r} if $self->{_r};
+  # some day we'll deprecate this...
+  $self->{_r} = Apache::Request->instance;
 }
 
 sub req_param {
   my $self = shift;
-  $self->r->param(@_);
+  $self->request->req_param(@_);
 }
 
 sub param  { cluck "param() deprecated; use tpl_param()"; tpl_param(@_) }
@@ -113,21 +116,19 @@ sub tpl_param {
 
 sub tpl_params {
   my $self = shift;
-  cluck("tpl_params called with [$self] as self.  Did you configure the handler to call ->handler instead of ->super?") unless ref $self;
+  cluck("tpl_params called with [$self] as self.  Did you configure the handler to call ->handler instead of ->super?")
+    unless ref $self;
   cluck('Combust::Control->tpl_params called with parameters, did you mean to call "param"?') if @_;
   $self->{params} || {};
 }
 
-sub _init {
+sub new {
   my ($class, $r) = @_;
 
   # return if we are already blessed
   return $class if ref $class;
 
-  # pass $r as an Apache::Request
-  $r = Apache::Request->instance($r);
-
-  my $self = bless( { _r => $r } , $class);
+  my $self = bless( { } , $class);
   
   $self->{params} = {
     config => $config,
@@ -143,7 +144,7 @@ sub super ($$) {
   confess(__PACKAGE__ . '->super got called without $r') unless $r;
   return unless $r;
 
-  my $self = $class->_init($r);
+  my $self = $class->new($r);
 
   my $status;
 
@@ -332,11 +333,7 @@ sub evaluate_template {
 }
 
 sub content_type {
-  my ($self, $content_type) = @_;
-  if ($content_type) {
-    $self->{_content_type} = $content_type;
-  }
-  $self->{_content_type};
+  shift->request->content_type(@_);
 }
 
 sub send_cached {
@@ -372,6 +369,10 @@ sub send_output {
   my $r = $self->r;
 
   $r->pnotes('combust_notes')->{cookies}->bake_cookies;
+  $self->request->bake_cookies;
+
+  # not that we actually have the /w3c/p3p.xml document
+  $r->header_out('P3P',qq[CP="NOI DEVo TAIo PSAo PSDo OUR IND UNI NAV", policyref="/w3c/p3p.xml"]);
 
   my $length;
   if (ref $routput eq "GLOB") {
@@ -486,35 +487,50 @@ sub bitcard {
     return;
   }
   my $bc = Authen::Bitcard->new(token => $bitcard_token);
-  $bc->key_cache(sub { &__bitcard_key });
+  # $bc->key_cache(sub { &__bitcard_key });
   $bc->bitcard_url($bitcard_url) if $bitcard_url;
   $bc;
 }
 
-sub __bitcard_key {
-my $data ='p=13068061680350176752234876832481478234154319331242577571656460540372792865700291709268210303020444167991240046685709879187396668735883511109283889387550789
-g=1401977638937829860717826639429308623356024940230586427178465043262707882613340266608708605504591642466549635815619377061542059792342434842504301852060665
-q=1297005586312101840913488712696386008259534926959
-pub_key=7302358805722444360264193473163917107602579324376483567164496937915293134647980754469578071162460920831323944975851733129476526614627949883675231700085598';
-use Math::BigInt;
-chomp $data;
-my $key = {};
-for my $f (split /\s+/, $data) {
-    my($k, $v) = split /=/, $f, 2;
-    $key->{$k} = Math::BigInt->new($v);
-}
-$key;
+sub request {
+  my $self = shift;
+  return $self->{_request} if $self->{_request};
+  # should we pass any parameters to the request class when we open it up? Hmn.
+  $self->{_request} = $self->request_class->new;
 }
 
-#sub modified_time {
-#  my ($self, $new_modified) = @_;
-#  my $r = Apache->request;
-#  # use $r->update_mtime(..) instead!
-#  my $modified = $r->notes('last_modified') || 0;
-#  if ($new_modified and $new_modified > $modified) {
-#    $r->notes('last_modified', $new_modified);
-#  }
-#  return $modified;
-#} 
+my $request_class;
+sub request_class {
+  return $request_class if $request_class;
+  my $class = shift;
+  $request_class = $class->pick_request_class;
+  eval "require $request_class";
+  die qq[Could not load "$request_class": $@] if $@;
+  $request_class;
+}
+
+sub pick_request_class {
+  my ( $class, $request_class ) = @_;
+
+  return 'Combust::Request::' . $request_class if $request_class;
+  return "Combust::Request::$ENV{COMBUST_REQUEST_CLASS}" if $ENV{COMBUST_REQUEST_CLASS};
+
+  if ($ENV{MOD_PERL}) {
+    my ($software, $version) = $ENV{MOD_PERL} =~ /^(\S+)\/(\d+(?:[\.\_]\d+)+)/;
+    if ($software eq 'mod_perl') {
+      $version =~ s/_//g;
+      $version =~ s/(\.[^.]+)\./$1/g;
+      return 'Combust::Request::Apache20' if $version >= 2.000001;
+      return 'Combust::Request::Apache13'  if $version >= 1.29;
+      die "Unsupported mod_perl version: $ENV{MOD_PERL}";
+    }
+    else {
+      die "Unsupported mod_perl: $ENV{MOD_PERL}"
+    }
+  }
+
+  return 'Combust::Request::CGI';
+}
+
 
 1;
