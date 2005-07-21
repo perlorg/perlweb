@@ -46,7 +46,7 @@ sub render {
     my %data;
     for my $f (@fields) {
       $data{$f} = Apache::Util::escape_html($r->param($f) || '');
-      if (grep { $f eq $_ } qw(distribution version_reviewed review rating_overall)) {
+      if (grep { $f eq $_ } qw(distribution version_reviewed review)) {
 	$errors->{$f} = "Required field"
 	  unless defined $data{$f} and $data{$f} ne "";
       }

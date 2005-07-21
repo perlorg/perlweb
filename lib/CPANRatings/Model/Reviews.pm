@@ -64,6 +64,15 @@ sub checked_rating {
   $checked;
 }
 
+sub has_detail_ratings {
+  my $self = shift;
+  for my $i (1..4) {
+    my $m = "rating_$i";
+    return 1 if $self->$m;
+  }
+  return 0;
+}
+
 sub review_html {
   my $self = shift;
   my $review = $self->review;

@@ -9,10 +9,7 @@ sub handler ($$) {
   my $dbh = db_open;
   
   my $sth = $dbh->prepare('select distribution,ROUND(avg(rating_overall),1),count(*)
-                           from reviews group by distribution');
-
-  #my ($distribution, $rating, $count); 
-  #$sth->bind_columns(\$distribution, \$rating, \$count);
+                           from reviews where rating_overall > 0 group by distribution');
 
   $sth->execute;
 
@@ -23,7 +20,6 @@ sub handler ($$) {
   }
 
   return 200;
-
 }
 
 1;
