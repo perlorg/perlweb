@@ -120,6 +120,7 @@ sub load_news_data_file {
 	title         => $title,
 	file          => $file,
 	pretty_date   => $t->fullmonth . " " . $t->mday . ", " . $year,
+    iso_date      => $t->datetime,
 	year          => $year,
 	yyyymmdd      => $yyyymmdd,
 	shortname     => $shortname,
@@ -259,6 +260,10 @@ sub generate_rss {
 	    title       => $news_entry->{title},
 	    link        => $news_entry->{abs_link},
 	    description => $news_entry->{body} . $news_entry->{long_body},
+		dc          => {
+           date     => $news_entry->{iso_date},
+                       },
+        pubDate     => $news_entry->{iso_date},
 	);
 	$rss_10->add_item(%entry);
 	$rss_20->add_item(%entry);
