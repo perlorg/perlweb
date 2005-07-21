@@ -63,7 +63,6 @@ sub render {
     }
     else {
       if ($self->provider->is_directory($file)) {
-	  warn "URI is $uri\n";
 	return $self->redirect($uri . "/", 1);
       }
       else {
