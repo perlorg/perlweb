@@ -30,6 +30,8 @@ is($cookies->cookie('r', 'root'), 'root', 'set r=root');
 ok(my @cookies = $cookies->bake_cookies, 'bake cookies');
 $ENV{COOKIE} = join " ", map { $_->name . "=" . $_->value  } @cookies;
 
+warn "ENV: $ENV{COOKIE}";
+
 #warn Data::Dumper->Dump([\@cookies], [qw(cookies)]);
 
 ok(my $request = Combust::Control->new->request, 'new request');
@@ -45,16 +47,16 @@ is($cookies->cookie('foo'), '', 'should not get foo cookie (bad checksum)');
 
 use Encode;
 
-my $cookie_string = 'c=2/cpruid/~1/~LRc/~1121942997/EF8739AB';
+my $cookie_string = 'c=2/cpruid/~2/~r/~root/~foo/~0.185078894793154/0298EC24'; 
 Encode::_utf8_off($cookie_string);
 $ENV{COOKIE} = $cookie_string;
 
 ok(my $request = Combust::Control->new->request, 'new request');
 ok(my $cookies = Combust::Cookies->new($request), 'new cookies');
-is($cookies->cookie('cpruid'), 1, 'get cpruid cookie');
+is($cookies->cookie('cpruid'), '2', 'get cpruid cookie');
 
 Encode::_utf8_on($cookie_string);
 $ENV{COOKIE} = $cookie_string;
 ok(my $request = Combust::Control->new->request, 'new request');
 ok(my $cookies = Combust::Cookies->new($request), 'new cookies');
-is($cookies->cookie('cpruid'), 1, 'get cpruid cookie');
+is($cookies->cookie('cpruid'), '2', 'get cpruid cookie');
