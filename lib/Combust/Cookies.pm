@@ -164,7 +164,7 @@ sub make_checksum {
   #warn "UTF8: ", utf8::is_utf8($x);
   $x = Encode::encode_utf8($x);
 
-  my $cs = DBI::hash($x);
+  my $cs = DBI::hash($x, 1);
   my $hex_cs = unpack("H8", pack("L",$cs));
   # warn "K: $key / V: $value / $cs / HCS: ", uc $hex_cs;
 
