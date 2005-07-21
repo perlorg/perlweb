@@ -43,8 +43,7 @@ sub parse_cookies {
   for my $cookie_name ($default_cookie_name, keys %special_cookies) {
     my $cookie = $self->{r}->cookie($cookie_name);
     next unless $cookie;
-    $cookie = $cookie;
-    
+
     $cookie =~ s/\r$// if $cookie;  # remove occasional trailing ^M
  
     $cookie = check_cookie($cookie_name, $cookie);
@@ -54,13 +53,21 @@ sub parse_cookies {
     # FIXME: we are unescaping the keys too... hmn 
     $parsed = { %$parsed, map { uri_unescape($_) } split /\/~/, $cookie } if $cookie;
 
-    my $last_refreshed = $parsed->{"LR" . $cookie_name} || 0;
-    if ($last_refreshed < (time - (86400*7))) {
-      $parsed->{"LR" . $cookie_name} = time;
-      $self->changed($cookie_name, 1);
-    }
+    $self->update_last_refreshed($cookie_name, $parsed);
   }
   return $self->{_parsed} = $parsed;
+}
+
+sub update_last_refreshed {
+  my ($self, $cookie_name, $cookies, $force) = @_;
+
+  # $cookies ||= $self->parse_cookies;
+
+  my $last_refreshed = $cookies->{"LR" . $cookie_name} || 0;
+  if ($force or $last_refreshed < (time - (86400*7))) {
+    $cookies->{"LR" . $cookie_name} = time;
+    $self->changed($cookie_name, 1);
+  }
 }
 
 sub cookie {
@@ -98,8 +105,9 @@ sub bake_cookies {
     #warn Data::Dumper->Dump([\$cookies], [qw(cookies)]);
     
     my @keys = $special_cookies{$cookie_name} ? @{ $special_cookies{$cookie_name} } : (keys %$cookies);
-    
     push @keys, "LR" . $cookie_name unless $cookie_name eq $default_cookie_name;
+
+    $self->update_last_refreshed($cookie_name, $cookies, 1);
 
     #warn "KEYS for $cookie_name: ", join "::", @keys;
 
@@ -107,8 +115,6 @@ sub bake_cookies {
 		       grep { $cookies->{$_} } @keys);
 
     next unless $encoded;  # TODO - skip the LR cookie ... oh well.
-
-    $cookies->{_R} = $$ . rand(1000); # . make_checksum(rand); 
 
     my $cs = make_checksum($cookie_name, $encoded);
  

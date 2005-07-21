@@ -95,7 +95,7 @@ sub r {
   my $self = shift;
   return $self->{_r} if $self->{_r};
   # some day we'll deprecate this...
-  $self->{_r} = Apache::Request->instance;
+  $self->{_r} = Apache::Request->instance(Apache->request);
 }
 
 sub req_param {
@@ -144,10 +144,18 @@ sub super ($$) {
   confess(__PACKAGE__ . '->super got called without $r') unless $r;
   return unless $r;
 
+  # Combust::Redirect ends up being called a bunch of times and in
+  # turn runs through super here with all the setup required just to
+  # be able to run $self->redirect when it needs to do that.  Not so
+  # great. (in particular because we don't keep it around as a
+  # singleton).
+
+  # Storing it is a hack for get_include_path ...
   my $self = $class->new($r);
+  $self->r->pnotes('controller', $self);
 
   my $status;
-
+  
   eval {
     $status = OK;
     $status = $self->init if $self->can('init');
@@ -220,6 +228,8 @@ sub _cleanup_params {
 sub get_include_path {
   my $r = Apache->request;
 
+  my $self = $r->pnotes('controller');
+
   $r = Apache::Request->instance($r);
 
   my $site = $r->dir_config("site");
@@ -229,12 +239,11 @@ sub get_include_path {
     return $path;
   }
 
-
   my $site_dir = $config->site->{$site}->{docs_site} || $site;
 
   #warn Data::Dumper->Dump([\$r], [qw(r)]);
 
-  my $cookies = $r->pnotes('combust_notes')->{cookies};
+  my $cookies = $self->cookies;
 
   #warn "param:root: ", $r->param('root');
   #warn "root coookie : ", $cookies->cookie('root');
@@ -368,8 +377,7 @@ sub send_output {
 
   my $r = $self->r;
 
-  $r->pnotes('combust_notes')->{cookies}->bake_cookies;
-  $self->request->bake_cookies;
+  $self->cookies->bake_cookies;
 
   # not that we actually have the /w3c/p3p.xml document
   $r->header_out('P3P',qq[CP="NOI DEVo TAIo PSAo PSDo OUR IND UNI NAV", policyref="/w3c/p3p.xml"]);
@@ -433,9 +441,8 @@ sub redirect {
   my $ref_url = ref $url || '';
   $url = shift if $ref_url =~ m/^Apache/;  # if we got passed an $r as the first parameter
   my $permanent = shift;
-  # we shouldn't get here without combust_notes, but apparently we do sometimes.
-  $self->r->pnotes('combust_notes')->{cookies}->bake_cookies
-    if ($self->r->pnotes('combust_notes') and $self->r->pnotes('combust_notes')->{cookies});
+
+  $self->cookies->bake_cookies;
 
   $url = $url->abs if ref $url =~ m/^URI/;
 
@@ -468,11 +475,18 @@ EOH
   return DONE;
 }
 
+sub cookies {
+  my $self = shift;
+  my $cookies = $self->request->notes('cookies');
+  return $cookies if $cookies;
+  $cookies = Combust::Cookies->new($self->request);
+  $self->request->notes('cookies', $cookies);
+  return $cookies;
+}
+
 sub cookie {
   my $self = shift;
-  my $r = $self->r;
-  my $cookies = $r->pnotes('combust_notes')->{cookies};
-  $cookies->cookie(@_);
+  $self->cookies->cookie(@_);
 }
 
 sub bitcard {

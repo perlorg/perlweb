@@ -7,7 +7,7 @@ use Apache::Cookie;
 sub _r {
   my $self = shift;
   return $self->{_r} if $self->{_r};
-  return $self->{_r} = Apache::Request->instance;
+  return $self->{_r} = Apache::Request->instance(Apache->request);
 }
 
 sub req_param {
@@ -23,7 +23,11 @@ sub hostname {
 }
 
 sub get_cookie {
-  my $c = shift->_r->cookie(shift);
+  my ($self, $name) = @_;
+  unless ($self->{cookies}) {
+    $self->{cookies} = Apache::Cookie->fetch || {}; 
+  }
+  my $c = $self->{cookies}->{$name};
   $c ? $c->value : undef;
 }
 

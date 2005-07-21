@@ -17,8 +17,6 @@ sub handler {
 
   my $ua = $r->header_in('User-Agent') || '';
 
-  my $cookies = Combust::Cookies->new($r);
-
   my $req_domain = ($r->hostname =~ m/([^\.]+\.[^\.]+)$/)[0];
 
   my %combust_notes = (
@@ -26,7 +24,6 @@ sub handler {
     user_agent	=> $ua,
     referer	=> $r->header_in('Referer')	|| '',
     user_id	=> 'none',
-    cookies	=> $cookies,
     'time'	=> time(),
     param	=> $param,
     req_domain  => $req_domain,
