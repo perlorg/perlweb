@@ -87,7 +87,7 @@ sub bake_cookies {
 
   my $r = $self->{r};
   my $notes  = $r->pnotes('combust_notes') or die "No combust_notes, configuration error?";
-  my $domain = $notes->{req_domain};
+  my $domain = $r->hostname;
 
   #warn "\n\n\nBAKING COOKIES\n\n";
 

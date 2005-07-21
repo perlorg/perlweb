@@ -281,6 +281,12 @@ PerlModule Apache::Reload
 PerlInitHandler Apache::Reload
 [% END %]
 
+[% IF config.apache_dumpheaders %]
+PerlModule     Apache::DumpHeaders
+PerlLogHandler Apache::DumpHeaders
+PerlSetVar     DumpHeaders_File [% root %]/apache/logs/dumpheaders.log
+[% END %]
+
 PerlRequire [% root %]/apache/conf/startup.pl
 PerlWarn On
 

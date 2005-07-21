@@ -37,8 +37,6 @@ sub init {
     }
   }
 
-  $self->tpl_param('user_info', $self->user_info);
-
   return OK;
 }
 

@@ -145,6 +145,10 @@ sub apache_reload {
   $cfg->param('apache_reload') || 0;
 }
 
+sub apache_dumpheaders {
+  $cfg->param('apache_dumpheaders') || 0;
+}
+
 # cronolog settings
 # {{{
 

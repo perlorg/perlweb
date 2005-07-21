@@ -23,6 +23,8 @@ sub search_distribution {
 sub _search {
   my ($self, $mode, $query) = @_;
 
+  return unless $query;
+
   my $cache = Combust::Cache->new(type => "CR.search");
 
   my $data = $cache->fetch(id => "search.module;$mode;$query");
