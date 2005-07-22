@@ -510,7 +510,7 @@ sub bitcard {
     cluck "No bitcard_token configured in combust.conf for $site";
     return;
   }
-  my $bc = Authen::Bitcard->new(token => $bitcard_token);
+  my $bc = Authen::Bitcard->new(token => $bitcard_token, @_);
   # $bc->key_cache(sub { &__bitcard_key });
   $bc->bitcard_url($bitcard_url) if $bitcard_url;
   $bc;
