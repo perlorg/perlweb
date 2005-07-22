@@ -160,6 +160,10 @@ sub super ($$) {
     $status = OK;
     $status = $self->init if $self->can('init');
   };
+  if ($@) {
+    cluck "$self->init died: $@";
+    return 500;
+  }
   return $status unless $status == OK;
 
   eval {
@@ -375,15 +379,17 @@ sub send_output {
     shift @_;
   }
 
-  my $routput = shift;
+  my $output = shift;
   my $content_type = shift || $self->content_type || 'text/html';
 
-  unless (defined $routput) {
-    cluck "send_output called with undefined routput";
+  unless (defined $output) {
+    cluck "send_output called with undefined output";
     return 404;
   }
 
-  $routput = \$routput unless ref $routput;
+  # for some reason mod_perl will sometimes forget to dereference
+  # a reference, so let's not try printing those anymore.
+  $output = $$output if ref $output and ref $output ne 'GLOB';
 
   my $r = $self->r;
 
@@ -393,20 +399,12 @@ sub send_output {
   $r->header_out('P3P',qq[CP="NOI DEVo TAIo PSAo PSDo OUR IND UNI NAV", policyref="/w3c/p3p.xml"]);
 
   my $length;
-  if (ref $routput eq "GLOB") {
-    $length = (stat($routput))[7];
+  if (ref $output eq "GLOB") {
+    $length = (stat($output))[7];
   }
   else {
-    $length = length($$routput);
+    $length = length($output);
   }
-
-#  if ( $length == 0 ) {
-#    my $error = 'zero length output for request: ' . $r->uri . '?' .$r->args;
-#    warn( $error );
-#    return SERVER_ERROR;
-#  }
-
-  #$r->headers_out->{'Content-Length'} = $length;
 
   $r->update_mtime(time) if $r->mtime == 0; 
   
@@ -430,18 +428,17 @@ sub send_output {
 
   $r->send_http_header;
 
-  #warn Data::Dumper->Dump([\$routput], [qw(routput)]) if $r->dir_config('site') eq 'cpanratings';
+  #warn Data::Dumper->Dump([\$output], [qw(output)]);
 
   # if all that is requested is HEAD
   # don't send the body
   return OK if $r->header_only;
 
-  if (ref $routput eq "GLOB") {
-    $r->send_fd($routput);
+  if (ref $output eq "GLOB") {
+    $r->send_fd($output);
   }
   else {
-    # for some reason mod_perl will sometimes forget to dereference the scalar; so we'll just do it here (grumble)
-    $r->print($$routput);
+    $r->print($output);
   }
 
   # TODO: need to get the status from further up the chain and return it correctly here.
