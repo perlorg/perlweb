@@ -3,11 +3,8 @@ use strict;
 use Exception::Class ('ControllerException');
 use Carp qw(confess cluck carp);
 use Encode qw(encode_utf8);
-use Combust::Request; 
-BEGIN {
 use Combust::Constants qw();
-}
-#use Apache::Util qw();
+use Combust::Request; 
 
 use Template;
 use Template::Parser;
@@ -470,7 +467,7 @@ sub redirect {
   $self->r->header_out('Location' => $url);
   $self->r->status($permanent ? MOVED : REDIRECT);
 
-  my $url_escaped = Apache::Util::escape_uri($url);
+  my $url_escaped = $self->request->escape_uri($url);
 
   my $data = <<EOH;
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">

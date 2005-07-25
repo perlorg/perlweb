@@ -1,5 +1,6 @@
 package Combust::Request;
 use strict;
+use URI::Escape;  # should we only require this as needed?
 
 sub new {
   my $class = shift;
@@ -34,6 +35,11 @@ sub cookie {
   else {
     $self->get_cookie($name);
   }
+}
+
+sub escape_uri {
+  my $self = shift;
+  URI::Escape::uri_escape(shift);
 }
 
 
