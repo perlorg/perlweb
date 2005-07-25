@@ -5,7 +5,10 @@
 <script language="Javascript1.1" type="text/javascript" src="/js/helpful.js"></script>
 ';
   END;
-  page.css_more.push('/css/cpanratings.css');
+  UNLESS (page.added_cpanratings_css);
+    page.css_more.push('/css/cpanratings.css');
+    page.added_cpanratings_css = 1;
+  END;
 %]
 
 
