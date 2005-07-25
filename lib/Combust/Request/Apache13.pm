@@ -3,7 +3,6 @@ use strict;
 use base qw(Combust::Request);
 use Apache::Request;
 use Apache::Cookie;
-use Apache::File;
 
 sub _r {
   my $self = shift;
@@ -53,14 +52,6 @@ sub set_cookie {
 sub bake_cookies {
   my $self = shift;
   $_->bake for @{$self->{cookies_out}};
-}
-
-sub import_constants {
-    warn "CALLER: ", caller();
-    my $caller = $caller;
-    warn "CALLER2: $caller";
-    eval "package $caller; use Apache::Constants qw(:common)";
-    warn "trouble importing constants into $caller: $@" if $@;
 }
 
 1;

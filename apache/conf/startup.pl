@@ -1,8 +1,6 @@
 BEGIN { if ($ENV{CBROOTLOCAL}) { unshift(@INC, "$ENV{CBROOTLOCAL}/lib") } }
 use lib "$ENV{CBROOT}/lib";
 
-use Apache2::porting;
-
 use strict;
 use Apache::DBI;
 use Data::Dumper;
@@ -13,7 +11,7 @@ use Combust::Notes;
 use Combust::Redirect;
 use Combust::Config;
 
-use Apache::Constants qw();
+use Apache::Constants qw(OK);
 
 BEGIN {
   if ($ENV{CBROOT} =~ m/redrock/) {

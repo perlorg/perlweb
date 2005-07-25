@@ -44,12 +44,4 @@ sub bake_cookies {
   1;
 }
 
-sub import_constants {
-    my $caller = caller();
-    eval "package $caller; use constant OK => 200; use constant NOT_FOUND => 404;";
-    $@ and warn "trouble importing constants into $caller: $@" and return 0;
-    return 1;
-}
-
-
 1;

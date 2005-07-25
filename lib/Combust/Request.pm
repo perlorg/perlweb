@@ -1,6 +1,5 @@
 package Combust::Request;
 use strict;
-use URI::Escape;  # should we only require this as needed?
 
 sub new {
   my $class = shift;
@@ -36,48 +35,6 @@ sub cookie {
     $self->get_cookie($name);
   }
 }
-
-sub escape_uri {
-  my $self = shift;
-  URI::Escape::uri_escape(shift);
-}
-
-
-# maybe these should be in Combust::Request::Factory or some such...
-
-my $request_class;
-sub request_class {
-  return $request_class if $request_class;
-  my $class = shift;
-  $request_class = $class->pick_request_class;
-  eval "require $request_class";
-  die qq[Could not load "$request_class": $@] if $@;
-  $request_class;
-}
-
-sub pick_request_class {
-  my ( $class, $request_class ) = @_;
-
-  return 'Combust::Request::' . $request_class if $request_class;
-  return "Combust::Request::$ENV{COMBUST_REQUEST_CLASS}" if $ENV{COMBUST_REQUEST_CLASS};
-
-  if ($ENV{MOD_PERL}) {
-    my ($software, $version) = $ENV{MOD_PERL} =~ /^(\S+)\/(\d+(?:[\.\_]\d+)+)/;
-    if ($software eq 'mod_perl') {
-      $version =~ s/_//g;
-      $version =~ s/(\.[^.]+)\./$1/g;
-      return 'Combust::Request::Apache20' if $version >= 2.000001;
-      return 'Combust::Request::Apache13' if $version >= 1.29;
-      die "Unsupported mod_perl version: $ENV{MOD_PERL}";
-    }
-    else {
-      die "Unsupported mod_perl: $ENV{MOD_PERL}"
-    }
-  }
-
-  return 'Combust::Request::CGI';
-}
-
 
 1;
 
