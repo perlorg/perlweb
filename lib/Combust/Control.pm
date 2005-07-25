@@ -1,14 +1,13 @@
 package Combust::Control;
 use strict;
 use Exception::Class ('ControllerException');
-use Apache::Request;
-use Apache::Cookie;
-use Apache::Constants qw(:common :response);
-use Apache::File;
 use Carp qw(confess cluck carp);
 use Encode qw(encode_utf8);
-
-use Apache::Util qw();
+use Combust::Request; 
+BEGIN {
+use Combust::Constants qw();
+}
+#use Apache::Util qw();
 
 use Template;
 use Template::Parser;
@@ -157,14 +156,14 @@ sub super ($$) {
   my $status;
   
   eval {
-    $status = OK;
+    $status = Combust::Constants::OK;
     $status = $self->init if $self->can('init');
   };
   if ($@) {
     cluck "$self->init died: $@";
     return 500;
   }
-  return $status unless $status == OK;
+  return $status unless $status == Combust::Constants::OK;
 
   eval {
     $status = $self->handler($self->r);
@@ -187,7 +186,7 @@ sub handler {
   }
   my ($status, $output, $content_type) = $self->do_request();
   # have to return 'OK' and fake it with r->status or some such to make a custom 404 easily
-  return $status unless $status == OK;
+  return $status unless $status == Combust::Constants::OK;
   return $self->send_output($output, $content_type);
 }
 
@@ -209,7 +208,7 @@ sub do_request {
   }
 
   ($status, $output, my $content_type) = $self->render;
-  return $status unless $status == OK;
+  return $status unless $status == Combust::Constants::OK;
 
   $cache_info->{meta_data}->{content_type} = $content_type if $content_type;
   $cache->store( %$cache_info, data => $output ) if $cache; 
@@ -220,7 +219,7 @@ sub do_request {
 }
 
 sub cache_info {}
-sub post_process { OK }
+sub post_process { Combust::Constants::OK }
 
 sub _cleanup_params {
   my $self = shift;
@@ -523,38 +522,6 @@ sub request {
   $self->{_request} = $self->request_class->new;
 }
 
-my $request_class;
-sub request_class {
-  return $request_class if $request_class;
-  my $class = shift;
-  $request_class = $class->pick_request_class;
-  eval "require $request_class";
-  die qq[Could not load "$request_class": $@] if $@;
-  $request_class;
-}
-
-sub pick_request_class {
-  my ( $class, $request_class ) = @_;
-
-  return 'Combust::Request::' . $request_class if $request_class;
-  return "Combust::Request::$ENV{COMBUST_REQUEST_CLASS}" if $ENV{COMBUST_REQUEST_CLASS};
-
-  if ($ENV{MOD_PERL}) {
-    my ($software, $version) = $ENV{MOD_PERL} =~ /^(\S+)\/(\d+(?:[\.\_]\d+)+)/;
-    if ($software eq 'mod_perl') {
-      $version =~ s/_//g;
-      $version =~ s/(\.[^.]+)\./$1/g;
-      return 'Combust::Request::Apache20' if $version >= 2.000001;
-      return 'Combust::Request::Apache13'  if $version >= 1.29;
-      die "Unsupported mod_perl version: $ENV{MOD_PERL}";
-    }
-    else {
-      die "Unsupported mod_perl: $ENV{MOD_PERL}"
-    }
-  }
-
-  return 'Combust::Request::CGI';
-}
 
 
 1;

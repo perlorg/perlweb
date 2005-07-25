@@ -26,12 +26,16 @@ my $apache_root = $config->apache_root;
 my $apache_config = $config->apache_config;
 
 my $apxs = $config->httpd;
+my ($apache_version) = map { m!Apache/(\S+)!; $1 } grep { /^Server version: / } `$apxs -V`;
+if ($apache_version) {
+    $apache_version = sprintf "%i.%02i%02i", split /\./, $apache_version;
+}
 $apxs =~ s!/httpd!/apxs!;
 my $apache_libexec;
 $apache_libexec = (-x $apxs and !-d _) ? `$apxs -q LIBEXECDIR` : '';
-
 $apache_root =~ s!/s?bin/httpd$!!;
 $apache_libexec ||= $apache_root . "/libexec";
+chomp $apache_libexec;
 
 my $include_path = []; 
 push @$include_path, $local_dir if $local_dir;
@@ -53,7 +57,8 @@ my $params = { config => $config,
 	       root_local   => ($ENV{CBROOTLOCAL} || ''),
 	       root_default => ($ENV{CBROOTLOCAL} || $ENV{CBROOT}),
 	       apache_root  => $apache_root,
-		   apache_config => $apache_config,
+               apache2      => ($apache_version > 2 ? 1 : 0),
+               apache_config => $apache_config,
 	       apache_libexec => $apache_libexec,
 	       mod_so       => $mod_so,
 	     };

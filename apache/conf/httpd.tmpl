@@ -32,9 +32,57 @@ Listen [% config.port %]
 
 CoreDumpDirectory [% root_default %]/apache/
 
-[%# this should be a bit more sophisticated and check for each module,
-    but for now it'll do ... %]
-[% IF mod_so %]
+[% IF apache2 %]
+
+LoadModule access_module [% apache_libexec %]/mod_access.so
+LoadModule auth_module [% apache_libexec %]/mod_auth.so
+LoadModule auth_anon_module [% apache_libexec %]/mod_auth_anon.so
+LoadModule auth_dbm_module [% apache_libexec %]/mod_auth_dbm.so
+LoadModule auth_digest_module [% apache_libexec %]/mod_auth_digest.so
+LoadModule ext_filter_module [% apache_libexec %]/mod_ext_filter.so
+LoadModule include_module [% apache_libexec %]/mod_include.so
+LoadModule deflate_module [% apache_libexec %]/mod_deflate.so
+LoadModule log_config_module [% apache_libexec %]/mod_log_config.so
+LoadModule log_forensic_module [% apache_libexec %]/mod_log_forensic.so
+LoadModule env_module [% apache_libexec %]/mod_env.so
+LoadModule mime_magic_module [% apache_libexec %]/mod_mime_magic.so
+#LoadModule cern_meta_module [% apache_libexec %]/mod_cern_meta.so
+LoadModule expires_module [% apache_libexec %]/mod_expires.so
+LoadModule headers_module [% apache_libexec %]/mod_headers.so
+LoadModule usertrack_module [% apache_libexec %]/mod_usertrack.so
+LoadModule unique_id_module [% apache_libexec %]/mod_unique_id.so
+LoadModule setenvif_module [% apache_libexec %]/mod_setenvif.so
+LoadModule proxy_module [% apache_libexec %]/mod_proxy.so
+LoadModule proxy_connect_module [% apache_libexec %]/mod_proxy_connect.so
+LoadModule proxy_ftp_module [% apache_libexec %]/mod_proxy_ftp.so
+LoadModule proxy_http_module [% apache_libexec %]/mod_proxy_http.so
+<IfDefine SSL>
+LoadModule ssl_module [% apache_libexec %]/mod_ssl.so
+</IfDefine>
+LoadModule mime_module [% apache_libexec %]/mod_mime.so
+#LoadModule dav_module [% apache_libexec %]/mod_dav.so
+LoadModule status_module [% apache_libexec %]/mod_status.so
+LoadModule autoindex_module [% apache_libexec %]/mod_autoindex.so
+#LoadModule asis_module [% apache_libexec %]/mod_asis.so
+#LoadModule info_module [% apache_libexec %]/mod_info.so
+#LoadModule cgi_module [% apache_libexec %]/mod_cgi.so
+#LoadModule dav_fs_module [% apache_libexec %]/mod_dav_fs.so
+#LoadModule vhost_alias_module [% apache_libexec %]/mod_vhost_alias.so
+LoadModule negotiation_module [% apache_libexec %]/mod_negotiation.so
+LoadModule dir_module [% apache_libexec %]/mod_dir.so
+#LoadModule imap_module [% apache_libexec %]/mod_imap.so
+#LoadModule actions_module [% apache_libexec %]/mod_actions.so
+#LoadModule speling_module [% apache_libexec %]/mod_speling.so
+LoadModule userdir_module [% apache_libexec %]/mod_userdir.so
+LoadModule alias_module [% apache_libexec %]/mod_alias.so
+LoadModule rewrite_module [% apache_libexec %]/mod_rewrite.so
+LoadModule perl_module [% apache_libexec %]/mod_perl.so
+
+
+[% ELSE;
+   # this should be a bit more sophisticated and check for each module,
+   # but for now it'll do ...
+  IF mod_so %]
 LoadModule env_module         [% apache_libexec %]/mod_env.so
 LoadModule config_log_module  [% apache_libexec %]/mod_log_config.so
 LoadModule mime_magic_module  [% apache_libexec %]/mod_mime_magic.so
@@ -56,7 +104,8 @@ LoadModule auth_module        [% apache_libexec %]/mod_auth.so
 LoadModule unique_id_module   [% apache_libexec %]/mod_unique_id.so
 LoadModule setenvif_module    [% apache_libexec %]/mod_setenvif.so
 LoadModule perl_module        [% apache_libexec %]/libperl.so
-[% END %]
+[%   END;
+  END; %]
 
 
 [% TRY;
@@ -74,7 +123,10 @@ PerlSetEnv  APACHEROOT [% apache_root %]
 #MimeMagicFile [% apache_root %]/conf/magic
 
 ExtendedStatus On
+
+[% UNLESS apache2 %]
 Port 80
+[% END %]
 serveradmin ask@perl.org
 ServerName [% config.servername %]
 
