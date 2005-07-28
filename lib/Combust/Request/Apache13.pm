@@ -22,6 +22,10 @@ sub hostname {
   shift->_r->hostname;
 }
 
+sub uri {
+  shift->_r->uri;
+}
+
 sub get_cookie {
   my ($self, $name) = @_;
   unless ($self->{cookies}) {
