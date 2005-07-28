@@ -1,6 +1,6 @@
 <DIV class="MENU">
 [% r_now = r.main || r.prev || r;
-  FILTER navigation(r_now.uri) %]
+  FILTER navigation(r_now.uri,'<b>','</b>') %]
 
 <h3>About</h3>
 <p>
@@ -15,22 +15,25 @@
 <a href="/contacts.html">Contact Us</a><br>
 <a href="/pr/">Press</a><br>
 <!--<a href="/mailing_lists.html">Mailing Lists</a><br>-->
+</p>
 
 <h3>Grants</h3>
 <p>
 <a href="/gc/grants/benefits.html">Grant Benefits</a><br>
+<a href="/gc/grants/2005-googlesoc.html">Google Summer of Code</a><br>
 <a href="/gc/grants/2005.html">2005 Grants</a><br>
-<a href="/gc/grants/2004.html">2004 Grants</a><br>
-<a href="/gc/grants/2003.html">2003 Grants</a><br>
-<a href="/gc/grants/2002.html">2002 Grants</a><br>
-<a href="/gc/grants/2001.html">2001 Grants</a><br>
+<a href="/gc/grants/2004.html">2004, </a>
+<a href="/gc/grants/2003.html">2003, </a><br>
+<a href="/gc/grants/2002.html">2002, </a>
+<a href="/gc/grants/2001.html">2001</a><br>
 <a href="/gc/grants/proposals.html">How to Write a Proposal</a><br>
+</p>
 
 <h3>Foundation News</h3>
 <p>
 <a href="/pr/release/">Press Releases</a><br>
 <a href="/news/">Archived News</a><br>
-<br>
+</p>
 
 <h3>Events</h3>
 <p>
@@ -38,7 +41,8 @@
 <a href="http://www.yapc.org/Australia/">YAPC Australia</a><br>
 <a href="http://www.yapc.org/Brasil/">YAPC Brasil</a><br>
 <a href="http://www.yapc.org/Europe/">YAPC Europe</a><br>
-<a href="http://www.perl.org.il/YAPC/">YAPC Israel</a>
+<a href="http://www.perl.org.il/YAPC/">YAPC Israel</a><br>
+</p>
 
 <h3>Affiliates</h3>
 <p>
@@ -47,11 +51,10 @@
 <a href="http://www.pm.org">Perl Mongers</a><br>
 <a href="http://perlmonks.org">Perl Monks</a><br>
 <a href="http://cpan.org">CPAN</a><br>
-<p>
+</p>
 
-<br>
 <a href="/news/tpf_rss_10.rss"><img 
 			src="/images/rss-10.gif" alt="RSS 1.0" border=0 width=80 height=15></a><br>
 <a href="/news/tpf_rss_20.rss"><img src="/images/rss-20.gif" alt="RSS 2.0" border=0 width=80 height=15></a><br>
-[% END %]
+[% END # FILTER %]
 </div>
