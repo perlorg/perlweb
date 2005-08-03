@@ -86,6 +86,7 @@ generate_individual($template,[@current,@news_data]);
 sub load_news_data {
     my ($data_dir) = @_;
     my @data_files = $data_dir ? glob($data_dir."*") : glob("*");
+    @data_files = grep !/~$/, @data_files;
     my @news_data = ();
     my %seen_shortnames = ();
     for my $file (@data_files) {
