@@ -1,36 +1,32 @@
-[% page.banner =  page.title = "Google Summer of Code 2005" %]
+[% page.banner = "Google Summer of Code 2005" %]
+[% page.title = page.banner %]
 
-<H1>Google Summer of Code 2005</H1>
-
-<style type="text/css"><!--
-.googlesoc H2 { background: #00CCFF; }
-.googlesoc H3 { margin-top: 0px; text-align: right; margin-top: 0;
-padding-top: 0; font-style: italic; }
-.googlesoc P { padding-left: 2em; text-align: justify; }
-// -->
+<style type="text/css">
+div .googlesoc { 
+    text-align: center;
+    float: right;
+    padding: 0px 0px 10px 10px;
+}
 </style>
 
-<span class="googlesoc">
-
-<BLOCKQUOTE>
-<P>The Summer of Code is Google's program designed to introduce
+<P>The <a href="http://code.google.com/summerofcode.html">Summer of Code</a>
+is Google's program designed to introduce
 students to the world of open source software development.</P>
 
-<P>This summer, don't let your programming skills lie fallow. Use them for the greater good of open source software and computer science. Google will provide a $4500 award to each student who successfully completes a project by the end of the summer. </P>
+<P>This summer, don't let your programming skills lie fallow. Use them 
+for the greater good of open source software and computer science. 
+Google will provide a $4500 award to each student who successfully 
+completes a project by the end of the summer.</p>
 
-<P>By pairing applicants up with the proven wisdom and experience of
+<p>By pairing applicants up with the proven wisdom and experience of
 established prominent open source organizations, we
-hope to make great software happen. </P>
-</BLOCKQUOTE>
-<DIV ALIGN="RIGHT">From <A HREF="http://code.google.com/summerofcode.html">http://code.google.com/summerofcode.html</A></DIV>
+hope to make great software happen.</p>
 
-<P>The following proposals were accepted for perl:</A>
+<h2>Refactor Pirate to be independent of the Python parse tree (AST).</h2>
+<div class="googlesoc"><b>Curtis Hall</b><br>
+<a href="/news/2005/socrefactorpirate.html"><i>Interview</i></a></div>
 
-
-<H2>Refactor Pirate to be independent of the Python parse tree (AST).</H2>
-<H3>Curtis Hall</H3>
-
-<P>I will refactor the intermediate code emitter in Pirate so that it
+<p>I will refactor the intermediate code emitter in Pirate so that it
 is independent of the python parser.  The idea is to create canned
 routines such as "WhileLoop.start()" and "WhileLoop.end()" that could
 call the specific routines for any language.  A language's parser
@@ -39,16 +35,11 @@ generic IMC emitter in Pirate to generate Parrot byte code.  Also,
 there is still work to be done in implementing slices, floor
 divisions, power operators, and to-string operators in Pirate.  I will
 implement as many of these as possible with the remaining time I
-have.</P>
+have.</p>
 
-<!--
-<UL>
-  <LI><A HREF="#">Interview</A>
-</UL>
--->
-
-<H2>Open Sourcing Perl/Java Integration</H2>
-<H3>David Rusek</H3>
+<h2>Open Sourcing Perl/Java Integration</h2>
+<div class="googlesoc"><b>David Rusek</b><br>
+<a href="/news/2005/socperljavaintegration.html"><i>Interview</i></a></div>
 
 <P>Perl and Java are two very mature environments, each with their own
 strengths. It is common to find both of these technologies in a
@@ -72,33 +63,23 @@ would "import" Java code. In addition, GCJ, along with SWIG, can
 enable a programmer to write and "XS wrap" Java classes for use in
 Perl programs in much the same way they would for a C++ class.</P>
 
-<UL>
-  <LI><A HREF="/news/2005/socperljavaintegration.html">Interview</A>
-</UL>
+<h2>Compiler/Optimizer Improvements to Parrot</h2>
+<div class="googlesoc"><b>Curtis Rawls</b><br>
+<a href="/news/2005/socimprovementstoparrot.html"><i>Interview</i></a></div>
 
-
-<H2>Compiler/Optimizer Improvements to Parrot</H2>
-<H3>Curtis Rawls</H3>
-
-<P>Parrot is a new virtual machine in development that will be the
+<p>Parrot is a new virtual machine in development that will be the
 target VM for Perl 6.  This project aims to make improvements to the
 Parrot optimizer.  Specific areas planned for improvement are:
 implementing SSA form, various self-contained optimizations, register
 allocation, and documentation.  The ultimate goals of this project are
 to improve the Parrot optimizer infrastructure and make Parrot code
-run more efficiently.</P>
+run more efficiently.</p>
 
-<!--
-<UL>
-  <LI><A HREF="#">Interview</A>
-</UL>
--->
+<h2>Extended Type Inference System for Perl 5</h2>
+<div class="googlesoc"><b>Gary Jackson</b><br>
+<a href="/news/2005/soctypeinterfaceperl5.html"><i>Interview</i></a></div>
 
-
-<H2>Extended Type Inference System for Perl 5</H2>
-<H3>Gary Jackson</H3>
-
-<P>I will be enhancing an existing compile-time type inference system
+<p>I will be enhancing an existing compile-time type inference system
 for Perl 5 to support aggregate data types, objects, and type
 qualifiers.  The initial thrust of the work is to assign types to
 arrays and hashes, the aggregate data types of Perl.  To this end, I
@@ -111,36 +92,25 @@ follows the inheritance of classes used in the program.  If time
 allows, I will also implement a type qualifier system for evaluating
 relationships among data (like Taint mode in Perl, but evaluated at
 compile time).
-</P>
+</p>
 
-<!--
-<UL>
-  <LI><A HREF="#">Interview</A>
-</UL>
--->
+<h2>A Generational Thread Aware GC for Parrot</h2>
+<div class="googlesoc"><b>Alexandre Buisse</b><br>
+<a href="/news/2005/socgcforparrot.html"><i>Interview</i></a></div>
 
-
-<H2>A Generational Thread Aware GC for Parrot</H2>
-<H3>Alexandre Buisse</H3>
-
-
-<P>Parrot, the VM for Perl6 (and other languages), currently uses a
+<p>Parrot, the VM for Perl6 (and other languages), currently uses a
 plain Mark-and-Sweep Garbage Collector. As it will be used on a wide
 range of systems, from clusters to embedded, this scheme isn't really
 optimal. It also does not consider multi-threading, which should be
 included later in Parrot.  The project is to implement a new GC that
 fixes all (or most of) these issues, by using a generational,
-compacting scheme that protects shared objects.</P>
+compacting scheme that protects shared objects.</p>
 
-<UL>
-  <LI><A HREF="/news/2005/socgcforparrot.html">Interview</A>
-</UL>
+<h2>Perl MegaDistro</h2>
+<div class="googlesoc"><b>David Buchman</b><br>
+<a href="/news/2005/socperlmegadistro.html"><i>Interview</i></a></div>
 
-
-<H2>Perl MegaDistro</H2>
-<H3>David Buchman</H3>
-
-<P>The creation of a "megadistro," of perl, which will be packaged for
+<p>The creation of a "megadistro," of perl, which will be packaged for
 each and every distro. This package will contain the various modules
 that are most used by experienced perl users and developers.  The
 intent is to benefit the user -- the acquisition of the various perl
@@ -156,20 +126,32 @@ encompass, the compilation of packaging lists (the decision of which
 modules to package for the megadistro), compatibility and testing, for
 each distro, and the verification that the code will successfully pass
 a `make test`, on each, respectively. After completion of this
-project, the perl "megadistro" should be ready for mass-distribution.
-</P>
+project, the perl "megadistro" should be ready for mass-distribution.</p>
 
-<UL>
-  <LI><A HREF="/news/2005/socperlmegadistro.html">Interview</A>
-</UL>
+<h2>WWW::Kontent - A Perl6 CMS</h2>
+<div class="googlesoc"><b>Brent Royal-Gordon</b><br>
+<a href="/news/2005/socwwwkontent.html"><i>Interview</i></a></div>
 
-<H2>WWW::Kontent - A Perl6 CMS</H2>
-<H3>Brent Royal-Gordon</H3>
+<p>Perl 6, a redesign and rewrite of Perl, has been in the design phase
+for over five years; only in the last few months have a prodigious
+group of programmers produced Pugs, a prototype interpreter for it.
+WWW::Kontent is an implementation of a highly dynamic web content
+management system in Perl 6, designed to support nearly any kind of
+website, from an active wiki or message board to a personal home page
+or corporate presence.  It is intended to test the new language in a
+non-trivial, real-world situation and provide a useful application
+written in the language right from its release.</p>
 
-<P></P>
 
-<UL>
-  <LI><A HREF="/news/2005/socwwwkontent.html">Interview</A>
-</UL>
+<h2>BitTorrent Peer Library For Perl</h2>
+<div class="googlesoc"><b>Josh McAdams</b><br>
+<a href="/news/2005/socbitorrentlibrary.html"><i>Interview</i></a></div>
 
-</span>
+<p></p>
+
+<!-- filler until we get the content --> 
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
