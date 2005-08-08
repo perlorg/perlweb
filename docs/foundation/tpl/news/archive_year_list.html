@@ -1,3 +1,5 @@
-[% FOREACH year = years %]
-<a href="/news/[% year %]/index.html">[% year %] News</a><br>
+Archived News: 
+[%- FOREACH year = years %]
+<a href="/news/[% year %]/index.html">[% year %]</a>
+[%- loop.last ? "." : ", " %]
 [% END %]

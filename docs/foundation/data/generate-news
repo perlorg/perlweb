@@ -77,11 +77,9 @@ my $template = Template->new({
 });
 
 my $rss_entries_index = $rss_entries - 1;
-my @rss = @news_data[0 .. $rss_entries_index];
-my @current = splice(@news_data,0,$current_entries);
-generate_current($template,\@current,\@rss,\@news_data);
-generate_archive($template,\@news_data);
-generate_individual($template,[@current,@news_data]);
+generate_current($template, [@news_data[0..$current_entries]],[@news_data[0..$rss_entries_index]]);
+generate_archive($template, \@news_data);
+generate_individual($template,\@news_data);
 
 sub load_news_data {
     my ($data_dir) = @_;
@@ -189,9 +187,9 @@ sub parse_body {
 # OUT:  /current_news.html
 sub generate_current {
     print STDERR "[SECTION ] current\n" if $VERBOSE;
-    my ($template, $current, $rss, $news_data) = @_;
-    my $vars = { news_data => $current, max_year => $current->[0]{year}};
-    my $depends = [ map { $_->{file} } @$current ];
+    my ($template, $news_data, $rss) = @_;
+    my $vars = { news_data => $news_data, max_year => $news_data->[0]{year}};
+    my $depends = [ map { $_->{file} } @$news_data ];
     process($template,'current',$vars,undef,$depends);
     generate_rss($rss);
 }
@@ -205,17 +203,17 @@ sub generate_archive {
     my ($years, $news_data_by_year) = build_years($news_data);
     my $max_year = 0;
     for my $year (@$years) {
-	$max_year = $year if $year > $max_year;
-	my $news_archive_data = $news_data_by_year->{$year};
-	my $output_template = $TEMPLATE->{output}{archive};
-	$output_template =~ s/YEAR/$year/;
-	my $vars = { news_data => $news_archive_data, year => $year, years => $years };
-	my $depends = [ map { $_->{file} } @$news_archive_data ];
-	process($template,'archive',$vars,$output_template,$depends);
+      $max_year = $year if $year > $max_year;
+      my $news_archive_data = $news_data_by_year->{$year};
+      my $output_template = $TEMPLATE->{output}{archive};
+      $output_template =~ s/YEAR/$year/;
+      my $vars = { news_data => $news_archive_data, year => $year, years => $years };
+      my $depends = [ map { $_->{file} } @$news_archive_data ];
+      process($template,'archive',$vars,$output_template,$depends);
     }
-    my $max_year_news_data = $news_data_by_year->{$max_year};
-    my $depends = [ map { $_->{file} } @$max_year_news_data ];
-    my $vars = { news_data => $max_year_news_data, years => $years };
+    my $current_news_data = [ @news_data[$current_entries+1..$current_entries+11] ];
+    my $depends = [ map { $_->{file} } @$current_news_data ];
+    my $vars = { news_data => $current_news_data, years => $years };
     process($template,'archive_summary', $vars, undef, $depends);
 }
 
