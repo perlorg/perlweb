@@ -204,15 +204,27 @@ sub do_request {
     my $cache_data = $cache->fetch(id => $cache_info->{id});
     if ($cache_data) {
       $self->post_process($cache_data->{data});
-      return $self->send_cached($cache_data);
+      $self->r->update_mtime($cache_data->{created_timestamp});
+      my ($content_type);
+      $content_type = $cache->{meta_data}->{content_type}
+	if $cache->{meta_data}->{content_type};
+      $status = $cache->{meta_data}->{status}
+	if $cache->{meta_data}->{status};
+
+      $status ||= OK;
+
+      return ($status, $cache_data->{data}, $content_type);
     }
   }
 
   ($status, $output, my $content_type) = $self->render;
   return $status unless $status == OK;
 
-  $cache_info->{meta_data}->{content_type} = $content_type if $content_type;
-  $cache->store( %$cache_info, data => $output ) if $cache; 
+  if ($cache) {
+    $cache_info->{meta_data}->{content_type} = $content_type if $content_type;
+    $cache_info->{meta_data}->{status}       = $status || $self->r->status;
+    $cache->store( %$cache_info, data => $output );
+  }
   
   $status = $self->post_process($output);
 
