@@ -1,0 +1,441 @@
+=head1 Perl 6 Summary for 2005-08-02 through 2005-08-10
+
+All~
+
+Welcome to another summary, brought to you by chinese food.  The attentive among you will notice that this summary is a day late, because I did not feel like doing it yesterday.  If only I could do that at work...
+
+=head2 Perl 6 Compilers
+
+=head3 Pugs Argument Processing
+
+Vadim Konovalov submitted a patch to pugs affecting @*ARGS processing.  Maybe it got applied, maybe not, Warnock applies.
+
+L<http://groups-beta.google.com/group/perl.perl6.compiler/browse_frm/thread/be055bd40627492d/a60044757ceb3e61#a60044757ceb3e61>
+
+
+
+=head3 Type Inferencing
+
+Autrijus wants to type push perl 6's type inferencing as far as it can go (and maybe a little beyond).  To this end he has been soliciting input from all comers.  It looks like he has put a lot of thought and research into it.  One day I expect to be thanking Autrijus for important (if likely difficult to understand) compiler errors and warnings..
+
+L<http://groups-beta.google.com/group/perl.perl6.compiler/browse_frm/thread/114ffdd27a9cb125/e4a4dc51ec90239f#e4a4dc51ec90239f>
+
+
+
+=head3 WWW::Kontent Release
+
+Brent 'Dax' Royal-Gordon announced the release of WWW::Kontent 0.01:  "a flexible web content management system written in Perl 6 and executable with Pugs".  It looks nifty to me... Maybe we need to fight Ruby on Rails with Perl 6 on Pylons or something.  That doesn't quite have the right ring to it... there has to be something catch there somewhere.
+
+L<http://groups-beta.google.com/group/perl.perl6.compiler/browse_frm/thread/c27335567a8fc562/f11a7310269764d7#f11a7310269764d7>
+
+
+
+=head3 Array Interpolation
+
+Phil Crow wondered why his arrays were not being interpolated in pugs.  Ingo Blechschmidt and Patrick explained that "@foo" does not interpolate, but "@foo[]" does.  I sense a frequently asked question here...
+
+L<http://groups-beta.google.com/group/perl.perl6.compiler/browse_frm/thread/338b1f8acccceb81/b635247572c975e7?utoken=YHABADYAAAA7xVMbCVGjeIx9IodtUfMwhFkjZG-vgVJcJYMxbUTYyDTxzYJPNMPNXytgmAvkYeEWcO1g0jwXN3xYLXnEJ39L>
+
+
+
+
+=head3 Pugs 6.2.9 Released
+
+Autrijus announced the release of Pugs 6.2.9.  It is full of nifty new feaures including the ability to lay on hands!
+
+L<http://groups-beta.google.com/group/perl.perl6.compiler/browse_frm/thread/3ac98d6a866ae1c4/f9e5fa2b6e17c67b#f9e5fa2b6e17c67b>
+
+
+
+=head3 Whitespace Before Parens
+
+Andrew Shitov wondered why whitespace between function name and parens was no longer allowed.  Autrijus explained that it allows < print (1+2)*3 > to print 9 instead of 3.  As someone who just last week explained the pecularity of ruby printing 3 in the above situation to a complete novice, I welcome the change.
+
+L<http://groups-beta.google.com/group/perl.perl6.compiler/browse_frm/thread/3ac98d6a866ae1c4/f9e5fa2b6e17c67b#f9e5fa2b6e17c67b>
+
+
+
+=head3 Contain Model Pictures
+
+Autrijus posted a few pretty pictures explaining the compiler and container models.  While the compiler model was readily understandable to me, the container one wasn't.  Fortunately, when prompted Autrijus provided a great explanation to accompany the diagram.
+
+L<http://groups-beta.google.com/group/perl.perl6.compiler/browse_frm/thread/c236932902cb3333/c0a37ac28a00a3d2#c0a37ac28a00a3d2> -- thread
+
+
+L<http://pugscode.org/images/container.png> -- containers
+
+
+L<http://pugscode.org/images/simple-compilation.png> -- compilation
+
+
+
+=head3 PxPerl 5.8.7-4
+
+Upon discovering that Pugs released a new version, Grégoire Péan released a new version of PxPerl that includes the new Pugs.  I (and many others) thank Grégoire for lowering the entry bar for Perl 6 hacking on windows.
+
+L<http://groups-beta.google.com/group/perl.perl6.compiler/browse_frm/thread/fbdc7bfb5ff3d803/588edb288e8527c7#588edb288e8527c7>
+
+
+
+=head3 Hosting Lexical Declarations
+
+Declaring lexicals mid block confuses things, expecially declaring them mid statement as in C< $x = $x + my $x if $x; >.  Autrijus proposed hoisting declarations of lexicals to the top of the block.  Unfortunately, this can make CALLER:: do funny things.  Thus, he suggests outlawing it.  Larry agreed.
+
+L<http://groups-beta.google.com/group/perl.perl6.compiler/browse_frm/thread/05cc1e19db2fcc14/4814ff30475fc03e#4814ff30475fc03e>
+
+
+
+=head2 Parrot
+
+=head3 export LD_LIBRARY_PATH
+
+Bdonlan noticed that parrot's test suite was not setting LD_LIBRARY_PATH which makes tests fail.  Leo pointed out that most users manually set their LD_LIBRARY_PATH as parrot often needs this, but he agreed that the tests should do it just in case.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/a929f3cbfe2aa9ec/25db76653bac717d#25db76653bac717d>
+
+
+
+=head3 Improved Argument Processing for ops2c.pl
+
+Tom submitted a patch which improves the command line argument processing powers of ops2c.pl.  Warnock applies.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/cc9242e455d1a63b/5d25c6b934119abe#5d25c6b934119abe>
+
+
+
+=head3 ANSI Escape Codes in Parrot
+
+Klaas-Jan Stol was having trouble putting special characters like ANSI clear screen and "¥" into strings.  Nick pointed out that he need to be careful with encodings and escapes.  In parrot "\O" is an octal escape, in Lua it is apparently not.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/be5dc2f14b0dfd42/896d89835150a493#896d89835150a493>
+
+
+
+=head3 Parrot 0.2.3
+
+Leo announced the release of Parrot 0.2.3 "Serenity", which reminds me, Firefly is coming back soon!! I can't wait!  Oddly google seems to have swallowed his release notice but not his warnings...
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/b5b68a0cf335822b/4ac938caaa6ff298#4ac938caaa6ff298>
+
+
+
+=head3 Strange Filename Based Bug
+
+Michal Wallace found a bug that would disappear if the file was renamed.  Leo, with the help of valgrind, provided Michal with a pointer.  Michal used that to find a likely culprit and provide a patch, which Leo then refined.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/d72580222deb1646/2b5afda2517c90bd#2b5afda2517c90bd>
+
+
+
+=head3 GDBM Hash on MinGW
+
+François Perrad provided a patch fixing gdbmhash on MinGW.  Bernhard Schmalhofer applied it.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/455218c176531ba6/8bb0656904124f4c#8bb0656904124f4c>
+
+
+
+=head3 PyString Link Problem
+
+François Perrad also fixed a link problem with pystring.o.  Jonathan Worthington applied that patch.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/1b63e4b253bb0eab/b10f19b834c85c0d#b10f19b834c85c0d>
+
+
+
+=head3 Filling a Large Data Structure
+
+Amir Karger wanted to know how to fill a large data structure in PIR other than explicitly.  Leo suggested reading them in from a config file.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/239e824edb7ff767/f1899af22d2a289e#f1899af22d2a289e>
+
+
+
+=head3 Helping Perl 6
+
+rjtucke asked the ever dangerous question "How can I help?".  Unfortunately, I think he asked it on google groups, and thus no one saw it and warnock applies.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/d0083cd312e17ab1/eb025a6949933347#eb025a6949933347>
+
+
+
+=head3 PGE Glob Escapes
+
+PGE Glob Escapes millions die before it can be rounded up again.  Actually Will Coleda noticed that he could not add a literal C<*> to globs in PGE.  Patrick fixed it so he could.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/94887d69a826227d/3f587ac32513e71e#3f587ac32513e71e>
+
+
+
+=head3 Language Test Requirements
+
+Amir Karger has decided to write a Z-code-to-PIR translator.  He wants its test suite to be integrated with Parrot's language tests.  Unfortunately it does not use Test::Simple or even perl.  Thus he wanted to know a good way to integrate it.  Will Coleda, Bernhard Schmalhofer, and chromatic all helped provide suggestions.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/3b9d082baa68c620/1f18c584c09e5053#1f18c584c09e5053>
+
+
+
+=head3 mod_parrot 0.3
+
+Adrian Lambeck provided a patch to fix src/call_list.txt for mod_parrot-0.3.  chromatic applied it.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/16ec7ea4d9ba4872/b52140fff1d78310#b52140fff1d78310>
+
+
+
+=head3 Making Makefile a Little to Clean
+
+Patrick noticed that the parrot build was breaking. Jonathan Worthington narrowed it down to an exact revision number.  Leo realized his mistake and fixed it.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/91cb1b36db9f3f30/e85db560e0496873#e85db560e0496873>
+
+
+
+=head3 Cygwin Status
+
+Bernhard Schmalhofer applied some old patches from  Joshua Gatcomb in the hope of getting cygwin better supported.  Nick Glencross provided needed test results
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/66c1435caa126e36/98038a170b66dea6#98038a170b66dea6>
+
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/6e3982c2438d4160/635220a375758f6d#635220a375758f6d>
+
+
+
+=head3 Calling SUPER methods
+
+Klaas-Jan Stol wondered how to call a specific parent methods (possibly bypassing child methods).  Leo provided a method.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/6782c143d9e3f9d7/0ab141d87d211369#0ab141d87d211369>
+
+
+
+=head3 
+
+Adrian Lambeck was having trouble compiling Pugs against Parrot.  Leo worked with him to find a solution, although one has not been found yet.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/065a98fa7217b71a/dedda1b8cd1df427#dedda1b8cd1df427>
+
+
+
+
+=head3 Pure Parrot Test::Builder 
+
+chromatic has written pure parrot versions of Test::Builder and Test::Builder::Tester.  As always patches are welcome.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/8c040e2a5d3303f6/bdec8011da7b4800#bdec8011da7b4800>
+
+
+
+=head3 Adding a New Opcode
+
+Gerd Pokorra wanted to know how to add a new opcode to parrot.  Klaas-Jan Stol and Leo provided answers.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/abcba81ef69f865c/b1d018e3114ce1f1#b1d018e3114ce1f1>
+
+
+
+François Perrad provided several patches for MinGW and Win32.  Warnock appliew.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/5472a5cdd52bd3dc/a48d4d6482a9b13b#a48d4d6482a9b13b>
+
+
+
+=head3 Update intro.pod
+
+Jonathan Worthington posted an updated intro.pod.  Autrijus provided a few edits, and Jonathan is planning on committing it.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/e36d2b676a916edf/41d4393ec1a5e334#41d4393ec1a5e334>
+
+
+
+=head3 Comment Fix in pir-mode.el
+
+Jim McKim made the mistake of using emacs.  Fortunately he counterbalanced that failing with the virtue of submitting a patch to fix an error in pir-mode.el file work better.  chromatic applied the patch.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/f2ea6e2b54a62425/53d23545fd068850#53d23545fd068850>
+
+
+
+=head3 commit bit
+
+Curtis Rawls seemed to be having trouble using his newly acquired commit bit.  Warnock applies.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/0d69e4b22417d1c7/95e0762f7e93b784#95e0762f7e93b784>
+
+
+
+=head3 Segfault with -E
+
+Tom noticed that parrot -E segfaults and provided a patch.  He was not very confident about the patch, and warnock applies.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/6c9d5b091d9f074a/2518470dafaa44f2#2518470dafaa44f2>
+
+
+
+=head3 make test in bc
+
+Amir Karger noticed that make test in bc dies because antlr is not installed.  Bernhard Schmalhofer said that he would try and fix it up to use the config-test for antlr.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/636c7816a8e30105/e03cba61e9968bca#e03cba61e9968bca>
+
+
+
+=head3 interpreter.c Breakage
+
+Amir Karger noticed that a break in interpreter.c.  Leo pointed out that he need to C<make realclean>.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/bed06d6981b46f90/20a4e2bc68c05819#20a4e2bc68c05819>
+
+
+
+=head3 MinGW Meets m4
+
+François Perrad provided two patched to make m4 work on MinGW.  Warnock applies.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/73a2bf56f29a06c3/f6ba5da370dc450d#f6ba5da370dc450d>
+
+
+
+=head3 substr Segfault
+
+Will Coleda posted a short PIR test that will segfault in the substr opcode.  This led to some discussion of variable width encodings, and the explanation from Leo that substr was a call that would probably force parrot to rectify variable width encodings into fixed width ones (which parrot does lazily).  Then he fixed it (presumably as he had suggested).
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/383873bdf6b2ae0e/72e13310f799ff92#72e13310f799ff92>
+
+
+
+=head3 Parrot Cygwin Meets Treefrog
+
+Steve "treefrog" posted a patch he needed to get cygwin testing.  I think he may have posted it to google group directly though.  Warnock applies.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/6c34526dde0f3cc4/f0d9ef39989dd4a6#f0d9ef39989dd4a6>
+
+
+
+=head3 call opcode cleanups
+
+Leo attempted to free himself from the horns of warnock by reposting his suggested call opcode clean up.  Patrick and I voidced our support.  More accurately I voice support and Patrick indifference.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/c7402b70371fb311/8c637a3801067f3a#8c637a3801067f3a>
+
+
+
+=head3 Complex Control Flow
+
+Nigel Hamilton began speculating that Perl 6 might have extremely complicated control flow.  Then he began to wonder alloud about a form of control flow I can only discribe as brain melting.  Luke Palmer suggested that his proposal might best start as a module.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/23345901e82f1cb5/4fb0b85a4f5ffa2c#4fb0b85a4f5ffa2c>
+
+
+
+=head3 Slurpy Parameters and Flattening
+
+Ingo Blechschmidt's question of the flattening (or not) of slurpy params continued producing some suggestions.  Piers seemed somewhat unhappy with earlier answers, but the thread died out.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/ebc571b19072db20/307e6736ab46b391#307e6736ab46b391>
+
+
+
+=head3 Does If Topicalize
+
+Luke Palmer noticed C< if foo() -> $foo { ... } > in an OSCON talk and wondered if C<if> now topicalized.  Stuart Cook offered a work around.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/0465204f271ce9cd/380c684482e0bb78#380c684482e0bb78>
+
+
+
+=head3 Data Constructors
+
+Luke Palmer posted his thoughts on unifying units and data constructors (a la Haskell or ML).  Warnock applies.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/f00f1d5500c678f6/fb0eaa8a7b334f4d#fb0eaa8a7b334f4d>
+
+
+
+=head3 Calling Methods on undef
+
+Ingo Blechschmidt wondered what would happen if he called C<undef.chars> or C<char undef>.   Brent 'Dax' Royal-Gordon responded that it would return undef in the absence of C< use fatal >.  Larry confirmed this behavior.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/615d21124b153ae0/f6cbeb1d58f527a8#f6cbeb1d58f527a8>
+
+
+
+=head3 Reassigning .ref and .meta
+
+Ingo Blechschmidt wondered what would happen if he assigned to .ref or .meta.  Luke Palmer figured that it would not be allowed.  I think it should cause a large person to come over to your house and kick you.  This is probably a good reason I don't write error messages.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/21a135e1140c86cc/6b9a07062460e34c#6b9a07062460e34c>
+
+
+
+=head3 Questioning .ref and .meta
+
+Ingo Blechschmidt left a bunch of blanks for people to fill in with respect to .ref and .meta.  Luke Palmer apparently segfaulted in the attempt to do fill in the blanks.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/17e69f24e28c43b1/abc3309f3107553b#abc3309f3107553b>
+
+
+
+=head3 Subscripting Pairs
+
+Ingo Blechschmidt wondered if one could subscript pairs.  Larry declared no.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/685af26a93bf2de5/5367cfdd8bda29e8#5367cfdd8bda29e8>
+
+
+
+=head3 Perl 6 Test in Parrot 0.2.3
+
+Andrew Shitov was having trouble running Perl 6 under the latest parrot.  Autrijus pointed out that the program he was trying to run was abandoned in June of 2004 and then pointed him toward Pugs.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/ec30cf943e4290b4/17263f56385a6b31#17263f56385a6b31>
+
+
+
+=head3 Java -> Perl ?
+
+Tim Bunce wondered if any work had started on parsing Java interface definitions and translating them to Perl 6.  Warnock applies (which probably means no).
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/f20535fdbe875d63/c49c08621487c7f6#c49c08621487c7f6>
+
+
+
+=head3 Meta Object Questions
+
+Stevan Little posted some of his thoughts on the MetaObject internals for comment.  Many questions ensued, my eyes glazed over, the summarizer punted.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/5ea04271d14d1735/6db35ec67d56d088#6db35ec67d56d088>
+
+
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/0e57aaa0f7db344e/13a663d95a5b23db#13a663d95a5b23db>
+
+
+
+=head3 C< defined > and C< typed > Traits
+
+Autrijus mused about how to deal with defined and typed traits in Perl 6.  This led Larry to wonder about undef being a class or a class being undef or something confusing.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/8c5f8ce3d6b4bbbc/4fcbb26681d490eb#4fcbb26681d490eb>
+
+
+
+=head3 C< is constant > Sugar
+
+Autrijus wondered how C< is constant > would desugar if it were a special form.  Larry came up with suggestions, some of which said it desugared some of which said it didn't.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/2e66199c576a8436/728ad09f9782b179#728ad09f9782b179>
+
+
+
+=head2 The usual footer
+
+To post to any of these mailing lists please subscribe by sending email to <perl6-internals-subscribe@perl.org>, <perl6-language-subscribe@perl.org>,  or <perl6-compiler-subscribe@perl.org>.  If you find these summaries useful or enjoyable, please consider contributing to the Perl Foundation to help support the development of Perl. You might also like to send feedback to ubermatt@gmail.com
+
+L<http://donate.perl-foundation.org/> -- The Perl Foundation
+L<http://dev.perl.org/perl6/> -- Perl 6 Development site
+L<http://planet.parrotcode.org/> -- Parrot Blog aggregator
+
+
+
