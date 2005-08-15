@@ -167,7 +167,7 @@ sub super ($$) {
   return $status unless $status == OK;
 
   eval {
-    $status = $self->handler($self->r);
+      ($status) = $self->handler($self->r);
   };
   cluck "Combust::Control: oops, class handler died with: $@" if $@;
   return 500 if $@;
@@ -199,6 +199,7 @@ sub do_request {
   my ($status, $output, $cache);
 
   if ($cache_info->{id} 
+      && !$self->req_param('cache_bypass')
       && ($cache = Combust::Cache->new( type => ($cache_info->{type} || '') ))
      ) {
     my $cache_data = $cache->fetch(id => $cache_info->{id});
@@ -217,10 +218,14 @@ sub do_request {
     }
   }
 
-  ($status, $output, my $content_type) = $self->render;
+  ($status, $output, my $content_type) = eval { $self->render };
+  if ($@) {
+      warn "render failed: $@";
+      $status = 500;
+  }
   return $status unless $status == OK;
 
-  if ($cache) {
+  if ($cache and $status != 500) {
     $cache_info->{meta_data}->{content_type} = $content_type if $content_type;
     $cache_info->{meta_data}->{status}       = $status || $self->r->status;
     $cache->store( %$cache_info, data => $output );
@@ -461,7 +466,11 @@ sub redirect {
   my $self = shift;
   my $url = shift;
   my $ref_url = ref $url || '';
-  $url = shift if $ref_url =~ m/^Apache/;  # if we got passed an $r as the first parameter
+  if ($ref_url =~ m/^Apache/) {  # if we got passed an $r as the first parameter
+    cluck "You don't need to pass \$r to the redirect method";
+    $url = shift;
+  }
+
   my $permanent = shift;
 
   $self->cookies->bake_cookies;

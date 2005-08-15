@@ -35,6 +35,8 @@ sub handler {
 
   # Do something sensible on server errors
 
+  return $status;
+
 }
 
 
