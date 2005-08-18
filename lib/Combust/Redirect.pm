@@ -85,9 +85,7 @@ sub handler($$) {
 	$r->uri($url);
       }
       else {
-	return $self->redirect($r, $url,
-				$c->[2] eq "P" ? 1 : 0
-			       );
+	return $self->redirect($url, $c->[2] eq "P" ? 1 : 0);
       }
     }
   }
