@@ -1,6 +1,6 @@
 package Bundle::Combust;
 
-$VERSION = "1.01";
+$VERSION = "1.02";
 
 1;
 
@@ -50,9 +50,15 @@ Apache::DBI
 
 Apache::Request
 
-=head1 AUTHOR
+Exporter::Lite
 
-Gabor Szabo E<lt>gabor@pti.co.ilE<gt>
+Yahoo::Search
+
+XML::Simple
+
+Cache::FileCache
+
+=head1 AUTHOR
 
 If you find out that the list of the required modules of
 Combust is not the same as the one provided in this file,
@@ -61,8 +67,6 @@ do not install correctly, please refer to their documentation
 and to the respective authors.
 
 =head1 COPYRIGHT
-
-Copyright 2003 by Gabor Szabo L<http://www.pti.co.il>.
 
 This program is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.

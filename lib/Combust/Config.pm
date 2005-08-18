@@ -174,7 +174,7 @@ sub cronolog_params {
 sub apache_root {
   my $root = $cfg->param('apache_root');
   unless (defined $root) {
-    ($root = $_[0]->httpd) =~ s!/bin/httpd$!!;
+    ($root = $_[0]->httpd) =~ s!/s?bin/httpd$!!;
   }
   $root;
 }
