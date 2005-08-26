@@ -17,10 +17,11 @@ sub get {
   my $attr = shift;
   
   my $data = $self->SUPER::get($attr, @_);
+  return $data if ref $data;
+
   my $data2;
 
   if ($] > 5.007) {
-    #Encode::_utf8_on($data);
     $data2 = Encode::decode_utf8($data);
   }
   

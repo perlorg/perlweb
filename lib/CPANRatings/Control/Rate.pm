@@ -52,7 +52,7 @@ sub render {
       }
     }
 
-    $data{user_id} = $self->user_info->id;
+    $data{user} = $self->user_info->id;
     $data{user_name} = $self->user_info->name || $self->user_info->username;
 
     unless (%$errors) {
@@ -63,7 +63,7 @@ sub render {
       my $review;
       if (($review) = CPANRatings::Model::Reviews->search(distribution => $data{distribution},
 							  module       => $data{module},
-							  user_id      => $data{user_id},
+							  user         => $data{user_id},
 							 )) {
 	for my $f (keys %data) {
 	  $review->$f($data{$f});
@@ -87,7 +87,7 @@ sub render {
 
     my ($review) = CPANRatings::Model::Reviews->search(distribution => $distribution,
 						       module       => $self->tpl_param('module') || '',
-						       user_id      => $self->user_info->id,
+						       user         => $self->user_info->id,
 						      );
 
     if ($review) {
@@ -145,7 +145,7 @@ sub render_helpful_vote {
   my $review = CPANRatings::Model::Reviews->retrieve($review_id)
     or return $self->_return_helpful_vote($review_id, 'SERVICE-FAILURE');
 
-  return $self->_return_helpful_vote($review_id, 'ILLEGAL') if $review->user_id == $user->id;
+  return $self->_return_helpful_vote($review_id, 'ILLEGAL') if $review->user->id == $user->id;
 
   my $updated = $review->add_helpful({ user => $user, helpful => $vote eq 'y' ? 1 : 0 });
 

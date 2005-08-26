@@ -11,7 +11,7 @@
 
 create table reviews (
   review_id mediumint unsigned not null primary key auto_increment,
-  user_id   mediumint unsigned not null,
+  user      mediumint unsigned not null,
   user_name varchar(255) not null,
   module    varchar(255) binary not null, 
   distribution varchar(255) binary not null, 

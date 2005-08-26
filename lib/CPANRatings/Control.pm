@@ -8,6 +8,7 @@ use CPANRatings::Model::Reviews;
 use CPANRatings::Model::User;
 use Encode qw();
 use Apache::Constants qw(OK);
+use XML::RSS;
 
 our $cookie_name = 'cpruid';
 
@@ -92,18 +93,19 @@ sub account_url {
 
 sub login {
   my $self = shift;
-
   return $self->redirect($self->login_url);
 }
 
 sub as_rss {
   my ($self, $reviews, $mode, $id) = @_;
 
-  require XML::RSS;
-  my $rss = new XML::RSS (version => '1.0');
+  my $rss = XML::RSS->new(version => '1.0');
   my $link = "http://" . $self->config->site->{cpanratings}->{servername};
   if ($mode and $id) {
-    $link .= ($mode eq "author" ? "/a/" : "/d/") . $id;
+      $link .= ($mode eq "author" ? "/a/" : "/d/") . $id;
+  }
+  else {
+      $link .= '/';
   }
 
   $rss->channel(

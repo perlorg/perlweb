@@ -1,17 +1,20 @@
 package CPANRatings::Model::Reviews;
 use base qw(CPANRatings::Model::DBI);
 use strict;
+use Class::DBI::Plugin::AbstractCount;
 
 __PACKAGE__->table('reviews');
 
-__PACKAGE__->columns(All => qw/review_id user_id user_name module distribution version_reviewed updated 
+__PACKAGE__->columns(All => qw/review_id user user_name module distribution version_reviewed updated 
 			review rating_overall rating_1 rating_2 rating_3 rating_4/);
 
 __PACKAGE__->columns(TEMP => qw/_helpful_total _helpful_yes/);
 
-__PACKAGE__->add_constructor(search_review => 'distribution = ? AND module = ? AND user_id = ?');
+__PACKAGE__->has_a('user' => 'CPANRatings::Model::User');
 
-__PACKAGE__->add_constructor(search_author => 'user_id=?', { order_by => 'updated' });
+__PACKAGE__->add_constructor(search_review => 'distribution = ? AND module = ? AND user = ?');
+
+__PACKAGE__->add_constructor(search_author => 'user=?', { order_by => 'updated' });
 
 __PACKAGE__->set_sql(recent => qq{
                       SELECT __ESSENTIAL__
@@ -20,11 +23,6 @@ __PACKAGE__->set_sql(recent => qq{
                       LIMIT 25
         });
 
-
-# we have this so we can have a reviews class to call "search_foo" on in the template (how php-esqe!)
-sub new {
-  bless {}, shift;
-}
 
 sub add_helpful {
   my $self = shift;

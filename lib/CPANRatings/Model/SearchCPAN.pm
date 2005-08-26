@@ -1,7 +1,6 @@
 package CPANRatings::Model::SearchCPAN;
 use strict;
 use LWP::Simple qw(get);
-#use XML::Simple;
 use XML::XPath;
 use Combust::Cache;
 
@@ -10,10 +9,6 @@ sub new {
   my $class = ref $proto || $proto;
   my $self = { };
   bless( $self, $class);
-}
-
-sub search_module {
-  shift->_search('module', @_);
 }
 
 sub search_distribution {
@@ -52,13 +47,15 @@ sub _search {
 	$distribution =~ s!(.*?author/[A-Z]+/([^/]+)).*!$2!;
 	my $distribution_link = $1 ? $1 . "/" : '' ;
 	$distribution =~ s!-\d+(\.\d+)?(_\d+)?$!!;
+        
+        my $name = $module->find('name')->string_value;
 
-	push @results, { name    => $module->find('name')->string_value,
+	push @results, { name    => $name,
 			 description => $module->find('description')->string_value,
 			 version => $module->find('version')->string_value,
 			 link    => $module->find('link')->string_value,
 			 author  => $author,
-			 distribution => { name => $distribution,
+			 distribution => { name => $name,
 					   link => $distribution_link,
 					 },
 		       };

@@ -50,8 +50,7 @@ sub render {
   }
 
   my $reviews = CPANRatings::Model::Reviews->search(
-						    ($mode eq "user" ? "user_id" : $mode)
-						    => $id,
+                                                    $mode => $id,
 						    { order_by => 'updated desc' }
 						   );
 

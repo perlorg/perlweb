@@ -13,16 +13,17 @@ sub render {
   
   my $query = $self->req_param('q');
 
-  my $search_type = $self->req_param('t') || 'distribution';
-  $search_type = 'module' unless $search_type eq "distribution";
-  
   my $results;
-  $results = $search->search_distribution($query) if $search_type eq "distribution";
-  $results = $search->search_module($query) if $search_type eq "module";
-  
+  $results = $search->search_distribution($query);
+
+  for my $r (@$results) {
+      my $dist_name = $r->{distribution}->{name};
+      my $reviews_count = CPANRatings::Model::Reviews->count_search_where({ distribution => $dist_name }); 
+      $r->{distribution}->{reviews_count} = $reviews_count;
+  }
+
   $self->tpl_param('search' => { query   => $query,
 				 results => $results,
-				 search_type => $search_type,
 			       });
 
   return OK, $self->evaluate_template($template);
