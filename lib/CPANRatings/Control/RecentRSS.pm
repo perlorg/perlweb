@@ -7,11 +7,9 @@ use Apache::Constants qw(OK);
 sub render {
     my $self = shift;
 
-    $self->tpl_param('reviews' => CPANRatings::Model::Reviews->new());
-
     $self->tpl_param('header', 'Recent reviews');
 
-    my $reviews = $self->tpl_param('reviews')->search_recent;
+    my $reviews = CPANRatings::Model::Reviews->search_recent;
     my $output = $self->as_rss($reviews);
     return OK, $output, 'application/rdf+xml';
 }
