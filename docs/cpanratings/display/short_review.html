@@ -16,6 +16,7 @@
 <i>[% review.helpful_yes %] out of [% review.helpful_total %] found this review helpful:<br /></i>
 [% END %]
 
+<a name="[% review.id %]"></a>
 <h3 class="review_header">
 [% IF review.module AND review.module != review.distribution %]
 [% review.module | html %] / 
@@ -38,8 +39,10 @@
 </blockquote>
 </p>
 <p>
-<a href="/a/[% review.user_id %]">[% review.user_name %]</a> - [% review.updated %]
-[% IF review.user_id == combust.user_info.id %]
+
+
+<a href="/user/[% review.user.username | html %]">[% review.user_name %]</a> - [% review.updated %]
+[% IF review.user.id == combust.user_info.id %]
   - <a href="/rate/?distribution=[% review.distribution | uri %][% 
   module_param = review.module ? ";module=" _ review.module : ""; 
   module_param | uri %]">edit</a>

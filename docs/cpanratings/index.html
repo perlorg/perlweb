@@ -16,9 +16,9 @@
 <a href="http://search.cpan.org/">Search CPAN</a> displays the average
 rating for each distribution.
 
-<h2>Recent reviews</h2>
- 
-[% FOR review = reviews.search_recent %]
+<h2>Recent reviews <span style="font-size:0.6em;">(<a href="/index.rss">RSS feed</a>)</span></h2>
+
+[% FOR review = reviews %]
 
 [% PROCESS display/short_review.html, review => review %]
 
