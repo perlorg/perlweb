@@ -34,6 +34,11 @@
   <title>[% page.title %]</title>
   <link rel="stylesheet" type="text/css" href="[% page.css %]" title="Default CSS2" media="screen">
   <link rel="shortcut icon" href="[% page.favicon || "/favicon.ico" %]">
+  [%- IF page.description;
+     '<META name="description" content="' _ page.description _ '">';
+     END
+  -%]
+  [%- IF page.morehead; page.morehead; END -%]
 </head>
 <body>
 
