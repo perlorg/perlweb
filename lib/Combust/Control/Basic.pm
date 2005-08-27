@@ -81,12 +81,20 @@ sub render {
     return 404;
   }    
 
+
   my $output = $self->evaluate_template($template);
   if ($@) {
     $r->pnotes('error', $@);
     return 404 if $@ =~ m/: not found/;
     return 500; 
   }
+
+  $content_type = $r->pnotes('combust_notes')->{response}{content_type}
+    if defined $r->pnotes('combust_notes')->{response}{content_type};
+
+  use Data::Dumper;
+  warn Dumper( [$self->tpl_params] );
+
   return OK, $output, $content_type;
 }
 
