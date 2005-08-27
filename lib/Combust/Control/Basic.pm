@@ -92,9 +92,6 @@ sub render {
   $content_type = $r->pnotes('combust_notes')->{response}{content_type}
     if defined $r->pnotes('combust_notes')->{response}{content_type};
 
-  use Data::Dumper;
-  warn Dumper( [$self->tpl_params] );
-
   return OK, $output, $content_type;
 }
 
