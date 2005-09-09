@@ -13,7 +13,7 @@ and cache for 24 hours.
 
 [% USE ua = CacheLWPSimple %]
 [% data = ua.get( 'url' =>
-      'http://svn.perl.org/parrot/trunk/docs/dev/optimimzer.pod'
-           'ttl' => 1*60*60 ) %]
+      'http://svn.perl.org/parrot/trunk/docs/dev/optimizer.pod'
+           'ttl' => 1 ) %]
 [% USE PodSimple %]
 [% PodSimple.parse('html', data ) %]
