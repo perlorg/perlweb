@@ -62,8 +62,7 @@ sub render {
 
       my $review;
       if (($review) = CPANRatings::Model::Reviews->search(distribution => $data{distribution},
-							  module       => $data{module},
-							  user         => $data{user_id},
+							  user         => $data{user},
 							 )) {
 	for my $f (keys %data) {
 	  $review->$f($data{$f});
@@ -84,9 +83,8 @@ sub render {
     }
   }
   else {
-
     my ($review) = CPANRatings::Model::Reviews->search(distribution => $distribution,
-						       module       => $self->tpl_param('module') || '',
+						       #module       => $self->tpl_param('module') || '',
 						       user         => $self->user_info->id,
 						      );
 
