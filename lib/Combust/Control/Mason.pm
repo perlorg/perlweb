@@ -18,14 +18,28 @@ use base qw(Combust::Control);
 #   $ah;
 # }
 
+my $root = $ENV{CBROOTLOCAL};
 
-sub handler {
+sub render {
   my $self = shift;
-
-  my $ah = $self->mason_handler;
 
   return 404 if $self->r->filename =~ m/\/_[^\/]+$/;  
 
+  my $site = $self->r->dir_config('site');
+  $self->r->notes('site', $site);
+
+  my $out;
+
+  my $ah = HTML::Mason::ApacheHandler->new
+    (comp_root=> [[$site => "$root/htdocs/$site"],
+                  [common => "$root/htdocs/shared"]],
+     data_dir => "$root/mason/data-$site",
+     error_mode => "output",
+     error_format => 'html',
+     out_method   => sub { $out .= join "", grep { defined $_ } @_ },
+     auto_send_headers => 0, 
+    );
+  
   my $status;
 
   eval {
@@ -35,7 +49,7 @@ sub handler {
 
   # Do something sensible on server errors
 
-  return $status;
+  return $status, $out;
 
 }
 

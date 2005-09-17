@@ -13,7 +13,6 @@ use Apache::Util qw();
 use Template;
 use Template::Parser;
 use Template::Stash;
-#use Template::Constants qw(:debug);
 
 use Combust::Template::Provider;
 use Combust::Template::Filters;
@@ -162,7 +161,7 @@ sub super ($$) {
   };
   if ($@) {
     cluck "$self->init died: $@";
-    return 500;
+    return SERVER_ERROR;
   }
   return $status unless $status == OK;
 
@@ -170,7 +169,7 @@ sub super ($$) {
       ($status) = $self->handler($self->r);
   };
   cluck "Combust::Control: oops, class handler died with: $@" if $@;
-  return 500 if $@;
+  return SERVER_ERROR if $@;
 
   # should we do this to make it harder for people to shoot themselves in the foot?
   # $self->_cleanup_params;
@@ -221,11 +220,12 @@ sub do_request {
   ($status, $output, my $content_type) = eval { $self->render };
   if ($@) {
       warn "render failed: $@";
-      $status = 500;
+      $status = SERVER_ERROR;
   }
   return $status unless $status == OK;
 
-  if ($cache and $status != 500) {
+  # sometimes we end up here with "OK" but with no content ... gah.
+  if ($cache and $output and $status != SERVER_ERROR) {
     $cache_info->{meta_data}->{content_type} = $content_type if $content_type;
     $cache_info->{meta_data}->{status}       = $status || $self->r->status;
     $cache->store( %$cache_info, data => $output );
