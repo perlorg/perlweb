@@ -10,14 +10,29 @@
        PerlHandler Combust::Control::Redirect->super
     </Location>
 
+    <Location /error/>
+       SetHandler   perl-script
+       PerlHandler Combust::Control::Error->super
+    </Location>
+
     <Location />
        SetHandler perl-script
        PerlHandler Combust::Control::Basic->super
     </Location>
 
-    <Location /error/>
-       SetHandler   perl-script
-       PerlHandler Combust::Control::Error->super
+    # Map parrotsketch logs into our namespace.  'logs' is a symlink to where the logs live
+    Alias /misc/parrotsketch-logs/ [% root %]/docs/live/parrotcode/misc/parrotsketch-logs/
+    <Directory  [% root %]/docs/live/parrotcode/misc/parrotsketch-logs/ >
+	HeaderName HEADER.html
+	DefaultType text/plain
+        Options +Indexes +FollowSymlinks
+ 	IndexOptions NameWidth=*
+ 	HeaderName HEADER.html
+    </Directory>
+    <Location /misc/parrotsketch-logs/>
+        SetHandler default-handler
+	PerlHandler Apache::DECLINED
     </Location>
+
   </VirtualHost>
 
