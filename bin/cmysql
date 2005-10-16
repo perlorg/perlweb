@@ -75,7 +75,7 @@ else {
 
     # extract the port number from the dsn, if present, for non-standard ports
     unshift @opts, "--port=$1" if $dbi_dsn =~ /\bport=(\d+)/;
-    if ($dbi_dsn =~ /\bdatabase=(\w+)/ && $1 ne $dbname) {
+    if ($dbi_dsn =~ /\bdatabase=([-\w]+)/ && $1 ne $dbname) {
       #warn "Using database name '$1' from dsn instead of '$dbname'\n";
       $ARGV[0] = $dbname = $1;
     }
