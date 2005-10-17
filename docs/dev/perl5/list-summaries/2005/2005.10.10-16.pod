@@ -1,0 +1,351 @@
+=head1 This Week on perl5-porters - 10-16 October 2005
+
+The porters mailing list was crowded with recurrent
+themes on multiple threads this week. 
+Paul Marquess led a lot of action on C<Compress::Zlib> front. 
+Much interaction and many fixes for latent
+and old issues.
+
+
+=head2 C<Compress::Zlib>
+
+
+This week has seen lots of action in C<Compress::Zlib> front,
+led by Paul Marquess. At least six threads were directly
+related to the compression module.
+
+After a report on a test failure on Cygwin, Paul Marquess
+kept his promise to make F<t/14gzopen.t> more robust.
+And then Paul attacked utf8 errors reported by recent
+smokes. And there was also a patch to silence warnings
+on AIX.
+
+    The patches
+    http://xrl.us/h2yr
+
+The utf8 errors survived the first approach and prompted
+for more investigation. Dominic Dunlop reported Mac OS X were
+quite happy with all tests succeeding. H.Merijn Brand remembered
+the tricky part was that, while passing manual runs, 
+failures were showing up while the test suite run from a smoke.
+Paul traced the trouble to issues with the binmode treatment
+for filehandles in a number of tests: it was hard for making
+Linux, Sun, AIX, Win32, HP-UX, Mac OS X satisfied at the
+same time.
+
+    UTF-8 errors are back
+    http://xrl.us/h2ys
+    Fighting UTF-8 smokes
+    http://xrl.us/h2yt
+
+Steve Hay noticed bleadperl smokes on Win32 have been
+failing in test F<09gziphdr.t> and crashing perl.
+Paul has agreed that it looked like a memory corruption
+issue and produced a patch so that Win32
+smokes can resume normally again.
+
+    Steve Hay reports
+    http://xrl.us/h2yu
+    Paul Marquess nails things down
+    http://xrl.us/h2yv
+
+There were also a thread involving an issue about C<Compress::Zlib> Makefile.PL 
+in perl core, driven by Yitzchak Scott-Thoennes and E.Merijn Brand, which
+sorted out some build details. In L</Perl on Symbian>, you read about
+Jarkko's working out C::Z in the Symbian port, where running tests in the device
+still looks like a dream. C<Compress::Zlib> 2.000_05 is reaching the high
+time in blead.
+
+    C::Z Makefile.PL revised for Cygwin
+    http://xrl.us/h2yw
+
+=head2 Perl on Cygwin
+
+
+Yitzchak Scott-Thoennes found some segfaults
+in recent main builds on Cygwin. Together
+with Nicholas Clark, they traced the issue
+down to a destruction ordering bug, which
+could affect other platforms and squashed it.
+
+    http://xrl.us/h2yx
+
+H.Merijn Brand reported that after the PERL_CORE
+patch, Cygwin does not dump core on blead
+anymore, failing two tests, one at C<Compress::Zlib>
+and other with POSIX signals. Paul Marquess 
+pointed the finger to issues with F<14gzopen.t> and prepared
+a patch to make it more robust (see L</Compress::Zlib>). Yitzchak
+Scott-Thoennes reported the F<sigaction> failure
+went away with the last Cygwin improvements.
+
+    http://xrl.us/h2yy
+
+Steve Peters reported 
+bugs #36665 ("delete $ENV{FOO} leaves $FOO visible 
+in subprocesses on Cygwin Perl") and #30952 ("qx() problems 
+with local environment variables on Cygwin/Perl 5.8.2")
+had to do with Perl's handling of environment variables
+when compiled with -DPERL_USE_SAFE_PUTENV. This was fixed
+in bleadperl with change #25737. (Read more on L</Environmental Recovery>.)
+
+    http://xrl.us/h2yz
+    http://xrl.us/h2y2
+
+=head2 Spaces in C<-F> Switch
+
+
+Steve Peters followed on the bug report #37366 by John Krahn.
+The issue is that a space cannot be used in patterns
+supplied as arguments to the C<-F> switch.
+Rafael Garcia-Suarez remembered it's a feature to make
+C<-F> work on C<#!> lines, now documented in blead. Rick
+Delaney thought this limitation could be lifted in the case
+when implicit delimiters were given and implemented it.
+Rafael pointed problems because you can't rely on doing
+the argument splitting yourself, something that "helpful
+kernels" could do for you. David Landgren showed Rick
+how FreeBSD could be more helpful than Linux
+and that perl was not in fault wrt awk. David also 
+remembered you can always use C<"\x20"> instead of spaces
+in patterns.
+
+    http://xrl.us/h2y3
+
+=head2 Perl on Symbian
+
+
+Jarkko Hietaniemi posted updates for Symbian on blead.
+Among the concerned issues, some fixes for C<Compress::Zlib>
+allowed the DLL to build and link successfully.
+Paul Marquess noted the changes to the zlib source. 
+Jarkko explained the changes have to do
+with the fact that a DLL in Symbian cannot have writable data.
+After a while, Paul announced Jarkko's patch
+was accepted to enter into the official zlib source.
+Another new feature of the Symbian port 0.2.0 is
+the introduction of another way of starting a Perl
+app in Series 60, packaging scripts and modules into
+SIS files.
+
+    Symbian on blead patch
+    http://xrl.us/h2y4
+    The "sisify.pl" patch
+    http://xrl.us/h2y5
+
+=head2 C<malloc_wrap>, the Default?
+
+
+Alan Burlison questioned why C<malloc_wrap> had
+become the default behavior and if the decision
+had to do with performance. Yitzchak Scott-Thoennes explained
+the goal of C<malloc_wrap> is to prevent situations
+where an overflow on multiplication causes a different
+amount of memory to be allocated. There ensued
+some discussion on playing whack-a-mole with compilers:
+Alan were seeing too much warnings with Forte compilers
+and Dave Mitchel said the macro was recently hacked
+to avoid warnings on gcc.
+
+    http://xrl.us/h2y6
+
+=head2 New Core Modules Release
+
+
+Without much ado, Paul Marquess brought a patch
+to sync blead and CPAN with respect to C<DB_File> 1.1812.
+
+    http://xrl.us/h2y7
+
+Sébastien Aperghis-Tramonis also announced
+a patch to bring C<XSLoader> to version 0.06.
+
+    http://xrl.us/h2y8
+
+=head2 C<Module::Build> Applies for Core
+
+
+Ken Williams announced the release of C<Module::Build> 0.27_03,
+which is the last major feature-adding beta release 
+before 0.28. Ken asked if it's not time for this version
+to get pulled into the core. Warnocked by now.
+
+    http://xrl.us/h2y9
+
+=head2 Not So Short
+
+
+Gisle Aas noticed that C<Win32::GetShortPathName()> 
+does not return shorter results (those ugly
+F<SHORTN~2>) all the time
+and posted a patch to update the documentation.
+While on this, he also fixed F<Test/Harness/Straps.pm>
+which relied on this misleading functionality.
+
+    http://xrl.us/h2za
+
+=head2 Postponed subregexes and groups
+
+
+Abigail opened RT ticket #37407 to tell about
+a malfunction of the postponed regex construction
+C</(??{"(PAT)"})/>. The C<$1> variable is not
+correctly set. Rick Delaney regretted the matched
+groups cannot be got and suggested documentation
+should change. On the other hand, the construction
+provides the only way to get reusable self-contained
+regexps with backreferences, which is pretty
+important to Rick and also Rafael Garcia-Suarez.
+Jeff 'japhy' Pinyan, Yitzchak Scott-Thoennes and
+Dave Mitchell entered this mind-bending discussion.
+A part of the solution for the raised issues rests 
+in Dave Mitchell's hands and his promised re_eval
+rewrite - may Duke Nukem Forever be soon released.
+
+    http://xrl.us/h2zb
+
+=head2 Environmental Recovery
+
+
+Discussion continued this week on the Perl's handling
+of environment variables which was triggered by 
+a problem seen at Solaris 10. And that's a long long
+continuation, regarding POSIX interfaces, probes,
+Solaris, AIX, etc.
+
+    Summarized here
+    http://xrl.us/h2zo
+    Continued this week
+    http://xrl.us/h2zc
+
+A new thread started (with subject "environ fixup")
+after the probe for C<unsetenv()> was added by E.Merijn
+Brand. Alan Burlison had been working out how to make
+use of the new probe and Rafael Garcia-Suarez
+gave pointers. It might as well impact
+Symbian, EPOC and Cygwin. And it did.
+At least, Cygwin
+got rid of some oddities in environment handling
+after this fruitful discussion. (Read more at L</Perl on Cygwin>.)
+
+    The new thread
+    http://xrl.us/h2zd
+
+=head2 Perl5 Bug Summary
+
+The bug count at the beginning of this week
+was 1519. An instant overview of the
+open tickets can be seen at any time in the 
+F<rt.perl.org> link below.
+
+    RT in Oct 10 13:00, courtesy of Robert Spier
+    http://xrl.us/h2ze
+    Perl RT just now
+    http://rt.perl.org/rt3/NoAuth/perl5/Overview.html
+
+=head2 In Brief
+
+
+B<Odd Behavior in Closures> In RT ticket #37396, Mathieu observed
+some weird problems with lexical bindings while mixing blocks,
+named subroutines and closures. Dave Mitchell remembered these
+issues had been fixed in the development branch of perl, which
+will eventually appear in the stable release 5.10. Yitzchak
+Scott-Thoennes sketched some workarounds to prevent the problems.
+
+    http://xrl.us/h2zf
+
+
+B< Faster C<++/--> for Integers >
+Postfix C<++>/C<--> in void contexts are optimized
+to prefix C<++>/C<-->, because the later is known
+to be faster. Hugo van der Sanden posted a patch
+to extend the special treatment even for integers,
+where the same rationale is also valid.
+
+    http://xrl.us/h2zg
+
+
+B<Indexing perl Docs>
+Carrying on with the plan to index the most of perl POD files,
+Ivan Tubert-Brohman, with contributions by Simon Taylor,
+sent a patch adding C<< X<> >> index entries
+to a number of Perl documents (like F<perldata>, 
+F<perlfunc>, and
+so on). A total of new 1999 index entries
+applied to blead. 
+
+    Ivan's calling summarized
+    http://xrl.us/h2zp
+    Ivan and the 1999 new entries
+    http://xrl.us/h2zh
+
+
+B<Array Indexing with a Ref>
+Bug #37427 was open by "daniel_lo" to report that
+the incorrect indexing of an array with a reference
+
+    perl -e '$a=1; print $stack->[\$a]->[0];'
+
+would produce an "Out of memory" error.
+Rick Delaney noticed there is a warning for this
+if he had tried with C<-w>. Dave Mitchel dismissed the bug: 
+a ref in numeric context gives the address of the
+referent. So the code may be actually trying to create an extremely
+large array. 
+
+    http://xrl.us/h2zi
+
+B<Using the DOR> 
+Last week had seen a thread on the subject of whether symbol tables
+C<%...::> should be expected to be defined or not (as summarized).
+David Nicol persisted on his suggestion to recognize C<if(defined)>
+and parse that to a construction involving the brand new operator
+C<op_DOR>, which could arguably be a concise solution.
+However cool, David got warnocked.
+
+    http://xrl.us/h2zj
+
+B<To Awk or Not To Awk> 
+Xavier Noria posted a doc patch for an improved explanation of
+C<$,> and C<$\>. Michael Schwern went further with Xavier's
+approach to not add references to awk, suggesting these awk
+jargons should be dumped entirely, as folks usually do not read perl
+documentation anymore to know how emulate awk behavior.
+
+    http://xrl.us/h2zk
+
+B< C<%INC> and Forward Slashes >
+Jan Dubois brought in a patch to make sure the I<keys> in C<%INC>
+always use forward slashes. That fixed those ugly "subroutine
+foo redefined" warnings on Windows. Yitzchak Scott-Thoennes
+had some questions whether that works in old perls on classic Mac OS,
+for which Jan Dubois thinks the general answer is yes.
+As a contumacious Windows user, I salute Jan Dubois
+for leaving Win32 free of those (dozens of) annoying warnings
+each time C<cpan> is run.
+
+    http://xrl.us/h2zm
+
+=head2 About this summary
+
+This summary was written by Adriano Ferreira.
+Fortunately, shorter than the last one he wrote. 
+
+Information concerning bugs referenced in this summary (as #nnnnn)
+may be viewed at http://rt.perl.org/rt3/Ticket/Display.html?id=nnnnn
+
+Information concerning patches to maint or blead referenced in
+this summary (as #nnnnn) may be viewed at
+http://public.activestate.com/cgi-bin/perlbrowse?patch=nnnnn
+
+Weekly summaries are published on F<http://use.perl.org/> and posted
+on a mailing list, (subscription: F<perl5-summary-subscribe@perl.org>).
+The archive is at F<http://dev.perl.org/perl5/list-summaries/>.
+Corrections and comments are welcome.
+
+If you found this summary useful or enjoyable, please consider
+contributing to the Perl Foundation to help support the development
+of Perl.
+
+
