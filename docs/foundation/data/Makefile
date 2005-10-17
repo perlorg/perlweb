@@ -3,3 +3,6 @@ PERL=/usr/bin/perl
 
 thefirstentryisthedefault:
 	$(PERL) ./generate-news -v
+
+force:
+	$(PERL) ./generate-news -v -f

@@ -54,9 +54,16 @@ events2005 = [
   "Braga, Portugal. Aug 31-Sep 2"],
  ["Perl Whirl '05", "http://www.geekcruises.com/top/pw05_top.htm",
   "Southwestern Carribean.  Oct 2-9"],
-
- ]
+ ["Nordic Perl Workshop", "http://perlworkshop.dk/2005/",
+  "Stockholm, Sweeden.  Oct 22-23"],
+ ];
+events2006 = [
+ ["Nordic Perl Workshop", "http://perlworkshop.dk/2006/",
+  "Oslo, Norway.  Jun 15-16"],
+]
 %]
+
+
 
 [% page.sidebar = BLOCK %]
 
@@ -69,12 +76,13 @@ events2005 = [
 [% END %]
 <br>and more...
 
+<!--
 <H4>2004 Conferences</H4>
 [% FOREACH event = events2004 %]
 <b><A HREF="[% event.1 %]">[%event.0%]</A></b>
 <br><small>[% event.2 %]</small><br>
 [% END %]
-
+-->
 </DIV>
 
 [%#
