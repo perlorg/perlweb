@@ -149,6 +149,11 @@ sub apache_dumpheaders {
   $cfg->param('apache_dumpheaders') || 0;
 }
 
+sub template_timer {
+  $cfg->param('template_timer') || 0;
+}
+
+
 # cronolog settings
 # {{{
 

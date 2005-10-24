@@ -65,8 +65,7 @@ $Combust::Control::provider ||= Combust::Template::Provider->new
 		   ],
   );
 
-$Combust::Control::tt = Template->new
-  ({
+my %tt_config = (
     FILTERS => { 'navigation' => [ \&Combust::Template::Filters::navigation_filter_factory, 1 ] },
     RELATIVE       => 1,
     LOAD_TEMPLATES   => [$Combust::Control::provider],
@@ -80,7 +79,15 @@ $Combust::Control::tt = Template->new
     'PROCESS'        => 'tpl/wrapper' ,
     'PLUGIN_BASE'    => 'Combust::Template::Plugin',
     #'DEBUG'  => DEBUG_VARS|DEBUG_DIRS|DEBUG_STASH|DEBUG_PARSER|DEBUG_PROVIDER|DEBUG_SERVICE|DEBUG_CONTEXT,
-  }) or die "Could not initialize Template object: $Template::ERROR";
+);
+
+if ( $config->template_timer ) {
+    require Template::Timer;
+    $tt_config{ CONTEXT } = Template::Timer->new( %tt_config );
+}
+
+$Combust::Control::tt = Template->new
+  (\%tt_config) or die "Could not initialize Template object: $Template::ERROR";
 
 sub provider {
   $Combust::Control::provider;
