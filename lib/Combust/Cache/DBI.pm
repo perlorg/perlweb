@@ -2,8 +2,20 @@ package Combust::Cache::DBI;
 use strict;
 use base qw(Combust::Cache);
 use Carp qw(carp);
-use Develooper::DB qw(db_open);
+use Combust::DB qw(db_open);
 use Storable qw(nfreeze thaw);
+use vars qw($HAVE_ZLIB);
+
+BEGIN {
+    $HAVE_ZLIB = eval "use Compress::Zlib (); 1;";
+}
+
+use constant F_STORABLE => 1;
+use constant F_COMPRESS => 2;
+
+# size savings required before saving compressed value
+use constant COMPRESS_THRESHOLD => 10_000;
+use constant COMPRESS_SAVINGS => 0.20; # percent
 
 sub fetch {
   my ($self, %args) = @_;
@@ -32,7 +44,12 @@ sub fetch {
 
   return undef unless $row;
 
-  if ($row->{serialized}) {
+  $row->{serialized} ||= 0;
+
+  $row->{data} = Compress::Zlib::memGunzip($row->{data})
+    if $HAVE_ZLIB && $row->{serialized} & F_COMPRESS;
+
+  if ($row->{serialized} & F_STORABLE) {
     $row->{data} = thaw $row->{data};
   }
   
@@ -66,11 +83,25 @@ sub store {
 
   if (ref $data) {
     $data = nfreeze($data);
-    $serialized = 1;
+    $serialized |= F_STORABLE;
   }
 
-  $metadata = nfreeze($metadata)
-    if (defined $metadata);
+  $metadata = nfreeze($metadata) if (defined $metadata);
+
+  my $len = length($data);
+  if ($HAVE_ZLIB && $len >= COMPRESS_THRESHOLD) {
+      my $c_val = Compress::Zlib::memGzip($data);
+      my $c_len = length($c_val);
+      
+      # do we want to keep it?
+      if ($c_len < $len*(1 - COMPRESS_SAVINGS)) {
+          $data = $c_val;
+          $len = $c_len;
+          $serialized |= F_COMPRESS;
+      }
+  }
+
+
 
   my $dbh = db_open();
   $dbh->do(q[replace into combust_cache
@@ -88,3 +119,8 @@ sub store {
 }
 
 1;
+
+
+__END__
+
+Parts are from Cache::Memcached by Brad Fitzpatrick
