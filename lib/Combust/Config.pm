@@ -105,10 +105,13 @@ sub base_url {
   carp "no [$sitename] site configured" and return unless $self->site->{$sitename};
   my $site = $self->site->{$sitename};
   my $servername = $site->{servername};
-  my $port = $self->external_port;
+  my $port = $self->external_port || 80;
   my $protocol = 'http';
-  $protocol = 'https' if $self->external_port and $self->external_port == 443;
-  my $base_url = "$protocol://$servername" . ($port ? ":$port" : '');
+  $protocol = 'https' if $port and $port == 443;
+  my $base_url = "$protocol://$servername" . 
+    ((($protocol eq 'http' and $port == 80) or ($protocol eq 'https' and $port == 443))
+      ? ''
+      : ":$port");
   return $base_url;
 }
 
