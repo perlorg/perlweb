@@ -1,0 +1,498 @@
+=head1 This Week on perl5-porters - 24-30 October 2005
+
+Mathoms, fixes, hobbits, speedups, all of them together
+advancing the development of Perl.
+
+
+=head2 A I<maint> Snapshot
+
+
+Nicholas Clark rolled out a maint snapshot towards 5.8.8.
+He called for reports of success and failure while
+stuff integration from blead to maint goes on.
+In the followups,
+OS X Tiger and Mandriva Linux seemed to be quite happy
+with the current state of maint.
+Nicholas' plan hopes to see another snapshot about
+a week later and probably 5.8.8 RC1 one week after
+this. 
+
+    Nicholas' announcement
+    http://xrl.us/h896
+    The snapshot
+    http://opensource.fotango.com/~nclark/perl-25817.tar.bz2
+
+
+
+=head2 Cut-and-Paste Findings
+
+
+Jarkko Hietaniemi posted the findings of cut-and-paste
+code on blead@25827. That triggered a discussion on how
+to deal with repeated code, why it is worthy and
+when it could be desirable. 
+
+    http://xrl.us/h897
+
+
+=head2 Getting C<sort()> Right
+
+Robin Houston had no rest this week fighting
+battles with recursive sorts and issues on
+fiddling with active subs.
+
+
+Robin started wondering about the rationale
+behind the "Can't redefine active sort sub" thing and
+found a number of bugs in the way. These bugs
+were related to oversights in doing multiple calls
+to subroutines and affected C<sort()> as well
+C<List::Util>. To solve the issue, Robin thought
+of a set of macros *MULTICALL* for repeatedly
+calling the same sub and intented to make easier
+to get right code like the C<sort> implementation.
+
+    http://xrl.us/h898
+
+
+Robin showed yet another subtle bug when you
+call C<sort()> with a sort sub that's already active.
+
+    http://xrl.us/h899
+
+
+Ben Tilly, the requestor of RT ticket #36430, explained
+Robin what exactly made the ticket issue unlike
+the one of bug #7063.
+
+    http://xrl.us/h9aa
+
+
+Then, Robin prepared drafts of his so-called sort/multicall
+patch. Yitzchak Scott-Thoennes prodded for tests and Graham Barr
+(the maintainer of C<List::Util>) asked for description
+of what really changes and how compatibility may be preserved/restored.
+
+    First draft
+    http://xrl.us/h9ab
+    Second draft
+    http://xrl.us/h9ac
+    Getting there
+    http://xrl.us/h9ad
+
+
+=head2 C<pp_push()> Gets Faster
+
+
+Tassilo von Parseval stumbled at a comment at F<pp.c>
+and found a good opportunity to speed up C<pp_push()>
+for the case of pushing multiple elements. Yitzchak 
+Scott-Thoennes had comments and suggestions that led
+Tassilo to write a more effective patch, illustrated
+by benchmarks hinted by H.Merijn Brand. Rafael applied it
+as change #25854.
+
+    http://xrl.us/h9ae
+
+=head2 Mathoms Held Together
+
+
+Back in June, Nicholas Clark suggested the name F<mathoms.c>,
+for a file holding C functions still kept around for binary 
+compatibility reasons. (For the record, mathoms will be yet another 
+Tolkien's reference in Perl source code.) This week, Steve Peters 
+made it happen with a patch
+to create the new file and a configure switch to turn on/off
+the inclusion of the file in the build. Ronald J. Kimball and
+Philip M. Gollucci played the part of the ones who don't like the name.
+Rafael Garcia-Suarez thought Steve's patch would break build on everything 
+but Unix. Steve asked for pointers on what files would need editing
+in other environments and, confronted with golden silence,
+found those files and made what was necessary, applying change #25866.
+
+    Nicholas coins the file name
+    http://xrl.us/h9af
+    Steve Peters gets mathoms together
+    http://xrl.us/h9ag
+
+
+
+=head2 Ken and PerlIO
+
+
+B< Panic with Multiple Encodings >
+Ken Hirsch reported bug #37526 which shows
+how using multiple encodings at once 
+may cause panic (more exactly, 
+C<"panic: sv_setpvn called with negative strlen">).
+
+    http://xrl.us/h9ah
+
+
+B< Reconciled 3-arg Opens >
+Ken Hirsch reported yet another problem with
+PerlIO encoding layers. This time, in RT ticket #37533,
+he noticed that three-arg opens seem to always
+ignore default layer settings by the C<open> pragma.
+Furthermore, he pointed an issue that Rafael Garcia-Suarez
+considered a contradiction between
+the C<open> pragma documentation and F<perlfunc>.
+Rafael produced a patch to reconcile the 3-arg
+opens with the C<open> pragma settings and suggested
+to settle the C<perlfunc> behavior as the correct one.
+
+    http://xrl.us/h9ai
+
+=head2 Gory Quoted Constructs
+
+
+Bas van Sisseren in bug #37527 reported the parser
+was having trouble with regexes delimited with C<[]>
+and backslashes. Jeff 'japhy' Pinyan elucidated the
+gory details which Rafael Garcia-Suarez believed
+to be documented in F<perlop>, although not very clearly.
+Bas proceeded to patch C<B::Deparse> which he was using
+when he met the problem.
+
+    http://xrl.us/h9aj
+
+=head2 Pre-loaded Perl executables
+
+
+Joseph Thames exposed a maintenance issue at
+his actual work environment using Perl, 
+Apache, mod_perl and various CPAN modules
+with very demanding requirements. He was 
+looking for a scalable solution minimizing
+configuration, preferably with native
+executables and wondered if there was
+a standard way of using early-bound
+Perls rather than the dynamic traditional
+way. Yitzchak Scott-Thoennes advised about the highly
+experimental nature of C<B::C> or C<B::CC>
+approaches and about C<PAR> as a candidate
+for the job. He also referred Joseph could
+reach a wider audience by asking at perlmonks.org.
+John Peacock suggested him to also evaluate C<perl2exe>
+in his context.
+
+    http://xrl.us/h9ak
+
+
+
+=head2 Fast C<IO::File> Once Again
+
+
+Pratik noticed that a recent change at C<IO::File> introduced
+a call to C<< File::Spec->rel2abs() >> which uses C<Cwd>
+that in turn forks a new process to determine the working
+directory. This led to a major performance hit. Gisle Aas
+explained the change was due to fixing a failure in Windows
+and soon found a way to fix the situation with a 3-arg
+open instead of munging with file names. Steve Peters
+applied and that made Pratik happy and eager to see
+the fix in 5.8.x branch as well.
+
+    http://xrl.us/h9am
+
+
+=head2 Multi-threaded C<IO::Socket>
+
+
+Peter Millington had a multi-threaded application
+and found some trouble when using C<IO::Socket> and
+C<Net::FTP> in such environment. He asked whether
+the corresponding objects are believed to be thread-safe
+and explained how he worked around the issue with a change
+to C<IO::Socket::Net::configure()>.
+Rafael Garcia-Suarez confirmed there may be
+problems with C<IO::Socket> and threads,
+called for a patch in unified diff format
+and greeted opinions on other points raised by Peter.
+
+    http://xrl.us/h9an
+
+
+
+
+=head2 C<utime>'s Turn
+
+
+In July, Gisle Aas set a trend on
+taking advantage of the corresponding C C<fxxx()> functions
+to implement builtins like C<chmod>, C<fchown>, and
+C<fchdir>. This time, Yitzchak Scott-Thoennes
+proposed to make C<utime> use C<futimes> where available.
+Gisle Aas backed it up and waits for somebody
+to add Configure probes for C<futimes>.
+
+
+    Gisle's start
+    http://xrl.us/h9ao
+    Yitzchak's turn
+    http://xrl.us/h9ap
+
+
+=head2 Extending Left Bit-shifts
+
+
+Tassilo von Parseval wondered whether perl could try to
+use the biggest available native integer type for left
+bit-shift operations. Adriano Ferreira believed perl would
+better stick to its configure/build-time integer types
+and C<bigint> pragma would be there
+for arbitrary precision integer arithmetic. Tassilo
+and Tels pointed the inconvenience of the performance
+hit when using C<Math::BigInt>. Yitzchak Scott-Thoennes 
+foresaw trouble in upgrading IV to NV types for 
+integer-type operations like shifts.
+
+    http://xrl.us/h9aq
+
+
+=head2 John and VMS
+
+
+B<VMS failure summary>
+After a failure summary of blead on VMS
+by John E. Malmberg, Rafael Garcia-Suarez
+thanked John (in the name of all perl5 porters
+and lovers, I dare to say) and gave a clue
+on making tests more portable.
+
+    http://xrl.us/h9ar
+
+
+B<VMS exit handling>
+After sorting out most of the issues in exit handling 
+in VMS, John E. Malmberg asked for help to make it
+right once and for all. In fact, he did work out
+his own way and regretted not being able to change
+the default behavior due to the compatibility burden,
+which was commented by Rafael Garcia-Suarez.
+And then John posted what he expects to
+be the last VMS exit/error fixes that were needed.
+
+    Call for help
+    http://xrl.us/h9as
+    Hopefully the last fixes
+    http://xrl.us/h9at
+
+
+B< F<vms.c> improvements and fixes >
+John E. Malmberg introduced in F<vms.c> a new
+C<do_mp_rmsexpand()> to support longer filenames
+for platforms/versions where it makes sense.
+While on this, he fixed memory leaks in old 
+C<do_mp_rmsexpand()> and made code safer with
+C<memmove()> replacing C<memcpy()>.
+
+    http://xrl.us/h9au
+
+
+B< C<sprintf> on VMS >
+John E. Malmberg posted a minor change to reflect
+the fact that C<sprintf> in VMS returns the length
+of the buffer. 
+
+    http://xrl.us/h9av
+
+=head2 Jarkko and Symbian
+
+
+This week, Nicholas Clark and Jarkko Hietaniemi discussed what changes would
+be needed to make C<Encode> work with the constraint of non-writeable
+data on Symbian. The issue at stage was how changes in underlying structure 
+types would break compatibility among C<Encode> and older format
+encode tables.
+
+    http://xrl.us/h9aw
+
+Jarkko also announced better support for Series 80 devices
+and some handy utilities for Perl on Symbian.
+
+    http://xrl.us/h9ax
+
+=head2 More Platform Specific Issues
+
+
+B< Cygwin, C<unlink>, Win32 >
+Sébastien Aperghis-Tramoni noticed how weird Perl on Cygwin
+can be when issuing code like this:
+
+    open FILE, '>', $file;
+    unlink $file or warn $!;
+    opendir DIR, '.';
+    print "here yet" if grep { $_ eq $file } readdir(DIR)
+
+C<unlink()> succeeds but the file can
+be seen yet with C<readdir()>, even though it is gone when
+the script ends or when the file is closed. 
+To Sébastien, it does not feel like Unix or Windows.
+Yitzchak Scott-Thoennes quoted F<perlport>: "Don't
+C<unlink> or C<rename> an open file" for portable code.
+Some discussion ensued with Yitzchak Scott-Thoennes unveiling 
+the relevant
+Perl source code and Yves Orton explaining oddities
+in Win32 API. Very instructive and scary.
+
+    http://xrl.us/h9ay
+
+
+B<AIX Woes>
+David Favor had some trouble building blead on AIX.
+Rafael Garcia-Suarez pointed it was probably due to 
+the F<Makefile> failing to use F<makedef.pl> to generate F<perl.exp>
+where that matters. And then it worked.
+
+    http://xrl.us/h9az
+
+
+B< EBCDIC, Unicode, C<unpack> >
+Sadahiro Tomoyuki explained the results Rajarshi Das was seing
+using C<unpack> with formats 'U' and 'C' on EBCDIC platforms:
+a UTF-8 versus UTF-EBCDIC issue.
+
+    http://xrl.us/h9a2
+
+
+B< A Linux Issue >
+Jason Vas Dias found F<perl.h> to incorrectly guess the C<IOPARM_LEN>
+on Linux to be constant 256 and posted a patch to use
+the C<_IOC_SIZE> as it should. Rafael tweaked the change
+to avoid misterious side-effects on some other random platform
+and applied it.
+
+    http://xrl.us/h9a3
+
+
+=head2 Perl5 Bug Summary
+
+
+The open tickets count was at 1519 in Oct 24 13:00. 
+
+    Robert Spier and the Bug summary
+    http://xrl.us/h2ze
+    Perl RT just now
+    http://rt.perl.org/rt3/NoAuth/perl5/Overview.html 
+
+
+
+=head2 In Brief
+
+
+B< Exit Code in 5.8.8? >
+Nicholas Clark, after seeing a lot of patching in exit code,
+asked whether it just had to do with VMS or if it affects Unix
+and Windows sides. He wondered about the convenience
+of integrating this to maint now or in a couple of months.
+No answer so far.
+
+    http://xrl.us/h9a4
+
+
+B< Revisited cc/cppsymbols >
+Yitzchak Scott-Thoennes posted a patch to fix
+a long-standing bug on Configure's test for cppsymbols
+with values which contain spaces, such as Cygwin's
+C<_LONG_DOUBLE=long double>.
+
+    http://xrl.us/h9a5
+
+
+B< F<mv-if-diff> Days are Counted >
+Rafael Garcia-Suarez posted a patch to remove F<mv-if-diff> from the main
+makefile and asked for people to try it. Nicholas did and found the
+need for a tweak.
+
+    The "remove mv-if-diff" campaign summarized
+    http://xrl.us/h9a6
+    This week
+    http://xrl.us/h9a7
+
+
+B< White Smokes for C<Compress::Zlib> >
+Without much ado, Paul Marquess filed a fix for
+the C<Compress::Zlib>'s smoke failures seen on 
+Win32, which was applied by H.Merijn Brand
+with great expectations.
+
+    http://xrl.us/h9a8
+
+
+B< F<warnings.pm> Works as It Should >
+Rafael Garcia-Suarez dismissed bug #36781
+which claimed functions C<enabled>, C<warn>, C<warnif>
+in F<warnings.pm> were buggy. He explained
+how the reported behavior was the intented one
+according to the docs and Paul Marquess
+noted it is all there in F<perllexwarn.pod>.
+
+    http://xrl.us/h9a9
+
+
+B< Named Escapes in Eval >
+Peter Scott noticed an oddity when using named
+escapes in evals and thought a POD fix could be in
+order. Sadahiro Tomoyuki suggested the issue
+could be slightly different as well as the appropriate doc fix.
+
+    http://xrl.us/h9ba
+
+
+B< Misleading Closures in Regexes >
+William L. Devanney opened RT ticket #37543 after
+being surprised with how C<$^N> worked with respect
+to global and lexical variables. Jeff 'japhy' Pinyan
+explained the point was the use of regex
+construction C<?{}> which creates a closure
+around the lexical environment and a known bug
+that makes it refer to the first time
+the regex is compiled, giving wrong results
+for subsequent calls.
+
+    http://xrl.us/h9bb
+
+
+B< F<perl5db.pl> Fix >
+Brendan O'Dea sent a patch for fixing an incorrect instruction
+in termination message emitted by F<perl5db.pl>.
+
+    http://xrl.us/h9bc
+
+
+B<Free the Tries>
+Jarkko Hietaniemi spotted and patched a bug in C<regcomp.c> that prevented
+tries to be freed.
+
+    http://xrl.us/h9bd
+
+B< C<ExtUtils::Constant> and Perl 5.004 > Sébastien Aperghis-Tramoni
+posted a small patch to restore C<ExtUtils::Constant> compatibility
+with Perl 5.004.
+
+    http://xrl.us/h9be
+
+
+=head2 About this summary
+
+This summary was written by Adriano Ferreira.
+I would like to acknowledge a mistake and apologize myself
+to H.Merijn Brand for spelling wrong his name in the last
+summaries. Please correct me and send comments.
+
+Information concerning bugs referenced in this summary (as #nnnnn)
+may be viewed at http://rt.perl.org/rt3/Ticket/Display.html?id=nnnnn
+
+Information concerning patches to maint or blead referenced in
+this summary (as #nnnnn) may be viewed at
+http://public.activestate.com/cgi-bin/perlbrowse?patch=nnnnn
+
+Weekly summaries are published on F<http://use.perl.org/> and posted
+on a mailing list, (subscription: F<perl5-summary-subscribe@perl.org>).
+The archive is at F<http://dev.perl.org/perl5/list-summaries/>.
+
+If you found this summary useful or enjoyable, please consider
+contributing to the Perl Foundation to help support the development
+of Perl.
+
