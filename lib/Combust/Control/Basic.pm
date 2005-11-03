@@ -9,13 +9,6 @@ use Apache::Constants qw(OK DONE);
 #   - sub class Template::Service to do the branch magic etc?
 #   - use/take code from Apache::Template? (probably not)
 
-# FIXME|TODO use setup_provider or some such to set this up. 
-#my $provider = Combust::Template::Provider->new(
-#   INCLUDE_PATH => [
-#		    "$ENV{CBROOT}/docs/www/live",
-#		    'http://svn.develooper.com/perl.org/docs/www/live',
-#		   ],
-#);
 
 LWP::MediaTypes::read_media_types("$ENV{APACHEROOT}/conf/mime.types");
 
@@ -51,7 +44,7 @@ sub render {
     my $file = $uri;
     substr($file,0,1) = ""; # trim leading slash
 
-    my $data = $self->provider->expand_filename($file);
+    my $data = $self->tt->provider->expand_filename($file);
     #warn Data::Dumper->Dump([\$data],[qw(data)]);
     if ($data->{path}) {
       $r->update_mtime($data->{time} || time);
@@ -62,7 +55,7 @@ sub render {
       return OK, $fh, $content_type;
     }
     else {
-      if ($self->provider->is_directory($file)) {
+      if ($self->tt->provider->is_directory($file)) {
 	return $self->redirect($uri . "/", 1);
       }
       else {
@@ -81,8 +74,7 @@ sub render {
     return 404;
   }    
 
-
-  my $output = $self->evaluate_template($template);
+  my $output = eval { $self->evaluate_template($template); };
   if ($@) {
     $r->pnotes('error', $@);
     return 404 if $@ =~ m/: not found/;

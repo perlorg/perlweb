@@ -19,6 +19,8 @@ sub render {
 
   my $error_text = $r->pnotes('error') || '';
 
+  
+  $self->tpl_param('error_uri'    => $r->prev->uri);
   $self->tpl_param('error'        => $error);
   $self->tpl_param('error_header' => $error_header);
   $self->tpl_param('error_text'   => $error_text);

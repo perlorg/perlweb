@@ -8,19 +8,12 @@ use Apache::File;
 use Carp qw(confess cluck carp);
 use Encode qw(encode_utf8);
 
+use Exception::Class ('Ex_ServerError');
+
 use Apache::Util qw();
 
-use Template;
-use Template::Parser;
-use Template::Stash;
-
-use Combust::Template::Provider;
-use Combust::Template::Filters;
-
-use Combust::Template::Translator::POD;
-
 use Combust::Cache;
-
+use Combust::Template;
 
 use Combust::Config;
 
@@ -28,74 +21,10 @@ my $config = Combust::Config->new();
 
 sub config { $config }
 
-#use HTTP::Date qw(time2str); 
+my $ctemplate = Combust::Template->new()
+  or die "Could not initialize Combust::Template object: $Template::ERROR";
 
-$Template::Config::STASH = 'Template::Stash::XS';
-
-$Template::Stash::SCALAR_OPS->{ rand } = sub {
-  return int(rand(shift));
-    };
-
-my $parser = Template::Parser->new(); 
-
-my $root = $ENV{CBROOT};
-
-my %provider_config = (
-		       PARSER => $parser,
-		       COMPILE_EXT      => '.ttc',
-		       COMPILE_DIR      => $config->root_local . "/tmp/ctpl",
-		       #TOLERANT => 1,
-		       #RELATIVE => 1,
-		       CACHE_SIZE       => 128,  # cache 128 templates
-		       EXTENSIONS       => [ { extension => "pod",
-					       translator => Combust::Template::Translator::POD->new()
-					     },
-					   ],
-					     
-		      );
-
-$Combust::Control::provider ||= Combust::Template::Provider->new
-  (
-   %provider_config,
-   INCLUDE_PATH => [
-		    sub {
-		      &get_include_path()
-		    },
-		    #'http://svn.develooper.com/perl.org/docs/www/live',
-		   ],
-  );
-
-my %tt_config = (
-    FILTERS => { 'navigation' => [ \&Combust::Template::Filters::navigation_filter_factory, 1 ] },
-    RELATIVE       => 1,
-    LOAD_TEMPLATES   => [$Combust::Control::provider],
-    #'LOAD_TEMPLATES' => [ $file, $http ],
-    #PREFIX_MAP => {
-    #               file => 0,
-    #               http => 1,
-    #		    default => 1,
-    #	            },
-    'PRE_PROCESS'    => 'tpl/defaults',
-    'PROCESS'        => 'tpl/wrapper' ,
-    'PLUGIN_BASE'    => 'Combust::Template::Plugin',
-    #'DEBUG'  => DEBUG_VARS|DEBUG_DIRS|DEBUG_STASH|DEBUG_PARSER|DEBUG_PROVIDER|DEBUG_SERVICE|DEBUG_CONTEXT,
-);
-
-if ( $config->template_timer ) {
-    require Template::Timer;
-    $tt_config{ CONTEXT } = Template::Timer->new( %tt_config );
-}
-
-$Combust::Control::tt = Template->new
-  (\%tt_config) or die "Could not initialize Template object: $Template::ERROR";
-
-sub provider {
-  $Combust::Control::provider;
-}
-
-sub tt {
-  $Combust::Control::tt
-}
+my $root = $config->root;
 
 sub r {
   my $self = shift;
@@ -136,10 +65,6 @@ sub new {
 
   my $self = bless( { } , $class);
   
-  $self->{params} = {
-    config => $config,
-  };
-
   $self;
 }
 
@@ -156,9 +81,8 @@ sub super ($$) {
   # great. (in particular because we don't keep it around as a
   # singleton).
 
-  # Storing it is a hack for get_include_path ...
   my $self = $class->new($r);
-  $self->r->pnotes('controller', $self);
+  $ctemplate->set_include_path(sub { $self->get_include_path });
 
   my $status;
   
@@ -254,13 +178,11 @@ sub _cleanup_params {
 }
 
 sub get_include_path {
-  my $r = Apache->request;
+  my $self = shift;
 
-  my $self = $r->pnotes('controller');
+  my $r = $self->r;
 
-  $r = Apache::Request->instance($r);
-
-  my $site = $r->dir_config("site");
+  my $site = $self->site;
   unless ($site) {
     my $path = [ $r->document_root ] if $r->dir_config('UseDocumentRoot');
     push @$path, "$root/apache/root_templates/";
@@ -279,7 +201,6 @@ sub get_include_path {
   my ($user, $dir);
   my $root_param = $r->param('root') || '';
   if (($user, $dir) = ($root_param =~ m!^/?([a-zA-Z]+)/([^\.]+)$!)) {
-    # FIXME|TODO: should expand on ~ instead of using /home
     $cookies->cookie('root', "$user/$dir");
   } 
   elsif ($root_param eq "/") {
@@ -297,6 +218,7 @@ sub get_include_path {
   my $docs = $config->docs_name;
 
   if ($user and $dir) {
+    # FIXME|TODO: should expand on ~ instead of using /home
     $user = "/home/$user";
     $path = [
 	     "$user/$docs/$dir/$site_dir/",
@@ -329,45 +251,54 @@ sub evaluate_template {
   my $self      = shift;
   my $template  = shift;
 
-  my %params    = @_;
+  my $tpl_params    = { %{$self->tpl_params }, @_ };
 
   my $r = $self->r;
-  my $output;
 
-  $params{params} ||= $self->tpl_params;
+  $tpl_params->{r} = $r; 
+  $tpl_params->{notes} = $r->pnotes('combust_notes'); 
+  $tpl_params->{root} = $root;  # localroot anyone?
 
-  $params{params}->{r} = $r; 
-  $params{params}->{notes} = $r->pnotes('combust_notes'); 
-  $params{params}->{root} = $root;  # localroot anyone?
+  $tpl_params->{combust} = $self;
 
-  $params{params}->{combust} = $self;
-
-  $params{params}->{site} = $r->dir_config("site")
-    unless $params{params}->{site};
+  $tpl_params->{site} = $self->site
+    unless $tpl_params->{site};
 
   my $user_agent = $r->header_in("User-Agent") || '';
-  $params{params}->{user_agent} = $user_agent;
-  $params{params}->{ns4_flag} =
+  $tpl_params->{user_agent} = $user_agent;
+  $tpl_params->{ns4_flag} =
     ( $user_agent =~ m!^Mozilla/4!
       && $user_agent !~ m!compatible!
       ? 1
       : 0
     );
 
-  my $rc = $self->tt->process( $template,
-			       $params{'params'},
-			       \$output )
-    or warn( (ref $self ? ref $self : $self) . "  - ". $r->uri . ($r->args ? '?' .$r->args : '')
-	     . ' - error processing template ' . $params{'template'} . ': '
-	     . $self->tt->error )
-      and eval {
-	# TODO: throw a "proper" exception?
-        die( 'error' => ($@ ? $@ : '') . " " . $self->tt->error );
-      };
+  my $output = eval { $ctemplate->process($template, $tpl_params, { site => $tpl_params->{site} } ) };
 
-  delete $params{params}->{combust};
+  delete $tpl_params->{combust};
 
-  return \$output;
+  $self->{params} = {
+    config => $config,
+  };
+
+
+  if ($@) {
+      warn( (ref $self ? ref $self : $self) . "  - ". $r->uri . ($r->args ? '?' .$r->args : '')
+            . " - error processing template $template: $@");
+      Ex_ServerError->throw( error => $@ );
+  }
+
+  return $output;
+}
+
+sub tt {
+    $ctemplate;
+}
+
+sub provider {
+    my $self = shift;
+    cluck "combust->provider is deprecated; use combust->tt->provider";
+    $self->tt->provider(@_);
 }
 
 sub site {

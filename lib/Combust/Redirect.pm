@@ -63,7 +63,7 @@ sub handler($$) {
   my $site = $r->dir_config('site');
   #warn join " / ", "REDIRECT CHECK FOR $site", $r->uri, $r->content_type;
 
-  my $path = $self->provider->paths;
+  my $path = $self->get_include_path;
   return unless $path and $path->[0];
   $path = $path->[0];
 
