@@ -132,7 +132,7 @@ sub process {
 
     local $site = $args->{site};
 
-    $tpl_params->{config}  = $config;
+    $tpl_params->{config} = $config unless $tpl_params->{config};
 
     #warn Data::Dumper->Dump([\$tpl_params], [qw(tpl_params)]);
     my $output;
