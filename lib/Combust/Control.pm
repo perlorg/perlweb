@@ -418,10 +418,7 @@ sub redirect {
   # this should really check for a complete URI or some such; we'll do
   # that when it breaks on a ftp:// or whatever redirect :-)
   unless ($url =~ m!^https?://!) {
-    $url = "http://" . $self->r->hostname .
-	  ( $self->config->external_port 
-		? ":" . $self->config->external_port
-		: ""  )	. $url;
+    $url = $config->base_url($self->site) . $url;
   }
 
   #use Carp qw(cluck);
