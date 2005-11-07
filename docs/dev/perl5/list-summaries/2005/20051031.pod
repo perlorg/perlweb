@@ -1,0 +1,357 @@
+=head1 This Week on perl5-porters - 31 October-6 November 2005
+
+This week sees consolidation on several fronts: mathoms, ops,
+env handling, futimes, sort... plus the usual assortment of
+bug fixes and enhancements.
+
+=head2 Feedback from last week's summary
+
+Steve Peters remembered the history of F<mathoms.c> in p5p dated back
+to 2001 and not only June/July this year, when it came to life again.
+Also, the F<Configure> option which was anticipated were not ready yet at
+the summary time, but it is now.
+
+  Steve Peters patches the summary
+  http://xrl.us/ib67
+
+Concerning B<Cygwin, C<unlink>, Win32>, Yitzchak Scott-Thoennes
+commented that he was referring to the Cygwin DLL source code and not perl
+when illustrating how C<unlink> in Cygwin mapped to the Windows API.
+
+  Yitzchak Scott-Thoennes makes things clear
+  http://xrl.us/ib68
+
+=head2 More F<mathoms.c> fallout
+
+The recent introduction of F<mathoms.c> produced fallout in
+various places this week
+
+  Gisle implements the Configure option
+  http://xrl.us/ib69
+
+  and shrinks the perl binary by 0.75%
+  http://xrl.us/ib7a
+
+  Getting do_exec on Win32 back in order
+  http://xrl.us/ib7b
+
+  Getting perl.h on VMS back in order
+  http://xrl.us/ib7c
+
+=head2 More on C<ExtUtils::Constant>
+
+chromatic raised an eyebrow at Sébastien Aperghis-Tramoni's use
+of indirect object notation (current best practices these days
+dictating that one should say C<< Object->method >> rather than
+C<method Object>. Nicholas Clark discovered that the patch causes
+a bad failure in C<blead> due to dependency orderings, because
+somehow in C<blead>, C<FileHandle> now requires C<IO::File> which
+is not yet available during the build. Nicholas fixed it up by
+with some conditional C<require>ing in patch #25927.
+
+  The patch
+  http://xrl.us/ib7d
+
+  The patch to the patch
+  http://xrl.us/ib7e
+
+=head2 Bring out yer dead (ops)
+
+After running perl under C<gcov>, Nicholas noticed that about twenty ops
+were never hit by the test suite. It could be expected that an op like
+C<pp_dump> (which exists solely to make perl dump core) would not be
+covered by the test suite, but maybe some ops should (which Dave Mitchell
+said was the case for C<pp_regcmaybe> and provided a snippet to prove it).
+
+Maybe some are obsolete and could thus be chainsawed away. Rafael
+Garcia-Suarez pointed out that a certain number of ops are required during
+compilation, but are optimised away afterwards, and thus it would be a
+non-trivial effort to truly get rid of them. Although he thought that
+C<pp_threadsv> and C<pp_setstate> could probably be let go.
+
+Rafael then noted that he had written some XS code in the past that
+called some C<pp_*> routines directly, and mentioned that he had published
+a module on CPAN that lets you change the interpreter runloop on the fly.
+
+This led Nicholas to think about the possibility of making the runloop
+deal with the handling of signals differently. That is, getting rid of the
+current C<PERL_ASYNC_CHECK()> (C<safe signals>) call in the runloop, and
+merely switching to a runloop that knows how to deal with a signal, when
+a signal is encountered.
+
+  Reported in ticket #37573
+  http://xrl.us/ib7f
+
+  Change your runloop
+  http://search.cpan.org/dist/Runops-Switch/lib/Runops/Switch.pm
+
+  Nick's second idea
+  http://xrl.us/ib7g
+
+=head2 Andy's consting
+
+Andy Lester consted more stuff, spotted a couple of chances to
+simplify code, and dedicated the patch to Etta James:
+
+  The patch
+  http://xrl.us/ib7h
+
+  Etta James
+  http://www.etta-james.com/
+
+... and dealt with F<perlio.c> seperately because it's so hairy:
+
+  http://xrl.us/ib7i
+
+Andy also posted the switches he's using for building perl under
+GCC 4.1.0 snapshots (using as many switches as possible to
+seek out doubtful code constructs).
+
+  Bondage and discipline
+  http://xrl.us/ib7j
+
+and also found a lovely trailing semi-colon-on-on-if bug in C<pp_ftrowned>:
+
+  http://xrl.us/ib7k
+
+and yet more consting
+
+  http://xrl.us/ib7m
+
+and cleaning of the x2p directory
+
+  http://xrl.us/ib7n
+
+=head2 DB_File patched to deal with Berkeley DB 4.4
+
+Paul Marquess supplied a patch to get DB_File to run with the
+upcoming 4.4 release of Berkeley DB. Steve Peters applied the patch
+and Yitzchak wondered whether it was important enough to make sure
+it made its way into 5.8.8.
+
+  http://xrl.us/ib7o
+
+=head2 Let the good futimes roll
+
+Gisle Aas continued on the thread last week about using C<futimes>
+on platforms where it is available, noting that the MacOS X manpage
+says that C<utime> is obsolete and C<utimes> should be used, but
+the Posix manpage says that C<utimes> is legacy, and C<utime> should
+be used for maximum portability. Sigh. Steve Peters and Gisle
+discussed the problem of getting F<Configure> to probe for this.
+
+Also, Solaris 10 has a function called C<futimesat>, which does
+everything, and more besides. (In case you were wondering, these
+functions deal with setting the access and modification times for
+files).
+
+  utime? utimes?
+  http://xrl.us/ib7p
+
+  Abe Timmerman patches configure.com
+  http://xrl.us/ib7q
+
+=head2 sort/multicall patch in blead
+
+Robin Houston's sort/multicall patch went into blead. Rafael noticed
+a few puffs of smoke escape from the lab, and saw that one functionality
+that the patch broke was the ability to empty the array I<while you
+sort it> and still retrieve the results afterwards. Since no-one
+was really sure why anyone would want to do a thing like that, the
+test was quietly dropped.
+
+So don't try the following at home, because it's not going to work
+any more:
+
+  @a = (1..10);
+  @b = sort { @a=(); ($a+1)<=>($b+1) } @a;
+
+Nicholas was worried that the test was a guard to check for core
+dumps, but perl wasn't dumping core, just sorting an array of
+undefined elements (which seems to be the right behaviour under the
+circumstances).
+
+Paul Marquess found that C<DB_File> revealed a couple of problems
+in the patch, and these problems were fixed. Jim Cromie pitched in
+and fixed a couple of other test errors.
+
+Dave Mitchell had a couple of minor queries about the code but
+basically liked it. The conversation went on between Robin and Dave
+for a while. Robin summed it up best:
+
+  It's the usual perl internals story really: everything
+  depends on everything else in mysterious and undocumented
+  ways, and it's hard to make apparently innocent changes
+  without subtle breakage...
+
+  Starting from last week
+  http://xrl.us/ib7r
+
+  The patch applied
+  http://xrl.us/ib7s
+
+  Dave weighs in
+  http://xrl.us/ib7t
+
+=head2 Compiling 5.8.7 with Visual Studio 2005
+
+Joel Reed wrote in to say that he was having some difficulty
+in compiling 5.8.7 with Microsoft's latest compiler, especially
+in the area of C<perlio> and related some very wacky symptoms.
+He also tried 5.9.2, and that didn't work, either. And
+unfortunately for Joel, he was Warnocked.
+
+  http://xrl.us/ib7u
+
+=head2 The prototype of C<Perl_magic_clear_all_env>
+
+Alan Burlison, in his quest to make the environment code a little
+less icky, wanted to change the signature of the
+C<Perl_magic_clear_all_env> function. This would prevent memory
+leaks when one lets perl manage the environment.
+
+The main problem is whether or not this would break binary
+compatibility. Steve Peters used the CPAN source code search and
+found that no-one outside of core is using it, and thought that it
+is unlikely that any other code does so, but the possibility
+cannot be ruled out.
+
+Alan was worried about platforms using different calling conventions
+and decided that the best way forward would be to put the new smarts
+in a new routine, and thereby not allow the possibility of breaking
+binary compatibility.
+
+Alan subsequently posted a patch to make use perl use C<clearenv> on
+platforms where it makes sense, and called for feedback on other
+platforms such as MacOS, Symbian, VMS and Win32.
+
+  The question
+  http://xrl.us/ib7v
+
+  All hail gonzui
+  http://cpansearch.bulknews.net/
+
+  using clearenv
+  http://xrl.us/ib7w
+
+=head2 A surprising segfault
+
+Robin Houston was rather bemused by:
+
+  % perl -e 'map print(reverse), ("")x68'
+  Segmentation fault
+
+and wondered why it was happening. Dave Mitchell promptly described the
+problem and fixed it. Sadahiro Tomoyuki found that many other C<pp_*>
+functions exhibit similar behaviour and provided a patch to fix them too.
+Tels wanted tests.
+
+  segfault
+  http://xrl.us/ib7x
+ 
+  How to kill perl
+  http://www.perlmonks.org/index.pl?node_id=505817
+
+=head2 See perl say()
+
+Steve Peters proposed a patch to bring Perl 6's C<say()> to Perl 5. (Which
+is roughly C<print> with a C<\n> tacked on). Robin Houston pointed to a
+prior thread (and patch) on the issue, that was not well received at the
+time. The main problem is one of backwards compatibility: how do you deal
+with a program that has defined a subroutine named C<say>?
+
+(The summariser recalls a thread on Perlmonks where someone suggested
+using C<-l> on the command line to get equivalent C<say> functionality
+with C<print> and use C<printf> (not necessarily with C<%> args) to
+get non-newline print behaviour).
+ 
+  This time
+  http://xrl.us/ib7y
+
+  Last time around
+  http://xrl.us/ib7z
+
+=head2 New Core Module Releases
+
+Andreas J. Koenig brought C<CPAN.pm> up to version 1.76_60. (The _60 implies
+a beta version). Some of the new features include: plays nicely with
+F<version.pm>, support for C<sudo>, new commands, better error messages
+and better handling of configuration variables.
+
+=head2 Perl 5 Bug Summary
+
+1520 open items, six items less that 2 weeks old have not been
+responded to.
+
+=head2 In brief
+
+Jarkko added UIQ support to the Symbian port
+
+  http://xrl.us/ib72
+
+Steven Schubiger cleared up the no-whitespace-before-semicolon
+problems for pod files that needed it.
+
+  http://xrl.us/ib73
+
+Jutta posted a bug report dealing with C<sysread> in UTF-8 mode. When
+Steve Peters opined that a little bit of code might help understand
+the problem more easily, Jutta replied with a TCP server written in
+C and a client written in Perl. What more could you wish for?
+
+  http://xrl.us/ib74
+
+Alan Burlison was still wondering about the C<malloc_wrap> compiler
+warnings being produced. After discussing the issue with Nicholas, he
+decided to add an explanation about the compiler warnings to the
+F<README.solaris> file.
+
+  http://xrl.us/ib75
+
+Dan Dascalescu posted a bug report concerning C<File::Glob>, escaped
+metacharacters and spaces in filenames. Steven Schubiger showed a
+couple of ways to get around the problem.
+
+  http://xrl.us/ib76
+
+Andreas J. Koenig took a stab at fixing bug #19049 (Incorrect C<$`> after
+replacement). Rafael applied it, and then backed it out after not being
+able to solve the remaining problems himself. If someone else wants to have a
+go...
+
+  http://xrl.us/ib77
+
+Robin Houston noted that F<perlcall.pod> documents problems that
+were fixed way back in version 5.002, and fired up the chainsaw.
+
+  http://xrl.us/ib78
+
+Anno Siegel posted an interesting bug:
+
+  my $str = 'aa';
+  $str &= 'a';
+  $str =~ /a+$/ or die;
+
+This dies, and Anno says it shouldn't. No response for the moment.
+
+  http://xrl.us/ib79
+
+=head2 About this summary
+
+This summary was written by David Landgren.
+
+Information concerning bugs referenced in this summary (as #nnnnn)
+may be viewed at http://rt.perl.org/rt3/Ticket/Display.html?id=nnnnn
+
+Information concerning patches to maint or blead referenced in
+this summary (as #nnnnn) may be viewed at
+http://public.activestate.com/cgi-bin/perlbrowse?patch=nnnnn
+
+Weekly summaries are published on F<http://use.perl.org/> and posted
+on a mailing list, (subscription: F<perl5-summary-subscribe@perl.org>).
+The archive is at F<http://dev.perl.org/perl5/list-summaries/>.
+Corrections and comments are welcome.
+
+If you found this summary useful or enjoyable, please consider
+contributing to the Perl Foundation to help support the development
+of Perl.
