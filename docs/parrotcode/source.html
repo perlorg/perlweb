@@ -7,29 +7,30 @@ pre { background: #DDDDDD; border: solid black 1px;
     }
 </style>
 [% END %]
-<UL>
-  <LI><A HREF="#Releases">Releases</A>
-  <LI><A HREF="#VersionControl">Version Control</A>
-  <UL>
-    <LI><A HREF="#Subversion">Subversion</A>
-    <LI><A HREF="#SVK">SVK</A>
-  </UL>
-  <LI><A HREF="#Snapshots">Snapshots</A>
-</UL>
+<ul>
+  <li><a href="#Releases">Releases</a>
+  <li><a href="#VersionControl">Version Control</a>
+  <ul>
+    <li><a href="#Subversion">Subversion</a>
+    <li><a href="#SVK">SVK</a>
+  </ul>
+  <li><a href="#Snapshots">Snapshots</a>
+  <li><a href="#Binaries">Binary Packages</a>
+</ul>
 
 [% END %]
 
-<A NAME="Releases"></A>
-<H1>Releases</H1>
+<a name="Releases"></a>
+<h1>Releases</H1>
 
 <p>Parrot releases are collected into tarballs and are available for
 download.  The most recent release is available here:</p>
 
-<UL>
-  <LI><A
-   HREF="ftp://ftp.cpan.org/pub/CPAN/authors/id/L/LT/LTOETSCH/parrot-0.3.0.tar.gz"
-   >parrot 0.3.0</A>
-</UL>
+<ul>
+  <li><a
+   href="ftp://ftp.cpan.org/pub/CPAN/authors/id/L/LT/LTOETSCH/parrot-0.3.1.tar.gz"
+   >parrot 0.3.1</a>
+</ul>
 
 <A NAME="VersionControl"></A>
 <H1>Version Control</H1>
@@ -157,5 +158,15 @@ HREF="http://svn.perl.org/snapshots/parrot/">http://svn.perl.org/snapshots/parro
 can use rsync to synchronize with the latest snapshot:
 </p>
 <pre>
-  rsync -av --delete cvs.perl.org::parrot-HEAD parrot
+  rsync -av --delete svn.perl.org::parrot-HEAD parrot
 </pre>
+
+<A NAME="Binaries"></A>
+<h1>Binary Packages</h1>
+
+<p> As a convenience, some volunteers have provided pre-built versions of
+parrot for some platforms.  </p>
+
+<ul>
+  <li><a href="http://perlcabal.org/~rafl/debian">Debian Packages</a></li>
+  <li><a href="http://pxperl.com/">PXPerl</a> &quot;Perl stuff package for Windows 2000/XP. &quot; (includes parrot)</li>
