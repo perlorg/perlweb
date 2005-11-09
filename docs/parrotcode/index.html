@@ -27,29 +27,46 @@ Parrot 0.3.1</a> from the CPAN.
 
 <h2> What is Parrot? </h2>
 
-<p> Parrot is a virtual machine designed to execute bytecode for interpreted
-languages efficiently. Parrot will be the target for the Perl 6 compiler.
-There is already a partial Perl 6 compiler as well as compilers in various
-stages of completion for a wide range of other languages.  </p>
+<p> Parrot is a virtual machine designed to efficiently compile and execute
+bytecode for interpreted languages. Parrot will be the target for the final
+Perl 6 compiler, and is already usable as a backend for
+<a href="http://www.pugscode.org/">Pugs</a>, as well as variety of 
+<a href="/languages/">other languages</a>.
+</p>
 
 <h2>Where Are We?</h2>
 
-<p> The Parrot source code was first released to the world on Monday 10th of
-September 2001. Since then, an army of developers has been furiously hacking
-away on it. Currently you can compile Parrot assembly and PIR (an intermediate
-language) to Parrot bytecode and execute it. Objects, threads, garbage
-collection, a JIT compiler, namespaces, subroutines, a range of basic types
-(e.g., arrays, hashes, BigInt), NCI (for calling into native libraries)
-and multi-method dispatch for vtable methods are all available.  </p>
-
-<p> Sean O'Rourke has contributed a working Perl 6 parser and compiler for a
-significant subset of the Perl 6 definition that currently exists.  The
-languages directory of the distribution contains other compilers for you to
-look at.  </p>
-
-<p> To keep up to date on the latest developments, check out <a
+<p>To keep up to date on current developments, check out <a
 href="http://dev.perl.org/perl6/list-summaries/">This week on Perl 6</a> by
-Matt Fowles, which covers the Parrot and Perl 6 mailing lists.  </p>
+Matt Fowles, which covers the Parrot and Perl 6 mailing lists.</p>
+
+<p>Parrot supports two primary languages,
+<a href="examples/pasm.html">PASM</a> (assembly), and
+<a href="examples/pir.html">PIR</a>, both of which are compilable to
+bytecode.
+</p>
+
+<p>
+Parrot has 
+objects,
+threads,
+garbage collection,
+a JIT compiler,
+namespaces,
+subroutines,
+coroutines,
+continuations,
+NCI (ability to call native libraries),
+multi-method dispatch,
+multiple charset string support, and
+cross-platform bytecode portability.
+</p>
+
+<p>Parrot has a growing standard library which can be used by any high level
+language implementors targeting parrot. This includes PGE, the Parrot Grammar Engine, which
+has a working implementation of the new
+<a href="http://dev.perl.org/perl6/doc/design/syn/S05.html">Perl 6 Rules</a>.
+
 
 <h2>How to Get Involved</h2>
 
