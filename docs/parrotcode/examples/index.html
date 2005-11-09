@@ -1,81 +1,88 @@
 [% page.title = "Parrot examples" %]
-[% page.style = "default.html" %]
-[% page.sidebar = INCLUDE "tpl/navigation.html" %]
+[% page.sidebar = BLOCK %]
+[% page.morehead = BLOCK %]
+<style>
+.pre {
+  border: solid 1px;
+  padding: .5em;
+  margin: .5em;
+  white-space: pre;
+  font-family: monospace;
+}
+.code {
+  background-color: #ccf;
+  border-color: #00f;
+}
+.output {
+  background-color: #cfc;
+  border-color: #0f0;
+}
+.note {
+  background-color: #fcc;
+  border-color: #f00;
+}
+</style>
+[% END %]
+<ul>
+  <li><a href="pir.html">PIR</a></li>
+  <li><a href="pasm.html">PASM</a></li>
+[%#
+  <li><a href="pge.html">PGE></a></li>
+  <li><a href="stdlib.html">Standard Library></a></li>
+%]
+</ul>
 
-<h2>Introduction</h2>
+[% END %]
 
-<p>
-Parrot is a virtual machine used to efficiently execute bytecode for
-interpreted languages - specifically, Perl 6, although we would like
-to keep the door open for other languages in the future. As such,
-Parrot will be the core of the Perl interpreter; it will be the target
-platform to which Perl 6 code is compiled.
-</p>
-
-<p>
-Parrot currently consists of an assembler and a virtual
-machine. The best introduction to the Parrot virtual machine
-is an article by Simon Cozens, 
-<a href="http://www.perl.com/pub/a/2001/09/18/parrot.html">Parrot: Some Assembly Required</a>, and it is 
-recommended that you read that before continuing.
-Note that the pace of Parrot development is currently quite fast and
-some of the details in the article are out of date. This guide
-will attempt to keep up to date to the latest CVS Parrot sources.
-</p>
-
-<p>
-Parrot is intended to be the virtual machine for Perl 6, but it is not tied to Perl 6.
-In fact, we hope Parrot can be a valid target architecture and common language
-runtime for many languages. This can only be achieved through detailed Parrot examples
-and explanations - the purpose of this site.
-</p>
-
-<p>
-Download the latest version of Parrot if you have not already done so.
-</p>
-
-<p>
-Since Parrot provides two languages to generate bytecode, there are two 
-separate sets of examples:
-</p>
-
-<h2><a href="pasm.html">Parrot assembler</a></h2>
 
 <p>
-Parrot assembler (PASM) is a low-level language which compiles directly into
-the Parrot virtual machine. Unlike most other virtual machines (but
-like most real computers), Parrot is register-based. It has 32
-registers of four different types: integers, numbers, strings, and
-PMCs. These are named <tt>I0...I31</tt>, <tt>N0...N31</tt>, <tt>S0...S31</tt>,
- and <tt>P0...P31</tt>. Most
-Parrot operators have the same format: the name of the operator, the
-destination register, and the operands.
+Before you can run any examples, you'll need to 
+<a href="/source.html">download the latest version of Parrot</a>.
+If you don't have a compiler, some binary packages are available.
 </p>
+
+<p>Once you have a parrot executable, check out the various types of
+examples on the left. Also, be sure to check out the examples directory
+in the parrot repository.
+</p>
+
+<h2> Example Conventions </h2>
 
 <p>
-The <a href="/docs/pdd/pdd06_pasm.html">
-Parrot assembly language documentation (PDD6)</a> is the
-main source of information about the assembly language, so you should
-read that for full information about the language.
+As you read through the examples, you'll see the following typographic conventions:
 </p>
+<p>
+Code snippets will appear in blue:
+</p>
+
+<div class="pre code">10 PRINT "HELLO"
+</div>
 
 <p>
-<a href="pasm.html">PASM Examples</a>
+Expected output will appear in green:
 </p>
 
-<h2>Parrot Intermediate Language</h2>
+<div class="pre output">HELLO
+</div>
 
 <p>
-Parrot Intermediate Language (abbreviated PIR) (No, really) is a slightly 
-higher level language than PASM. It manages the 
-<a href="../docs/pdd/pdd03_calling_conventions.html">
-Parrot Calling Conventions
-(PDD03)</a>
-transparently, provides improved syntax, register allocation, register
-spilling, and more. 
+Occasionally, additional information will be presented in red: take note!
 </p>
 
-<p>
-<a href="pir.html">PIR Examples</a>
-</p>
+<div class="pre note">Help! I'm stuck inside a fortune cookie factory!
+</div>
 
+<h2>Running Examples</h2>
+
+For all of the examples, you can save the code in a file
+(PIR examples use a <tt>.pir</tt> suffix, PASM examples use a
+<tt>.pasm</tt> suffix.). Then you can either run the sample directly:
+
+<div class="pre note">parrot foo.pir
+</div>
+
+Or, you can compile to bytecode and then run it:
+
+<div class="pre note">parrot -o foo.pbc foo.pir
+parrot foo.pbc
+</div>

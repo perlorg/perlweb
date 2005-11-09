@@ -1,9 +1,27 @@
-[% page.title = "Parrot examples" %]
+[% page.title = "Parrot examples :: PIR" %]
 [% page.style = "default.html" %]
 [% page.sidebar = INCLUDE "tpl/navigation.html" %]
-
-Before reading these examples, we recommend you read the 
-<a href="pasm.html">PASM Examples</a>.
+<style>
+.pre {
+  border: solid 1px;
+  padding: .5em;
+  margin: .5em;
+  white-space: pre;
+  font-family: monospace;
+}
+.code {
+  background-color: #ccf;
+  border-color: #00f;
+}
+.output {
+  background-color: #cfc;
+  border-color: #0f0;
+}
+.note {
+  background-color: #fcc;
+  border-color: #f00;
+}
+</style>
 
 <h2>Hello world!</h2>
 
@@ -12,35 +30,16 @@ The first example clearly has to be an example that prints out <tt>&quot;Hello
 world!&quot;</tt>.
 </p>
 
-<!-- CSS? -->
-
-<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
-bgcolor="#0000ff"><tr><td><table WIDTH="600" BORDER="0"
-CELLPADDING="0" CELLSPACING="0" bgcolor="#ccccff"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
-.sub foo
+<div class="pre code">.sub foo
         # Trivial example
         print &quot;Hello world!\n&quot;
-        end
 .end
-</td></tr></table></td></tr></table></td></tr></table>
+</div>
 
-<p>
-If you save this small file as &quot;hello.pir&quot;, you can assemble 
-and execute it in one pass with <tt>./parrot hello.pir</tt>
-</p>
+Running this generates:
 
-<p>
-If you would rather assemble separately, you can first generate a bytecode
-file with <tt>./parrot -o hello.pbc hello.pir</tt>. Then, you can run the
-pre-assembled bytecode with: <tt>./parrot hello.pbc</tt>. Either way, you'll
-get:
-</p>
-
-<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
-bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
-CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
-Hello world!
-</td></tr></table></td></tr></table></td></tr></table>
+<div class="pre output">Hello world!
+</div>
 
 <p>
 First, <tt>.sub foo</tt> tells the compiler that we are beginning a subroutine 
@@ -51,16 +50,13 @@ that our sub definition is complete.
 </p>
 
 <p>
-Next, we have the contents of the PASM example. <tt>#</tt> indicates a
-comment, a fairly obvious <tt>print</tt> opcode, and an <tt>end</tt>
-opcode. Without the end, we'd walk off the end of the bytecode during
-execution, so don't leave it off.
+<tt>#</tt> indicates a comment, and is followed by a fairly obvious <tt>print</tt> opcode.
 </p>
 
 <p>
-<a name="footnote_1">
-Note that PIR requires that any code you give it must be placed in a
-subroutine.</a>
+<a name="footnote_1"></a>
+Note that PIR requires that any code you give it <b>must</b> be placed in a
+subroutine.
 <sup><a href="#footnote1">1</a></sup>
 </p>
 
@@ -69,54 +65,54 @@ subroutine.</a>
 <p>
 In PASM, you're required to keep track of all your registers. PIR lets you
 use &quot;temporary&quot; registers, so you no longer have to worry about
-register lifetimes, or spilling.
+register lifetimes.
 </p>
 
-<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
-bgcolor="#0000ff"><tr><td><table WIDTH="600" BORDER="0"
-CELLPADDING="0" CELLSPACING="0" bgcolor="#ccccff"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
-.sub temps
-        $I99 = 1
-        $N64 = 4.2
-	$S71 = &quot;Resting&quot;
-	print $I99
-	print &quot;, &quot;
-	print $N64
-	print &quot;, &quot;
-	print $S71
-	print &quot;\n&quot;
-        end
+<div class="pre code">.sub temps
+  $I99 = 1
+  print $I99
+  print &quot;, &quot;
+
+  $I98 = 2
+  print $I98
+  print &quot;, &quot;
+
+  $N64 = 4.2
+  print $N64
+  print &quot;, &quot;
+
+  $S71 = &quot;Resting&quot;
+  print $S71
+  print &quot;\n&quot;
 .end
-</td></tr></table></td></tr></table></td></tr></table>
+</div>
 
 <p>Prints:</p>
 
-<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
-bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
-CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
-1, 4.200000, Resting
-</td></tr></table></td></tr></table></td></tr></table>
+<div class="pre output">1, 2, 4.200000, Resting
+</div>
 
 <p>
 Note that by specifying a <tt>$</tt> in front of a register, we don't know 
-which of the &quot;physical&quot; registers that's being used, just the type.
-A trace of this program (<tt>./parrot -t temps.pir</tt>) shows:
+which of the &quot;physical&quot; registers that is being used, just the type.
+A trace of this program (<tt>parrot -t 1 temps.pir</tt>) shows:
 </p>
 
-<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
-bgcolor="#ff0000"><tr><td><table WIDTH="600" BORDER="0"
-CELLPADDING="0" CELLSPACING="0" bgcolor="#ffcccc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
-     0 set I30, 1       - I30=0, 
-     3 set N30, 4.2     - N30=0.000000, 
-     6 set S30, &quot;Resting&quot;       - , 
-     9 print I30        - I30=1
-    11 print &quot;, &quot;
-    13 print N30        - N30=4.200000
-    15 print &quot;, &quot;
-    17 print S30        - S30=&quot;Resting&quot;
-    19 print &quot;\n&quot; 1, 4.200000, Resting
-    21 end
-</td></tr></table></td></tr></table></td></tr></table>
+<div class="pre note">     0 set I0, 1        - I0=0, 
+     3 print I0         - I0=1
+     5 print &quot;, &quot;
+     7 set I0, 2        - I0=1, 
+    10 print I0         - I0=2
+    12 print &quot;, &quot;
+    14 set N0, 4.2      - N0=0.000000, 
+    17 print N0         - N0=4.200000
+    19 print &quot;, &quot;
+    21 set S0, "Resting"        - , 
+    24 print S0         - S0=&quot;Resting&quot;
+    26 print &quot;\n&quot;
+    28 set_returns PMC_C[5]
+    30 returncc
+</div>
 
 <p>
 The trace shows you the offset in the bytecode (useful for telling when
@@ -130,40 +126,34 @@ So, these temporary registers map to actual registers in the PVM, but
 using them frees
 the compiler writer from dealing with the details. Parrot's
 PIR assembler will automatically handle variable lifetimes, and reuse 
-actual registers when necessary. You can also use more than 32 registers of
-a single type - if there aren't enough physical registers, Parrot will
-create a container PMC and spill values into and out of the container as 
-necessary.
+actual registers when possible. You can see that both integer registers
+above map to <tt>I0</tt>.
 </p>
 
-<h2>Named Registers</h2>
+<p>You should also note the last two opcodes: PIR is automatically handling
+the calling conventions for you as the subroutine exits.</p>
+
+<h2>Variables! Well, named registers</h2>
 
 <p>
 In addition to temporary registers, you can declare named registers,
 which are effectively subroutine-specific variables. They don't
-necessarily correspond to high level language variables.  (Those are
+correspond to high level language variables.  (Those are
 more likely to be declared as lexicals or globals.)
 </p>
 
-<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
-bgcolor="#0000ff"><tr><td><table WIDTH="600" BORDER="0"
-CELLPADDING="0" CELLSPACING="0" bgcolor="#ccccff"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
-.sub pie
-        .local num almost_pi
-        almost_pi = 22/7.0
-	print almost_pi
-	print &quot;\n&quot;
-        end
+<div class="pre code">.sub pie
+  .local num almost_pi
+  almost_pi = 22/7.0
+  print almost_pi
+  print &quot;\n&quot;
 .end
-</td></tr></table></td></tr></table></td></tr></table>
+</div>
 
 <p>Prints:</p>
 
-<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
-bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
-CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
-3.142857
-</td></tr></table></td></tr></table></td></tr></table>
+<div class="pre output">3.142857
+</div>
 
 <p>
 If you examine the trace for this code, you'll see that there's no
@@ -185,10 +175,7 @@ does not provide high level language constructs like loops, with its
 conditional handling, it's very easy to generate them.
 </p>
 
-<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
-bgcolor="#0000ff"><tr><td><table WIDTH="600" BORDER="0"
-CELLPADDING="0" CELLSPACING="0" bgcolor="#ccccff"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
-.sub loopy
+<div class="pre code">.sub loopy
         .local int counter
         counter = 0
 LOOP:   if counter > 10 goto DONE
@@ -200,51 +187,40 @@ DONE:
         print &quot;\n&quot;
         end
 .end
-</td></tr></table></td></tr></table></td></tr></table>
+</div>
 
 <p>Prints:</p>
 
-<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
-bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
-CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
-0 1 2 3 4 5 6 7 8 9 10 
-</td></tr></table></td></tr></table></td></tr></table>
+<div class="pre output">0 1 2 3 4 5 6 7 8 9 10 
+</div>
 
 <h2>Subroutines</h2>
 
 <p>
 One of the strengths of PIR is its syntax for both defining and calling
 subroutines that support
-the Parrot Calling Conventions. Here's a simpler version of the double
-subroutine that we created in the PASM examples.
+the Parrot Calling Conventions.
 </p>
 
 
-<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
-bgcolor="#0000ff"><tr><td><table WIDTH="600" BORDER="0"
-CELLPADDING="0" CELLSPACING="0" bgcolor="#ccccff"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
-.sub double
-        .param int arg
-        arg *=  2
-        .return(arg)
+<div class="pre code">.sub double
+  .param int arg
+   arg *=  2
+   .return(arg)
 .end
 
-.sub main @MAIN
-        .local int result
-        result = double(42)
-        print result
-        print " was returned\n"
-        end
+.sub main :main
+  .local int result
+  result = double(42)
+  print result
+  print " was returned\n"
 .end
-</td></tr></table></td></tr></table></td></tr></table>
+</div>
 
 <p>Prints:</p>
 
-<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
-bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
-CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
-84 was returned
-</td></tr></table></td></tr></table></td></tr></table>
+<div class="pre output">84 was returned
+</div>
 
 <p>
 If you trace this program, you can see that it's handling the calling
@@ -255,7 +231,7 @@ necessary.
 </p>
 
 <p>
-Notice the <tt>@MAIN</tt> directive on the <tt>main</tt> subroutine? This
+Notice the <tt>:main</tt> directive on the <tt>main</tt> subroutine? This
 tells parrot that when running this file, <i>this</i> subroutine should be
 run first. Otherwise, the first subroutine we defined (<tt>double</tt>),
 would be run instead. This bears repeating: The <i>directive</i> is what
@@ -275,30 +251,23 @@ contains an invokable PMC. For example, if you wanted to use a subroutine
 from parrot's standard library:
 </p>
 
-<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
-bgcolor="#0000ff"><tr><td><table WIDTH="600" BORDER="0"
-CELLPADDING="0" CELLSPACING="0" bgcolor="#ccccff"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
-.sub main @MAIN
-        load_bytecode "library/Data/Escape.pbc"
-        .local pmc escaper
-        .local string result
+<div class="pre code">.sub main @MAIN
+  load_bytecode "library/Data/Escape.pbc"
+  .local pmc escaper
+  .local string result
 
-        escaper = find_global "Data::Escape", "String"
-        result = escaper( "This is an embedded newline:\n", "'")
-        print "result of '"
-        print result
-        print "'\n"
-        end
+  escaper = find_global "Data::Escape", "String"
+  result = escaper( "This is an embedded newline:\n", "'")
+  print "result of '"
+  print result
+  print "'\n"
 .end
-</td></tr></table></td></tr></table></td></tr></table>
+</div>
 
 <p>Prints:</p>
 
-<table CELLPADDING="1" CELLSPACING="0" BORDER="0"
-bgcolor="#00ff00"><tr><td><table WIDTH="600" BORDER="0"
-CELLPADDING="0" CELLSPACING="0" bgcolor="#ccffcc"><tr><td><table CELLPADDING="12" CELLSPACING="0"><tr><td><pre>
-result of 'This is an embedded newline: \n'
-</td></tr></table></td></tr></table></td></tr></table>
+<div class="pre output">result of 'This is an embedded newline: \n'
+</div>
 
 <p>
 One more PIR convenience you can see above.
@@ -307,21 +276,18 @@ that as a the first parameter, PIR lets you specify it as a left hand of
 an assignment. So, the PIR above:
 </p>
 
-<pre>
-escaper = find_global "Data::Escape", "String"
-</pre>
+<div class="pre code">escaper = find_global "Data::Escape", "String"
+</div>
 
 is syntactic sugar for
 
-<pre>
-find_global escaper, "Data::Escape", "String"
-</pre>
+<div class="pre code">find_global escaper, "Data::Escape", "String"
+</div>
 
 
 <hr>
 
 <sup><a href="#footnote_1">1</a></sup>
-<a name="footnote1">
+<a name="footnote1"></a>
 This is only mostly true. You can also use an <tt>.emit</tt>, 
 <tt>.eom</tt> pair, but this is beyond the scope of our examples.
-</a>
