@@ -30,16 +30,16 @@ The first example clearly has to be an example that prints out <tt>&quot;Hello
 world!&quot;</tt>.
 </p>
 
-<div class="pre code">.sub foo
+<pre class="pre code">.sub foo
         # Trivial example
         print &quot;Hello world!\n&quot;
 .end
-</div>
+</pre>
 
 Running this generates:
 
-<div class="pre output">Hello world!
-</div>
+<pre class="pre output">Hello world!
+</pre>
 
 <p>
 First, <tt>.sub foo</tt> tells the compiler that we are beginning a subroutine 
@@ -68,7 +68,7 @@ use &quot;temporary&quot; registers, so you no longer have to worry about
 register lifetimes.
 </p>
 
-<div class="pre code">.sub temps
+<pre class="pre code">.sub temps
   $I99 = 1
   print $I99
   print &quot;, &quot;
@@ -85,12 +85,12 @@ register lifetimes.
   print $S71
   print &quot;\n&quot;
 .end
-</div>
+</pre>
 
 <p>Prints:</p>
 
-<div class="pre output">1, 2, 4.200000, Resting
-</div>
+<pre class="pre output">1, 2, 4.200000, Resting
+</pre>
 
 <p>
 Note that by specifying a <tt>$</tt> in front of a register, we don't know 
@@ -98,7 +98,7 @@ which of the &quot;physical&quot; registers that is being used, just the type.
 A trace of this program (<tt>parrot -t 1 temps.pir</tt>) shows:
 </p>
 
-<div class="pre note">     0 set I0, 1        - I0=0, 
+<pre class="pre note">     0 set I0, 1        - I0=0, 
      3 print I0         - I0=1
      5 print &quot;, &quot;
      7 set I0, 2        - I0=1, 
@@ -112,7 +112,7 @@ A trace of this program (<tt>parrot -t 1 temps.pir</tt>) shows:
     26 print &quot;\n&quot;
     28 set_returns PMC_C[5]
     30 returncc
-</div>
+</pre>
 
 <p>
 The trace shows you the offset in the bytecode (useful for telling when
@@ -142,18 +142,18 @@ correspond to high level language variables.  (Those are
 more likely to be declared as lexicals or globals.)
 </p>
 
-<div class="pre code">.sub pie
+<pre class="pre code">.sub pie
   .local num almost_pi
   almost_pi = 22/7.0
   print almost_pi
   print &quot;\n&quot;
 .end
-</div>
+</pre>
 
 <p>Prints:</p>
 
-<div class="pre output">3.142857
-</div>
+<pre class="pre output">3.142857
+</pre>
 
 <p>
 If you examine the trace for this code, you'll see that there's no
@@ -175,7 +175,7 @@ does not provide high level language constructs like loops, with its
 conditional handling, it's very easy to generate them.
 </p>
 
-<div class="pre code">.sub loopy
+<pre class="pre code">.sub loopy
         .local int counter
         counter = 0
 LOOP:   if counter > 10 goto DONE
@@ -187,12 +187,12 @@ DONE:
         print &quot;\n&quot;
         end
 .end
-</div>
+</pre>
 
 <p>Prints:</p>
 
-<div class="pre output">0 1 2 3 4 5 6 7 8 9 10 
-</div>
+<pre class="pre output">0 1 2 3 4 5 6 7 8 9 10 
+</pre>
 
 <h2>Subroutines</h2>
 
@@ -203,7 +203,7 @@ the Parrot Calling Conventions.
 </p>
 
 
-<div class="pre code">.sub double
+<pre class="pre code">.sub double
   .param int arg
    arg *=  2
    .return(arg)
@@ -215,12 +215,12 @@ the Parrot Calling Conventions.
   print result
   print " was returned\n"
 .end
-</div>
+</pre>
 
 <p>Prints:</p>
 
-<div class="pre output">84 was returned
-</div>
+<pre class="pre output">84 was returned
+</pre>
 
 <p>
 If you trace this program, you can see that it's handling the calling
@@ -251,7 +251,7 @@ contains an invokable PMC. For example, if you wanted to use a subroutine
 from parrot's standard library:
 </p>
 
-<div class="pre code">.sub main @MAIN
+<pre class="pre code">.sub main @MAIN
   load_bytecode "library/Data/Escape.pbc"
   .local pmc escaper
   .local string result
@@ -262,12 +262,12 @@ from parrot's standard library:
   print result
   print "'\n"
 .end
-</div>
+</pre>
 
 <p>Prints:</p>
 
-<div class="pre output">result of 'This is an embedded newline: \n'
-</div>
+<pre class="pre output">result of 'This is an embedded newline: \n'
+</pre>
 
 <p>
 One more PIR convenience you can see above.
@@ -276,13 +276,13 @@ that as a the first parameter, PIR lets you specify it as a left hand of
 an assignment. So, the PIR above:
 </p>
 
-<div class="pre code">escaper = find_global "Data::Escape", "String"
-</div>
+<pre class="pre code">escaper = find_global "Data::Escape", "String"
+</pre>
 
 is syntactic sugar for
 
-<div class="pre code">find_global escaper, "Data::Escape", "String"
-</div>
+<pre class="pre code">find_global escaper, "Data::Escape", "String"
+</pre>
 
 
 <hr>

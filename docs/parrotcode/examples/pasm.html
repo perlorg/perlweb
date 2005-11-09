@@ -35,13 +35,13 @@ The first example clearly has to be an example that prints out <tt>&quot;Hello
 world!&quot;</tt>.
 </p>
 
-<div class="pre code">print &quot;Hello world!\n&quot;
-</div>
+<pre class="pre code">print &quot;Hello world!\n&quot;
+</pre>
 
 <p>When you run this example, you'll get:</p>
 
-<div class="pre output">Hello world!
-</div>
+<pre class="pre output">Hello world!
+</pre>
 
 <p>
 Note that the first line in the file is a comment, which starts with a
@@ -81,7 +81,7 @@ first number register to 4.2 and the first string register to
 &quot;Resting&quot;
 <p>
 
-<div class="pre code">  set     I1, 1
+<pre class="pre code">  set     I1, 1
   set     N1, 4.2
   set     S1, &quot;Resting&quot;
   print   I1
@@ -91,12 +91,12 @@ first number register to 4.2 and the first string register to
   print   S1
   print   &quot;\n&quot;
   end
-</div>
+</pre>
 
 <p>Prints:</p>
 
-<div class="pre output">1, 4.200000, Resting
-</div>
+<pre class="pre output">1, 4.200000, Resting
+</pre>
 
 <p>
 Note how it seems that the print operator is polymorphic - it can
@@ -112,18 +112,18 @@ the same type.
 </p>
 
 
-<div class="pre code">  set     I1, 10
+<pre class="pre code">  set     I1, 10
   set     I3, 30
   set     I1, I3
   print   I1
   print   &quot;\n&quot;
   end
-</div>
+</pre>
 
 <p>Prints:</p>
 
-<div class="pre output">30
-</div>
+<pre class="pre output">30
+</pre>
 
 <p>
 Remember that the first operand is the destination register, so that
@@ -136,7 +136,7 @@ To copy between registers of different types, the <tt>set</tt>
 operator is also used:
 </p>
 
-<div class="pre code">  set     I1, 10
+<pre class="pre code">  set     I1, 10
   set     N1, I1
   set     N2, 4.2
   set     I2, N2
@@ -145,12 +145,12 @@ operator is also used:
   print   I2
   print   &quot;\n&quot;
   end
-</div>
+</pre>
 
 <p>Prints:</p>
 
-<div class="pre output">10.000000, 4
-</div>
+<pre class="pre output">10.000000, 4
+</pre>
 
 <p>
 Note that at the moment there
@@ -167,7 +167,7 @@ assumed.
 </p>
 
 
-<div code="pre code">  set     I1, 10
+<pre code="pre code">  set     I1, 10
   inc     I1       # I1 is now 11
   inc     I1       # I1 is now 12
   inc     I1       # I1 is now 13
@@ -180,12 +180,12 @@ assumed.
   print   N1
   print   &quot;\n&quot;
   end
-</div>
+</pre>
 
 <p>Prints:</p>
 
-<div class="pre output">13, 39.000000
-</div>
+<pre class="pre output">13, 39.000000
+</pre>
 
 <p>
 More common arithmetic operators are: <tt>add</tt>, <tt>sub</tt>,
@@ -193,7 +193,7 @@ More common arithmetic operators are: <tt>add</tt>, <tt>sub</tt>,
 divide the contents of registers:
 </p>
 
-<div class="pre code">  set     I1, 2
+<pre class="pre code">  set     I1, 2
   set     I2, 4
   add     I3, I1, I2  # I3 is now 6 (2+4)
   sub     I3, I1, I2  # I3 is now -2 (2-4)
@@ -208,12 +208,12 @@ divide the contents of registers:
   print   N3
   print   &quot;\n&quot;
   end
-</div>
+</pre>
 
 <p>Prints:</p>
 
-<div class="pre output">7, 0.333333
-</div>
+<pre class="pre output">7, 0.333333
+</pre>
 
 <p>
 Note that <tt>add I1, I1, 5</tt> is also valid: both constants
@@ -238,7 +238,7 @@ end of another), <tt>substr</tt> (extract substrings), <tt>repeat</tt>
 (repeat a string), <tt>index</tt> (search for a substring):
 </p>
 
-<div class="pre code">  set     S1, &quot;Fourty&quot;
+<pre class="pre code">  set     S1, &quot;Fourty&quot;
   set     S2, &quot;two&quot;
   length  I1, S2       # I1 is now 3
   print   I1
@@ -254,12 +254,12 @@ end of another), <tt>substr</tt> (extract substrings), <tt>repeat</tt>
   print   S3
   print   &quot;\n&quot;
   end
-</div>
+</pre>
 
 <p>Prints:</p>
 
-<div class="pre output">3, Fourty, Four, Fourtytwotwo
-</div>
+<pre class="pre output">3, Fourty, Four, Fourtytwotwo
+</pre>
 
 <p>
 Note that the two-argument <tt>concat</tt> concatenates the second
@@ -277,7 +277,7 @@ presented at the start of the line with a colon.
 </p>
 
 
-<div class="pre code">  set     S1, &quot;Beautiful&quot;
+<pre class="pre code">  set     S1, &quot;Beautiful&quot;
   branch  CHOIR
 EX:
   print   S1
@@ -288,12 +288,12 @@ CHOIR:
   branch  EX
 END:
   end
-</div>
+</pre>
 
 <p>Prints:</p>
 
-<div class="pre output">Beautiful plumage!
-</div>
+<pre class="pre output">Beautiful plumage!
+</pre>
 
 <p>
 The following conditional operators are available: <tt>eq</tt>
@@ -308,7 +308,7 @@ The following code prints the
 numbers from 1 to 10, by looping over until I1 is greater than 10:
 </p>
 
-<div class="pre code">  set     I1, 1
+<pre class="pre code">  set     I1, 1
 REDO:
   gt      I1, 10, END
   print   I1
@@ -318,12 +318,12 @@ REDO:
 END:
   print &quot\n&quot;
   end
-</div>
+</pre>
 
 <p>Prints:</p>
 
-<div class="pre output">1 2 3 4 5 6 7 8 9 10 
-</div>
+<pre class="pre output">1 2 3 4 5 6 7 8 9 10 
+</pre>
 
 <p>
 The conditional operators take a register and either a constant or
@@ -335,7 +335,7 @@ The <tt>if</tt> opcode tests if a register holds a true value. Any
 value other than zero is true.
 </p>
 
-<div class="pre code">  set     I1, 1
+<pre class="pre code">  set     I1, 1
   if      I1, TRUE
   print   &quot;False!\n&quot;
   branch  END
@@ -343,12 +343,12 @@ TRUE:
   print   &quot;True!\n&quot;
 END:
   end
-</div>
+</pre>
 
 <p>Prints:</p>
 
-<div class="pre output">True!
-</div>
+<pre class="pre output">True!
+</pre>
 
 <h2>Subroutines</h2>
 
@@ -364,17 +364,17 @@ returns from a subroutine). The following code jumps to a subroutine
 named <tt>HELLO</tt> which prints a message and returns.
 </p>
 
-<div class="pre code">  bsr     HELLO
+<pre class="pre code">  bsr     HELLO
   end
 
 HELLO:
   print &quot;Hello there!\n&quot;
   ret
-</div>
+</pre>
 
 <p>Prints:</p>
 
-<div class="pre output">Hello there!</div>
+<pre class="pre output">Hello there!</pre>
 
 <p>The parrot calling conventions have recently changed. While examples
 will be generated for PASM-based calling conventions, it is recommended
@@ -403,7 +403,7 @@ adds them together.
 </p>
 
 
-<div class="pre code">  new P0, .PerlInt
+<pre class="pre code">  new P0, .PerlInt
   set P0, 123
   new P1, .PerlInt
   set P1, 321
@@ -411,16 +411,16 @@ adds them together.
   print P1
   print &quot;\n&quot;
   end
-</div>
+</pre>
 
 <p>Prints:</p>
 
-<div class="pre output">444
-</div>
+<pre class="pre output">444
+</pre>
 
 <p>The following code concatenates a number and a string. </p>
 
-<div class="pre code">  new     P0, .PerlInt
+<pre class="pre code">  new     P0, .PerlInt
   set     P0, 42
   new     P1, .PerlInt
   set     P1, &quot; is the answer!&quot;
@@ -428,12 +428,12 @@ adds them together.
   print   P0
   print   &quot;\n&quot;
   end
-</div>
+</pre>
 
 <p>Prints:</p>
 
-<div class="pre output"> 42 is the answer!
-</div>
+<pre class="pre output"> 42 is the answer!
+</pre>
 
 <p>
 It's worth noting that Perl integers also behave as strings and as a result,
@@ -441,7 +441,7 @@ PMCs have the ability to change their own type on the fly. (also known as
 morphing or shimmering). If you trace this code:
 </p>
 
-<div class="pre note">     0 new P0, 35       - P0=PMCNULL, 
+<pre class="pre note">     0 new P0, 35       - P0=PMCNULL, 
      3 set P0, 42       - P0=PerlInt=PMC(0xcf11d0 Num:0.000000 Int:0), 
      6 new P1, 35       - P1=PMCNULL, 
      9 set P1, " is the answer!"        - P1=PerlInt=PMC(0xcf11b8 Num:0.000000 Int:0), 
@@ -449,7 +449,7 @@ morphing or shimmering). If you trace this code:
     16 print P0         - P0=PerlString=PMC(0xcf11d0 Str:"42 is the answer!")
     18 print "\n"
     20 end
-</div>
+</pre>
 
 <p>You see that the P0 and P1 registers are initialized as PerlInts.
 At line 12, however, the concat is processing a PerlInt (P0) and a PerlString
