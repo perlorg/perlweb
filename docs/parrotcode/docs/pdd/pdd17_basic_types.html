@@ -11,9 +11,11 @@ POD comes from
 and cache for 24 hours.
 %]
 
+<h1>Draft: Pending Verification</h1>
+
 [% USE ua = CacheLWPSimple %]
 [% data = ua.get( 'url' =>
-      'http://svn.perl.org/parrot/trunk/docs/pdds/pdd17_basic_types.pod'
+      'http://svn.perl.org/parrot/trunk/docs/pdds/clip/pdd17_basic_types.pod'
            'ttl' => 1*60*60 ) %]
 [% USE PodSimple %]
 [% PodSimple.parse('html', data ) %]

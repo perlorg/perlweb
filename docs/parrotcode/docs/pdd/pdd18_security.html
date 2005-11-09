@@ -1,4 +1,4 @@
-[% page.title = "Opcode Function specs" %]
+[% page.title = "Document parrot's security infrastructure" %]
 [% page.style = "default.html" %]
 [% page.sidebar = INCLUDE "tpl/navigation.html" %]
 
@@ -6,7 +6,7 @@
 <B>PLACEHOLDER</B><BR>
 POD comes from 
 
-<tt>http://svn.perl.org/parrot/trunk/docs/pdds/pdd05_opfunc.pod</tt>
+<tt>http://svn.perl.org/parrot/trunk/docs/pdds/pdd18_security.pod</tt>
 
 and cache for 24 hours.
 %]
@@ -15,7 +15,7 @@ and cache for 24 hours.
 
 [% USE ua = CacheLWPSimple %]
 [% data = ua.get( 'url' =>
-      'http://svn.perl.org/parrot/trunk/docs/pdds/clip/pdd05_opfunc.pod'
+      'http://svn.perl.org/parrot/trunk/docs/pdds/clip/pdd18_security.pod'
            'ttl' => 1*60*60 ) %]
 [% USE PodSimple %]
 [% PodSimple.parse('html', data ) %]
