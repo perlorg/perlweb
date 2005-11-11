@@ -1,4 +1,4 @@
-[% page.title = "Parrot" %]
+[% page.title = "Parrot Virtual Machine" %]
 [% page.forcenavigation = 1 %]
 [% page.sidebar = BLOCK %]
 [% page.tagline = "one bytecode to rule them all" %]
@@ -25,7 +25,7 @@ href="ftp://ftp.cpan.org/pub/CPAN/authors/id/L/LT/LTOETSCH/parrot-0.3.1.tar.gz">
 Parrot 0.3.1</a> from the CPAN. 
 </p>
 
-<h2> What is Parrot? </h2>
+<h2> What is Parrot </h2>
 
 <p> Parrot is a virtual machine designed to efficiently compile and execute
 bytecode for interpreted languages. Parrot will be the target for the final
@@ -34,7 +34,7 @@ Perl 6 compiler, and is already usable as a backend for
 <a href="/languages/">other languages</a>.
 </p>
 
-<h2>Where Are We?</h2>
+<h2>Under Development</h2>
 
 <p>To keep up to date on current developments, check out <a
 href="http://dev.perl.org/perl6/list-summaries/">This week on Perl 6</a> by
@@ -43,33 +43,35 @@ Piers's summaries will appear on
 <a href="http://www.bofh.org.uk/xml/atom10/category/perl-6-summaries/feed.xml">
 this RSS feed</a> first.</p>
 
-<p>Parrot supports two primary languages,
-<a href="examples/pasm.html">PASM</a> (assembly), and
-<a href="examples/pir.html">PIR</a>, both of which are compilable to
-bytecode.
-</p>
-
 <p>
-Parrot has 
-objects,
-threads,
-garbage collection,
-a JIT compiler,
-namespaces,
-subroutines,
-coroutines,
-continuations,
-NCI (ability to call native libraries),
-multi-method dispatch,
-multiple charset string support, and
-cross-platform bytecode portability.
+We're happy to report that as of late, the rate of parrot development has
+been increasing. Here's a short summary of what's going on now:
+</p><p>
+Design-wise, Chip Salzenberg is working on calling conventions with respect
+to exception
+handlers, while Matt Diephouse tackles namespaces, Joshua Hoblitt considers a
+rewrite of the configure system, and Jonathan Worthington is both designing
+and implementing high-level language debug segments and packfile PMCs.
+Leopold T&ouml;tsch has
+the lexical specification
+(<a href="/docs/pdd/pdd20_lexical_vars.html">PDD20</a>)
+in his implementation queue, and has been
+improving parrot's Unicode support.
+</p><p>
+The Parrot Grammar Engine (PGE) is in a state of constant improvement, keeping
+Patrick Michaud out of trouble. Meanwhile ParTcl, Will Coleda's port of Tcl,
+continues to push parrot to implement new routines and has been quite helpful
+at finding garbage collector bugs. With Leo, Will continues smoking them out,
+hunting them down, and bringing them to justice. Allison Randal is continuing
+her implementation of Perl 1, a.k.a. 'Punie.'
+</p><p>
+Bernhard Schmalhofer has been revising the stale examples in the repository,
+updating them to
+provide a good starting point for learning parrot, and adding tests to make
+sure they are updated as parrot grows and changes. Jerry Gay has been adding
+tests to PGE, and has been trying to stay ahead of Patrick (so far, Patrick
+has been much too fast to catch.)
 </p>
-
-<p>Parrot has a growing standard library which can be used by any high level
-language implementors targeting parrot. This includes PGE, the Parrot Grammar Engine, which
-has a working implementation of the new
-<a href="http://dev.perl.org/perl6/doc/design/syn/S05.html">Perl 6 Rules</a>.
-
 
 <h2>How to Get Involved</h2>
 
