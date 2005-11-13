@@ -62,13 +62,14 @@ sub translate {
   $psh->complain_stderr(1);
   $psh->output_string( \$out );
   $psh->set_source( \( $data->{text} ) );
+  my $title = $psh->get_title_short( );
   $psh->run;
 
   Template::Document->new({
 			   BLOCK => sub { $out },
 			   METADATA => {
 					translator => 'POD',
-					title => $psh->get_title_short( ),
+					title => $title,
 				       }
 			  })
       or die $Template::Document::ERROR;
