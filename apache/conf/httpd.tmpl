@@ -296,6 +296,13 @@ PerlWarn On
 
 PerlPostReadRequestHandler ProxyIP Combust::Notes
 
+[% IF config.use_apache_statinc %]
+PerlInitHandler Apache::StatINC
+[%   IF config.use_apache_statinc > 1 %]
+PerlSetVar StatINC_Debug 1
+[%   END %]
+[% END %]
+
 
 NameVirtualHost *:[% config.port %]
 
