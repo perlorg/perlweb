@@ -164,8 +164,22 @@ some of the old site configurations for examples.
 
 =back
 
+=head1 Database Setup
+
+CREATE TABLE `combust_cache` ( 
+    `id` varchar(250) character set latin1 collate latin1_bin NOT NULL default '',
+    `type` varchar(128) character set latin1 collate latin1_bin NOT NULL default '',
+    `created` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP, 
+    `purge_key` varchar(64) character set latin1 collate latin1_bin default NULL,
+    `data` mediumblob NOT NULL,
+    `metadata` mediumblob,
+    `serialized` tinyint(1) NOT NULL default '0',
+    `expire` datetime NOT NULL default '0000-00-00 00:00:00',
+     PRIMARY KEY  (`id`,`type`),  KEY `expire_idx` (`expire`),  KEY `purge_idx` (`purge_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 =head2 Copyright
 
-Combust is copyright 2003-2004 Ask Bjørn Hansen and Develooper LLC.  See
+Combust is copyright 2003-2004 Ask BjÃ¸rn Hansen and Develooper LLC.  See
 the LICENSE file in the main combust directory for the full details.
 

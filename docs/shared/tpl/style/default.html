@@ -43,8 +43,11 @@
   <title>[% page.title %]</title>
   <link rel="stylesheet" type="text/css" 
         href="[% page.css || "/css/perl.css" %]" 
-        title="Default CSS2" media="screen">
-  <link rel="shortcut icon" href="[% page.favicon || "/favicon.ico" %]">
+        title="Default">
+ [% FOR css = page.css_more %]
+ <link rel="stylesheet" type="text/css" href="[% css %]">
+ [% END %]
+ <link rel="shortcut icon" href="[% page.favicon || "/favicon.ico" %]">
   [% IF page.description;
      '<META name="description" content="' _ page.description _ '">';
      END
