@@ -220,9 +220,5 @@ sub docs_name {
   $cfg->param('docs_name') || 'docs';
 }
 
-sub use_apache_statinc {
-  $cfg->param('use_apache_statinc') || 0;
-}
-
 
 1;

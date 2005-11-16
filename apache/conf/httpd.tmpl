@@ -1,7 +1,6 @@
 [% # -*- apache -*- %]
 [% dont_edit # add warning; do edit *THIS* file.. ;-) %]
 
-
 #
 # httpd.tmpl - 
 # 
@@ -279,6 +278,13 @@ ErrorDocument 500 /error/500.html
 [% IF config.apache_reload %]
 PerlModule Apache::Reload
 PerlInitHandler Apache::Reload
+[%   IF config.use_apache_reload > 1 %]
+PerlSetVar ReloadDebug On
+[%   END %]
+[% END %]
+
+
+
 [% END %]
 
 [% IF config.apache_dumpheaders %]
@@ -295,14 +301,6 @@ PerlWarn On
 #PerlTransHandler Combust::Trans
 
 PerlPostReadRequestHandler ProxyIP Combust::Notes
-
-[% IF config.use_apache_statinc %]
-PerlInitHandler Apache::StatINC
-[%   IF config.use_apache_statinc > 1 %]
-PerlSetVar StatINC_Debug 1
-[%   END %]
-[% END %]
-
 
 NameVirtualHost *:[% config.port %]
 
