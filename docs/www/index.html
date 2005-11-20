@@ -41,17 +41,19 @@
     <DIV CLASS="ITEMS">
     <a href="http://learn.perl.org/">learn</a>, 
     <a href="http://history.perl.org/">history</a>,
-    <a href="http://perl.oreilly.com/news/success_stories.html">success stories</a>
+    <a href="http://perl.oreilly.com/news/success_stories.html">success stories</a>,<br>
+    <a href="get.html">downloads</a><br>
     <P>
     </div>
 
-    <a href="get.html" CLASS="TOPIC">Get Perl</a>
+    <a href="http://cpan.perl.org/" CLASS="TOPIC">CPAN</a>
     <DIV CLASS="ITEMS">
-    <a href="http://cpan.perl.org/">modules and extensions</a>,<br>
-    <a href="http://www.cpan.org/src/README.html">the Perl sourcecode</a><br>
-
+    <a href="http://search.cpan.org/">Search</a>,
+    <a href="http://cpanratings.perl.org/">CPAN&nbsp;Ratings</a>,
+    <a href="http://www.annocpan.org/">Annotated&nbsp;CPAN</a>
     <P>
     </div>
+
 
     <a href="http://dev.perl.org/" CLASS="TOPIC">Perl Core Development</a>
     <DIV CLASS="ITEMS">
@@ -59,6 +61,7 @@
     <a href="http://dev.perl.org/perl6/">Perl 6</a>, 
     <a href="http://www.parrotcode.org/">Parrot</a>, 
     <a href="http://bugs.perl.org/">bugs</a>
+    <br><br>
     <P>
     </div>
     
@@ -71,11 +74,11 @@
     <P>
     </div>
     
-    <a href="events.html" CLASS="TOPIC">Events</a>
+    <a href="events.html" CLASS="TOPIC">Events and Conferences</a>
     <DIV CLASS="ITEMS">
     <a href="http://www.yapc.org/">YAPC</a>, 
-    <a href="http://conferences.oreillynet.com/">The Perl Conference</a>,
-    <a href="http://www.perlworkshop.de/">German Perl Workshop</a>, 
+    <a href="http://conferences.oreillynet.com/oscon/">The Perl Conference</a>,
+    <br>
     <a href="http://www.pm.org/">local meetings</a>
     </div>
     </td>
@@ -103,10 +106,8 @@
     <DIV CLASS="ITEMS">
     <a href="http://www.pm.org/">Perl Monger user groups</a>,
     <a href="http://www.perlmonks.org/">Perl&nbsp;Monks</a>,
-    <a href="http://lists.perl.org/">mail lists</a>,
-    <a href="http://planet.perl.org/">Planet Perl</a>,
-    <a href="http://cpanratings.perl.org/">CPAN reviews</a>,
-    <a href="http://www.annocpan.org/">Annotated CPAN</a>
+    <a href="http://lists.perl.org/">Mailing lists</a>,
+    <a href="http://planet.perl.org/">Planet Perl</a>
     <P>
     </div>
     
@@ -126,7 +127,7 @@
  </tr>
 
 [% MACRO quicknews(shortname,count) BLOCK %]
-[%- UNLESS count %]
+[%- IF count < 1 %]
   [%  count = 2 %]
 [% END %]
 [%- TRY %]
