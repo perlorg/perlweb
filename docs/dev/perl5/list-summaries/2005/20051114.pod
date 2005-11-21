@@ -1,0 +1,325 @@
+=head1 This Week on perl5-porters - 11-20 November 2005
+
+The crackdown. A number of bugs were fixed this week, possibly
+obsolete code was scrutinised, Hugo patched the regexp engine and
+Perl on Windows was improved.
+
+=head2 C<h2ph> finds C<gcc>'s include directory
+
+Brendan O'Dea posted a patch to use the C<gcc> command line switch
+C<--print-libgcc-file-name> to locate the C<gcc> include directory.
+The previous technique of parsing C<gcc -v> no longer works on
+version 4.
+
+H.Merijn Brand wanted to know when C<--print-libgcc-file-name> was
+introduced (otherwise things would start failing for older gcc
+compilers). Brendan said that he had reached as far back as 2.95,
+and the switch was supported. Abe Timmerman chipped in with a
+justifiably ancient 2.7.2.2 gcc compiler that also
+supported the switch.
+
+Jason Vas Dias pointed to bug #37582 that he had filed on the issue,
+and that the patch had been applied by Steve Peters as change #26074.
+
+  Brendan's patch
+  http://xrl.us/iiau
+
+  Jason's patch
+  https://rt.perl.org/rt3/Ticket/Display.html?id=37582
+
+=head2 Eliminating discrete arenaroots
+
+Jim Cromie issued a reworked, tested on threaded and unthreaded,
+patch to remove the fifteen different type-specific arenaroots,
+and asked people to have a smoke. Nicholas Clark went over the
+patch very carefully and made a number of suggestions, and
+Jim proposed a revision of the patch, which Nicholas applied as
+#26139.
+
+After looking at Nicholas's reworking of the patch, Jim added a
+number of corrections to the comments in the code, and then posted
+a series of benchmark results showing that the patch should have
+made things go faster (with the usual proviso about statistics).
+
+Later in the week, Jim came back with another patch that gathered
+the arenas into a linked list. This has some upsides and some
+downsides, but notably, it allows the possibility of exposing
+the arena to allow performance tuning.
+
+  The elimination
+  http://xrl.us/iiav
+
+  Benchmark results
+  http://xrl.us/iiaw
+
+  RFC - linked list of arenas
+  http://xrl.us/iiax
+
+=head2 A better warning in maint
+
+Yitzchak Scott-Thoennes asked whether change #22807, which makes
+C<$^O !~ /xxx/> emit the warning C<Useless use of negative pattern
+binding (!~ in void context)> instead of C<Useless use of not in
+void context> should be applied to maint. Nicholas yelped in pain
+and whispered something about perl 5.10. Yitzchak sympathised, and
+went through his own blead patches, evaluating which ones were
+worthy (safe enough) to be applied to maint.
+
+  The question
+  http://xrl.us/iiay
+
+  Yitzchak's list
+  http://xrl.us/iiaz
+
+=head2 C<h2xs> and backwards compatibility
+
+Steven Schubiger voiced his disquiet over the way h2xs ties the
+Perl version of the module to the module of perl installed on
+the author's machine (even when it might run perfectly well on
+any number of prior versions).
+
+Rafael Garcia-Suarez agreed that the orginal design decisions was
+probably incorrect and Nicholas remembered a previous thread on the matter,
+which Steven tracked down. Sébastien Aperghis-Tramoni
+was annoyed by modules that failed to install on 5.8.5 because
+they required 5.8.7, and wondered if it wouldn't be better to
+focus on the branch version (that is, 5.8), rather than relying
+on the subversion (the x in 5.8.x), and offered a patch. And also
+pointed out that C<XSLoader> is backwards-compatible as far back
+as C<5.005_04>.
+
+Rafael declined to pick up the patch, pointing out that there
+is no way of ensuring that code that runs on 5.8.x will run on
+5.8.x-1 and lower.
+
+This latter point prompted David Nicol to ask whether any
+documentation existed relating feature to version, and when
+the feature moved from absent, to experimental, to robust.
+
+  Doubts over h2xs
+  http://xrl.us/iia2
+
+  2001, a Perl odyssey
+  http://xrl.us/iia3
+
+=head2 Abigail and the regexp engine
+
+Abigail posted some code where it was expected that
+C<'A B' =~ /^(.)\s+.$(?(1))/> should match. In 5.005 it
+used to work, but from 5.6.0 and beyond it fails.
+
+Andreas König tried to track down the patch that
+caused the change in behaviour, but C<gcc> got in the way.
+In fact, depending on whether he used version 3.2.3 or
+4.0.3 the pattern matched, or didn't, respectively.
+
+Hugo van der Sanden burnt a precious tuit or two and
+rummaged around in the regexp engine internals and
+made a one-line change that fixed the problem, but
+said that he didn't have time to study the ramifications
+implied by the patch and noted that "C<intuit_start> is
+probably the least maintainable piece of code in perl".
+
+  Now why would you want to do a thing like that?
+  http://xrl.us/iia4
+
+=head2 Tracking down a Win32 smoke failure
+
+One of Steve Hay's boxes phoned home with a smoke failure.
+After first ignoring it and hoping it would just go away
+of its own accord, Steve had a closer look and noticed that
+it was a real bug, and only occurred when C<PERL_IMPLICIT_SYS>
+was defined. Unfortunately, this particular C<#define> is needed
+by ActivePerl, and Steve tracked the change in behaviour
+down to patch #26108. A three line change to tweak stacks
+in C<BEGIN> blocks.
+
+Nicholas shrunk the problem down to a neat
+
+  #!./perl -w
+
+  BEGIN {
+    $SIG{INT} = sub {exit(0)};
+    kill 'INT', $$;
+  }
+
+which causes a little known routine named C<S_unwind_handler_stack>
+to blow up. After a certain amount of detective work, he was able
+to show quite clearly I<why> the code was failing, but was at a
+loss as to I<how> to fix it.
+
+Steve Hay pointed to a thread from last year where Jan Dubois posted
+a patch that seemed promising at the time, but for whatever reason
+was never polished and applied to blead.
+
+Jan spoke up and offered a bit more detail about how the patch
+worked, and what it needed in order to be complete. The next day
+he came back with a much better version. Stever Peters applied it
+and all the tests passed. Yay Jan!
+
+  Smoke issues forth
+  http://xrl.us/iia5
+
+  The offending patch
+  http://public.activestate.com/cgi-bin/perlbrowse?patch=26108
+
+  "free to wrong pool", circa January 2004
+  http://xrl.us/iia6
+
+=head2 Is C<STRANGE_MALLOC> still useful?
+
+Nicholas wondered about the different code paths taken depending
+on whether C<STRANGE_MALLOC> is defined. He wondered whether it
+would be safe to assume that C<malloc>/C<realloc>/C<free> work
+correctly these days, and that by chainsawing it out we would
+escape some no-longer-needed complexity?
+
+Andy Dougherty supplied a valuable history lesson, explaining
+why things came to be the way they are. And concurring that at
+this point in time, it could possibly get the axe, but it would
+be important to try out a couple of big applications to see how
+they fare.
+
+  Compare the simple code path to the complex code path
+  http://xrl.us/iia7
+
+  Sarathy's 1995 summary of the problem
+  http://xrl.us/iia8
+
+=head2 When errors are reported on the wrong line
+
+David Hillman crafted a detailed bug report concerning errors
+being reported on the wrong line (which of course tends to
+drive people insane when they try debugging it).
+
+Dave Mitchell, noting the relative frequency with which these
+sorts of bug reports tend to appear, wondering what the cost
+benefit ratio would be of using up more memory per op in order
+to keep accurate track of the current line.
+
+Jim Cromie came up with what he termed a rather ugly solution
+to the matter. Then again, beauty is in the eye of the beholder.
+Dave Mitchell followed up with some preliminary numbers on the
+memory cost. The concensus is that a certain amount of memory
+could be traded for the peace of mind it would bring.
+
+  The bug report
+  http://xrl.us/iia9
+
+  An ugly fix
+  http://xrl.us/iiba
+
+=head2 Sun Studio compiler for Linux
+
+Steve Peters tweaked F<hints/linux.sh> to get the Sun Studio compilers
+for Linux up and running. The results are promising, although the patch,
+in Steve's own opinion, needs work.
+
+He also used it to take a look at Jarkko Hietaniemi's C<valgrind>
+finding from last month.
+
+  The tweak
+  http://xrl.us/iibb
+
+  Problems with sprintf()
+  http://xrl.us/iibc
+
+  Jarkko's valgrind discovery last month
+  http://xrl.us/iibd
+
+=head2 Perl 5 Bug Summary
+
+The current number of open issues stands at 1508.
+
+  The bugs at the beginning of the week
+  http://xrl.us/iibe
+  
+  The Bug Summary
+  http://rt.perl.org/rt3/NoAuth/perl5/Overview.html
+
+=head2 In brief
+
+B<C<abs2rel("/foo/bar", "/foo/bar")>> should return C<'.'> or
+something else sensible, according to Ken Williams (and not an empty
+string).  After asking around if anything other than C<File::Spec>
+relied on the behaviour, Ken went ahead and fixed the problem in
+C<Path::Class>.
+
+  http://xrl.us/iibf
+
+B<C<local> and C<thread::shared> don't mix>. "dean" filed bug
+#37671 showing how localising variables bound to shared variables can
+cause the shared variable to become undefined. At least in version
+5.8.4.
+
+  http://xrl.us/iibg
+
+B<C<Compress::Zlib> should now build nicely> on Win32 environments,
+now that Paul Marquess has fixed a lurking C<binmode> bug.
+
+  http://xrl.us/iibh
+
+B<Recent C<const>ing changes> to the codebase had broken C<perlbug>'s
+ability to grok F<patchlevel.h>. Yitzchak filed a patch to make it
+work again and threw some compatibility future-proofing into the
+bargain.
+
+  http://xrl.us/iibi
+
+B<Dynamically appending code to an existing file>. Jos I. Boumans
+wants to do this from time to time, and showed several techniques
+for implementing it, however, only two methods work. Looking at
+C<pp_require> in F<pp_ctl.c>, it looks as if the code is going
+straight to the file, rather than going through a higher layer.
+Jos asked if this could or should be fixed, or nailed down in the
+documentation. No takers.
+
+  http://xrl.us/iibj
+
+B<Another source of segmentation faults killed>. Peter Dintelmann
+followed on from last week and continued to nail segfaults. He noted
+that executing the code snippet C<PerlIO::get_layers undef> would
+end in grief and patched F<universal.c> to make it work correctly
+(or rather, not crash). Applied by Steve Peters as #26144.
+
+  http://xrl.us/iibk
+
+Vadim Konovalov supplied B<a patch make WinCE compile blead>
+and wondered whether F<./wince> shouldn't be made a subdirectory
+of the F<./win32> directory in the source tree. H.Merijn made a few
+remarks about the patch, basically prodding Vadim to give himself
+and Rainer a bit more credit in the README.
+
+  http://xrl.us/iibm
+
+B<When in doubt, use brute force.> "fbriere" noted a cute bug: if
+you require a module that dies when it is loaded, it fails the first
+time. But the second time, it succeeds!
+
+  http://xrl.us/iibn
+
+Andy Lester took a preliminary run through the codebase and B<axed
+the ancient RCS commit comments> in the source. (These days the
+codebase is managed in a Perforce repository).
+
+  http://xrl.us/iibo
+
+=head2 About this summary
+
+This summary was written by David Landgren.
+
+Information concerning bugs referenced in this summary (as #nnnnn)
+may be viewed at http://rt.perl.org/rt3/Ticket/Display.html?id=nnnnn
+
+Information concerning patches to maint or blead referenced in
+this summary (as #nnnnn) may be viewed at
+http://public.activestate.com/cgi-bin/perlbrowse?patch=nnnnn
+
+Weekly summaries are published on F<http://use.perl.org/> and posted
+on a mailing list, (subscription: F<perl5-summary-subscribe@perl.org>).
+The archive is at F<http://dev.perl.org/perl5/list-summaries/>.
+Corrections and comments are welcome.
+
+If you found this summary useful or enjoyable, please consider
+contributing to the Perl Foundation to help support the development
+of Perl.
