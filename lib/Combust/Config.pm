@@ -224,6 +224,7 @@ sub docs_name {
 
 sub maxclients          { $cfg->param('apache.maxclients')      || 20 }
 sub keepalive           { $cfg->param('apache.keepalive')       || 'Off' }
+sub keepalivetimeout    { $cfg->param('apache.keepalivetimeout')|| 300 }
 sub startservers        { $cfg->param('apache.startservers')    || 5 }
 sub minspareservers     { $cfg->param('apache.minspareservers') || 1 }
 sub maxspareservers     { $cfg->param('apache.maxspareservers') || 10 }

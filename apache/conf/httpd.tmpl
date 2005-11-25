@@ -22,6 +22,7 @@ PidFile             [% root_default %]/apache/logs/httpd.pid
 ScoreBoardFile      [% root_default %]/apache/logs/httpd.scoreboard
 Timeout             300
 KeepAlive           [% config.keepalive %]
+KeepAliveTimeout    [% config.keepalivetimeout %]
 MinSpareServers     [% config.minspareservers %]
 MaxSpareServers     [% config.maxspareservers %]
 StartServers        [% config.startservers %]
