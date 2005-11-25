@@ -220,5 +220,16 @@ sub docs_name {
   $cfg->param('docs_name') || 'docs';
 }
 
+# apache configuration
+
+sub maxclients          { $cfg->param('apache.maxclients')      || 20 }
+sub keepalive           { $cfg->param('apache.keepalive')       || 'Off' }
+sub startservers        { $cfg->param('apache.startservers')    || 5 }
+sub minspareservers     { $cfg->param('apache.minspareservers') || 1 }
+sub maxspareservers     { $cfg->param('apache.maxspareservers') || 10 }
+sub maxrequestsperchild { $cfg->param('apache.maxsrequestsperchild') || 500 }
+
+
+
 
 1;

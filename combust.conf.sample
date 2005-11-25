@@ -65,6 +65,15 @@ default=1
 # [database-something]
 # alias = combust
 
+# Apache specific configuration 
+[apache]
+#maxclients          = 20
+#keepalive           = Off
+#startservers        = 5
+#minspareservers     = 1
+#maxspareservers     = 10
+#maxrequestsperchild = 500
+
 
 # Configure sites
 
