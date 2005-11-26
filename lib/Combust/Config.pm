@@ -5,8 +5,10 @@ use Data::Dumper qw();
 use Sys::Hostname qw(hostname);
 use Carp qw(carp croak cluck);
 
-my $file = $ENV{CBCONFIG} || "$ENV{CBROOT}/combust.conf";
-$file = "$ENV{CBROOTLOCAL}/combust.conf" if $ENV{CBROOTLOCAL};
+my $file = $ENV{CBCONFIG} ? $ENV{CBCONFIG}
+           : $ENV{CBROOTLOCAL} ? "$ENV{CBROOTLOCAL}/combust.conf"
+           : $ENV{CBROOT} ? "$ENV{CBROOT}/combust.conf"
+           : croak 'Could not find combust.conf, did you set $ENV{CBROOT} / $ENV{CBROOTLOCAL}?';
 
 my $cfg = new Config::Simple($file) or die Config::Simple->error();
 
@@ -53,6 +55,12 @@ sub new {
 sub _new {
   my ($class, %args) = (shift, @_);
   bless( {}, $class);
+}
+
+sub config_file {
+    my $self = shift;
+    croak "can't set config_file()" if @_;
+    $file;
 }
 
 sub site {

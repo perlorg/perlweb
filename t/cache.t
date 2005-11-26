@@ -2,6 +2,11 @@ use Test::More qw(no_plan);
 use strict;
 use Data::Dumper;
 
+eval 'use Test::Benchmark';
+if ($@) {
+  plan skip_all => 'Could not load Test::Benchmark';
+}
+
 use_ok('Combust::Cache');
 
 for my $cache_backend (qw(dbi memcached)) {
