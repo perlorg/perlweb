@@ -207,6 +207,11 @@ sub httpd {
   $cfg->param('httpd') || '/home/perl/apache1/bin/httpd';
 }
 
+sub perl {
+  $cfg->param('perl');
+}
+
+
 #sub config {
 #  $cfg;
 #}

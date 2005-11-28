@@ -251,7 +251,7 @@ sub evaluate_template {
   my $self      = shift;
   my $template  = shift;
 
-  my $tpl_params    = { %{$self->tpl_params }, @_ };
+  my $tpl_params    = { %{$self->tpl_params }, ($_[0] and ref $_[0] eq 'HASH') ? %{$_[0]} : @_ };
 
   my $r = $self->r;
 
