@@ -277,11 +277,6 @@ sub evaluate_template {
 
   delete $tpl_params->{combust};
 
-  $self->{params} = {
-    config => $config,
-  };
-
-
   if ($@) {
       warn( (ref $self ? ref $self : $self) . "  - ". $r->uri . ($r->args ? '?' .$r->args : '')
             . " - error processing template $template: $@");
