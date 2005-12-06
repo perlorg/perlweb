@@ -1,0 +1,10 @@
+[% page.banner = "Perl Foundation Blog" %]
+[% page.title = page.banner %]
+
+[% USE news = XML.RSS("${root}/var/rss/tpfblog.rss"); limit = 5 %]
+[% FOREACH item = news.items %]
+[%- LAST IF loop.count() > limit %]
+  <H2><a href="[% item.link | html%]">[% item.title %]</a></H2>
+  [%# item.description %]
+  [%- END %]
+</UL>
