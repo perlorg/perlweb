@@ -1,0 +1,349 @@
+=head1 This Week on perl5-porters - 28 November-4 December 2005
+
+A rather hectic week on p5p, when it was revealed that
+signed/unsigned comparisons and unchecked format strings to
+C<printf> and C<sprintf> could cause serious problems in
+poorly written applications.
+
+=head2 Format strings in C<s?printf>
+
+It turned out that a nasty C<sprintf> format string could cause havoc
+in the C<webmin> application suite (a set of web scripts geared
+towards systems administration). Not the kind of place you want
+havoc to occur.
+
+Rafael noted that this could lead to a buffer overrun in the
+interpreter, by taking advantage of a signed/unsigned conversion
+bug in C<printf> (which is pretty much all hand-rolled and not the
+C<printf> of the underlying C standard library), and that the next
+major release will apply taint checks to format strings. Andy
+questioned whether it was really possible to create a buffer overrun,
+and Gisle Aas responded with a tiny one-liner:
+
+  $ perl -e 'printf "%4294967295d"'
+  Segmentation fault (core dumped)
+
+In a subsequent thread, Andy was rather dismayed to learn that
+pretty-printing a variable through a C<%d> format string makes it
+lose its taintedness. In later developments, Jan Dubois pointed out
+that Python does not have this flaw:
+
+  >>> print "%4294967295d" % 1
+  Traceback (most recent call last):
+    File "<stdin>", line 1, in ?
+  ValueError: width too big
+
+Andy subsequently decided not to post a rebuttal to the News.com
+article, since, to paraphrase Nathan Torkington: "everybody fucked
+up", and the best that can be done is to get the fix into 5.8.8,
+and get 5.8.8 out the door. Nicholas Clark replied that it would
+take a couple of weeks, which would take us right up to Christmas
+time. Not the kind of time you want a Perl upgrade to occur.
+
+Philippe M. Chiasson cooked up a patch that produced the following
+behaviour:
+
+  $ perl -e 'printf("%04294967294d",1)'
+  panic: memory wrap at -e line 1.
+
+That patch was applied by Rafael, but Gisle still managed to punch
+a hole through it with C<sprintf "%#.4294967295b">. But made up
+for it by fixing it. Dave Mitchell supplied a patch to fix the
+signed/unsigned mismatch in the C<printf> code. Hugo van der Sanden
+had a minor quibble with the change in behaviour, and Nicholas
+provided a clearer change.
+
+Gisle thought about patching the code and documentation for
+C<Sys::Syslog>, to prevent the possibility of using C<%n>.
+Ronald Kimball improved the patch with a better regular
+expression to strip out C<%n>.
+
+(Summariser's note: C<%n>, in case you weren't aware (I had to go
+and look it up in the documentation), takes the current number
+of characters emitted so far by the format string, and stores
+that count in the next variable appearing in the argument list;
+problems occur when there is no variable to take the result).
+
+Gisle then came back later with a patch for C<sprintf>, to
+prevent constant folding from taking place. Hugo appreciated the
+patch, and suggested a long-term plan. (Constant folding in this
+context meaning something like):
+
+  perl -MO=Deparse -e '$a = sprintf "%g", 2/3'
+  $a = '0.666667';
+
+Which stops bad things happening when C<%g> is replaced by C<%99g>
+(where 99 is a very large number). But in general, constant folding
+is a Good Thing, and a concensus seems to be forming around the
+idea that it should be possible to back out of a constant folding
+attempt during compilation without killing the compile, and defer
+the resolution until run-time.
+
+Andy started to look at GCC's warnings of signed/unsigned comparisons,
+and picked a bit of low-hanging fruit in F<pp_pack.c>. He also heard
+back from Jack Louis, who reported the the initial integer
+overflow problem. Dave Mitchell noted that one of them had already
+been fixed in C<blead>. Andy forwarded another message from Jack
+showing how the exploit could be brought to bear on Webmin.
+
+Joshua ben Jore pointed to a couple of threads he wrote on Perlmonks,
+showing the results of the code he wrote to look for uses of C<printf>
+and C<sprintf> with non-constant format parameters.
+
+Executive summary: the problems will be fixed in 5.8.8, and a series
+of patches will be made available for all the 5.8 releases.
+
+  The article on News.com
+  http://news.com.com/2100-1002_3-5975954.html
+
+  Andy Lester's call for input
+  http://xrl.us/i395
+
+  sprintf and tainting
+  http://xrl.us/i396
+
+  Andy's first approximation to a PR response
+  http://xrl.us/i397
+
+  Andy declines to respond
+  http://xrl.us/i398
+
+  Philippe's patch
+  http://xrl.us/i399
+
+  Dave's patch
+  http://xrl.us/i4aa
+
+  Gisle's patch
+  http://xrl.us/i4ab
+
+  Disabling constant folding of sprintf
+  http://xrl.us/i4ac
+
+  Andy's patch of pp_pack.c
+  http://xrl.us/i4ad
+
+  Word back from the original finder of the integer overflow
+  http://xrl.us/i4ae
+
+  Details of a possible exploit
+  http://xrl.us/i4af
+
+  The message sent to bugtraq
+  http://xrl.us/i4ag
+
+  Joshua's findings
+  http://xrl.us/i4ah
+
+=head2 Debugging F<lib/archive/tar.t/02_methods.t>
+
+John E. Malmberg was having difficulty tracking down why this test
+file was failing on VMS, and had to resort to inserting C<print>
+statements to trace what was happening. Rafael Garcia-Suarez explained
+that it was hard to find, because in fact it is created in
+F<00_setup.t>. Ronald J Kimball thought it rather dubious that two
+different test files cannot be run independently of each other (this
+precludes, amongst other things, being able to run tests in a
+massively parallel manner).
+
+  Looking in the wrong place
+  http://xrl.us/i4ai
+
+=head2 C<my $var = undef> fails to set C<$var> when re-run
+
+Erland Sommarskog posted bug #37776 showing that a declaration and
+assignment of a variable to C<undef> doesn't work when the assignment
+is run subsequently. It turns out that it was due to an optimisation
+that was, well, wrong. This behaviour, according to Robin Houston, is
+a side-effect of change #22520. Rafael fixed it with change #26226.
+
+  Can't go there again
+  http://xrl.us/i4aj
+
+=head2 F<Cwd.pm> scan of C<$ENV{PATH}>
+
+Nick Ing-Simmons ran into a problem with C<Cwd>'s use of C<grep>
+on the list of directories in C<$ENV{PATH}>. This usually works
+well, but if your PATH happens to contain automounted directories
+that are not there, bad things happen. Indeed, Nick's C<Cwd> was
+taking I<minutes> to load. This can be construed as an abuse of
+C<grep>, because only the first result is needed, but C<grep>, by
+design, will always scan the entire list it is given. Nick
+proposed a number of ways out of the problem.
+
+Graham Barr suggested C<first> from C<List::Util>. Ken Williams
+said that C<Cwd> contains lots of ancient voodoo, and because it
+is so low on the CPAN dependency graphs, that a C<foreach> is
+probably the only wise path to take. Some patches were put forward.
+
+  http://xrl.us/i4ak
+
+=head2 Using C<I32> for arrays on 64 platforms
+
+Jan Dubois noticed that the internal structures for arrays use
+32 bits for index computations, thus limiting arrays on 64 bit
+architectures to I<only> 2**32 elements. An array that size
+would consume a non-trivial amount of memory, but Jan felt that
+it should be fixed in blead, even if it wouldn't start being
+hit by applications for some time yet. Or otherwise, paraphrasing
+Bill Gates, that "2**32 array elements will be big enough for
+everyone." The concensus seems to be to use an C<IV> instead.
+
+  http://xrl.us/i4am
+
+=head2 Passing function parameters in registers
+
+Last week in his quest to const, Andy Lester stumbled across
+some redundant code that he was able to chop out. In response
+Yitzchak Scott-Thoennes asked whether Andy was considering
+investigating the C<regparm> attribute of the gcc compiler,
+which indicates that the parameters of the function are to
+be passed in registers, for a nice speed boost. But
+implementing this would add considerable complexity to the
+codebase.
+
+  The regparm attribute
+  http://xrl.us/i4an
+
+  Declaring attributes in gcc
+  http://gcc.gnu.org/onlinedocs/gcc-4.0.2/gcc/Function-Attributes.html
+
+=head2 POD Encoding
+
+Alberto Simões was writing POD assuming Latin-1, but noted that
+it gets mangled on a system that uses UTF-8 by default, and wondered
+what the correct fix was. Russ Allbery replied that the correct
+solution was to use the C<=encoding> directive. POD translators that
+are based on C<Pod::Simple> get this for free. Other translators
+including C<pod2man> and C<pod2txt> may not.
+
+Worse, C<pod2man> has difficulty in dealing with non-ASCII characters
+because of limitations in C<nroff> implementations. Russ is hoping to
+get around to adding a switch to C<pod2man> to tell it to "assume
+C<groff>", which does not how to generate UTF-8 output.
+
+Tels noted that the POD in C<blead> does not contain any C<=encoding>
+directives, and that it probably should. Then Sadahiro Tomoyuki
+started talking about EBCDIC and my head exploded.
+
+  http://xrl.us/i4ao
+
+=head2 The Archive of Perl Changes (APC)
+
+Philippe M. Chiasson wrote to say that the Archive of Perl Changes is
+now running on more powerful hardware (a shade less than ten times more
+powerful, if you lend any credence to BogoMIPS).
+
+The main change is that L<rsync://ftp.linux.activestate.com/> became
+L<rsync://public.activestate.com/>. Abe Timmerman experienced
+a bit of transient grief with his C<Test::Smoke> kit, but everything was
+sorted out in the end.
+
+  http://xrl.us/i4ap
+
+=head2 New Modules
+
+John Peacock released B<C<version-0.50>>. Much of the change involves
+improvements to the documentation.
+
+  http://xrl.us/i4aq
+
+Andreas König released B<C<CPAN-1.80>>. Lots of new goodies, including
+support for C<sudo> and new commands C<recent> and C<perldoc>. Now runs
+(again) under 5.005_04.
+
+  http://xrl.us/i4ar
+
+=head2 Perl5 Bug Summary
+
+1512 as of Monday the 5th. All the tickets that were opened last
+week were commented on, which made Robert Spier happy.
+
+  http://xrl.us/i4as
+
+=head2 In Brief
+
+B<C<podlators> 2.00 released> by Russ Allbery. The underlying POD
+parsing is now handled by C<Pod::Simple>, rather than C<Pod::Parser>.
+Stever Peters planned to add it the core. Tels was very happy, and
+showed how this would let him write custom POD paragraphs.
+
+  http://xrl.us/i4at
+
+Ulrich Windl filed bug report #37781 show B<how to make the debugger
+crash>. Richard Foley replied with a couple of message IDs showing
+what the probable fix would be, and otherwise how to work around it.
+
+  http://xrl.us/i4au
+
+Torsten Förtsch queried a B<strange split feature>, wondering why
+the trailing empty elements of the C<split> are discarded. H.Merijn
+Brand explained that it was operating according to spec, and showed
+a snippet that let Torsten achieve the desired result.
+
+  http://xrl.us/i4av
+
+B<Redundant C<SvUTF8_on()> calls> were removed from the codebase
+in a couple of places, thanks to careful observation from Gisle.
+
+  http://xrl.us/i4aw
+
+B<Tk compatibility> was reported broken on C<blead> by Gisle on the
+23rd of November. Andreas König traced the fault back to change
+#26110. The fix had already been unwound in C<maint>, and Rafael
+unwound it in C<blead>. But the bug that the change tried to fix
+in the first place, as Nicholas reminded us, is still there.
+
+  http://xrl.us/i4ax
+
+B<C<arenas by SV-type>> work continued. Jim Cromie smoked the latest
+C<blead> and more or less came up with a clean bill of health. There
+were a couple of compiler squawks, and one test failure that Jim had
+difficulty in deciding whether it was because C<blead> was in a
+state of flux, or whether it was because of his patch since
+"monkeying with arenas affects everything."
+
+  http://xrl.us/i4ay
+
+and a patch to unify C<PL_body_arenaroots[]> to a single variable:
+
+  http://xrl.us/i4az
+
+Sadahiro Tomoyuki improved his B<XS-assisted SWASHGET> patch.
+
+  http://xrl.us/i4a2
+
+=head2 About this summary
+
+This summary was written by David Landgren. Adriano and I are
+moving to a Monday night publishing schedule, rather than
+Sunday night, to give us a bit more time.
+
+One thing I keep failing to mention in these summaries is the 
+tireless effort that Steve Peters puts into delving into the
+bug queue and closing out fixed bugs and reviving the lost, the
+forgotten and the ignored. The number of open bugs for
+Perl5 has been pretty stable over the last few months (and
+no doubt longer, but I never paid close attention before), and
+this is in no small part due to Steve's diligence.
+
+Unfortunately, as most of this activity is just one-shot messages
+to the list, it's nearly impossible to summarise, so casual readers
+of this summary have no idea of the work Steve does. So, thank-you
+Steve.
+
+Information concerning bugs referenced in this summary (as #nnnnn)
+may be viewed at http://rt.perl.org/rt3/Ticket/Display.html?id=nnnnn
+
+Information concerning patches to maint or blead referenced in
+this summary (as #nnnnn) may be viewed at
+http://public.activestate.com/cgi-bin/perlbrowse?patch=nnnnn
+
+Weekly summaries are published on F<http://use.perl.org/> and posted
+on a mailing list, (subscription: F<perl5-summary-subscribe@perl.org>).
+The archive is at F<http://dev.perl.org/perl5/list-summaries/>.
+Corrections and comments are welcome.
+
+If you found this summary useful or enjoyable, please consider
+contributing to the Perl Foundation to help support the development
+of Perl.
