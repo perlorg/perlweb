@@ -5,6 +5,6 @@
 [% FOREACH item = news.items %]
 [%- LAST IF loop.count() > limit %]
   <H2><a href="[% item.link | html%]">[% item.title %]</a></H2>
-  [%# item.description %]
+  [% item.description %]
   [%- END %]
 </UL>
