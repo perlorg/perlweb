@@ -1,6 +1,6 @@
 package Bundle::Combust;
 
-$VERSION = "1.02";
+$VERSION = "1.03";
 
 1;
 
@@ -42,6 +42,8 @@ URI::Find
 
 Template
 
+Template::Timer
+
 Apache::Reload
 
 Pod::Simple
@@ -56,7 +58,10 @@ Yahoo::Search
 
 XML::Simple
 
-Cache::FileCache
+Exception::Class
+
+Cache::Memcached
+
 
 =head1 AUTHOR
 

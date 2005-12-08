@@ -6,7 +6,19 @@ __END__
 
 =head1 CONTENTS
 
+DBI
+
 DBD::SQLIte
+
+DBD::mysql
+
+Test::Pod
+
+Devel::Symdump
+
+Pod::Coverage
+
+Test::Pod::Coverage
 
 Class::DBI
 
@@ -14,7 +26,11 @@ CGI::Untaint
 
 CGI::Untaint::ipaddress
 
+Email::Valid
+
 CGI::Untaint::email
+
+Date::Manip
 
 CGI::Untaint::date
 
@@ -34,11 +50,27 @@ Mail::Sendmail
 
 Mail::Send
 
+Email::Simple
+
+Email::Send
+
+Email::Date
+
+Email::Simple::Creator
+
+HTML::Strip
+
 Digest::SHA1
 
 Time::Piece
 
 Time::Piece::MySQL
+
+Math::Pari
+
+Class::Loader
+
+Crypt::Random
 
 =cut
 
