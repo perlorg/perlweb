@@ -60,6 +60,8 @@ XML::Simple
 
 Exception::Class
 
+String::CRC32
+
 Cache::Memcached
 
 

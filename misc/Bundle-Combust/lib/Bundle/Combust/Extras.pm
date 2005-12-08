@@ -1,10 +1,13 @@
 package Bundle::Combust::Extras;
 
+
 1;
 
 __END__
 
 =head1 CONTENTS
+
+Module::Signature
 
 DBI
 

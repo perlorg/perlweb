@@ -3,7 +3,7 @@ use strict;
 
 WriteMakefile(
     'NAME'	=> 'Bundle::Combust',
-    'VERSION_FROM' => 'Combust.pm',
+    'VERSION_FROM' => 'lib/Bundle/Combust.pm',
 );
 
 
