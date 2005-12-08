@@ -9,11 +9,17 @@ __END__
 
 Module::Signature
 
-DBI
+Module::Build
 
-DBD::SQLIte
+Test::Pod
+
+DBD::SQLite
 
 DBD::mysql
+
+Test::More
+
+Test::Builder::Tester
 
 Test::Pod
 
@@ -23,7 +29,25 @@ Pod::Coverage
 
 Test::Pod::Coverage
 
-Class::DBI
+UNIVERSAL::moniker
+
+Class::Accessor
+
+Clone
+
+IO::Scalar
+
+Class::Trigger
+
+DBIx::ContextualFetch
+
+Ima::DBI
+
+version
+
+# Class::DBI
+
+UNIVERSAL::require
 
 CGI::Untaint
 
@@ -35,7 +59,11 @@ CGI::Untaint::email
 
 Date::Manip
 
+Date::Simple
+
 CGI::Untaint::date
+
+URI::Find::Schemeless::Stricter
 
 CGI::Untaint::url
 
@@ -45,17 +73,27 @@ Class::DBI::Untaint
 
 Class::DBI::FromCGI
 
+SQL::Abstract
+
+Sub::Uplevel
+
+Test::Exception
+
+SQL::Abstract::Limit
+
 Class::DBI::AbstractSearch
 
 Class::DBI::mysql
 
-Mail::Sendmail
-
-Mail::Send
-
 Email::Simple
 
+Return::Value
+
+Email::Address
+
 Email::Send
+
+Time::Piece
 
 Email::Date
 
@@ -64,6 +102,8 @@ Email::Simple::Creator
 HTML::Strip
 
 Digest::SHA1
+
+Digest::SHA
 
 Time::Piece
 
@@ -74,6 +114,28 @@ Math::Pari
 Class::Loader
 
 Crypt::Random
+
+Image::Info
+
+Class::ErrorHandler
+
+Math::BigInt
+
+Crypt::DES
+
+Crypt::DES_EDE3
+
+Convert::ASN1
+
+Convert::PEM
+
+Data::Buffer
+
+Crypt::DSA
+
+Authen::TypeKey::Sign
+
+Authen::Bitcard
 
 =cut
 

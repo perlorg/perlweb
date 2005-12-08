@@ -26,7 +26,13 @@ Date::Parse
 
 DBI
 
+Devel::StackTrace
+
+Class::Data::Inheritable
+
 Exception::Class
+
+Compress::Zlib
 
 Bundle::LWP
 
@@ -40,13 +46,19 @@ Time::HiRes
 
 URI::Find
 
+AppConfig
+
 Template
 
 Template::Timer
 
 Apache::Reload
 
+Pod::Escapes
+
 Pod::Simple
+
+Digest::SHA1
 
 Apache::DBI
 
