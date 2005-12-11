@@ -2,18 +2,9 @@
 [% page.style = "default.html" %]
 [% page.sidebar = INCLUDE "tpl/navigation.html" %]
 
-[%#
-<B>PLACEHOLDER</B><BR>
-POD comes from 
-
-<tt>http://svn.perl.org/parrot/trunk/ops/set.ops</tt>
-
-and cache for 24 hours.
-%]
-
 [% USE ua = CacheLWPSimple %]
 [% data = ua.get( 'url' =>
-      'http://svn.perl.org/parrot/trunk/ops/set.ops'
+      'http://svn.perl.org/parrot/trunk/src/ops/set.ops'
            'ttl' => 1*60*60 ) %]
 [% USE PodSimple %]
 [% PodSimple.parse('html', data ) %]
