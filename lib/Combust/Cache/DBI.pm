@@ -118,6 +118,18 @@ sub store {
 	  );
 }
 
+sub delete {
+  my ($self, %args) = @_;
+  my $id        = ($args{id} || $self->{fetched_id}) 
+    or carp "No id specified" and return;
+  my $type = $self->{type};
+
+  my $dbh = db_open();
+  $dbh->do(q[delete from combust_cache where id=? and type=?], undef, $id, $type);
+}
+
+
+
 1;
 
 

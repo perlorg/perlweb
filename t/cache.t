@@ -2,11 +2,6 @@ use Test::More qw(no_plan);
 use strict;
 use Data::Dumper;
 
-eval 'use Test::Benchmark';
-if ($@) {
-  plan skip_all => 'Could not load Test::Benchmark';
-}
-
 use_ok('Combust::Cache');
 
 for my $cache_backend (qw(dbi memcached)) {
@@ -33,6 +28,9 @@ for my $cache_backend (qw(dbi memcached)) {
   ok($cache->store(id => "test_large", data => $large_data), "store large data");
   ok(my $d = $cache->fetch(id => "test_large"), "fetch large data");
   is($d->{data}, $large_data, "test large data");
+
+  ok($cache->delete(id => "test_large"), "delete");
+  is($cache->fetch(id => "test_large"), undef, "deleted data is gone");
   
 
 }

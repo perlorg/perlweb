@@ -49,4 +49,14 @@ sub fetch {
 
 }
 
+sub delete {
+  my ($self, %args) = @_;
+  my $id        = ($args{id} || $self->{fetched_id}) 
+    or carp "No id specified" and return;
+
+  my $type = $self->{type};
+
+  $memd->delete("$type;$id");
+}
+
 1;
