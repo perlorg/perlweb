@@ -1,4 +1,4 @@
-package Test::Control::One;
+package Trivial::Control::One;
 
 use base 'Combust::Control';
 
