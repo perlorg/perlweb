@@ -13,49 +13,8 @@ web administration package.  All Webmin users should update immediately
 to the updated version of Sys::Syslog.
 </p>
 
-<p>
-Dyad Security released
-<a href="http://dyadsecurity.com/webmin-0001.html">a security advisory</a>
-explaining how arbitrary, untrusted data can get passed by Webmin
-into Perl's Sys::Syslog module as a <tt>sprintf</tt> format string.
-This allows an attack to create arbitrarily large strings, overwhelming
-server resources and causing a denial of service.
-</p>
 
-<p>
-However, Dyad Security's
-<a href="http://dyadsecurity.com/perl-0002.html">other security advisory</a>,
-detailing an integer overflow bug in <tt>sprintf</tt>, meant that the
-Webmin bug could potentially mean arbitrary code execution with the
-permissions of the web server process, not just a denial of service.
-</p>
-
-<p>
-The release of the
-<a href="http://search.cpan.org/dist/Sys-Syslog">updated Sys::Syslog</a>
-handles the specific coding problem presented by Webmin, and perhaps
-other packages, of passing format strings to the <tt>syslog()</tt>
-function when the programer does not realize that <tt>syslog()</tt>
-acts as a proxy for <tt>sprintf</tt>.  The new <tt>syslog()</tt>
-function now notes the special case of only passing one message
-parameter, and does what the programmer intended: treats the parameter
-as a single message string and does not call <tt>sprintf</tt>.
-</p>
-
-<p>
-The other issue, with the <tt>sprintf</tt> integer overflow, is still
-being worked on.  Fixes have been made, and patches for older versions
-of Perl are being created.  The Perl 5 Porters are taking the time to
-make sure that the patches work for as many existing Perl 5 installations
-as possible.  Watch
-<a href="http://news.perlfoundation.org/">news.perlfoundation.org</a>
-for information on the patches as they become available.
-</p>
-
-<p>
-Further queries may be sent to <tt>pr at perlfoundation.org</tt>.
-</p>
-
+<p align="right"><a href="/news/2005/webmin_flaw_alleviated.html">Read more...</a></p>
 <!--news item-->
 <h2>December 5, 2005<br><a class="title_link" href="/news/2005/blog_announced.html">Announcing the Perl Foundation Blog</a></h2>
 <p>
@@ -69,53 +28,8 @@ and
 <a href="http://news.perlfoundation.org/index.xml">RSS</a>).
 </p>
 
-<p>
-Perl Foundation News is the place to read updates on what members of the
-Foundation's working groups are working on and for other project-related
-announcements.  Where before a working group member might post an update
-to his
-<a href="http://use.perl.org/">use.perl</a>
-journal, or a meditation on
-<a href="http://perlmonks.org">perlmonks.org</a>,
-from today those updates and more will be appearing on the Perl
-Foundation Blog.
-</p>
 
-<p>
-The Perl Foundation's work includes:
-<ul>
-<li>sponsoring the <a href="http://yapc.org/">YAPC</A> conferences and supporting their organizers
-<li>managing <a href="http://www.perlfoundation.org/gc/">grants</a> for Perl-related projects
-<li>working with outside groups, as on Google's
-    <a href="http://www.perlfoundation.org/gc/grants/2005-googlesoc.html">Summer Of Code</a> project
-<li>putting a public face on the work of the Perl community
-<li>providing <a href="http://noc.perl.org/">technical infrastructure</A> for web hosting and Subversion repositories
-<li>supporting and coordinating volunteer efforts
-</ul>
-Now you can get information about these activities.
-</p>
-
-<p>
-Comments are enabled, allowing you to give feedback directly to our
-working group members. Talk directly to us and tell us what we're doing
-right or wrong. Ask us questions and we'll do our best to answer. We
-love comments and want to hear your views.
-</p>
-
-<p>
-We're well aware of the problems of the past.  We know that communications
-have been weak.  We're working hard for the trust of the Perl community,
-and creating the Perl Foundation Blog is a crucial step as we work to
-earn that trust.
-</p>
-
-<p>
-Whether you want to participate in helping make the Perl community even
-better, or interested in what's going on, we hope that
-<a href="http://blog.perlfoundation.org/">blog.perlfoundation.org</a>
-helps.
-</p>
-
+<p align="right"><a href="/news/2005/blog_announced.html">Read more...</a></p>
 <!--news item-->
 <h2>November 26, 2005<br><a class="title_link" href="/news/2005/steering_commitee_chairman.html">Richard Dice elected Perl Foundation steering committee chair</a></h2>
 <p>
@@ -127,48 +41,7 @@ YAPC::NA 2004 in Buffalo and YAPC::NA 2005 in Toronto, respectively.
 </p>
 
 
-<p>
-Richard has clear ideas for where TPF should be headed.  Richard's draft
-of a TPF mission statement:
-</p>
-
-<blockquote>
-<p>
-TPF exists to promote Perl to people and organizations so that they
-can benefit from all of what is available within the Perl community.
-</p>
-<p>
-Because we want to help.
-</p>
-
-<p>
-If we are successful then the result will be the growth of the Perl
-language and community -- a positive feedback loop to the benefit
-of all.
-</p>
-</blockquote>
-
-<p>
-Richard sees this as fitting into four specific areas of activity:
-</p>
-<ol>
-<li> Introduce Perl, and foster its use, to IT professionals and
-amateurs of all stripes (programmers, sysadmins, students, scientists, engineers and more)
-
-<li> Work to create a space within the IT and business world
-that is amenable to the use of Perl
-
-<li> Provide support to people working on key technological
-(and sometimes cultural) pieces of Perl
-
-<li> Lead the Perl culture -- by providing a good example
-</ol>
-
-<p>
-In the coming months, watch <a href="http://perlfoundation.org/">http://perlfoundation.org</A> for more specific plans.
-</p>
-
-
+<p align="right"><a href="/news/2005/steering_commitee_chairman.html">Read more...</a></p>
 <!--news item-->
 <h2>November 22, 2005<br><a class="title_link" href="/news/2005/yapc_na_2006_announced.html">YAPC::NA 2006 in Chicago, June 26-28th</a></h2>
 <p>
@@ -179,43 +52,14 @@ for three days of conference sessions and community, including some of
 the biggest names in the Perl community.
 </p>
 
-<p>
-Each year, Yet Another Perl Conference offers an affordable, accessible
-conference put together by grass-roots volunteers, as part of the work
-done by <A HREF="http://perlfoundation.org/">The Perl Foundation</A>.
-This year, a team led by Josh McAdams, publisher of the popular
-<A HREF="http://perlcast.com/">Perlcast</A> podcast, and Pete Krawczyk,
-are putting together another great conference.  McAdams noted, "We have
-a lot of big plans for the conference and a lot of expectations to live
-up to. With low costs, a central location, and a wealth of local Perl
-talent, be ready for a YAPC to remember."
-</p>
 
-<p>
-The official website,
-<A HREF="http://www.yapcchicago.org">yapcchicago.org</A>, will have the
-latest information about the plans.
-</p>
-
-
-
+<p align="right"><a href="/news/2005/yapc_na_2006_announced.html">Read more...</a></p>
 <!--news item-->
 <h2>November 9, 2005<br><a class="title_link" href="/news/2005/new_parrot_grant_manager.html">New Parrot Grant Manager</a></h2>
-With my stepping up to head the grant committee, I've had a number of issues I've needed to address. One of the most pressing has been finding a dedicated grant manager for the Parrot project. While I've temporarily filled this role, I have too many other pressing tasks to accomplish to be able to give this role the attention it needs. NLnet has been a huge supporter and we've needed to communicate with them on a regular basis about the Parrot development. We determined that we needed to meet the following criteria for a grant manager:
+Dave Rolsky selected as Parrot Grant Manager
 
-<ul>
-<li>An individual who is both well-known and respected in the Perl community.
-<li>Deep knowledge of Perl and has paid attention to the Parrot project.
-<li>No conflict of interests (for example, this ruled out Jesse Vincent, the project manager).
-<li>Was foolish, er, courageous enough to take on this challenge.
-</ul>
-Enter Dave Rolsky of <a href="http://masonhq.com/">Mason</a> fame. Currently an employee with <a href="http://www.socialtext.com">Socialtext</a>, Dave has agreed to handle this very important role. Primarily he will be keeping abreast of the Parrot project and communicating with NLNet to let them know what's being accomplished. Further, as the Parrot Grant Manager, he'll be the one deciding whether or not specific goals have been accomplished and money should be distributed.
-<p>
-Congratulations and many thanks to Dave on helping out! Viva la Parrot!
-<p>
-Cheers,
-Ovid
 
+<p align="right"><a href="/news/2005/new_parrot_grant_manager.html">Read more...</a></p>
 <!--news item-->
 <h2>October 16, 2005<br><a class="title_link" href="/news/2005/steering_committee_elections.html">New President, Steering Committee Members Announced</a></h2>
 <p>
@@ -224,62 +68,8 @@ four new members have been elected to its Steering Committee, the Perl
 Foundation announced today.
 </p>
 
-<p>
-Allison Randal, president since 2002, is stepping aside to take a
-more active role in Perl 6 and Parrot development.  "I endorse Bill
-wholeheartedly," she said.  "Bill is calm in a crisis, follows
-through on what he starts, and inspires others to do great work.
-I can't think of anyone better suited to lead TPF through our next
-steps of growth."
-</p>                                                 
 
-<p>
-Bill started working with TPF at OSCON in 2004 when he organized
-the exhibit hall booth and took charge of the auction.  Soon after,
-he was elected to chair the Steering Committee. 
-</p>
-
-<p>
-There are also big changes in the Steering Committee that does the
-day-to-day work of TPF.  Four new members have been elected.
-</p>
-
-<p>
-The Grants Commmittee will be led by Curtis "Ovid" Poe, who has already
-distinguished himself as a grant manager for TPF.  His experience and
-dedication, most recently with the Google Summer of Code / Perl Foundation
-grant recipients, has shown how valuable Curtis is to TPF.
-</p>
-
-<p>
-Long-time TPF member Jim Brandt is stepping into the role of Conferences
-Committee chair. He assembled and managed the incredible team that
-hosted the very successful YAPC::NA in Buffalo in 2004, and has used
-that experience to help others organize subsequent conferences.
-</p>                                                                            
-
-<p>
-New public relations coordinator Andy Lester, while new to TPF, is no
-stranger to the Perl community. He's well-known as an outspoken, steadfast
-advocate of Perl, and is definitely the right person to provide "Public
-Relations the Perl way" -- honest, forthright, and useful information,
-as the community rightly demands.
-</p>
-
-<p>
-Kirsten Jones may be a new name to many, but brings a wealth of experience
-to her role as the webmaster of perlfoundation.org.  A self-described
-"serial volunteer," she's lent her considerable skills and energy to a
-variety of organizations over the past few years.
-</p>
-
-<p>
-TPF president Bill Odom said "I'm very pleased with the results of
-these elections. We're fortunate to have such capable people willing to
-volunteer their time and talents for the Perl community, and I'm looking
-forward to working with all of them."
-</p>                                                                                                       
-
+<p align="right"><a href="/news/2005/steering_committee_elections.html">Read more...</a></p>
 <!--news item-->
 <h2>August 2, 2005<br><a class="title_link" href="/news/2005/white_camel_awards.html">2005 White Camel Awards</a></h2>
 <p>The Perl Foundation is proud to announce the winners of the 2005 <A
@@ -334,7 +124,7 @@ finding out more information about these projects. Up now is
 Curtis Hall with "Refactor Pirate so that the intermediate code emitter 
 is independent of the Python parse tree (AST)".</p>
 
-<p><a href="/news/2005/socrefactorpirate.html">Read more...</a></p>
+<p align="right"><a href="/news/2005/socrefactorpirate.html">Read more...</a></p>
 <!--news item-->
 <h2>July 19, 2005<br><a class="title_link" href="/news/2005/yapcna2006cfv.html">YAPC::NA::2006 Call for Venue</a></h2>
 <p>With the close of another successful YAPC::NA, it is now
@@ -378,7 +168,7 @@ program and managed to get <a href="http://www.perlfoundation.org/news/2005/goog
 finding out more information about these projects. Up now is Curtis 
 Rawls with "Compiler/Optimizer Improvements to Parrot".</p>
 
-<p><a href="/news/2005/socimprovementstoparrot.html">Read more...</a></p>
+<p align="right"><a href="/news/2005/socimprovementstoparrot.html">Read more...</a></p>
 <!--news item-->
 <h2>July 15, 2005<br><a class="title_link" href="/news/2005/socbitorrentlibrary.html">Summer of Code: BitTorrent Peer Library For Perl</a></h2>
 <p>The Perl Foundation took part in Google's 
@@ -388,7 +178,7 @@ and managed to get
 This is the sixth in a series of informal interviews finding out more information 
 about thes e projects. Up now is Josh McAdams with "BitTorrent Peer Library For Perl".</p>
 
-<p><a href="/news/2005/socbitorrentlibrary.html">Read more...</a></p>
+<p align="right"><a href="/news/2005/socbitorrentlibrary.html">Read more...</a></p>
 <!--news item-->
 <h2>July 14, 2005<br><a class="title_link" href="/news/2005/soctypeinterfaceperl5.html">Summer of Code: Extended Type Inference System for Perl 5</a></h2>
 <p>The Perl Foundation took part in Google's 
@@ -399,7 +189,7 @@ This is the fifth in a series of informal interviews finding out more
 information about these projects. Up now is Gary Jackson with "Extended 
 Type Inference System for Perl 5".</p>
 
-<p><a href="/news/2005/soctypeinterfaceperl5.html">Read more...</a></p>
+<p align="right"><a href="/news/2005/soctypeinterfaceperl5.html">Read more...</a></p>
 <!--news item-->
 <h2>July 14, 2005<br><a class="title_link" href="/news/2005/tpffinancialdetail.html">Allison on TPF Financial Details</a></h2>
 <p><i>Why can't we see where our donation money goes? We see appeals 
@@ -408,7 +198,7 @@ occasional "$4,000 to X, $50,000 to Y" go past. But where's the annual
 report with the actual details of what was earned and what was spent 
 and where, and how much you have in the bank at the end of each year?</i></p>
 
-<p><a href="/news/2005/tpffinancialdetail.html">Read more...</a></p>
+<p align="right"><a href="/news/2005/tpffinancialdetail.html">Read more...</a></p>
 <!--news item-->
 <h2>July 12, 2005<br><a class="title_link" href="/news/2005/socwwwkontent.html">Summer of Code: WWW:Kontent - A Perl 6 CMS</a></h2>
 <p>The Perl Foundation took part in Google's 
@@ -419,7 +209,7 @@ This is the fourth in a series of informal interviews finding out
 more information about these projects. Up now is Brent Royal-Gordon 
 with "WWW:Kontent - A Perl 6 Content Management System".</p>
 
-<p><a href="/news/2005/socwwwkontent.html">Read more...</a></p>
+<p align="right"><a href="/news/2005/socwwwkontent.html">Read more...</a></p>
 <!--news item-->
 <h2>July 11, 2005<br><a class="title_link" href="/news/2005/socperlmegadistro.html">Summer of Code: Perl "Megadistro"</a></h2>
 <p>The Perl Foundation took part in Google's 
@@ -429,7 +219,7 @@ program and managed to get
 This is the third in a series of informal interviews finding out more information 
 about these projects. Up now is David Buchman  with "Perl Megadistro".</p>
 
-<p><a href="/news/2005/socperlmegadistro.html">Read more...</a></p>
+<p align="right"><a href="/news/2005/socperlmegadistro.html">Read more...</a></p>
 <!--news item-->
 <h2>July 9, 2005<br><a class="title_link" href="/news/2005/socgcforparrot.html">Summer of Code:  A Generational, Thread-Aware GC for Parrot</a></h2>
 <p>The Perl Foundation took part in Google's 
@@ -440,7 +230,7 @@ funded</a>. This is the second in a series of informal interviews finding
 out more information about these projects. Up now is Alexandre Buisse 
 with "A Generational, Thread-Aware GC for Parrot".</p>
 
-<p><a href="/news/2005/socgcforparrot.html">Read more...</a></p>
+<p align="right"><a href="/news/2005/socgcforparrot.html">Read more...</a></p>
 <!--news item-->
 <h2>July 9, 2005<br><a class="title_link" href="/news/2005/socperljavaintegration.html">Summer of Code: Open Sourcing Perl/Java Integration</a></h2>
 <P>The Perl Foundation took part in Google's 
@@ -451,14 +241,14 @@ This is the first in a series of informal interviews finding out more
 information about these projects. First up is David Rusek 
 with "Open Sourcing Perl/Java Integration"</p>
 
-<p><a href="/news/2005/socperljavaintegration.html">Read more...</a></p>
+<p align="right"><a href="/news/2005/socperljavaintegration.html">Read more...</a></p>
 <!--news item-->
 <h2>July 8, 2005<br><a class="title_link" href="/news/2005/allisonpugs.html">Allison Answers Questions about TPF & Pugs</a></h2>
 <p>Allison Randal has some answers to questions that came up at 
 YAPC::NA about Pugs and where TPF stands in relation to the 
 project.</p>
 
-<p><a href="/news/2005/allisonpugs.html">Read more...</a></p>
+<p align="right"><a href="/news/2005/allisonpugs.html">Read more...</a></p>
 <!--news item-->
 <h2>June 30, 2005<br><a class="title_link" href="/news/2005/googlesoc2.html">Google Summer of Code Projects Announced</a></h2>
 <p>The Perl Foundation is proud to announce 8 funded projects under
@@ -525,7 +315,7 @@ subsystems. (They will each receive $5k at the start of a milestone,
 $1k on the completion of each subsystem for the milestone, and $3.5k
 on completion of the milestone.)</p>
 
-<p><a href="/news/2005/nlnetparrot.html">Read more...</a></p>
+<p align="right"><a href="/news/2005/nlnetparrot.html">Read more...</a></p>
 <!--news item-->
 <h2>March 18, 2005<br><a class="title_link" href="/news/2005/yapc2005reg.html">YAPC::NA::2005 Registration Open</a></h2>
 <p>Registration for <a href="http://yapc.org/America/">YAPC::NA</a> 
