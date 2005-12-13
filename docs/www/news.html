@@ -24,6 +24,7 @@
 [% END %]
 
 [% MACRO newsentry(shortname,longname,limit,url) BLOCK %]
+[%-TRY %]
 <A NAME="[% shortname %]"></A>
 <h3><A HREF="[% url %] ">[% longname %]</A></H3>
     [% USE news = XML.RSS("${root}/var/rss/${shortname}.rss") %]
@@ -33,6 +34,9 @@
        <LI>[% newsitem(item) %]</LI>
     [%- END %]
     </UL>
+[%-CATCH %]
+[Error processing directive]
+[%-END %]
 [% END %]
 
 <P>
