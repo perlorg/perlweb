@@ -1,5 +1,59 @@
 [%# *** Generated File.  Do not edit.  (Or Robert will hurt you.) *** %]
 <!--news item-->
+<h2>December 13, 2005<br><a class="title_link" href="/news/2005/webmin_flaw_alleviated.html">Updated Perl modules alleviate Webmin security flaw</a></h2>
+<p>
+The Perl community has updated the core module
+<a href="http://search.cpan.org/dist/Sys-Syslog">Sys::Syslog</a>
+to help alleviate a security hole in the
+<a href="http://www.webmin.com">Webmin</a>
+web administration package.  All Webmin users should update immediately
+to the updated version of Sys::Syslog.
+</p>
+
+<p>
+Dyad Security released
+<a href="http://dyadsecurity.com/webmin-0001.html">a security advisory</a>
+explaining how arbitrary, untrusted data can get passed by Webmin
+into Perl's Sys::Syslog module as a <tt>sprintf</tt> format string.
+This allows an attack to create arbitrarily large strings, overwhelming
+server resources and causing a denial of service.
+</p>
+
+<p>
+However, Dyad Security's
+<a href="http://dyadsecurity.com/perl-0002.html">other security advisory</a>,
+detailing an integer overflow bug in <tt>sprintf</tt>, meant that the
+Webmin bug could potentially mean arbitrary code execution with the
+permissions of the web server process, not just a denial of service.
+</p>
+
+<p>
+The release of the
+<a href="http://search.cpan.org/dist/Sys-Syslog">updated Sys::Syslog</a>
+handles the specific coding problem presented by Webmin, and perhaps
+other packages, of passing format strings to the <tt>syslog()</tt>
+function when the programer does not realize that <tt>syslog()</tt>
+acts as a proxy for <tt>sprintf</tt>.  The new <tt>syslog()</tt>
+function now notes the special case of only passing one message
+parameter, and does what the programmer intended: treats the parameter
+as a single message string and does not call <tt>sprintf</tt>.
+</p>
+
+<p>
+The other issue, with the <tt>sprintf</tt> integer overflow, is still
+being worked on.  Fixes have been made, and patches for older versions
+of Perl are being created.  The Perl 5 Porters are taking the time to
+make sure that the patches work for as many existing Perl 5 installations
+as possible.  Watch
+<a href="http://news.perlfoundation.org/">news.perlfoundation.org</a>
+for information on the patches as they become available.
+</p>
+
+<p>
+Further queries may be sent to <tt>pr at perlfoundation.org</tt>.
+</p>
+
+<!--news item-->
 <h2>December 5, 2005<br><a class="title_link" href="/news/2005/blog_announced.html">Announcing the Perl Foundation Blog</a></h2>
 <p>
 The Perl Foundation was established in December 2001, but is a mystery
@@ -222,51 +276,6 @@ these elections. We're fortunate to have such capable people willing to
 volunteer their time and talents for the Perl community, and I'm looking
 forward to working with all of them."
 </p>                                                                                                       
-
-<!--news item-->
-<h2>August 2, 2005<br><a class="title_link" href="/news/2005/white_camel_awards.html">2005 White Camel Awards</a></h2>
-<p>The Perl Foundation is proud to announce the winners of the 2005 <A
-HREF="http://www.perl.org/advocacy/white_camel">White Camel</A>
-awards.  The awards were announced today,  by David H. Adler at the <A
-HREF="http://conferences.oreillynet.com/os2005/">2005 O'Reilly Open
-Source Convention</A> in Portland, Oregon.</p>
-
-<dl>
-<dt><b>Stas Bekman</b></dt>
-<dd>
-Stas Bekman has been a tireless advocate for large-scale applications
-in Perl and, of course, mod_perl. He went from an occasional asker of
-questions on the mod_perl list to answering many questions, and had
-the forethought to write it all down, creating and maintaining the
-mod_perl guide which quickly grew to over 600 pages. Recently, he made
-himself available for free talks to Perl Mongers groups during a trip
-covering North America, Australia, the Middle East and elsewhere.
-</dd>
-
-<dt><b>Eric Cholet</b></dt>
-<dd>
-Eric Cholet may be familiar to you as the technical manager of the
-YAPC Europe Foundation and as co-author of A Conference Toolkit (ACT),
-which has been used to administer several European YAPCs. More
-importantly, though, he works behind the scenes at perl.org,
-moderating the mailing lists we all use. If you've noticed the absence
-of spam on a perl.org mailing list, filters help, but Eric catches
-what falls through.
-</dd>
-
-<dt><b>Andy Lester</b></dt>
-<dd>
-Andy Lester is one of the prominent voices advocating testing and
-quality assurance. He has written extensively on the importance of
-good testing and maintains qa.perl.org. He is also the creator and
-project leader of Phalanx, which is devoted to improving tests and
-test coverage of Perl and CPAN modules to maintain quality as
-development continues. Phalanx encourages interaction between
-programmers by having groups of developers work together to improve
-test coverage on the most used CPAN modules.
-</dd>
-
-</dl>
 
 <h2>Older News</h2>
 Read <a href="/news/">older news...</a>
