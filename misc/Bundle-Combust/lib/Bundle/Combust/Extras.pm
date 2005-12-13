@@ -135,7 +135,15 @@ Crypt::DSA
 
 Authen::TypeKey::Sign
 
+Crypt::SSLeay
+
 Authen::Bitcard
+
+Sys::Syscall
+
+Danga::Socket
+
+JSON
 
 =cut
 
