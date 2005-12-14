@@ -1,0 +1,493 @@
+=head1 This Week on perl5-porters - 5-11 December 2005
+
+This week had seen the development of the responses of Perl community
+to the Webmin security hole, with the usual assortment of activity
+on many other fronts in the advancement of the Perl interpreter.
+C<Pod::Simple> integration, issues in newer Windows, better OpenVMS
+support illustrate the discussion diversity.
+
+=head2 sprintf patches
+
+
+This week, the responses around the security breach found on Webmin 
+had been dominated by patching the culprits, namely, C<Sys::Syslog>
+and the Perl domestic implementation of C<sprintf>. 
+Nicholas presented the bundle of prepared sprintf patches
+to 5.8.x and triggered a rather impressive cooperation to
+test them in the most varied architectures Perl runs in. 
+Lots of people in Perl community reported on the (fortunately
+successful) outcomes of the fixes.
+Some tricks were needed (like using context rather than
+unified diffs) to get the maximum portability but it was
+worthy.
+
+    http://xrl.us/i7zs
+
+=head2 C<Sys::Syslog> Fixes
+
+
+Upon requests, Sébastien Aperghis-Tramoni prepared a CPAN
+release of C<Sys::Syslog> which is now dual-lived. The
+release 0.09 sprouted from blead@26281 (with the corresponding
+last week's fixes) and a few tweaks.
+To be honest, 0.10 is already there for public
+comsumption (in CPAN, I<blead> and maybe I<maint>). 
+
+    http://xrl.us/i7zt
+
+=head2 Still vulnerable?
+
+
+Brendan O'Dea essayed an answer to a bug report on Debian
+for the one-liner below, which suggested another security risk.
+To Steve Langaseek, even though it was not a buffer overflow,
+but a probable read of "uninitialized" locations in memory,
+it does not exclude the possibility of an exploit, as had already 
+been done for C programs. Gisle Aas acknowledged C<"%vs">
+did strange things, as well as C<"%vc">, C<"%vn">, C<"%v%"> and
+fixed them all with change #26321.
+
+    $ perl -e 'printf("%2918905856\$vs")'
+    Segmentation fault
+
+    http://xrl.us/i7zu
+
+=head2 Improving F<Cwd.pm>
+
+
+The thread started in the previous week on F<Cwd.pm> continued this week.
+Nick Ing-Simmons seconded Ken William's proposal to mess with C<getcwd()> 
+for performance/enhancement purposes. Nicholas Clark asked
+about the behavior of current Perl implementation of C<getcwd>: a directory
+can be changed in a way that can't be recovered (unlike determined by POSIX)? 
+Ken thought it could be done more safely, but the risk exists actually. 
+Ken announced a new beta of C<PathTools> to CPAN, where the scan of C<$ENV{PATH}>
+that started this thread was "fixed", C<Cwd::getcwd> maps to the underlying
+C C<getcwd()> when possible, besides contributions by John E. Malmberg and
+Bryan Daimler. Ken awaits for comments and test reports towards a non-beta
+release. 
+
+    http://xrl.us/i7zv
+
+
+=head2 Takeuchi Benchmark
+
+
+Recai Oktas posted his concerns about a bad performance
+shown by Perl 5.8.7 running the Takeuchi benchmark test:
+too much memory and slow to a crawl. Dave Mitchell rewrote the
+code in a perl55 rather than perl4 style, cutting down
+execution time and memory usage. Rekai felt more confident,
+seeing an improvement from ~23 s to < 1 s and asked
+if Dave's version should replace the code in the
+"Computer Language Shootout". chromatic reminded C<use Memoize>
+could make it even faster at the expense of memory, but
+that's not a fair technique for the benchmark purposes.
+
+    http://xrl.us/i7zw
+
+=head2 Cross-compilation with uClibc
+
+
+Philippe Ney had been trying to cross-compile Perl with
+an eye for using B<uClibc>, a C library for developing
+embedded Linux systems, and B<buildroot>, a cross-compilation
+toolkit for C<uClibc>. In his way,
+Philippe stumbled with some strangeness and asked for help.
+Rafael Garcia-Suarez recommended the use of the same version of perl
+on the host machine as on the target system, since Philippe
+was using perl 5.8.4 as host for building a 5.8.7 target.
+Vadim Konovalov explained that the F<./configpm> script
+generates F<Config.pm> (possibly for another target system)
+and, via F<Config.pm> manipulations, a host F<miniperl> produces
+binaries for the target platform. This used to work only for WinCE
+cross-compiling but had been worked out for general 
+cross-compiling. Vadim also advised on the differences
+of F<Config.pm> in 5.8.4 and 5.8.7 (where the later
+uses a second file F<Config_heavy.pl>).
+
+    http://xrl.us/i7zx
+
+
+
+=head2 APC Relocated
+
+
+Just to make sure you have heard about the relocation of the Archive
+of Perl Changes (APC) by Philippe "gozer" Chiasson, let me repeat the
+URLs below.
+
+    rsync://public.activestate.com/
+    http://public.activestate.com/pub/apc/
+    ftp://public.activestate.com/pub/apc/
+
+In the thread "-Duse64bitint on HP-UX", Jan Dubois reminded APC now also has
+the feature to fetch a tarball instead of all the files individually
+(which can speed FTP access). Jan also thought a symlink to the latest snapshot
+could be a good idea so that smoke code doesn't have to parse 
+the directory listing. Yitzchak Scott-Thoennes suggested that F<.bz2> files
+would also be a good addition. Philippe did both of them.
+
+    You find snapshots here
+    http://public.activestate.com/pub/apc/perl-current-snap/
+    Including the latest one
+    http://public.activestate.com/pub/apc/perl-current-snap/perl-current-latest.tar.gz
+    ftp://public.activestate.com/pub/apc/perl-current-snap/perl-current-latest.tar.gz
+
+=head2 C<-Duse64bitint> on HP-UX
+
+
+Jan Dubois found a little odd that H.Merijn Brand had stated that 
+HP-UX does allow only 32/32 or 64/64 for int/pointer sizes.
+Jan was used to build Perl 5.8.7 with C<-Duse64bitint> on HP-UX 11.00
+PA-RISC successfully. H.Merijn Brand explained C<-Duse64bitint>
+is automatically promoted to C<-Duse64bitall> so that you always
+end with 64bit ints and pointers.
+
+    http://xrl.us/i7zy
+
+While Merijn gave some touches to make the documentation more precise,
+Jan made some suggestions and asked why the HP-UX code/docs were so 
+focused on PA-RISC and what to expect on IA64. 
+Merijn explained this is due to the fact that most of the contributions
+was based on his use of those systems, and his limited access to Itanium.
+Spider Boardman volunteered to do some smoke with rx2600 machines -
+being concerned about the smoke interface not playing with firewalls
+that refuse rsync. Merijn pointed that ftp should work and Jan introduced
+the new features of APC (mentioned in the APC section above). 
+
+=head2 What Andy Lester Did This Week
+
+
+The tireless Andy Lester brought a new patch of consting
+plus some stuff to F<embed.fnc> and a couple of minor fixes. 
+Vadim Konovalov had a small doubt about
+some of Andy's updates and Andy assured him that everything
+was fine. Contamplating Andy's work, Jim Cromie noticed 
+what he thought was B<the way>
+to share small bits of interface between core parts and
+asked about ideas for him to complete his work on arenas.
+Rafael applied Andy's patches and Jim's questions went on unanswered.
+
+    http://xrl.us/i7zz
+
+
+Andy ruled that arguments of function in F<embed.fnc> were a
+good idea, cleaned it up and added a check to ensure this in the future.
+He then noticed some pad funcs, which weren't called when DEBUGGING
+was off, were still getting compiled and changed that.
+And asked for some attention to make sure a few code changes he did
+wasn't on crack. Steve Peters reconciled Andy's patch with some recent
+changes and applied the changes.
+
+    We need names
+    http://xrl.us/i7z2
+    DEBUGGING code only when DEBUGGING
+    http://xrl.us/i7z3
+    These changes look right?
+    http://xrl.us/i7z4
+
+=head2 stringification of v-string references
+
+
+Nicholas Clark noticed how v-strings were given different
+treatment on stringification of references.
+
+    $ ./perl -Ilib -le 'print $_, " ", ref $_ foreach \v1, \\v1, \@a, *STDOUT{IO}, qr/a/'
+    SCALAR(0x8145f00) VSTRING
+    REF(0x8145f30) REF
+    ARRAY(0x8145f70) ARRAY
+    IO::Handle=IO(0x8145b60) IO::Handle
+    (?-xism:a) Regexp
+
+All other references stringify their name given by C<sv_reftype>.
+Nicholas asked if that was an intentional change and John
+Peacock told the story about how v-strings prior to 5.8.1
+were evil and how the changes Nicholas found made v-strings
+into objects which act like scalars with a bit of magic inside.
+John then prepared a patch so that v-strings references now
+stringify according to the convention of everything else
+in Perl. Nicholas had already a patch to do this, 
+besides some rearrangement and tidying up for a couple of things.
+
+    $ ./perl -Ilib -le 'print $_, " ", ref $_ foreach \v1'
+    VSTRING(0x8145f00) VSTRING
+
+    http://xrl.us/i7z5
+
+
+=head2 C<podlators> 2.00
+
+
+Russ Albery announced a new major release of C<podlators>, 2.00, which
+uses C<Pod::Simple> rather than C<Pod::Parser>.
+Steve Peters added it to the core together with C<Pod::Simple> itself
+and C<Pod::Escapes>. Steve observed that the new C<Pod::Text> broke 
+C<Pod::Usage> and Russ Albery remembered to have submitted a patch to fix that a while ago.
+Steve applied Russ's patch to C<Pod::Usage>, even though things do not look perfect yet.
+
+    http://xrl.us/i7z6
+
+=head2 C<Pod::Simple> Integration
+
+
+During C<Pod::Simple> integration, Andreas Koenig noticed some issues with files from
+C<Pod-Simple> distribution, worked out with Steve Peters.
+Craig Berry also found that C<Pod::Simple> brought into the core directories 
+with names like F<lib/Pod/Simple/t/other^test^lib> which do not play 
+well with the recommendations on filenames on F<perlport.pod> and which cause
+trouble on VMS systems. Yves Orton pointed these caused some annoyances
+in Win32 as well. Yitzchak Scott-Thoennes reminded F<Porting/check83.pl>
+checks for filenames portable enough to go in the 
+perl distribution and showed the list of guilty parts where the script actually complains.
+I bet we'll see it fixed by the next week. Oops, next week is here
+and these are not issues anymore - but I am anticipating.
+
+    http://xrl.us/i7z7
+
+=head2 C<alarm()> on Windows 2003 and Vista
+
+
+Jan Dubois noticed that the C<alarm()> function isn't working
+on newer Windows (Windows 2003 64-bit and Windows Vista Beta 1 32-bit) 
+and pointed the change in F<win32/win32.c> that did the feat
+and opened it up for discussion. Nick Ing-Simmons, which wrote
+the original code and the change, entered the thread
+and he and Jan talked a lot about Windows programming
+tricks with events, while searching the simplest solution
+which fixed the problem without adding others.
+Nick even digged up a forgotten suggestion to change
+the code in question, which did not turn up to be a solution
+to the original problem. Jan envisioned an attempt to mix 
+one of the Nick's ideas with some modifications to cope with additional
+complications, some Windows 2000 features and some nice
+improvements to current Perl handling of Windows message queue.
+
+    Jan's report
+    http://xrl.us/i7z8
+    From Nick's attic
+    http://xrl.us/i7z9
+
+=head2 switch
+
+
+Robin Houston had been quite busy this week 
+advancing his idea on bringing the Perl 6 C<switch>
+into Perl 5. He demonstrated how it was added with
+a new syntax enabled by
+a lexically-scoped pragma "use feature". Paul Johnson,
+David Nicol and Damian Conway contributed with comments.
+Maybe soon we'll see Robin's addition to standard Perl 
+which is indeed a general mechanism for extending syntax
+and semantics of Perl programs.
+
+    use feature "switch";
+
+    http://xrl.us/i72a
+
+=head2 What John E. Malmberg Did This Week
+
+
+B< Patching F<lib/File/Spec/VMS.pm> >
+John E. Malmberg went on with his work on the VMS front, paving the
+way for a more capable Perl on newer OpenVMS systems.
+John brought a patch to F<lib/File/Spec/VMS.pm>
+to fix bugs in C<abs2rel()> and C<canonpath()> when handling
+the exquisite VMS paths like C<'[t1.t2.t3]file'>.
+John remembered there is a lot to do yet for handling
+the OpenVMS file specifications. Ken Williams applied the
+patch and prodded John for tests to exercise the dead bugs.
+John noticed the tests were already included by someone else,
+which forced him to propose these fixes so that tests succeed
+again and let him go on with dealing with a bunch of unresolved issues
+with VAX legacy, support for Unix formats and ODS-5 features,
+and other scary things. 
+
+    http://xrl.us/i72b
+
+
+B<Commands with Embedded New Lines>
+John questioned if there was a reason to truncate
+commands with embedded new lines (as done in F<vms/vms.c>) and pointed
+that some tests on VMS succeed or improve if truncation is not done.
+OpenVMS will pass all non-null binary data though to the program
+without DCL interpreter processing.
+To Craig A. Berry, it looks probable that older versions of DCL 
+would choke on newlines.
+
+    http://xrl.us/i72c
+
+
+B<Towards Long Filenames>
+John announced a code shakeup to remove the characteristic
+limitation of VMS filenames to 256 characters. Craig Berry
+listened, applied the changes and suggested some of the next actions
+towards the complete handling of long filenames on VMS
+
+    http://xrl.us/i72d
+
+=head2 Perl5 Bug Summary
+
+
+Perl RT had a count of 1515 open tickets at Dec 12 2005 14:00 GMT.
+
+    Robert Spier's summary
+    http://xrl.us/i72e
+    Perl RT just now
+    http://rt.perl.org/rt3/NoAuth/perl5/Overview.html
+
+=head2 In Brief
+
+
+B<A While Back in the Last Summary> 
+there was a confusion about the C<%m>
+format (which C<Sys::Syslog::syslog()> replaces with the contents of C<$!>)
+and C<%n> (a special conversion of Perl C<sprintf>), 
+spotted by Ronald J. Kimball. Please consider it patched, C<s/%n/%m/g>.
+
+    http://xrl.us/i72f
+
+
+B<False Matches with Bad utf-8>
+Ralph Bolton opened RT ticket #37836 to tell about a very simple
+regex run on specific data causing a SEGV. Dave Mitchell
+immediately trimmed down the problem to the piece of code below.
+
+    my $s = "\xa2\xf8";
+    open F, "<:utf8", \$s;
+    while(<F>) {
+        s/[\000]+//g;       # Causes a SEGV
+    }
+
+Nicholas Clark found that feeding in
+malformed uft8 was producing a bad length of -1 on a call to
+C<memmove>. 
+Sadahiro Tomoyuki observed F<regexec.c> (falsely) matched C<[\000]>
+with malformed utf-8 and proposed a tiny patch to fix that, which was
+applied and the ticket closed.
+
+    http://xrl.us/i72g
+
+
+B<Bye to Autovivification Bug>
+Steve Peters revisited RT ticket #8409 about an autovivification bug
+that made some expressions to succeed when errors like
+"Modification of a read-only value attempted" should be expected.
+Steve confirmed all of the reported troublesome expressions 
+produce consistent errors since 5.8.6.
+
+    http://xrl.us/i72h
+
+
+B< C<$Data::Dumper::Sortkeys> I<déjà vu> >
+Jerry Hebert rediscovered the trouble with C<Data::Dumper::Sortkeys>
+causing C<each()> failures which was already fixed in 5.8.8
+codebase (change #25308) as reported by Paul Johnson and Yitzchak Scott-Thoennes.
+Yitzchak also pointed the current workaround of using a void-context C<keys %hash>
+after dumping.
+
+    http://xrl.us/i72i
+
+
+
+B<the 'syntax error during sub, use or no' problem>
+In bug #37864, Brian Hirt showed up a syntax error that
+causes perl to crash. Paul Johnson pointed the issue was
+already fixed in bleadperl (since 5.9.2), and Dave Mitchell
+identified the bug as an instance of the standard 
+'syntax error during sub, use or no' problem,
+which required a fix in bleed too complex to be comfortably packported
+to 5.8.x.
+
+    http://xrl.us/i72j
+
+B<Improving I<ithreads> clone time>
+Nicholas Clark noticed ithreads clone time is less than
+desirable. The clone code uses a custom hash table to keep
+track of copied parts and it seems the used hash
+function is lousy. So Nicholas proposed the task to
+find a better one and immediately did the first experiment 
+with the regular perl hash function, posting stats
+and patches for others to try out.
+
+    http://xrl.us/i72k
+
+
+B< C<timelocal> not reverse of C<localtime> >
+Gisle Aas reported a failure on Windows XP when testing
+the behavior of C<timelocal> as the reverse of C<localtime>
+on a certain time zone and summer time adjustment.
+Steve Hay had something to add to the corresponding CPAN
+ticket #12068 (C<libwww-perl>) and Dave Rolsky noticed the problem 
+can reproduced on Linux boxes as well. Dave also detected
+the problematic code in C<Time::Local>, posted a fix
+that worked for Gisle and a new release of C<Time::Local>
+should be released in no time.
+
+    The CPAN ticket for libwww-perl
+    http://rt.cpan.org/Ticket/Display.html?id=12068
+    Gisle seeks the solution
+    http://xrl.us/i72m
+
+
+B< setting C<$SIG{ZERO}> coredumps >
+In bug #37869, Yitzchak Scott-Thoennes reported how setting C<$SIG{ZERO}>
+coredumps in perl 5.8.7.
+
+    $ perl -e'$SIG{ZERO}=sub{}'
+    Segmentation fault (core dumped)
+
+Andreas Koenig informed the SEGV came to blead with #18975 
+and went with #24406 and Steve Peters noticed it has been
+integrated to maint as well.
+
+    http://xrl.us/i72n
+
+
+B< C<Term::ReadKey>, Solaris, gcc >
+Jonathan Stowe, author of C<Term::ReadKey>, forwarded to the list
+a CPAN RT ticket where a user complained about trouble building
+C<Term::ReadKey> on Solaris 10. Jonathan explained C<Term::ReadKey>
+would not work unless the module has access to the same shared
+C runtime library objects as Perl do, a problem common to all modules
+with XS components. Yitzchak Scott-Thoennes remembered that building 
+add-on modules for perl shipped with Solaris requires
+the CPAN modules C<Solaris::PerlGcc>.
+
+    http://xrl.us/i72o
+
+
+
+B<Coping with False Alarms>
+Jim Shi opened RT ticket #37855 to tell about what he thought to be
+an odd behavior from a simple Perl script and was taught
+by Ronald J. Kimball, Paul Johnson and chromatic to always
+turn warnings on, to read docs like F<perldata.pod>
+and to not abuse prototypes and C<&> sigils when none
+is necessary.
+
+    http://xrl.us/i72p
+
+=head2 About this summary
+
+It rained while this summary was written (in fact, it rained
+during the last two or three weeks which is rather unusual
+at our sunny weather). But I am digressing, this is definitely not Monday 
+and even so here's another p5p summary to your delight, 
+written by Adriano Ferreira.
+
+Information concerning bugs referenced in this summary (as #nnnnn)
+may be viewed at http://rt.perl.org/rt3/Ticket/Display.html?id=nnnnn
+
+Information concerning patches to maint or blead referenced in
+this summary (as #nnnnn) may be viewed at
+http://public.activestate.com/cgi-bin/perlbrowse?patch=nnnnn
+
+Weekly summaries are published on F<http://use.perl.org/> and posted
+on a mailing list, (subscription: F<perl5-summary-subscribe@perl.org>).
+The archive is at F<http://dev.perl.org/perl5/list-summaries/>.
+Corrections and comments are welcome.
+
+If you found this summary useful or enjoyable, please consider
+contributing to the Perl Foundation to help support the development
+of Perl.
