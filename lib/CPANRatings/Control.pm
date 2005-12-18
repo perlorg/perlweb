@@ -1,6 +1,6 @@
 package CPANRatings::Control;
 use strict;
-use base qw(Combust::Control);
+use base qw(Combust::Control Combust::Control::Bitcard);
 use Apache::Cookie;
 use LWP::Simple qw(get);
 use Apache::Util qw();
@@ -63,38 +63,11 @@ sub user_info {
   return;
 }
 
-sub bitcard {
-  my $self = shift;
-  my $bc = $self->SUPER::bitcard(@_);
-  $bc->info_required('username');
-  $bc;
+sub bc_info_required {
+  'username'
 }
 
-sub _here_url {
-  my $self = shift;
-  my $here = URI->new($self->config->base_url('cpanratings')
-		      . $self->r->uri 
-		      . '?' . $self->r->query_string 
-		     );
-  $here->as_string;
-}
 
-sub login_url {
-  my $self = shift;
-  my $bc = $self->bitcard;
-  $bc->login_url( r => $self->_here_url )
-}
-
-sub account_url {
-  my $self = shift;
-  my $bc = $self->bitcard;
-  $bc->account_url( r => $self->_here_url )
-}
-
-sub login {
-  my $self = shift;
-  return $self->redirect($self->login_url);
-}
 
 sub as_rss {
   my ($self, $reviews, $mode, $id) = @_;

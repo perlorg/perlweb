@@ -5,7 +5,7 @@ use Class::DBI::Plugin::AbstractCount;
 
 __PACKAGE__->table('reviews');
 
-__PACKAGE__->columns(All => qw/review_id user user_name module distribution version_reviewed updated 
+__PACKAGE__->columns(All => qw/id user user_name module distribution version_reviewed updated 
 			review rating_overall rating_1 rating_2 rating_3 rating_4/);
 
 __PACKAGE__->columns(TEMP => qw/_helpful_total _helpful_yes/);
@@ -28,7 +28,7 @@ sub add_helpful {
   my $self = shift;
   my $args = shift;
   # 2: updated, 1: insert, 0: something went wrong.
-  $self->dbh->do(q[replace into reviews_helpful (review_id, user_id, helpful) values (?,?,?)], undef,
+  $self->dbh->do(q[replace into reviews_helpful (review, user, helpful) values (?,?,?)], undef,
 		 $self->id, $args->{user}->id, $args->{helpful}
 		);
 }
@@ -36,7 +36,7 @@ sub add_helpful {
 sub helpful_total {
   my $self = shift;
   return $self->_helpful_total if defined $self->_helpful_total;
-  my ($count) = $self->db_Main->selectrow_array(q[select count(*) from reviews_helpful where review_id=?], undef, $self->id);
+  my ($count) = $self->db_Main->selectrow_array(q[select count(*) from reviews_helpful where review=?], undef, $self->id);
   $self->_helpful_total($count);  
   $count;
 }
@@ -44,7 +44,7 @@ sub helpful_total {
 sub helpful_yes {
   my $self = shift;
   return $self->_helpful_yes if defined $self->_helpful_yes;
-  my ($count) = $self->db_Main->selectrow_array(q[select count(*) from reviews_helpful where review_id=? and helpful='1'], undef, $self->id);
+  my ($count) = $self->db_Main->selectrow_array(q[select count(*) from reviews_helpful where review=? and helpful='1'], undef, $self->id);
   $self->_helpful_yes($count); 
   $count;
 }

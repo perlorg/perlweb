@@ -8,9 +8,17 @@
 #   from reviews_helpful rh inner join review_users u ON(u.id=rh.user_id)
 #   group by rh.user_id order by 2;
 
+CREATE TABLE `review_users` (
+  `id` mediumint(8) unsigned NOT NULL auto_increment,
+  `bitcard_id` char(40) default NULL,
+  `username` varchar(128) default NULL,
+  `name` varchar(128) default NULL,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `username` (`username`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 create table reviews (
-  review_id mediumint unsigned not null primary key auto_increment,
+  id mediumint unsigned not null primary key auto_increment,
   user      mediumint unsigned not null,
   user_name varchar(255) not null,
   module    varchar(255) binary not null, 
@@ -25,21 +33,15 @@ create table reviews (
   rating_4       tinyint unsigned,
   KEY module_idx (module),
 --  UNIQUE KEY (user_id, distribution, module),
-  KEY user_id_idx (user_id)
+  KEY user_id_idx (user),
+  constraint foreign key (user) references review_users(id)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 create table reviews_helpful (
-  review_id  mediumint unsigned not null, 
-  user_id    mediumint unsigned not null,
-  helpful    enum('1','0') not null,
-  primary key (review_id, user_id)
+  review    mediumint unsigned not null, 
+  user      mediumint unsigned not null,
+  helpful   enum('1','0') not null,
+  primary key (review, user),
+  constraint foreign key (review) references reviews(id)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `review_users` (
-  `id` mediumint(8) unsigned NOT NULL auto_increment,
-  `bitcard_id` char(40) default NULL,
-  `username` varchar(128) default NULL,
-  `name` varchar(128) default NULL,
-  PRIMARY KEY  (`id`),
-  UNIQUE KEY `username` (`username`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
