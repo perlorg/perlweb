@@ -53,8 +53,8 @@
 <iframe name="YesNoVotingFrame" id="YesNoVotingFrame" height=0 width=0 style="visibility:hidden;"></iframe>
 <script language="Javascript1.1" type="text/javascript">
 <!--
-var uId = '[% review.review_id %]';
-var vUrl = '/rate/helpful?review_id=[% review.review_id %]';
+var uId = '[% review.id %]';
+var vUrl = '/rate/helpful?review_id=[% review.id %]';
 showYesButton(vUrl,uId);
 showNoButton(vUrl,uId);
 showYesNoDefaultMessage(uId);
