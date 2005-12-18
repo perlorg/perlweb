@@ -1,0 +1,29 @@
+
+CREATE TABLE `cpannotify_users` (
+  `id`               mediumint(8) unsigned NOT NULL auto_increment primary key,
+  `bitcard_id`       char(40) not null,
+  `frequency_hours`  smallint unsigned not null default 24,
+  `last_mail`        datetime,
+   key (last_mail, frequency_hours),
+   unique key (bitcard_id)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `cpannotify_emails` (
+  `id` mediumint(8) unsigned NOT NULL auto_increment primary key,
+  user mediumint unsigned not null,
+  `email` varchar(255) not null,
+  key (user),
+  UNIQUE KEY (`email`),
+  constraint foreign key (user) references cpannotify_users(id)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `cpannotify_subscriptions` (
+  `id`          mediumint(8) unsigned NOT NULL auto_increment primary key,
+  user          mediumint unsigned not null,
+  `search_type` enum('dist', 'author', 'module') not null default 'dist',
+  `name`        varchar(255) not null,
+  UNIQUE KEY (user, search_type, name),
+  constraint foreign key (user) references cpannotify_users(id)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+
