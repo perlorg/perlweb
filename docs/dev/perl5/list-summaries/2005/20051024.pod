@@ -18,7 +18,7 @@ a week later and probably 5.8.8 RC1 one week after
 this. 
 
     Nicholas' announcement
-    http://xrl.us/h896
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00740.html
     The snapshot
     http://opensource.fotango.com/~nclark/perl-25817.tar.bz2
 
@@ -32,7 +32,7 @@ code on blead@25827. That triggered a discussion on how
 to deal with repeated code, why it is worthy and
 when it could be desirable. 
 
-    http://xrl.us/h897
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00748.html
 
 
 =head2 Getting C<sort()> Right
@@ -52,20 +52,20 @@ of a set of macros *MULTICALL* for repeatedly
 calling the same sub and intented to make easier
 to get right code like the C<sort> implementation.
 
-    http://xrl.us/h898
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00791.html
 
 
 Robin showed yet another subtle bug when you
 call C<sort()> with a sort sub that's already active.
 
-    http://xrl.us/h899
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00820.html
 
 
 Ben Tilly, the requestor of RT ticket #36430, explained
 Robin what exactly made the ticket issue unlike
 the one of bug #7063.
 
-    http://xrl.us/h9aa
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00828.html
 
 
 Then, Robin prepared drafts of his so-called sort/multicall
@@ -74,11 +74,11 @@ patch. Yitzchak Scott-Thoennes prodded for tests and Graham Barr
 of what really changes and how compatibility may be preserved/restored.
 
     First draft
-    http://xrl.us/h9ab
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00823.html
     Second draft
-    http://xrl.us/h9ac
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00849.html
     Getting there
-    http://xrl.us/h9ad
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00884.html
 
 
 =head2 C<pp_push()> Gets Faster
@@ -92,7 +92,7 @@ Tassilo to write a more effective patch, illustrated
 by benchmarks hinted by H.Merijn Brand. Rafael applied it
 as change #25854.
 
-    http://xrl.us/h9ae
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00752.html
 
 =head2 Mathoms Held Together
 
@@ -111,9 +111,9 @@ in other environments and, confronted with golden silence,
 found those files and made what was necessary, applying change #25866.
 
     Nicholas coins the file name
-    http://xrl.us/h9af
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-06/msg00077.html
     Steve Peters gets mathoms together
-    http://xrl.us/h9ag
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00799.html
 
 
 
@@ -126,7 +126,7 @@ how using multiple encodings at once
 may cause panic (more exactly, 
 C<"panic: sv_setpvn called with negative strlen">).
 
-    http://xrl.us/h9ah
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00813.html
 
 
 B< Reconciled 3-arg Opens >
@@ -141,7 +141,7 @@ Rafael produced a patch to reconcile the 3-arg
 opens with the C<open> pragma settings and suggested
 to settle the C<perlfunc> behavior as the correct one.
 
-    http://xrl.us/h9ai
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00822.html
 
 =head2 Gory Quoted Constructs
 
@@ -154,7 +154,7 @@ to be documented in F<perlop>, although not very clearly.
 Bas proceeded to patch C<B::Deparse> which he was using
 when he met the problem.
 
-    http://xrl.us/h9aj
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00814.html
 
 =head2 Pre-loaded Perl executables
 
@@ -176,7 +176,7 @@ reach a wider audience by asking at perlmonks.org.
 John Peacock suggested him to also evaluate C<perl2exe>
 in his context.
 
-    http://xrl.us/h9ak
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00829.html
 
 
 
@@ -193,7 +193,7 @@ open instead of munging with file names. Steve Peters
 applied and that made Pratik happy and eager to see
 the fix in 5.8.x branch as well.
 
-    http://xrl.us/h9am
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00856.html
 
 
 =head2 Multi-threaded C<IO::Socket>
@@ -210,7 +210,7 @@ problems with C<IO::Socket> and threads,
 called for a patch in unified diff format
 and greeted opinions on other points raised by Peter.
 
-    http://xrl.us/h9an
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00865.html
 
 
 
@@ -228,9 +228,9 @@ to add Configure probes for C<futimes>.
 
 
     Gisle's start
-    http://xrl.us/h9ao
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-07/msg00730.html
     Yitzchak's turn
-    http://xrl.us/h9ap
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-07/msg00730.html
 
 
 =head2 Extending Left Bit-shifts
@@ -247,7 +247,7 @@ hit when using C<Math::BigInt>. Yitzchak Scott-Thoennes
 foresaw trouble in upgrading IV to NV types for 
 integer-type operations like shifts.
 
-    http://xrl.us/h9aq
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00881.html
 
 
 =head2 John and VMS
@@ -260,7 +260,7 @@ thanked John (in the name of all perl5 porters
 and lovers, I dare to say) and gave a clue
 on making tests more portable.
 
-    http://xrl.us/h9ar
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00754.html
 
 
 B<VMS exit handling>
@@ -274,9 +274,9 @@ And then John posted what he expects to
 be the last VMS exit/error fixes that were needed.
 
     Call for help
-    http://xrl.us/h9as
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00746.html
     Hopefully the last fixes
-    http://xrl.us/h9at
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00817.html
 
 
 B< F<vms.c> improvements and fixes >
@@ -287,7 +287,7 @@ While on this, he fixed memory leaks in old
 C<do_mp_rmsexpand()> and made code safer with
 C<memmove()> replacing C<memcpy()>.
 
-    http://xrl.us/h9au
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00837.html
 
 
 B< C<sprintf> on VMS >
@@ -295,7 +295,7 @@ John E. Malmberg posted a minor change to reflect
 the fact that C<sprintf> in VMS returns the length
 of the buffer. 
 
-    http://xrl.us/h9av
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00802.html
 
 =head2 Jarkko and Symbian
 
@@ -306,12 +306,12 @@ data on Symbian. The issue at stage was how changes in underlying structure
 types would break compatibility among C<Encode> and older format
 encode tables.
 
-    http://xrl.us/h9aw
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00700.html
 
 Jarkko also announced better support for Series 80 devices
 and some handy utilities for Perl on Symbian.
 
-    http://xrl.us/h9ax
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00840.html
 
 =head2 More Platform Specific Issues
 
@@ -336,7 +336,7 @@ the relevant
 Perl source code and Yves Orton explaining oddities
 in Win32 API. Very instructive and scary.
 
-    http://xrl.us/h9ay
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00846.html
 
 
 B<AIX Woes>
@@ -345,7 +345,7 @@ Rafael Garcia-Suarez pointed it was probably due to
 the F<Makefile> failing to use F<makedef.pl> to generate F<perl.exp>
 where that matters. And then it worked.
 
-    http://xrl.us/h9az
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00886.html
 
 
 B< EBCDIC, Unicode, C<unpack> >
@@ -353,7 +353,7 @@ Sadahiro Tomoyuki explained the results Rajarshi Das was seing
 using C<unpack> with formats 'U' and 'C' on EBCDIC platforms:
 a UTF-8 versus UTF-EBCDIC issue.
 
-    http://xrl.us/h9a2
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00889.html
 
 
 B< A Linux Issue >
@@ -363,7 +363,7 @@ the C<_IOC_SIZE> as it should. Rafael tweaked the change
 to avoid misterious side-effects on some other random platform
 and applied it.
 
-    http://xrl.us/h9a3
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00826.html
 
 
 =head2 Perl5 Bug Summary
@@ -372,7 +372,7 @@ and applied it.
 The open tickets count was at 1519 in Oct 24 13:00. 
 
     Robert Spier and the Bug summary
-    http://xrl.us/h2ze
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00257.html
     Perl RT just now
     http://rt.perl.org/rt3/NoAuth/perl5/Overview.html 
 
@@ -388,7 +388,7 @@ and Windows sides. He wondered about the convenience
 of integrating this to maint now or in a couple of months.
 No answer so far.
 
-    http://xrl.us/h9a4
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00775.html
 
 
 B< Revisited cc/cppsymbols >
@@ -397,7 +397,7 @@ a long-standing bug on Configure's test for cppsymbols
 with values which contain spaces, such as Cygwin's
 C<_LONG_DOUBLE=long double>.
 
-    http://xrl.us/h9a5
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00709.html
 
 
 B< F<mv-if-diff> Days are Counted >
@@ -406,9 +406,9 @@ makefile and asked for people to try it. Nicholas did and found the
 need for a tweak.
 
     The "remove mv-if-diff" campaign summarized
-    http://xrl.us/h9a6
+    http://dev.perl.org/perl5/list-summaries/2005/20050926.html#The_Future_of_mv-if-diff
     This week
-    http://xrl.us/h9a7
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00788.html
 
 
 B< White Smokes for C<Compress::Zlib> >
@@ -417,7 +417,7 @@ the C<Compress::Zlib>'s smoke failures seen on
 Win32, which was applied by H.Merijn Brand
 with great expectations.
 
-    http://xrl.us/h9a8
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00794.html
 
 
 B< F<warnings.pm> Works as It Should >
@@ -428,7 +428,7 @@ how the reported behavior was the intented one
 according to the docs and Paul Marquess
 noted it is all there in F<perllexwarn.pod>.
 
-    http://xrl.us/h9a9
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00838.html
 
 
 B< Named Escapes in Eval >
@@ -437,7 +437,7 @@ escapes in evals and thought a POD fix could be in
 order. Sadahiro Tomoyuki suggested the issue
 could be slightly different as well as the appropriate doc fix.
 
-    http://xrl.us/h9ba
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00870.html
 
 
 B< Misleading Closures in Regexes >
@@ -451,27 +451,27 @@ that makes it refer to the first time
 the regex is compiled, giving wrong results
 for subsequent calls.
 
-    http://xrl.us/h9bb
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00866.html
 
 
 B< F<perl5db.pl> Fix >
 Brendan O'Dea sent a patch for fixing an incorrect instruction
 in termination message emitted by F<perl5db.pl>.
 
-    http://xrl.us/h9bc
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00897.html
 
 
 B<Free the Tries>
 Jarkko Hietaniemi spotted and patched a bug in C<regcomp.c> that prevented
 tries to be freed.
 
-    http://xrl.us/h9bd
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00905.html
 
 B< C<ExtUtils::Constant> and Perl 5.004 > Sébastien Aperghis-Tramoni
 posted a small patch to restore C<ExtUtils::Constant> compatibility
 with Perl 5.004.
 
-    http://xrl.us/h9be
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00945.html
 
 
 =head2 About this summary

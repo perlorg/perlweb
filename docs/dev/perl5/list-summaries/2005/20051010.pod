@@ -21,7 +21,7 @@ smokes. And there was also a patch to silence warnings
 on AIX.
 
     The patches
-    http://xrl.us/h2yr
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00225.html
 
 The utf8 errors survived the first approach and prompted
 for more investigation. Dominic Dunlop reported Mac OS X were
@@ -34,9 +34,9 @@ Linux, Sun, AIX, Win32, HP-UX, Mac OS X satisfied at the
 same time.
 
     UTF-8 errors are back
-    http://xrl.us/h2ys
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00274.html
     Fighting UTF-8 smokes
-    http://xrl.us/h2yt
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00336.html
 
 Steve Hay noticed bleadperl smokes on Win32 have been
 failing in test F<09gziphdr.t> and crashing perl.
@@ -45,9 +45,9 @@ issue and produced a patch so that Win32
 smokes can resume normally again.
 
     Steve Hay reports
-    http://xrl.us/h2yu
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00271.html
     Paul Marquess nails things down
-    http://xrl.us/h2yv
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00420.html
 
 There were also a thread involving an issue about C<Compress::Zlib> Makefile.PL 
 in perl core, driven by Yitzchak Scott-Thoennes and E.Merijn Brand, which
@@ -57,7 +57,7 @@ still looks like a dream. C<Compress::Zlib> 2.000_05 is reaching the high
 time in blead.
 
     C::Z Makefile.PL revised for Cygwin
-    http://xrl.us/h2yw
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00215.html
 
 =head2 Perl on Cygwin
 
@@ -68,7 +68,7 @@ with Nicholas Clark, they traced the issue
 down to a destruction ordering bug, which
 could affect other platforms and squashed it.
 
-    http://xrl.us/h2yx
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00200.html
 
 H.Merijn Brand reported that after the PERL_CORE
 patch, Cygwin does not dump core on blead
@@ -79,7 +79,7 @@ a patch to make it more robust (see L</Compress::Zlib>). Yitzchak
 Scott-Thoennes reported the F<sigaction> failure
 went away with the last Cygwin improvements.
 
-    http://xrl.us/h2yy
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00220.html
 
 Steve Peters reported 
 bugs #36665 ("delete $ENV{FOO} leaves $FOO visible 
@@ -89,8 +89,8 @@ had to do with Perl's handling of environment variables
 when compiled with -DPERL_USE_SAFE_PUTENV. This was fixed
 in bleadperl with change #25737. (Read more on L</Environmental Recovery>.)
 
-    http://xrl.us/h2yz
-    http://xrl.us/h2y2
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00291.html
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00292.html
 
 =head2 Spaces in C<-F> Switch
 
@@ -110,7 +110,7 @@ and that perl was not in fault wrt awk. David also
 remembered you can always use C<"\x20"> instead of spaces
 in patterns.
 
-    http://xrl.us/h2y3
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00372.html
 
 =head2 Perl on Symbian
 
@@ -129,9 +129,9 @@ app in Series 60, packaging scripts and modules into
 SIS files.
 
     Symbian on blead patch
-    http://xrl.us/h2y4
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00234.html
     The "sisify.pl" patch
-    http://xrl.us/h2y5
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00344.html
 
 =head2 C<malloc_wrap>, the Default?
 
@@ -147,7 +147,7 @@ Alan were seeing too much warnings with Forte compilers
 and Dave Mitchel said the macro was recently hacked
 to avoid warnings on gcc.
 
-    http://xrl.us/h2y6
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00249.html
 
 =head2 New Core Modules Release
 
@@ -155,12 +155,12 @@ to avoid warnings on gcc.
 Without much ado, Paul Marquess brought a patch
 to sync blead and CPAN with respect to C<DB_File> 1.1812.
 
-    http://xrl.us/h2y7
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00204.html
 
 Sébastien Aperghis-Tramonis also announced
 a patch to bring C<XSLoader> to version 0.06.
 
-    http://xrl.us/h2y8
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00488.html
 
 =head2 C<Module::Build> Applies for Core
 
@@ -170,7 +170,7 @@ which is the last major feature-adding beta release
 before 0.28. Ken asked if it's not time for this version
 to get pulled into the core. Warnocked by now.
 
-    http://xrl.us/h2y9
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00258.html
 
 =head2 Not So Short
 
@@ -182,7 +182,7 @@ and posted a patch to update the documentation.
 While on this, he also fixed F<Test/Harness/Straps.pm>
 which relied on this misleading functionality.
 
-    http://xrl.us/h2za
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00230.html
 
 =head2 Postponed subregexes and groups
 
@@ -202,7 +202,7 @@ A part of the solution for the raised issues rests
 in Dave Mitchell's hands and his promised re_eval
 rewrite - may Duke Nukem Forever be soon released.
 
-    http://xrl.us/h2zb
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00269.html
 
 =head2 Environmental Recovery
 
@@ -214,9 +214,9 @@ continuation, regarding POSIX interfaces, probes,
 Solaris, AIX, etc.
 
     Summarized here
-    http://xrl.us/h2zo
+    http://dev.perl.org/perl5/list-summaries/2005/20051003.html#Environmental_damage_on_Solaris_10
     Continued this week
-    http://xrl.us/h2zc
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00238.html
 
 A new thread started (with subject "environ fixup")
 after the probe for C<unsetenv()> was added by E.Merijn
@@ -229,7 +229,7 @@ got rid of some oddities in environment handling
 after this fruitful discussion. (Read more at L</Perl on Cygwin>.)
 
     The new thread
-    http://xrl.us/h2zd
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00283.html
 
 =head2 Perl5 Bug Summary
 
@@ -239,7 +239,7 @@ open tickets can be seen at any time in the
 F<rt.perl.org> link below.
 
     RT in Oct 10 13:00, courtesy of Robert Spier
-    http://xrl.us/h2ze
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00257.html
     Perl RT just now
     http://rt.perl.org/rt3/NoAuth/perl5/Overview.html
 
@@ -253,7 +253,7 @@ issues had been fixed in the development branch of perl, which
 will eventually appear in the stable release 5.10. Yitzchak
 Scott-Thoennes sketched some workarounds to prevent the problems.
 
-    http://xrl.us/h2zf
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00207.html
 
 
 B< Faster C<++/--> for Integers >
@@ -263,7 +263,7 @@ to be faster. Hugo van der Sanden posted a patch
 to extend the special treatment even for integers,
 where the same rationale is also valid.
 
-    http://xrl.us/h2zg
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00457.html
 
 
 B<Indexing perl Docs>
@@ -276,9 +276,9 @@ so on). A total of new 1999 index entries
 applied to blead. 
 
     Ivan's calling summarized
-    http://xrl.us/h2zp
+    http://dev.perl.org/perl5/list-summaries/2005/20050915.html#Pod_Indexing_Project_Status_and_Plan
     Ivan and the 1999 new entries
-    http://xrl.us/h2zh
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00368.html
 
 
 B<Array Indexing with a Ref>
@@ -294,7 +294,7 @@ a ref in numeric context gives the address of the
 referent. So the code may be actually trying to create an extremely
 large array. 
 
-    http://xrl.us/h2zi
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00397.html
 
 B<Using the DOR> 
 Last week had seen a thread on the subject of whether symbol tables
@@ -304,7 +304,7 @@ and parse that to a construction involving the brand new operator
 C<op_DOR>, which could arguably be a concise solution.
 However cool, David got warnocked.
 
-    http://xrl.us/h2zj
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00254.html
 
 B<To Awk or Not To Awk> 
 Xavier Noria posted a doc patch for an improved explanation of
@@ -313,7 +313,7 @@ approach to not add references to awk, suggesting these awk
 jargons should be dumped entirely, as folks usually do not read perl
 documentation anymore to know how emulate awk behavior.
 
-    http://xrl.us/h2zk
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00471.html
 
 B< C<%INC> and Forward Slashes >
 Jan Dubois brought in a patch to make sure the I<keys> in C<%INC>
@@ -325,7 +325,7 @@ As a contumacious Windows user, I salute Jan Dubois
 for leaving Win32 free of those (dozens of) annoying warnings
 each time C<cpan> is run.
 
-    http://xrl.us/h2zm
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00504.html
 
 =head2 About this summary
 

@@ -22,7 +22,7 @@ http://hop.perl.plover.com/errata/byid.cgi/131 and
 http://hop.perl.plover.com/~alias/list.cgi?2:mss:264 for more
 information on the matter.
 
-  http://xrl.us/hkyk
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00078.html
 
 =head2 VMS Issues
 
@@ -33,17 +33,17 @@ are done in the DCL command shell. Part of the problem was that the
 test suite failure message was misleading. John fixed things up as
 best he could.
 
-  http://xrl.us/hkym
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00000.html
 
 He also landed a patch for ExtUtils::CBuilder. After a bit of work,
 he and Ken Williams got it working correctly.
 
-  http://xrl.us/hkyn
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00126.html
 
 In other VMS news, the current bleadperl is testing fairly well.
 The main show-stopper being  problems with Compress::Zlib.
 
-  http://xrl.us/hkyo
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00189.html
 
 =head2 Eliminating arenaroots
 
@@ -54,7 +54,7 @@ smokes produced a number of odd results that had people scratching
 their heads, until it was realised that the problem was a single
 statement C<if> that lost its braces.
 
-  http://xrl.us/hkyp
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00102.html
 
 =head2 Dying in a grep
 
@@ -68,7 +68,7 @@ Normally, the third line shouldn't appear. And C<map> will do the
 same thing. Salvador Fandiño noted that this had already been recorded
 as bug #24254.
 
-  http://xrl.us/hkyq
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00109.html
 
 =head2 eg should be e.g. in the documentation
 
@@ -78,7 +78,7 @@ wondered why it was not abbreviated to "for example". Michael Schwern
 brought the discussion to a close by performing a simple cost/benefit
 analysis.
 
-  http://xrl.us/hkyr
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00115.html
 
 =head2 Math::Complex atan2 bug
 
@@ -96,7 +96,7 @@ Steffen Müller observed the following
 Jarkko Hietaniemi said that he'd cook up a patch, but that he had
 other outstanding things to do with Math::Complex and Math::Trig.
 
-  http://xrl.us/hkys
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00157.html
 
 =head2 undefing *foo{CODE}
 
@@ -104,7 +104,7 @@ Ben Tilly reported that undef'ing the CODE slot of a typeglob doesn't
 quite work well enough to be useful, and supplied a short snippet
 of code showing the problem.
 
-  http://xrl.us/hkyt
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00169.html
 
 Dave Mitchell shed some light on what was going on under the covers
 "the thing continues to exist, but has no useful 'value'", and
@@ -120,7 +120,7 @@ tricky.
 Sadahiro Tomoyuki found problems with transliterating Unicode
 characters. I can only offer my deepest sympathy.
 
-  http://xrl.us/hkyu
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00181.html
 
 =head2 New core module releases
 
@@ -155,7 +155,7 @@ the situation whereby...
 the bug, by asking whether returning a U32 value instead of a bool
 would fix matters. 
 
-  http://xrl.us/hmtr
+  ERROR: no such short_url
 
 =head2 In Brief
 
@@ -163,7 +163,7 @@ Rajarshi Das found a problem with Encode on EBCDIC. Dan Kogai noted
 that the code is not well tested on EBCDIC. There was another thread
 on the matter:
 
-  http://xrl.us/hkyv
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00142.html
 
 Robert Spier released the latest version of the Perl5 bug summary
 
@@ -199,7 +199,7 @@ still a problem:
 Michael Schwern also followed up on the test suite of PathTools 3.10, which
 was released some time ago.
 
-  http://xrl.us/hkyw
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00183.html
 
 In bug #36075, Nicholas Clark wants to get C<malloc_size> and
 C<malloc_good_size> into C<Configure>, because this would help perl

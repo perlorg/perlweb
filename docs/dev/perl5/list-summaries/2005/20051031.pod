@@ -12,14 +12,14 @@ Also, the F<Configure> option which was anticipated were not ready yet at
 the summary time, but it is now.
 
   Steve Peters patches the summary
-  http://xrl.us/ib67
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00967.html
 
 Concerning B<Cygwin, C<unlink>, Win32>, Yitzchak Scott-Thoennes
 commented that he was referring to the Cygwin DLL source code and not perl
 when illustrating how C<unlink> in Cygwin mapped to the Windows API.
 
   Yitzchak Scott-Thoennes makes things clear
-  http://xrl.us/ib68
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00006.html
 
 =head2 More F<mathoms.c> fallout
 
@@ -27,16 +27,16 @@ The recent introduction of F<mathoms.c> produced fallout in
 various places this week
 
   Gisle implements the Configure option
-  http://xrl.us/ib69
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00973.html
 
   and shrinks the perl binary by 0.75%
-  http://xrl.us/ib7a
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00010.html
 
   Getting do_exec on Win32 back in order
-  http://xrl.us/ib7b
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00011.html
 
   Getting perl.h on VMS back in order
-  http://xrl.us/ib7c
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00136.html
 
 =head2 More on C<ExtUtils::Constant>
 
@@ -50,10 +50,10 @@ is not yet available during the build. Nicholas fixed it up by
 with some conditional C<require>ing in patch #25927.
 
   The patch
-  http://xrl.us/ib7d
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00945.html
 
   The patch to the patch
-  http://xrl.us/ib7e
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00991.html
 
 =head2 Bring out yer dead (ops)
 
@@ -80,13 +80,13 @@ merely switching to a runloop that knows how to deal with a signal, when
 a signal is encountered.
 
   Reported in ticket #37573
-  http://xrl.us/ib7f
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00980.html
 
   Change your runloop
   http://search.cpan.org/dist/Runops-Switch/lib/Runops/Switch.pm
 
   Nick's second idea
-  http://xrl.us/ib7g
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00020.html
 
 =head2 Andy's consting
 
@@ -94,33 +94,33 @@ Andy Lester consted more stuff, spotted a couple of chances to
 simplify code, and dedicated the patch to Etta James:
 
   The patch
-  http://xrl.us/ib7h
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00951.html
 
   Etta James
   http://www.etta-james.com/
 
 ... and dealt with F<perlio.c> seperately because it's so hairy:
 
-  http://xrl.us/ib7i
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00988.html
 
 Andy also posted the switches he's using for building perl under
 GCC 4.1.0 snapshots (using as many switches as possible to
 seek out doubtful code constructs).
 
   Bondage and discipline
-  http://xrl.us/ib7j
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00989.html
 
 and also found a lovely trailing semi-colon-on-on-if bug in C<pp_ftrowned>:
 
-  http://xrl.us/ib7k
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00090.html
 
 and yet more consting
 
-  http://xrl.us/ib7m
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00124.html
 
 and cleaning of the x2p directory
 
-  http://xrl.us/ib7n
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00123.html
 
 =head2 DB_File patched to deal with Berkeley DB 4.4
 
@@ -129,7 +129,7 @@ upcoming 4.4 release of Berkeley DB. Steve Peters applied the patch
 and Yitzchak wondered whether it was important enough to make sure
 it made its way into 5.8.8.
 
-  http://xrl.us/ib7o
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00000.html
 
 =head2 Let the good futimes roll
 
@@ -146,10 +146,10 @@ functions deal with setting the access and modification times for
 files).
 
   utime? utimes?
-  http://xrl.us/ib7p
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00008.html
 
   Abe Timmerman patches configure.com
-  http://xrl.us/ib7q
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00131.html
 
 =head2 sort/multicall patch in blead
 
@@ -185,13 +185,13 @@ for a while. Robin summed it up best:
   without subtle breakage...
 
   Starting from last week
-  http://xrl.us/ib7r
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00717.html
 
   The patch applied
-  http://xrl.us/ib7s
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00041.html
 
   Dave weighs in
-  http://xrl.us/ib7t
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00129.html
 
 =head2 Compiling 5.8.7 with Visual Studio 2005
 
@@ -201,7 +201,7 @@ in the area of C<perlio> and related some very wacky symptoms.
 He also tried 5.9.2, and that didn't work, either. And
 unfortunately for Joel, he was Warnocked.
 
-  http://xrl.us/ib7u
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00046.html
 
 =head2 The prototype of C<Perl_magic_clear_all_env>
 
@@ -226,13 +226,13 @@ platforms where it makes sense, and called for feedback on other
 platforms such as MacOS, Symbian, VMS and Win32.
 
   The question
-  http://xrl.us/ib7v
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00087.html
 
   All hail gonzui
   http://cpansearch.bulknews.net/
 
   using clearenv
-  http://xrl.us/ib7w
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00117.html
 
 =head2 A surprising segfault
 
@@ -247,7 +247,7 @@ functions exhibit similar behaviour and provided a patch to fix them too.
 Tels wanted tests.
 
   segfault
-  http://xrl.us/ib7x
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00126.html
  
   How to kill perl
   http://www.perlmonks.org/index.pl?node_id=505817
@@ -266,10 +266,10 @@ with C<print> and use C<printf> (not necessarily with C<%> args) to
 get non-newline print behaviour).
  
   This time
-  http://xrl.us/ib7y
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00144.html
 
   Last time around
-  http://xrl.us/ib7z
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-03/msg00162.html
 
 =head2 New Core Module Releases
 
@@ -287,44 +287,44 @@ responded to.
 
 Jarkko added UIQ support to the Symbian port
 
-  http://xrl.us/ib72
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00979.html
 
 Steven Schubiger cleared up the no-whitespace-before-semicolon
 problems for pod files that needed it.
 
-  http://xrl.us/ib73
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00993.html
 
 Jutta posted a bug report dealing with C<sysread> in UTF-8 mode. When
 Steve Peters opined that a little bit of code might help understand
 the problem more easily, Jutta replied with a TCP server written in
 C and a client written in Perl. What more could you wish for?
 
-  http://xrl.us/ib74
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00040.html
 
 Alan Burlison was still wondering about the C<malloc_wrap> compiler
 warnings being produced. After discussing the issue with Nicholas, he
 decided to add an explanation about the compiler warnings to the
 F<README.solaris> file.
 
-  http://xrl.us/ib75
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00048.html
 
 Dan Dascalescu posted a bug report concerning C<File::Glob>, escaped
 metacharacters and spaces in filenames. Steven Schubiger showed a
 couple of ways to get around the problem.
 
-  http://xrl.us/ib76
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00068.html
 
 Andreas J. Koenig took a stab at fixing bug #19049 (Incorrect C<$`> after
 replacement). Rafael applied it, and then backed it out after not being
 able to solve the remaining problems himself. If someone else wants to have a
 go...
 
-  http://xrl.us/ib77
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00091.html
 
 Robin Houston noted that F<perlcall.pod> documents problems that
 were fixed way back in version 5.002, and fired up the chainsaw.
 
-  http://xrl.us/ib78
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00121.html
 
 Anno Siegel posted an interesting bug:
 
@@ -334,7 +334,7 @@ Anno Siegel posted an interesting bug:
 
 This dies, and Anno says it shouldn't. No response for the moment.
 
-  http://xrl.us/ib79
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00159.html
 
 =head2 About this summary
 

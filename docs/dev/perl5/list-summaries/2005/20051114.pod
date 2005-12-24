@@ -22,7 +22,7 @@ Jason Vas Dias pointed to bug #37582 that he had filed on the issue,
 and that the patch had been applied by Steve Peters as change #26074.
 
   Brendan's patch
-  http://xrl.us/iiau
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00385.html
 
   Jason's patch
   https://rt.perl.org/rt3/Ticket/Display.html?id=37582
@@ -47,13 +47,13 @@ downsides, but notably, it allows the possibility of exposing
 the arena to allow performance tuning.
 
   The elimination
-  http://xrl.us/iiav
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00407.html
 
   Benchmark results
-  http://xrl.us/iiaw
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00426.html
 
   RFC - linked list of arenas
-  http://xrl.us/iiax
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00523.html
 
 =head2 A better warning in maint
 
@@ -66,10 +66,10 @@ went through his own blead patches, evaluating which ones were
 worthy (safe enough) to be applied to maint.
 
   The question
-  http://xrl.us/iiay
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00421.html
 
   Yitzchak's list
-  http://xrl.us/iiaz
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00424.html
 
 =head2 C<h2xs> and backwards compatibility
 
@@ -97,10 +97,10 @@ documentation existed relating feature to version, and when
 the feature moved from absent, to experimental, to robust.
 
   Doubts over h2xs
-  http://xrl.us/iia2
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00440.html
 
   2001, a Perl odyssey
-  http://xrl.us/iia3
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2001-01/msg01419.html
 
 =head2 Abigail and the regexp engine
 
@@ -121,7 +121,7 @@ implied by the patch and noted that "C<intuit_start> is
 probably the least maintainable piece of code in perl".
 
   Now why would you want to do a thing like that?
-  http://xrl.us/iia4
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00461.html
 
 =head2 Tracking down a Win32 smoke failure
 
@@ -158,13 +158,13 @@ he came back with a much better version. Stever Peters applied it
 and all the tests passed. Yay Jan!
 
   Smoke issues forth
-  http://xrl.us/iia5
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00457.html
 
   The offending patch
   http://public.activestate.com/cgi-bin/perlbrowse?patch=26108
 
   "free to wrong pool", circa January 2004
-  http://xrl.us/iia6
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-01/msg00709.html
 
 =head2 Is C<STRANGE_MALLOC> still useful?
 
@@ -181,10 +181,10 @@ be important to try out a couple of big applications to see how
 they fare.
 
   Compare the simple code path to the complex code path
-  http://xrl.us/iia7
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00481.html
 
   Sarathy's 1995 summary of the problem
-  http://xrl.us/iia8
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/9512/msg00314.html
 
 =head2 When errors are reported on the wrong line
 
@@ -204,10 +204,10 @@ memory cost. The concensus is that a certain amount of memory
 could be traded for the peace of mind it would bring.
 
   The bug report
-  http://xrl.us/iia9
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00508.html
 
   An ugly fix
-  http://xrl.us/iiba
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00520.html
 
 =head2 Sun Studio compiler for Linux
 
@@ -219,20 +219,20 @@ He also used it to take a look at Jarkko Hietaniemi's C<valgrind>
 finding from last month.
 
   The tweak
-  http://xrl.us/iibb
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00497.html
 
   Problems with sprintf()
-  http://xrl.us/iibc
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00529.html
 
   Jarkko's valgrind discovery last month
-  http://xrl.us/iibd
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00895.html
 
 =head2 Perl 5 Bug Summary
 
 The current number of open issues stands at 1508.
 
   The bugs at the beginning of the week
-  http://xrl.us/iibe
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00417.html
   
   The Bug Summary
   http://rt.perl.org/rt3/NoAuth/perl5/Overview.html
@@ -245,26 +245,26 @@ string).  After asking around if anything other than C<File::Spec>
 relied on the behaviour, Ken went ahead and fixed the problem in
 C<Path::Class>.
 
-  http://xrl.us/iibf
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00389.html
 
 B<C<local> and C<thread::shared> don't mix>. "dean" filed bug
 #37671 showing how localising variables bound to shared variables can
 cause the shared variable to become undefined. At least in version
 5.8.4.
 
-  http://xrl.us/iibg
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00401.html
 
 B<C<Compress::Zlib> should now build nicely> on Win32 environments,
 now that Paul Marquess has fixed a lurking C<binmode> bug.
 
-  http://xrl.us/iibh
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00398.html
 
 B<Recent C<const>ing changes> to the codebase had broken C<perlbug>'s
 ability to grok F<patchlevel.h>. Yitzchak filed a patch to make it
 work again and threw some compatibility future-proofing into the
 bargain.
 
-  http://xrl.us/iibi
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00403.html
 
 B<Dynamically appending code to an existing file>. Jos I. Boumans
 wants to do this from time to time, and showed several techniques
@@ -274,7 +274,7 @@ straight to the file, rather than going through a higher layer.
 Jos asked if this could or should be fixed, or nailed down in the
 documentation. No takers.
 
-  http://xrl.us/iibj
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00433.html
 
 B<Another source of segmentation faults killed>. Peter Dintelmann
 followed on from last week and continued to nail segfaults. He noted
@@ -282,7 +282,7 @@ that executing the code snippet C<PerlIO::get_layers undef> would
 end in grief and patched F<universal.c> to make it work correctly
 (or rather, not crash). Applied by Steve Peters as #26144.
 
-  http://xrl.us/iibk
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00470.html
 
 Vadim Konovalov supplied B<a patch make WinCE compile blead>
 and wondered whether F<./wince> shouldn't be made a subdirectory
@@ -290,19 +290,19 @@ of the F<./win32> directory in the source tree. H.Merijn made a few
 remarks about the patch, basically prodding Vadim to give himself
 and Rainer a bit more credit in the README.
 
-  http://xrl.us/iibm
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00476.html
 
 B<When in doubt, use brute force.> "fbriere" noted a cute bug: if
 you require a module that dies when it is loaded, it fails the first
 time. But the second time, it succeeds!
 
-  http://xrl.us/iibn
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00504.html
 
 Andy Lester took a preliminary run through the codebase and B<axed
 the ancient RCS commit comments> in the source. (These days the
 codebase is managed in a Perforce repository).
 
-  http://xrl.us/iibo
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00505.html
 
 =head2 About this summary
 

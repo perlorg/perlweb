@@ -33,7 +33,7 @@ Alas, it may be that this breaks C<Tk> if the source code comments
 are to be believed. So far, it doesn't appear that anyone has
 investigated this possibliity.
 
-  http://xrl.us/hxs4
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00066.html
 
 =head2 Enhancing Data::Dumper
 
@@ -83,7 +83,7 @@ If you only have time to read one thread this week, this is a good 'un.
   http://use.perl.org/~Ovid/journal/26973
 
   The thread on p5p
-  http://xrl.us/hxs5
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00067.html
 
 =head2 Taint checks in the test suite
 
@@ -128,7 +128,7 @@ being done, such as dropping image privileges (my VMS is too
 rusty to summarise what that means).
 
   From a small patch, a mighty thread grows
-  http://xrl.us/hxs6
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00074.html
 
 =head2 Localising %Config
 
@@ -159,7 +159,7 @@ C<Config>, and invoked Tom Christiansen:
 information to the author of C<Test::Plan>.
 
   The lethal problem:
-  http://xrl.us/hxs7
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00071.html
 
   How EU:MM does it:
   http://search.cpan.org/src/MSCHWERN/ExtUtils-MakeMaker-6.30/lib/ExtUtils/MakeMaker/Config.pm
@@ -174,16 +174,16 @@ back to the drawing boards with a less ambitious test. Applied by Steve
 Peters.
 
   It started in August
-  http://xrl.us/hxs8
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-08/msg00191.html
 
   And continued in September
-  http://xrl.us/hxs9
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00665.html
 
   Which was summarised here
   http://dev.perl.org/perl5/list-summaries/2005/20050926.html
 
   And then this week
-  http://xrl.us/hxta
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00114.html
 
 =head2 Return value for Perl_io_close
 
@@ -206,7 +206,7 @@ being closed because the lexical is going out of scope, as in
 there is no possible way, short of dying, to tell the program that
 Something Bad happened.
 
-  http://xrl.us/hxtb
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00132.html
 
 =head2 Environmental damage on Solaris 10
 
@@ -246,13 +246,13 @@ reason to.
 All summed up in bugs #37376 and #37377.
 
   Managing synlinks with MakeMaker
-  http://xrl.us/hxtc
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00122.html
 
   The stench begins
-  http://xrl.us/hxtd
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00156.html
 
   The link with Cygwin
-  http://xrl.us/hxte
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00167.html
 
   The source code for Solaris's getenv
   http://cvs.opensolaris.org/source/xref/usr/src/lib/libc/port/gen/getenv.c
@@ -297,19 +297,19 @@ lounge, or whatever the saying is. Nothing is ever carved in stone.
   http://www.mail-archive.com/perl-qa@perl.org/msg04740.html 
 
   Test/Simple/More/Builder is released
-  http://xrl.us/hxtf
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00179.html
 
 =head2 In brief
 
 The Perl5 bug summary has 1512 open items
 
-  http://xrl.us/hxtg
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00057.html
 
 Sébastien Aperghis-Tramoni asked for an addition to C<Devel::PPPort>,
 to make life easier for C<Net::Pcap>, for much the same thing that Ken
 Williams is already doing in F<Cwd.xs>.
 
-  http://xrl.us/hxth
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00090.html
 
 Paul D. Lalli found that:
 
@@ -323,30 +323,30 @@ I'm not mistaken, I think that code wants:
   my $last = $#a;
 
   Bug #37350
-  http://xrl.us/hxti
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00097.html
 
 H.Merijn Brand added C<-C> as an allowed flag to the C<PERL5OPT> environment
 variable. (Which you can use to set command-line switches for all invocations
 of perl, so one would hope that C<-u> is not allowed).
 
-  http://xrl.us/hxtj
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00093.html
 
 Andy Lester checked in with some more C<const> work, and cleaned up C<printf>.
 Applied by H.Merijn.
 
-  http://xrl.us/hxtk
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00094.html
 
 Rajarshi Das patched utf8.c on EBCDIC platforms. Sadahiro Tomoyuki asked for
 regression tests, and provided four, two that currently fail and two that
 pass. Rajarshi's fix should ensure that all four pass. Rajarshi ran the tests
 and all passed.
 
-  http://xrl.us/hxtm
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00105.html
 
 Mohammad Yaseen asked about F<ext/B/t/optree_specials.t> when running on
 z/OS (an EBCDIC platform), and was Warnocked.
 
-  http://xrl.us/hxtn
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00107.html
 
 "jafoc" said (in #37355) that bad things happen when you try to run
 
@@ -354,12 +354,12 @@ z/OS (an EBCDIC platform), and was Warnocked.
 
 on perl 5.6.1. Yves "demerphq" Orton replied that it was fixed in 5.8.
 
-  http://xrl.us/hxto
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00108.html
 
 Following on from Michael Schwern's announcement of C<EU::MM> 6.30_01,
 Peter Prymmer came up with some patches for VMS:
 
-  http://xrl.us/hxtp
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00118.html
 
 Tassilo von Parseval reported in #36875 (August 2005) that for perls
 between 5.5.4 (did he not mean 5.8.4?) and 5.9.3 that
@@ -369,7 +369,7 @@ between 5.5.4 (did he not mean 5.8.4?) and 5.9.3 that
 would not emit a warning about uninitialised values. Steve Peters confirmed
 the bug, and had a preliminary patch beginning to take shape.
 
-  http://xrl.us/hxtq
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00125.html
 
 In #37384, Dan Dascalescu reported that
 

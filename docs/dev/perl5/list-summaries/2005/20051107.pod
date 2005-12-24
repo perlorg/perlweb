@@ -12,12 +12,12 @@ B<while you sort it> and still retrieve the results has never worked.
 The point was that Robin added a test for this feature, 
 which slipped into the patch sent to the list. 
 
-    http://xrl.us/ifnf
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00195.html
 
 Steven Schubiger may stop assuming his patch on POD estetics
 was overlooked: Rafael applied it seamlessly. 
 
-    http://xrl.us/ifng
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00319.html
 
 =head2 See perl C<say()> (continued)
 
@@ -27,7 +27,7 @@ Rafael Garcia-Suarez made a few points and admitted himself
 not enthusiastic about adding a new keyword to perl,
 mainly a weak keyword. And things stand still in this matter.
 
-    http://xrl.us/ifnh
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00169.html
 
 =head2 C<print FILEHANDLE>
 
@@ -39,7 +39,7 @@ a syntax error and C<B::Deparse> being unprepared
 for this kind of expressions. Rafael Garcia-Suarez
 said it doesn't look easy to fix without weird side-effects.
 
-    http://xrl.us/ifni
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00170.html
 
 =head2 C<&=> and C<m//> Misbehavior
 
@@ -58,7 +58,7 @@ by such limitations, which Nicholas thought it could
 be a nice bug to fix and which may lead us to a nice bug fix real soon.
 
     The discussion of the ticket enters this week
-    http://xrl.us/ifnj
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00172.html
 
 =head2 Bad Locales in Mac OS X
 
@@ -72,7 +72,7 @@ Dominic also proposed a throrough update of F<README.macosx>
 which was applied. With the change, Steve Peters also closed
 ticket #35895 which concerned this same locale.
 
-    http://xrl.us/ifnk
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00180.html
 
 =head2 Dying in map, grep, sort
 
@@ -90,7 +90,7 @@ when unwinding context and save stacks due to an exception.
 Rafael Garcia-Suarez applied Chris' patch as change #26027
 to bleadperl.
 
-    http://xrl.us/ifnm
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00189.html
 
 =head2 Behave Yourself, C<ucfirst>
 
@@ -103,7 +103,7 @@ And then he patched the issue(s) with change 26034
 and closed the ticket, setting a model for a most productive
 monologue in RT.
 
-    http://xrl.us/ifnn
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00197.html
 
 =head2 Perl on Symbian
 
@@ -113,9 +113,9 @@ work on the Symbian port of Perl, reaching release
 improved support to S60 and S80 devices and UIQ).
 
     First patch
-    http://xrl.us/ifno
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00199.html
     Second patch
-    http://xrl.us/ifnp
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00306.html
 
 =head2 C<List::Util> issues
 
@@ -131,14 +131,14 @@ changes, and after some tweaks, the patches were applied,
 hopefully fixing the issue.
 
     Rafael shows the actual message by bleadperl
-    http://xrl.us/ifnq
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00204.html
 
 B< Memory Leaks in C<first> >
 Tassilo von Parseval opened ticket #37643 to say
 about memory leaks in C<List::Util::first>. Dave Mitchell
 remembered this issue is already fixed in blead by now.
 
-    http://xrl.us/ifnr
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00301.html
 
 =head2 Code Unification for Cygwin, Win32 and WinCE
 
@@ -154,7 +154,7 @@ to be found between blead and C<libwin32> and noticed
 that the wince branch also copied some of this
 Win32 code. 
 
-    http://xrl.us/ifns
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00166.html
 
 To Jan, the starting point of this unification was
 the elimination of USING_WIDE codebranches that
@@ -163,7 +163,7 @@ UTF8 support for PVs. And, indeed, Jan assembled a patch
 towards this goal of improving maintainability
 and the sharing with Cygwin.
 
-    http://xrl.us/ifnt
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00240.html
 
 =head2 Cygwin Configure
 
@@ -172,7 +172,7 @@ long series of messages while tighting up issues with
 Configure on Cygwin. In the end, it looks 
 more stable now.
 
-    http://xrl.us/ifnu
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00284.html
 
 =head2 Perl on WinCE
 
@@ -184,7 +184,7 @@ Later, he sent in the revised patch and Steve Hay explained
 how some issues that apply to build configuration on
 Win32 and AIX may be needed as well for WinCE.
 
-    http://xrl.us/ifnv
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00214.html
 
 =head2 C<DB_File> 1.814
 
@@ -197,15 +197,15 @@ with the release of 1.814 and a corresponding
 patch to blead.
 
     Dominic gets rid of old Darwin warning
-    http://xrl.us/ifnw
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00320.html
     Paul Marquess announces DB_File 1.814
-    http://xrl.us/ifnx
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00352.html
 
 =head2 C<CPAN> 1.76_65
 
 Andreas Koenig brought F<CPAN.pm> up to version 1.76_65.
 
-    http://xrl.us/ifny
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00224.html
 
 =head2 C<Time::HiRes> 1.82
 
@@ -229,11 +229,11 @@ the related ticket #5851, made some changes
 and got us rid of these core dumps.
 
     Benjamin Sugars' long-forgotten patch
-    http://xrl.us/ifnz
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2001-04/msg01101.html
     Robin Houston ressurects the issue
-    http://xrl.us/ifn2
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00148.html
     Steve Peters closes RT ticket #5851
-    http://xrl.us/ifn3
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00252.html
 
 =head2 Perl on EBCDIC
 
@@ -252,7 +252,7 @@ the undocumented C<utf8::unicode_to_native()> and other using
 C<pack('U', $arg)> but warned about issues that may arise
 between the new UTF8 behavior and old scripts.
 
-    http://xrl.us/ifn4
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00326.html
 
 B< C<cond_timedwait> Issues >
 Mohammad Yaseen found some errors while playing with
@@ -260,7 +260,7 @@ C<cond_timedwait> on EBCDIC platform. Yaseen showed the issues
 with an extended test adapted from F<cond.t> and hinted on
 possible causes.
 
-    http://xrl.us/ifn5
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00362.html
 
 =head2 C<Storable> Updates
 
@@ -273,9 +273,9 @@ applied both patches with these new features that come
 handy for dealing with C<Storable> on any platform.
 
     Gisle restores Storable compatibility
-    http://xrl.us/ifn6
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00354.html
     Gisle brings read_magic() to the foreground
-    http://xrl.us/ifn7
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00366.html
 
 =head2 Handling Security Advisories
 
@@ -288,7 +288,7 @@ end-users, at least by the time necessary to fix the problem.
 Rafael Garcia-Suarez and Michael Cummings compared this to the
 infrastructure for handling security advisories by OS vendors.
 
-    http://xrl.us/ifn8
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00364.html
 
 =head2 Playing Games with gcc
 
@@ -301,9 +301,9 @@ Jason Vas Dias pointed he raised bug #37582 about this
 with a patch accepted as change #26074.
 
     Steve Peters applies Jason's patch
-    http://xrl.us/ifn9
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00322.html
     Brendan's post
-    http://xrl.us/ifoa
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00385.html
 
 =head2 Perl5 Bug Summary
 
@@ -316,7 +316,7 @@ The next week should inevitably start with
 a lower score at the bugs count.
 
     Robert Spier and the Bug summary
-    http://xrl.us/ifob
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00208.html
     Perl RT just now
     http://rt.perl.org/rt3/NoAuth/perl5/Overview.html
 
@@ -328,20 +328,20 @@ under 5.8.6,
 unlike documented, returns 9 rather than 8 values.
 F<perlfunc> was fixed with change #26024 by Steve Peters.
 
-    http://xrl.us/ifoc
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00177.html
 
 B< C<File::Glob> and Its Origins >
 On a followup to bug #37597, Steve Peters observed 
 "there have been some changes between the Perl C<bsd_glob()> and the original OpenBSD glob 
 function where it came from." He'll look into merging the OpenBSD changes in soon.
 
-    http://xrl.us/ifod
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00178.html
 
 B< F<perldiag> issues >
 Steve Peters closed RT tickets #3190 and #7543 about minor F<perldiag> issues.
 
-    http://xrl.us/ifoe
-    http://xrl.us/ifof
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00232.html
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00237.html
 
 B< Redefining Sort Subs via C<goto> >
 Steve Peters reported on the solution of bug #7579, which 
@@ -352,7 +352,7 @@ the behavior we get from now on is saner. And another ticked closed.
     ./perl -wle 'sub s1 { goto &s2 } sub s2 { $a cmp $b } print sort s1 (3, 2, 1)' 
     Can't goto subroutine from a sort sub (or similar callback) at -e line 1.
 
-    http://xrl.us/ifog
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00238.html
 
 B<A Surprising Segfault (continued)>
 In a followup to last week's thread, Dave Mitchell added that, like
@@ -361,14 +361,14 @@ being applied to various C<pp_*> functions
 may be dubious, which calls for more assertions in code
 and better tests.
 
-    http://xrl.us/ifoh
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00265.html
 
 B< 5.8.7 on AIX failing C<make test> >
 Sujeet Kulkarni asked for help to resolve problems while
 running C<make test> on AIX. Dominic Dunlop provided some guesswork
 and H.Merijn Brand added a few hints regarding AIX oddities.
 
-    http://xrl.us/ifoi
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00299.html
 
 B<Panic with Multiple Encodings> Steve Peters noticed the reported bug
 was gone with bleadperl. The above command does not panic anymore.
@@ -378,7 +378,7 @@ was gone with bleadperl. The above command does not panic anymore.
         print "\xe1", "\n";'
     "\x{128a}" does not map to iso-8859-1 at -e line 1.
 
-    http://xrl.us/ifoj
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00302.html
 
 B< C<if.pm> vs Other Long-Forgotten Patches >
 Rafael applied a patch by Ilya Zakharevich to give more meaningful error
@@ -386,7 +386,7 @@ messages from F<if.pm> when invoked with a condition in list
 context. Ilya greeted the change, as he was afraid of that taking
 the route of tens of other patches waiting forever. 
 
-    http://xrl.us/ifok
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00333.html
 
 B< Silencing C<ExtUtils> Tests >
 Dominic Dunlop posted a patch to supress some leaked warnings
@@ -394,7 +394,7 @@ in C<ExtUtils> tests which was applied by Rafael Garcia-Suarez.
 It seemed like these tests waited long enough for Schwern's
 touch after behavior change of C<cmp_ok> in C<Test::More>.
 
-    http://xrl.us/ifom
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00334.html
 
 B< 5.6.1 Install/Compile on Solaris 8 >
 Steve Peters urged for more information in diagnosing
@@ -403,7 +403,7 @@ by newer gcc's, mentioned a short-term fix and confirmed
 perl 5.8.x handles this just fine. To Andy, it is a ticket
 to be closed.
 
-    http://xrl.us/ifon
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00337.html
 
 B< Crashes in Multithreaded Server >
 Zefram opened ticket #37652 to tell about crashes
@@ -412,7 +412,7 @@ or locking up the application. He posted a test program
 to reproduce the issue and stack traces obtained with gdb.
 Currently Warnocked.
 
-    http://xrl.us/ifoo
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00338.html
 
 B< F<English.pm> and C<$COMPILING> >
 Dan Tierra noticed the English name for C<$^C>, namely C<$COMPILING>,
@@ -420,35 +420,35 @@ does not get exported when doing C<use English qw(-no_match_vars);>.
 Steve Peters added the variable to the list of exports with change
 #26080.
 
-    http://xrl.us/ifop
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00339.html
 
 B< C<OTHERLDFLAGS> in C<ExtUtils::MakeMaker> >
 Steve Peters replied bug #37433 which concerns a patch to
 MakeMaker. Fearful of accidental breaking C<ExtUtils::MakeMaker>,
 he announced the patch was sent off to rt.cpan.org queue.
 
-    http://xrl.us/ifoq
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00343.html
 
 B< C<PERLIO_DEBUG> Patch >
 Peter Dintelmann found that setting the environment variable
 C<PERLIO_DEBUG> as described in F<perlapio.pod> could result in
 segfaults and proposed a patch, applied to blead as change #26075.
 
-    http://xrl.us/ifor
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00321.html
 
 B< C<binmode H, ":pop"> Patch >
 Peter 'Segfault-Killer' Dintelmann, in ticket #37557, showed how
 calling C<binmode()> after popping the last IO layer results
 in a segfault and proposed a patch, applied as change 26101.
 
-    http://xrl.us/ifos
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00355.html
 
 B<Andy's Const & Local Mission>
 Andy Lester went on with his tireless mission
 of bringing consting and localizing goodness to
 Perl source code.
 
-    http://xrl.us/ifot
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00346.html
 
 B<mathoms on VMS>
 John E. Malmberg posted a patch to add a compile rule
@@ -456,19 +456,19 @@ which is needed for VMS to compile F<mathoms.c>. He also
 inquired on a few things that need to be resolved in
 order to allow blead to build on VMS.
 
-    http://xrl.us/ifou
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00283.html
 
 B<Mathoms with Proper Prototypes>
 Andy Lester noticed the mathoms functions weren't using proper
 prototypes, causing gcc to complain. Steve Peters applied
 Andy's fix as change #26099.
 
-    http://xrl.us/ifov
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00360.html
 
 B<blead@26091 on VMS>
 Abe Timmerman posted the results of blead snapshot @26091 on VMS. No feedback yet. 
 
-    http://xrl.us/ifow
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00395.html
 
 B< C<abs2rel("/foo/bar", "/foo/bar")> >
 David Golden recently reported problems in C<Path::Class>
@@ -477,7 +477,7 @@ C<abs2rel("/foo/bar", "/foo/bar")> returns the empty string
 rather than C<"."> or something sensible. Before fixing it,
 Ken asked what are the likely issues.
 
-    http://xrl.us/ifox
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00389.html
 
 B<Extending the stack inside ops>
 Nicholas Clark found an apparent problem which could
@@ -488,7 +488,7 @@ doing the call to push a new stack. So Nicholas made
 the appropriate change for the case in question and called
 for feedback on the way he did it.
 
-    http://xrl.us/ifoy
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00377.html
 
 B<Localizing Shared Variables>
 "dean" noticed that
@@ -496,7 +496,7 @@ localizing variables bound to shared variables can cause the shared
 variable to become undefined and provided tests to make his point.
 No one answered so far.
 
-    http://xrl.us/ifoz
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00401.html
 
 =head2 About this summary
 

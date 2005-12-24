@@ -27,7 +27,7 @@ takes care in trapping them.
 It's quite an interesting thread, even if VMS is not your cup of
 tea.
 
-  http://xrl.us/hqx4
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00399.html
 
 John also noticed that the t/io/fs.t triply-linked file test does
 not do what the comments says it does. It's actually more about
@@ -35,12 +35,12 @@ Unix's C<uname> behaviour. Which makes it a bit tricky to figure
 out what to do on VMS. One idea was to make the test test what it
 claimed to test.
 
-  http://xrl.us/hqx5
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00398.html
 
 He ended on a high note of proposed VMSish changes, which
 appeared to be well received by Craig Berry and Peter Prymmer.
 
-  http://xrl.us/hqx6
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00488.html
 
 =head2 Doing the version bump
 
@@ -61,7 +61,7 @@ on the TODO "that need a little C knowledge." John Peacock suggested
 a patch.
 
   The discussion
-  http://xrl.us/hqx7
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00413.html
 
   The TODO as she stands
   http://public.activestate.com/cgi-bin/perlbrowse?file=pod%2Fperltodo.pod&rev=
@@ -85,10 +85,10 @@ Dubois thought the two fragments were semantically equivalent
 although the blead version was more robust.
 
   The oddity
-  http://xrl.us/hqx8
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00420.html
 
   The Cygwin status
-  http://xrl.us/hqx9
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00429.html
 
   DOR patches for maint
   http://search.cpan.org/CPAN/authors/id/H/HM/HMBRAND/
@@ -108,7 +108,7 @@ META.yml file).
 John Malmberg gave it a clean bill of health on VMS. Nicholas Clark
 recalled some problems with distclean and SDBM_File
 
-  http://xrl.us/hqya
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00425.html
 
 =head2 License clarification for perlglossary.pod
 
@@ -128,10 +128,10 @@ O'Reilly said that the last sentence can be changed to
 And there was much rejoicing.
 
   The patch
-  http://xrl.us/hqyb
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00451.html
 
   The forwarded message from Allison
-  http://xrl.us/hqyc
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00458.html
 
 =head2 Building perl on AIX
 
@@ -143,7 +143,7 @@ again Campo Weijerman came to the rescue. Apparently AIX just won't
 let you build perl with C<-Duse64bitall> and C<-Duseithreads>. AIX
 is strange.
 
-  http://xrl.us/hqyd
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00461.html
 
 =head2 File::Find::find and {follow => 1} on Win32
 
@@ -155,7 +155,7 @@ Rafael Garcia-Suarez couldn't believe nobody had noticed it until
 now. Steve Peters guiltily raised his hand and pointed to patch
 #23510.
 
-  http://xrl.us/hqye
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00481.html
 
 =head2 Fixing pod/pod2usage2.t
 
@@ -169,7 +169,7 @@ contains a Unixism (C<open(IN, "-|")> that doesn't work quite right
 on Win32. He remembered that C<t/op/write.t> has a workaround for
 this.
 
-  http://xrl.us/hqyf
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00491.html
 
 =head2 Regexp stack overflow in 5.8.7
 
@@ -192,7 +192,7 @@ used, rarely understood C<< (?>...) >> assertion).
 Brian said that that one dumped core too. Abigail concluded that
 sometimes, core dumps happen.
 
-  http://xrl.us/hqyg
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00503.html
 
 =head2 Too late for INIT
 
@@ -202,7 +202,7 @@ an odd wart. Rafael suggested adding a C<UNITCHECK> code block, that
 would be run regardless of how the module was loaded.
 
   The thread
-  http://xrl.us/hqyh
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00529.html
 
   Possible source of Hugo's question, from Perlmonks
   http://www.perlmonks.org/index.pl?node_id=494439
@@ -222,7 +222,7 @@ two seeks and read for each converted line ending, which of course does
 wonders for performance. Nick Ing-Simmons replied, saying that what was
 needed is an efficient version of C<:crlf>.
 
-  http://xrl.us/hqyi
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00562.html
 
 =head2 Kill mv-if-diff?
 
@@ -257,14 +257,14 @@ to throw away the broken optimisation that is C<mv-if-diff>.
 Yves Orton brought patches 24004, 24056 and 24320 back up on the radar,
 saying that all this business is probably the cause of those patches.
 
-  http://xrl.us/hqyj
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00546.html
 
 =head2 New modules
 
 Michael Schwern announced C<Test::Simple/More/Builder> version 0.61.
 Lots of new goodies and fixes.
 
-  http://xrl.us/hqyk
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00543.html
 
 =head2 Using Test::More to test Math::Complex
 
@@ -284,7 +284,7 @@ using C<diag()>, but that the real solution would be to override
 C<Test::Builder>'s diagnostics, but that it's not yet quite
 flexible enough to do that.
 
-  http://xrl.us/hqym
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00559.html
 
 =head2 In brief
 
@@ -296,18 +296,18 @@ on Perl 5.8.x, and went on to say why, supported by code fragments in
 Perl and C. He wondered whether the code or documentation should be
 fixed. He was Warnocked.
 
-  http://xrl.us/hqyn
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00474.html
 
 Yitzchak sent in a patch to silence a couple of compiler warnings (three
 out of seven). Rafael fell asleep at the wheel and had to be pinged to
 apply it two days later.
 
-  http://xrl.us/hqyo
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00487.html
 
 Paul Marquess supplied a patch to sync C<Compress::Zlib> 1.40 with core.
 Patch applied with alacrity by Rafael.
 
-  http://xrl.us/hqyp
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00538.html
 
 Alex Davies reported a memory leak in #37231 when eval'ing syntactically
 incorrect code.
@@ -322,23 +322,23 @@ home). No takers yet; Dave Mitchell must be busy doing something else.
 "lace" reported in #37250 that C<pod2html> does not produce XHTML-conformant
 code.
 
-  http://xrl.us/hqyq
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00516.html
 
 Jan Hudec posted more ways of making perl panic, but cheated by using UTF-8
 in the PerlIO layer.
 
-  http://xrl.us/hqyr
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00533.html
 
 Taro Kawagishi found a problem with C<perlfaq3> "How do I find which
 modules are installed on my system?", and supplied code to deal with the
 case when a directory path listed in @INC is a symbolic link.
 
-  http://xrl.us/hqys
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00561.html
 
 Steve Peters posted a patch (#25571) to get C<PERL_DEBUG_COW> (Copy On
 Write) working correctly on the smoke tests.
 
-  http://xrl.us/hqyt
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00535.html
 
 =head2 About this summary
 

@@ -21,7 +21,7 @@ Some tricks were needed (like using context rather than
 unified diffs) to get the maximum portability but it was
 worthy.
 
-    http://xrl.us/i7zs
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00210.html
 
 =head2 C<Sys::Syslog> Fixes
 
@@ -33,7 +33,7 @@ last week's fixes) and a few tweaks.
 To be honest, 0.10 is already there for public
 comsumption (in CPAN, I<blead> and maybe I<maint>). 
 
-    http://xrl.us/i7zt
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00200.html
 
 =head2 Still vulnerable?
 
@@ -50,7 +50,7 @@ fixed them all with change #26321.
     $ perl -e 'printf("%2918905856\$vs")'
     Segmentation fault
 
-    http://xrl.us/i7zu
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00291.html
 
 =head2 Improving F<Cwd.pm>
 
@@ -67,7 +67,7 @@ C C<getcwd()> when possible, besides contributions by John E. Malmberg and
 Bryan Daimler. Ken awaits for comments and test reports towards a non-beta
 release. 
 
-    http://xrl.us/i7zv
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00193.html
 
 
 =head2 Takeuchi Benchmark
@@ -84,7 +84,7 @@ if Dave's version should replace the code in the
 could make it even faster at the expense of memory, but
 that's not a fair technique for the benchmark purposes.
 
-    http://xrl.us/i7zw
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00124.html
 
 =head2 Cross-compilation with uClibc
 
@@ -106,7 +106,7 @@ cross-compiling. Vadim also advised on the differences
 of F<Config.pm> in 5.8.4 and 5.8.7 (where the later
 uses a second file F<Config_heavy.pl>).
 
-    http://xrl.us/i7zx
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00120.html
 
 
 
@@ -144,7 +144,7 @@ PA-RISC successfully. H.Merijn Brand explained C<-Duse64bitint>
 is automatically promoted to C<-Duse64bitall> so that you always
 end with 64bit ints and pointers.
 
-    http://xrl.us/i7zy
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00168.html
 
 While Merijn gave some touches to make the documentation more precise,
 Jan made some suggestions and asked why the HP-UX code/docs were so 
@@ -169,7 +169,7 @@ to share small bits of interface between core parts and
 asked about ideas for him to complete his work on arenas.
 Rafael applied Andy's patches and Jim's questions went on unanswered.
 
-    http://xrl.us/i7zz
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00155.html
 
 
 Andy ruled that arguments of function in F<embed.fnc> were a
@@ -181,11 +181,11 @@ wasn't on crack. Steve Peters reconciled Andy's patch with some recent
 changes and applied the changes.
 
     We need names
-    http://xrl.us/i7z2
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00208.html
     DEBUGGING code only when DEBUGGING
-    http://xrl.us/i7z3
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00214.html
     These changes look right?
-    http://xrl.us/i7z4
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00256.html
 
 =head2 stringification of v-string references
 
@@ -213,7 +213,7 @@ besides some rearrangement and tidying up for a couple of things.
     $ ./perl -Ilib -le 'print $_, " ", ref $_ foreach \v1'
     VSTRING(0x8145f00) VSTRING
 
-    http://xrl.us/i7z5
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00161.html
 
 
 =head2 C<podlators> 2.00
@@ -226,7 +226,7 @@ and C<Pod::Escapes>. Steve observed that the new C<Pod::Text> broke
 C<Pod::Usage> and Russ Albery remembered to have submitted a patch to fix that a while ago.
 Steve applied Russ's patch to C<Pod::Usage>, even though things do not look perfect yet.
 
-    http://xrl.us/i7z6
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00223.html
 
 =head2 C<Pod::Simple> Integration
 
@@ -243,7 +243,7 @@ perl distribution and showed the list of guilty parts where the script actually 
 I bet we'll see it fixed by the next week. Oops, next week is here
 and these are not issues anymore - but I am anticipating.
 
-    http://xrl.us/i7z7
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00284.html
 
 =head2 C<alarm()> on Windows 2003 and Vista
 
@@ -264,9 +264,9 @@ complications, some Windows 2000 features and some nice
 improvements to current Perl handling of Windows message queue.
 
     Jan's report
-    http://xrl.us/i7z8
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00239.html
     From Nick's attic
-    http://xrl.us/i7z9
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00299.html
 
 =head2 switch
 
@@ -283,7 +283,7 @@ and semantics of Perl programs.
 
     use feature "switch";
 
-    http://xrl.us/i72a
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00247.html
 
 =head2 What John E. Malmberg Did This Week
 
@@ -303,7 +303,7 @@ again and let him go on with dealing with a bunch of unresolved issues
 with VAX legacy, support for Unix formats and ODS-5 features,
 and other scary things. 
 
-    http://xrl.us/i72b
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00169.html
 
 
 B<Commands with Embedded New Lines>
@@ -315,7 +315,7 @@ without DCL interpreter processing.
 To Craig A. Berry, it looks probable that older versions of DCL 
 would choke on newlines.
 
-    http://xrl.us/i72c
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00211.html
 
 
 B<Towards Long Filenames>
@@ -324,7 +324,7 @@ limitation of VMS filenames to 256 characters. Craig Berry
 listened, applied the changes and suggested some of the next actions
 towards the complete handling of long filenames on VMS
 
-    http://xrl.us/i72d
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00266.html
 
 =head2 Perl5 Bug Summary
 
@@ -332,7 +332,7 @@ towards the complete handling of long filenames on VMS
 Perl RT had a count of 1515 open tickets at Dec 12 2005 14:00 GMT.
 
     Robert Spier's summary
-    http://xrl.us/i72e
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00373.html
     Perl RT just now
     http://rt.perl.org/rt3/NoAuth/perl5/Overview.html
 
@@ -345,7 +345,7 @@ format (which C<Sys::Syslog::syslog()> replaces with the contents of C<$!>)
 and C<%n> (a special conversion of Perl C<sprintf>), 
 spotted by Ronald J. Kimball. Please consider it patched, C<s/%n/%m/g>.
 
-    http://xrl.us/i72f
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00166.html
 
 
 B<False Matches with Bad utf-8>
@@ -366,7 +366,7 @@ Sadahiro Tomoyuki observed F<regexec.c> (falsely) matched C<[\000]>
 with malformed utf-8 and proposed a tiny patch to fix that, which was
 applied and the ticket closed.
 
-    http://xrl.us/i72g
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00134.html
 
 
 B<Bye to Autovivification Bug>
@@ -376,7 +376,7 @@ that made some expressions to succeed when errors like
 Steve confirmed all of the reported troublesome expressions 
 produce consistent errors since 5.8.6.
 
-    http://xrl.us/i72h
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00160.html
 
 
 B< C<$Data::Dumper::Sortkeys> I<déjà vu> >
@@ -386,7 +386,7 @@ codebase (change #25308) as reported by Paul Johnson and Yitzchak Scott-Thoennes
 Yitzchak also pointed the current workaround of using a void-context C<keys %hash>
 after dumping.
 
-    http://xrl.us/i72i
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00227.html
 
 
 
@@ -399,7 +399,7 @@ identified the bug as an instance of the standard
 which required a fix in bleed too complex to be comfortably packported
 to 5.8.x.
 
-    http://xrl.us/i72j
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00226.html
 
 B<Improving I<ithreads> clone time>
 Nicholas Clark noticed ithreads clone time is less than
@@ -410,7 +410,7 @@ find a better one and immediately did the first experiment
 with the regular perl hash function, posting stats
 and patches for others to try out.
 
-    http://xrl.us/i72k
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00276.html
 
 
 B< C<timelocal> not reverse of C<localtime> >
@@ -427,7 +427,7 @@ should be released in no time.
     The CPAN ticket for libwww-perl
     http://rt.cpan.org/Ticket/Display.html?id=12068
     Gisle seeks the solution
-    http://xrl.us/i72m
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00192.html
 
 
 B< setting C<$SIG{ZERO}> coredumps >
@@ -441,7 +441,7 @@ Andreas Koenig informed the SEGV came to blead with #18975
 and went with #24406 and Steve Peters noticed it has been
 integrated to maint as well.
 
-    http://xrl.us/i72n
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00244.html
 
 
 B< C<Term::ReadKey>, Solaris, gcc >
@@ -454,7 +454,7 @@ with XS components. Yitzchak Scott-Thoennes remembered that building
 add-on modules for perl shipped with Solaris requires
 the CPAN modules C<Solaris::PerlGcc>.
 
-    http://xrl.us/i72o
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00222.html
 
 
 
@@ -466,7 +466,7 @@ turn warnings on, to read docs like F<perldata.pod>
 and to not abuse prototypes and C<&> sigils when none
 is necessary.
 
-    http://xrl.us/i72p
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00228.html
 
 =head2 About this summary
 
