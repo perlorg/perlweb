@@ -1,0 +1,94 @@
+[% page.banner = BLOCK %]Our Sites[% END %]
+[%# page.style = ".html" %]
+[% page.site = "perl.org" %]
+[% page.title = "Our Sites" %]
+[% page.description = '' %]
+[% page.tagline = 'Suppliers of camel and parrot food' %]
+
+[% MACRO s(s,u) BLOCK -%]
+<A HREF="[% u || "http://" _ s %]">[% s %]</A>
+[% END %]
+
+
+<p>
+We host lots of sites.  Here's a list of most of them and what kind of content you'll find on each one.  
+</p>
+
+<table width="100%">
+<tr><th>Site</th><th>Description</th>
+<tr>
+  <td>[% s('www.perl.org') %]</td>
+  <td>General Perl Information, News.  A Portal</td>
+</tr>
+
+<tr>
+  <td>[% s('www.nntp.perl.org') %]</td>
+  <td>Access to our mailing lists via the web</td>
+</tr>
+
+<tr>
+  <td>[% s('nntp.perl.org','nntp://nntp.perl.org') %]</td>
+  <td>Access to our mailing lists via NNTP</td>
+</tr>
+
+<tr>
+  <td>[% s('dev.perl.org') %]</td>
+  <td> anything related to perl5 or perl6
+development.  (i.e. "technical things")</td>
+</tr>
+
+<tr>
+  <td>[% s('parrotcode.org') %]</td>
+  <td>parrot development (i.e. "technical things") </td>
+</tr>
+
+<tr>
+  <td>[% s('perlfoundation.org') %]</td>
+  <td> meta stuff, foundation related stuff, grants
+   stuff, *non-technical stuff*. news aggregation.</td>
+</tr>
+
+<tr>
+  <td>[% s('learn.perl.org') %]</td>
+  <td>where to start learning perl.  (currently being redecorated)</td>
+</tr>
+
+<tr>
+  <td>[% s('search.cpan.org') %]</td>
+  <td>Search the CPAN</td>
+</tr>
+
+<tr>
+  <td>[% s('ftp.cpan.org','ftp://ftp.cpan.org') %]</td>
+  <td>The CPAN ftp multiplexer. (Automatically finds a CPAN mirror near you)</td>
+</tr>
+
+<tr>
+  <td>[% s('poniecode.org') %]</td>
+  <td>Ponie development</td>
+</tr>
+
+
+<tr>
+  <td>[% s('pm.org') %]</td>
+  <td>Perl Mongers (User Groups)</td>
+</tr>
+
+<tr>
+  <td>[% s('jobs.perl.org') %]</td>
+  <td>Where to find a perl job</td>
+</tr>
+
+<tr>
+  <td>[% s('rt.perl.org') %]</td>
+  <td>Perl/Parrot Bugtracking</td>
+</tr>
+
+<tr>
+  <td>[% s('svn.perl.org') %]</td>
+  <td>Subversion</td>
+</tr>
+
+
+
+</table>

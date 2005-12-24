@@ -1,0 +1,226 @@
+=head1 The Perl 6 Summary for the week ending 2005-12-04
+
+I heard a rumour on the London.pm mailing list week. Apparently the Perl 6
+Summaries are no longer being published. As I'm sure you can imagine, it came
+as something of a surprise to me.
+
+This week has been all about Parrot, Leo's got the new lexical scheme, calling
+conventions and exception handlers working and made Parrot stricter about
+arguments. The end of the week saw the release of 'Luthor', version 0.4.0 of
+Parrot. Read on for more details...
+
+=head1 This week in perl6-compiler
+
+Um... one post in perl6-compiler this week. And that was crossposted to
+perl6-language. And because it got posted at the end of the week, none of the
+actual discussion occurred this week.
+
+Moving swiftly on...
+
+=head1 This week in perl6-internals
+
+Much more going on here as everyone rushed towards the release of Parrot
+0.4.0 "Luthor" at the end of the week.
+
+=head2 Exception handlers and calling conventions
+
+As I predicted last week, Leo's brain dump about exception handling got
+discussed this week. It was well liked, and after a small bit of sugar was
+sprinkled on to make ParTCL's life a little easier (and possibly unsprinkled
+later) all manner of things were well.
+
+L<http://groups.google.com/groups?threadm=5b4f21642641211939b10fe8548ea876@toetsch.at>
+
+=head2 Subs may not contain dynamic call info, ever
+
+Chip posted a clarification of his comments on what data could and couldn't be
+hung off a Sub object at runtime. Let's be reentrant people.
+
+L<http://groups.google.com/groups?threadm=20051128035833.GD6446@tytlal.topaz.cx>
+
+=head2 PDD20 Tcl
+
+Will Coleda announced that ParTCL is now working with the new lexically lovely
+Parrot calling conventions. There was much rejoicing.
+
+L<http://groups.google.com/groups?threadm=A235A03B-6CF1-4C5A-83FB-AB49805ED491@coleda.com>
+
+=head2 Test::More and Tests in PIR
+
+Leo showed the love for chromatic's shiny pure parrot implementation of
+Test::More. So the patch was applied.
+
+L<http://groups.google.com/groups?threadm=cbd309ab4fac265f6ceab71ccb2cd91d@toetsch.at>
+
+=head2 Upcoming changes
+
+Leo announced the scratchpad's impending doom and outlined the planned change
+for comment. Nobody commented, and the changes went in.
+
+L<http://groups.google.com/groups?threadm=5c3a3e2a9838b2e7ed45b7a0d03d52f7@toetsch.at>
+
+=head2 Parrot directory reorganization
+
+Quick quiz: where would you expect to find tests in the parrot distribution?
+How about generated source files? 
+
+Jerry Gay proposed a reorganization to make things a little more lovely. 
+
+The consensus seemed to be that a reorg along Jerry's lines wouldn't be a bad
+idea, but Chip pointed out that, whatever gets done it should be done
+'cautiously so as to minimize unpleasantness'. So Jerry is proceeding
+cautiously, starting with a host of new TODO tickets in RT.
+
+L<http://groups.google.com/groups?threadm=1d9a3f400511281645s5e75a64fl529dfad83f8457af@mail.gmail.com>
+
+=head2 Solving C<=> confusion: ':=' for aliasing
+
+There are those of us who are wondering why this one took so long...
+
+Chip proposed that people start to spell aliasing as C<:=> and assignment as
+C<=>. I think it's a really good idea, but then I don't have a large amount of
+PIR code to maintain so what do I know. Some other folks weren't so sure, but
+Chip is not to be denied. Discussion then span off into what language to write
+the automagical translator in. 
+
+I believe this may involve writing it in PIR then converting it to PIL, which
+would be converted to Perl 5 using pugs and then Larry's Perl 5 to Perl 5
+project could be used to convert it to XML, which could then be modified using
+XSLT and converted back into PIR using some scary voodoo magic.
+
+Or they could just write it in Perl 5. Prosaic, but possible right now.
+
+L<http://groups.google.com/groups?threadm=20051129200801.GT6446@tytlal.topaz.cx>
+
+=head2 PDD03 Revisions
+
+Chip announced that he'd put up another revision of PDD03 on Parrot calling
+conventions. Most of the changes are simple clarifications and flag renaming,
+but he's also proposing a new C<READONLY> flag for C<get_params> to make it
+easy to support the default Perl 6 argument mode. Response was muted, but
+favourable.
+
+L<http://groups.google.com/groups?threadm=20051130030122.GL6446@tytlal.topaz.cx>
+
+=head2 PDD03 and Overflow/Underflow
+
+It's been mandated for ages that Parrot should throw an exception when
+functions get called with the wrong number of arguments. It's always been one
+of those things that will be implemented 'some day'. Well this week had a
+someday in it as Leo made parrot do what it's supposed to do. And broke PGE for
+a while...
+
+L<http://groups.google.com/groups?threadm=438D8A90.8070105@toetsch.at>
+
+=head2 PDD20 questions
+
+Jonathan Sillito is a class act. He didn't just ask a bunch of questions about
+the new PDD20 on lexical variables, he promised to take the answers he received
+and use them to patch PDD20 to make things clearer. Spurred on by this promise,
+Chip was unstinting in his answers and clarifications of them. Which is nice.
+
+L<http://groups.google.com/groups?threadm=8be166ff0511301202s4382b6efwc579d7d711419bc9@mail.gmail.com>
+
+=head2 PIR methods and local variables occupy the same 'namespace'
+
+Allison Randal used Snarks, Boojums and Thingies to demonstrate a possible
+problem with the way Parrots local variable and method namespaces overlap. Leo
+pointed out that this can sometimes be useful. So, for the time being, Parrot
+continues as is in this area. If you go getting the bowsprit and the rudder
+mixed up, it's your own silly fault.
+
+L<http://groups.google.com/groups?threadm=AB54429A-690E-47FA-805C-33FEEBAF9EB9@perl.org>
+
+=head2 Suddenly... Namespaces!
+
+After "many months and lots of work," Matt Diephouse returned from the mountain
+top bearing a couple of stone tablets. One was labelled 'Namespace Spec' and the
+other '[Draft]'. Muttering dark incantations about giving a discussion eyes, he
+laid out their contents and asked for comments. And low, there were comments in
+abundance. I would attempt to summarize both the spec and the ensuing
+discussion but, alas, the margin here is narrow and my time is short. Suffice
+it to say that if namespaces are your bag, you should read this thread.
+
+L<http://groups.google.com/groups?threadm=198c87380512012231w42dee5a9y96c9c06508b55fbe@mail.gmail.com>
+
+=head2 HLL and autoboxing
+
+Okay, who else has an image of two of those transformer robot things from the
+Renault Megane advert punching each others' lights out?
+
+Ahem.
+
+I'm afraid I didn't quite understand François Perrad's question about maps and
+autoboxing. Luckily Roger Browne and Leo did.
+
+L<http://groups.google.com/groups?threadm=5.1.0.14.2.20051202100324.02cfe6d8@pop.besancon.parkeon.com>
+
+=head2 Punie's demo likes its memory
+
+Jerry Gay worried that Punie is using way too much memory, running out of the
+stuff on his 512Mb machine. He wondered if it was a bug or to be expected. Luke
+thought it might be an issue with the algorithm used in the attribute grammar
+implementation which is somewhat less than abstemious with memory. Nick
+Glencross noted that, after he'd done a nuke of the distribution and rechecked
+it out, the problem seemed to go away. So, it's either fixed, or there was
+something odd going on somewhere.
+
+L<http://groups.google.com/groups?threadm=1d9a3f400512021414t6b789daev5c4bc5df089938da@mail.gmail.com>
+
+=head2 Parrot 0.4.0 "Luthor"
+
+Leo announced the usual freezes and parrot proceeded smoothly down the road to
+release. After the release he discussed goals for the next release and asked
+for comments.
+
+L<http://groups.google.com/groups?threadm=ed864ea1d4db3a436c7de6d6bf4046f8@toetsch.at>
+
+L<http://groups.google.com/groups?threadm=df23aee8ec07c676e2748102f6668d72@toetsch.at>
+
+=head1 Meanwhile, in perl6-language
+
+A quiet week here too.
+
+=head2 Capabilities in Perl 6
+
+Rob Kinyon has read slides on CAPerl and had some thoughts about how to build
+the idea into Perl 6. Larry and Yuval Kogman commented on it.
+
+L<http://groups.google.com/groups?threadm=70384420512010754w1dbdc62cq5404a295da5b6e7e@mail.gmail.com>
+
+L<http://caperl.links.org>
+
+=head1 Acknowledgements, apologies and everything else
+
+It's not exactly Monday today is it? Well, I could lie and claim that I was
+waiting for the Perl Foundation blog to be announced before I posted the
+summary, but that would be Wrong. Instead I shall claim (with some
+justification) that there's an awful lot of things that need sorting out when
+you're moving house, and they take far longer than you expect. 
+
+My ankle and shin are progressing nicely, thanks for asking, and there has been
+a good deal less random swearing in the Cawley household this week. 
+
+L<http://blog.perlfoundation.org/> -- The Perl Foundation blog
+
+=head2 Help Chip
+
+L<http://geeksunite.org/> -- Chip still needs help.
+
+=head2 The usual coda
+
+If you find these summaries useful or enjoyable, please consider
+contributing to the Perl Foundation to help support the development of
+Perl. 
+
+L<http://donate.perlfoundation.org/> -- The Perl Foundation
+
+L<http://dev.perl.org/perl6/> -- Perl 6 Development site
+
+Check out my website, it's lovely.
+
+L<http://www.bofh.org.uk/>
+
+Vaguely pretty photos by me can be found at:
+
+L<http://www.flickr.com/photos/pdcawley>
