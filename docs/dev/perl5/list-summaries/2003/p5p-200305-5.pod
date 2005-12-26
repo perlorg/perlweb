@@ -13,7 +13,7 @@ PerlIO-enabled perls don't support setvbuf() anymore. This was followed by
 a small discussion about different methods to do unbuffered I/O at the C
 level.
 
-    http://xrl.us/ivx
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-05/msg01228.html
 
 =head2 C<< $<digit> >> scoping
 
@@ -26,7 +26,7 @@ after exiting that scope. Rafael explained what happens behind the scenes
 lexical scopes -- and said that this behaviour ought to be better
 documented.
 
-    http://xrl.us/ivy
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-05/msg01293.html
 
 =head2 @INC setup
 
@@ -34,7 +34,7 @@ There was a small but interesting thread on the default setup of the
 @INC path, why it was designed that way, and how OS vendors implement
 it. Andy Dougherty summarizes it :
 
-    http://xrl.us/ivz
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-05/msg01218.html
 
 =head2 Cygwin and IO layers
 
@@ -51,7 +51,7 @@ character classes. For example, C<[\p{AtoZ}&&\P{Vowels}]> would be
 equivalent to C<[b-df-hj-np-tv-z]>. He faced Warnock's dilemma at an
 unprecedented level.
 
-    http://xrl.us/iv2
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-05/msg01241.html
 
 =head2 In Brief
 

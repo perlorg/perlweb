@@ -12,7 +12,7 @@ a tied hash, you should use keys()). However, this new fatal error was
 integrated into 5.8.1-RC2 and this appears to be a surprising change,
 probably not suited to a maintenance release (bug #22973).
 
-    http://xrl.us/mux
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg00971.html
 
 =head2 5.8.1-RC2 incompatibilities
 
@@ -24,7 +24,7 @@ behave the same way than references to regular hash elements. Dave
 Mitchell proposes to I<make tie-specific LVs stringify to SCALAR, while
 other LVs remain as LVALUE.>
 
-    http://xrl.us/muy
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg00819.html
 
 =head2 A case of C<$1> scoping
 
@@ -33,7 +33,7 @@ not always dynamically scoped to the enclosing block, when C<qr//> comes
 to play. Arthur explains what happens in the guts of perl, but this
 behaviour is nevertheless surprising (or so do I imagine).
 
-    http://xrl.us/muz
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg00912.html
 
 =head2 Improving B::Deparse and other backends
 
@@ -44,7 +44,7 @@ them just like other statements. Secondly, he made several suggestions
 about adding information in the op tree for figuring out the place of
 those statements relatively to scoping operators.
 
-    http://xrl.us/mu2
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg00909.html
 
 He also sent a fix for an obscure deparsing bug, related to
 ithread-specific optrees, reported a while back by Alexey Tourbin.
@@ -55,7 +55,7 @@ Tels explains why external signatures are more secure than embedded ones for
 CPAN packages. Autrijus Tang then added to CPANPLUS the ability to check
 the integrity of a package against a separate F<.sig> file.
 
-    http://xrl.us/mu3
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg00925.html
 
 =head2 Hash key placeholders
 
@@ -68,7 +68,7 @@ He proposes that, instead of using PL_sv_undef to mark placeholders (which
 are used to implement restricted hashes), a new global PL_sv_placeholder
 should be created (and proposes a patch against RC2).
 
-    http://xrl.us/mu5
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg01106.html
 
 =head2 Perlbug attack
 
@@ -128,7 +128,7 @@ Jim Cromie is trying to get B::Generate working with recent perls.
 Tassilo von Parseval is working on F<h2xs>, although he finds it
 hopelessly unmaintainable. He considers rewriting it from scratch.
 
-    http://xrl.us/mu6
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg00899.html
 
 Chip Salzenberg tries to find a way to add additional options to
 File::Copy::copy() (his primary goal being to add C<cp -p> behaviour).
@@ -136,7 +136,7 @@ Slaven Rezic proposes that File::Copy::copy() could be made to support
 most of the POSIX or GNU options of cp(1). Which seems to involve a
 Getopt-like interface.
 
-    http://xrl.us/mu7
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg00817.html
 
 Tim Jenness found out that the C<**> operator was broken in RC2. Stephen
 McCamant fixed it.

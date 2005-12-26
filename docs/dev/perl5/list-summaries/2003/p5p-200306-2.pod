@@ -17,7 +17,7 @@ Ton Hospel reports (bug #22613) that if the loop variable used in a for()
 loop is C<$\> (the output record separator), then this new value doesn't
 in fact affect the behavior of print(). It should.
 
-    http://xrl.us/jnt
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-06/msg00215.html
 
 =head2 C<make> oddities
 
@@ -25,7 +25,7 @@ Andy Dougherty reports some test failures for ExtUtils with maintperl on
 Solaris 8. They're caused by a difference between GNU make and Sun make,
 in handling commands split over several lines.
 
-    http://xrl.us/jnu
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-06/msg00254.html
 
 =head2 fork() portability on BSD
 
@@ -38,7 +38,7 @@ implemented and supported by different UNIX vendors. See the thread for
 the portability round-up (Tru64, Solaris, Linux, AIX, IRIX). This ended in
 a patch (#19765) specific to BSDish OSes.
 
-    http://xrl.us/jnv
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-06/msg00364.html
 
 =head2 untie() partially working
 
@@ -47,8 +47,8 @@ broken with perl 5.8.0. It worked in previous perls. He proposed a patch
 that reverts to the internals of untie() as they were in 5.6.x, but the
 root of the problem is not clear.
 
-    Bug:   http://xrl.us/jnw
-    Patch: http://xrl.us/jnx
+    Bug:   http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-06/msg00365.html
+    Patch: http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-06/msg00422.html
 
 =head2 In brief
 

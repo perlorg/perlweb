@@ -20,7 +20,7 @@ CORE::readlink(). Several people noted that a shortcut is not the same
 thing at all than a symlink, and thus that perl should not cheat about
 readlink() and paths involving symlinks.
 
-    http://xrl.us/hi6
+    http://archive.develooper.com/perl5-porters@perl.org/msg94878.html
 
 =head2 ACL support, and the filetest pragma
 
@@ -38,7 +38,7 @@ between the effective user id and the real user id. And backward
 compatibility should be preserved. Jarkko Hietaniemi recalls that the
 C<filetest> pragma should be used modify to the semantics of filetests.
 
-    http://xrl.us/hi7
+    http://archive.develooper.com/perl5-porters@perl.org/msg94966.html
 
 Later, Slaven Rezic asks whether C<filetest> works at all. This pragma is
 supposed to be lexically-scoped, like C<strict>. It is not, because it
@@ -56,7 +56,7 @@ tries to implement a module to provide COW-enabled magic scalars. Nicholas
 Clark summarized the state of the copy-on-write feature : I<the good news:
 I can't measure any slowdown. The bad news: I can't measure any speedup.>
 
-    http://xrl.us/hi8
+    http://archive.develooper.com/perl5-porters@perl.org/msg96172.html
 
 =head2 Meta-information in CPAN packages
 
@@ -67,7 +67,7 @@ files or directories from being indexed. Ken Williams noted that
 Module::Build was already able to generate a F<META.yml> file. Autrijus'
 proposal was extensively discussed in a long thread :
 
-    http://xrl.us/hi9
+    http://archive.develooper.com/perl5-porters@perl.org/msg95986.html
 
 =head2 C<$VERSION>
 
@@ -78,7 +78,7 @@ assigned to it into version objects.
 Matthew O. Persico asks about the possibility to backport John's changes
 via a CPAN module.
 
-    http://xrl.us/hja
+    http://archive.develooper.com/perl5-porters@perl.org/msg96211.html
 
 =head2 In brief
 
@@ -93,7 +93,7 @@ Gurusamy Sarathy warns that there are probably cases of non-thread-safety
 in perl 5.8.0, because some global variables have gone into F<perlvars.h>,
 instead of being put into F<intrpvars.h>. Sorting them out is needed.
 
-    http://xrl.us/hjb
+    http://archive.develooper.com/perl5-porters@perl.org/msg95215.html
 
 Rafael Garcia-Suarez provided a patch to get bleadperl working on SCO
 OpenUNIX 8.
@@ -104,7 +104,7 @@ Tye McQueen proposed a simple patch to fix a bug in hash bucket assignment
 Richard Clamp posted a quick-fix patch to get perl 5.005_03 to compile on
 newer Linux distributions.
 
-    http://xrl.us/hjc (long)
+    http://archive.develooper.com/perl5-porters@perl.org/msg95227.html (long)
 
 Brent Dax asked why regex-heredocs aren't allowed (something like C<<
 $string =~ <</FOO/ >>). Perhaps because they're not really needed.

@@ -22,8 +22,8 @@ semantics), Rafael proposes to purely and simply remove it. That will
 solve the bug. He asks : I<when removing a deprecated feature, should the
 deprecation warning be removed as well ?>
 
-    http://xrl.us/jb3
-    http://xrl.us/jb4
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-06/msg00120.html
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-06/msg00138.html
 
 =head2 Lexical warnings from XS
 
@@ -32,7 +32,7 @@ code (conditionally warn, depending on whether a custom warning category
 is in use.) Paul Marquess gives some hints, but says that there is no
 general solution at the moment.
 
-    http://xrl.us/jb5
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-06/msg00041.html
 
 =head2 Temp files
 
@@ -44,7 +44,7 @@ and should be avoided, especially on Windows, where File::Temp is
 sub-optimal. He proposed an implementation based on the native Win32 API.
 Jarkko reverted his changes.
 
-    http://xrl.us/jb6
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-06/msg00015.html
 
 =head2 Fat comma auto-quoting
 
@@ -60,7 +60,7 @@ turned into a literal string. Rafael and Michael Schwern explored a bit more
 this change, and this ended in a documentation patch, to clarify the
 current behaviour.
 
-    http://xrl.us/jb7
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-06/msg00061.html
 
 =head2 In brief
 
@@ -81,7 +81,7 @@ typo warning works, and why it works that way. Rafael explains that it's
 issued only at compile-time, and not for variables defined in modules
 pulled in by C<use>.
 
-    http://xrl.us/jb8
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-06/msg00103.html
 
 Ton Hospel came up with	a new bug gem : #22614, I<the array length of @-
 and @+ is not properly localized during backtracking>, which leads to the
@@ -91,7 +91,7 @@ Steve Hay released Win32::UTCFileTime on CPAN, a module intended to
 provide alternative versions of the built-in functions stat(), lstat() and
 utime() on Win32 systems, to handle correctly UTC file times.
 
-    http://xrl.us/jb9
+    http://search.cpan.org/author/SHAY/Win32-UTCFileTime-1.00/UTCFileTime.pm
 
 Jarkko released a new maintperl snapshot.
 

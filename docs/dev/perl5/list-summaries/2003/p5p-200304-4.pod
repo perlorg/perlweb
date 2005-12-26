@@ -13,7 +13,7 @@ was unnecessary bloat. Arthur Bergman proposes to mark C<%::> as read-only
 instead. Hugo van der Sanden feels this patch is actually trying to hide
 other problems.
 
-    http://xrl.us/g4o
+    http://archive.develooper.com/perl5-porters@perl.org/msg94634.html
 
 =head2 Use of freed value in iteration
 
@@ -21,7 +21,7 @@ It's a well-known fact that you can crash perl by modifying an array over
 which a C<for> loop iterates. Dave Mitchell changed this into a new fatal
 run-time error, B<Use of freed value in iteration>.
 
-    http://xrl.us/g4p
+    http://archive.develooper.com/perl5-porters@perl.org/msg94640.html
 
 =head2 Localization of lvalues
 
@@ -35,7 +35,7 @@ or C<substr>, although not very reliably sometimes), thinks this should be
 fixed to work. Hugo, however, says that the most we can do is to add a
 deprecation warning.
 
-    http://xrl.us/g4q
+    http://archive.develooper.com/perl5-porters@perl.org/msg94719.html
 
 =head2 Slice auto-extending
 
@@ -43,7 +43,7 @@ But Dave didn't stop there. He also asked about whether splice() should
 extend the array it operates on (bug #1832). The consensus was to fix the
 docs, which are unclear.
 
-    http://xrl.us/g4r
+    http://archive.develooper.com/perl5-porters@perl.org/msg94734.html
 
 =head2 Restricted hashes strike back
 
@@ -57,7 +57,7 @@ a list to a restricted hash ( C<< %h = (key => 1) >> ). However, if this
 list contains a disallowed key, %h is left empty rather than with its
 original contents.
 
-    http://xrl.us/g4s
+    http://archive.develooper.com/perl5-porters@perl.org/msg94835.html
 
 =head2 Documentation effort
 
@@ -66,7 +66,7 @@ documentation>, and posts a list of goals. Notably, he's willing to
 coordinate and encourage efforts. Then, proving it, he posted a large
 number of documentation patches, closing a large number of bugs.
 
-    http://xrl.us/g4t
+    http://archive.develooper.com/perl5-porters@perl.org/msg94653.html
 
 Meanwhile, Nick Ing-Simmons agrees that the PerlIO / open / binmode /
 perliol docs need to be cleaned up so that they fit more nicely together.
@@ -80,7 +80,7 @@ environment variable PERLIO is set at C<stdio>.) Nick Ing-Simmons points
 out that when the dup is done, the file pointer of DATA is at EOF, and
 that dup'ing DATA is not going to copy the DATA buffer.
 
-    http://xrl.us/g4u
+    http://archive.develooper.com/perl5-porters@perl.org/msg94694.html
 
 =head2 Lists in scalar context
 
@@ -94,7 +94,7 @@ parentheses be ignored, hence setting $x to 3 ? Graham Barr explains that
 I<a list in a scalar context evaluates each element in a scalar context
 before any flattening is done.>
 
-    http://xrl.us/g4v
+    http://archive.develooper.com/perl5-porters@perl.org/msg94823.html
 
 =head2 sfio
 
@@ -105,7 +105,7 @@ sfio library), and formats don't work with a tied STDOUT. Mark Mielke
 considers that writing a CGI and expecting it to work under mod_perl is
 naive anyway.
 
-    http://xrl.us/g4w
+    http://archive.develooper.com/perl5-porters@perl.org/msg94819.html
 
 =head2 prebind on Mac OS X
 
@@ -115,7 +115,7 @@ should optimize the loading of XS modules (and other dynamic libraries).
 Wilfredo Sánchez adds that adding C<-prebind> to the linker flags can't
 hurt.
 
-    http://xrl.us/g4x
+    http://archive.develooper.com/perl5-porters@perl.org/msg94905.html
 
 =head2 etc.
 

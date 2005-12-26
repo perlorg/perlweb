@@ -15,8 +15,8 @@ itself, as Michael Schwern suggested.
 In fact, Michael even provided a small tarball of XSLoader, repackaged for
 CPAN. He also wrote tests for it and cleaned it up a bit.
 
-    http://xrl.us/rsv
-    http://xrl.us/rsw
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01980.html
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01991.html
 
 =head2 base.pm
 
@@ -33,7 +33,7 @@ C<fields> from Class::Fields, which is going to CPAN as C<base-2.0>. He
 also mentions that he's bored with those modules and I<would welcome
 someone to take over the CPAN version>.
 
-    http://xrl.us/rsx
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01816.html
 
 =head2 C<next $label>
 
@@ -42,7 +42,7 @@ labels, specified via a variable. (C<goto> supports this.) Enache Adrian
 remarks that this isn't probably worth the performance penalty. Schwern
 quotes Larry.
 
-    http://xrl.us/rsz
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01890.html
 
 =head2 Spambench
 
@@ -54,7 +54,7 @@ His results so far : copy-on-write doesn't seem to make a difference in
 speed (perhaps in memory usage ? there aren't memory statistics), and a
 perl interpreter compiled with ithread support is slower by 4/5%.
 
-    http://xrl.us/rs2
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01723.html
 
 =head2 Parsing pod fast
 
@@ -65,7 +65,7 @@ the parse tree to contain no empty nodes and no consecutive text nodes.
 Marek also says that Pod::Simple is nowadays considered a better
 alternative to write pod parsers backends.
 
-    http://xrl.us/rs3
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01586.html
 
 =head2 tell() in append mode
 
@@ -76,7 +76,7 @@ of tell() is a patch to the Linux compilation hints file, and indeed the
 bug disappears if perl is configured with C<-Dd_stdstdio=define>. Jarkko
 commited a fix, but labels it as I<probably wrong>.
 
-    http://xrl.us/rs4
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01972.html
 
 =head2 In Brief
 
@@ -91,7 +91,7 @@ provided by the Symbol module is sometimes so zealous that the deleted
 package can't be reloaded efficiently. Rafael explained this (and why it
 won't probably be fixed in a near future.)
 
-    http://xrl.us/rs5
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01787.html
 
 Nicholas Clark filed a couple of bugs that were uncovered by valgrind
 (#23753, #23576). One of them involves matching something against a
@@ -102,7 +102,7 @@ Tassilo von Parseval found a strange bug involving the scoping of @- and
 @+, used in a tied hash, accessed from the right-hand side of a
 substitution (bug #23624). But the workaround is even stranger.
 
-    http://xrl.us/rs6
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01937.html
 
 =head2 About this summary
 

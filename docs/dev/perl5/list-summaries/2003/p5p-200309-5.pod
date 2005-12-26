@@ -7,12 +7,12 @@ It was relatively quiet in the aftermath of the release of Perl 5.8.1.
 Unfortunately, the first bugs in 5.8.1 were found also.  Some annoying,
 such as a memory leak when initializing a shared array:
 
- http://xrl.us/vwv
+ http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-09/msg01615.html
 
 and, more seriously, a bug with random numbers after fork() which basically
 cause each child to get the same random numbers as the parent:
 
- http://xrl.us/vww
+ http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg00037.html
 
 Fortunately, the upcoming mod_perl release 1.29, will take this bug into
 account when running with 5.8.1.  More bugs will no doubt be found and more
@@ -23,12 +23,12 @@ fixes will be made in the coming weeks.
 Johan Vromans found some warnings when installing 5.8.1 RPM's that indicated
 dependencies of core modules on non-core modules.
 
- http://xrl.us/vwx
+ http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-09/msg01644.html
 
 This thread turned into a discussion whether Perl should / could be
 responsible for packaging on different platforms.
 
- http://xrl.us/vwy
+ http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg00021.html
 
 Some consensus was reached in that it was felt to be a good idea to supply
 a META.yml file with each Perl distribution, which would allow packagers to
@@ -37,24 +37,24 @@ more easily package.
 And then Ken Williams realized there suddenly was a META.yml in bleadperl.
 With incorrect information.  But that all got sorted out:
 
- http://xrl.us/vwz
+ http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg00088.html
 
 =head2 A bleadperl snapshot!
 
 Hugo released a snapshot and fires up bleadperl development again!
 
- http://xrl.us/vw2
+ http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg00086.html
 
 =head2 Documentation patches
 
 A flurry of documentation patches started when Shlomi Fish returned to p5p:
 
- http://xrl.us/vw3
+ http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg00055.html
 
 As a side note, Shlomi also started some action to refurbish learn.perl.org
 on the Perl Advocacy list:
 
- http://xrl.us/vw4
+ http://www.mail-archive.com/advocacy%40perl.org/msg01816.html
 
 =head2 64bit configurations
 
@@ -62,7 +62,7 @@ Michael Schwern found an(other) difference between 5.8.0 and 5.8.1.  This time
 it involves configuration on 64bit platforms.  Previously, some configurations
 would silently fall back.  In 5.8.1, they exit with an error.
 
- http://xrl.us/vw5
+ http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg00059.html
 
 =head2 Attribute::Handlers: our vs my
 
@@ -70,7 +70,7 @@ Jos Boumans reported a bug in the handling of attributes with our and my.
 Richard Clamp explained why C<my> attributes are handled at execution time and
 C<our> at compile time.  But there may still be something amiss:
 
- http://xrl.us/vw6
+ http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg00105.html
 
 =head2 In brief
 

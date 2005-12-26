@@ -18,7 +18,7 @@ Tim Conrow pointed out that C</w> conflicts with the Perl 6 switch of the
 same name. Jos Boumans proposed C</r> instead. A new version of the patch
 is in the works.
 
-    http://xrl.us/e9v
+    http://archive.develooper.com/perl5-porters@perl.org/msg93670.html
 
 =head2 A warnings.pm for old perls
 
@@ -30,7 +30,7 @@ back-compatibility stubs based on the current perl's version. As he says,
 I<CPAN module authors just need to include Perl::Backport in their
 PREREQ_PM and it'll do the rest of the job.>
 
-    http://xrl.us/e9w
+    http://archive.develooper.com/perl5-porters@perl.org/msg93632.html
 
 =head2 A generic solution for dual-life CPAN packages
 
@@ -50,7 +50,7 @@ definitive and should not be relied upon. He also liked Stas' BUNDLED file
 idea and suggested that this file could use the MANIFEST.SKIP syntax (i.e.
 C<^inc/> to excludes files from F<inc/>).
 
-    http://xrl.us/e9x
+    http://archive.develooper.com/perl5-porters@perl.org/msg93635.html
 
 =head2 In brief
 
@@ -58,25 +58,25 @@ John L. Allen has problems compiling Perl 5.8.0 on AIX with long doubles
 with the latest version of IBM's compiler (vac). Apparently Configure
 isn't getting right the modfl support. He's working on this with Merijn.
 
-    http://xrl.us/e9z
+    http://archive.develooper.com/perl5-porters@perl.org/msg93682.html
 
 Doug Thayer reports a case of segfault, using GDBM in a threaded program
 (bug #21699). Arthur Bergman says that the fix is probably to make
 GDBM thread aware.
 
-    http://xrl.us/e92
+    http://archive.develooper.com/perl5-porters@perl.org/msg93648.html
 
 Jean Forget reminds us that he put on CPAN an alpha version of an enhanced
 C<diagnostics> module, containing bug fixes and support for
 internationalization. Wolfgang Laun announces that he'll have a look at
 it.
 
-    http://xrl.us/e93
+    http://archive.develooper.com/perl5-porters@perl.org/msg93652.html
 
 Michael G Schwern announced a new alpha release of MakeMaker (version
 6.06_03, then 6.06_04). Testers welcome.
 
-    http://xrl.us/e94
+    http://archive.develooper.com/perl5-porters@perl.org/msg93812.html
 
 He also reported bug #21742 : encountering a C<require Foo::Bar> statement
 invoked in void context and from an C<eval(STRING)> statement, perl 5.8.0
@@ -84,7 +84,7 @@ isn't able to compute correctly the module's return value, because it
 provides a wrong context for it. (The correct context to be provided would
 be scalar context, and perl actually provides void context in this case.)
 
-    http://xrl.us/e95
+    http://archive.develooper.com/perl5-porters@perl.org/msg93747.html
 
 Juerd reports bug #21744 about B::Deparse. A code snippet is worth a dozen
 words :
@@ -95,7 +95,7 @@ words :
 Enache Adrian (which I haven't already mentioned, although he posted a
 load of bug fixes this week, as usual) provides a fix.
 
-    http://xrl.us/e96
+    http://archive.develooper.com/perl5-porters@perl.org/msg93766.html
 
 =head2 About this summary
 

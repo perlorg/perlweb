@@ -14,7 +14,7 @@ Guidelines. Its copyright is currently owned by The Perl Journal, but
 Mark-Jason Dominus (author of this document) is trying to obtain it. If he
 succeeds he will rerelease it under a more standard license.
 
-    http://xrl.us/pxb
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01100.html
 
 Meanwhile, a new manpage, F<perlcheat> (the perl cheat sheet), crafted by
 Juerd, was added to the perl core documentation.
@@ -25,7 +25,7 @@ Jarkko Hietaniemi added a C<test.valgrind> make target, to run the core
 test suite under valgrind, a memory access debugger for Linux/x86. This
 shakes out some errors, indicating potential or actual bugs.
 
-    http://xrl.us/pxc
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01262.html
     valgrind : http://developer.kde.org/~sewardj/
 
 =head2 Warnings
@@ -40,7 +40,7 @@ running tests (unless otherwise specified), test suites that used to seem
 perfectly working could be now proven flawed. (Not mentioning potential
 failures due to random hash key ordering.)
 
-    http://xrl.us/pxd
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01073.html
 
 =head2 PerlIO layers
 
@@ -49,7 +49,7 @@ mod_perl 2 when there are PerlIO layers pushed on those handles, asks for
 a way to replace the worker PerlIO layer. Nick Ing-Simmons explains some
 of the details about the PerlIO internals.
 
-    http://xrl.us/pxe
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01045.html
 
 =head2 Scripts for porters
 
@@ -65,7 +65,7 @@ a list of the standard documentation pod files (various makefiles, table
 of contents generator, etc.) Nicholas Clark studied the problem and posted
 the state of his unfinished work so far.
 
-    http://xrl.us/pxf
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01084.html
 
 =head2 In Brief
 
@@ -74,7 +74,7 @@ the basic parts of the interpreter that might be undertested and/or
 undocumented (for example, numeric/string conversion). This would most
 probably be useful for Ponie.
 
-    http://xrl.us/pxg
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01077.html
 
 Abigail finds that the snippet C<$x=~(0,0)> produces an obscure error
 message : I<Too many arguments for regexp internal reset>. (Bug #23328).
@@ -86,7 +86,7 @@ apparently cured by using a non-parallel make for C<make _test>.
 
 Hugo explained why some long-deprecated features are not likely to be removed.
 
-    http://xrl.us/pxh
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01212.html
 
 gcc 3.3.1 was released ; it doesn't seem to cause major problems.
 

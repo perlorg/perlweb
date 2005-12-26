@@ -23,7 +23,7 @@ Hugo van der Sanden describes what should be done to solve this problem :
 fatal exceptions thrown during constant folding must be caught and abort
 folding, instead of aborting the whole interpreter.
 
-    http://xrl.us/nis
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg01190.html
 
 =head2 Checking whether a method exists
 
@@ -31,7 +31,7 @@ Jeff 'japhy' Pinyan suggested that one could overload C<exists>, so that
 C<< exists THING->method >> would be equivalent to C<< THING->can('method') >>.
 Dave Mitchell doesn't like this new syntax proposal, and says I<yuck>.
 
-    http://xrl.us/nit
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg01277.html
 
 =head2 Panther
 
@@ -43,7 +43,7 @@ he imported the perl sources, and is going to fix it. Ken Williams says
 that the CVS manuals recommend against using the C<%Revision%> keyword to
 generate release versions, to prevent this kind of problem.
 
-    http://xrl.us/niu
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg01338.html
 
 =head2 In Brief
 
@@ -58,14 +58,14 @@ C<Internals::find_script()>, to emulate the B<-S> command-line option.
 Michael G Schwern disagrees on using the C<Internals> namespace (and
 points out that there's already a module on CPAN called C<Internals>.)
 
-    http://xrl.us/niv
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg01318.html
 
 Stas Bekman finds a problem with perlio layers : if one pushes a layer
 onto a stream, it's not popped when the filehandle is closed. Nick
 Ing-Simmons replies that the Popped method should return zero in order to
 actually pop the layer.
 
-    http://xrl.us/niw
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg01391.html
 
 Stas asks also for a way to get a complete list of the dual-life modules,
 in order to include a file C<META.yml> in the perl 5.8.1 distribution.

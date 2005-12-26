@@ -31,12 +31,12 @@ and think that randomization (that benefits to security) should be the
 default -- arguing that only broken programs will break with this change
 anyway.
 
-    RC2 is out : http://xrl.us/lzr
+    RC2 is out : http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg00710.html
 
 Scott A Crosby confesses he is now analysing worst cases of regular
 expression matching.
 
-    http://xrl.us/lzs
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg00745.html
 
 =head2 vstrings RIP
 
@@ -45,7 +45,7 @@ Version strings (a.k.a. vstrings) are now Officially Deprecated in perl
 of an anti-vstring cabal, lead by Casey West and other influential people,
 at OSCON.
 
-    vstrings must die! - http://xrl.us/lzt
+    vstrings must die! - http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg00470.html
 
 There is another welcomed change in vstrings behaviour for 5.8.1 : the
 vstrings that begin with a C<v> and that don't contain dots now get
@@ -62,7 +62,7 @@ change. In other words this change only affects bareword-like vstrings.)
 John posted also a roadmap to remove vstrings from bleadperl, and to
 replace them by version objects.
 
-    http://xrl.us/lzu
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg00666.html
 
 =head2 5.6.1++
 
@@ -75,7 +75,7 @@ mailing list archives), Rafael suggests the version number 5.6.1a, buts
 lots of people come with lots of good arguments in favor of a full-fledged
 increment, 5.6.2.
 
-    http://xrl.us/lzv
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg00623.html
 
 =head2 Sort subroutine edge cases
 
@@ -94,7 +94,7 @@ is to filter them out beforehand :
 
     my @sorted = sort { $a <=> $b } grep { $_ == $_ } @unsorted ;
 
-    http://xrl.us/lzw
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg00508.html
 
 =head2 Safe and unsafe signals
 
@@ -106,7 +106,7 @@ hand, someone who needs the features from the POSIX sigaction can't rely
 on perl-level safe signals. Chip then implemented optional safe signals
 via POSIX::sigaction, using a new C<safe> flag.
 
-    http://xrl.us/lzx
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg00386.html
 
 =head2 Floating point exceptions
 
@@ -118,7 +118,7 @@ Chip solved this with a patch that remembers the original state of the
 SIGFPE signal handler, and that temporarily sets it back to that state for
 the duration of each exec() call.
 
-    http://xrl.us/lzy
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg00571.html
 
 =head2 More about floats
 
@@ -134,7 +134,7 @@ original one, due to rounding. Yitzchak Scott-Thoennes suggests that
 B::Deparse could emit pack/unpack code instead, but in fact an
 exponent/mantissa decomposition should be enough.
 
-    http://xrl.us/lzz
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg00373.html
 
 =head2 In Brief
 
@@ -153,12 +153,12 @@ will not change, and the problems it causes, notably by conflicting with
 the version of C<base.pm> that lives on CPAN, will be worked around for
 now.
 
-    http://xrl.us/lz2
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg00466.html
 
 Claes Jacobsson finds that attribute handlers are apparently not invoked
 from within an C<eval(STRING)>.
 
-    http://xrl.us/lz3
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg00760.html
 
 Ken Williams released File::Spec 0.84 on CPAN (and is going the maintain
 it). It's in sync with the version currently in bleadperl and maintperl.

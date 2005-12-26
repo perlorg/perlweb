@@ -8,8 +8,8 @@ The big news of the week is of course the first release candidate of perl
 Nicholas Clark, the new maint pumpking (if you have missed previous
 episodes), released perl 5.8.2-RC1.
 
-    http://xrl.us/2sg
-    first perldelta draft : http://xrl.us/2sh
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg01312.html
+    first perldelta draft : http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg01372.html
 
 Alexey Tourbin found a problem with this latest version : an
 incompatibility is caused by a patch to UNIVERSAL.pm committed at the
@@ -19,14 +19,14 @@ far of UNIVERSAL::import(), that was inherited by subclasses. Paul
 Marquess is going to fix the next release of BerkeleyDB. Nicholas backed
 the change out of maint for 5.8.2.
 
-    http://xrl.us/2si
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg01334.html
 
 Another compatibility problem was caused in mod_perl by a patch by Rick
 Delaney that changed the behaviour of require() regarding files that one
 try to load again after a first unsuccessful attempt. This one also was
 backed out of maint.
 
-    http://xrl.us/2sj
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg01517.html
 
 =head2 The adventures of binary compat
 
@@ -37,8 +37,8 @@ threads involved also security considerations and tests for potential
 attacks against this hashing schemes. I'll shamelessly refer the
 interested parties to the archives :
 
-    http://xrl.us/2sk
-    http://xrl.us/2sl
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg01379.html
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg01516.html
 
 Meanwhile, Jan Dubois spotted another potential binary incompatibility
 between 5.8.0 and 5.8.1, the problem being related to the reentrant APIs.
@@ -48,8 +48,8 @@ but it makes the situation better, as it restores the compatibility
 between 5.8.0 and 5.8.2. Details to be supplied in the next iteration of
 perldelta.
 
-    http://xrl.us/2sm
-    http://xrl.us/2sn
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg01557.html
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-11/msg00053.html
 
 =head2 Threads and -D
 
@@ -59,7 +59,7 @@ with perl's debugging flags could be done by running perl's test suite
 with C<PERL5OPT=-D...> (at least for the tests that aren't run under taint
 mode).
 
-    http://xrl.us/2so
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg01449.html
 
 =head2 Attribute::Handlers and UNIVERSAL
 
@@ -69,7 +69,7 @@ can() AUTOLOAD(), DESTROY() and import(). To fix this, he suggests to
 override UNIVERSAL::can() to reject inherited methods. But Damian Conway
 says he hasn't a good solution for this problem.
 
-    http://xrl.us/2sp
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg01388.html
 
 =head2 Setting group and user ids
 
@@ -78,7 +78,7 @@ doesn't produce the same result than assigning to the list C<< ($),$>) >>
 (at least on Solaris.) Rick Delaney sends a patch, but points out that it's
 hard to write tests for this.
 
-    http://xrl.us/2sq
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg01285.html
 
 =head2 Selected bugs
 
@@ -96,40 +96,40 @@ the rest of the said string (i.e. from outside the substr() window.) As
 the docs are unclear, he can't say he's sure it's a bug, but that's at
 least a potentially dangerous behaviour. Graham Barr proposes a patch.
 
-    http://xrl.us/2sr
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg01390.html
 
 David Dyck has some problems with a snippet of code where he's eval()'ing
 a string that contains a scalar variable in an END block (bug #24296).
 Dave Mitchell explains what's happening and provides some insight about
 how closures work.
 
-    http://xrl.us/2ss
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg01317.html
 
 Yitzchak Scott-Thoennes demonstrates that list assignment to a hash in list
 context has some problems (bug #24380).
 
-    http://xrl.us/2st
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-11/msg00022.html
 
 =head2 In Brief
 
 Arthur Bergman considers deprecating the SvPVX macro.
 
-    http://xrl.us/2su
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg01269.html
 
 Jeff Pinyan has a question about how the regular expression engine treats
 terms that match an empty string in an alternation. Mark-Jason Dominus
 provides some answers.
 
-    http://xrl.us/2sv
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg01414.html
 
 ExtUtils::MakeMaker 6.18 is coming soon, announces Michael Schwern,
 listing the new improvements and features :
 
-    http://xrl.us/2sw
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg01552.html
 
 Nicholas explicits his maint patching policy.
 
-    http://xrl.us/2sx
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-11/msg00084.html
 
 =head2 About this summary
 

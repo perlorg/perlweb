@@ -16,13 +16,13 @@ little languages (sed and awk) and to C. In spite of their historical
 interest, those references are no longer relevant to most readers of those
 documents nowadays. So he decided to do something about it.
 
-    http://xrl.us/h7g
+    http://archive.develooper.com/perl5-porters@perl.org/msg97710.html
 
 And by the way, while Casey posted a patch to replace all occurrences of
 I<catenate> by I<concatenate>, Tom explained the subtle difference between
 those two words.
 
-    http://xrl.us/h7h
+    http://archive.develooper.com/perl5-porters@perl.org/msg97687.html
 
 =head2 A new version of Getopt::Long
 
@@ -36,11 +36,11 @@ version 2.3203 or later.>
 This unconventional way to enable these new features was discussed and
 adapted, after the problems it caused were sorted out.
 
-    http://xrl.us/h7i
+    http://archive.develooper.com/perl5-porters@perl.org/msg97480.html
 
 For the latest state of the module (2.32_05), see :
 
-    http://xrl.us/h7j
+    http://archive.develooper.com/perl5-porters@perl.org/msg97734.html
     http://search.cpan.org/src/JV/Getopt-Long-2.32_05/CHANGES
 
 =head2 Build problems
@@ -55,7 +55,7 @@ Enache Adrian tried to build bleadperl on Windows 2000 with MS Visual C.
 He gets several failures, and also reminds us about bug #21473
 (C<sysread()> and C<syswrite()> don't process CRLF correctly).
 
-    http://xrl.us/h7k
+    http://archive.develooper.com/perl5-porters@perl.org/msg97565.html
 
 Alain Barbet gets smoke failures, building perl on NetBSD on a Sparc 64
 hardware, but apparently upgrading gcc helps a lot. He's going to try with
@@ -71,12 +71,12 @@ C<$hash{@array}>. That's because the subscript must be a list, so it's
 necessary to employ some syntactic trick, as C<$hash{@array,()}> to get it
 working.
 
-    http://xrl.us/h7l
+    http://archive.develooper.com/perl5-porters@perl.org/msg97572.html
 
 Later, Rafael asks whether this feature should be deprecated, and after
 discussion, the answer appears to be no.
 
-    http://xrl.us/h7m
+    http://archive.develooper.com/perl5-porters@perl.org/msg97705.html
 
 =head2 Alpha version numbers
 
@@ -88,7 +88,7 @@ to be an alpha version number, while PAUSE, for doing so, requires that
 the distribution filename matches C</d\.\d+_\d/>, and moreover it looks
 into the module(s) for $VERSION scalars.
 
-    http://xrl.us/h7n
+    http://archive.develooper.com/perl5-porters@perl.org/msg97802.html
 
 =head2 In brief
 

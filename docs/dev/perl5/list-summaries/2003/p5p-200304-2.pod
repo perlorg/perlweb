@@ -10,7 +10,7 @@ referenced through the C<use base> pragma. Graham Barr disagrees,
 saying that C<use base> should only be used to set up inheritance, and
 Michael Schwern threatens to call the backward compatibility police.
 
-    http://xrl.us/f4p
+    http://archive.develooper.com/perl5-porters@perl.org/msg94142.html
 
 =head2 Cross-compilation
 
@@ -21,7 +21,7 @@ dynamically loaded extensions, and the ability to cross-compile XS modules !
 (Perl 5.8.0 has the beginning of a minimal support for cross-compilation.
 Let's hope it can be improved by this impressive work.)
 
-    http://xrl.us/f4q
+    http://archive.develooper.com/perl5-porters@perl.org/msg94160.html
 
 =head2 Unknown error
 
@@ -30,8 +30,8 @@ message is actually produced by perl when it fails to load a module, and
 fails again to get an error message for this first failure.
 Enache Adrian provided a fix.
 
-    http://xrl.us/f4r
-    http://xrl.us/f4s
+    http://archive.develooper.com/perl5-porters@perl.org/msg94096.html
+    http://archive.develooper.com/perl5-porters@perl.org/msg94183.html
 
 =head2 OS X peculiarities
 
@@ -45,7 +45,7 @@ This doesn't seem to be related to the fact that you can't run perldoc as
 root on MacOS X. That's what Dan Kogai explains after a few tests of
 changing the UID and EUID on various BSD flavors.
 
-    http://xrl.us/f4t
+    http://archive.develooper.com/perl5-porters@perl.org/msg94194.html
 
 Michael also criticizes the choice of the default I<vendorlib> location on
 OS X. In fact, he doesn't think that I<vendorlib> should be set at all in
@@ -54,7 +54,7 @@ on a patch, both for the Darwin and Rhapsody hints files. (By the way,
 Wilfredo doesn't have a Mac OS X server, so he'll patch blindly unless
 someone wants to test bleadperl and/or maintperl on Rhapsody.)
 
-    http://xrl.us/f4u
+    http://archive.develooper.com/perl5-porters@perl.org/msg94104.html
 
 =head2 C<h2xs> and enums
 
@@ -63,7 +63,7 @@ constants from the enumerated types found in C header files. Nicholas
 Clark explains how to use ExtUtils::Constant to achieve the desired
 effect.
 
-    http://xrl.us/f4v
+    http://archive.develooper.com/perl5-porters@perl.org/msg94212.html
 
 =head2 Big Bug Fixes
 
@@ -73,7 +73,7 @@ Basically his solution is to add a field C<sv_length> to the internal SV
 structure, to hold the length, in chars, of the scalar string value.
 Nobody commented yet.
 
-    http://xrl.us/f4w
+    http://archive.develooper.com/perl5-porters@perl.org/msg94230.html
 
 Dave Mitchell sent a patch to allow I<FETCH to access arrays and hashes
 which are themselves tied without fear of crashing> (a.k.a. nested
@@ -81,7 +81,7 @@ FETCHes). I personally don't understand fully the solution. Nobody
 commented yet. No, wait, Arthur Bergman said it was nice ! and asked for
 benchmarks.
 
-    http://xrl.us/f4x
+    http://archive.develooper.com/perl5-porters@perl.org/msg94130.html
 
 =head2 Beware the precedence police
 
@@ -94,7 +94,7 @@ precedence of C<.> is actually lower than the precedence of C<=~>. Tom
 Horsley comments that I<APL was the only language that ever got precedence
 and associativity correct.>
 
-    http://xrl.us/f4y
+    http://archive.develooper.com/perl5-porters@perl.org/msg94127.html
 
 =head2 In brief
 
@@ -118,7 +118,7 @@ Patches welcome !
 Nathan Torkington asks a bunch of I/O layer questions, and gets some
 answers.
 
-    http://xrl.us/f4z
+    http://archive.develooper.com/perl5-porters@perl.org/msg94285.html
 
 =head2 About this summary
 

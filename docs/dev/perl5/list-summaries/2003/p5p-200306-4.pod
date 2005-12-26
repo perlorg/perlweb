@@ -33,7 +33,7 @@ Jarkko made a failed attempt at implementing it, but as anyway people
 seemed to dislike it, or to not like it enough (finding it overkill), it
 wasn't kept.
 
-The thread starts at F<http://xrl.us/j7m> -- and it counts more than 100
+The thread starts at F<http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-06/msg00584.html> -- and it counts more than 100
 messages.
 
 Now what would be interesting is to have some benchmark results, on
@@ -64,7 +64,7 @@ that this may mislead users in expecting that C<local @hash{@keys}> works
 analogously, by emptying %hash first, and thus pronounces himself against
 this idea.
 
-    http://xrl.us/ks4
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-06/msg00859.html
 
 =head2 CHECK and INIT blocks
 
@@ -88,8 +88,8 @@ The state of the equivalents of CHECK, INIT, BEGIN and END blocks in Perl
 6 seems to be mostly unclear to the P5P crowd, although Arthur Bergman
 crafted a module that provides PRE and POST to Perl 5 (Hook::Scope).
 
-    http://xrl.us/ks5
-    http://xrl.us/ks6
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-06/msg00905.html
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-06/msg00921.html
 
 =head2 Perldoc and Cygwin
 
@@ -99,20 +99,20 @@ Perhaps something to do with groff. Merijn applied the patch. John Peacock
 found a workaround : setting the environment variable C<LESS=-R> (or
 C<--RAW-CONTROL-CHARS>) instead.
 
-    http://xrl.us/ks7
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-06/msg00767.html
 
 =head2 In brief
 
 Johan Vromans posted a RFC to choose a default way to handle multiple
 valued options in Getopt::Long. Nobody commented.
 
-    http://xrl.us/ks8
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-06/msg00816.html
 
 Alan Burlison had a look at the build process (on Solaris), and he notices
 that C<perl> is linked against libraries it doesn't actually use. He's
 investigating it.
 
-    http://xrl.us/ks9
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-06/msg00848.html
 
 Gurusamy Sarathy and Ed Avis talked about releasing Data::Dumper on CPAN.
 This raises the question of the test suite, that should work over all perl
@@ -122,7 +122,7 @@ fix that test suite to enable the C<Sortkeys> option to Data::Dumper
 might be a better tool than Data::Dumper for a large number of uses of
 Data::Dumper.
 
-    http://xrl.us/kta
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-06/msg00971.html
 
 A new Perl Repository Browser has been put on line on ActiveState's side.
 The URL hasn't changed.

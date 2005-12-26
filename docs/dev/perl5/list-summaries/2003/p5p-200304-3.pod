@@ -15,7 +15,7 @@ Abhijit Menon-Sen finds out that perl, trying to access a symbol that has
 an empty name, sets explicitly the length of this name to 1, which seems
 obviously wrong, and thus fixes the bug by suppressing this behaviour.
 
-    http://xrl.us/gll
+    http://archive.develooper.com/perl5-porters@perl.org/msg94390.html
 
 =head2 Long Doubles
 
@@ -28,7 +28,7 @@ Configure fails to detect support for it on the platform, should it abort
 ? The answer, for now, is yes. As a consequence, some holes appear in the
 smoke matrices, corresponding to now-disallowed configs.
 
-    http://xrl.us/gln
+    http://archive.develooper.com/perl5-porters@perl.org/msg94408.html
 
 =head2 Ties, Fetches and Storabilization
 
@@ -45,7 +45,7 @@ SERIALIZE and DESERIALIZE special methods. Slaven Rezic points out that
 C<Storable> uses already the STORABLE_thaw and STORABLE_freeze methods, if
 they're available.
 
-    http://xrl.us/glo
+    http://archive.develooper.com/perl5-porters@perl.org/msg94513.html
 
 =head2 More on cross-compilation
 
@@ -56,7 +56,7 @@ during the cross-compilation process for WinCE, which is basically a
 substitution for C<Config.pm> when cross-compiling (either perl itself, or
 perl modules).
 
-    http://xrl.us/glp
+    http://archive.develooper.com/perl5-porters@perl.org/msg94415.html
 
 =head2 More black smoke
 
@@ -64,7 +64,7 @@ Nicholas Clark is struggling with strange smoke failures on BSD.
 Unreproducibly, for some reasons, Makefile.PL expansion is going wrong
 under crontab.
 
-    http://xrl.us/glq
+    http://archive.develooper.com/perl5-porters@perl.org/msg94583.html
 
 =head2 In Brief
 

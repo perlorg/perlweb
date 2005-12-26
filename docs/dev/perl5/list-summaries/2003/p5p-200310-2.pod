@@ -13,10 +13,10 @@ compatibility and at the same time preserve the security feature (the hash
 seed randomization) which was introduced in 5.8.1 and that broke binary
 compatibility.
 
-    http://xrl.us/xwk
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg00633.html
 
 The announcement of Nicholas' first snapshot can be found at
-F<http://xrl.us/xwl>.
+F<http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg00890.html>.
 
 =head2 Version numbering
 
@@ -26,7 +26,7 @@ release of the previous version, or just before the release of the new
 version ? Several arguments were raised. Usually, the tradition is to
 bump up the version number before the first release candidate.
 
-    http://xrl.us/xwm
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg00695.html
 
 =head2 CPAN things
 
@@ -34,14 +34,14 @@ Ilya Zakharevich posted a patch containing several improvements to the
 CPAN.pm module. This led to a discussion about IPC::Open3 (don't ask me
 why...)
 
-    http://xrl.us/xwn
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg00498.html
 
 Meanwhile, Randal Schwartz notices that the CPAN shell of perl 5.8.0
 reports AutoLoader as I<to be upgraded> since 5.8.1 is out. Andreas Koenig
 agrees that the shell should be silent about core modules that are not
 (yet) dual-lived on CPAN.
 
-    http://xrl.us/xwo
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg00561.html
 
 =head2 getppid() and mod_perl
 
@@ -57,7 +57,7 @@ to mod_perl to fix this, and noted that a similar problem potentially
 occurs with the $$ special variable (although it was already correctly
 handled by mod_perl.)
 
-    http://xrl.us/xwp
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg00741.html
 
 =head2 Dup'ing stderr
 
@@ -70,28 +70,28 @@ The discussion continues on the cleverness of Unix tricks, how and why
 they should be supported by perl, and (permitted by Mark-Jason Dominus'
 digging skills) POSIX compliance.
 
-    http://xrl.us/xwq
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg00642.html
 
 =head2 In Brief
 
 Rafael released a new snapshot of perl 5.6.2.
 
-    http://xrl.us/xwr
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg00694.html
 
 Stas Bekman asked why the PERL5LIB environment variable is ignored when
 taint mode is on.
 
-    http://xrl.us/xws
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg00764.html
 
 Autrijus Tang added support for signing distributions in
 ExtUtils::MakeMaker.
 
-    http://xrl.us/xwt
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg00612.html
 
 Richard Clamp is working on the perl bug triaging effort, via the
 bugmongers mailing list. He posted an announcement draft :
 
-    http://xrl.us/xwu
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg00566.html
 
 Following a suggestion by Alex Hudson, support for Linux abstract Unix
 domain sockets were implemented. Those are basically like regular named

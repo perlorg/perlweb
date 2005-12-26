@@ -10,7 +10,7 @@ Arthur Bergman has the idea to use a cache to store symbol tables
 package name each time they're invoked. He proposes a patch, with which
 he observes an average 180% speed increase (on his system).
 
-    http://xrl.us/fm9
+    http://archive.develooper.com/perl5-porters@perl.org/msg93974.html
 
 =head2 Patches
 
@@ -21,15 +21,15 @@ implementation in 5.8.0, and tried to have microperl working. (Look in
 the perldelta manpage for perl 5.8.0 if you haven't heard about microperl
 before.)
 
-    http://xrl.us/fna : threads goofs
-    http://xrl.us/fnb : microperl
+    http://archive.develooper.com/perl5-porters@perl.org/msg93848.html : threads goofs
+    http://archive.develooper.com/perl5-porters@perl.org/msg93936.html : microperl
 
 And that's not all. He also proposed to add built-in support for the
 now-standard C<--help> and C<--version> switches to Getopt::Std. This is
 followed by a discussion with Johan Vromans about extending this feature
 to Getopt::Long.
 
-    http://xrl.us/fnd
+    http://archive.develooper.com/perl5-porters@perl.org/msg93940.html
 
 =head2 In brief
 
@@ -38,13 +38,13 @@ C<usemymalloc> configuration option, doesn't seem to be able to handle
 more than 1GB of RAM. This being most probably due to an inner limitation
 (although nobody commented on this).
 
-    http://xrl.us/fne
+    http://archive.develooper.com/perl5-porters@perl.org/msg94022.html
 
 Bug #21765 is about split() not returning the desired kind of false/empty
 value, when called in a specific assignment context. Yitzchak
 Scott-Thoennes sent a fix. Demonstration here :
 
-    http://xrl.us/fnf
+    http://archive.develooper.com/perl5-porters@perl.org/msg93876.html
 
 Bug #21787 reports a problem with the C<fields> pragma. Michael Schwern
 says that this looks like a bug which was just reported in Class:Fields,

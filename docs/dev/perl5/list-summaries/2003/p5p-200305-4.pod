@@ -12,7 +12,7 @@ thus BOMs in encoded text. This was a consequence of bug report #22261,
 about I<unrecognized BOM when reading a file larger than 1k with
 encoding(UTF-16)>.
 
-    The bug : http://xrl.us/inj
+    The bug : http://archive.develooper.com/perl5-porters@perl.org/msg98054.html
     What's a BOM : http://www.unicode.org/unicode/faq/utf_bom.html
 
 =head2 What does sysread() do ?
@@ -29,7 +29,7 @@ sysread() should do what the C-level read() does, or, at least, that it
 should always have byte semantics. That's the opinion of Nick, Graham
 Barr, Ton Hospel, and others.
 
-    http://xrl.us/ink
+    http://archive.develooper.com/perl5-porters@perl.org/msg98043.html
 
 =head2 Overloading C<=>
 
@@ -43,7 +43,7 @@ I<overloading as it stands now works on the value, while tying works on
 the variable>. But, in this case, how would work a tied variable holding a
 blessed value ? Interesting thread.
 
-    http://xrl.us/inl
+    http://archive.develooper.com/perl5-porters@perl.org/msg98105.html
 
 =head2 Constant sub redefined
 
@@ -60,7 +60,7 @@ FOO>. However, while developing mod_perl modules under Apache::Reload,
 those warnings can be annoying. In this case the recommended way to shut
 them up is to use a custom C<$SIG{__WARN__}> handler.
 
-    http://xrl.us/inm
+    http://archive.develooper.com/perl5-porters@perl.org/msg98139.html
 
 =head2 In Brief
 
@@ -73,7 +73,7 @@ mechanism he didn't understand, and Spider Boardman provided a brilliant
 explanation of it, pointing his finger at the right place in the
 documentation.
 
-    http://xrl.us/inn
+    http://archive.develooper.com/perl5-porters@perl.org/msg98069.html
 
 As a consequence from a discussion we had last month, Dave Mitchell added
 a new warning, I<Useless localization>, intended to warn at some usages of

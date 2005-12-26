@@ -15,7 +15,7 @@ especially bad>, as says Jarkko.
 The workaround is to set the environment variable C<LANG> to C<C> before
 building a module.
 
-    http://xrl.us/hwk
+    http://archive.develooper.com/perl5-porters@perl.org/msg97360.html
 
 =head2 External dependencies of CPAN distributions
 
@@ -37,7 +37,7 @@ external dependencies could be embedded in distributions.
 Autrijus Tang and Brian Ingerson give some interesting spoilers about the
 soon-to-be-released C<Module::Install> framework. Or should I say virus ?
 
-    http://xrl.us/hwl
+    http://archive.develooper.com/perl5-porters@perl.org/msg97282.html
 
 =head2 CORE::readline() calls overloaded <>
 
@@ -47,7 +47,7 @@ class calls the overloaded function. Rafael Garcia-Suarez showed that a
 similar behavior occurs for int(), and explained why he thinks it's not a
 bug.
 
-    http://xrl.us/hwm
+    http://archive.develooper.com/perl5-porters@perl.org/msg96064.html
 
 =head2 Destruction uses too much memory
 
@@ -58,7 +58,7 @@ inside the perl interpreter, and that (1) replacing the recursion by an
 iterative algorithm would be a gain, (2) that each step of recursion uses
 probably too much memory. As said Arthur, patches are welcome.
 
-    http://xrl.us/hwo
+    http://archive.develooper.com/perl5-porters@perl.org/msg97243.html
 
 =head2 Making tests run anywhere
 
@@ -70,7 +70,7 @@ and optionally to unbundle the test suite. Rafael recalls that F<t/TEST>
 already includes support to run the test suite using an arbitrary perl
 interpreter, via the C<PERL> environment variable.
 
-    http://xrl.us/hwp
+    http://archive.develooper.com/perl5-porters@perl.org/msg97271.html
 
 =head2 Old bugs, new fixes
 
@@ -116,7 +116,7 @@ Daniel Berger proposed an alternative implementation of kill() on Win32
 systems. Gurusamy Sarathy and Jan Dubois provided some insightful
 comments.
 
-    http://xrl.us/hwq
+    http://archive.develooper.com/perl5-porters@perl.org/msg97540.html
 
 =head2 About this summary
 
