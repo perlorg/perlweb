@@ -1,0 +1,686 @@
+=head1 This Fortnight on perl5-porters - 12-25 December 2005
+
+Perl 5 turns 18 and is given some lovely birthday presents, such as
+Perl 6's switch, smart match and say. Constants get smaller, faster
+and cheaper. So with all that and more, it's probably time for 5.9.3
+to escape from the lab.
+
+=head2 Patching C<sprintf>, all the time, everywhere
+
+The C<sprintf> patch effort proceeded smoothly this week. Andy Dougherty
+phoned in to give the patching of Solaris 8 a clean bill of health. But
+Nicholas Clark wanted to get the other segmentation violations nailed
+down as well, and suggested a new set of patches. Which didn't work on
+Windows, and so the set was refined.
+
+Dominic Dunlop reported perls 5.8.0 through 5.8.7 on Mac OS/X was
+looking good, albeit with minor unrelated warnings. Steve Hay reported
+success on Windows for 5.8.0, .2, .3 and .7. Nicholas published the patches
+on CPAN.
+
+  http://xrl.us/jbwc
+
+Gisle Aas modified the way C<sprintf> obtains indexes and widths from the
+format string to check for overflows. As a result numbers larger than
+C<IV_MAX+1> (already ridiculously large on 32 bit hardware) can no longer
+be used directly to specify a width, but as a) such values are probably
+not used in practice and b) there are still indirect means of specifying
+Very Large Widths (such as C<%*d>), it's not much of a loss.
+
+  http://xrl.us/jbwd
+
+=head2 More on funny file names
+
+Last week, Craig Berry pointed out an annoyance with C<Pod::Simple>: its
+test suite contains directories with names such as F<lib/Pod/Simple/t/test^lib>.
+This is a hassle on VMS, because circumflex is not a legal character for a
+filename, and he hoped that the directories could be renamed by changing the
+circumflex to an underscore.
+
+This week, John E. Malmberg pointed out other problems of filename
+portability. Nicholas Clark reported that the directories had been renamed
+to something sensible, but was now struggling with trying to get Perforce
+to delete the now-empty C<troublesomely^named^directories>. Rafael came to
+the rescue with the correct incantation.
+
+  http://xrl.us/jbwe
+
+=head2 C<strict 'refs'> doesn't apply inside C<defined>
+
+Nicholas Clark noticed that the following snippet produced no
+error:
+
+  use strict;
+  $a = "Not documented"; print defined @$a;
+  # prints nothing, no error message
+  $a = "Not documented"; print defined %$a;
+  # prints nothing, no error message
+
+... which is certainly a bug, and was worried that production code
+might be relying on this misbehaviour. Since applying C<defined>
+to arrays or hashes is vaguely deprecated, Rafael Garcia-Suarez
+thought that it wasn't very important, and probably some odd side-effect
+of the optimiser. Robin Houston came to the heart of the problem by
+showing that that C<defined()> doesn't autovivify stash entries when
+used via a symbolic reference:
+
+   % perl -le '$n="z"; %$n; print(exists $::{$n} ?  "yes" : "no")'
+   yes
+
+   % perl -le '$n="z"; defined%$n; print(exists $::{$n} ? "yes" : "no")'
+   no
+
+... and also showed where in the source this was happening.
+
+  http://xrl.us/jbwf
+
+Rafael Garcia-Suarez noticed that all the internal datatypes exhibit
+similar behaviour, but when he patched the necessary functions to
+fix it up an odd assortment of tests began to fail. One of the more
+icky cases was C<DBM_Filter>, with the snippet:
+
+  C<if (!defined %{"${class}::"})>
+
+Rafael want to at least fix up C<defined($$foo)>, but Robin was doubtful,
+thinking that there's probably code Out There that relies on this
+behaviour. And we got back to the comment in C<Perl_ck_defined()> that
+has a warning comment about not breaking C<Tk> (This issue has been
+hovering in the fringes of a number of threads in the past few months).
+
+Nicholas then posted a particularly brilliant analysis of the problem.
+It's well worth reading if you want to get a feel for what goes on in
+perl's guts
+
+  http://xrl.us/jbwg
+
+It comes down to the fact that people are not so much trying to see
+whether hashes (or. more precisely, stashes -- symbol tables hashes)
+are defined I<per se>, but rather they are trying to determine what
+packages have been loaded below the current package (that is, C<A::B>
+wants to know if C<A::B::C> or C<A::B::D> are loaded. In the current
+state of affairs, just I<thinking> about C<A::B::C> makes it spring
+into life. So Rafael applied change #26370 to tweak the lexer to make
+it all work again.
+
+  http://xrl.us/jbwh
+
+=head2 C<sprintf> of version objects
+
+Gisle Aas filed bug #37897 regarding how C<sprintf> deals with version
+objects, as part of the fallout from the C<webmin>/C<syslog> debacle.
+John Peacock was at a bit of a loss as to where to start looking, and
+said that C<sv_vcatpvfn()> was an example of overloaded operation gone
+wrong. After mulling over the problem for a while, John came up with
+a simpler approach that Gisle liked. So John went ahead an implemented
+it. Gisle came back with a couple of suggestions to tighten it up.
+
+H.Merijn Brand came up with a good test case:
+
+  # all on one line
+  ($_=sprintf"%vx\n",$^V)=~s^\d\d.3\d.2^Just \
+  Anoth^;s$.3..2$r P$;s;.3.;rl Hacker,;;print
+
+At the end of the thread, John reminded us about far more than we ever
+wanted to know about version objects.
+
+  http://xrl.us/jbwi
+
+=head2 C<Pod::Man> creates empty man pages
+
+Randal L. Schwartz wrote in to say that C<podlators-2.0> broke an interface
+assumption (a parser object could not be reused) which caused a number of
+things (heavy lifters like C<pod2man>, C<ExtUtils::MakeMaker:MM> and
+C<Module::Build>) to fail. Russ Allbery said that C<pod2man> was fixed in
+the C<podlators> distribution, but the main reason is C<Pod::Simple> objects
+are single use once only. The new maintainer is interested in resolving the
+issue, but the solution is not simple.
+
+Ken Williams was ready to patch C<Module::Build>, but pointed out that if
+someone was using C<M::B> or C<EU::MM> and after upgrading C<Pod::Man>
+noticed that their man pages stopped working, then their first reflex
+would be to see about seeing what was wrong with C<Pod::Man>. It might
+not be obvious that the correct fix would be to upgrade C<M::B> or
+C<EU::MM>. So at some point in time C<Pod::Man> does need to do The
+Right Thing.
+
+  http://xrl.us/jbwj
+
+=head2 Calling perl's guts simultaneously from many threads
+
+Every once in a while, someone pops into p5p with a very (on the surface)
+simple question that turns out to be fiendishly complex. Mark Glines
+won this week's award for the best question.
+
+It turns out that Mark has written a Perl XS wrapper for the Fuse project.
+
+  http://fuse.sf.net/
+
+Fuse, as I understand it from Perl's perspective, is that you just
+C<use Fuse> and you create a filesystem whose entries can be mapped
+to Perl routines.  The Perl interface, until now, has been a
+single-threaded implementation (mainly because it's been around
+since 5.6.1). Mark recently looked at 5.8's thread support and
+decided it looked much better, and set about investigating how to
+make a multiple-threaded version of Fuse. He had a number of
+questions.
+
+Nick Ing-Simmons dived in with a number of detailed responses to
+Mark's questions, explaining how perl's threads behave. In fact,
+with a bit of help from Nick and Yitzchak Scott-Thoennes, Mark was
+well on his way to getting it all work quite well.
+
+  http://xrl.us/jbwk
+
+=head2 The Ponie Pump(?:king|queen) chair is up for grabs
+
+Two and a half years ago, Fotango began sponsoring the Perl 6
+development effort, in the shape of Ponie, or an implementation of
+Perl 5 on Parrot.  Nicholas worked on the project during his stay
+at Fotango, but he's now moved on, and Ponie is looking for a new
+manager. If you're interested, drop Nick and/or Jesse a line at
+C<ponie-pumpking@perl.org>.
+
+  http://xrl.us/jbwm
+
+=head2 Eliminating null macros.
+
+Nicholas wondered whether it would be worth reducing the use of macros
+by changing things like C<Nullsv> to C<(SV*)0>, the reason being that
+it's three things that people have to remember, and three things that
+newcomers have to learn.
+
+Andy Lester thought it might be better to replace the C<Null[a-z]+>
+variants with C<NULL>. Jan Dubois remembered a case where it does
+matter: when using C<vararg>-style functions, H.Merijn pointed out
+that the explicit casts gives the compiler something bare C<NULL>s
+don't: hints about alignment. Specifically, on some architectures
+(ok, HP) the following is safe:
+
+  long l; *((char *)&l) = 'a';
+
+but
+
+  char a[160]; *((long *)a) = 100L;
+
+may result in phase-of-the-moon errors. Nicholas applied a couple of
+experimental patches to see what it would look like.
+
+  http://xrl.us/jbwn
+
+=head2 PeekMessage() call in win32\win32.c win32_async_check fixed
+
+Following on from last week's thread about C<alarm()> on Win32,
+Jan checked in some code to address the problems. Rafael had a bit
+of trouble with the associated test suite, and it was all sorted out
+in the end
+
+  http://xrl.us/jbwo
+
+=head2 Change 26165 broke F<ext/threads/t/stress_re.t> test on Win32
+
+Steve Hay observed that somewhere between changes 26150 and 26185,
+changes to F<sv.c> caused the above test file to fail. After doing
+a binary search among those change, he pinned the problem on change
+26165, but couldn't see what in the patch was causing the problem.
+
+Nicholas and Steve went over the parts of 26165 and began to apply
+them individually, looking for mistakes. It turned out to be a
+trailing comma at the end of a very heavily-casted subtraction.
+
+After a lot of patient untangling of the initial patch, Nicholas
+got it all sorted out. A fascinating case of debugging by mail. All
+fixed up in 26378.
+
+  http://xrl.us/jbwp
+
+=head2 Reducing ithreads overhead
+
+Brendan O'Dea told of how Debian now builds a threaded perl by
+default, and one of the biggest complaints is the slowdown that
+that induces, and worse, segfaults. A couple of ideas where
+discussed, but no firm conclusions were made.
+
+  http://xrl.us/jbwq
+
+=head2 Smart match is done
+
+Robin Houston wrapped up his work on the new smart match operator,
+the C<~~> operator from Perl 6. The patch was over 100 kilobytes.
+Nicholas carefully applied two parts of it, that corrected a
+couple of spelling errors in comments. which tickled Robin no end.
+
+After having looked more carefully at the patch, Nicholas
+decomposed into six discrete components. Rafael
+was a bit dubious about the C<use feature> approach to implementing
+smart match (and switch, and say)... all of which are provided
+by this patch. He thought it a pity that a pragma was required
+to get at recent coolness added to the language, but backwards
+compatibility being what it was, that it was the best way forward.
+
+Yves Orton ironed a few kinks out the patch to get it running
+cleanly under threads and Windows.
+
+  http://xrl.us/jbwr
+
+Robin later followed up with another version of the patch
+incorporating Yves's changes and a tweaked version of smart
+match semantics (subject to more possible semantic changes when
+Larry and/or Damian touch base). Applied by Rafael as change 26400
+and a tweak in 26416.
+
+  http://xrl.us/jbws
+
+=head2 Slimming down C<constant>s
+
+Nicholas Clark noted that, despite optimisations and inlining,
+constants take up a lot of memory:
+
+  $ perl -MDevel::Size=size -le 'sub c () {3}; print size(\&c)'
+  434
+
+... and wondered whether there was a viable way of reducing their
+size. One approach would be to store the scalar value directly,
+but that would require some collusion between the optimiser and
+the C<pp_entersub> opcode. Over seven years ago, Ilya Zakharevich
+produced a patch to bring the cost of a subroutine declaration
+from 500 bytes down to 100 (change 965), one possibly non-documented
+side effect of which is:
+
+  $ perl -lwe 'sub foo {}; sub bar; sub baz ($); \
+    print "($_)" foreach $::{foo}, $::{bar}, $::{baz}'
+  (*main::foo)
+  (-1)
+  ($)
+
+Nicholas wondered whether it would be worth replacing this mechanism
+by another whereby something else than a typeglob could appear in
+symbol tables and could be used for storing constants. For modules
+sych as C<Socket> and C<Fcntl> that implement constants internally,
+it would become possible to generate true inlineable constants at
+require time, rather than at run time.
+
+The main stumbling block is that as a constant is secretly prototyped
+as C<()> behind the scenes, the trick is figure out how to distinguish
+between a true prototyped routine and a constant value.
+
+After some more legwork, Nicholas discovered that C<pp_entersub>
+can be fed just about any old thing, which would therefore require
+a non-trivial amount of cooperation from higher-level ops. And the
+worst of it is that as a general rule, most constant subs are never
+actually called in any particular program.
+
+The new scheme that Nicholas came up with is quite clever. Now, when
+a reference to a constant value is stored in the symbol table, like
+
+  $foo::{bar} = \3;
+
+It stays that way (occupying only as much space as a reference) until
+it gets called upon. At that point, it springs into C<sub foo::bar () {3}>
+and can be inlined as needed. What is more, any constant-building
+mechanism that looks like this get the optimisation for free. But
+wait! there's more!  The first time Nicholas took the new code for
+a test drive, he picked up an error (a missing semi-colon in
+C<Tie::File>).
+
+Benchmarking the new technique revealed that 1% less memory is
+consumed when Fcntl is C<require>d and a massive 12% less when
+C<use>d. And all its constants are now inlined. The C<POSIX> shows
+even better improvements (which will put to rest the meme about
+writing C<use POSIX ()> to avoid importing the universe). Bonus!
+
+Even better still, the memory saved is that much less memory
+needed to be cloned when threads are created. A truly momentous
+change.
+
+  http://xrl.us/jbwt
+
+Later on, Nicholas figured that it should be possible to teach
+C<Devel::Peek> how to dump out the value of constant subroutines,
+and committed a patch (26404) to do just that. Dave Mitchell
+liked the output.
+
+  http://xrl.us/jbwu
+
+=head2 C<//g> loops infinitely on tainted data
+
+Steve Peters revived an old bug (#8262) where Kirrelly "Skud"
+Roberts noticed that the follow snippet went into an infinite
+loop when tainting is active
+
+  while($ENV{LANG} =~ m/(.)/g ) {
+    print "saw '$1'\n";
+  }
+
+Sadahiro Tomoyuki noticed that it occurs with certain, but not
+all, tainted values. For instance C<$ARGV[0]> loops, but its
+copy C<$copy = shift> does not. Mike Guy reasoned that bad magic
+was causing the trouble, no doubt some interaction between
+magic and taint causing C<pos()> to be reset.
+
+This last clue was sufficient for the light-bulb to go off over
+Dave Mitchell's head, and create a patch that fixes the problem.
+
+  http://xrl.us/jbwv
+
+=head2 Perl is 18 years old
+
+Dave Mitchell noted that Perl is now old enough to drink hard liquor,
+vote and join the army. Randal Schwartz remarked that that's a long time to
+be printing "Hello, world". Joshua Juran recommended that Randal purchase
+a book called, um, "Learning Perl", currently in its third edition.
+C<brian d foy> suggested that Joshua buy a new copy, since it's now
+in its fourth edition.
+
+  http://xrl.us/jbww
+
+=head2 Plugins for Lint
+
+Joshua ben Jore sent in a patch against blead to teach C<B::Lint>
+to accept plugins. The particular scratch he wanted to itch was the
+ability to check for unchecked system calls and non-constant sprintf
+formats.  Rafael wondered whether Joshua planned to backport the
+current C<B::Lint> checks as plugins in the new regime.  Joshua
+wasn't convinced of the value in doing so, to which Hugo van der
+Sanden pointed out that it would provide a good set of examples to
+show how future plugin authors could write their own. But as the
+plugin mechanism has a certain overhead, the cost would be too great
+to convert everything over.
+
+  http://xrl.us/jbwx
+
+=head2 Making the C<sort> pragma lexically scoped
+
+Robin Houston thought that the C<use sort> pragma (as in
+C<use sort '_quicksort'>, C<use sort _'mergesort'>) should be
+lexically scoped. And having a couple of moments to spare after
+having written C<switch> and other goodies, whipped up a patch
+to do just that. As a result he had to rewrite part of the test
+suite which was relying on the previous behaviour, but that no-one
+minded that.
+
+Nicholas did raise a concern about pragmata namespaces, which
+Robin addressed in a followup patch. All applied by Rafael.
+
+  http://xrl.us/jbwy
+
+Robin also supplied a patch to test for C<%^H> (the hints hash)
+being propagated into C<eval>.
+
+  http://xrl.us/jbwz
+
+=head2 Is C<perlivp> too fussy?
+
+Gisle Aas doesn't like the way C<perlivp> (Perl Installation
+Verification Procedure) moans about incorrectly installed C<*.ph>
+files, which isn't really a problem under ActiveState Perl,
+and supplied a patch to silence these warnings.
+
+Rafael noted that C<perlivp> doesn't play nicely in this day and
+age of package-managed operating systems, and that Mandriva doesn't
+bother distributing it. Gisle thought that another solution would
+be to get rid of it altogether. Michael Cummings (who does Perl
+on Gentoo) voted for either removing it, or at least updating it
+so that it at least prints out a description of each test as it
+runs.
+
+  http://xrl.us/jbw2
+
+=head2 Should C<err> be a feature?
+
+Up until now, C<err> has been implemented as a weak keyword, which
+in a nutshell means that it operates as a keyword only if a subroutine
+of the same name has not been declared previously. Now that Robin
+has introduced the C<feature> pragma, he wondered whether it would
+not make more sense to recast C<err> as a feature.
+
+In case you haven't been following Perl 6 too closely, C<err> is to
+C<//> (defined or) as C<and> is to C<&&>. Rafael quite rightly pointed
+out that since C<//> isn't a feature, (because it doesn't clash with
+anything apart from an obscure regexp construct) it seems odd to
+require C<err> to be featured. The crux of the matter is the trade-off
+between backwards compatibility and using new, ah, features.
+
+Also proposed was the idea of C<use feature ':5.9.3'>, C<use feature ':5.10'>
+and C<use feature ':all'> as ways of getting everything new that the
+interpreter has to offer, with possibly various degrees of pain inflicted
+on getting your code to compile.
+
+Sébastien Asperghis-Tramoni fired up his own private gonzui search
+tool, and discovered that 69 distributions on CPAN currently define
+C<sub err>.
+
+Hot on the heels was the need for
+a command line switch that would have the same effect, in order to
+C<err>, C<say> or smart match in a one-liner. Since the best candidate
+(C<-f>) has recently been used for another purpose, Robin posted the
+list of unused command-line switches
+
+  b E g G H j J k K L N o O q Q r R y Y z Z
+
+... and wondered which one would be the best for this purpose. Abigail
+suggested C<-6> only not really. More interesting was Abigail's idea
+to just enable the whole lot when C<-e> is used, since in a one-liner it
+would be highly doubtful that C<err> ever needs to be diambiguated, or
+else C<-e> uses all features, and C<-E> uses none.
+
+Then it started to get really silly, with Tels suggesting to use æ
+(ae ligature).
+
+  http://xrl.us/jbw3
+
+In a followup post, Robin produced a patch that does the reverse of
+Abigail's sensible idea: that is, C<-E> is like C<-e> with the
+addition of all features.
+
+=head2 Time to release 5.9.3?
+
+After the discussion featuring C<err>, Rafael thought that with the
+addition of all these new shiny, erm, features, it must be time to
+roll out a new version of bleadperl to give it some wider exposure.
+Some things that need to be done are: get feedback from Larry and
+Damian on smart match, better (read: more) tests for modules like
+C<DBI> and C<Tk> and implementing C<feature 'err'>.
+
+Robin promised to wrap up the documentation for the work he's done
+so far, on the understanding that semantics may change from here to
+5.10, and Rafael said that it might be nice to try for 1/1/2006 as
+a release date. Robin checked in some documentation for switch
+and smart match a few days later.
+
+  http://xrl.us/jbw4
+
+A long discussion followed revolving around C<err>, and whether it
+could be possible to promote it to a full keyword. Rafael disliked
+the idea, because it would introduce source-level incompatibilities,
+
+Gisle proposed cutting the Gordian knot by just simply removing
+the C<err> keyword altogether. H.Merijn said that this would
+remove a certain amount of orthogonality from C<||>/C<or> and
+C<&&>/C<and>. Yves thought that C<err> was a pretty dumb name, and
+put forward C<dor> as an alternative. Randy W. Sims concurred,
+and thought that C<default> would be better than C<err>. But as
+it comes from Perl 6, it appears we don't have that luxury.
+
+Yves's objection is that C<err> sounds too much like error, as in
+Danger! Danger!, when it really means "I half expect this to not
+work, but that's ok. Another valid argument was that the C<err>
+object in Visual Basic is the way you throw errors, so VB refugees
+are going to have a hard time unlearning it in Perl.
+
+To summarise: just about everyone thinks that C<err> sucks, but
+no-one can think of anything better.
+
+The summariser thinks that since the purpose of the operator is
+to let you try out something, and if that doesn't work, get something
+else, then it should be called the Jagger-Richards operator, because
+you can't always get what you want, but you might find you get what
+you need.
+
+Rafael wondered whether, with Robin's implementation of switch in
+the interpreter, whether it would be possible to fast-track the
+deprecation of C<Switch.pm>. Robin pointed out that the semantics
+of his switch are not quite the same as Damians source filter
+switch. In the end, though, since 21 CPAN modules (again thanks
+to a search from Sébastien's) already use Switch, it'll stay.
+
+  http://xrl.us/jbw5
+
+=head2 Adding feature bundles and featuring C<err>
+
+After having done six Impossible Things before breakfast, Robin
+finished up with a patch to implement feature bundles, as discussed
+above.
+
+  http://xrl.us/jbw6
+
+=head2 Should occurences of C<I32> be replaced with C<IV> or C<STRLEN>?
+
+After having started to look at the array index issue, Jan Dubois
+noted that there are many other cases where signed/unsigned types
+are used inconsistently.
+
+Worse, in the case of 64-bit builds, some temporary copies of things
+get shoved into hard-coded 32-bit variables, which admits the possibility
+of nasty wrap-around errors.
+
+Rafael wondered what impact the proposed change would have on the
+recompilation of XS modules, and other checks that might cause
+slowdowns.
+
+  http://xrl.us/jbw7
+
+=head2 New Modules
+
+Ken Williams uploaded a beta C<PathTools> (3.14_02). This incorporates
+the "stop at first directory in PATH" fix that was giving Nick
+Ing-Simmons grief a few weeks ago. If all goes well, a 3.15 will be out
+shortly.
+
+=head2 Perl5 Bug Summary
+
+Steve Peters closed out at least two bugs that I was paying attention to,
+7567 and 23907. And 23357 and 27319 as well.
+
+Robert Spier noted that in the past seven weeks, all bugs have been replied
+to. 1511 open tickets as of December 19.
+
+  http://xrl.us/jbw8
+
+  The list
+  http://rt.perl.org/rt3/NoAuth/perl5/Overview.html
+
+=head2 In Brief
+
+B<Sorting within a sort does not set C<$a>, C<$b>> was filed as bug #36430
+back in June 2005. Robin (Houston, I suppose, the RT interface isn't clear
+on the matter) poked at it in late October. Steve Peters applied a change
+to fix it, only to realise that it had already been fixed by change #25953.
+
+  http://xrl.us/jbw9
+
+Jarkko Hietaniemi followed up on his B<C<valgrind> findings from last
+month> and October with a short snippet that demonstrates ampersandy
+leakage:
+
+  s/a//e;
+  print eval '$&';
+
+  http://xrl.us/jbxa
+
+A B<problem using C<local> with C<threads::shared>> (bug 37671) inched
+forward a bit closer to resolution when Steve Peters realised that a
+more restrictive approach was needed when dealing with magic and
+Yitzchak agreed with the idea.
+
+  http://xrl.us/jbxb
+
+Jim Cromie refined his B<work on C<arenaroot>s>.
+
+  http://xrl.us/jbxc
+
+Thanks to last week's summary, Andy Lester realised that he had let
+a message from Jim slip, and answered Jim's questions.
+
+  http://xrl.us/jbxd
+
+Vadim Konovalov noted that B<C<s{}{goto uncool;uncool:;}e> produces
+the error C<Can't find label uncool at -e line 1>>, but that
+C<s{}{do{goto uncool if 1;uncool:;}}e> (wrapping the inner
+statement in a C<do> block) works. After a moment of astonished
+silence, Chip Salzenberg said that this was perhaps the most
+evil thing he'd ever seen.
+
+  http://xrl.us/jbxe
+
+Rafael discovered that the C<INSTALLSCRIPT> doesn't follow
+changes to INSTALLDIR and that it's probably a bug. No-one
+complained about possible backwards compatibility breakage,
+but for the time being things are staying as they are.
+
+  http://xrl.us/jbxf
+
+Andy Lester announced B<the C<Sys::Syslog> and C<sprintf> fixes>
+on the Perl foundation blog:
+
+  http://xrl.us/jbxg
+  http://news.perlfoundation.org/2005/12/updated_perl_modules_alleviate.html
+
+Jerry D. Hedden posted bug #37946 concerning B<C<refaddr>s of C<threads::shared>
+variables>. Rather than staying constant, it flip-flops between two addresses.
+Nicholas Clark explained why it was so. Dave Mitchell scuffed his toe, looking
+for tuits.
+
+  http://xrl.us/jbxh
+
+See also his other bug, #37919
+
+  http://xrl.us/jbxi
+
+Yves Orton supplied a patch to B<fix the script embedded in patchlevel.h>
+in order to make it  work on Windows.
+
+  http://xrl.us/jbxj
+
+Andrew Savige started B<tracking down perl memory leaks with C<valgrind>>
+and noticed a leak with constant subs with prototypes and asked
+for some tips on how to proceed. Andrew, meet Jarkko. Jarkko, meet Andrew.
+
+  http://xrl.us/jbxk
+
+Nicholas looked at how B<C<Perl_yylex> tokenises version strings>
+and couldn't see how a certain piece of code should be reached.
+Robin Houston supplied a one-liner to show how it could, and Nicholas
+thanked him for the insight, noting that there now remained only
+3000-odd lines of similarly incomprehensible code.
+
+  http://xrl.us/jbxm
+
+=head2 About this summary
+
+This summary was written by David Landgren. Sorry about the delay, Santa ate
+all my tuits. No doubt Adriano will do a much better job next week. This
+summary took me far too long to write, and in the interest of matrimonial
+harmony, hasn't had the care it deserves applied, so the quotient of
+typos, wordos and other oddities will probably be higher than usual.
+
+Information concerning bugs referenced in this summary (as #nnnnn)
+may be viewed at http://rt.perl.org/rt3/Ticket/Display.html?id=nnnnn
+
+Information concerning patches to maint or blead referenced in
+this summary (as #nnnnn) may be viewed at
+http://public.activestate.com/cgi-bin/perlbrowse?patch=nnnnn
+
+If you want a bookmarklet approach to viewing bugs and change reports,
+there are a couple of bookmarklets that you might find useful on
+my page of Perl stuff:
+
+  http://www.landgren.net/perl/
+
+Weekly summaries are published on F<http://use.perl.org/> and posted
+on a mailing list, (subscription: F<perl5-summary-subscribe@perl.org>).
+The archive is at F<http://dev.perl.org/perl5/list-summaries/>.
+Corrections and comments are welcome.
+
+If you found this summary useful or enjoyable, please consider
+contributing to the Perl Foundation to help support the development
+of Perl.
