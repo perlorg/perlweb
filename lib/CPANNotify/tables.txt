@@ -18,12 +18,42 @@ CREATE TABLE `cpannotify_emails` (
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `cpannotify_subscriptions` (
+  id          mediumint(8) unsigned NOT NULL auto_increment primary key,
+  user        mediumint unsigned not null,
+  search      mediumint unsigned not null,
+  last_notification datetime,
+  constraint foreign key (user) references cpannotify_users(id),
+  constraint foreign key (search) references cpannotify_searches(id),
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `cpannotify_authors` (
+  
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `cpannotify_dists` (
   `id`          mediumint(8) unsigned NOT NULL auto_increment primary key,
-  user          mediumint unsigned not null,
+  `name`        varchar(255) not null,
+  `author`      varchar(255) not null, 
+  recent_version varchar(255),
+  last_match    datetime,
+  UNIQUE KEY (name),
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `cpannotify_modules (
+
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+
+
+CREATE TABLE `cpannotify_seZRch` (
+  `id`          mediumint(8) unsigned NOT NULL auto_increment primary key,
   `search_type` enum('dist', 'author', 'module') not null default 'dist',
   `name`        varchar(255) not null,
-  UNIQUE KEY (user, search_type, name),
-  constraint foreign key (user) references cpannotify_users(id)
+  recent_version varchar(255),
+  last_match    datetime,
+  UNIQUE KEY (search_type, name),
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
 
 

@@ -91,6 +91,8 @@ Return::Value
 
 Email::Address
 
+Module::Pluggable
+
 Email::Send
 
 Time::Piece

@@ -14,6 +14,10 @@ sub req_param {
   shift->_r->param(@_);
 }
 
+sub req_params {
+  shift->_r->parms;
+}
+
 sub notes {
   shift->_r->pnotes(@_);
 }

@@ -29,7 +29,7 @@ sub render {
     elsif ($mode eq 'subscribe') {
         my $sub = $self->req_param('sub');
         my $type = $self->req_param('type') || 'dist';
-        $type = 'dist' unless $type =~ m/^(author|dist)$/;  # |module        
+        $type = 'dist' unless $type =~ m/^(author|dist|module)$/;
 
         if (CPANNotify::Subscription->search(user => $user, search_type => $type, name => $sub)) {
             return OK, 'You were already subscribed';

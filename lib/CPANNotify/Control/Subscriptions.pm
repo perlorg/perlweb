@@ -13,7 +13,7 @@ sub render {
 
     if (my $sub = $self->req_param('sub')) {
         my $type = $self->req_param('type') || 'dist';
-        $type = 'dist' unless $type =~ m/^(author|dist)$/;  # |module
+        $type = 'dist' unless $type =~ m/^(author|dist|module)$/;
 
         my $user = $self->user; 
 

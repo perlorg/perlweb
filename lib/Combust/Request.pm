@@ -38,3 +38,19 @@ sub cookie {
 
 1;
 
+=head1 NAME
+
+
+
+=head2 METHODS
+
+=over 4
+
+=item req_param
+
+
+=item req_params
+
+Hash ref to all the request parameters.
+
+=back  
