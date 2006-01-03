@@ -18,7 +18,7 @@ looking good, albeit with minor unrelated warnings. Steve Hay reported
 success on Windows for 5.8.0, .2, .3 and .7. Nicholas published the patches
 on CPAN.
 
-  http://xrl.us/jbwc
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00315.html
 
 Gisle Aas modified the way C<sprintf> obtains indexes and widths from the
 format string to check for overflows. As a result numbers larger than
@@ -27,7 +27,7 @@ be used directly to specify a width, but as a) such values are probably
 not used in practice and b) there are still indirect means of specifying
 Very Large Widths (such as C<%*d>), it's not much of a loss.
 
-  http://xrl.us/jbwd
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00363.html
 
 =head2 More on funny file names
 
@@ -43,7 +43,7 @@ to something sensible, but was now struggling with trying to get Perforce
 to delete the now-empty C<troublesomely^named^directories>. Rafael came to
 the rescue with the correct incantation.
 
-  http://xrl.us/jbwe
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00284.html
 
 =head2 C<strict 'refs'> doesn't apply inside C<defined>
 
@@ -72,7 +72,7 @@ used via a symbolic reference:
 
 ... and also showed where in the source this was happening.
 
-  http://xrl.us/jbwf
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00357.html
 
 Rafael Garcia-Suarez noticed that all the internal datatypes exhibit
 similar behaviour, but when he patched the necessary functions to
@@ -91,7 +91,7 @@ Nicholas then posted a particularly brilliant analysis of the problem.
 It's well worth reading if you want to get a feel for what goes on in
 perl's guts
 
-  http://xrl.us/jbwg
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00449.html
 
 It comes down to the fact that people are not so much trying to see
 whether hashes (or. more precisely, stashes -- symbol tables hashes)
@@ -102,7 +102,7 @@ state of affairs, just I<thinking> about C<A::B::C> makes it spring
 into life. So Rafael applied change #26370 to tweak the lexer to make
 it all work again.
 
-  http://xrl.us/jbwh
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00332.html
 
 =head2 C<sprintf> of version objects
 
@@ -123,7 +123,7 @@ H.Merijn Brand came up with a good test case:
 At the end of the thread, John reminded us about far more than we ever
 wanted to know about version objects.
 
-  http://xrl.us/jbwi
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00371.html
 
 =head2 C<Pod::Man> creates empty man pages
 
@@ -143,7 +143,7 @@ not be obvious that the correct fix would be to upgrade C<M::B> or
 C<EU::MM>. So at some point in time C<Pod::Man> does need to do The
 Right Thing.
 
-  http://xrl.us/jbwj
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00423.html
 
 =head2 Calling perl's guts simultaneously from many threads
 
@@ -169,7 +169,7 @@ Mark's questions, explaining how perl's threads behave. In fact,
 with a bit of help from Nick and Yitzchak Scott-Thoennes, Mark was
 well on his way to getting it all work quite well.
 
-  http://xrl.us/jbwk
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00452.html
 
 =head2 The Ponie Pump(?:king|queen) chair is up for grabs
 
@@ -180,7 +180,7 @@ at Fotango, but he's now moved on, and Ponie is looking for a new
 manager. If you're interested, drop Nick and/or Jesse a line at
 C<ponie-pumpking@perl.org>.
 
-  http://xrl.us/jbwm
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00464.html
 
 =head2 Eliminating null macros.
 
@@ -205,7 +205,7 @@ but
 may result in phase-of-the-moon errors. Nicholas applied a couple of
 experimental patches to see what it would look like.
 
-  http://xrl.us/jbwn
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00492.html
 
 =head2 PeekMessage() call in win32\win32.c win32_async_check fixed
 
@@ -214,7 +214,7 @@ Jan checked in some code to address the problems. Rafael had a bit
 of trouble with the associated test suite, and it was all sorted out
 in the end
 
-  http://xrl.us/jbwo
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00502.html
 
 =head2 Change 26165 broke F<ext/threads/t/stress_re.t> test on Win32
 
@@ -231,7 +231,7 @@ After a lot of patient untangling of the initial patch, Nicholas
 got it all sorted out. A fascinating case of debugging by mail. All
 fixed up in 26378.
 
-  http://xrl.us/jbwp
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00513.html
 
 =head2 Reducing ithreads overhead
 
@@ -240,7 +240,7 @@ default, and one of the biggest complaints is the slowdown that
 that induces, and worse, segfaults. A couple of ideas where
 discussed, but no firm conclusions were made.
 
-  http://xrl.us/jbwq
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00520.html
 
 =head2 Smart match is done
 
@@ -260,7 +260,7 @@ compatibility being what it was, that it was the best way forward.
 Yves Orton ironed a few kinks out the patch to get it running
 cleanly under threads and Windows.
 
-  http://xrl.us/jbwr
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00561.html
 
 Robin later followed up with another version of the patch
 incorporating Yves's changes and a tweaked version of smart
@@ -268,7 +268,7 @@ match semantics (subject to more possible semantic changes when
 Larry and/or Damian touch base). Applied by Rafael as change 26400
 and a tweak in 26416.
 
-  http://xrl.us/jbws
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00603.html
 
 =head2 Slimming down C<constant>s
 
@@ -332,14 +332,14 @@ Even better still, the memory saved is that much less memory
 needed to be cloned when threads are created. A truly momentous
 change.
 
-  http://xrl.us/jbwt
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00595.html
 
 Later on, Nicholas figured that it should be possible to teach
 C<Devel::Peek> how to dump out the value of constant subroutines,
 and committed a patch (26404) to do just that. Dave Mitchell
 liked the output.
 
-  http://xrl.us/jbwu
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00644.html
 
 =head2 C<//g> loops infinitely on tainted data
 
@@ -360,7 +360,7 @@ magic and taint causing C<pos()> to be reset.
 This last clue was sufficient for the light-bulb to go off over
 Dave Mitchell's head, and create a patch that fixes the problem.
 
-  http://xrl.us/jbwv
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00604.html
 
 =head2 Perl is 18 years old
 
@@ -371,7 +371,7 @@ a book called, um, "Learning Perl", currently in its third edition.
 C<brian d foy> suggested that Joshua buy a new copy, since it's now
 in its fourth edition.
 
-  http://xrl.us/jbww
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00616.html
 
 =head2 Plugins for Lint
 
@@ -386,7 +386,7 @@ show how future plugin authors could write their own. But as the
 plugin mechanism has a certain overhead, the cost would be too great
 to convert everything over.
 
-  http://xrl.us/jbwx
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00623.html
 
 =head2 Making the C<sort> pragma lexically scoped
 
@@ -401,12 +401,12 @@ minded that.
 Nicholas did raise a concern about pragmata namespaces, which
 Robin addressed in a followup patch. All applied by Rafael.
 
-  http://xrl.us/jbwy
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00636.html
 
 Robin also supplied a patch to test for C<%^H> (the hints hash)
 being propagated into C<eval>.
 
-  http://xrl.us/jbwz
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00661.html
 
 =head2 Is C<perlivp> too fussy?
 
@@ -423,7 +423,7 @@ on Gentoo) voted for either removing it, or at least updating it
 so that it at least prints out a description of each test as it
 runs.
 
-  http://xrl.us/jbw2
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00658.html
 
 =head2 Should C<err> be a feature?
 
@@ -466,7 +466,7 @@ else C<-e> uses all features, and C<-E> uses none.
 Then it started to get really silly, with Tels suggesting to use æ
 (ae ligature).
 
-  http://xrl.us/jbw3
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00674.html
 
 In a followup post, Robin produced a patch that does the reverse of
 Abigail's sensible idea: that is, C<-E> is like C<-e> with the
@@ -487,7 +487,7 @@ so far, on the understanding that semantics may change from here to
 a release date. Robin checked in some documentation for switch
 and smart match a few days later.
 
-  http://xrl.us/jbw4
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00747.html
 
 A long discussion followed revolving around C<err>, and whether it
 could be possible to promote it to a full keyword. Rafael disliked
@@ -523,7 +523,7 @@ of his switch are not quite the same as Damians source filter
 switch. In the end, though, since 21 CPAN modules (again thanks
 to a search from Sébastien's) already use Switch, it'll stay.
 
-  http://xrl.us/jbw5
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00676.html
 
 =head2 Adding feature bundles and featuring C<err>
 
@@ -531,7 +531,7 @@ After having done six Impossible Things before breakfast, Robin
 finished up with a patch to implement feature bundles, as discussed
 above.
 
-  http://xrl.us/jbw6
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00686.html
 
 =head2 Should occurences of C<I32> be replaced with C<IV> or C<STRLEN>?
 
@@ -547,7 +547,7 @@ Rafael wondered what impact the proposed change would have on the
 recompilation of XS modules, and other checks that might cause
 slowdowns.
 
-  http://xrl.us/jbw7
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00706.html
 
 =head2 New Modules
 
@@ -564,7 +564,7 @@ Steve Peters closed out at least two bugs that I was paying attention to,
 Robert Spier noted that in the past seven weeks, all bugs have been replied
 to. 1511 open tickets as of December 19.
 
-  http://xrl.us/jbw8
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00632.html
 
   The list
   http://rt.perl.org/rt3/NoAuth/perl5/Overview.html
@@ -576,7 +576,7 @@ back in June 2005. Robin (Houston, I suppose, the RT interface isn't clear
 on the matter) poked at it in late October. Steve Peters applied a change
 to fix it, only to realise that it had already been fixed by change #25953.
 
-  http://xrl.us/jbw9
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00445.html
 
 Jarkko Hietaniemi followed up on his B<C<valgrind> findings from last
 month> and October with a short snippet that demonstrates ampersandy
@@ -585,23 +585,23 @@ leakage:
   s/a//e;
   print eval '$&';
 
-  http://xrl.us/jbxa
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00605.html
 
 A B<problem using C<local> with C<threads::shared>> (bug 37671) inched
 forward a bit closer to resolution when Steve Peters realised that a
 more restrictive approach was needed when dealing with magic and
 Yitzchak agreed with the idea.
 
-  http://xrl.us/jbxb
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00532.html
 
 Jim Cromie refined his B<work on C<arenaroot>s>.
 
-  http://xrl.us/jbxc
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00458.html
 
 Thanks to last week's summary, Andy Lester realised that he had let
 a message from Jim slip, and answered Jim's questions.
 
-  http://xrl.us/jbxd
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00451.html
 
 Vadim Konovalov noted that B<C<s{}{goto uncool;uncool:;}e> produces
 the error C<Can't find label uncool at -e line 1>>, but that
@@ -610,19 +610,19 @@ statement in a C<do> block) works. After a moment of astonished
 silence, Chip Salzenberg said that this was perhaps the most
 evil thing he'd ever seen.
 
-  http://xrl.us/jbxe
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00369.html
 
 Rafael discovered that the C<INSTALLSCRIPT> doesn't follow
 changes to INSTALLDIR and that it's probably a bug. No-one
 complained about possible backwards compatibility breakage,
 but for the time being things are staying as they are.
 
-  http://xrl.us/jbxf
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00370.html
 
 Andy Lester announced B<the C<Sys::Syslog> and C<sprintf> fixes>
 on the Perl foundation blog:
 
-  http://xrl.us/jbxg
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00392.html
   http://news.perlfoundation.org/2005/12/updated_perl_modules_alleviate.html
 
 Jerry D. Hedden posted bug #37946 concerning B<C<refaddr>s of C<threads::shared>
@@ -630,22 +630,22 @@ variables>. Rather than staying constant, it flip-flops between two addresses.
 Nicholas Clark explained why it was so. Dave Mitchell scuffed his toe, looking
 for tuits.
 
-  http://xrl.us/jbxh
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00465.html
 
 See also his other bug, #37919
 
-  http://xrl.us/jbxi
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00419.html
 
 Yves Orton supplied a patch to B<fix the script embedded in patchlevel.h>
 in order to make it  work on Windows.
 
-  http://xrl.us/jbxj
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00594.html
 
 Andrew Savige started B<tracking down perl memory leaks with C<valgrind>>
 and noticed a leak with constant subs with prototypes and asked
 for some tips on how to proceed. Andrew, meet Jarkko. Jarkko, meet Andrew.
 
-  http://xrl.us/jbxk
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00609.html
 
 Nicholas looked at how B<C<Perl_yylex> tokenises version strings>
 and couldn't see how a certain piece of code should be reached.
@@ -653,7 +653,7 @@ Robin Houston supplied a one-liner to show how it could, and Nicholas
 thanked him for the insight, noting that there now remained only
 3000-odd lines of similarly incomprehensible code.
 
-  http://xrl.us/jbxm
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-12/msg00650.html
 
 =head2 About this summary
 
