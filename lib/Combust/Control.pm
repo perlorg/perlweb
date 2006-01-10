@@ -198,42 +198,40 @@ sub get_include_path {
   #warn "param:root: ", $r->param('root');
   #warn "root coookie : ", $cookies->cookie('root');
 
-  my ($user, $dir);
+  my ($user);
   my $root_param = $r->param('root') || '';
-  if (($user, $dir) = ($root_param =~ m!^/?([a-zA-Z]+)/([^\.]+)$!)) {
-    $cookies->cookie('root', "$user/$dir");
+  if (($user) = ($root_param =~ m!^/?([a-zA-Z]+)$!)) {
+    $cookies->cookie('root', "$user");
   } 
   elsif ($root_param eq "/") {
-    # don't set user and dir, reset the cookie
+    # don't set user, reset the cookie
     $cookies->cookie('root', "/");
   }
-  elsif (($user, $dir) = (($cookies->cookie('root')||'') =~ m!^([a-zA-Z]+)/([^\.]+)$!)) {
+  elsif (($user) = (($cookies->cookie('root')||'') =~ m!^([a-zA-Z]+)$!)) {
     # ...  why is this in an elsif?  :-)
   }
 
-  $r->pnotes('combust_notes')->{include_root} = ($user and $dir) ? "/$user/$dir" : '/';
+  $r->pnotes('combust_notes')->{include_root} = ($user) ? "/$user" : '/';
 
   my $path;
 
   my $docs = $config->docs_name;
 
-  if ($user and $dir) {
+  if ($user) {
     # FIXME|TODO: should expand on ~ instead of using /home
     $user = "/home/$user";
     $path = [
-	     "$user/$docs/$dir/$site_dir/",
-	     "$user/$docs/$dir/shared/",
-	     "$user/$docs/$dir/",
+	     "$user/$docs/$site_dir/",
+	     "$user/$docs/shared/",
+	     "$user/$docs/",
 	    ];
   }
   else {
-    my $root_docs = $config->root_docs,
-    # TODO: root=/something should set dir to 'something'
-    $dir = 'live';
+    my $root_docs = $config->root_docs;
     $path = [
-	     "$root_docs/$dir/$site_dir/",
-	     "$root_docs/$dir/shared/",
-	     "$root_docs/$dir/",
+	     "$root_docs/$site_dir/",
+	     "$root_docs/shared/",
+	     "$root_docs/",
 	    ];
   }
 
