@@ -113,11 +113,10 @@ sub default_include_path {
                      ? $config->site->{$site}->{docs_site}
                      : $site;
 
-    my $dir = 'live';
     my $path = [
-                "$root_docs/$dir/$site_dir/",
-                "$root_docs/$dir/shared/",
-                "$root_docs/$dir/",
+                "$root_docs/$site_dir/",
+                "$root_docs/shared/",
+                "$root_docs/",
                 "$root/apache/root_templates/",
                ];
     $path;
