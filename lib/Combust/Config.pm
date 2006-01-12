@@ -230,7 +230,7 @@ sub root_docs {
 }
 
 sub docs_name {
-  $cfg->param('docs_name') || 'docs';
+  $cfg->param('docs_name') || 'docs/live';
 }
 
 # apache configuration
