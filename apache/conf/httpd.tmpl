@@ -326,7 +326,7 @@ NameVirtualHost *:[% config.port %]
 [% MACRO expandServerAliases( aliasList ) BLOCK %]
     [%- FOREACH v = aliasList.list %][%- IF v -%]
     ServerAlias [% v %]
-    [%- END -%][%- END -%]
+    [% END -%][%- END -%]
 [% END %]
 
 [% FOREACH site = config.sites_list %]
