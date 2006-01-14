@@ -188,12 +188,13 @@ Now that we have a test system that works, its time to get the full
 system working.
 
 Check out the perl.org doc tree from
-L<https://svn.perl.org/perl.org/docs/> into a F<docs> subdirectory of
-your combust installation.  If you don't like nested checkouts, or are
-using a system such as svk that doesn't allow them, you can place it
-elsewhere and symlink $CBROOT/docs -> wherever you put it.  (Note:
-this is going to change in the future when the perl.org sites are
-"isolated" from the main combust tree.)
+L<https://svn.perl.org/perl.org/docs/> (this requires an
+L<http://auth.perl.org/> identity and password) into a F<docs>
+subdirectory of your combust installation.  If you don't like nested
+checkouts, or are using a system such as svk that doesn't allow them,
+you can place it elsewhere and symlink $CBROOT/docs -> wherever you
+put it.  (Note: this is going to change in the future when the
+perl.org sites are "isolated" from the main combust tree.)
 
 Copy the F<combust.conf.sample> from the combust directory to
 F<combust.conf> and edit it to look something like this:
