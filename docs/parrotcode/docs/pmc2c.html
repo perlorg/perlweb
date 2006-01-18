@@ -2,18 +2,9 @@
 [% page.style = "default.html" %]
 [% page.sidebar = INCLUDE "tpl/navigation.html" %]
 
-[%#
-<B>PLACEHOLDER</B><BR>
-POD comes from 
-
-<tt>http://svn.perl.org/parrot/trunk/build_tools/pmc2c.pl</tt>
-
-and cache for 24 hours.
-%]
-
 [% USE ua = CacheLWPSimple %]
 [% data = ua.get( 'url' =>
-      'http://svn.perl.org/parrot/trunk/build_tools/pmc2c.pl'
+      'http://svn.perl.org/parrot/trunk/tools/build/pmc2c.pl'
            'ttl' => 1*60*60 ) %]
 [% USE PodSimple %]
 [% PodSimple.parse('html', data ) %]
