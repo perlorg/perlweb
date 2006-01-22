@@ -108,7 +108,7 @@ sub as_rss {
       if ($review->rating_overall);
     $rss->add_item(
 		   title       => (!$mode || $mode eq "author" ? $review->distribution : $review->user_name),
-                   link        => "$link#" . $review->review_id,
+                   link        => "$link#" . $review->id,
                    description => $text,
                    dc => {
                           creator  => $review->user_name,
