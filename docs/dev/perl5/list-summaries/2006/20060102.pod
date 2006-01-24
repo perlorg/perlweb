@@ -277,7 +277,7 @@ version of C<blead>, the compilation would issue a huge number of errors:
   macro "newSVpvn" requires 2 arguments, but only 1 given
 
 ... but only when threads were configured. Rafael spotted the problem and
-connitted a patch to deal with the first level of macro expansion, so that
+committed a patch to deal with the first level of macro expansion, so that
 instead of:
 
   #define newSVpvs(str) newSVpvn(STR_WITH_LEN(str))
