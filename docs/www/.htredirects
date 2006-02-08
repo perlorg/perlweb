@@ -20,9 +20,6 @@
 # temporary fix for evil leading //, like http://www.perl.org//about.html
 //(.*)  /$1
 
-/sponsors/? /siteinfo.html#sponsors
- 
-
 # Personal coolness
 /~?ask(/.*)?     http://www.askbjoernhansen.com/
 /~?robert(/.*)?  http://robert.spier.us/
@@ -59,7 +56,7 @@
 /learn/beginners-list/first-response http://bfr.caseywest.com/ perm
 
 # Freak people out
-/index\.(php|py|jsp|cgi|asp)  /  internal
+/index\.(php|py|jsp|cgi|asp|rb)  /  internal
 
 
 # stupid idiots
@@ -68,3 +65,6 @@
 /_vti_bin/.*	       http://www.af.mil/
 /_vti_inf.*	       http://www.whitehouse.gov/
 /MSOffice/.*	       http://www.navy.mil/
+
+# more stuff
+/advocacy/whyperl  /advocacy/whyperl.html perm
