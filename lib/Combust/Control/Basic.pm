@@ -1,6 +1,7 @@
 package Combust::Control::Basic;
 use strict;
 use base 'Combust::Control';
+use Combust::Config;
 use Combust::Template::Provider;
 use LWP::MediaTypes qw(guess_media_type);;
 use Apache::Constants qw(OK DONE);
@@ -9,14 +10,15 @@ use Apache::Constants qw(OK DONE);
 #   - sub class Template::Service to do the branch magic etc?
 #   - use/take code from Apache::Template? (probably not)
 
+my $config = Combust::Config->new();
 
-LWP::MediaTypes::read_media_types("$ENV{APACHEROOT}/conf/mime.types");
+LWP::MediaTypes::read_media_types( $config->root . "/apache/conf/mime.types");
 
 sub render {
   my $self = shift;
 
   my $r = $self->r;
-  
+
   my $template = '';
   my $content_type = 'text/html';
   my $uri = $r->uri;
