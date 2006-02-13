@@ -1,0 +1,42 @@
+[% page.style = "default.html" %]
+[% page.site = "perl.org" %]
+[% page.title = "SVN Authentication and Access at perl.org" %]
+[% page.description = '' %]
+[% page.tagline = 'Suppliers of camel and parrot food' %]
+[% page.sidebar = PROCESS svn/tpl/navigation.html %]
+
+<i>This document is still under construction and is subject to revision at any time.</i>
+
+<H1>Authentication</H1>
+
+<p>Authentication for <tt>svn.perl.org</tt> is managed through <A
+HREF="https://auth.perl.org/">auth.perl.org</A>.  Access to
+<tt>auth.perl.org</tt> is controlled through <A
+HREF="https://www.bitcard.org/">Bitcard</A>.  Confused yet?
+</p>
+
+<p>It works like this: You create a Bitcard account, username and
+password, which you then use to log into <tt>auth.perl.org</tt>.  Once
+there, you set a new password for use in Subversion.  This password
+shouldn't be the same as you use for Bitcard.</p>
+
+<p>What does this have to do with your CPAN/PAUSE id?  Absolutely
+nothing.  End of story.</p>
+
+<p>Please use SSL (i.e. <tt>https://svn.perl.org/</tt>) when comitting
+(or performing any other operation that requires authentication.)
+Right now, we still allow authentication over the non-SSL side, but
+this will be changing eventually.  You don't want your password to go
+over the net in cleartext anyway.</p>
+
+<H1>Access</H1>
+
+If you require write access to a repository, the owner of that
+repository (and or sub-repository) must send your
+Bitcard/auth.perl.org username to <tt>svn at perl.org</tt> (with the
+appropriate details about what directories access should be granted
+to.).  If you are not the owner, please do not request access, go talk
+to the owner.  Do <b>not</b> send a password via email.
+
+
+<br><br><br><br>
