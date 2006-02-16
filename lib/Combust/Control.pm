@@ -184,9 +184,9 @@ sub get_include_path {
 
   my $site = $self->site;
   unless ($site) {
-    my $path = [ $r->document_root ] if $r->dir_config('UseDocumentRoot');
-    push @$path, "$root/apache/root_templates/";
-    return $path;
+    my @path = ("$root/apache/root_templates/");
+    unshift @path, $r->document_root if $r->dir_config('UseDocumentRoot');
+    return \@path;
   }
 
   my $site_dir = $config->site->{$site}->{docs_site} || $site;
