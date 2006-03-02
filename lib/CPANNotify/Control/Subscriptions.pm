@@ -5,6 +5,9 @@ use Apache::Constants qw(OK);
 
 sub render {
     my $self = shift;
+
+    $self->r->set_last_modified(time);
+
     return $self->login unless $self->is_logged_in;
 
     if ($self->request->uri =~ m!^/sub/logout!) {

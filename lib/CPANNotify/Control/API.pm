@@ -31,6 +31,8 @@ sub render {
         my $type = $self->req_param('type') || 'dist';
         $type = 'dist' unless $type =~ m/^(author|dist|module)$/;
 
+        return OK, 'Name of distribution or module required' unless $sub;
+
         if (CPANNotify::Subscription->search(user => $user, search_type => $type, name => $sub)) {
             return OK, 'You were already subscribed';
         }
@@ -40,10 +42,10 @@ sub render {
         }
     }
     elsif ($mode eq 'unsubscribe') {
-        my $id = $self->req_param('id');
+        my ($id) = ($self->request->uri =~ m!/(\d+)$!);
         my $sub = CPANNotify::Subscription->retrieve($id);
         if ($sub and $sub->user == $user) {
-            $sub->delete and return OK, $json->objToJson( { status => 'OK' });
+            $sub->delete and return OK, $json->objToJson( { status => 'OK', id => $id });
         }
         return OK, $json->objToJson( { status => 'ERROR' } ); 
     }

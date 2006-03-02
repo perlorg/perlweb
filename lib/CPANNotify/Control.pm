@@ -9,6 +9,10 @@ use HTML::Prototype;
 sub init {
     my $self = shift;
     $self->bc_check_login_parameters;
+
+    $self->tpl_param('yui'   => 'http://st.askask.net/yui/0.9.0/js'); 
+    $self->tpl_param('moofx' => 'http://st.askask.net/moofx/1.2.2/scripts'); 
+
     return OK;
 }
 

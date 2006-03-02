@@ -26,4 +26,8 @@
        SetHandler   perl-script
        PerlHandler CPANNotify::Control::Error->super
     </Location>
+
+    <Location /server-status>
+      SetHandler server-status
+    </Location>  
   </VirtualHost>
