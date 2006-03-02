@@ -1,32 +1,26 @@
 
-
-Ajax.Responders.register({
-  onCreate: function() {
-    if($('busy') && Ajax.activeRequestCount>0) {
-      Effect.Appear('busy',{duration:0.1,queue:'end'});
-    }
-  },
-  onComplete: function() {
-    if($('busy') && Ajax.activeRequestCount===0) {
-      Effect.Fade('busy',{duration:0.1,queue:'end'});
-    }
-  }
-});
-
-
 function cancel_subscription() {
-  Effect.Fade('add_request', {duration:0.8});
+ /*   if (!document.getElementById('add_request') )
+        return; */
+
+    var removeElement = function() {
+        var el = $('add_request');
+        el.parentNode.removeChild(el);
+    };
+
+    var attributes = {
+        height: {to: 0 },
+        width:  {to: 200 },
+        opacity: { to: 0.0 },
+        fontSize: { from: 100, to: 0, unit: '%'}
+    };
+    var myAnim = new YAHOO.util.Anim('add_request', attributes, 0.3, YAHOO.util.Easing.easeIn);
+    myAnim.onComplete.subscribe(removeElement);
+    myAnim.animate();
 }
 
-function subscriptions_loading() {
-  return true;
-} 
-
-function subscriptions_loaded(request) {
+function subscriptions_loaded(results) {
   try {
-
-    var results = JSON.parse(request.responseText);
-
     var table = document.createElement('table');
     table.cellPadding = 2;
     table.cellSpacing = 0;
@@ -35,7 +29,7 @@ function subscriptions_loaded(request) {
 
     for (var s in results.subscriptions) {
       var sub = results.subscriptions[s];
-      if (typeof sub == 'function') continue;
+      if (typeof sub == 'function') { continue; }
 
       var div = document.createElement('DIV');
       var tr = document.createElement('TR');
@@ -47,8 +41,10 @@ function subscriptions_loaded(request) {
       td2.appendChild(document.createTextNode(sub.name) );
 
       var unsubLink = document.createElement('A');
-      unsubLink.setAttribute('href','unsubscribe/' + sub.id);
-      unsubLink.setAttribute('onclick','unsubscribe("' + sub.id + '"); return false;');
+      unsubLink.setAttribute('href','/api/unsubscribe/' + sub.id);
+
+      unsubLink.onclick = function() { unsubscribe(this.href); return false; };
+
       var linkText=document.createTextNode('Unsubscribe');
       unsubLink.appendChild(linkText);
       td3.appendChild(unsubLink);
@@ -78,20 +74,72 @@ function subscriptions_loaded(request) {
   }
 }
 
-function unsubscribed(id, request) {
+function unsubscribed(request) {
   var results = JSON.parse(request.responseText);
-  if (results.status = 'OK') {
-    document.getElementById('unsub' + id).innerHTML = 'Unsubscribed';
-    Effect.Puff('sub' + id, {duration:2.0});
+  if (results.status == 'OK') {
+    document.getElementById('unsub' + results.id).innerHTML = 'Unsubscribed';
+    /*  cancel_subscription(); */
+  }
+  else {
+    alert(request.responseText);
   }
 }
 
-function unsubscribe(id) {
-  new Ajax.Request(  '/api/unsubscribe?id=' + id, { asynchronous: 1,onComplete: function(request){  unsubscribed(id, request)} } );
+var responseFailure = function(o) {
+   alert('failure tld: ' + o.tld);
+   $('subscriptions').innerHTML = o.responseText;
+};
+
+
+function unsubscribe(uri, id) {
+
+  var responseSuccess = function(o) {
+     unsubscribed(o);
+  };
+
+  var callback = {
+     success : responseSuccess,
+     failure : responseFailure
+  };   
+
+  YAHOO.util.Connect.asyncRequest('POST', uri, callback);
 }
 
-function load_subscriptions() {
-  //alert("loading them..");
-  new Ajax.Request(  '/api/subscriptions', { asynchronous: 1,onLoading: function(request){ subscriptions_loading() },onComplete: function(request){  subscriptions_loaded(request)} } );
+function confirm_subscription(name, type) {
+
+  if (!type) { type = 'dist'; }
+
+  var responseSuccess = function(o){
+    cancel_subscription();
+    load_subscriptions();
+  };
+  
+  var callback = {
+     success : responseSuccess,
+     failure : responseFailure
+  };
+
+  YAHOO.util.Connect.asyncRequest('POST','/api/subscribe', callback, 'type=' + type + '&' + 'sub=' + name ); 
+
 }
+
+var load_subscriptions = function() {
+
+  var responseSuccess = function(o){
+    // $('subscriptions').innerHTML = o.responseText;
+    var results = JSON.parse(o.responseText);
+    subscriptions_loaded(results);
+  };
+
+  var callback = {
+     success : responseSuccess,
+     failure : responseFailure
+  };
+
+  YAHOO.util.Connect.asyncRequest('POST','/api/subscriptions?', callback);
+
+};
+
+
+YAHOO.util.Event.addListener(window, 'load', load_subscriptions);
 
