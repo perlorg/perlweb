@@ -55,7 +55,7 @@ LoadModule auth_module        [% apache_libexec %]/mod_auth.so
 #LoadModule headers_module     [% apache_libexec %]/mod_headers.so
 LoadModule unique_id_module   [% apache_libexec %]/mod_unique_id.so
 LoadModule setenvif_module    [% apache_libexec %]/mod_setenvif.so
-LoadModule perl_module        [% apache_libexec %]/libperl.so
+LoadModule perl_module        [% modperl_path %]
 [% END %]
 
 
@@ -69,6 +69,7 @@ PerlPassEnv CBROOT
 PassEnv     CBROOT
 PerlPassEnv CBROOTLOCAL
 PassEnv     CBROOTLOCAL
+# No idea what this is for ... 
 PerlSetEnv  APACHEROOT [% apache_root %]
 
 #MimeMagicFile [% apache_root %]/conf/magic
@@ -234,7 +235,7 @@ ServerSignature Off
         LanguagePriority en da nl et fr de el it ja kr no pl pt pt-br ru ltz ca es sv tw
     </IfModule>
 
-    TypesConfig [% apache_config %]/mime.types
+    TypesConfig [% root %]/apache/conf/mime.types
 
     #AddType application/x-httpd-php .php
     #AddType application/x-httpd-php-source .phps

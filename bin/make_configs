@@ -23,7 +23,6 @@ my $config = Combust::Config->new();
 my $dir = "$ENV{CBROOT}/apache/conf/";
 my @local_dir = $ENV{CBROOTLOCAL} ? ("$ENV{CBROOTLOCAL}/apache/conf", "$ENV{CBROOTLOCAL}/apache") : ();
 my $apache_root = $config->apache_root;
-my $apache_config = $config->apache_config;
 
 my $apxs = $config->httpd;
 $apxs =~ s!/httpd!/apxs!;
@@ -52,8 +51,8 @@ my $params = { config => $config,
 	       root         => $ENV{CBROOT},
 	       root_local   => ($ENV{CBROOTLOCAL} || ''),
 	       root_default => ($ENV{CBROOTLOCAL} || $ENV{CBROOT}),
+               modperl_path => ($config->modperl_path || "${apache_libexec}/libperl.so"),
 	       apache_root  => $apache_root,
-		   apache_config => $apache_config,
 	       apache_libexec => $apache_libexec,
 	       mod_so       => $mod_so,
 	     };

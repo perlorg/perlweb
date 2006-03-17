@@ -79,6 +79,15 @@ sub site {
 
 sub sites_list { 
   my $sites = $cfg->param('sites');
+  my  $vars = $cfg->vars;
+  unless ($sites) {
+      $sites = [ grep { my $b = $cfg->param(-block => $_);
+                        $b->{disabled} ? 0 : 1;
+                      }
+                 grep { $_ !~ m/^database/ and $_ !~ m/^(default|apache)$/ }
+                 sort $cfg->get_block() 
+               ];
+  }
   ref $sites ? @$sites : ($sites);
 }
 
@@ -195,12 +204,8 @@ sub apache_root {
   $root;
 }
 
-sub apache_config {
-  my $config = $cfg->param('apache_config');
-  unless (defined $config) {
-    $config = $_[0]->apache_root . '/conf';
-  }
-  $config;
+sub modperl_path {
+  $cfg->param('modperl_path');
 }
 
 sub httpd {

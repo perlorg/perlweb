@@ -5,10 +5,9 @@ httpd = /usr/sbin/httpd
 # but you can override that.
 # apache_root = /etc/apache
 
-# By default, we expect to find some config files (like mime.types) in
-# $apache_root/conf.
-# If this isn't your apache config directory, you will need to set it:
-# apache_config = /usr/local/etc/apache
+# path to libperl.so -- the default works in any standard install
+# default: `libexec path as defined by apxs`/libperl.so
+# modperl_path = /opt/mod_perl/foo/libperl.so
 
 # the servername for the combust instance
 servername = combust.c.askask.com
@@ -16,7 +15,8 @@ servername = combust.c.askask.com
 # list of activated sites on this combust instance.  the individual
 # site configuration is below in the [$sitename] section blocks and in
 # apache/conf/sites/$sitename.tmpl
-sites = www, qa
+# default: all sites defined in [$sitename] sections are active.
+# sites = www, qa
 
 # default port is 8225
 port = 8230
@@ -85,6 +85,8 @@ siteadmin  = root@combust.example.com
 
 [qa]
 servername = qa.c.askask.com
+# don't include this in the default sites list
+disabled = 1
 # bitcard_token = 324312423423abc981
 # bitcard_url = https://www.bitcard.org/
 
