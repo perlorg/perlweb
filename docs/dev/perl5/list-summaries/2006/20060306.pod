@@ -1,0 +1,501 @@
+=head1 This Week on perl5-porters - 6-12 March 2006
+
+Larry returns to p5p
+
+=head1 Topics of Interest
+
+=head2 Routines that accept a file name or a filehandle
+
+Salvador Fandino was trying to override C<CORE::GLOBAL::stat> when
+he discovered that there is no way to be able to distinguish
+between a filename C<'Foo'> and a bareword filehandle C<Foo>.
+
+Salvador patched the prototyping mechanism to permit
+
+  C<sub my_stat (/) {...}>
+
+to mean that a bareword will be converted to a typeglob. Rafael Garcia-Suarez
+replied that C<stat> already had a prototype of C<*> (star). Salvador
+showed why that didn't work the way he wanted. Rafael thought that
+it would be better to fix the C<'*'> prototype rather than introduce a
+new one, on the basis that replacements of built-ins really are supposed
+to behave identically the built-ins they are replacing.
+
+Salvador was worried that changing the behaviour of C<*> would introduce
+backwards compatibility problems, and maintained his C</> idea. Rafael
+asked for examples where problems could arise, and remained somewhat
+unconvinced. Salva showed what the problem was from his perspective,
+and admitted that his solution was a bit ugly, but
+couldn't think of anything better, if backwards compatibility were
+to be maintained.
+
+Nick Ing-Simmons suggested that the replacement do just what C<stat>
+does -- checks to see whether the string exists as a glob, but Salvador
+maintained that such a check had the potential for error, and pointed
+out in the code why things can get messed up.
+
+Nick began to accept the validity of Salva's argument, saying only that
+he didn't like the choice of C</> (slash) as the prototype key. H.Merijn
+Brand ruled out a number of characters that would cause grief for
+simple-minded syntax highlighters. Nick suggested C<+> (like a star) or
+C<?> (conditional globbing could be occurring).
+
+  Who gets the colon?
+  http://xrl.us/kgk8
+
+=head2 Overriding filetest operators
+
+Salvador also supplied a patch to allow the filetest operators to
+be overridden. Given the previous thread about overriding C<stat>,
+Nick Ing-Simmons wanted to get to the bottom of things and find out
+what Salvador really needed to do.
+
+It turns out that Salvador is writing a module to manipulate remote
+file systems transparently via C<sftp>. In the process of doing so
+he had uncovered various oddities, which was the reason for patches.
+
+Nick and Yitzchak Scott-Thoennes thought that a more promising
+approach would be to use the IO abstractions available in PerlIO,
+rather than the approach based on C<tie>s that Salva was using.
+
+The thread continued on for quite some time, debating whether or
+not Perl 5 is an evolving language and whether the prototype
+scheme was in need of tweaking.
+
+  Ties are out, layers are in
+  http://xrl.us/kgk9
+
+=head2 Threads and VMS
+
+We left John E. Malmberg and Craig A. Berry last week trying to
+build a threaded core that didn't splatter itself out over the
+landscape. Considerable progress was made this week: John spotted
+some memory leaks, Craig saw that some memory was being
+allocated before the threads subsystem was fully operational,
+which caused grief when that memory was later C<free>ed, since
+the thread housekeeping code knew nothing about it.
+
+John was still getting some errors in the test suite in the
+end.
+
+  http://xrl.us/kgma
+
+Another problem John ran into was that he was able to provoke
+C<Perl_safesysfree> into freeing memory allocated by C<malloc>,
+because a race condition in updating an internal linked list
+structure. Dave Mitchell thought that the linked lists in
+question were allocated on a per-thread basis, so they should
+be safe.
+
+John eventually traced the problem to a completely different piece
+of code that he had been working on, and therefore suggested that
+the linked list C<next> and C<prev> pointers be poisoned (that is,
+overwritten with garbage values) so that the use of already-freed
+memory would be noticed the first time it was attempted.
+
+  Die fast
+  http://xrl.us/kgmb
+
+=head2 Source code analysis with Coverity
+
+Andy Lester had a look at the results of applying Coverity (a static
+source code analysis tool) to see what came out the other end. He found
+an unnecessary C<NULL> check in C<Digest::SHA>.
+
+  http://xrl.us/kgmc
+
+David Dyck looked at a C<NULL> dereference in F<Zlib.xs> and wondered
+whether it too had unnecessary code guards around it. Marcus Holland-Moritz
+showed that the checks were indeed necessary. Paul Marquess fixed up his
+local copy of C<Compress::Zlib> to guard against what Marcus had discovered.
+
+  http://xrl.us/kgmd
+
+Andy found another code fragment in F<pp_hot.c> that could be
+tightened up, resulting in a cascade that caused another pointer
+to go C<const>.
+
+  http://xrl.us/kgme
+
+Elsewhere, in F<toke.c>, he pulled some variable declarations down
+into tighter scopes. In the process of applying the patch, Nicholas
+discovered another tiny tweak.
+
+  A cycle here, a cycle there
+  http://xrl.us/kgmf
+
+=head2 Allocating op-codes from an arena
+
+One of things to do in the huge evergrowing pulsating TODO list is to
+allocate OPs from an arena. Nicholas Clark thought that there might be
+a big win due to the  resulting simplification of allocation and
+freeing of ops.
+
+Jim Cromie, who has been spending a lot of time recently on these
+matters thought that it might be an overall loss, due the fact that
+the CPU would probably wind up trampling over a far larger section
+of memory and thus ruining the cache.
+
+All the same, he wrote a patch to allow the arenarisation of op
+allocations to allow the issue to be explored in more detail.
+
+  http://xrl.us/kgmg
+
+=head2 Mentioning the new constant routines in C<perlxstut>
+
+Achim Grolms filed a bug report after looking at C<perlxstut> should
+made no mention of new constant subroutine construction mechanism
+C<newCONSTSUB>. He felt it deserved a mention. Marcus Holland-Moritz
+told him to send the documentation patches to the list (the maintainer
+e-mail address in C<perlxstut> was bouncing).
+
+  http://xrl.us/kgmh
+
+=head2 Coroutine support in the perl core
+
+Marc Lehmann, author of the C<Coro> module, had a wishlist of items that,
+if implemented, would improve the its functionality. Part of the
+effort of getting C<Coro> to work involves from reusing code
+from the guts of perl, which leads to problems when said guts undergo
+changes. Marc was hoping to have something more stable upon which
+to hang his work.
+
+Nick Ing-Simmons noted the similarities between Marc's needs, and
+those of threads and wondered whether the current global/interpreter/thread
+variable model needs a new "coro" category as a subset of thread
+variables. Marc said that sometimes he needs to copy variables,
+sometimes he needs to clone them. Nick wondered whether a new
+"weird" category was also needed. All this probably only makes sense
+if you understand coroutines already -- I had to reread Dan Sugalski's
+blog.
+
+Yuval Kogman added his own wishlist to the Coro module: to make them
+serialisable. Marc was of the opinion that such a thing was theoretically
+impossible. To do it in practice would involve giving up a certain
+number of features, such as closures.
+
+Yves Orton said that C<Data::Dump::Streamer> was able to serialise
+closures, although he wasn't sure whether it was applicable in the
+current instance. Marc posted a snippet showing that it doesn't
+work. Things batted back and forth a bit Yves saying it could, Marc
+saying it couldn't. Looking at the code posted by both Marc and
+Yves it looks to me as if they're both correct, they're just not
+talking about the same things.
+
+Yves was showing that it was possible to recreate the universe.
+March was showing how it's not possible to take something from
+the universe and then put it back again.
+
+  http://xrl.us/kgmi
+
+  Dan Sugalski's "What the heck is a coroutine"
+  http://www.sidhe.org/~dan/blog/archives/000178.html
+
+=head2 Should C<truncate> perform a C<seek>
+
+H.Merijn Brand was having problems with the fact that after truncating
+a file, the file pointer (à la C<seek> and C<tell>) was now
+pointing into limbo. This would mean that a subsequent print would 
+create a sparse file. Gellyfish, er, Johnathon Stowe thought that
+the problem was more one of documentation than implementation.
+
+Gisle Aas produced an explanation that was sufficient to make
+H.Merijn change his mind.
+
+  Seek and ye shall truncate
+  http://xrl.us/kgmj
+
+=head2 Larry's Perl 5 to Perl 5 convertor
+
+In preparation for Perl 6, Larry Wall has been writing a Perl 5 to Perl 5
+convertor. Nicholas Clark had the unenviable task of merging Larry's work
+into C<blead> (in that the code base has moved around around considerably
+since Larry took a copy to work on). It's now available if you compile
+with -Dmad (Misc Attribute Decoration -- I suspect we'll be hearing a lot
+about this in the future).
+
+Alas, the code was not working as expected. After some serious grief and
+punishment, Nicholas got it all working correctly. Yay!
+
+  They're mad I tell you
+  http://xrl.us/kgmk
+
+Andy cranked up the warn-o-meter and found an uninitialised variable in
+C<S_my_kid>, but didn't know what to do about it.
+
+  http://xrl.us/kgmm
+
+Elsewhere (as we segue into what Andy did this week), Andy
+spotted an inconsistency between F<embed.fnc> and F<doio.c>,
+where the parameters didn't agree.
+
+  http://xrl.us/kgmn
+
+And an unnecessary C<switch> was flicked.
+
+  http://xrl.us/kgmo
+
+=head2 Madly duplicated files
+
+Dave Mitchell started to look at the new MAD code
+and was worried at the presence of files
+that had been copied and then modified, such as F<regen_perly.pl>
+becoming F<regen_madly.pl>.
+
+Dave pleaded for some creative C<#ifdef>ing to merge the two
+files back into one, to avoid them drifting out of sync.
+
+Nicholas Clark tended to agree. So did Larry. It seems that
+for some files, simple C<#ifdef>s should suffice, but there
+will be some cases where the only solution is to create
+a meta-file that can be processed to emit, say, F<perly.y>
+or F<madly.y>, depending on what the build requires.
+
+  One file to rule them
+  http://xrl.us/kgmp
+
+=head2 F<P5RE.pm> and F<P5re.pm> don't mix
+
+Craig A. Berry was running into trouble following on from change
+#27453. The two files F<P5RE.pm> and F<P5re.pm> map to the same
+name on a case-insensitive file system, which results in either
+last-one-standing wins, or infinite loops when synching the
+C<blead> repository with C<rsync>.
+
+Larry replied that the correct file to use was F<P5re.pm>, the
+other one can be axed, which is exactly what Nick Clark went
+ahead and did.
+
+  http://xrl.us/kgmq
+
+=head2 Fixing C<ExtUtils::Install> on Win32
+
+Adam Kennedy reported that his Vanilla Perl, a Windows installer
+for Perl and MinGW was almost ready, except for a problem with
+C<ExtUtils::Install>, and the fact that it's difficult to
+replace a file that is in use. He wanted to know what the status
+of C<ExtUtils::Install> was, and whether any progress had been
+made on this front.
+
+Randy Sims said that Yves Orton had done all the necessary footwork,
+but Michael Schwern is still the putative owner and things are in
+limbo at the moment, since Michael is apparently lost in the Worlds
+of Warcraft.
+
+Randy took Yves' second patch and applied it against C<blead> with
+some minor additions. Yves spotted a couple of problems and Randy
+promised to fix them up. It all finally wound up looking good.
+
+Paging Mr. Schwern, white courtesy phone.
+
+  Vanilla Perl approaches beta
+  http://xrl.us/kgmr
+
+=head1 New and old bugs from RT
+
+=head2 perl 5.8.8 build fails at C<dynaloader> (#38687)
+
+Andy Ford posted the tail end of what appeared to be an ordinary build
+on Linux that died when building C<dynaloader>. No takers. Perhaps
+Andy didn't post enough of the log for people to figure out what was
+going wrong.
+
+  http://xrl.us/kgms
+
+=head2 Test failures on AFS (#38698)
+
+Peter Scott traced a test failure involving sockets back to change 
+#22258.
+
+  http://xrl.us/kgmt
+
+=head2 Pre-extending an array should fill it with C<undef> (#38703)
+
+Marc Lehmann wanted to know where it in the documentation it
+explains that 
+
+  perl -e '@a = (undef); map $_->{x}, @a'
+
+runs without error, but
+
+  perl -e '$#a = 1; map $_->{x}, @a'
+
+dies with a "Modification of a read-only value attempted".  He
+wondered whether they should behave in the same manner.  Larry Wall
+replied saying that it was vaguely implied by reading the documentation
+for C<exists>, in that it allows for testing for the presence of
+an element in an array, regardless of whether it is some value or
+C<undef>.
+
+This in turn permits sparse arrays to be implemented with
+arrays, and not just with hashes.
+
+Marc more or less agreed, but still had trouble tying it back
+to pre-extended arrays. Nicholas Clark agreed that the
+error Marc ran could be interpreted as an artifact of
+the implementation, and probably should be fixed.
+
+  http://xrl.us/kgmu
+
+=head2 Opening C<|-> triggers unjustified taint check (#38709)
+
+Martin Hasch discovered that opening C<|-> will trigger an
+C<$ENV{PATH}> taint check, even though no C<PATH> dependency
+is involved. He noticed that the problem started to occur from
+5.8.7 onwards, including C<blead>. Furthermore, he tracked the
+problem down to what may have been an over-optimisation in
+F<doio.c>, restored the previous behaviour, and added a couple
+of tests to ensure it continues to work.
+
+Rick Delaney confirmed Martin's hypothesis, tracing the problem
+to change #23725, which accidently lost an single character (a
+C<!>, thus inverting the truth of a conditional).
+
+  For the want of a character, the program was lost
+  http://xrl.us/kgmv
+
+=head2 More on the C<Term::ReadKey>/C<Term::ReadLine> bug
+
+Adam Kennedy forwarded the thread to Ilya Zakharevich that Johnathon
+Stowe started last week, concerning C<Term::ReadKey> and C<Term::ReadLine>
+on Win32. Ilya said that the bug wasn't in C<Term::ReadLine>, but
+rather the Windows C<CON> device driver, and suggested where to add
+a work-around.
+
+Johnathon confirmed that Ilya was correct, and nearly had the bug
+nailed, except for a nagging problem with carriage returns that
+remains to be solved.
+
+  Routing around damage
+  http://xrl.us/kgmw
+
+=head2 C<local>ised stash slices (#38710)
+
+Hugo van der Sanden discovered a way to make localised stash slices
+go dreadfully wrong, and suggested where to start looking, along with
+some new tests to guide the way.
+
+  If the tests pass, ship it
+  http://xrl.us/kgmx
+
+=head2 Threads calling LWP causes exception (#38712)
+
+Steve Haneman posted a short program demonstrating how C<LWP>,
+the C<https> protocol and threads do not mix.
+
+  http://xrl.us/kgmy
+
+=head2 Perl5 Bug Summary
+
+  1556 open tickets
+  http://xrl.us/kgmz
+
+  In glorious Technicolor
+  http://rt.perl.org/rt3/NoAuth/perl5/Overview.html
+
+=head1 New Core Modules
+
+=over 8
+
+=item *
+
+Jos I. Boumans announced the release of C<CPANPLUS> version 0.060. No, it's
+not core, but it is nonetheless a major release.
+
+  http://xrl.us/kgm2
+
+=item *
+
+C<Module::Build> 0.27_09
+
+Ken Williams released a new version that contains a number of minor
+fixes.
+
+  http://xrl.us/kgm3
+
+=back
+
+=head1 In Brief
+
+Continuing on from last week, Jarkko Hietaniemi reported a technique
+to B<give C<Devel::DProf> indigestion> using C<XSLoader::load()>
+and its C<goto &$name> trickery.
+
+  http://xrl.us/kgm4
+
+Marcus Holland-Moritz took B<C<DEBUG_LEAKING_SCALARS>> for a spin.
+He wrote a short section that leaked an C<SV> and then wondered
+why he didn't get any debug output. Dave Mitchell showed another
+snippet that did. Marcus ran Dave's code, which died with a
+segmentation fault. This led Marcus to ask what the use of it
+was for.
+
+  http://xrl.us/kgm5
+
+Tels realised that B<bug #1808 can be closed>, but lacked the necessary auth
+bit to do so himself
+
+  http://xrl.us/kgm6
+
+As mentioned last week, Jerry D. Hedden announced that he had
+completed the preparatory ground work for B<uploading a version
+of C<threads.pm> to CPAN>. There's some new functionality in
+there, plus some documentation and test suite improvements.
+
+  http://xrl.us/kgm7
+
+Jan Dubois noticed that B<change #24576 zapped #24576> (which deals with
+C<USE_SITECUSTOMIZE>). H.Merijn Brand applied a liberal dose of his
+config-fu to ensure that it sticks around this time.
+
+  http://xrl.us/kgm8
+
+John E. Malmberg was having B<test failures with C<Compress::Zlib>>.
+Craig Berry reasoned correctly that the problem was to do with
+shell redirections. Finally after a certain amount of work,
+John started from a clean directory tree and achieved success.
+
+  http://xrl.us/kgm9
+
+Shlomi Fish posted B<a pathological regular expression pattern> in
+bug #38717 that caused perl to die a horrible death. Yves
+dissected it neatly, suggesting a couple of ways to make it work
+faster and not crash perl.
+
+  http://xrl.us/kgna
+
+Rafael made a B<small change in C<.pmc> files> in order to help
+Audrey and the Pugs crowd do some nifty things with precompiled
+modules. See C<Module::Compile> for more information.
+
+Robert Spier, Hugo and Andy Dougherty weren't too keen on the idea.
+
+  http://xrl.us/kgnb
+
+  http://search.cpan.org/dist/Module-Compile/
+
+=head2 About this summary
+
+This summary was written by David Landgren.
+
+Information concerning bugs referenced in this summary (as #nnnnn)
+may be viewed at http://rt.perl.org/rt3/Ticket/Display.html?id=nnnnn
+
+Information concerning patches to C<maint> or C<blead> referenced in
+this summary (as #nnnnn) may be viewed at
+http://public.activestate.com/cgi-bin/perlbrowse?patch=nnnnn
+
+If you want a bookmarklet approach to viewing bugs and change reports,
+there are a couple of bookmarklets that you might find useful on
+my page of Perl stuff:
+
+  http://www.landgren.net/perl/
+
+Weekly summaries are published on F<http://use.perl.org/> and posted
+on a mailing list, (subscription: F<perl5-summary-subscribe@perl.org>).
+The archive is at F<http://dev.perl.org/perl5/list-summaries/>.
+Corrections and comments are welcome.
+
+If you found this summary useful or enjoyable, please consider
+contributing to the Perl Foundation to help support the development
+of Perl.
