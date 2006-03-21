@@ -12,13 +12,20 @@ Bundle::Combust - All the modules required to run Combust
 
 =head1 SYNOPSIS
 
-perl -MCPAN -e 'install Bundle::Combust'
+    perl -MCPAN -e 'install Bundle::Combust'
+
+or if using a version not on CPAN
+
+    perl -MCPAN -I/Users/ask/src/combust/misc/Bundle-Combust/lib  -e 'install "Bundle::Combust"'
+
 
 =head1 DESCRIPTION
 
 Installs all the modules as listed on
 L<http://combust.develooper.com/install.html> that are required
 to run a Combust server except DBD::mysql
+
+
 
 =head1 CONTENTS
 
@@ -62,11 +69,17 @@ Digest::SHA1
 
 Apache::DBI
 
+Apache::Test
+
 Apache::Request
 
 Exporter::Lite
 
 Yahoo::Search
+
+XML::SAX
+
+XML::NamespaceSupport
 
 XML::Simple
 

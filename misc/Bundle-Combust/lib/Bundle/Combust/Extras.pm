@@ -45,7 +45,11 @@ Ima::DBI
 
 version
 
-# Class::DBI
+Time::Piece
+
+Time::Piece::MySQL
+
+Class::DBI
 
 UNIVERSAL::require
 
@@ -95,8 +99,6 @@ Module::Pluggable
 
 Email::Send
 
-Time::Piece
-
 Email::Date
 
 Email::Simple::Creator
@@ -106,10 +108,6 @@ HTML::Strip
 Digest::SHA1
 
 Digest::SHA
-
-Time::Piece
-
-Time::Piece::MySQL
 
 Math::Pari
 

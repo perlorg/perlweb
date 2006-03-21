@@ -138,22 +138,14 @@ sub render_helpful_vote {
 
   $vote =~ m/^[yn]$/ or return $self->_return_helpful_vote($review_id, 'BADVOTE');
 
-  warn "ba05";
-
   my $user = $self->user_info or return $self->_return_helpful_vote($review_id, 'UNRECOGNIZED');
-
-  warn "ba10: $review_id";
 
   my $review = CPANRatings::Model::Reviews->retrieve($review_id)
     or return $self->_return_helpful_vote($review_id, 'SERVICE-FAILURE');
 
-  warn "ba15";
-
   return $self->_return_helpful_vote($review_id, 'ILLEGAL') if $review->user->id == $user->id;
 
   my $updated = $review->add_helpful({ user => $user, helpful => $vote eq 'y' ? 1 : 0 });
-
-  warn "ba30";
 
   $self->_return_helpful_vote($review_id, 'SERVICE-FAILURE')
     unless $updated;
