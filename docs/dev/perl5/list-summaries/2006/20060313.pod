@@ -21,7 +21,7 @@ to deal with. In other words, Nicholas has done about as much as
 can be done. Now for testing and feedback.
 
   A movable feast
-  http://xrl.us/ki3w
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00482.html
 
 =head2 Overridable filetest operators (continued)
 
@@ -37,7 +37,7 @@ is to allow prototypes to indicate that the routine defaults to
 using C<$_> if no argument is passed).
 
   Prototyping the prototype
-  http://xrl.us/ki3x
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00303.html
 
 =head2 C<Module::Compile> and the C<.pmc> file extension
 
@@ -45,7 +45,7 @@ Audrey Tang wrote to explain her position on what C<.pmc> means.
 Surprisingly, this elicited no discussion.
 
   Nothing to do with Parrot (yet)
-  http://xrl.us/ki3y
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00483.html
 
 =head2 Advice for C<pack> failure needed
 
@@ -60,7 +60,7 @@ C<NV>s and C<SV>s, but was well and truly stuck (since this resulting
 code worked identically on both compilers).
 
   What we have here is a failure to pack
-  http://xrl.us/ki3z
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00524.html
 
 =head2 Move C<DynaLoader> into F<libperl.so>
 
@@ -73,7 +73,7 @@ loaded dynamically.
 So far, no complaints.
 
   Pulling yourself up by the bootstraps
-  http://xrl.us/ki32
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00575.html
 
 =head2 C<Useless localization of substr> warning messages
 
@@ -82,7 +82,7 @@ that C<blead> was now issuing, and wondered what to do about it. Again,
 no takers.
 
   What's the use?
-  http://xrl.us/ki33
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00611.html
 
 =head1 Patches of Interest
 
@@ -91,7 +91,7 @@ no takers.
 Johnathon Stowe produced a patch to fix up the
 C<Term::ReadKey>/C<Term::ReadLine> bug on the C<Win32> platform.
 
-  http://xrl.us/ki34
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00464.html
 
 =head2 VMS-specific C<arg_defines> for C<ExtUtils::CBuilder>
 
@@ -105,14 +105,14 @@ John E. Malmberg tweaked Craig's patch to work around a couple of other
 issues he encountered. In fact John sent in a steady stream of patches
 for VMS this week. See the In Brief section to catch them all.
 
-  http://xrl.us/ki35
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00440.html
 
 =head2 A bit more C<Module::Build> help for VMS
 
 Craig then added a patch to help get more of C<Module::Build>'s test
 suite to pass. John received some strange errors that left him puzzled.
 
-  http://xrl.us/ki36
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00442.html
 
 =head2 SPAGAIN in the poor-man's-multicall API
 
@@ -122,7 +122,7 @@ with the problem that Tassilo von Parseval had encountered in bug
 to C<blead> as change #27486, noting that Graham Barr will have to
 apply the change to his own repository of C<List::Util> as well.
 
-  http://xrl.us/ki37
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00458.html
 
 =head2 Sundry fixes from Jan Dubois for C<Win32>
 
@@ -132,10 +132,10 @@ a patch to restore the correct behaviour, and in the process of
 investigating found another small problem that also needed fixing.
 
   win32_async_check() fixed
-  http://xrl.us/ki38
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00551.html
 
   win32_plclose() fixed
-  http://xrl.us/ki39
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00553.html
 
 =head2 Allocating op-codes from arenas
 
@@ -145,7 +145,7 @@ Nicholas Clark). There were, nonetheless, a number of issues that will
 have to be worked through. For instance, it has a nasty tendency to
 segfault. People were still digesting the patch at summary time.
 
-  http://xrl.us/ki4a
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00601.html
 
 =head2 The continuing story of Andy Lester's quest to C<const>
 
@@ -155,14 +155,14 @@ segfault. People were still digesting the patch at summary time.
 
 Made C<S_looks_like_bool>'s argument C<const>...
 
-  http://xrl.us/ki4b
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00463.html
 
 =item *
 
 Taught some of the new MAD code preprocessor tricks to
 keep C<gcc> quiet.
 
-  http://xrl.us/ki4c
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00472.html
 
 =item *
 
@@ -175,7 +175,7 @@ Hugo noticed that Andy's work highlighted the underlying similarities
 in three sections of the code, and that all should be hoisted out into
 a subordinate function or macro.
 
-  http://xrl.us/ki4d
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00582.html
 
 =item *
 
@@ -183,27 +183,27 @@ Changed the semantics of C<S_isa_lookup>. Andy noticed that this function
 (in C<universal.c>) returned pointers to C<PL_sv_yes> and C<PL_sv_no>
 simply to indicate truth. So he changed it to return C<TRUE> or C<FALSE>.
 
-  http://xrl.us/ki4e
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00594.html
 
 =item *
 
 Cleanups in F<op.c>
 
-  http://xrl.us/ki4f
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00603.html
 
 =item *
 
 Random consting in C<Data::Dumper>.
 
   Not random, merely chaotic
-  http://xrl.us/ki4g
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00605.html
 
 =item *
 
 And changed some C<@ISA> definitions to work correctly under C<use strict>,
 such as C<@ISA = (Exporter)> becoming C<@ISA = qw(Exporter)>.
 
-  http://xrl.us/ki4h
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00606.html
 
 =back
 
@@ -222,7 +222,7 @@ Nicholas then wrote a patch to implement one of the safer approaches,
 and if the time it takes to run the test suite is any guide, the
 performance difference is pretty much lost in the noise.
 
-  http://xrl.us/ki4i
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00511.html
 
   The original Perlbug (authentication required)
   http://rt.perl.org/rt3/Ticket/Display.html?id=34925
@@ -247,14 +247,14 @@ in the depths of C<CV>s, C<GV>s and stashes, but had never been able to
 adequately explain why.
 
   Shades of Moria
-  http://xrl.us/ki4j
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00147.html
 
 =head2 C<SvPOK> breaks magic in 5.8.5 and beyond (#38707)
 
 Zowie noted that C<SvPOK> breaks code in C<PDL>, specifically, when
 looking at things like C<$#$arrayref>.
 
-  http://xrl.us/ki4k
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00374.html
 
 =head2 perl 5.8.8 make fails at dynaloader (#38687)
 
@@ -265,7 +265,7 @@ make sure there was sufficient free disk space, and start the build
 again.
 
   If problems persist, consult your doctor in the morning
-  http://xrl.us/ki4m
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00259.html
 
 =head2 C<local>ised stash slices are fixed (#38710)
 
@@ -280,7 +280,7 @@ worked, but
 ... did not. Now it does, thanks to a patch for F<pp.c> from
 Rick Delaney.
 
-  http://xrl.us/ki4n
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00377.html
 
 =head2 C<Perl_utf8n_to_uvuni> decodes illegal characters (#38722)
 
@@ -289,7 +289,7 @@ C<Perl_utf8n_to_uvuni> decodes (that is to say, Unicode characters)
 and what C<Perl_uvuni_to_utf8_flags> considers illegal, and provides
 a short snippet of code to demonstrate the problem. No takers as yet.
 
-  http://xrl.us/ki4o
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00473.html
 
 =head2 Backticks don't work in Win32 multi-threaded perl (#38723)
 
@@ -299,7 +299,7 @@ problem to the routine C<win32_popen>, which is apparently
 not thread-safe. He then recompiled perl with C<-DUSE_RTL_POPEN>
 and saw that that fixes the problem.
 
-  http://xrl.us/ki4p
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00494.html
 
 =head2 C<syslog-ng> inappropriately expects C<\n> (and C<\0>?) in C<syslog> messages  (#28019)
 
@@ -315,7 +315,7 @@ due to work-arounds for broken commercial Unix C<syslog> implementations,
 and that the RFCs surrounding these are sadly only informational, and
 do not mandate a specific way of doing things.
 
-  http://xrl.us/ki4q
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00504.html
 
 =head2 Poor example for C<$^V> in C<perlvar> (#38743)
 
@@ -326,7 +326,7 @@ clever example that dealt with the hash key randomisation work that
 went into perl 5.8.1.
 
   Clues you can use
-  http://xrl.us/ki4r
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00546.html
 
 =head2 Undetectable, incompatible API changes in C<POPpx>, etc. (#38744)
 
@@ -341,7 +341,7 @@ who built the release candidate running up to the official 5.8.8
 release.
 
   The importance of testing
-  http://xrl.us/ki4s
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00548.html
 
 =head2 Segmentation fault in generating F<Config.pm> (#38745)
 
@@ -352,10 +352,10 @@ whether previous versions of perl had been built successfully on
 the platform, or if this was the first time. The next thing to
 try is to build an unoptimised C<miniperl>.
 
-  http://xrl.us/ki4t
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00555.html
 
   Follow-ups in a detached thread
-  http://xrl.us/ki4u
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00634.html
 
 =head2 F<threads.xs> broken under C<PERL_IMPLICIT_SYS>; 5.8.8 regression
 
@@ -370,7 +370,7 @@ Jerry Hedden picked up the patch and reworked it slightly. His plan
 is to get some feedback from CPAN testers before getting it folded
 back into C<blead>.
 
-  http://xrl.us/ki4v
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00556.html
 
 =head2 C<qx> loses C</dev/tty> (#38748)
 
@@ -381,12 +381,12 @@ be problems with the program if it really I<was> a daemon, because
 in that case it would have no controlling terminal and thus no
 C</dev/tty>.
 
-  http://xrl.us/ki4w
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00568.html
 
 =head2 Perl5 Bug Summary
 
   1556 tickets
-  http://xrl.us/ki4x
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00477.html
 
   Summarised here
   http://rt.perl.org/rt3/NoAuth/perl5/Overview.html
@@ -400,28 +400,28 @@ C</dev/tty>.
 C<ExtUtils::CBuilder> version 0.17 uploaded Ken Williams (based on the
 thread concerning VMS. See above).
 
-  http://xrl.us/ki4y
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00538.html
 
 =item *
 
 C<Module::Build> version 0.27_09, also from Ken.
 
-  http://xrl.us/ki4z
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00409.html
 
 =item *
 
 C<threads> version 1.09 uploaded by Jerry D. Hedden.
 
-  http://xrl.us/ki42
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00474.html
 
 He also sent in a patch to sync C<blead> with the current
 versions of C<threads> and C<threads::shared>.
 
   threads 1.12
-  http://xrl.us/ki43
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00613.html
 
   threads::shared 0.99
-  http://xrl.us/ki44
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00614.html
 
 =back
 
@@ -431,46 +431,46 @@ John E. Malmberg reported at the beginning of the week that B<13 test
 scripts (of 1140 total) were still generating failures> on VMS.
 
   threads and VMS (redux)
-  http://xrl.us/ki45
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00505.html
 
 He tweaked F<thread.h> to give B<threads on VMS a bit more stack space>.
 
-  http://xrl.us/ki46
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00581.html
 
 And some B<buffer size fixes for F<vms.c>>
 
-  http://xrl.us/ki47
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00616.html
 
 And B<C<utime>> (I think I need a what "What John did" section).
 
-  http://xrl.us/ki48
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00627.html
 
 Peter Prymmer filed a small patch to B<fix C<Pod::Simple> on C<blead>> so that
 it works on VMS ODS-2. (Which I understand to be an older file-system
 for VMS, the current being ODS-5).
 
-  http://xrl.us/ki49
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00509.html
 
 Paul Marquess sent in a patch to synch C<blead> with the CPAN versions
 of B<C<Compress::Raw::Zlib>, C<Compress::Zlib> and C<IO::Compress::Zlib>>.
 
-  http://xrl.us/ki5a
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00542.html
 
 Someone noted (in bug #34981) that B<binding C<STDIN> to C<scalar>
 hides fd 0 forever>. I'm not quite sure what they mean by that.
 
-  http://xrl.us/ki5b
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00570.html
 
 Randy W. Sims nailed an B<uninitialised value in C<Archive::Tar>>.
 
-  http://xrl.us/ki5c
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00635.html
 
 =head2 About this summary
 
 There was some feedback from Marcus Holland-Moritz on last
 week's summary concerning the issue of C<DEBUG_LEAKING_SCALARS>.
 
-  http://xrl.us/ki5d
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00638.html
 
 This summary was written by David Landgren.
 
