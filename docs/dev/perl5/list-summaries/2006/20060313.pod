@@ -1,0 +1,497 @@
+=head1 This Week on perl5-porters - 13-19 March 2006
+
+On the move -- C<Module::Build> moving into core -- Perl
+core moving around the file system -- Threads moving onto
+CPAN -- plus the usual assortment of bug reports, patches
+and new ideas.
+
+=head1 Topics of Interest
+
+=head2 Support for relocating C<@INC>
+
+Nicholas Clark delivered the functionality to make C<@INC> relocatable.
+This means you can now build Perl, install some modules from CPAN,
+take the whole directory tree and move it elsewhere and things
+continue to work. Andy Dougherty wondered how Nicholas had dealt
+with the shared F<libperl.so> file.
+
+The answer is that there isn't much that can be done in the general
+case, although some platforms, like Solaris, make the issues easier
+to deal with. In other words, Nicholas has done about as much as
+can be done. Now for testing and feedback.
+
+  A movable feast
+  http://xrl.us/ki3w
+
+=head2 Overridable filetest operators (continued)
+
+Salvador Fandio continued to look at the problem of overriding
+C<stat>, which was now a question of how to deal with the C<;$>
+prototype correctly. Rafael didn't want anything to be changed at
+this late stage of the game, and instead suggested two new prototypes,
+C<^$> and C<^*>.
+
+In this scenario, C<stat> would have the latter prototype. (The
+C<^> is loosely based on a concept from the Perl TODO list, which
+is to allow prototypes to indicate that the routine defaults to
+using C<$_> if no argument is passed).
+
+  Prototyping the prototype
+  http://xrl.us/ki3x
+
+=head2 C<Module::Compile> and the C<.pmc> file extension
+
+Audrey Tang wrote to explain her position on what C<.pmc> means.
+Surprisingly, this elicited no discussion.
+
+  Nothing to do with Parrot (yet)
+  http://xrl.us/ki3y
+
+=head2 Advice for C<pack> failure needed
+
+H.Merijn Brand was trying to understand why C<gcc> 4.0.3 works, but
+4.1.x doesn't when producing a 64-bit perl for HP-UX 11.00 and
+11.11.  He had stripped a failing test file (F<pack.t>) down to a
+bare minimum.
+
+He had gone as far as literally unrolling the code from F<pp_pack.c>
+into straight C using C<int>s and C<double>s instead of C<I32>s,
+C<NV>s and C<SV>s, but was well and truly stuck (since this resulting
+code worked identically on both compilers).
+
+  What we have here is a failure to pack
+  http://xrl.us/ki3z
+
+=head2 Move C<DynaLoader> into F<libperl.so>
+
+Gisle Aas has problems with applications that wish to instantiate
+an embedded perl interpreter. This is due to the fact that C<Dynaloader>
+is compiled statically into the perl stub executable. He wanted to
+move things around a bit so that part of C<DynaLoader> is, well,
+loaded dynamically.
+
+So far, no complaints.
+
+  Pulling yourself up by the bootstraps
+  http://xrl.us/ki32
+
+=head2 C<Useless localization of substr> warning messages
+
+Hugo van der Sanden was puzzled by new C<useless localization of substr>
+that C<blead> was now issuing, and wondered what to do about it. Again,
+no takers.
+
+  What's the use?
+  http://xrl.us/ki33
+
+=head1 Patches of Interest
+
+=head2 C<Term::ReadKey>/C<Term::ReadLine> on Windows
+
+Johnathon Stowe produced a patch to fix up the
+C<Term::ReadKey>/C<Term::ReadLine> bug on the C<Win32> platform.
+
+  http://xrl.us/ki34
+
+=head2 VMS-specific C<arg_defines> for C<ExtUtils::CBuilder>
+
+Craig A. Berry sent in a patch for C<ExtUtils::CBuilder> to deal
+with the requirements of compiling extensions in C on VMS. Ken
+Williams, the maintainer, took the patch under his wing and asked
+if there was a test case that could expose this problem, should it
+ever arise in the future.
+
+John E. Malmberg tweaked Craig's patch to work around a couple of other
+issues he encountered. In fact John sent in a steady stream of patches
+for VMS this week. See the In Brief section to catch them all.
+
+  http://xrl.us/ki35
+
+=head2 A bit more C<Module::Build> help for VMS
+
+Craig then added a patch to help get more of C<Module::Build>'s test
+suite to pass. John received some strange errors that left him puzzled.
+
+  http://xrl.us/ki36
+
+=head2 SPAGAIN in the poor-man's-multicall API
+
+Robin Houston fixed up F<multicall.h> (in C<List::Util>) to deal
+with the problem that Tassilo von Parseval had encountered in bug
+#38644 (a missing C<SPAGAIN> macro call). Rafael applied the patch
+to C<blead> as change #27486, noting that Graham Barr will have to
+apply the change to his own repository of C<List::Util> as well.
+
+  http://xrl.us/ki37
+
+=head2 Sundry fixes from Jan Dubois for C<Win32>
+
+Jan Dubois realised that some of the work he did to make C<alarm> work
+on Windows 2003 could cause perl go into an infinite loop. He sent in
+a patch to restore the correct behaviour, and in the process of
+investigating found another small problem that also needed fixing.
+
+  win32_async_check() fixed
+  http://xrl.us/ki38
+
+  win32_plclose() fixed
+  http://xrl.us/ki39
+
+=head2 Allocating op-codes from arenas
+
+Jim Cromie landed a first version of patch that would allow op-codes to
+be allocated from arenas (following on from the discussion last week with
+Nicholas Clark). There were, nonetheless, a number of issues that will
+have to be worked through. For instance, it has a nasty tendency to
+segfault. People were still digesting the patch at summary time.
+
+  http://xrl.us/ki4a
+
+=head2 The continuing story of Andy Lester's quest to C<const>
+
+=over 4
+
+=item *
+
+Made C<S_looks_like_bool>'s argument C<const>...
+
+  http://xrl.us/ki4b
+
+=item *
+
+Taught some of the new MAD code preprocessor tricks to
+keep C<gcc> quiet.
+
+  http://xrl.us/ki4c
+
+=item *
+
+Redundant boolean checks removed, some C<goto>'s for speed and sundry
+C<const>s in F<regexec.c>. Dave Mitchell surfaced briefly to mention that
+he's in the middle of reworking C<S_regmatch> (I<and the crowd goes wild>)
+and asked for this patch to be kept on ice.
+
+Hugo noticed that Andy's work highlighted the underlying similarities
+in three sections of the code, and that all should be hoisted out into
+a subordinate function or macro.
+
+  http://xrl.us/ki4d
+
+=item *
+
+Changed the semantics of C<S_isa_lookup>. Andy noticed that this function
+(in C<universal.c>) returned pointers to C<PL_sv_yes> and C<PL_sv_no>
+simply to indicate truth. So he changed it to return C<TRUE> or C<FALSE>.
+
+  http://xrl.us/ki4e
+
+=item *
+
+Cleanups in F<op.c>
+
+  http://xrl.us/ki4f
+
+=item *
+
+Random consting in C<Data::Dumper>.
+
+  Not random, merely chaotic
+  http://xrl.us/ki4g
+
+=item *
+
+And changed some C<@ISA> definitions to work correctly under C<use strict>,
+such as C<@ISA = (Exporter)> becoming C<@ISA = qw(Exporter)>.
+
+  http://xrl.us/ki4h
+
+=back
+
+=head1 New and old bugs from RT
+
+=head2 overload and rebless (#34925)
+
+Nicholas Clark returned to a bug from last year (which I cannot
+find again on Xray) dealing with reC<bless>ing an object in an
+overloaded class, and proposed three ways of fixing it, One of them
+was probably only suitable for C<blead>, and thus 5.10, but two
+other avenues showed more promise. This is apparently a big issue
+for C<Class::DBI>.
+
+Nicholas then wrote a patch to implement one of the safer approaches,
+and if the time it takes to run the test suite is any guide, the
+performance difference is pretty much lost in the noise.
+
+  http://xrl.us/ki4i
+
+  The original Perlbug (authentication required)
+  http://rt.perl.org/rt3/Ticket/Display.html?id=34925
+
+=head2 Debugger Loses Names for Anonymous Subroutines (#38673 update)
+
+chromatic returned to his own bug report, and discovered that by deleting
+a swath of code in F<op.c> he was able to make it work to his satisfaction,
+even though he felt slightly uneasy about doing do.
+
+Rafael Garcia-Suarez didn't think much of the idea either and explained
+a better way of fixing it. He thought it should be feasible to patch the
+debugger only, the only trouble is that patching the debugger is even
+more scary.
+
+Another important issue for Rafael is the poor state of C<$^P> (a.k.a
+C<$PERLDB>) in the C<perlvar> documentation. Someone needs to explain
+I<why> you would want to diddle the bits, and what happens when you do.
+
+Nicholas Clark admitted to having seen weird thing occurring deep down
+in the depths of C<CV>s, C<GV>s and stashes, but had never been able to
+adequately explain why.
+
+  Shades of Moria
+  http://xrl.us/ki4j
+
+=head2 C<SvPOK> breaks magic in 5.8.5 and beyond (#38707)
+
+Zowie noted that C<SvPOK> breaks code in C<PDL>, specifically, when
+looking at things like C<$#$arrayref>.
+
+  http://xrl.us/ki4k
+
+=head2 perl 5.8.8 make fails at dynaloader (#38687)
+
+Dominic Dunlop reproduced the symptoms demonstrated by Andy Ford in
+the initial bug report by C<touch(1)>ing the F<Makefile> so that an
+empty file was created. He suggested that Andy delete the directory,
+make sure there was sufficient free disk space, and start the build
+again.
+
+  If problems persist, consult your doctor in the morning
+  http://xrl.us/ki4m
+
+=head2 C<local>ised stash slices are fixed (#38710)
+
+To recap:
+
+  local $::{"func"} = sub { "func" };
+
+worked, but 
+
+  local @::{qw/ func1 func2 /} = (sub { "func1" }, sub { "func2" });
+
+... did not. Now it does, thanks to a patch for F<pp.c> from
+Rick Delaney.
+
+  http://xrl.us/ki4n
+
+=head2 C<Perl_utf8n_to_uvuni> decodes illegal characters (#38722)
+
+John Gardiner Myers uncovered a discrepancy between what
+C<Perl_utf8n_to_uvuni> decodes (that is to say, Unicode characters)
+and what C<Perl_uvuni_to_utf8_flags> considers illegal, and provides
+a short snippet of code to demonstrate the problem. No takers as yet.
+
+  http://xrl.us/ki4o
+
+=head2 Backticks don't work in Win32 multi-threaded perl (#38723)
+
+Krzysztof Koczyjan filed a bug that showed how C<fork> and
+backticks don't work on the Win32 platform. He traced the
+problem to the routine C<win32_popen>, which is apparently
+not thread-safe. He then recompiled perl with C<-DUSE_RTL_POPEN>
+and saw that that fixes the problem.
+
+  http://xrl.us/ki4p
+
+=head2 C<syslog-ng> inappropriately expects C<\n> (and C<\0>?) in C<syslog> messages  (#28019)
+
+Julian Mehnle was chasing down a bug in Debian-land concerning their
+C<libmail-spf-query-perl> package, and stumbled over the changes made
+to C<Sys::Syslog> after the C<Webmin> flap. The issue was that the module
+no longer appended a C<\n> to the logged message, and C<syslog-ng> was
+running lines together.
+
+Sébastien Aperghis-Tramoni, the maintainer of
+C<Sys::Syslog>. explained that the current state of affairs was more
+due to work-arounds for broken commercial Unix C<syslog> implementations,
+and that the RFCs surrounding these are sadly only informational, and
+do not mandate a specific way of doing things.
+
+  http://xrl.us/ki4q
+
+=head2 Poor example for C<$^V> in C<perlvar> (#38743)
+
+Nicholas Clark thought that the documentation example in C<perlvar>
+concerning C<$^V> (perl version) was rather stupid, and hoped someone
+could come up with a better idea. Dave Mitchell came up with a very
+clever example that dealt with the hash key randomisation work that
+went into perl 5.8.1.
+
+  Clues you can use
+  http://xrl.us/ki4r
+
+=head2 Undetectable, incompatible API changes in C<POPpx>, etc. (#38744)
+
+John Gardiner Myers sent in a scathing bug report concerning changes
+to the C<POPpx> macro, which broke his code when running on  5.8.8.
+
+Nicholas Clark replied that no-one who watched the commit go past
+realised the subtle change in behaviour, nor did anyone pick it up
+in any of the maintenance snapshots in the three months that
+followed the change. Similarly, the bug was not caught by anyone
+who built the release candidate running up to the official 5.8.8
+release.
+
+  The importance of testing
+  http://xrl.us/ki4s
+
+=head2 Segmentation fault in generating F<Config.pm> (#38745)
+
+Derek Chen was having trouble building perl on an embedded Linux
+system running on an ARM processor. Dominic Dunlop wondered
+whether this could be related to bug #38913, and wanted to know
+whether previous versions of perl had been built successfully on
+the platform, or if this was the first time. The next thing to
+try is to build an unoptimised C<miniperl>.
+
+  http://xrl.us/ki4t
+
+  Follow-ups in a detached thread
+  http://xrl.us/ki4u
+
+=head2 F<threads.xs> broken under C<PERL_IMPLICIT_SYS>; 5.8.8 regression
+
+Jan Dubois sent a patch (for the third time) to free the
+perl interpreter structure after the threads structure. The latest
+changes to F<threads.xs> broke this again.
+
+Tels asked for better documentation in the code, and new tests in 
+test suite to ensure that the problem doesn't come back a fourth time.
+
+Jerry Hedden picked up the patch and reworked it slightly. His plan
+is to get some feedback from CPAN testers before getting it folded
+back into C<blead>.
+
+  http://xrl.us/ki4v
+
+=head2 C<qx> loses C</dev/tty> (#38748)
+
+"ende" had a C<Tcl> script hooked up to a perl program running as
+a daemon which wasn't working. But the equivalent daemon written
+in shell worked correctly. Dominic Dunlop thought that there might
+be problems with the program if it really I<was> a daemon, because
+in that case it would have no controlling terminal and thus no
+C</dev/tty>.
+
+  http://xrl.us/ki4w
+
+=head2 Perl5 Bug Summary
+
+  1556 tickets
+  http://xrl.us/ki4x
+
+  Summarised here
+  http://rt.perl.org/rt3/NoAuth/perl5/Overview.html
+
+=head1 New Core Modules
+
+=over 4
+
+=item *
+
+C<ExtUtils::CBuilder> version 0.17 uploaded Ken Williams (based on the
+thread concerning VMS. See above).
+
+  http://xrl.us/ki4y
+
+=item *
+
+C<Module::Build> version 0.27_09, also from Ken.
+
+  http://xrl.us/ki4z
+
+=item *
+
+C<threads> version 1.09 uploaded by Jerry D. Hedden.
+
+  http://xrl.us/ki42
+
+He also sent in a patch to sync C<blead> with the current
+versions of C<threads> and C<threads::shared>.
+
+  threads 1.12
+  http://xrl.us/ki43
+
+  threads::shared 0.99
+  http://xrl.us/ki44
+
+=back
+
+=head1 In Brief
+
+John E. Malmberg reported at the beginning of the week that B<13 test
+scripts (of 1140 total) were still generating failures> on VMS.
+
+  threads and VMS (redux)
+  http://xrl.us/ki45
+
+He tweaked F<thread.h> to give B<threads on VMS a bit more stack space>.
+
+  http://xrl.us/ki46
+
+And some B<buffer size fixes for F<vms.c>>
+
+  http://xrl.us/ki47
+
+And B<C<utime>> (I think I need a what "What John did" section).
+
+  http://xrl.us/ki48
+
+Peter Prymmer filed a small patch to B<fix C<Pod::Simple> on C<blead>> so that
+it works on VMS ODS-2. (Which I understand to be an older file-system
+for VMS, the current being ODS-5).
+
+  http://xrl.us/ki49
+
+Paul Marquess sent in a patch to synch C<blead> with the CPAN versions
+of B<C<Compress::Raw::Zlib>, C<Compress::Zlib> and C<IO::Compress::Zlib>>.
+
+  http://xrl.us/ki5a
+
+Someone noted (in bug #34981) that B<binding C<STDIN> to C<scalar>
+hides fd 0 forever>. I'm not quite sure what they mean by that.
+
+  http://xrl.us/ki5b
+
+Randy W. Sims nailed an B<uninitialised value in C<Archive::Tar>>.
+
+  http://xrl.us/ki5c
+
+=head2 About this summary
+
+There was some feedback from Marcus Holland-Moritz on last
+week's summary concerning the issue of C<DEBUG_LEAKING_SCALARS>.
+
+  http://xrl.us/ki5d
+
+This summary was written by David Landgren.
+
+Information concerning bugs referenced in this summary (as #nnnnn)
+may be viewed at http://rt.perl.org/rt3/Ticket/Display.html?id=nnnnn
+
+Information concerning patches to C<maint> or C<blead> referenced in
+this summary (as #nnnnn) may be viewed at
+http://public.activestate.com/cgi-bin/perlbrowse?patch=nnnnn
+
+If you want a bookmarklet approach to viewing bugs and change reports,
+there are a couple of bookmarklets that you might find useful on
+my page of Perl stuff:
+
+  http://www.landgren.net/perl/
+
+Weekly summaries are published on F<http://use.perl.org/> and posted
+on a mailing list, (subscription: F<perl5-summary-subscribe@perl.org>).
+The archive is at F<http://dev.perl.org/perl5/list-summaries/>.
+Corrections and comments are welcome.
+
+If you found this summary useful or enjoyable, please consider
+contributing to the Perl Foundation to help support the development
+of Perl.
