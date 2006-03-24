@@ -17,9 +17,9 @@
 #   configurable in a future release.
 
 ServerRoot          "[% root_default %]/apache/"
-LockFile            [% root_default %]/apache/logs/httpd.lock
-PidFile             [% root_default %]/apache/logs/httpd.pid
-ScoreBoardFile      [% root_default %]/apache/logs/httpd.scoreboard
+LockFile            "[% config.log_path %]/httpd.lock"
+PidFile             "[% config.log_path %]/httpd.pid"
+ScoreBoardFile      "[% config.log_path %]/httpd.scoreboard"
 Timeout             300
 KeepAlive           [% config.keepalive %]
 KeepAliveTimeout    [% config.keepalivetimeout %]
@@ -30,7 +30,7 @@ MaxClients          [% config.maxclients %]
 MaxRequestsPerChild [% config.maxrequestsperchild %]
 Listen              [% config.port %]
 
-CoreDumpDirectory   [% root_default %]/apache/
+CoreDumpDirectory   "[% config.work_path %]"
 
 [%# this should be a bit more sophisticated and check for each module,
     but for now it'll do ... %]
@@ -80,7 +80,7 @@ serveradmin ask@perl.org
 ServerName [% config.servername %]
 
 # valid empty directory
-DocumentRoot "[% root_default %]/tmp/htdocs"  
+DocumentRoot "[% config.work_path %]/htdocs"  
 <Directory />
     Options FollowSymLinks 
     AllowOverride None
@@ -116,19 +116,20 @@ LogFormat "%h %V %u %t %{site}n \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"
 LogFormat "%h %V %u %t \"%r\" %>s %b" common
 
 [% IF config.use_cronolog %]
-  [% cronolog_access      = config.cronolog_template.replace("LOGFILE","access");
+  [% log_path = config.log_path;
+     cronolog_access      = config.cronolog_template.replace("LOGFILE","access");
      cronolog_error       = config.cronolog_template.replace("LOGFILE","error");
      cronolog_access_params = config.cronolog_params.replace("LOGFILE","access");
      cronolog_error_params  = config.cronolog_params.replace("LOGFILE","error");
-     cronolog_access_params = cronolog_access_params.replace("LOGDIR", "${root_default}/apache/logs");
-     cronolog_error_params  = cronolog_error_params.replace("LOGDIR",  "${root_default}/apache/logs");
+     cronolog_access_params = cronolog_access_params.replace("LOGDIR", log_path);
+     cronolog_error_params  = cronolog_error_params.replace("LOGDIR",  log_path);
   %]
-  ErrorLog  "|[% config.cronolog_path %] [% root_default %]/apache/logs/[% cronolog_error  %] [% cronolog_error_params  %]"
-  CustomLog "|[% config.cronolog_path %] [% root_default %]/apache/logs/[% cronolog_access %] [% cronolog_access_params %]" combined
+  ErrorLog  "|[% config.cronolog_path %] [% config.log_path %]/[% cronolog_error  %] [% cronolog_error_params  %]"
+  CustomLog "|[% config.cronolog_path %] [% config.log_path %]/[% cronolog_access %] [% cronolog_access_params %]" combined
 [% ELSE %]
-  ErrorLog  [% root_default %]/apache/logs/error_log
-  CustomLog [% root_default %]/apache/logs/access_log combined
-[% END %] 
+  ErrorLog  [% config.log_path %]/error_log
+  CustomLog [% config.log_path %]/access_log combined
+[% END %]
 
 
 ServerSignature Off
@@ -288,7 +289,7 @@ PerlSetVar ReloadDebug On
 [% IF config.apache_dumpheaders %]
 PerlModule     Apache::DumpHeaders
 PerlLogHandler Apache::DumpHeaders
-PerlSetVar     DumpHeaders_File [% root %]/apache/logs/dumpheaders.log
+PerlSetVar     DumpHeaders_File [% config.log_path %]/dumpheaders.log
 [% END %]
 
 PerlRequire [% root %]/apache/conf/startup.pl

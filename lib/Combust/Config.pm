@@ -208,8 +208,22 @@ sub modperl_path {
   $cfg->param('modperl_path');
 }
 
+sub log_path {
+  my $self = shift;
+  my $path = $cfg->param('log_path') || $self->root_local . '/apache/logs';
+  $path =~ s!/$!!;
+  $path;
+}
+
+sub work_path {
+  my $self = shift;
+  my $path = $cfg->param('work_path') || $self->root_local . '/tmp';
+  $path =~ s!/$!!;
+  $path
+}
+
 sub httpd {
-  $cfg->param('httpd') || '/home/perl/apache1/bin/httpd';
+  $cfg->param('httpd') || '/usr/sbin/httpd';
 }
 
 sub perl {

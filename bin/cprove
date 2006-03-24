@@ -15,9 +15,7 @@ my $prove = $config->perl;
 $prove =~ s/\/perl/\/prove/;
 $ENV{CBCONFIG} = ($cbrl || $cbr) . '/combust.conf.testing';
 
-my @inc = map { "-I$_/lib" } grep { $_ } ($cbrl, $cbr);
-
-my @prove = ("$cbr/bin/perl", $prove, @inc, @ARGV);
+my @prove = ("$cbr/bin/perl", $prove, @ARGV);
 
 print join(" ", @prove), "\n";
 

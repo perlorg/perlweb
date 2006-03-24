@@ -37,7 +37,7 @@ sub new {
     my %provider_config = (
 		       PARSER => $parser,
 		       COMPILE_EXT      => '.ttc',
-		       COMPILE_DIR      => $config->root_local . "/tmp/ctpl",
+		       COMPILE_DIR      => $config->work_path . "/ctpl",
 		       #TOLERANT => 1,
 		       #RELATIVE => 1,
 		       CACHE_SIZE       => 128,  # cache 128 templates

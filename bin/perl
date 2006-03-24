@@ -19,6 +19,10 @@ if [ -z $MYPERL ]; then
   exit
 fi
 
-$MYPERL ${1+"$@"} 
+if [ ! -z $CBROOTLOCAL ]; then
+  LLIB=-I$CBROOTLOCAL/lib
+fi
+
+$MYPERL -I$CBROOT/lib $LLIB ${1+"$@"} 
 
 

@@ -13,9 +13,12 @@ else
    cd $CBROOT
 fi
 
-# TODO: change this to check if the httpd is still running every second
 
-mkdir -p tmp/htdocs && mkdir -p tmp/ctpl && mkdir -p apache/logs && \
+LOG_PATH=`$CBROOT/bin/perl -MCombust::Config -e 'print Combust::Config->new->log_path'`
+WORK_PATH=`$CBROOT/bin/perl -MCombust::Config -e 'print Combust::Config->new->work_path'`
+
+# TODO: change this to check if the httpd is still running every second
+mkdir -p $WORK_PATH/htdocs && mkdir -p $WORK_PATH/ctpl && mkdir -p $LOG_PATH && \
 $CBROOT/bin/make_configs && \
 $CBROOT/apache/bin/apachectl configtest && \
 $CBROOT/apache/bin/apachectl stop && sleep 6 && $CBROOT/apache/bin/apachectl start
