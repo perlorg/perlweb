@@ -1,6 +1,6 @@
 package Develooper::DB;
 use Combust::DB;
-use Exporter::Lite;
+use base(Exporter);
 @EXPORT = qw(db_open);
 use strict;
 

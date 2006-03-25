@@ -73,8 +73,6 @@ Apache::Test
 
 Apache::Request
 
-Exporter::Lite
-
 Yahoo::Search
 
 XML::SAX
