@@ -6,12 +6,14 @@ fi
 
 ROOT=${CBROOTLOCAL:-$CBROOT}
 
-if [ ! -f $ROOT/combust.conf ]; then
-  echo Could not find configuration file $ROOT/combust.conf
+CONFIGFILE=${CBCONFIG:-$ROOT/combust.conf}
+
+if [ ! -f $CONFIGFILE ]; then
+  echo Could not find configuration file $CONFIGFILE
   exit
 fi
 
-HTTPD=`grep ^httpd $ROOT/combust.conf | cut -d= -f2 | sed 's/[[:space:]]//g'`
+HTTPD=`grep ^httpd $CONFIGFILE | cut -d= -f2 | sed 's/[[:space:]]//g'`
 
 if [ -z $HTTPD ]; then
   echo Could not find "httpd = /path/bin/httpd" line in the combust.conf
