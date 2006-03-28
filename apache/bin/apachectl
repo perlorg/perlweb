@@ -23,7 +23,8 @@
 # 
 # the path to your PID file
 ROOT=${CBROOTLOCAL:-$CBROOT}
-PIDFILE=$ROOT/apache/logs/httpd.pid
+LOG_PATH=`$CBROOT/bin/perl -MCombust::Config -e 'print Combust::Config->new->log_path'`
+PIDFILE=$LOG_PATH/httpd.pid
 #
 # the path to your httpd binary, including options if necessary
 #HTTPD="/usr/local/sbin/httpd -d /home/perlweb/apache -f /home/perlweb/apache/conf/httpd.conf"
