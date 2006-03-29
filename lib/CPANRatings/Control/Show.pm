@@ -63,7 +63,7 @@ sub render {
   }
   elsif ($format eq "rss") {
     my $output = $self->as_rss($r, $reviews, $mode, $id);
-    return OK, $output, 'application/rdf+rss';
+    return OK, $output, 'application/rss+xml';
   }
 
   return OK, 'huh? unknown output format', 'text/plain';
