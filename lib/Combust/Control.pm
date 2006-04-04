@@ -129,10 +129,12 @@ sub do_request {
   my ($status, $output, $cache);
 
   if ($cache_info->{id} 
-      && !$self->req_param('cache_bypass')
       && ($cache = Combust::Cache->new( type => ($cache_info->{type} || '') ))
      ) {
-    my $cache_data = $cache->fetch(id => $cache_info->{id});
+    my $cache_data;
+    $cache_data = $cache->fetch(id => $cache_info->{id})
+      unless $self->req_param('cache_bypass');
+
     if ($cache_data) {
       $self->post_process($cache_data->{data});
       $self->r->update_mtime($cache_data->{created_timestamp});
