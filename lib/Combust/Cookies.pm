@@ -20,7 +20,10 @@ sub new {
   my $proto = shift;
   my $class = ref $proto || $proto;
   my $r = shift;
-  my $self = bless( { r => $r }, $class);
+  my %args = @_;
+  my $self = bless( { r => $r,
+                      domain => $args{domain}
+                    }, $class);
   return $self;
 }
 
@@ -89,7 +92,6 @@ sub bake_cookies {
   my $self = shift;
 
   my $r = $self->{r};
-  my $domain = $r->hostname;
 
   #warn Data::Dumper->Dump([\$self], [qw(self)]);
 
@@ -122,7 +124,8 @@ sub bake_cookies {
 
     #warn "[$cookie_name] encoded: [$encoded]";
 
-    $self->{r}->cookie($cookie_name, $encoded, { expires => '+180d' });
+    $self->{r}->cookie($cookie_name, $encoded, { expires => '+180d',
+                                                 domain => $self->{domain} });
   }
   $self->{r}->bake_cookies;
 }
