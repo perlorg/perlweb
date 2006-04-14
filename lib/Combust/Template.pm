@@ -78,7 +78,7 @@ sub new {
     $self->{provider} = $provider;
 
     $self->{tt} = Template->new
-      (\%tt_config) or die "Could not initialize Template object: $Template::ERROR";
+      (\%tt_config) or croak "Could not initialize Template object: $Template::ERROR";
     $self;
 }
 
@@ -119,6 +119,7 @@ sub default_include_path {
                 "$root_docs/",
                 "$root/apache/root_templates/",
                ];
+
     $path;
 }
 
@@ -133,11 +134,9 @@ sub process {
 
     $tpl_params->{config} = $config unless $tpl_params->{config};
 
-    #warn Data::Dumper->Dump([\$tpl_params], [qw(tpl_params)]);
     my $output;
     unless ($self->{tt}->process($template, $tpl_params, \$output)) {
-        warn "got an error!";
-        die $self->{tt}->error;
+        croak $self->{tt}->error . "\n";
     }
     $output;
 }
