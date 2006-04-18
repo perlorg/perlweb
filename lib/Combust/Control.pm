@@ -263,6 +263,7 @@ sub evaluate_template {
   $tpl_params->{r} = $r; 
   $tpl_params->{notes} = $r->pnotes('combust_notes'); 
   $tpl_params->{root} = $root;  # localroot anyone?
+  $tpl_params->{siteconfig} = $self->config->site->{$self->site};
 
   $tpl_params->{combust} = $self;
 
