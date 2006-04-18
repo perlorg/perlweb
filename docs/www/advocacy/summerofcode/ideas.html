@@ -36,26 +36,29 @@ This list is still under development!  Check back soon.
   <li>Smoke testing architecture for binary compatibility between
   versions of Perl.</li>
 
-  <li>Develop a strategy for useful benchmarking of the Perl
-  core.</li>
-
   <li>Benchmarks for PGE (Parrot Grammar Engine) (likely mentor:
   Patrick Michaud)</li>
 
-  <li> Profile Perl - measure the performance of the Perl interpreter
-  using free tools such as cachegrind, gprof, and dtrace, and work to
-  reduce the bottlenecks they reveal.</li>
-
   <li>A good chunk of things from the Perl 5 <a
-  href="http://search.cpan.org/~nwclark/perl-5.8.7/pod/perltodo.pod#DESCRIPTION"
+  href="http://mirrors.develooper.com/perl/APC/perl-current/pod/perltodo.pod"
   >TODO
   list</a>. Good examples:
 
     <ul>
-      <li>"The regexp optimiser is not optional" --  "Make the peephole optimizer optional"</li>
-      <li>"iCOW" - unless Dave gets a mound of tuits between now and the summer.</li>
-      <li>tokeniser/pads/UTF-8 --    The tokeniser isn't actually very UTF-8 clean. use utf8; is a hack -  variable names are stored in stashes as raw bytes, without the utf-8 flag    set. The pad API is all bytes. The UTF-8-ness of PL_rsfp is ignored.  All this could be fixed.</li>
-      <li> "Attach/detach debugger from running program" which will inevitably snowball into a lot more debugger stuff.</li>
+      <li>"A decent benchmark" + "Profile Perl" -- measure the performance of
+      the Perl interpreter using free tools such as cachegrind, gprof, and
+      dtrace, and work to reduce the bottlenecks they reveal.</li>
+      <li>"The regexp optimiser is not optional" + "Make the peephole
+      optimizer optional"</li>
+      <li>"iCOW" -- a plan for Copy-On-Write to speed up thread creation.</li>
+      <li>"Properly Unicode safe tokeniser and pads" -- The tokeniser isn't
+      actually very UTF-8 clean. Under <code>use utf8;</code> variable names
+      are stored in stashes as raw bytes, without the utf-8 flag set. The pad
+      API is all bytes. The UTF-8-ness of <code>PL_rsfp</code> is ignored.
+      All this should be fixed.
+      </li>
+      <li>"Attach/detach debugger from running program" which will inevitably
+      snowball into a lot more debugger related improvements.</li>
       <li>"fix tainting bugs" + "Make tainting consistent"</li>
     </ul>
   </li>
