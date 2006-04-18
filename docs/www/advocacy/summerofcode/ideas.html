@@ -4,38 +4,96 @@
 &lArr; <A HREF="index.html">back to Summer of Code</A>
 [% END %]
 
+<H3 class="BEGINNER">
+<center>
+This list is still under development!  Check back soon.
+</center>
+</H3>
 
-
+<p>Good projects...</p>
 <ul>
-<li>Ajax library for Template Toolkit, akin to the Ajax support in Ruby in Rails (likely mentor: the <a href="http://www.perl.com/pub/a/2005/06/02/catalyst.html">Catalyst</a> project).
-<li>Put together a megadistro of Perl: pick guru brains to come up with the
-modules they use.  Assemble a Makefile to build an install of Perl with
-those modules, make sure everything passes 'make test', package the results as
-RPM, .pkg, etc., and offer to the world.
-<li>A visual SQL query-builder in Perl.
-<li>Build a suite of tools around WxWidgets for cross-platform GUI apps with low overhead (i.e., don't require Tk or GNOME overhead).
-<li>A Perl SOAP library including WSDL support.
-<li>Automate smoke testing new Perl releases with CPAN (possible mentor: Adam Kennedy).
-<li>Smoke testing architecture for binary compatibility between versions of Perl.
-<li>Develop a strategy for useful benchmarking of the Perl core.
-<li>Benchmarks for PGE (Parrot Grammar Engine) (likely mentor: Patrick Michaud)
-<li> Profile Perl - measure the performance of the Perl interpreter using free
-tools such as cachegrind, gprof, and dtrace, and work to reduce the bottlenecks
-they reveal.
-<li>Anything in the Perl 5 <a href="http://search.cpan.org/~nwclark/perl-5.8.7/pod/perltodo.pod#DESCRIPTION">TODO list</a>. 
-<li>Polish up and finish off <a href="http://use.perl.org/~chromatic/journal/20481">P5NCI</a> (likely mentor: chromatic).
-<li> <a href="http://llvm.cs.uiuc.edu/">LLVM</a> <-> Parrot interop (likely mentor: Leo T&ouml;tsch)
-<ul>
-<li> Parrot as LLVM backend (LLVM -> PASM)
-<li> PIR -> LLVM (not really, but evaluate optimizations)
-<li> Implement well-known optimizations in PIR compiler (SSA -> register allocation)
-<li> Runtime & offline bytecode optimization
+  <li>...build on or integrate well with existing code</li>
+  <li>...are a development of an existing project, rather than starting from scratch</li>
+  <li>...provide more basic infrastructure or libraries that will provide the widest opportunities for others to build on the results of the proposal</li>
 </ul>
 
-<li>Parrot GC: generational, multi-threaded GC
 
-<li>Parrot JIT: improve & complete JIT for some set of subsystems from alpha to
-Z8000 i.e. several pieces, one per platform
+<p>Some ideas...</p>
 
-<li>Parrot threads: STM (software transactional memory as in GHC, et al.) for Parrot
+<ul>
+  
+  <li>Ajax library for Template Toolkit, akin to the Ajax support in Ruby in Rails (likely mentor: the <a href="http://www.perl.com/pub/a/2005/06/02/catalyst.html">Catalyst</a> project).</li>
+  
+  <li>A visual SQL query-builder in Perl.</li>
+  
+  <li>Build a suite of tools around WxWidgets for cross-platform GUI apps with low overhead (i.e., don't require Tk or GNOME overhead).</li>
+  
+  <li>A Perl SOAP library including WSDL support.</li>
+
+  <li>Automate smoke testing new Perl releases with CPAN (possible
+  mentor: Adam Kennedy).</li>
+
+  <li>Smoke testing architecture for binary compatibility between
+  versions of Perl.</li>
+
+  <li>Develop a strategy for useful benchmarking of the Perl
+  core.</li>
+
+  <li>Benchmarks for PGE (Parrot Grammar Engine) (likely mentor:
+  Patrick Michaud)</li>
+
+  <li> Profile Perl - measure the performance of the Perl interpreter
+  using free tools such as cachegrind, gprof, and dtrace, and work to
+  reduce the bottlenecks they reveal.</li>
+
+  <li>A good chunk of things from the Perl 5 <a
+  href="http://search.cpan.org/~nwclark/perl-5.8.7/pod/perltodo.pod#DESCRIPTION"
+  >TODO
+  list</a>. Good examples:
+
+    <ul>
+      <li>"The regexp optimiser is not optional" --  "Make the peephole optimizer optional"</li>
+      <li>"iCOW" - unless Dave gets a mound of tuits between now and the summer.</li>
+      <li>tokeniser/pads/UTF-8 --    The tokeniser isn't actually very UTF-8 clean. use utf8; is a hack -  variable names are stored in stashes as raw bytes, without the utf-8 flag    set. The pad API is all bytes. The UTF-8-ness of PL_rsfp is ignored.  All this could be fixed.</li>
+      <li> "Attach/detach debugger from running program" which will inevitably snowball into a lot more debugger stuff.</li>
+      <li>"fix tainting bugs" + "Make tainting consistent"</li>
+    </ul>
+  </li>
+
+  <li>Polish up and finish off <a
+  href="http://use.perl.org/~chromatic/journal/20481">P5NCI</a>
+  (likely mentor: chromatic).</li>
+
+  <li> <a href="http://llvm.cs.uiuc.edu/">LLVM</a> <-> Parrot interop
+  (likely mentor: Leo T&ouml;tsch)</li>
+
+  <li> Parrot as LLVM backend (LLVM -> PASM)</li>
+
+  <li> PIR -> LLVM (not really, but evaluate optimizations)</li>
+
+  <li> Implement well-known optimizations in PIR compiler (SSA -> register allocation)</li>
+
+  <li> Runtime & offline bytecode optimization</li>
+
+  <li>Parrot JIT: improve & complete JIT for some set of subsystems
+  from alpha to Z8000 i.e. several pieces, one per platform</li>
+
+  <li>Parrot threads: STM (software transactional memory as in GHC, et al.) for Parrot</li>
+
+
+  <li>Improve TGE
+    <ul>
+      <li> allow complex node selectors in rules</li>
+      <li> find and implement a rule syntax other than PIR</li>
+      <li> complete and document the default PAST and POST objects</li>
+      <li> make the default objects available to all projects</li>
+      <li> refactor out a default compiler framework for all projects</li>
+      <li>  optimize for memory use</li>
+      <li>  allow interpretation as well as compilation</li>
+      <li>  create a system that provides scaffolding of a new language 
+        implementation</li>
+      <li>  create default tree optimizations (SSA would be nice)</li>
+      <li>  create default POST -> PIR rules</li>
+    </ul>
+  </li>
 </ul>
