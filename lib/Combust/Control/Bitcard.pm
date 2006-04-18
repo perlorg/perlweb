@@ -91,6 +91,10 @@ sub login {
     return OK, $self->evaluate_template('tpl/bitcard_login.html');
 }
 
+sub show_login {
+    shift->login(@_);
+}
+
 sub logout {
     my $self = shift;
     $self->cookie($cookie_name, 0);

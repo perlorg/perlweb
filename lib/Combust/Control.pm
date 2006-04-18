@@ -118,7 +118,12 @@ sub handler {
   my ($status, $output, $content_type) = $self->do_request();
   # have to return 'OK' and fake it with r->status or some such to make a custom 404 easily
   return $status unless $status == OK;
-  return $self->send_output($output, $content_type);
+  my @r = $self->send_output($output, $content_type);
+  if ($self->can('cleanup')) {
+      eval { $self->cleanup };
+      warn "CLEANUP method failed: $@" if $@; 
+  }
+  return @r;
 }
 
 sub do_request {

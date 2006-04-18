@@ -75,9 +75,9 @@ Apache::Request
 
 Yahoo::Search
 
-XML::SAX
-
 XML::NamespaceSupport
+
+XML::SAX
 
 XML::Simple
 
