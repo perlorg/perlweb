@@ -35,6 +35,19 @@ This list is still under development!  Check back soon.
     themselves or even have the headers for the libraries installed</em>.
     Obviously they need the NCI and bound libraries installed, but not the
     headers or even a C compiler.</li>
+
+  <li>Implement a Perl 5 regular expression module for Parrot along the same
+      lines as the Perl 6 grammar engine. This will allow the use of current
+      Perl 5 regular expression syntax with the new engine.<br>
+      There is an initial Perl 5 syntax parser to build from, which already
+      passes some 600 tests, although the Perl 5 test suite provides plenty
+      more! Of course, the tests that it's not yet passing are the ones that
+      are syntactically more complex (<i>i.e.</i>, <code>(?...)</code>
+      extensions) or otherwise more involved to implement, so this should
+      provide plenty of interest. With the syntax is fully implemented, the
+      next stage is to analyze and start to port over the optimizations from 
+      the Perl 5 engine. (mentor: Patrick Michaud)</li>
+      
   
   <li>Ajax library for Template Toolkit, akin to the Ajax support in Ruby in Rails (likely mentor: the <a href="http://www.perl.com/pub/a/2005/06/02/catalyst.html">Catalyst</a> project).</li>
   
