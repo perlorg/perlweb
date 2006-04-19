@@ -47,7 +47,20 @@ This list is still under development!  Check back soon.
       provide plenty of interest. With the syntax is fully implemented, the
       next stage is to analyze and start to port over the optimizations from 
       the Perl 5 engine. (mentor: Patrick Michaud)</li>
-      
+
+  <li>A Perl 5 to Perl 6 translator.<br>
+      As the first stage of of translating Perl 5 to Perl 6, Larry Wall has
+      been working on adapting the existing Perl 5 parser to output a complete
+      abstract syntax tree, something it had never needed to do before. The
+      current implementation can convert about 75% of the core Perl 5
+      distribution back into byte-for-byte perfect source code (<i>i.e.</i>
+      everything restored, including the exact whitespace and comment text
+      normally discarded by a tokenizer). His work has been merged back into
+      the core Perl 5 development tree. What is needed is for someone to
+      complete this first stage proof-of-concept identity transformation,
+      then to work with the Perl 5 and Perl 6 teams on converting the code
+      from generating Perl 5 output to Perl 6 output.</li>
+
   
   <li>Ajax library for Template Toolkit, akin to the Ajax support in Ruby in Rails (likely mentor: the <a href="http://www.perl.com/pub/a/2005/06/02/catalyst.html">Catalyst</a> project).</li>
   
