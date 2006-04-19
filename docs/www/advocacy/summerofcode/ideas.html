@@ -21,6 +21,20 @@ This list is still under development!  Check back soon.
 <p>Some ideas...</p>
 
 <ul>
+  <li>Using Parrot and the compiler tools, write a parser for C header files
+      that can generate Perl 5 NCI or Parrot NCI code.<br>
+      It should let the developer write an SDL binding for either language by
+      running the parser against SDL.h and its friends. For output, it would
+      generate either or both Perl 5 and Parrot code that:
+   <ul><li>opens the appropriate library with NCI or Parrot NCI</li>
+       <li>binds to the functions with the appropriate data types</li>
+       <li>declares the defined structs appropriately</li></ul>
+                                                                              
+    Developers should be able to include this generated code in the
+    distribution so that <em>end users never have to run this compiler tools
+    themselves or even have the headers for the libraries installed</em>.
+    Obviously they need the NCI and bound libraries installed, but not the
+    headers or even a C compiler.</li>
   
   <li>Ajax library for Template Toolkit, akin to the Ajax support in Ruby in Rails (likely mentor: the <a href="http://www.perl.com/pub/a/2005/06/02/catalyst.html">Catalyst</a> project).</li>
   
