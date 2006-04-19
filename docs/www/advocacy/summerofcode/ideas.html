@@ -81,6 +81,90 @@ This list is still under development!  Check back soon.
       profiling and other code analysis tools for Parrot, as well as
       investigating approaches to improve the algorithms used in the engine
       and their implementations. (likely mentor: Patrick Michaud)</li>
+
+  <li><a href="http://llvm.cs.uiuc.edu/">LLVM</a> &lt;-&gt; Parrot interop
+  (likely mentor: Leo T&ouml;tsch)</li>
+  <ul><li>Parrot as LLVM backend (LLVM -> PASM)</li>
+      <li>PIR -&gt; LLVM (not really, but evaluate optimizations)</li>
+      <li>Implement well-known optimizations in PIR compiler (SSA -&gt;
+          register allocation)</li>
+      <li> Runtime &amp; offline bytecode optimization</li>
+  </ul>
+  <li>Parrot JIT: improve &amp; complete JIT for some set of subsystems
+      from alpha to Z8000 <i>i.e.</i> several pieces, one per platform</li>
+  <li>Parrot threads: implement STM for Parrot (software transactional memory,
+      as in GHC, <i>et al.</i>)</li>
+
+
+  <li>Any collection of items from the <a
+  href="http://mirrors.develooper.com/perl/APC/perl-current/pod/perltodo.pod"
+  > Perl 5 TODO list</a> that would combine to a project of a suitable length.
+  Good examples:
+
+    <ul>
+      <li>"A decent benchmark" + "Profile Perl"<br>
+      Measure the performance of the Perl interpreter using free tools such
+      as <code>cachegrind</code>, <code>gprof</code>, and <code>dtrace</code>,
+       and work to reduce the bottlenecks they reveal.</li>
+      <li>"The regexp optimizer is not optional" + "Make the peephole
+      optimizer optional"<br>
+      Perl 5's parser and the Perl 5 regexp engine both have optimizers.
+      However, both optimizers are somewhat misnamed - as well as performing
+      optimizations, they also perform transformations that are essential parts
+      of the compilation processes. This means that they can't currently be
+      disabled. Each would benefit from being split into two parts, separating
+      out the essential compilation related-transformations, from the
+      non-essential optimizations. This would allow the optimizations to be
+      made optional, which allows the occasional bugs found in the optimizer
+      to be more easily traced and eliminated.</li>
+      <li>"iCOW" -- a plan for Copy-On-Write to speed up thread creation.<br>
+      Perl 5's threading model runs each thread in a distinct interpreter.
+      This has the benefit of low contention between threads, but the
+      disadvantage that thread creation is slow. Sarathy and Arthur have a
+      design for a Copy-On-Write system which will work across threads,
+      allowing thread creation times to be dramatically reduced. The first
+      stage of this project would be to test out the new model by implementing
+      Copy-On-Write within a single thread. With the technology proven and
+      debugged, the project would then move on to implementing the full COW
+      semantics for thread creation.</li>
+      <li>"Properly Unicode safe tokeniser and pads"<br>
+      The tokeniser isn't actually very UTF-8 clean. Whilst Perl provides
+      <code>use utf8;</code> to allow scripts to be written with variable names
+      in UTF-8, globals are actually stored in stashes as raw bytes, without
+      the internal UTF-8 flag set. Lexicals are stored in "PAD"s, and the
+      API to access them is all bytes. If the input file handle for the
+      program source code is marked by the IO system as UTF-8, the tokenizer
+      ignores this. All this should be fixed.</li>
+      <li>"Attach/detach debugger from running program"<br>
+      Debuggers such as <code>gdb</code> and other tools such as
+      <code>truss</code> can be attached to an existing running program.
+      It should be possible to provide similar functionality with the
+      Perl debugger, which would allow long running process to be inspected
+      without restarting. On Unix <code>ssh</code> and <code>screen</code>
+      address security concerns about connecting unrelated processes by using
+      named pipes in <code>/tmp</code>. Maybe Perl can too. This project is
+      likely to also evolve into many more debugger related improvements.</li>
+      <li>"fix tainting bugs" + "Make tainting consistent"<br>
+      Running the test suite with the taint warnings enabled reveals that
+      many tests and some core modules are not written to be taint safe. It
+      would be good for someone to work through these, identify and address
+      the issues, so that as much of the core as possible can be used under
+      the added protection that <code>-T</code> provides.<br>
+      Related to this, tainting is documented as being able to take shortcuts,
+      which allows the implementation to be more efficient. As computers have
+      become faster but humans remain immune to Moore's law, this tradeoff
+      is no longer optimal. The implementation of tainting should be changed
+      so that taint is propagated exactly in step with data, so that
+      programmers don't get hard-to-understand surprises when they are working
+      with tainting enabled</li>
+      <li>Merge the <code>win32</code> and <code>wince</code> codebases<br>
+      Currently, code used to build Perl on Win32 and WinCE are maintained
+      in two separate parallel directory trees, which contain much of the same
+      code. This gives a high probability of the code diverging when it
+      shouldn't. It would be good for someone to heal this rift, merging the
+      common parts so that the two systems can share as much as possible.</li>
+    </ul>
+  </li>
   
   <li>Ajax library for Template Toolkit, akin to the Ajax support in Ruby in Rails (likely mentor: the <a href="http://www.perl.com/pub/a/2005/06/02/catalyst.html">Catalyst</a> project).</li>
   
@@ -94,49 +178,10 @@ This list is still under development!  Check back soon.
   <li>Smoke testing architecture for binary compatibility between
   versions of Perl.</li>
 
-  <li>A good chunk of things from the Perl 5 <a
-  href="http://mirrors.develooper.com/perl/APC/perl-current/pod/perltodo.pod"
-  >TODO
-  list</a>. Good examples:
-
-    <ul>
-      <li>"A decent benchmark" + "Profile Perl" -- measure the performance of
-      the Perl interpreter using free tools such as cachegrind, gprof, and
-      dtrace, and work to reduce the bottlenecks they reveal.</li>
-      <li>"The regexp optimiser is not optional" + "Make the peephole
-      optimizer optional"</li>
-      <li>"iCOW" -- a plan for Copy-On-Write to speed up thread creation.</li>
-      <li>"Properly Unicode safe tokeniser and pads" -- The tokeniser isn't
-      actually very UTF-8 clean. Under <code>use utf8;</code> variable names
-      are stored in stashes as raw bytes, without the utf-8 flag set. The pad
-      API is all bytes. The UTF-8-ness of <code>PL_rsfp</code> is ignored.
-      All this should be fixed.
-      </li>
-      <li>"Attach/detach debugger from running program" which will inevitably
-      snowball into a lot more debugger related improvements.</li>
-      <li>"fix tainting bugs" + "Make tainting consistent"</li>
-    </ul>
-  </li>
 
   <li>Polish up and finish off <a
   href="http://use.perl.org/~chromatic/journal/20481">P5NCI</a>
   (likely mentor: chromatic).</li>
-
-  <li> <a href="http://llvm.cs.uiuc.edu/">LLVM</a> <-> Parrot interop
-  (likely mentor: Leo T&ouml;tsch)</li>
-
-  <li> Parrot as LLVM backend (LLVM -> PASM)</li>
-
-  <li> PIR -> LLVM (not really, but evaluate optimizations)</li>
-
-  <li> Implement well-known optimizations in PIR compiler (SSA -> register allocation)</li>
-
-  <li> Runtime & offline bytecode optimization</li>
-
-  <li>Parrot JIT: improve & complete JIT for some set of subsystems
-  from alpha to Z8000 i.e. several pieces, one per platform</li>
-
-  <li>Parrot threads: STM (software transactional memory as in GHC, et al.) for Parrot</li>
 
 
 </ul>
