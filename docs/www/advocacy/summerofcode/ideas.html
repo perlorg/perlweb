@@ -197,7 +197,25 @@ This list is still under development!  Check back soon.
   Architecture</a>, intended to comprehensively solve the problem of mass
   testing Perl packages against a wide variety of different platforms
   (possible mentor: Adam Kennedy).</li>
-  
+
+  <li>Build tools capable of migrating the Perl source repository from
+  perforce to subversion.<br>
+  This isn't a trivial task to get right. Existing tools such as <a
+  href="http://search.cpan.org/~autrijus/VCP-autrijus-snapshot/">VCP</a> are
+  great for migrating most repositories, but every tool chokes when asked to
+  migrate the nearly 30000 changes racked up in the past 9 years in the
+  perforce repository that holds the core Perl source code. In particular,
+  they fail to preserve the existing complex branching history, which we need
+  to retain for code auditing purposes. This task would commence by researching
+  the limits of the existing migration tools, to learn what they do,
+  and deciding whether it is preferable to enhance them or instead steal their
+  best ideas. The bulk of the project would be an iterative cycle of battle
+  testing: running a migration, evaluating the corner cases where it failed
+  (scope for automation here too), then working out how enhance the migration
+  tools to cope. Getting the repository migrated is merely a side effect - the
+  real deliverables here are reliable tools capable of manipulating and
+  migrating everyone else's complex repositories.</li>
+
   <li>Ajax library for Template Toolkit, akin to the Ajax support in Ruby in Rails (likely mentor: the <a href="http://www.perl.com/pub/a/2005/06/02/catalyst.html">Catalyst</a> project).</li>
   
   <li>Build a suite of tools around WxWidgets for cross-platform GUI apps with low overhead (i.e., don't require Tk or GNOME overhead).</li>
