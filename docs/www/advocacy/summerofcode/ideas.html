@@ -170,11 +170,30 @@ This list is still under development!  Check back soon.
    href="http://use.perl.org/~chromatic/journal/20481">Perl 5 Native Call
    Interface.</a> (likely mentor: chromatic).</li>
 
-  <li>Smoke testing architecture for binary compatibility between
-  versions of Perl. This would also allow the automated testing of upcoming
-  Perl releases with the CPAN codebase.</li>
+  <li>Automated testing for binary compatibility between versions of Perl.<br>
+  Stable minor releases of Perl should be binary compatible, but there is no
+  formal testing of this. The project would develop a testing architecture to
+  verify that XS modules compiled with earlier minor versions still pass all
+  tests when run with a Perl binary built from maintenance branch checked out
+  from version control. The initial challenge in this project is automating the
+  system sufficiently well that it runs reliably without attention or filling
+  the local disks. Once that's done the interesting part can be tackled - 
+  correctly identifying all the test failure modes:
+  <ul><li>when a module failing tests with an existing released Perl version is
+  that the module author's fault, or a local setup problem?</li>
+  <li>when an already built module's tests fail with the new Perl version, is
+  that really a binary compatibility problem, or do they also fail if that
+  module is built from clean with the new Perl?</li>
+  <li>Is the observed failure actually because a dependency failed in the same
+  way?</li>
+  <li>Do you get the same results when you build dependencies with the old
+  Perl but the module in question with the new Perl?</li></ul>
+  And all this while minimizing both false positives (reporting a binary
+  compatibility where none exists) and false negatives (missing one).
+  Doing all this would also provide a very thorough testing of upcoming Perl
+  releases with the CPAN codebase.</li>
 
-  <li>Work on the<a href="http://ali.as/pita/">Perl Image Testing
+  <li>Work on the <a href="http://ali.as/pita/">Perl Image Testing
   Architecture</a>, intended to comprehensively solve the problem of mass
   testing Perl packages against a wide variety of different platforms
   (possible mentor: Adam Kennedy).</li>
