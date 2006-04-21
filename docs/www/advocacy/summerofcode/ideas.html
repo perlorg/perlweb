@@ -21,6 +21,36 @@ This list is still under development!  Check back soon.
 <p>Some ideas...</p>
 
 <ul>
+  <li>Create a "Web Application Toolkit" for the <a href="
+  http://nms-cgi.sourceforge.net/">NMS project</a>.<br>
+
+  NMS has been very successful at providing well-written re-implementations of
+  certain popular but insecure CGI scripts, but the requirement to be
+  "drop-in" replacements has constrained what could be done. The next phase
+  is to provide entirely new programs based around a "Web Application
+  Toolkit", wide variety of functionality without any programming knowledge
+  on the part of the person configuring it, and it should be simply
+  installed on the majority of shared web hosting that supports Perl CGI
+  programs.  The work has been started - <code>TFmail</code> is the recommended
+  replacement for the <code>FormMail</code> program.<br>
+
+  The project would be to write this toolkit and scripts that use it. The
+  toolkit should incorporate all <code>TFmail</code>'s functionality, but
+  also support configurations as Guestbook, Web Discussion Board, Content
+  Search, Link Exchange, or any combination. It's likely to need code to deal
+  with
+
+  <ul><li>Authentication</li>
+  <li>Rate limiting of requests</li>
+  <li>Session management</li>
+  <li>Secure file handling</li>
+  <li>Generalized and flexible error reporting</li>
+  <li>Message threading</li>
+  <li>Improved templating engine</li></ul>
+
+  see <a href="http://nms-cgi.sourceforge.net/phase2.html">http://nms-cgi.sourceforge.net/phase2.html</a> for more information.
+ (likely mentors: Dave Cross, Jonathan Stowe)</li>
+
   <li>Using Parrot and the compiler tools, write a parser for C header files
       that can generate Perl 5 NCI or Parrot NCI code.<br>
       It should let the developer write an SDL binding for either language by
