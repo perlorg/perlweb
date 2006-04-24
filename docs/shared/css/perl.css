@@ -2,20 +2,18 @@
 
 /* also, perl-ns4.css stops ns4 from crashing. */
 
-BODY {
-  font-family:helvetica,sans-serif;
-  font-size:14px;
-  font-weight:normal;
+body {
+  font: .9em/1.5em verdana, arial, sans-serif;
   width: 730px;
   background-color: #FFF;
   color: black;
 }
 
-UL{
+ul{
   list-style-type: square;
 }
 
-A {
+a {
   color: #003399;
   /* color: #0055BB; */
   text-decoration: none;
@@ -34,22 +32,22 @@ A {
   color: #DD0000;
 }
 
-A:visited {
+a:visited {
   color: #663399;
 }
 
 /* specify link and visited so the 'hover' style doesn't apply to
    other links, like those which are just NAME anchors. */
-A:link:hover {
+a:link:hover {
   text-decoration: underline;
   color: #8B0000; /* dark red */
 }
-A:visited:hover {
+a:visited:hover {
   text-decoration: underline;
   color: #8B0000; /* dark red */
 }
 
-TD {
+td {
   font-size:14px;
 }
 
@@ -83,6 +81,7 @@ TD {
 
 /* Navigation */
 #NAV {
+  font-size: .8em;
   width: 180px;
   /* don't use an absolute font size here */
   /* font-size:12px; */
@@ -208,7 +207,7 @@ TD {
   margin-top: -10px
 }
 
-HR      {
+hr      {
   color: #191970;
   text-align: center;  /* what does this do on a HR? */
   padding-top: .5em;
@@ -220,23 +219,23 @@ HR      {
   /* margin-top: -5em; */
 }
 
-H3     {
+h3     {
   color: #000;
   font-size: 14px;
   font-family:verdana,helvetica,sans-serif;
   font-weight: bolder;
 }
 
-TR      {
+tr      {
   vertical-align: top;
 }
 
-TD.NOVERTPAD {
+td.NOVERTPAD {
   padding-top: 0;
   padding-bottom: 0;
 }
 
-IMG.border {
+img.border {
   border-width: 1px;
   border-color: #191970;
   border-style: solid;
@@ -250,7 +249,7 @@ IMG.border {
   text-align: justify;
 }
 
-P.fancyp:first-letter { 
+p.fancyp:first-letter { 
   font-size: 215%; float: left; font-family: serif; padding: 1px;
 }
 
