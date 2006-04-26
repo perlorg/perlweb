@@ -126,13 +126,20 @@ This list is still under development!  Check back soon.
       and their implementations. (likely mentor: Patrick Michaud)</li>
 
   <li><a href="http://llvm.cs.uiuc.edu/">LLVM</a> &lt;-&gt; Parrot interop
-  (likely mentor: Leo T&ouml;tsch)
+  (likely mentor: Leopold T&ouml;tsch)
   <ul><li>Parrot as LLVM backend (LLVM -> PASM)</li>
       <li>PIR -&gt; LLVM (not really, but evaluate optimizations)</li>
       <li>Implement well-known optimizations in PIR compiler (SSA -&gt;
           register allocation)</li>
       <li> Runtime &amp; offline bytecode optimization</li>
-  </ul>
+  </ul></li>
+  <li>Create a compiler for LISS (Language of Integers, Sequences and Sets
+      an educational language developed at Universidade do Minho) and target
+      it into Parrot. As deliverables we expect the compiler (runnable on the
+      three major architectures) and a tutorial/how-to explaining the compiler
+      architecture (to be added in the documentation of Parrot as an example
+      of a compiler). (Likely mentor: Alberto Sim&otilde;es or Leopold
+      T&ouml;tsch)</li>
   </li>
   <li>Parrot JIT: improve &amp; complete JIT for some set of subsystems
       from alpha to Z8000 <i>i.e.</i> several pieces, one per platform</li>
