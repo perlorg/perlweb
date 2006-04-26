@@ -2,7 +2,14 @@
 [% page.title = page.banner %]
 [% page.sidebar = BLOCK %]
 &lArr; <A HREF="index.html">back to Summer of Code</A>
-[% END %]
+[% END -%]
+[% page.morehead = BLOCK %]
+<style type="text/css">
+ ul.ideas li ul { list-style: disc; }
+ ul.ideas li { padding-top: .8em; }
+ ul.ideas li ul li { padding-top: .2em; }  
+</style>
+[% END -%]
 
 <H3 class="BEGINNER">
 <center>
@@ -20,7 +27,7 @@ This list is still under development!  Check back soon.
 
 <p>Some ideas...</p>
 
-<ul>
+<ul class="ideas">
   <li>Reimplement the DBI v1 API in Pugs<br>
   Design an implementation of the DBI API in Perl 6 using Pugs.
   The goal is to maintain the familiar DBI API while radically
@@ -119,13 +126,14 @@ This list is still under development!  Check back soon.
       and their implementations. (likely mentor: Patrick Michaud)</li>
 
   <li><a href="http://llvm.cs.uiuc.edu/">LLVM</a> &lt;-&gt; Parrot interop
-  (likely mentor: Leo T&ouml;tsch)</li>
+  (likely mentor: Leo T&ouml;tsch)
   <ul><li>Parrot as LLVM backend (LLVM -> PASM)</li>
       <li>PIR -&gt; LLVM (not really, but evaluate optimizations)</li>
       <li>Implement well-known optimizations in PIR compiler (SSA -&gt;
           register allocation)</li>
       <li> Runtime &amp; offline bytecode optimization</li>
   </ul>
+  </li>
   <li>Parrot JIT: improve &amp; complete JIT for some set of subsystems
       from alpha to Z8000 <i>i.e.</i> several pieces, one per platform</li>
   <li>Parrot threads: implement STM for Parrot (software transactional memory,
