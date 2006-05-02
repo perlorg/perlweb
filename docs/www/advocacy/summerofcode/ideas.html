@@ -22,6 +22,28 @@
 <p>Some ideas...</p>
 
 <ul class="ideas">
+  <li><a href="http://svk.elixus.org/"><code>svk</code></a> has several tasks
+  which would make <a href="http://svk.elixus.org/?SVKTasks">good Summer of
+  Code projects</a>:
+  <ul><li>Fully implement svk Public Key infrastructure.<br>
+          svk allows you to sign and verify changesets. Implement the public
+          key and policy infrastructure on top of it.</li>
+      <li>Web GUI for svk users.<br>
+          A web tool that at least allows svk users to merge one branch to
+          another. Much of this could be re-used elsewhere. For example, a web
+          implementation of 3 way-merge would benefit wikis and other online
+          edit+versioning applications</li>
+      <li>Thin client for svk.<br>
+          Make the command layer of svk networked. This allows svk users in
+          well-connected environment to use a specialized svk server without
+          mirroring the repository.</li>
+      <li>Revamp foreign version control system support.<br>
+          We are currently using VCP which is not actively developed, and it
+          also suffers from complicated abstraction to cope with the CVS
+          model. Investigate and integrate tailor or other technology to
+          provide robust foreign version control system integration. Separate
+          the cvs changeset aggregation issue.</li>
+  </ul></li>
   <li><a href="http://www.pjcj.net/perl.html#Devel::Cover.pm">Devel::Cover</a>
       provides code coverage metrics for Perl code.  There are plenty of tasks
       available which would make good projects.
@@ -273,20 +295,10 @@
   compatibility where none exists) and false negatives (missing one).
   Doing all this would also provide a very thorough testing of upcoming Perl
   releases with the CPAN codebase.</li>
-
   <li>Work on the <a href="http://ali.as/pita/">Perl Image Testing
   Architecture</a>, intended to comprehensively solve the problem of mass
   testing Perl packages against a wide variety of different platforms
   (possible mentor: Adam Kennedy).</li>
-
-  <li><a href="http://svk.elixus.org/"><code>svk</code></a> has several tasks
-  which would make good Summer of Code projects:
-  <ul><li>Fully implement SVK Public Key infrastructure</li>
-      <li>Web GUI for svk users. Much of this could be re-used elsewhere.
-      For example, a web implementation of 3 way-merge would benefit wikis and
-      other online edit+versioning applications</li>
-      <li>Thin client for SVK</li></ul></li>
-
   <li>Build tools capable of migrating the Perl source repository from
   perforce to subversion.<br>
   This isn't a trivial task to get right. Existing tools such as <a
