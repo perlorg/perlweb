@@ -240,7 +240,7 @@ And a tweaklet to speed up F<utf8.c>
   http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-05/msg00438.html
 
 Andy then tinkered with C<bytes_to_uni>, bringing it into line
-with f<embed.fnc> best practices. In doing so, this brought the
+with F<embed.fnc> best practices. In doing so, this brought the
 function up on Sadahiro Tomoyuki's radar, who realised that
 C<S_bytes_to_uni> in F<pack.c> is nearly the same as F<utf.c>'s
 C<Perl_bytes_to_utf8> function.
@@ -496,7 +496,7 @@ wondered if the fix was appropriate for C<maint>.
 
   http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-05/msg00368.html
 
-Nicholas was also surprised that B<parsing changes in B<blead>> caused
+Nicholas was also surprised that B<parsing changes in blead> caused
 C<Tk> to fail, since C<$#{@$arrayref}> now fails with a run-time
 error. (One should of course be using C<$#$arrayref>).
 
