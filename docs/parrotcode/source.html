@@ -1,7 +1,7 @@
 [% page.title = "Parrot Source Code &amp; Binaries " %]
 [% page.morehead = BLOCK %]
 <style>
-pre { background: #DDDDDD; border: solid black 1px;
+pre { background: #DDD; border: solid black 1px;
       padding: .5em; margin-left: 3em; margin-right: 1em;
     }
 </style>
@@ -21,7 +21,7 @@ pre { background: #DDDDDD; border: solid black 1px;
 [% END %]
 
 <a name="Releases"></a>
-<h1>Releases</H1>
+<h1>Releases</h1>
 
 <p>Parrot releases are collected into tarballs and are available for
 download.  The most recent release is available here:</p>
@@ -32,92 +32,92 @@ download.  The most recent release is available here:</p>
    >parrot 0.4.4</a>
 </ul>
 
-<A NAME="VersionControl"></A>
-<H1>Version Control</H1>
+<a name="VersionControl"></a>
+<h1>Version Control</h1>
 
-<A NAME="Subversion"></A>
-<H2>Subversion</H2>
+<a name="Subversion"></a>
+<h2>Subversion</h2>
 
-<P><A HREF="http://subversion.tigris.org/">Subversion</A> aims is to
-be a version control system that is a compelling replacement for <A
-HREF="http://cvshome.org">CVS</A>.  The definitive reference is <A
-HREF="http://svnbook.red-bean.com/">Version Control with
-Subversion</A> published by <A
-HREF="http://www.oreilly.com/catalog/0596004486/">O'Reilly Media</A>.
-The <A HREF="http://subversion.tigris.org/faq.html">FAQ</A> is also
+<p><a href="http://subversion.tigris.org/">Subversion</a> aims is to
+be a version control system that is a compelling replacement for <a
+href="http://cvshome.org">CVS</a>.  The definitive reference is <a
+href="http://svnbook.red-bean.com/">Version Control with
+Subversion</a> published by <a
+href="http://www.oreilly.com/catalog/0596004486/">O'Reilly Media</a>.
+The <a href="http://subversion.tigris.org/faq.html">FAQ</a> is also
 useful.
-</P>
+</p>
 
-<P>
-Our subversion repositorly lives at <tt><A
-HREF="https://svn.perl.org/parrot/">https://svn.perl.org/parrot/</A></tt>.
-</P>
+<p>
+Our subversion repositorly lives at <tt><a
+href="https://svn.perl.org/parrot/">https://svn.perl.org/parrot/</a></tt>.
+</p>
 
-<P>A <A HREF="http://viewcvs.sf.net">ViewCVS</A> (ViewSVN) interface
-is available at <tt><A HREF="http://svn.perl.org/viewcvs/parrot/"
->http://svn.perl.org/viewcvs/parrot/</A></tt>.</P>
+<p>A <a href="http://viewcvs.sf.net">ViewCVS</a> (ViewSVN) interface
+is available at <tt><a href="http://svn.perl.org/viewcvs/parrot/"
+>http://svn.perl.org/viewcvs/parrot/</a></tt>.</p>
 
-<P>
-To check out a local copy, use:<BR>
+<p>
+To check out a local copy, use:<br>
 <pre>
   svn co https://svn.perl.org/parrot/trunk parrot
 </pre>
-</P>
+</p>
 
-<P>The SSL certificate is from the <A
-HREF="http://ca.develooper.com/">Develooper Certificate Authority</A>.
-</P>
+<p>The SSL certificate is from the <a
+href="http://ca.develooper.com/">Develooper Certificate Authority</a>.
+</p>
 
-<P>Subversion clients are available for most operating systems.  For
-the subversion source code, visit <A
-HREF="http://subversion.tigris.org/">the Subversion project home</A>.
-If you use Windows, try <A
-HREF="http://tortoisesvn.tigris.org/">TortoiseSVN</A>.  <A
-HREF="http://subversion.tigris.org/project_packages.html#binary-packages"
->Binary packages</A> are also available for most operating
-systems.</P>
+<p>Subversion clients are available for most operating systems.  For
+the subversion source code, visit <a
+href="http://subversion.tigris.org/">the Subversion project home</a>.
+If you use windows, try <a
+href="http://tortoisesvn.tigris.org/">TortoiseSVN</a>.  <a
+href="http://subversion.tigris.org/project_packages.html#binary-packages"
+>Binary packages</a> are also available for most operating
+systems.</p>
 
-<P>If you are a comitter, you will use your <A
-HREF="http://auth.perl.org/">auth.perl.org</A> username.</P>
+<p>If you are a comitter, you will use your <a
+href="http://auth.perl.org/">auth.perl.org</a> username.</p>
 
-<H3>Configuration</H3>
+<h3>Configuration</h3>
 
-<P>
-If you are a comitter, make sure that your <tt><A
-HREF="http://svnbook.red-bean.com/en/1.1/ch07.html#svn-ch-7-sect-1.3.2"
->~/.subversion/config</A></tt> file does not have the <A
-HREF="http://svnbook.red-bean.com/en/1.1/ch06s02.html#svn-ch-6-sect-2.2"
->storage of authentication credentials</A> disabled, or you will be
-prompted for your password on every commit.</P>
+<p>
+If you are a comitter, make sure that your <tt><a
+href="http://svnbook.red-bean.com/en/1.1/ch07.html#svn-ch-7-sect-1.3.2"
+>~/.subversion/config</a></tt> file does not have the <a
+href="http://svnbook.red-bean.com/en/1.1/ch06s02.html#svn-ch-6-sect-2.2"
+>storage of authentication credentials</a> disabled, or you will be
+prompted for your password on every commit.</p>
 
 
-<P>If you have <A
-HREF="http://svnbook.red-bean.com/en/1.1/ch07s02.html#svn-ch-7-sect-2.4"
->auto-props</A> enabled, be sure to only set the basic types.  Leopold
+<p>If you have <a
+href="http://svnbook.red-bean.com/en/1.1/ch07s02.html#svn-ch-7-sect-2.4"
+>auto-props</a> enabled, be sure to only set the basic types.  Leopold
 T&ouml;tsch provided this example from his <tt>~/.subversion/config</tt>:
-</P>
+</p>
 
-<PRE>
+<pre>
   [miscellany]
   enable-auto-props = yes
   [auto-props]
   *.t = svn:mime-type=text/plain
-</PRE>
+</pre>
 
-<A NAME="SVK"></A>
-<H2>SVK</H2>
+<a name="SVK"></a>
+<h2>SVK</h2>
 
-<P>
-<A HREF="http://svk.elixus.org">SVK</A> is a decentralized version
+<p>
+<a href="http://svk.elixus.org">SVK</a> is a decentralized version
 control system written in Perl. It uses the Subversion filesystem but
 provides additional, powerful features.
-</P>
+</p>
 
-<P>Please <b>do not</b> mirror the entire parrot repository.  You will
+<p>Please <b>do not</b> mirror the entire parrot repository.  You will
 suck up huge amounts of bandwidth and CPU on our servers for lots of
-data you will never look at.</P>
+data you will never look at.</p>
 
-<P>The easiest thing to do is to just synchronize the head of the
+<p>The easiest thing to do is to just synchronize the head of the
 trunk and pull changes forward from there.  You won't get branches,
 but at this point, thats probably ok.</p>
 
@@ -141,18 +141,18 @@ local mirror:</p>
 repository up to the date of the dump.  (Which will mean you'll only
 need to update your local copy with the remaining revisions.)</p>
 
-<p><A
-HREF="http://www.parrotcode.org/svk-bootstrap-dump.bz2">svk-bootstrap-dump</A>
+<p><a
+href="http://www.parrotcode.org/svk-bootstrap-dump.bz2">svk-bootstrap-dump</a>
 was last updated on September 26th, 2005 to revision 9252</p>  
   
 
-<A NAME="Snapshots"></A>
-<H1>Snapshots</H1>
+<a name="Snapshots"></a>
+<h1>Snapshots</h1>
 
 <p>
 Three times a day, snapshots of the svn repository are taken.  They
-are available at <tt><A
-HREF="http://svn.perl.org/snapshots/parrot/">http://svn.perl.org/snapshots/parrot/</A></tt>.
+are available at <tt><a
+href="http://svn.perl.org/snapshots/parrot/">http://svn.perl.org/snapshots/parrot/</a></tt>.
 </p>
 <p> For automatic <a href="http://qa.perl.org/">smoke testing</a> you
 can use rsync to synchronize with the latest snapshot:
@@ -161,7 +161,7 @@ can use rsync to synchronize with the latest snapshot:
   rsync -av --delete svn.perl.org::parrot-HEAD parrot
 </pre>
 
-<A NAME="Binaries"></A>
+<a name="Binaries"></a>
 <h1>Binary Packages</h1>
 
 <p> As a convenience, some volunteers have provided pre-built versions of
@@ -171,15 +171,17 @@ parrot for some platforms.  </p>
   <li><a href="http://ftp.debian.org/debian/pool/main/p/parrot/">Debian Packages</a></li>
   <li><a href="http://www.jwcs.net/~jonathan/perl6/">Win32</a> <i>(Daily Build)</i></li>
   <li><a href="http://pxperl.com/">PXPerl</a> &quot;Perl stuff package for Windows 2000/XP. &quot; (includes parrot)</li>
+  <li><a href="http://www.unobe.com/packages/">Pugs
+  (r10396) and Parrot (r12747)</a> OSX package builds.</li>
 </ul>
 
-<A NAME="Commits"></A>
+<a name="Commits"></a>
 <h1>Commit Mailing List</h1>
 
 <p>If you'd like to get an email whenever something gets committed to the
 repository, send an email to <a href="mailto:cvs-parrot-subscribe@perl.org">
 cvs-parrot-subscribe@perl.org</a>. The list is archived at
 <a href="http://www.nntp.perl.org/group/perl.cvs.parrot">
-http://www.nntp.perl.org/group/perl.cvs.parrot</a>. <I>Don't let the cvs fool
+http://www.nntp.perl.org/group/perl.cvs.parrot</a>. <i>Don't let the cvs fool
 you, this really <b>is</b> the svn list.</i>
 </p>
