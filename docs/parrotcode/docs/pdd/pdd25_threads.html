@@ -1,0 +1,10 @@
+[% page.title = "Document threads in parrot" %]
+[% page.style = "default.html" %]
+[% page.sidebar = INCLUDE "tpl/navigation.html" %]
+
+[% USE ua = CacheLWPSimple %]
+[% data = ua.get( 'url' =>
+      'http://svn.perl.org/parrot/trunk/docs/pdds/clip/pdd25_threads.pod'
+           'ttl' => 1*60*60 ) %]
+[% USE PodSimple %]
+[% PodSimple.parse('html', data ) %]
