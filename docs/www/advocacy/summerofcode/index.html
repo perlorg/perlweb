@@ -2,47 +2,78 @@
 [% page.title = page.banner %]
 [% page.style = "default.html" %]
 [% page.sidebar = BLOCK %][% END %]
+
+
 <IMG SRC="http://code.google.com/images/code_sm.png" 
      style="float: right; padding-top: 3em; ">
 
-<p><A HREF="http://www.perlfoundation.org">The Perl Foundation</A> is
-proud to participate in <A HREF="http://code.google.com/soc/">Google's
-Summer of Code</A> 2006.
+<p style="font-size: 150%"><A HREF="http://www.perlfoundation.org">The
+Perl Foundation</A> is proud to participate in <br> <A
+HREF="http://code.google.com/soc/">Google's Summer of Code</A> 2006.
+
 
 <H3 class="BEGINNER">
 
 We're extremely excited to announce that we have 5 projects this year:<br />
 <ul>
-  <li>Complete Perl 5 Parser and Perl 6 Output</li>
-  <ul>
-    <li>Student: Sage LaTorra</li>
-    <li>Mentor: Larry Wall</li>
-  </ul>
-  <li>Perl 6 DBI Module</li>
-  <ul>
-    <li>Student: Szilakszi Bálint</li>
-    <li>Mentor: Tim Bunce</li>
-  </ul>
-  <li>POE 1.0 Milestone</li>
-  <ul>
-    <li>Student: Benjamin Smith</li>
-    <li>Mentor: Rocco Caputo</li>
-  </ul>
-  <li>Pugs Self-hosting Bootstrap From Perl 5 and Rules</li>
-  <ul>
-    <li>Student: Shu-chun Weng</li>
-    <li>Mentor: Patrick R. Michaud</li>
-  </ul>
-  <li>Software Transactional Memory for Parrot</li>
-  <ul>
-    <li>Student: Charles Albert Reiss</li>
-    <li>Mentor: Leopold Toetsch</li>
-  </ul>
+  <li><A HREF="http://code.google.com/soc/tpf/appinfo.html?csaid=2CEA85C4F16766F9" 
+      >Complete Perl 5 Parser and Perl 6 Output</A>
+    <ul>
+      <li>Student: Sage LaTorra</li>
+      <li>Mentor: Larry Wall</li>
+    </ul>
+  </li>
+  <li><A HREF="http://code.google.com/soc/tpf/appinfo.html?csaid=2724C0CE12822D61" 
+      >Perl 6 DBI Module</A>
+    <ul>
+      <li>Student: Szilakszi Bálint</li>
+      <li>Mentor: Tim Bunce</li>
+    </ul>
+  </li>
+  <li><A HREF="http://code.google.com/soc/tpf/appinfo.html?csaid=11D28EAE85D36E9B" 
+      >POE 1.0 Milestone</A>
+    <ul>
+      <li>Student: Benjamin Smith</li>
+      <li>Mentor: Rocco Caputo</li>
+    </ul>
+  </li>
+  <li><A HREF="http://code.google.com/soc/tpf/appinfo.html?csaid=E166DA908BC1393B"
+      >Pugs Self-hosting Bootstrap From Perl 5 and Rules</A>
+    <ul>
+      <li>Student: Shu-chun Weng</li>
+      <li>Mentor: Patrick R. Michaud</li>
+    </ul>
+  </li>
+  <li><A HREF="http://code.google.com/soc/tpf/appinfo.html?csaid=92ED8A3EEED1FBDF"
+      >Software Transactional Memory for Parrot</A>
+    <ul>
+      <li>Student: Charles Albert Reiss</li>
+      <li>Mentor: Leopold Toetsch</li>
+    </ul>
+  </li>
 </ul>
 
-More information coming soon.
-
 </H3>
+
+<H2>Blog</H2>
+<A HREF="http://perlsoc2006.blogspot.com/">http://perlsoc2006.blogspot.com/</A><BR>
+[%- TRY %]
+   [% count = 10 %]
+   [%- USE news = XML.RSS("${root}/var/rss/perlsoc2006.rss") %]
+   <UL>
+   [% FOREACH item = news.items %]
+       <LI> <a href="[% item.link | html %]">[% item.title %] 
+              <small>(by [% item.dc.creator %])</small>
+            </a>
+       [% count = count - 1 %]
+       [% LAST IF count == 0 %]
+    [% END %]
+    </UL>
+[%- CATCH %]
+    [Error Processing Directive]
+  [%- FILTER stderr %][% error.info %][% END %]
+[%- END %]
+
 
 <H2>Links</H2>
 <UL>
