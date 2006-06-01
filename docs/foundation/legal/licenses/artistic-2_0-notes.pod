@@ -18,6 +18,18 @@ this revision.  We hope they will help you understand how to use the new
 license. To make the comments easier to follow, we use Perl as an example in
 these notes.
 
+=head3 "Original License":
+
+We found ourselves repeating "the version of the Artistic License that ships
+with the Standard Version" far too many times through the license, so we
+decided to define it in one place. The "original license" identifies the
+license that the developer used to distribute their code. It also lets the
+users know that TPF might update the license in the future, and that developers
+who have distributed under one version of the license can always upgrade to
+another. This isn't an automatic upgrade. If you distribute a package under the
+Artistic License 2.0, and want to take advantage of "bug fixes" in version 2.1,
+you have to include the new version of the license in the package.
+
 =head3 Section 1:
 
 This section applies to using Perl yourself "as is", or
@@ -65,7 +77,7 @@ won't be dual licensed with the GPL, unlike Perl 5. Since they won't be dual
 licensed, if you want to use Perl 6 or Parrot under a GPL license, you will
 doing so under 4(c)(ii).   Several other open source and free software licenses
 also qualify under 4(c)(ii), including the LGPL, MPL, and the Apache license.
-Note that these are only what have become known as "copy-left" licenses:
+Note that these are only what have become known as "copyleft" licenses:
 "freely available" means both free as in speech and free as in beer.
 
 =head3 Section 5:
@@ -87,7 +99,7 @@ include it in your distribution of Linux.
 
 You're totally free to embed Perl inside your software in a way
 that doesn't allow users to access Perl. On the other hand, if you embed it and
-users can nevertheless do things like running Perl scripts, then you're really
+users can nevertheless do things like running Perl scripts, then you really
 are distributing Perl and need make sure that your distribution fits one of the
 use cases in (1)-(7).
 
@@ -118,17 +130,26 @@ rights, or rights related to trademark rights.
 
 =head3 Section 13:
 
-We're not particularly fond of patents, but they're part of the
-world we live in.  So, with a goal of minimizing the likelihood of patent
-infringement claims, we grant you a patent license from all our contributors,
-with a termination clause that's triggered if infringement litigation is filed.
-The termination affects only your license to Packages that you allege are
-infringements, not every Artistic License on every Package you've ever licensed
-from us or anyone else.
+We're not particularly fond of patents, but they're part of the world we live
+in.  So, with a goal of minimizing the likelihood of patent infringement
+claims, we grant you a patent license. In addition, under our contribution
+process, each Contributor makes a patent grant for their Contributions directly
+to you as a User. Both patent license clauses contain a provision that
+terminates the license(s) of anyone who files a lawsuit claiming that any
+licensed Package infringes any patent. The termination only applies to Packages
+that are claimed to be infringements.
 
 =head3 Section 14:
 
 Disclaimers of warranties and damages, like those you find in other
 open source and software licenses.
+
+=head2 Frequently Asked Questions
+
+=head3 What are the major differences between the Artistic 1 and Artistic 2.0?
+
+Overall, the terms of the Artistic 2 are the same as the Artistic 1, though the
+language has been polished and reorganized to be more readable and more legally
+precise. The significant additions are sections 4(c)(ii) and 13.
 
 =cut
