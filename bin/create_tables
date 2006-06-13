@@ -17,7 +17,7 @@ my @tables = split /\n\s*\n/, <<EOT;
 create table combust_cache (
   id varchar(128)   not null,
   type varchar(128) NOT NULL default '',
-  created timestamp(14) not null,
+  created timestamp not null,
   purge_key varchar(64) binary null,
   data mediumblob not null,
   metadata mediumblob null,
@@ -26,7 +26,7 @@ create table combust_cache (
   PRIMARY KEY  (id, type),
   KEY expire_idx (expire),
   KEY purge_idx (purge_key)
-) TYPE=INNODB;
+) ENGINE=InnoDB;
 
 
 EOT
