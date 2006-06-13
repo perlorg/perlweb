@@ -111,6 +111,10 @@ sub external_port {
   $cfg->param('external_port') || undef;
 }
 
+sub external_protocol {
+  $cfg->param('external_protocol') || undef;
+}
+
 sub proxyip_forwarders {
   my $allow = $cfg->param('proxyip_forwarders') || "127.0.0.1";
   ref $allow ? @$allow : ($allow);
@@ -125,6 +129,7 @@ sub base_url {
   my $port = $self->external_port || 80;
   my $protocol = 'http';
   $protocol = 'https' if $port and $port == 443;
+  $protocol = $self->external_protocol if $self->external_protocol;
   my $base_url = "$protocol://$servername" . 
     ((($protocol eq 'http' and $port == 80) or ($protocol eq 'https' and $port == 443))
       ? ''

@@ -26,6 +26,18 @@ sub hostname {
   shift->_r->hostname;
 }
 
+sub header_in {
+    shift->_r->header_in(@_);
+}
+
+sub header_out {
+    shift->_r->header_out(@_);
+}
+
+sub remote_ip {
+    shift->_r->connection->remote_ip;
+}
+
 sub uri {
   shift->_r->uri;
 }

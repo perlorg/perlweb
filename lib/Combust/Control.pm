@@ -439,7 +439,7 @@ EOH
   $self->r->header_out('Content-Length' => length($data));
 
   $self->r->send_http_header("text/html");
-  print $data;
+  $self->r->print($data);
   return DONE;
 }
 
