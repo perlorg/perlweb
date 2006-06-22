@@ -1,6 +1,6 @@
 # -*- cperl -*-
-eval 'exec $CBROOT/bin/perl $0 -w ${1+"$@"}'
-  unless $running_under_some_shell;
+eval 'exec $CBROOT/bin/perl -w $0 ${1+"$@"}'
+  if my $running_under_some_shell;
 
 use strict;
 use Getopt::Long;
@@ -75,7 +75,7 @@ else {
 
     # extract the port number from the dsn, if present, for non-standard ports
     unshift @opts, "--port=$1" if $dbi_dsn =~ /\bport=(\d+)/;
-    if ($dbi_dsn =~ /\bdatabase=([-\w]+)/ && $1 ne $dbname) {
+    if ($dbi_dsn =~ /\bdatabase=([-\w]+)/ and (!$dbname or $1 ne $dbname)) {
       #warn "Using database name '$1' from dsn instead of '$dbname'\n";
       $ARGV[0] = $dbname = $1;
     }
