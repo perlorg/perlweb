@@ -63,7 +63,7 @@ sub db_open {
   if ($lock) {
     $lock_timeout = 180 unless $lock_timeout;
     $lock_name = $0 unless $lock_name;
-    my $lockok = $dbh && $dbh->do(qq[SELECT GET_LOCK("$lock_name",$lock_timeout)]);
+    my ($lockok) = $dbh && $dbh->selectrow_array(qq[SELECT GET_LOCK("$lock_name",$lock_timeout)]);
     croak "Unable to get $lock_name lock for $0\n" unless $lockok;
   }
   
