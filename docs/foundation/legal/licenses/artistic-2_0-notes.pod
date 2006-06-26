@@ -146,10 +146,33 @@ open source and software licenses.
 
 =head2 Frequently Asked Questions
 
-=head3 What are the major differences between the Artistic 1 and Artistic 2.0?
+=head3 What are the major differences between the Artistic 1.0 and Artistic 2.0?
 
-Overall, the terms of the Artistic 2 are the same as the Artistic 1, though the
+Overall, the terms of the Artistic 2.0 are the same as the Artistic 1, though the
 language has been polished and reorganized to be more readable and more legally
 precise. The significant additions are sections 4(c)(ii) and 13.
+
+=head3 Can I include code from a project licensed under the GPL in a project
+licensed under the Artistic license?
+
+No, you can't include code from a GPL (version 1, 2, or 3) project in an
+Artistic licensed package. Because the Artistic License (1.0 or 2.0) is a less
+restrictive license than GPL (1, 2, or 3). That is, if you distributed GPL'd
+code under the Artistic License, you would be giving away rights that the
+original author never gave you. The most obvious example of this is the fact
+that the Artistic License allows proprietary versions, but the GPL does not.
+
+This doesn't prevent you from linking to GPL libraries.  It only prevents you
+from absorbing GPL code into a package and distributing that GPL code under an
+Artistic License.
+
+=head3 Can I include code from a project licensed under the Artistic License
+version 1 in a project licensed under the Artistic License version 2?
+
+Yes. The terms of Artistic 2.0 are the same as Artistic 1.0, aside from the
+added patent clause and relicensing clause. That means Artistic 2.0 is a more
+restrictive license than Artistic 1.0 (it gives away fewer rights), so any
+Artistic 1.0 code can be distributed as Artistic 2.0.
+
 
 =cut
