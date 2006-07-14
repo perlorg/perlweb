@@ -77,7 +77,7 @@ sub store {
   		     ? $args{meta_data}
 		     : undef);
 
-  my $expire    = time + ($args{expire} || 7200);
+  my $expire    = time + ($args{expire} || $args{expires} || 7200);
 
   my $serialized = 0;
 

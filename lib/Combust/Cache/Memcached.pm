@@ -26,7 +26,7 @@ sub store {
   		     ? $args{meta_data}
 		     : undef);
 
-  my $expire    = time + ($args{expire} || 7200);
+  my $expire    = time + ($args{expire} || $args{expires} || 7200);
 
   $memd->set("$type;$id", { data => $data,
 			    meta_data => $metadata,
