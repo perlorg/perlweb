@@ -1,8 +1,24 @@
-#!/usr/bin/perl -w
+# -*- cperl -*-
+eval 'exec $CBROOT/bin/perl $0 ${1+"$@"}'
+  unless $running_under_some_shell;
+use strict;
+use warnings;
+BEGIN {
+  die "CBROOT required" unless $ENV{CBROOT};
+  if (defined $ENV{CBROOTLOCAL}) {
+    use lib;
+    import lib "$ENV{CBROOTLOCAL}/lib";
+  }
+}
+
+use lib "$ENV{CBROOT}/lib";
 use strict;
 use DBI;
-use lib "$ENV{CBROOT}/lib";
 use Combust::DB qw(db_open);
+
+# TODO:
+#   - this really should just be in a sql/combust.sql file or something
+#     like that. 
 
 my $db_name = 'combust';
 
