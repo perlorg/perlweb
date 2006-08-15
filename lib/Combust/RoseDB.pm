@@ -28,6 +28,7 @@ BEGIN {
     my %opt = (
       domain   => $db_cfg->{domain} || 'combust',
       type     => $db_name,
+      database => $db_name,
       driver   => $driver,
       dsn      => $dsn,
       username => $db_cfg->{user},
@@ -44,28 +45,12 @@ BEGIN {
   }
 }
 
-my %rdb;
-
 sub new {
-  my($class) = shift;
+  my $class = shift;
 
-  @_ = (type => $_[0])  if(@_ == 1);
+  my $db = $class->SUPER::new(@_);
+  $db->retain_dbh;    # Prevent Rose::DB from disconnecting
 
-  my %args = @_;
-
-  my $domain = 
-    exists $args{'domain'} ? $args{'domain'} : $class->default_domain;
-
-  my $type = 
-    exists $args{'type'} ? $args{'type'} : $class->default_type;
-
-  my $db = $rdb{"$domain.$type"};
-  
-  unless ($db) {
-    $db = $rdb{"$domain.$type"} = $class->SUPER::new(@_);
-    $db->retain_dbh; # Prevent Rose::DB from disconnecting
-  }
-  
   $db;
 }
 
