@@ -3,84 +3,55 @@
 [% page.style = "default.html" %]
 
 
-<h1>The Perl Foundation announces project Ponie to bridge Perl 5 and Perl 6</h1>
+<h1>Ponie has been put out to pasture</h1>
 
-<H1>Links</H1>
+<p>August 23rd, 2006</p>
 
-<UL>
-  <LI><A HREF="http://opensource.fotango.com/software/ponie/">Ponie website at Fotango</A>
-  <LI><A HREF="http://opensource.fotango.com/software/ponie/faq">Ponie FAQ</A>
-  <LI><A HREF="http://opensource.fotango.com/software/ponie/plan">The Ponie Plan</A>
-</UL>
+<p>
+Over the past several years, one key aspect of the migration plan to
+Perl 6 has been the Ponie project, a fusion of the Perl 5 runtime with
+Parrot. Sponsored by Fotango, Artur Bergman and Nicholas Clark did a
+heroic job cleaning up Perl's internals to make it possible to replace
+some components of Perl 5 with Parrot, one piece at a time, while
+still keeping the core of the Perl 5 runtime intact with 100%
+bug-for-bug compatibility. Along the way, Nicholas ported several
+significant Perl core improvements from Ponie back to the Perl 5.9
+tree.
+</p>
+
+<p>
+Ponie never really became a community project. All significant work
+was done as part of Fotango's sponsorship. When it had good momentum
+and sponsored developers, it needed a number of Parrot features that
+weren't yet available. At this point, Ponie has not been in active
+development for almost half a year and it's my unhappy duty to declare
+the project dead.
+</p>
+
+<p>
+Norman Nunley is currently working to do a final extraction of
+unharvested improvements from the Ponie code before we put it out to
+pasture. Lots of good came out of Ponie, just not the good things we
+expected.
+</p>
+
+<p>
+A number of very talented hackers are currently exploring multiple
+strategies to enable most Perl 5 code to run seamlessly along side
+Perl 6 in Parrot. Folks have already demonstrated a proof-of-concept
+Parrot VM embedded in the Perl 5 runtime. Work is underway on a Perl 5
+to Perl 6 translator and the existing Perl 6 compiler on Parrot is the
+proof of concept for a similar implementation of a "regularized" Perl
+5. At this point, it wouldn't be reasonable to bless any one right way
+forward but each of these techniques (and possibly others) could play
+a part in whatever "5 on 6" scheme we end up with. No matter what
+happens, we're committed to making your Perl 5 code play well with new
+Perl 6 code.
+</p>
+
+<p>
+   - Jesse<br/>
+     Perl 6 Project Manager
+</p>
 
 
-<h1>Press Release</H1>
-
-
-
-<h2>Two year investment from Fotango to lead the development of Perl 5 running on top of Parrot.</h2>
-OSCON 2003, Portland, OR (July 8, 2003) -- The Perl Foundation (TPF) is
-pleased to announce the formation of the Ponie Project, a bridge between
-Perl 5 and Perl 6.  The Perl 5 interpreter will be rewritten to run on
-Parrot, the Perl 6 virtual machine.  This will ensure the future of the
-millions of lines of Perl 5 code at thousands of companies around the
-world.
-<p>
-Fotango's two-year commitment will allow Arthur Bergman, a Senior
-Developer at the company and the main contributor to the Perl 5.8
-threading effort, to help TPF coordinate and steer the Ponie project
-externally with the Perl community and internally within Fotango.
-</p>
-<p>
-"Ponie changes all the rules. Parrot will be the heart of Perl 6.
-Bringing Parrot to the heart of Perl 5 is very exciting," said Simon
-Wardley, Fotango's COO. "Ponie will offer a clear road forward for
-companies contemplating the Perl 5 to Perl 6 transition."
-</p>
-<p>
-"Fotango has been working with the Perl community for some time now."
-said Allison Randal, President of The Perl Foundation. "Ponie is not
-only important for Perl 5, but for Perl 6 as well. With Fotango's
-involvement and sponsorship we are confident in the route the Ponie
-project is taking."
-</p>
-<p>
-Perl 6 is the next version of the Perl programming language. Perl 6 is
-currently in the design stage and is coordinated by Larry Wall, inventor
-of the Perl language, Damian Conway, the author of 'Object Oriented
-Programming in Perl' and Allison Randal, the president of the Perl
-Foundation. Parrot, being coordinated by Dan Sugalski, is the virtual
-machine designed for dynamic languages that will run the next version of
-Perl.
-</p>
-<p>
-The Perl Foundation is dedicated to the advancement of the Perl
-programming language through open discussion, collaboration, design, and
-code. The Perl Foundation is a unit of the Yet Another Society (YAS), a
-non-profit, 501(c)(3) organization based in Holland, Michigan. <a
-href="http://www.perlfoundation.org">http://www.perlfoundation.org/</a>
-</p>
-<p>
-Fotango is a creative solutions group providing consultancy on software
-projects. Fotango employs a large number of open source contributors and
-releases much of its own software as open source. Fotango is based in
-London, UK.
-<a href="http://opensource.fotango.com">http://opensource.fotango.com/</a>
-</p>
-<p>
-Press Contacts:
-</p>
-<p>
-Pierre Denis<br>
-Fotango Ltd.<br>
-+44 (0) 20 7251 7010<br>
-press@fotango.com<br>
-</p>
-<p>
-Allison Randal<br>
-The Perl Foundation<br>
-170 College Ave.<br>
-Suite 230<br>
-Holland, MI 49423<br>
-allison@perl.org<br>
-</p>
