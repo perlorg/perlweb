@@ -10,10 +10,12 @@
   IF !page.site;
     page.site = "perl.org";
   ELSE;
-    page.site = page.site || ":";
+    page.site = page.site _ ": ";
   END;
 
-  page.site = "" IF page.nosite;
+  IF page.nosite;
+    page.site = "";
+  END;
 
   UNLESS page.banner;
     # should we make use of page.site here?  i.e. "dbi.perl.org: "
@@ -37,7 +39,6 @@
 
 
 %]
-
 <html>
 <head>
   <title>[% page.title %]</title>
