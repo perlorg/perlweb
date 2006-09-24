@@ -1,0 +1,14 @@
+[%-  page = {
+            title = template.title,
+            style = template.style or 'default.html',
+            site = "Learn Perl",
+    };
+
+page.sidebar = BLOCK; -%]
+<a href="/">Home</a> |
+<a href="/faq/">FAQ</a> |
+<a href="/tips/">Tips</A> |
+<a href="/library/">Online Library</A>
+[%- END -%]
+
+

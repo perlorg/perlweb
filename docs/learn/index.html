@@ -1,35 +1,79 @@
+[%
+page.title = "Learn Perl";
+page.banner = "Learn Perl";
+%]
 
-[% page.title = "Learn Perl!" %]
+
+[% MACRO quicknews(shortname,count) BLOCK %]
+[%- IF count < 1 %]
+  [%  count = 2 %]
+[% END %]
+[%- TRY %]
+   [%- USE news = XML.RSS("${root}/var/rss/${shortname}.rss") %]
+   [% FOREACH item = news.items %]
+       - <a href="[% item.link | html %]">[% item.title %]</a><BR>
+       [% count = count - 1 %]
+       [% LAST IF count == 0 %]
+    [% END %]
+[%- CATCH %]
+    [Error Processing Directive]
+  [%- FILTER stderr %][% error.info %][% END %]
+[%- END %]
+[%- END %]
 
 
-<pre>
 
-(front page has little direct content.. just a few big links... maybe
-two columns.. left one is text right one is image..)
+<h2>Learn Perl</h2>
 
-So, you want to learn perl?  Where to start? 
+So, you want to learn perl?  Where to start?  A good place is 
+<A HREF="http://perldoc.perl.org/perlintro.html"
+   TITLE="A Perl Introduction for Beginners"
+>this introduction
+</A> or any of the books in the Beginners section below.  As you learn more, you can move down the book lists and visit <A HREF="http://www.perl.org/" TITLE="The Perl Resource Directory">www.perl.org</A> and <A HREF="http://www.cpan.org">www.cpan.org</A> for more information.
+<p>
 
- [ START HERE ]
+<p>
+You can read the <a href="http://perldoc.perl.org/">perl documentation</a> on our perldoc site!
+Did  you know that you can also access the perl documentation with the <tt>perldoc</tt> command?  Try "<tt>perldoc <a href="http://perldoc.perl.org/perlreftut.html">perlreftut</a></tt>" at your command line prompt.
 
-It would rock to build a tutorial for learning Perl, but this is very
-far down the road.  Perhaps for now we could have a link right to
-Simon's book, it does come highly recommended, and it's a complete,
-free resource.
+</p>
 
- [ MAILING LISTS / FORUMS ]
+<h2>News</h2>
 
-Keeping the current subscribe boxes would be nice.
 
- [ ONLINE LIBRARY ]
+<div style="float:right; border:solid 1px black; width: 30%; padding: 1em; margin: 1em;">
+<H3 align="center"><a href="http://use.perl.org">use.perl.org</a></H3>
+[% quicknews ("useperl",4) %]
+<H3 align="center"><a href="http://www.perl.com">perl.com</a></H3>
+[% quicknews ("perlcom",4) %]
+<H3 align="center"><a href="http://jobs.perl.org">jobs.perl.org</a></H3>
+[% quicknews ("jobs",4) %]
+</div>
 
-Links or hosted, or doesn't matter?
 
- [ TUTORIALS ]
+<P><A HREF="/first-response">Beginners First Response</A> helps you find the answers to the question you're about to ask.</P>
 
-I suspect we just need a link to /tutorials here.
+<P>Announcing the <tt>learn.perl.org</tt> <A HREF="/library">Online
+Library</A> where you can read your favorite perl books.</P>
 
- [ BOOKS ]
+<!-- 
+The <a href="/tips/">tips</a> list is now active. Sign up and get Perl
+tips sent by email a few times a month.
+-->
+<p>
 
-Link to /books.
+You can now read the beginners lists (and all other perl.org
+mailinglists) with your newsreader (<a
+href="http://freshmeat.net/browse/39/">Unix</a>, <a
+href="http://www.tucows.com/downloads/Windows/Internet/NewsgroupsNewsReaders/NewsReaders/"
+>Windows</a> or
 
-</pre>
+<a href="http://www.smfr.org/mtnw/">MacOS</a> readers) from the news
+server
+<a href="news://nntp.perl.org/perl.beginners">nntp.perl.org</a>.  You can
+also browse it <a href="http://nntp.perl.org/group/perl.beginners/">on
+the web</a>
+
+
+[% PROCESS books_content.html %]
+
