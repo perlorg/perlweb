@@ -25,6 +25,7 @@ fi
 
 # TODO: change this to check if the httpd is still running every second
 mkdir -p $WORK_PATH/htdocs && mkdir -p $WORK_PATH/ctpl && mkdir -p $LOG_PATH && \
+rm -fr $WORK_PATH/ctpl/* && \
 $CBROOT/bin/make_configs && \
 $CBROOT/apache/bin/apachectl configtest && \
 $CBROOT/apache/bin/apachectl stop && sleep 6 && $CBROOT/apache/bin/apachectl start
