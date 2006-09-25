@@ -27,8 +27,8 @@ BEGIN {
   
     my %opt = (
       domain   => $db_cfg->{domain} || 'combust',
-      type     => $db_name,
-      database => $db_name,
+      type     => $db_cfg->{type} || $db_name,
+      database => $db_cfg->{database} || ($dsn=~ /[:;]database=(\w+)/)[0] || $db_name,
       driver   => $driver,
       dsn      => $dsn,
       username => $db_cfg->{user},
@@ -45,13 +45,15 @@ BEGIN {
   }
 }
 
-sub new {
-  my $class = shift;
+sub init_dbh {
+  my $self = shift;
+  $self->SUPER::init_dbh(@_) && $self->retain_dbh;  # Prevent Rose::DB from disconnecting
+}
 
-  my $db = $class->SUPER::new(@_);
-  $db->retain_dbh;    # Prevent Rose::DB from disconnecting
-
-  $db;
+sub dbh {
+  my $self = shift;
+  @_ ? $self->SUPER::dbh(@_) && $self->retain_dbh # Prevent Rose::DB from disconnecting
+     : $self->SUPER::dbh;
 }
 
 1;
