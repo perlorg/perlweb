@@ -25,6 +25,6 @@ if [ ! -z $CBROOTLOCAL ]; then
   LLIB=-I$CBROOTLOCAL/lib
 fi
 
-$MYPERL -I$CBROOT/lib $LLIB ${1+"$@"} 
+exec $MYPERL -I$CBROOT/lib $LLIB ${1+"$@"} 
 
 

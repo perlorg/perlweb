@@ -45,15 +45,17 @@ BEGIN {
   }
 }
 
-sub init_dbh {
-  my $self = shift;
-  $self->SUPER::init_dbh(@_) && $self->retain_dbh;  # Prevent Rose::DB from disconnecting
-}
-
+our $once;
 sub dbh {
   my $self = shift;
-  @_ ? $self->SUPER::dbh(@_) && $self->retain_dbh # Prevent Rose::DB from disconnecting
-     : $self->SUPER::dbh;
+  my $dbh = $self->SUPER::dbh(@_);
+  unless ($once) {
+    local $once = 1;
+    $self->retain_dbh; # Prevent RDB calling disconnect
+  }
+  $dbh;
 }
+
+sub DESTROY { } # Avoid disconnect being called
 
 1;
