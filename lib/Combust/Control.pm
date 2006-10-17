@@ -196,7 +196,7 @@ sub get_include_path {
     return \@path;
   }
 
-  my $site_dir = $config->site->{$site}->{docs_site} || $site;
+  my @site_dirs = split /:/, ($config->site->{$site}->{docs_site} || $site);
 
   #warn Data::Dumper->Dump([\$r], [qw(r)]);
 
@@ -228,7 +228,7 @@ sub get_include_path {
     # FIXME|TODO: should expand on ~ instead of using /home
     $user = "/home/$user";
     $path = [
-	     "$user/$docs/$site_dir/",
+	     (map { "$user/$docs/$_/" } @site_dirs),
 	     "$user/$docs/shared/",
 	     "$user/$docs/",
 	    ];
@@ -236,7 +236,7 @@ sub get_include_path {
   else {
     my $root_docs = $config->root_docs;
     $path = [
-	     "$root_docs/$site_dir/",
+	     (map { "$root_docs/$_/" } @site_dirs),
 	     "$root_docs/shared/",
 	     "$root_docs/",
 	    ];
