@@ -7,6 +7,7 @@ use Apache::Constants qw(:common :response);
 use Apache::File;
 use Carp qw(confess cluck carp);
 use Encode qw(encode_utf8);
+require bytes;
 
 use Exception::Class ('Ex_ServerError');
 
@@ -359,7 +360,7 @@ sub send_output {
     $length = (stat($output))[7];
   }
   else {
-    $length = length($output);
+    $length = bytes::length($output);
   }
 
   $r->update_mtime(time) if $r->mtime == 0; 

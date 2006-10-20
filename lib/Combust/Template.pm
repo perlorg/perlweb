@@ -135,9 +135,11 @@ sub process {
     $tpl_params->{config} = $config unless $tpl_params->{config};
 
     my $output;
-    unless ($self->{tt}->process($template, $tpl_params, \$output)) {
+    unless ($self->{tt}->process($template, $tpl_params, \$output, { binmode => ":utf8" })) {
         croak $self->{tt}->error . "\n";
     }
+    # XXX:  Why does $output not get UTF8 bit set correctly ??
+    utf8::decode($output);
     $output;
 }
 
