@@ -139,7 +139,7 @@ sub process {
         croak $self->{tt}->error . "\n";
     }
     # XXX:  Why does $output not get UTF8 bit set correctly ??
-    utf8::decode($output);
+    utf8::decode($output) || utf8::upgrade($output);
     $output;
 }
 
