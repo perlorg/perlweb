@@ -1,7 +1,7 @@
 #!/bin/sh
 if [ -z $CBROOT ]; then
-  echo CBROOT environment variable not set
-  exit 
+  echo CBROOT environment variable not set 1>&2
+  exit 255
 fi
 
 ROOT=${CBROOTLOCAL:-$CBROOT}
@@ -9,15 +9,15 @@ ROOT=${CBROOTLOCAL:-$CBROOT}
 CONFIGFILE=${CBCONFIG:-$ROOT/combust.conf}
 
 if [ ! -f $CONFIGFILE ]; then
-  echo Could not find configuration file $CONFIGFILE
-  exit
+  echo Could not find configuration file $CONFIGFILE 1>&2
+  exit 255
 fi
 
 HTTPD=`grep ^httpd $CONFIGFILE | cut -d= -f2 | sed 's/[[:space:]]//g'`
 
 if [ -z $HTTPD ]; then
-  echo Could not find "httpd = /path/bin/httpd" line in the combust.conf
-  exit
+  echo Could not find "httpd = /path/bin/httpd" line in the combust.conf 1>&2
+  exit 255
 fi
 
 $HTTPD ${1+"$@"}

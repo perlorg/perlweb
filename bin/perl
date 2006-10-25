@@ -1,7 +1,7 @@
 #!/bin/sh
 if [ -z $CBROOT ]; then
-  echo CBROOT environment variable not set
-  exit 
+  echo CBROOT environment variable not set 1>&2
+  exit 255
 fi
 
 # funny bash syntax for setting ROOT to one or the other if the one isn't set
@@ -10,15 +10,15 @@ ROOT=${CBROOTLOCAL:-$CBROOT}
 CONFIGFILE=${CBCONFIG:-$ROOT/combust.conf}
 
 if [ ! -f $CONFIGFILE ]; then
-  echo Could not find configuration file $CONFIGFILE
-  exit
+  echo Could not find configuration file $CONFIGFILE 1>&2
+  exit 255
 fi
 
 MYPERL=`grep ^perl $CONFIGFILE | cut -d= -f2 | sed 's/[[:space:]]//g'`
 
 if [ -z $MYPERL ]; then
-  echo Could not find "perl =" line in the combust.conf
-  exit
+  echo Could not find "perl =" line in the combust.conf 1>&2
+  exit 255
 fi
 
 if [ ! -z $CBROOTLOCAL ]; then
