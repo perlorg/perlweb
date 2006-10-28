@@ -19,15 +19,14 @@ sub render {
 
   my $error_text = $r->pnotes('error') || '';
 
-  
-  $self->tpl_param('error_uri'    => $r->prev->uri);
   $self->tpl_param('error'        => $error);
   $self->tpl_param('error_header' => $error_header);
   $self->tpl_param('error_text'   => $error_text);
 
-  # is this right?  
   my $r_err = $r->main || $r->prev || $r;
-  $self->tpl_param('error_url', $r_err->uri);
+  # the default template uses error_uri, but error_url was setup here too...
+  $self->tpl_param('error_url' => $r_err->uri);
+  $self->tpl_param('error_uri' => $r_err->uri);
 
   return OK, $self->evaluate_template($template);
 }
