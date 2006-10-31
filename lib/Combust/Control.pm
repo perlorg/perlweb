@@ -462,6 +462,13 @@ sub cookie {
   $self->cookies->cookie(@_);
 }
 
+sub deployment_mode {
+    my $self = shift;
+    my $dm = $self->config->site->{$self->site}->{deployment_mode} || 'test';
+    warn "INVALID deployment_mode CONFIG for ", $self->site, "! Use devel, test or prod\n" unless $dm =~ m/^(devel|test|prod)$/;
+    $dm;
+}
+
 sub request {
   my $self = shift;
   return $self->{_request} if $self->{_request};
