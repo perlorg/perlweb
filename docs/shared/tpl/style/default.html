@@ -54,6 +54,10 @@
      END
   %]
   [% IF page.morehead; page.morehead; END %]
+  [% IF page.rss %]
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="[% page.rss %]" />
+  [% END %]
+
   [% PROCESS "tpl/googleanalytics.html" %]
 </head>
 <body>

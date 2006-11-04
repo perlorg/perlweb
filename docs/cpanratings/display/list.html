@@ -1,5 +1,7 @@
 [% page.title = header %]
 
+[% page.rss = r.uri _ '.rss' %]
+
 <p>
 <a href="[% r.uri %].rss">RSS</a>
 [% UNLESS mode == 'author' %]
