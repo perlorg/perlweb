@@ -35,10 +35,11 @@ sub bc_info_required {
 sub as_rss {
   my ($self, $reviews, $mode, $id) = @_;
 
+
   my $rss = XML::RSS->new(version => '1.0');
-  my $link = "http://" . $self->config->site->{cpanratings}->{servername};
+  my $link = $self->config->base_url('cpanratings');
   if ($mode and $id) {
-      $link .= ($mode eq "author" ? "/a/" : "/d/") . $id;
+      $link .= ($mode eq "author" ? "/user/" : "/dist/") . $id;
   }
   else {
       $link .= '/';
@@ -53,7 +54,7 @@ sub as_rss {
                        subject    => "Perl",
                        creator    => 'ask@perl.org',
                        publisher  => 'ask@perl.org',
-                       rights     => 'Copyright 2004, The Perl Foundation',
+                       rights     => 'Copyright 2004-' . ((gmtime)[5]+1900) .', The Perl Foundation',
                        language   => 'en-us',
                       },
                 syn => {
@@ -77,7 +78,7 @@ sub as_rss {
                           creator  => $review->user_name,
                          },
                   );    
-    last if ++$i == 10;
+    last if ++$i == 20;
   }
   
   my $output = $rss->as_string;
