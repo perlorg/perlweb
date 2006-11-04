@@ -28,7 +28,7 @@ sub render {
     
     return $self->system_error("$uri didn't return a result") unless (defined $result);
 
-    return OK, $result;
+    return OK, $result, 'text/javascript';
 
 }
 
@@ -40,7 +40,7 @@ sub system_error {
     return OK, $json->objToJson({ system_error => $err,
                                   server       => hostname,
                                   datetime     => $time,
-                                });
+                                }), 'text/javascript';
 }
 
 
