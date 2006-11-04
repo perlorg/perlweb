@@ -50,19 +50,12 @@
 
 <br /><span class="helpfulq">Was this review helpful to you?&nbsp;
 
-<iframe name="YesNoVotingFrame" id="YesNoVotingFrame" height=0 width=0 style="visibility:hidden;"></iframe>
-<script language="Javascript1.1" type="text/javascript">
-<!--
-var uId = '[% review.id %]';
-var vUrl = '/rate/helpful?review_id=[% review.id %]';
-showYesButton(vUrl,uId);
-showNoButton(vUrl,uId);
-showYesNoDefaultMessage(uId);
-//-->
-</script>
-<noscript>
-<!-- we need to add a non-js link to rate stuff helpful/not helpful here... -->
-</noscript>
+<!-- we should add non-js links to rate stuff helpful/not helpful too... -->
+
+<a class="js_link" onclick="CR.Helpful.Vote( [% review.id %], 'yes' ); return false;">Yes</a>
+<a class="js_link" onclick="CR.Helpful.Vote( [% review.id %], 'no' ); return false;">No</a>
+<span class="vote_thanks" id="thanks_[% review.id %]"></span>
+
 </span>
 
 </p>

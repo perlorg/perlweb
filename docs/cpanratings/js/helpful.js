@@ -1,76 +1,44 @@
 
-function showYesNoCommunityResponse(uId,result,value) {
-    var msgLayer = getElement("thanks" + uId);
-    if ( result == "SUCCESS" ) {
-	msgLayer.innerHTML = "Thanks! " + value;
-    } else {
-	showYesNoErrorResponse(uId,result,value);
-    }
-}
 
-function getElement(id, d) {
-    if (!d) d = document;
-    if (d.getElementById) {
-	return d.getElementById(id);
-    }
-    if (d.layers && d.layers[id]) {
-	return d.layers[id];
-    }
-    if (d.all && d.all[id]) {
-	return d.all[id];
-    }
-}
+CR.Helpful = {};
 
-function showYesNoDefaultMessage(uId){
-    document.write("<span class='tiny' style='color:#990000;margin-left:5px;' id='" + "thanks" + uId + "'></span>");
-}
+CR.Helpful.Vote = function(review_id, vote) {
 
-function restoreYesNoDefaultMessage(uId){
-    var msgLayer = getElement("thanks" + uId);
-    msgLayer.innerHTML = "";
-}
+  var status_span = YAHOO.util.Dom.get("thanks_" + review_id);
+  if (!status_span)
+    return;
 
-function showYesButton(vUrl, uId){
-    var yesVote = ' <a style="cursor:pointer; text-decoration: underline;" onclick="sendYesNoRating( \'' + vUrl + '&v=y\', \'' + uId + '\' ); return false;">Yes</a>';
-    document.write(yesVote);
-}
+   var callback = {
+        success:function(o) {
+          var review_id = o.argument.review_id;
+          var status_span = YAHOO.util.Dom.get("thanks_" + review_id);
+          var response =  eval( '(' + o.responseText + ')' );
+          var status_text = '';
+          if (response.error) {
+            status_text = response.error;
+          }
+          else {
+            status_text = 'Thanks! ' + response.message;
+          }
+          status_span.innerHTML = status_text;
+        },
+        failure:function(o) {
+          var review_id = o.argument.review_id;
+          var status_span = YAHOO.util.Dom.get("thanks_" + review_id);
+          var status_text = o.statusText;
+          if (o.status == -1)
+            status_text = 'Timeout / Transaction aborted';
+          status_span.innerHTML = 'Error: ' + status_text;
+        },
+        timeout: 15000,
+        argument: { review_id: review_id }
+   };
 
-function showNoButton(vUrl, uId){
-    var noVote = ' <a style="cursor:pointer; text-decoration: underline;" onclick="sendYesNoRating( \'' + vUrl + '&v=n\', \'' + uId + '\' ); return false">No</a>';
-    document.write(noVote);
-}
+  status_span.innerHTML = '<img src="/images/progress.gif">';
 
-function sendYesNoRating(vUrl,uId){
-    restoreYesNoDefaultMessage(uId);
-    var voteLayer = getElement('YesNoVotingFrame');
-    voteLayer.src = vUrl;
-}
+  var transaction = YAHOO.util.Connect.asyncRequest('POST', '/api/helpful/vote', callback,
+                                                    'auth_token=' + global_auth_token 
+                                                    + '&review_id=' + review_id
+                                                    + '&vote=' + vote); 
 
-function showYesNoResponse(uId,result,value) {
-    var msgLayer = getElement("thanks" + uId);
-    if ( result == "SUCCESS" ) {
-	msgLayer.innerHTML = "Thank you for your feedback.";
-    } else {
-	showYesNoErrorResponse(uId,result,value);
-    }
 }
-
-function showYesNoErrorResponse(uId,result,value) {
-    var msgLayer = getElement("thanks" + uId);
-    if ( result == "BADVOTE" ) {
-	msgLayer.innerHTML = "There was a problem with your request.";
-    }
-    else if ( result == "UNRECOGNIZED" ) {
-	msgLayer.innerHTML = "You must be logged in to vote.";
-    }
-    else if ( result == "SERVICE-FAILURE" ) {
-	msgLayer.innerHTML = "There was an error processing your request. Please try again later.";
-    }
-    else if ( result == "ILLEGAL" ) {
-	msgLayer.innerHTML = "You are not allowed to vote on your own review.";
-    }
-    else {
-	msgLayer.innerHTML = result;
-    }
-}
-

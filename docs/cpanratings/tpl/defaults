@@ -1,8 +1,18 @@
 [%-  page = {
             title = template.title,
             style = template.style or 'default.html',
-	    site  = "CPAN Ratings (BETA)"
+	    site  = "CPAN Ratings (Gamma)"
     };
+
+    page.morehead = page.morehead _ '
+     <script type="text/javascript">
+       var CR = {};
+       var global_auth_token = \'' _ combust.user_auth_token _ "';
+     </script>";
+
+    page.morehead = page.morehead _ '
+       <script type="text/javascript" src="/js/yui/yui.js"></script>
+    ';  
 
     page.banner_prefix = page.site;	
 
