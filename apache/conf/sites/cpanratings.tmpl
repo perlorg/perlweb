@@ -42,6 +42,10 @@
        PerlHandler CPANRatings::Control::RecentRSS->super
     </Location>
 
+    <Location /api>
+       SetHandler perl-script
+       PerlHandler CPANRatings::Control::API->super
+    </Location>
 
     <Location /error/>
        SetHandler   perl-script

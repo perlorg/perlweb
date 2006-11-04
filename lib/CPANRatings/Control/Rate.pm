@@ -12,8 +12,6 @@ sub render {
 
   my $r = $self->r;
 
-  return $self->render_helpful_vote if $r->uri =~ m!^/rate/helpful!; 
-
   my ($submit) = $r->uri =~ m!^/rate/submit!;
 
   my $template = 'rate/rate_form.html';
@@ -128,66 +126,6 @@ sub error {
   return OK, $self->evaluate_template('rate/rate_error.html');
 }
 
-sub render_helpful_vote {
-  my $self = shift;
-
-  my $review_id = $self->req_param('review_id') || '';
-  my $vote      = $self->req_param('v') || '';
-
-  $review_id = ''  unless $review_id =~ m/^\d+$/;
-
-  $vote =~ m/^[yn]$/ or return $self->_return_helpful_vote($review_id, 'BADVOTE');
-
-  my $user = $self->user_info or return $self->_return_helpful_vote($review_id, 'UNRECOGNIZED');
-
-  my $review = CPANRatings::Model::Reviews->retrieve($review_id)
-    or return $self->_return_helpful_vote($review_id, 'SERVICE-FAILURE');
-
-  return $self->_return_helpful_vote($review_id, 'ILLEGAL') if $review->user->id == $user->id;
-
-  my $updated = $review->add_helpful({ user => $user, helpful => $vote eq 'y' ? 1 : 0 });
-
-  $self->_return_helpful_vote($review_id, 'SERVICE-FAILURE')
-    unless $updated;
-  
-  $self->_return_helpful_vote($review_id, 'SUCCESS',
-                              ($updated == 2 
-                                 ? "We'll update your vote." 
-                                 : 'Your vote will be counted within a couple of hours.'
-                              )
-                             );
-
-}
-
-sub _return_helpful_vote {
-  my ($self, $review_id, $code, $value) = @_;
-
-  $value = $value || '';
-
-  # SUCCESS 
-  # BADVOTE
-  # UNRECOGNIZED
-  # SERVICE-FAILURE
-  # ILLEGAL
- 
-  my $msg = <<EOV;
-<html>
-<head><title>CPAN Ratings</title>
-
-<script language="Javascript1.1" type="text/javascript">
-<!--
-parent.showYesNoCommunityResponse("$review_id","$code","$value");
-//-->
-</script>
-</head>
-</html>
-
-
-EOV
-
-  return OK, \$msg;
-
-}
 
 1;
 

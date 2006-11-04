@@ -6,5 +6,7 @@ use CPANRatings::Control::Show;
 use CPANRatings::Control::ShowAll;
 use CPANRatings::Control::Logout;
 use CPANRatings::Control::RecentRSS;
+use CPANRatings::Control::API;
+
 
 1;
