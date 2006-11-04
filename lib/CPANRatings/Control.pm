@@ -15,58 +15,21 @@ our $cookie_name = 'cpruid';
 sub init {
   my $self = shift;
 
-  if ($self->req_param('sig') or $self->req_param('bc_id')) {
-    my $bc = $self->bitcard;
-    my $bc_user = eval { $bc->verify($self->r) };
-    warn $@ if $@;
-    unless ($bc_user) {
-      warn $bc->errstr;
-    }
-    if ($bc_user and $bc_user->{id} and $bc_user->{username}) {
-      my ($user) = CPANRatings::Model::User->search({ bitcard_id => $bc_user->{id} });
-      unless ($user) {
-	$user = CPANRatings::Model::User->find_or_create({ username  => $bc_user->{username} });
-      }
-      my $uid = $user->id;
-      $user->username($bc_user->{username});
-      $user->name($bc_user->{name});
-      $user->bitcard_id($bc_user->{id});
-      $user->update;
-      $self->cookie($cookie_name, $uid);
-      $self->user_info($user);
-    }
-  }
+  $self->bc_check_login_parameters;
 
   return OK;
 }
 
-sub is_logged_in {
-  my $self = shift;
-  my $user_info = $self->user_info;
-  return 1 if $user_info and $user_info->username;
-  return 0;
+sub bc_user_class {
+  'CPANRatings::Model::User';
 }
 
-sub user_info {
-  my $self = shift;
-
-  return $self->{_user} if $self->{_user};
-
-  if (@_) {
-    return $self->{_user} = $_[0];
-  }
-
-  my $uid = $self->cookie($cookie_name) or return;
-  my $user = CPANRatings::Model::User->retrieve($uid);
-  return $self->{_user} = $user if $user;
-  $self->cookie($cookie_name, '0');
-  return;
-}
+# old code here
+sub user_info { shift->user(@_) }
 
 sub bc_info_required {
   'username'
 }
-
 
 
 sub as_rss {
