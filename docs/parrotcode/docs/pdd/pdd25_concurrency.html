@@ -4,7 +4,7 @@
 
 [% USE ua = CacheLWPSimple %]
 [% data = ua.get( 'url' =>
-      'http://svn.perl.org/parrot/trunk/docs/pdds/clip/pdd25_threads.pod'
+      'http://svn.perl.org/parrot/trunk/docs/pdds/clip/pdd25_concurrency.pod'
            'ttl' => 1*60*60 ) %]
 [% USE PodSimple %]
 [% PodSimple.parse('html', data ) %]
