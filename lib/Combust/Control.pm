@@ -462,6 +462,29 @@ sub cookie {
   $self->cookies->cookie(@_);
 }
 
+
+# default api_class tries to guess what you wanted
+sub api_class {
+    my $class = shift;
+    my ($api_class) = $class =~ m/^([^:]+)/;
+    return "${api_class}::API" unless $api_class eq 'Combust';
+    die 'api_class not defined in your controller';
+}
+
+sub api {
+    my ($self, $method, $params, $args) = @_;
+
+    return $self->api_class->call
+      ($method,
+       { params   => $params,
+         ($self->can('user')
+          ? (user => $self->user) 
+          : ()),
+         $args ? (%$args) : (),
+       },
+      );
+}
+
 sub deployment_mode {
     my $self = shift;
     my $dm = $self->config->site->{$self->site}->{deployment_mode} || 'test';

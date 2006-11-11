@@ -31,17 +31,6 @@ sub bc_info_required {
   'username'
 }
 
-sub api {
-    my ($self, $method, $params, $args) = @_;
-
-    return CPANRatings::API->call
-      ($method,
-       { params   => $params,
-         user     => ($self->user || 0),
-         $args ? (%$args) : (),
-       },
-      );
-}
 
 sub user_auth_token {
     my $self = shift;

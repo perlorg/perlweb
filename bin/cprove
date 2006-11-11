@@ -19,6 +19,6 @@ my @prove = ("$cbr/bin/perl", $prove, @ARGV);
 
 print join(" ", @prove), "\n";
 
-system(@prove);
+exec(@prove);
 
 

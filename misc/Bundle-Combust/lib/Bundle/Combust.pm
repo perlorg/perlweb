@@ -1,6 +1,6 @@
 package Bundle::Combust;
 
-$VERSION = "1.03";
+$VERSION = "1.04";
 
 1;
 
@@ -87,6 +87,7 @@ String::CRC32
 
 Cache::Memcached
 
+Class::Accessor::Class
 
 =head1 AUTHOR
 
