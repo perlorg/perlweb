@@ -474,14 +474,16 @@ sub api_class {
 sub api {
     my ($self, $method, $params, $args) = @_;
 
+    my $api_params = {
+             params   => $params,
+             ($args ? (%$args) : ()),
+       };
+    
+    $api_params->{user} = $self->user if $self->can('user');
+
     return $self->api_class->call
       ($method,
-       { params   => $params,
-         ($self->can('user')
-          ? (user => $self->user) 
-          : ()),
-         $args ? (%$args) : (),
-       },
+       $api_params,
       );
 }
 

@@ -20,7 +20,7 @@ sub render {
     }
     
     my ($result, $meta) = eval {
-        $self->api($method, $self->request->req_params, { json => 1 });
+        $self->api($method, $self->api_params, { json => 1 });
     };
     if ($@) {
         return $self->system_error($@);
@@ -29,20 +29,35 @@ sub render {
     return $self->system_error("$uri didn't return a result") unless (defined $result);
 
     return OK, $result, 'text/javascript';
+}
 
+sub api_params {
+    shift->request->req_params;
 }
 
 my $json = JSON->new(selfconvert => 1, pretty => 1);
 
-sub system_error {
+sub _format_error {
     my $self = shift;
     my $time = scalar localtime();
     chomp(my $err = join(" ", $time, @_));
     warn "ERROR: $err\n";
-    return OK, $json->objToJson({ system_error => $err,
-                                  server       => hostname,
-                                  datetime     => $time,
-                                }), 'text/javascript';
+    $json->objToJson({ system_error => $err,
+                       server       => hostname,
+                       datetime     => $time,
+                     });
+}
+
+sub show_error {
+    my $self = shift;
+    $self->send_output($self->_format_error(@_), 'text/javascript');
+    return 400;
+}
+
+sub system_error {
+    my $self = shift;
+    $self->send_output($self->_format_error(@_), 'text/javascript');
+    return 500;
 }
 
 
