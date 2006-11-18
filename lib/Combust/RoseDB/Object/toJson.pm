@@ -1,5 +1,6 @@
 package Combust::RoseDB::Object::toJson;
 use strict;
+use Scalar::Util;
 
 sub _json_columns {
   shift->meta->columns;
@@ -30,7 +31,7 @@ sub toJson {
   foreach my $column ($self->_json_columns) {
     my $name = ref($column) ? $column->name : $column;
     my $v = $self->$name; 
-    if (ref($v)) {
+    if (Scalar::Util::blessed($v)) {
       if ($v->isa('DateTime')) {
         my $meth = $date_formatter{$column->type};
         $v = $v->$meth; # strftime($date_format{$column->type});

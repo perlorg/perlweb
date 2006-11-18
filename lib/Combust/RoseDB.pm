@@ -24,7 +24,7 @@ BEGIN {
   
     my ($scheme, $driver, $attr_string, $attr_hash, $driver_dsn) = DBI->parse_dsn($dsn)
         or die "Can't parse DBI DSN '$dsn'";
-  
+
     my %opt = (
       domain   => $db_cfg->{domain} || 'combust',
       type     => $db_cfg->{type} || $db_name,
@@ -35,7 +35,11 @@ BEGIN {
       password => $db_cfg->{password},
     );
     $opt{server_time_zone} = $db_cfg->{time_zone} if $db_cfg->{time_zone};
-    
+
+    if ($db_cfg->{sql_mode} and $db_cfg->{sql_mode} =~ /(\S+)/) {
+      push @{$opt{post_connect_sql}}, "SET sql_mode = '$1'";
+    }
+
     __PACKAGE__->register_db(%opt);
     
     if ($db_cfg->{default}) {
