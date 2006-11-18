@@ -12,7 +12,6 @@ our $cookie_name = 'bc_u';
 sub bc_check_login_parameters {
     my $self = shift;
     if ($self->req_param('sig') or $self->req_param('bc_id')) {
-        warn "got sig and bc_id!";
         my $bc = $self->bitcard;
         my $bc_user = eval { $bc->verify($self->r) };
         warn $@ if $@;
@@ -20,8 +19,11 @@ sub bc_check_login_parameters {
             warn "Authen::Bitcard error: ", $bc->errstr;
         }
         if ($bc_user and $bc_user->{id}) {
-            warn "got user!";
-            my $user = $self->bc_user_class->find_or_create({ bitcard_id => $bc_user->{id} });
+            my $user;
+            if ($self->bc_user_class->can('username') and $bc_user->{username}) {
+                ($user) = $self->bc_user_class->search( username => $bc_user->{username} );
+            }
+            $user = $self->bc_user_class->find_or_create({ bitcard_id => $bc_user->{id} }) unless $user;
             for my $m (qw(username email name)) {
                 next unless $user->can($m);
                 $user->$m($bc_user->{$m});
@@ -32,7 +34,6 @@ sub bc_check_login_parameters {
             $self->user($user);
             return $user;
         }
-        warn "no user?";
     }
 }
 
