@@ -37,6 +37,7 @@ world!&quot;.
 
 <pre class="pre code">  # ``the'' example
   print &quot;Hello world!\n&quot;
+  end
 </pre>
 
 <p>When you run this example, you'll get:</p>
@@ -399,14 +400,14 @@ The various types of PMCs shipped with Parrot are defined in the file
 <p>
 To use a PMC, you must first create it using the <tt>new</tt>
 operator. You can then assign it a value and treat it much like the
-lower-level types. The following code creates two PerlInt PMCs and
+lower-level types. The following code creates two Integer PMCs and
 adds them together.
 </p>
 
 
-<pre class="pre code">  new P0, .PerlInt
+<pre class="pre code">  new P0, .Integer
   set P0, 123
-  new P1, .PerlInt
+  new P1, .Integer
   set P1, 321
   add P1, P1, P0
   print P1
@@ -421,9 +422,9 @@ adds them together.
 
 <p>The following code concatenates a number and a string. </p>
 
-<pre class="pre code">  new     P0, .PerlInt
+<pre class="pre code">  new     P0, .Integer
   set     P0, 42
-  new     P1, .PerlInt
+  new     P1, .Integer
   set     P1, &quot; is the answer!&quot;
   concat  P0, P0, P1
   print   P0
@@ -437,22 +438,27 @@ adds them together.
 </pre>
 
 <p>
-It's worth noting that Perl integers also behave as strings and as a result,
+You may notice that in the last example, we declare P1 as an Integer type,
+but then set it to a string value.  As with their Perl or Tcl counterparts,
 PMCs have the ability to change their own type on the fly. (also known as
-morphing or shimmering). If you trace this code:
+morphing or shimmering). If you trace this code: <tt>parrot -t1 foo.pasm</tt>
+...
 </p>
 
-<pre class="pre note">     0 new P0, 35       - P0=PMCNULL, 
-     3 set P0, 42       - P0=PerlInt=PMC(0xcf11d0 Num:0.000000 Int:0), 
-     6 new P1, 35       - P1=PMCNULL, 
-     9 set P1, " is the answer!"        - P1=PerlInt=PMC(0xcf11b8 Num:0.000000 Int:0), 
-    12 i_concatenate P0, P1     - P0=PerlInt=PMC(0xcf11d0 Num:42.000000 Int:42), P1=PerlString=PMC(0xcf11b8 Str:" is the answer!")
-    16 print P0         - P0=PerlString=PMC(0xcf11d0 Str:"42 is the answer!")
+<pre class="pre note">     0 new P0, 30                       P0=PMCNULL 
+     3 set P0, 42                       P0=Integer=PMC(0xf004f4: 0) 
+     6 new P1, 30                       P1=PMCNULL 
+     9 set P1, " is the answer!"        P1=Integer=PMC(0xf004e0: 0) 
+    12 i_concatenate P0, P1             P0=Integer=PMC(0xf004f4: 42) P1=String=PMC(0xf004e0 Str:" is the answer!")
+    16 print P0                         P0=String=PMC(0xf004f4 Str:"42 is the answer!")
     18 print "\n"
+42 is the answer!
     20 end
+
 </pre>
 
-<p>You see that the P0 and P1 registers are initialized as PerlInts.
-At line 12, however, the concat is processing a PerlInt (P0) and a PerlString
-(P1). The assignment on line 9 morphed the PMC in P1 to a different type.
+<p>... you see that the P0 and P1 registers are both initialized as the same
+type (Integers), but at line 12, the concat opcode is processing a Integer
+(P0) and a String (P1). The assignment on line 9 morphed the PMC in P1 to a 
+different type automatically.
 </p>
