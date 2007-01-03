@@ -4,7 +4,7 @@
 
 [% USE ua = CacheLWPSimple %]
 [% data = ua.get( 'url' =>
-      'http://svn.perl.org/parrot/trunk/docs/pdds/clip/pdd22_io.pod'
+      'http://svn.perl.org/parrot/trunk/docs/pdds/pdd22_io.pod'
            'ttl' => 1*60*60 ) %]
 [% USE PodSimple %]
 [% PodSimple.parse('html', data ) %]
