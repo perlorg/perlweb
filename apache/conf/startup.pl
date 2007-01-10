@@ -13,18 +13,13 @@ use Combust::Config;
 
 use Apache::Constants qw(OK);
 
-BEGIN {
-  if ($ENV{CBROOT} =~ m/redrock/) {
-    require RRE::Control;
-    require RRE::Control::RSS;
-  }
-}
+my $config = new Combust::Config;
 
 sub ProxyIP::handler {
     my $r = shift;
-    my $config = new Combust::Config;
+
     return OK
-     unless grep {$_ eq $r->connection->remote_ip} $config->proxyip_forwarders;
+     unless grep { $_ eq '*' or $_ eq $r->connection->remote_ip } $config->proxyip_forwarders;
 
     my @ip = split(/,\s*/, ($r->header_in('X-Forwarded-For')||''));
     if (my $ip = pop(@ip)) {

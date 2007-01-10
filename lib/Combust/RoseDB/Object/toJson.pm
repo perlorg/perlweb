@@ -1,6 +1,7 @@
 package Combust::RoseDB::Object::toJson;
 use strict;
 use Scalar::Util;
+use JSON;
 
 sub _json_columns {
   shift->meta->columns;
@@ -24,7 +25,7 @@ my %date_formatter = (
   time      => 'hms',
 );
 
-sub toJson {
+sub get_data_hash {
   my $self = shift;
   my %hash;
 
@@ -53,5 +54,12 @@ sub toJson {
 
   \%hash;
 }
+
+sub toJson {
+    my ($self, $json) = @_;
+    $json ||= JSON::Converter->new(selfconv => 1);
+    $json->hashToJson($self->get_data_hash);
+}
+
 
 1;

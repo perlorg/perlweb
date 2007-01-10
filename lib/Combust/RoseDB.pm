@@ -63,3 +63,46 @@ sub dbh {
 sub DESTROY { } # Avoid disconnect being called
 
 1;
+
+__END__
+
+# This has been put into the upstream code now
+
+package Rose::DB::MySQL;
+
+sub parse_set {
+    my($self) = shift;
+    
+    return $_[0]  if(ref $_[0]);
+    return [ @_ ] if(@_ > 1);
+
+    my $val = $_[0];
+    
+    return undef  unless(defined $val);
+
+    my @set = split /,/, $val;
+
+    return \@set;
+}
+
+sub format_set {
+    my($self) = shift;
+
+    my @set = (ref $_[0]) ? @{$_[0]} : @_;
+    
+    return undef  unless(@set && defined $set[0]);
+
+    return join(',', map {
+        if(!defined $_)
+          {
+              Carp::croak 'Undefined value found in array or list passed to ',
+                  __PACKAGE__, '::format_set()';
+          }
+        else {
+            $_
+        }
+    } @set);
+}
+
+
+1;
