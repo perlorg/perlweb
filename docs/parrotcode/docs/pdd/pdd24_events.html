@@ -2,9 +2,11 @@
 [% page.style = "default.html" %]
 [% page.sidebar = INCLUDE "tpl/navigation.html" %]
 
+<h1>Draft: Pending Verification</h1>
+
 [% USE ua = CacheLWPSimple %]
 [% data = ua.get( 'url' =>
-      'http://svn.perl.org/parrot/trunk/docs/pdds/clip/pdd24_events.pod'
+      'http://svn.perl.org/parrot/trunk/docs/pdds/draft/pdd24_events.pod'
            'ttl' => 1*60*60 ) %]
 [% USE PodSimple %]
 [% PodSimple.parse('html', data ) %]

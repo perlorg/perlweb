@@ -2,20 +2,11 @@
 [% page.style = "default.html" %]
 [% page.sidebar = INCLUDE "tpl/navigation.html" %]
 
-[%#
-<B>PLACEHOLDER</B><BR>
-POD comes from 
-
-<tt>http://svn.perl.org/parrot/trunk/docs/pdds/pdd05_opfunc.pod</tt>
-
-and cache for 24 hours.
-%]
-
 <h1>Draft: Pending Verification</h1>
 
 [% USE ua = CacheLWPSimple %]
 [% data = ua.get( 'url' =>
-      'http://svn.perl.org/parrot/trunk/docs/pdds/clip/pdd05_opfunc.pod'
+      'http://svn.perl.org/parrot/trunk/docs/pdds/draft/pdd05_opfunc.pod'
            'ttl' => 1*60*60 ) %]
 [% USE PodSimple %]
 [% PodSimple.parse('html', data ) %]
