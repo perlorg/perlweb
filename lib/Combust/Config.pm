@@ -257,6 +257,19 @@ sub docs_name {
   $cfg->param('docs_name') || 'docs/live';
 }
 
+sub job_servers {
+  my $self = shift;
+  my $port = $self->job_server_port;
+  my $js = $cfg->param('job_servers') || "127.0.0.1";
+  my @js = ref $js ? @$js : ($js);
+  map { $_ =~ m/:/ ? $_ : "$_:$port" } @js;
+}
+
+sub job_server_port {
+  $cfg->param('job_server_port') || "7003";
+}
+
+
 # apache configuration
 
 sub maxclients          { $cfg->param('apache.maxclients')      || 20 }
