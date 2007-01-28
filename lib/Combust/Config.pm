@@ -235,6 +235,10 @@ sub perl {
   $cfg->param('perl');
 }
 
+sub apache_libexec {
+  $cfg->param('apache_libexec');
+}
+
 
 #sub config {
 #  $cfg;
