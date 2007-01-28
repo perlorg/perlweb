@@ -4,7 +4,7 @@
 
 You need Apache 1.3.x with mod_perl 1.2.x, Perl 5.8 and the CPAN
 modules from the following section.  Combust can be installed and run
-as any user. (As long as it doesn't bind to port 80.)  We reccomend
+as any user. (As long as it doesn't bind to port 80.)  We recommend
 using a front-end Apache2 proxy on port 80.
 
 If the sites you work on use caching you will also need to run a
@@ -83,7 +83,7 @@ server runs on port 8225 (configured in combust.conf).
 
     svn co https://svn.develooper.com/combust/trunk .
 
-  svn co https://svn.develooper.com/perl.org/docs    
+  svn co https://svn.perl.org/perl.org/docs
 
   # setup configuration from the sample conf
   cp combust.conf.sample combust.conf
@@ -92,7 +92,7 @@ server runs on port 8225 (configured in combust.conf).
   CBROOT=`pwd` ./bin/run_httpd
 
 The read-only username and password for the svn server are both
-"guest".
+"guest". [This is not true on svn.perl.org.]
 
 /combust/branches/stable is usually an older version of Combust in
 less flux.  The /combust/trunk version is the one currently in
@@ -125,11 +125,11 @@ switch to the latest stable version you would use
 
 =head2 Use a different document root on the fly
 
-Adding "?root=user/path" to a url will make Combust use the
+Adding "?root=user" to a url will make Combust use the
 ~user/docs/path as the document root when loading templates.  For
 example then I'd use
 
-  http://site.c.askask.com/?root=ask/live
+  http://site.c.askask.com/?root=ask
 
 to load templates from ~ask/docs/live on my development server. 
 
