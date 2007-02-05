@@ -116,7 +116,16 @@ sub user {
   return $self->{_user} if $self->{_user};
   if (@_) { return $self->{_user} = $_[0] }
   my $uid = $self->cookie($cookie_name) or return;
-  my $user = $self->bc_user_class->retrieve($uid);
+  my $user;
+  if ($self->bc_user_class->can('retrieve')) {
+      # Class::DBI
+      $user = $self->bc_user_class->retrieve($uid);
+  }
+  elsif ($self->bc_user_class->can('fetch')) {
+      # RDBO with combust helpers
+      $user = $self->bc_user_class->fetch(id => $uid);
+  }
+
   return $self->{_user} = $user if $user;
   $self->cookie($cookie_name, '0');
   return;
