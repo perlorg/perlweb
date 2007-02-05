@@ -1,0 +1,153 @@
+# -*- cperl -*-
+eval 'exec $CBROOT/bin/perl $0 ${1+"$@"}'
+  if $running_under_some_shell;
+use strict;
+use warnings;
+
+use Getopt::Long qw(GetOptions);
+use Rose::DB::Object::Loader;
+use Combust::DB::Manager;
+use Combust::DB::Object;
+use File::Path qw(mkpath);
+
+GetOptions(
+  'db=s@' => \my @db_name,
+  'all'   => \my $all,
+);
+
+my %db_class;
+while (my($class,$type) = each %Combust::DB::Object::class_type) {
+ $db_class{$type} = $class->schema;
+}
+
+@db_name = keys %db_class if $all;
+
+die "Nothing todo, specify a database with --db={prod,feeds,...} or use --all\n" unless @db_name;
+
+if (my @unknown = grep { !exists $db_class{$_} } @db_name) {
+  warn "Unknown db '$_'\n" for @unknown;
+  exit 1;
+}
+
+$| = 1;
+
+generate_schema($_) for @db_name;
+
+sub generate_schema {
+  my $db_name = shift;
+  my $schema_class = $db_class{"$db_name"}
+    or die "Bad db_name '$db_name'\n";
+
+  print "Generating $schema_class ...\n";
+
+  (my $base_class = $schema_class . "::Object") =~ s/::Model::/::DB::/;
+
+  my $loader = Rose::DB::Object::Loader->new(
+    db            => $base_class->init_db,
+    base_class    => $base_class,
+    class_prefix  => "Foo__::$schema_class", # Prevents ::Loader loading existing classes
+    with_managers => 0,
+    # convention_manager => 'CN::DB::ConventionManager',
+  );
+
+  my @classes = sort grep { $_->isa('Rose::DB::Object') }
+    $loader->make_classes(
+      filter_tables => \&filter_tables,
+    );
+
+  (my $schema_path = $schema_class) =~ s,::,/,g;
+  my $schema_file = $ENV{CBROOTLOCAL} . "/lib/$schema_path.pm";
+
+  (my $schema_dir = $schema_file) =~ s,/[^/]+$,,;
+  mkpath($schema_dir) unless -d $schema_dir;
+
+  open(FH,">$schema_file.tmp") or die "Canot open '$schema_file.tmp': $!\n";
+  select(FH);
+
+  print <<EOS;
+package $schema_class;
+##
+## This file is auto-generated *** DO NOT EDIT ***
+##
+use Combust::DB::Object;
+use Combust::DB::Manager;
+
+our \$SVN = q\$Id\$;
+
+EOS
+
+
+  foreach my $class (@classes) {
+    my $meta = $class->meta;
+
+    foreach my $col ($meta->columns) {
+      $col->default('now') if $col->type eq 'datetime' and !$col->default and $col->not_null;
+    }
+
+    if (cached_filter($meta->table)) {
+        $meta->cached_objects_expire_in('12 hours');
+    }
+
+    my @isa = cached_filter($meta->table)
+      ? ( isa => "${base_class}::Cached") : ();
+    my $t = $meta->perl_class_definition(indent => 2, @isa);
+    my $m = $meta->perl_manager_class( isa => 'Combust::DB::Manager');
+
+    $t =~ s/^use Foo__.*\n\n?//mg;
+    s/\s*^1;$//m for $t, $m;
+    s/Foo__:://g for ($t, $m, $class);;
+
+    (my $class_path = $class) =~ s,::,/,g;
+
+    print <<EOS;
+{ $t}
+
+{ $m}
+
+# Allow user defined methods to be added
+eval { require $class }
+  or \$@ !~ m:^Can't locate $class_path.pm: and die \$@;
+
+EOS
+
+  }
+
+  my $classes = join("\n    ",'my @classes = qw(',@classes,');');
+  print <<EOS;
+{ package $schema_class;
+
+  sub dbh { shift; $base_class->init_db(\@_)->dbh; }
+  sub db  { shift; $base_class->init_db(\@_);      }
+
+  $classes
+  sub flush_caches {
+    \$_->meta->clear_object_cache for \@classes;
+  }
+
+EOS
+
+  foreach my $class (@classes) {
+    $class =~ s/Foo__:://g;
+    (my $meth = $class) =~ s/([A-Z])/_\l$1/g;
+    $meth =~ s/.*::_//;
+    print "  my \$$meth;\n";
+    print "  sub $meth { \$$meth ||= bless [], '${class}::Manager' }\n";
+  }
+  print "\n}\n1;\n";
+
+  select(STDOUT);
+  close(FH);
+
+  rename("$schema_file.tmp", $schema_file);
+}
+
+sub filter_tables {
+  return 0 if /combust/i or /^(old|te?mp)_/;
+  return 0 if /^((index|search)polygons|s_\d+_part_)/;
+  return 1;
+}
+
+
+sub cached_filter {
+  $_[0] =~ /^(groups)$/ ? 1 : 0;
+}

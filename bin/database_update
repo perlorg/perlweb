@@ -1,0 +1,169 @@
+# -*- cperl -*-
+eval 'exec $CBROOT/bin/perl $0 ${1+"$@"}'
+  unless $running_under_some_shell;
+use strict;
+use warnings;
+use Combust::DB qw(db_open);
+use Getopt::Long qw(GetOptions);
+
+=head1 database_update
+
+By default this program runs the updates to get the database schema to
+the latest revision.  It takes a few options that can make it output
+the needed SQL instead.
+
+It uses the C<schema_revision> table to keep track of the version of
+the schema.  The table is created with an assumed revision of 0 if it
+doesn't already exists.
+
+=head2 Synopsis
+
+   $CBROOT/bin/database_update database_name 
+
+   $CBROOT/bin/database_update --from 5  database_name 
+
+
+=head2 Strategy
+
+This system uses explicit SQL statements to change the schema from one
+known revision to another.  (Another strategy, not implemented here,
+is to just look at the current schema column by column and change it
+to what it should be).
+
+=head2 Options
+
+=over 4
+
+=item --sql
+
+Output SQL instead of actually running the updates
+
+=item --from $revision
+
+Output the SQL from the specified revision to the latest revision
+(instead of using whatever revision the schema in the current database
+is on).
+
+Implies C<--sql>.
+
+=back
+
+=cut
+
+my %opts = (sql  => 0,
+            from => 0,
+           );
+
+GetOptions (\%opts,
+            "sql!",
+            "from=i", 
+           );
+
+$opts{sql} = 1 if $opts{from};
+
+my $database = shift or die "$0 [database_name]\n";
+my $dbh = db_open($database);
+
+my %rev;
+{
+    my $cur_rev;
+    my $sql = '';
+    my $filename = "$ENV{CBROOTLOCAL}/sql/$database.update";
+    open my $fh, "<", $filename or die "Could not open $filename: $!";
+    while (<$fh>) {
+        if (my ($new_rev) = (m/^\#(\d+)/)) {
+            $rev{$cur_rev} = _split_sql($sql) if $cur_rev and $sql;
+            $sql = '';
+            die "$new_rev revision defined twice!\n" if $rev{$new_rev};
+            $cur_rev = $1;
+            next;
+        }
+        next unless m/\S/;
+        next if m/^\s*(\#|--\s)/;
+        die "No revision set, line [$_]\n" unless $cur_rev;
+        $sql .= $_;
+    }
+    $rev{$cur_rev} = _split_sql($sql) if $cur_rev and $sql;
+}
+
+
+sub _split_sql {
+    my $sql = shift;
+    [ split ';\s*\n+', $sql ]
+}
+
+my $db_version     = $opts{from} || get_db_version();
+my $latest_version = get_latest_version();
+
+# warn Data::Dumper->Dump([\%rev], [qw(rev)]); exit;
+
+if ($db_version == $latest_version) {
+  print "Database schema is up-to-date! (v${db_version})\n";
+  exit;
+}
+
+if ($db_version > $latest_version) {
+  printf "Ooops!  Your database version is v%i but the code is expecting v%i!  Aborting.\n",
+    $db_version, $latest_version;
+  exit;
+}
+
+if ($latest_version > $db_version) {
+  printf "Schema update needed.  You have v%i and v%i is needed.\n",
+    $db_version, $latest_version;
+
+  for my $r ($db_version+1 .. $latest_version) {
+    print "\n--\n-- * Updating to v$r...\n--\n";
+    die "Doesn't know how to update from v", $r-1, " to v$r! ABORTING\n" unless $rev{$r};
+    for my $c (@{ $rev{$r} }) {
+      my @tables;
+      do_sql($c);
+    }
+    update_db_version($r);
+  }
+}
+
+sub do_sql {
+  my $sql = shift;
+  if ($opts{sql}) {
+      my @opts = map { $dbh->quote($_) } @_;
+      while (@opts and $sql =~ s/\?/shift @opts/e) { 1 };
+      $sql =~ s/\s+$//ms;
+      $sql .= ';' unless $sql =~ m/;\s*$/ms;
+      printf "%s\n", $sql;
+  }
+  else {
+      printf " - %s\n", $sql;
+      $dbh->do($sql, {}, @_);
+  }
+}
+
+sub get_latest_version {
+  my @a = sort { $b <=> $a } keys %rev;
+  $a[0];
+}
+
+sub get_db_version {
+  my ($revision) = eval { $dbh->selectrow_array(q[select revision from schema_revision]) };
+  if (my $err = $@) {
+      if ($err =~ m/doesn't exist/) {
+          $dbh->do(q[create table schema_revision (revision smallint unsigned not null default 0) ENGINE=InnoDB DEFAULT CHARSET=utf8;]);
+          return get_db_version()
+      }
+      else {
+          die $err
+      }
+
+  }
+  # for now we'll just default this to 0
+  $revision ||= 0;
+  # die "Could not get revision from db" unless $revision;
+  $revision;
+}
+
+sub update_db_version {
+  my ($revision) = shift or return;
+  do_sql(q[update schema_revision set revision=?], $revision);
+}
+
+
