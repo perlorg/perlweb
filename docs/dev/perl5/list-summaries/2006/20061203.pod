@@ -1,0 +1,503 @@
+=head1 This Week on perl5-porters - 27 November-3 December 2006
+
+I<"So I don't really have an answer for you. When faced with a similar
+situation, I punted and did a PerlIO_fdopen(fileno(stdio)) instead of
+a PerlIO_importFILE(stdio).  This way you know you are creating a
+unixio layer which gets ref counted properly."> -- Craig A. Berry,
+somewhere in the sprawling PerlIO layers saga.
+
+=head1 Topics of Interest
+
+=head2 C<PerlIO::Scalar> buffering
+
+H.Merijn Brand wondered if he had uncovered a problem with performing
+IO to a scalar, since at the end of a series of operations where the
+scalar should have been emptied, a lone newline character remained.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-11/msg00995.html
+
+=head2 Whither 5.8.9
+
+Jerry D. Hedden wondered if there was going to be a 5.8.9 release, and if
+so would arrive before 5.10.0. H.Merijn Brand confirmed that a 5.8.9 release
+is going to happen some time, and it's likely to escape from the lab before
+5.10. No dates have been set for either event as yet.
+
+  when it's ready
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-11/msg01004.html
+
+=head2 Old C<dmake>s for building perl on Win32...
+
+Steve Hay noticed that recent changes to the Makefiles for Windows are
+no longer understood by the older make programs floating around in the
+Windows world. He felt that the best approach was to update the README
+to explain the fix, in the unlikely event that someone encounters it,
+and to move on.
+
+  time to go
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-11/msg01010.html
+
+=head2 ... and archaic Visual C++ compilers
+
+Steve also noted that the compiler writers at Microsoft have played the
+compiler command line switch fandango in recent versions, and now
+warnings are emitted when certain deprecated switches are used.  To
+get things into shape means drawing the line at VC++ 5.0.  This
+equates to roughly a 10 year old compiler. The Makefile states that
+things should be compatible all the way back to 2.0, but Steve has
+his doubts.
+
+Nicholas Clark pointed out that if people really need to use a pre-5.0
+compiler, all they have to do is change the new-name switch back to
+old-name, and things should work. Steve updated F<README.win32> to note
+this point.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-11/msg01022.html
+
+=head2 Trouble with PERLIO_INIT/PERLIO_TERM changes
+
+Steve Hay and Jarkko Hietaniemi tried to make sense of the ongoing
+PerlIO problems, in that reference counts were going too far negative
+and bad things were happening as a result. And the code was a bit
+too twisty for people to understand exactly what was happening. My
+eyes sort of glazed over on this thread.
+
+It eventually wound up being filed as a bug, see below.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-11/msg01062.html
+
+Also, in another thread, Steve also wondered whether
+B<PerlIO_importFILE()> needed to do a C<refcnt_inc>. Craig A. Berry
+showed him how to test the hypothesis. One thing that came out of
+it is that Steve noticed that the code was leaking file descriptors.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00026.html
+
+Similarly, Yves Orton found a segfault on Windows due
+to one of the many changes that were attempted this week
+to come to grips with these issues. Rafaël was pretty
+sure about which patch was the problem, and when Yves reverted it,
+his build succeeded in starting the test suite.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00042.html
+
+=head2 C<PathTools> now at svk.perl.org
+
+Ken Williams announced that he'd thrown up C<File::Spec> and C<Cwd>,
+on a Subversion repository, and asked if there were any volunteers
+who wanted to poke around at them. Philippe Bruhat bravely stepped
+forward.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-11/msg01081.html
+
+=head2 Change #26513 breaks C<Devel::SmallProf>
+
+Nicholas Clark found that the addition of an assertion to ensure
+an AV is always non-null made C<Devel::SmallProf> curl up and die,
+and didn't what to do about it.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-11/msg01101.html
+
+In the new month, the thread continued: Gisle Aas observed that
+the problem went away of the build was configured with C<usethreads>.
+Rafaël Garcia-Suarez realised that the heart of the problem lay
+in F<toke.c>, and made the appropriate change there.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00009.html
+
+=head2 Minor patch for C<Benchmark.pm>
+
+Christophe Grosjean patched what he thought was a minor problem
+in C<Benchmark>, but was really quite a significant bug when you
+think about it: C<cmpthese> used to ignore child process times,
+which led to the fascinating outcome that a process that spawned
+an external command appeared to be faster than something done in
+native Perl.
+
+  Highly illogical
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00065.html
+
+=head1 Patches of Interest
+
+=head2 Abstract mempool header testing
+
+Jarkko did a bit of work on memory pools, (that approximates the
+conditions of Win32 on Unix), where memory allocation (especially
+in threads) is a much trickier issue. Nicholas Clark gave a clear
+explanation of how the mechanisms present in the source code fitted
+together, and Jan Dubois completed the picture.
+
+Based especially upon Jan's information, Jarkko produced a patch to
+attempt to clear up some PerlIO problems. Jan, however, thought
+that the code in question traded one set of problems (the mempool
+allocations) for another (leaking stuff from the opcode tree instead),
+and explained how to fix that problem
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-11/msg00991.html
+
+As the month rolled over into December, Yves Orton took a stab at
+the matter, pointing to a couple of spots in the code that he felt
+relied on flawed assumptions.  The patches went back and forth, and
+I lost track of which patch undid what, and which ones were reverted.
+
+Jan Dubois suggested one strategy for getting things straightened
+out, and Jarkko coded it up as a patch. This seemed to fix things
+sufficiently well that Steve Hay was able to unrevert a previously
+reverted patch with everything still behaving itself.
+
+Yves was most impressed, but also confused, and asked if there was some
+documentation that explained The Big Picture. Steve Hay did his best to
+illuminate the part of the canvas that he understood, hoping that Jan
+Dubois would chip in and complete as necessary. And so he did. Jan gave
+a thorough best exposé on the issue of mempools here:
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00128.html
+
+Now all we need is for someone to draw a diagram of the myriad ways
+in which one may allocate memory in perl. The thread in the December,
+from the top:
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00056.html
+
+=head2 Building 5.8.8 on OS/2
+
+Ilya Zakharevich delivered a patch to get 5.8.8 compiling again on
+OS/2. There are still some tests that fail, and Ilya promised to
+address them in a future patch.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-11/msg01013.html
+
+=head2 C<perl5db> on C<miniperl>
+
+Similarly, Ilya noticed that F<perl5db.pl> no longer worked with
+C<miniperl>, due to a reliance on C<IO::Handle>, which was not yet
+fully operational at that stage of the build process. So he tweaked
+things to handle this situation gracefully.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-11/msg01014.html
+
+=head2 C<Test::Class> and blead
+
+A test in C<Test::Class> tested for a bogus regular expression, and
+was supposed to die. The funny part was that thanks to Yves Orton's
+tireless efforts, what used to be a meaningless string of characters
+is now a legal pattern, so the pattern matches and the test fails.
+
+So Nicholas Clark made the pattern even more bogus, to force the
+pattern to fail again. Which judging by Yves's prodigious output,
+should see the test safe for a least three weeks.
+
+  NO CARRIER
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-11/msg01047.html
+
+=head2 MacOSX debugger fork support
+
+F<perldb.pl> received some more patching goodness from Bo Lindbergh
+to allow the debugger to be fired up in a separate terminal window
+on Mac OS/X.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-11/msg01048.html
+
+=head2 Make C<B::Lint> use C<Module::Pluggable>
+
+Joshua ben Jore was one of the first people to take advantage of
+C<Module::Pluggable>'s new promotion to core, and rewrote C<B::Lint>
+to make use of it. He was immensely pleased, since it meant that he
+was able to rip out the previous clumsy efforts.
+
+  The street finds its own uses for things
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-11/msg01073.html
+
+=head2 No code specified for -.
+
+Jarkko discovered that an 'e' was dropped in the message C<No code
+specified for -e> if in fact there was no code.
+
+  dash before e except after p
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-11/msg01077.html
+
+=head2 Perl regexp structures bifurcation
+
+Yves Orton continued to deliver a stream of changes to introduce a
+higher level of abstraction to the regular expression engine. This
+is part of his ongoing work to permit pluggable engines.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-11/msg01098.html
+
+=head2 C<\R> means something else in POSIX
+
+Yves discovered that not only does the Unicode consortium care about
+regular expressions, they even published a specification on the
+matter. Yves read the spec, and learnt that they recommend using
+C<\R> as a best-practice sequence for specifying a generic line-break
+marker.
+
+This unfortunately clashes with C<\R> as a relative back-reference
+assertion in Perl's regular expression, but since we are still not
+out of beta, Yves was quite happy to cast around for a different
+unused character. After looking around at what was left of the
+alphabet, he settled in C<\g> (as in group). He implemented a
+generalised syntax with curly braces, so that now C<\g1> or C<\g{1}>
+is the same as the existing C<\1>, and conversely, that C<\g-1> and
+C<\g{-1}> as a replacement for the now-defunct C<\R1> syntax. (Yves,
+if you're reading this, doesn't that mean you could drop
+C<\kE<lt>fooE<gt>> and subsume it into C<\gE<lt>fooE<gt>>? You have
+15 minutes to write the patch).
+
+
+Yves also thought that implement C<\R> shouldn't be too difficult either,
+noting in passing that Philip Hazel will be delivering it in the next
+release of PCRE.
+
+  14 minutes and counting
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00067.html
+
+=head1 New and old bugs from RT
+
+=head2 Segfault due to a semicolon inside an array reference (#40995)
+
+Shlomi Fish discovered that a semi-colon, such as in C<[ $i-E<gt>func2();
+]> gets the tokeniser in a tizz. Rafaël noted that this
+misbehaviour was fixed in blead.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-11/msg00996.html
+
+=head2 Setting C<$0> invalidates environment shown by C<ps> (#41008)
+
+Alexander Bluhm noted that assigning to C<$0> causes unwanted side-effects
+on OpenBSD, and suggested a patch to fix things up. Rafaël took it and
+applied it to C<blead>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-11/msg01028.html
+
+=head2 C<(?(COND))> in pattern matching not working properly (#41010)
+
+Karl Williamson discovered a bug where an alternation (C<(a|b)>)
+did not match the same thing as a character class (C<[ab]>). What
+was worse was that the original program, when it didn't crash, the
+values of other assorted variables in the program mysteriously
+changed. Yves Orton figured out what the problem was, and developed
+a patch to fix things up.
+
+  Applied
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-11/msg01038.html
+
+=head2 "backslash-G" does not appear to work in a while loop (#41011)
+
+Jim Woodworth filed what he thought was a bug, but Dr. Ruud suspected
+that he was a victim of crypto-context.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-11/msg01039.html
+
+=head2 Changing C<$0> on darwin leads to excessive padding in C<ps> (#38868)
+
+The week continued in a C<$0> vein, with Darwin also causing trouble. Chris
+Dolan sorted things out with the help of the C preprocessor.
+
+  You were expecting \0?
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00038.html
+
+=head2 Regexp optimizer loses its hopes too soon (#39096)
+
+Yves Orton explored the reasons why the optimiser was ignoring
+obvious shortcuts and pointed out why a naive solution wouldn't
+work, and the problems that a generalised solution would have to
+consider.
+
+  It used to be simple
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00062.html
+
+=head2 C<LD_LIBRARY_PATH> changes not exported to Dynaloader,Perl 5.8.8 On Solaris 8 (#40655)
+
+A mysterious person reported that this bug was resolved.
+
+  Private and Confidential
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00064.html
+
+=head2 SIGSEGV with C<pos()> in regexp (#40989)
+
+Yves Orton noted that this bug no longer existed in C<blead>. This is no doubt
+a pleasing side-effect of all the work that the engine has received in recent
+times, although he was hard pressed to say which change would have been
+responsible. By extension, he didn't expect the fix to be backported to
+C<maint>.
+
+  One more reason
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00015.html
+
+Yves noted that bug #39893 was probably another facet of the same problem.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00019.html
+
+=head2 C<File::Glob> braces with character classes erratic behaviour (#41027)
+
+Kolano discovered some inconsistencies with globs, curly braces and
+character classes.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00039.html
+
+=head2 Nested closures result in scoping related segmentation fault (#41028)
+
+... and they are fixed in blead.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00040.html
+
+=head2 C<PerlIOUnix_refcnt_dec()> croaks in bleadperl since #29065 (#41030)
+
+Steve Hay reported that since change #29065, his C<Win32-SharedFileOpen>
+croaked with a strange error from somewhere within PerlIO. He traced the
+problem to a couple of patches, thinking that while they were not incorrect,
+perhaps there was an underlying bug which had only now been exposed as a result.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00053.html
+
+=head2 MSWin32: can't disable crlf trans. on STDxxx using :raw or binmode (#41034)
+
+Vaclav Ovsik reported a problem with end-of-line markers on Windows. He
+was not able to disable end-of-line translations on files opened by default
+(such as C<STDOUT> and C<STDERR>, but files opened afterwards were just fine.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00054.html
+
+=head2 Perl5 Bug Summary
+
+We almost crept under the 1500 barrier this week.
+
+  Once more into the breech
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-11/msg00990.html
+
+  http://rt.perl.org/rt3/NoAuth/perl5/Overview.html
+
+=head1 New Core Modules
+
+=over 4
+
+=item *
+
+C<IPC::Cmd> achieved core status this week. Steve Hay tweaked it slightly
+to fix a test problem on Windows.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-11/msg01012.html
+
+=item *
+
+C<threads> moved onto version 1.53. This corrected some of the problems
+that Steve Hay was experiencing with his smoke machine, but now he saw
+that the test suite was hanging on a different test.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-11/msg00998.html
+
+=item *
+
+C<File::Fetch> made it to the core. Johan Vromans wondered why this
+functionality was not added to C<LWP::UserAgent>. The reason is that
+C<File::Fetch> is a wrapper for any number of command-line tools
+and protocols than can be used to fetch a file (such as C<rsync>,
+C<LWP> itself, C<curl>, C<wget> and the like).
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00012.html
+
+=back
+
+=head1 In Brief
+
+Nicholas Clark taught the B<Aho-Corasick regexp patch> how to behave
+in the presence of threads.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-11/msg00985.html
+
+H.Merijn Brand discovered that B<C<PerlIO::Scalar> ignores C<format> and
+C<write>>, preferring instead to send the output to C<STDOUT>, instead of
+the associated variable.
+
+  The last user of formats in the world
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-11/msg01003.html
+
+B<C<Time::Piece> is back> from the future.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-11/msg01015.html
+
+David Landgren discovered that B<a literal before C<< \kE<lt>fooE<gt> >> (a
+named back reference)> can really ruin a conference talk. Yves Orton
+resolved the problem in 20 minutes, give or take a few.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-11/msg01031.html
+
+The B<5.8.3 C<sprintf> patch> made its way into the B<Mac OS X Security Update 2006-007>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-11/msg01040.html
+
+Paul Marquess independently rediscovered the joy of B<testing
+filehandles with threaded 5.6.x> perls, and decided to give it
+a wide berth.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-11/msg01041.html
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00014.html
+
+Bo Lindbergh B<proposed adding lexical scope to C<SelfLoader>>, complete
+with patch, but elicited no comments.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-11/msg01051.html
+
+Gabor Szabo and Abe Timmerman talked about the B<broken pages on
+db.test-smoke.org>. 
+
+  In November
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-11/msg01096.html
+
+  and in December
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00004.html
+
+Yves Orton had some B<unhappy results with C<Time::HiRes>>. After
+an incredibly long thread, everything was sorted out.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-11/msg01099.html
+
+Johan Vromans was worried that B<adding C<Module::Load::Conditional>
+to the core> would be like unleashing Pandora's box.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00017.html
+
+Yves Orton wanted to know whether 'twas B<better to merge bugs or set
+up dependencies>.
+
+  Whatever lowers the count most
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00020.html
+
+Jarkko tried in vain to sort out B<the UTF-8 -related failures>
+that have been occurring in the smokes since August. Nicholas
+Clark explained the difficulties.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00028.html
+
+Jarkko added some things to think about in C<perltodo>.
+
+  Nick's movie
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00036.html
+
+Jim Cromie noticed that the B<C<install> target misses
+C<Compress/IO/{Base,Zlib}>>. The ideal solution involves using a
+more orthodox directory layout for the modules: C<Configure> gets
+too confused otherwise.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00044.html
+
+Rob "Sisyphus" puzzled over B<integer exponentiation under
+C<-Duse64bitint> on Cygwin>, wondering why the same result could
+be stored as an NV (a float) or an IV (an integer). Nicholas
+Clark could no longer remember why, only that it was a conscious
+design decision not to do integer exponentiation.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00050.html
+
+=head2 About this summary
+
+This summary was written by David Landgren.
+
+Weekly summaries are published on F<http://use.perl.org/> and posted
+on a mailing list, (subscription: F<perl5-summary-subscribe@perl.org>).
+The archive is at F<http://dev.perl.org/perl5/list-summaries/>.
+Corrections and comments are welcome.
+
+If you found this summary useful, please consider contributing to
+the Perl Foundation to help support the development of Perl.

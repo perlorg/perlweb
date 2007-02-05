@@ -1,0 +1,383 @@
+=head1 This Week on perl5-porters - 25 September-1 October 2006
+
+"Well not since that time you thought that embedding perl was a
+good idea in the first place" -- Johnathon Stowe, commenting on
+Marc Lehmann saying that yes, he loved embedding perl in other
+applications and that no, he didn't do drugs.
+
+=head1 Topics of Interest
+
+=head2 Wrapping up EVAL handling in blead's regexp engine
+
+Dave Mitchell checked in a couple of patches to fix the breakage
+that had crept in during the recent overhaul to the regexp engine.
+Yves Orton liked what he saw, and suggested a few ways to improve
+the maintainability.
+
+Dave told him to go for it. And so he did.
+
+  Mad scientists at work
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00538.html
+
+=head2 pod errors in C<perlref.pod>
+
+David Landgren noticed some formatting errors when looking at
+C<perlref> in blead. Rafael Garcia-Suarez wondered what podlator
+was being used, since the pod checked out as valid. The
+podlator in question was the bundled C<Pod::Perldoc>, which led
+David to wonder why something like Russ Alberry's podlators
+code. Russ explained what was holding this up.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00550.html
+
+=head2 Nick Ing-Simmons
+
+It was with great sadness that the porters learnt that Nick Ing-Simmons
+had died of a heart attack. Nick was one of the longest serving
+contributors to Perl's development, and we are all poorer for his
+loss.  I can recall many a time when people puzzled over things
+were done in a particular way in the code, until Nick would chip
+in with a a cogent explanation of why. It will be harder without
+him.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00586.html
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00649.html
+
+The Perl Foundation ran the following obituary
+
+  Thanks Nick
+  http://news.perl-foundation.org/2006/09/thanks_nick.html
+
+=head2 Unhandled exceptions in shared libraries
+
+Kalpana Shetty explained a problem with shared libraries throwing
+an exception, and the perl program dumping core on a C<SIGABRT>
+signal. No takers, possibly since the exact nature of the shared
+library wasn't specified.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00619.html
+
+=head2 C<reentr> reshuffle
+
+Jarkko Hietaniemi looked at bug #40256 and a few other bits and
+pieces, and rejigged F<reentr.pl> to make everyone happy. In fact,
+Marc Lehmann was positively ecstatic.
+
+  Get down
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00621.html
+
+=head2 seek beyond length
+
+Juerd Waalboer wanted to know whether it was reasonable to seek,
+upon a scalar opened for IO, beyond its length. And especially
+what happens as a result. Dave Mitchell confirmed that Bad Things
+were indeed happening, that probably should be fixed.
+
+  oops
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00626.html
+
+I think that this may be what inspired Jarkko to file cook up the
+following patch:
+
+  Don't talk to strangers
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00663.html
+
+=head2 Finding the *correct* line number
+
+Curtis "Ovid" Poe wanted to disambiguate two calls to a function
+on the same line with C<caller>. Dave Mitchell mentioned that he
+had proposed to spend two bytes per op, which, at the expense of
+a certain increase in memory consumption, would clear these sorts
+of problems up, once and for all.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00648.html
+
+=head2 Fixing up C<lndir> to improve source tree symlinking
+
+Jim Cromie made a small change to C<lndir> to make it behave more
+nicely in the presence of modified files (which could other clobber
+the pristine base tree). This kicked off a discussion with John
+Peacock, Rafael Garcia-Suarez and Andy Dougherty about other tricks
+that can be used to deal with similar sorts of home experiments.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00631.html
+
+=head2 Error message changes in C<blead>
+
+Yves Orton mourned the passing of pseudo-hashes, and their attendant
+C<Can't coerce array into hash> error message. Nicholas Clark
+reasoned that it should be possible to change the current C<Not a
+HASH reference> to something like C<can't coerce ARRAY reference
+to HASH reference>, but wondered if it would break anything.
+
+Yves pointed out that since the message had already changed, the
+issue was moot. Nicholas agreed that an error message should explain
+I<why> something was wrong, rather than just saying that it I<was>
+wrong.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00643.html
+
+One may assume that afterwards, Yves went away to see what could
+be done to improve the situation, and came back with a new conclusion:
+perl's error message suck. They are scattered throughout the source,
+which makes maintenance difficult, and localisation impossible. He
+proposed changing things like
+
+	DIE(aTHX_ "Not a GLOB reference");
+
+to
+
+	THROW_ERROR(PERL_ENOTAGLOB);
+
+This way, a message can be changed in one single place, and would
+allow commercial vendors to make perl's error message fit in with
+their own frameworks (witness the recent z/OS efforts), and finally
+allow messages to be translated in to other languages.
+
+Jonathan Stowe wasn't exactly opposed to the idea, but mentioned the
+frequent idiom:
+
+  eval { somethingnasty() };
+  $@ and $@ =~ /Some nasty error/ and recover();
+
+Rafael pointed out that there are messages with %s specifiers
+as well, but that it would surely benefit the maintenance of
+C<perldiag>.
+
+  Globales Symbol "x" erfordert ausdrücklichen Paketnamen
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00653.html
+
+=head1 Patches of Interest
+
+=head2 What Yves Orton did this week
+
+Nicholas applied Yves's patch from last week, which prompted Yves
+to deliver another patch, this time sawing off six thread-shared
+variables. The result is that C<use re 'debug'> is now lexically
+scoped. This latter patch was redone after Rafael had a bit of
+trouble with it. Yves also took the opportunity to throw in some
+tests for lexically scoped regexp debugging.
+
+  Awesome
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00570.html
+
+On to the main course, Yves then delivered a patch that introduced
+a new assertion that allows the writing of elegant expressions to
+match arbitrarily deeply nested pairs of tokens. For instance,
+one could parse XML documents code with:
+
+  /^(<(?:[^<>]+|(?1))*>)$/
+
+(along with the appropriate amount of hand waving). Yves was critical
+of the implementation, in that it requires capturing C<(...)> to
+be used, rather than grouping C<(?:...)>, but on the other hand it
+conforms with what Python and PCRE already do.
+
+Dave Mitchell was most impressed, and quizzed Yves about the
+behavioural semantics regarding backtracking. Rafael wanted to know
+if it was possible to extend the patch to allow case sensitivity
+changes by way of something like C<(?i(?1))>. (Alas, no).
+
+Robin Houston also expressed his delight at the patch and admitted
+to being the party who added this functionality to PCRE since he
+lacked the courage to attack Perl's regular expression internals.
+He too raised a couple of questions about behaviour in borderline
+areas.
+
+Yves followed up with another version of the patch that added
+user documentation and more tests. He has also been reading
+Jeffrey Friedl's I<Mastering Regular Expressions>, and has taken
+up the challenge to resolve as much as possible the areas in
+which Jeffrey finds Perl's regular expressions wanting. He
+laid out his roadmap in C<perltodo>.
+
+All applied.
+
+  And the crowd goes wild
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-10/msg00001.html
+
+And as Yves was sweeping the floor of the lab clean from his previous
+efforts, he bundled up one last patch to tidy the regexp debugging
+output somewhat.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00669.html
+
+=head2 Improving C<Exporter> documentation
+
+Smylers caught up on the Exporter thread (thanks to the summary, heh)
+and argued in favour of ensuring that code was C<strict>-compatible, even
+if C<use strict> wasn't explicitly mentioned in the snippet. This means
+either using package variables or using C<our>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00680.html
+
+=head2 Continuing to deal with some gcc warnings
+
+Sadahiro Tomoyuki figured out why a recent patch of Jarkko's was causing
+things to go B<boom!> on a perl compiled with C<-Duse64bitint>. Patched.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00537.html
+
+=head2 C<File::Temp> doesn't handle C<cmp> overloading
+
+Rafael Garcia-Suarez posted a short snippet demonstrating a problem
+with C<File::Temp> overloading. When stringified (interpolated in
+a string), a C<File::Temp> object returns the underlying file name.
+
+This works fine until you try to compare the stringified object to
+a scalar, at which point perl starts looking for an C<eq> operator
+and dies. So the fix was to overload C<cmp>, and all was well, but
+Rafael wondered whether C<overload> should synthesise a C<cmp> from
+a stringification override.
+
+Rick Delaney pointed out that it will already do this if you add
+the C<fallback =E<gt> 1> attribute. John Peacock didn't like the idea
+of generating C<cmp> automatically.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00547.html
+
+=head2 F<cflags.SH>: The Revenge of C<gcc -std=c89>
+
+Jarkko, ever the optimist, kicked through the rubble of his previous
+C89 configuration patch and worked up a scan to get better results
+back to see how C<-ansi>, C<-pedantic> and C<-std=c89> behave in the
+face of weird system headers and other platform oddities, and asked
+for people on proprietary hardware to take it for a spin and see
+what comes of it.
+
+  Don't take no for an answer
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00681.html
+
+=head1 New and old bugs from RT
+
+=head2 threads creation memory leak (#40416)
+
+Santeri Paavolainen posted a short program that demonstrated a fairly
+definite leak when creating threads. Dave Mitchell noted that it was
+fixed in blead.
+
+  Another reason
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00585.html
+
+=head2 C<File::Find> has issues with symlinks (#40417)
+
+Ammon posted a very long and detailed report about the problems that
+C<File::Find> has in relation to symbolic links. Code included.
+
+  Warnocked
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00605.html
+
+=head2 Unicode Command Line Arguments (#40418)
+
+Dale Gerdermann wanted to read Unicode arguments from the command line
+and it seemed to work in all cases until he hit a regular expression,
+and there he had to force a C<utf8::upgrade($arg)> for it to work.
+
+Dave Mitchell pointed the C<-C> command line switch that takes care
+of this issue.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00609.html
+
+Dale found similar Unicode problems in conjunction with  LWP and Unicode (#40432)
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00675.html
+
+=head2 C<XML-Twig> tests cause C<bleadperl> to segfault (#40420)
+
+Shlomi Fish reported that the test suite of C<XML-Twig> version 3.26
+causes segfaults on C<bleadperl>, but forgot to say which tests were
+at fault.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00615.html
+
+=head2 Segfault in pack (#40427)
+
+dgay showed how to provoke a core dump with a simple call to C<pack>
+and provided a simple patch to fix up the problem. Unapplied.
+
+  Should have a test, too
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00650.html
+
+=head2 Perl5 Bug Summary
+
+  A net increase of ten bugs this week
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00552.html
+
+  Kill a bug today
+  http://rt.perl.org/rt3/NoAuth/perl5/Overview.html
+
+=head1 New Core Modules
+
+=over 4
+
+=item *
+
+Andreas König released CPAN 1.88_51 to CPAN.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00683.html
+
+=back
+
+=head1 In Brief
+
+Dave Mitchell applied an expedient hack to B<allow C<\x{NNN}> in
+F<t/op/re_tests>>.
+
+  So there's no excuse now
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00539.html
+
+Mark Stosberg wanted to B<clarify the documentation for F<lib.pm>>
+with a short snippet. H.Merijn Brand golfed it.
+
+  And still readable
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00573.html
+
+David Landgren made a small clarification in C<perlref> concerning
+B<the interpolation of scalar references>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00553.html
+
+Christian Jaeger made a couple of suggestions to improve B<the
+navigation between C<bugs.perl.org>, Request Tracker and CPAN>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00580.html
+
+Jim Cromie wanted to B<start cooking with C<perl.gcov>>, so Steve
+Peters and Sébastien Aperghis-Tramoni gave him a couple of
+recipes.
+
+  Got you covered
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00571.html
+
+John E. Malmberg. responsible in large part for brings Perl's VMS
+implementation kicking and screaming into the third millennium, had
+to say B<goodbye for now>. He's out looking for a new job, and so
+had to bow out from the list for the time being.
+
+  Thanks, and good luck
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00635.html
+
+Yves Orton noticed that the B<ptree constants TODO tests are passing>
+and wondered if that meant that they could be untodo'ed.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00670.html
+
+Jim Cromie proposed a B<C<-U> patch, that stands for Unofficial Userhacking>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00672.html
+
+Jarkko thought that gcc's B<C<-pedantic> should be renamed C<-useless>>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-10/msg00000.html
+
+=head2 About this summary
+
+This summary was written by David Landgren.
+
+Weekly summaries are published on F<http://use.perl.org/> and posted
+on a mailing list, (subscription: F<perl5-summary-subscribe@perl.org>).
+The archive is at F<http://dev.perl.org/perl5/list-summaries/>.
+Corrections and comments are welcome.
+
+If you found this summary useful, please consider contributing to
+the Perl Foundation to help support the development of Perl.

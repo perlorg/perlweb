@@ -1,0 +1,348 @@
+=head1 This Week on perl5-porters - 1-10 September 2006
+
+I<"Most version control systems have flexible commit hooks to automatically perform actions"> -- Michael G Schwern
+
+I<"Obi Wan Perforce: This isn't the version control system you were looking for. Move along, move along..."> -- John Peacock
+
+=head1 Topics of Interest
+
+=head2 CPAN-ification of core modules - dual life modules
+
+Gabor Szabo wanted to know if the dual-lifing of core modules on
+CPAN was still on the agenda, and if so, was there a list of
+suitable candidates, and/or modules that should never become
+dual-lifed. Rafael Garcia-Suarez said that the process was done
+on an as-needed basis.
+
+Dual-lifing is when a module is bundled with the core distribution,
+but also available separately on CPAN. For instance, C<Time::HiRes>,
+a module that for a long time was only available on CPAN, went into
+core for 5.8.
+
+It stood at version 1.48 when 5.8.0 was released, 1.66 when 5.8.3
+was released, and the current version on CPAN is around 1.90. If
+it wasn't dual-lifed, you would have to wait until a new version
+of Perl came out to get the upgrade. As it is, any of those versions
+of perl can be upgraded to use the current version of Time::HiRes
+from CPAN, with all the attendant bug fixes and improvements that
+the maintainer has made to it over the past four years.
+
+Dual-lifing the core modules, then, is simply giving this same
+flexibility to modules that I<only> come with the perl distribution,
+and do not have a distinct distribution on CPAN.
+
+Michael Schwern explained a couple of the tricks needed to test
+core modules, said that back-porting the module to earlier perls
+would be a bonus, and suggested C<Exporter> and C<Class::Struct>
+as two possible immediate candidates.
+
+  Moving out today
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00051.html
+
+=head2 Dual life for C<Exporter>
+
+So Adriano Ferreira took Schwern's suggestion seriously and
+set about dual-lifing the venerable C<Exporter> module. Andy
+Lester noticed this, and wondered what scratch it itched.
+
+Michael explained that he thought cleaning up cruftiness was a good
+enough reason. Giving people the chance of upgrading just C<Exporter>
+in order to take advantage of some new feature was a Good Thing,
+especially if this would otherwise mean upgrading to the latest
+version of Perl.
+
+After this was explained to Andy, he wholeheartedly agreed, and
+suggested that Adriano hook up with Ricardo Signes, who
+apparently has a number of ideas on the subject.
+
+Following that, H.Merijn Brand played devil's advocate and
+explained what was bad about the idea. The porters decided
+that the current method of doing things should be able to
+handle the points H.Merijn raised.
+
+  Exporting Exporter
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00089.html
+
+=head2 Boolean Operator Evil
+
+David Wheeler was writing a mini-language in Perl, but discovered
+that the lazy evaluation semantics of C<or> makes life complicated
+when you try and overload it. Fergal Daly mentioned Tangram's
+trick of co-opting C<&> and C<|>, which works for most people
+most of the time.
+
+Joshua ben Jore thought that this approach would be less pain
+than grovelling around in C<B::> space to deparse the op-tree
+(which David had mooted as a possible approach).
+
+chromatic mentioned that it is within the realms of the
+feasible (and a little XS code) to override any op in the
+op-tree. Mark-Jason Dominus suggested David get in touch
+with Audrey Tang, who does this sort of mind-bending
+syntax overloading all the time.
+
+  Covert operations
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00055.html
+
+=head2 Trimming OPs
+
+Jim Cromie posted a 90KB patch to combine the C<op_next> and
+C<op_sibling> fields into a union, which could shave up to a fifth
+of the size off the the total of a full op-tree. This might provide
+a benefit to C<mod_perl>-like environments (and hey! it might improve
+L2 cache behaviour).
+
+As things stand, it nearly all works, and Jim asked for clarification
+on a couple of points. After three days of deafening silence, Leon
+Brocard wondered out loud whether the added complexity was worth
+it.
+
+  Now with less fat
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00082.html
+
+=head1 Patches of Interest
+
+=head2 Use direct object constructor calls
+
+chromatic landed a rather large documentation patch. The idea was
+to replace all indirect constructor calls (C<my $f = new Foo>) by
+direct calls (C<my $f = Foo-E<gt>new>), the reason being that the
+documentation should encourage unambiguous and reliable programming
+practices.
+
+Surprisingly enough, the patch elicited next to no comment (chromatic
+and I discussed this at YAPC::Europe last week, imagining that it
+would cause a meltdown on the list). Rafael applied it.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00010.html
+
+He then did the same in F<lib/*>, but ran into problems with
+C<IO::Compress> and C<File::Temp> (at least), since they are both
+dual-lifed. This will require a lot more coordination with
+the various distribution maintainers and thus may fall within the
+realms of fiddling with the bloody grammar[tm].
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00062.html
+
+=head2 Correction to POD for C<FETCH_*_ATTRIBUTES>
+
+Jerry D. Hedden was astonished to find a glaring seven year old
+documentation error in F<attributes.pm>. Which may mean that either
+no-one uses them or no-one reads documentation. Whatever the reason,
+Rafael applied Jerry's correction.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00020.html
+
+=head2 Trie jumping
+
+After a false start last month, Yves Orton managed to beat his latest
+regular expression engine optimisation into submission.
+
+Now, C</foo[xy]+|bar[tu]*|baz+/> goes really fast. That is, fixed-string
+prefixes followed by metacharacters in alternations reap the benefit
+of Yves' earlier trie work, whereas before, only C</foo|bar|baz/> would
+have seen an improvement.
+
+  Jumping out of tries
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00029.html
+
+=head2 Unicode Character Database (UCD) 5.0.0 released
+
+Jarkko Hietaniemi urged all porters to fire up their clay tablets
+and drag out their styluses (ahem, I<styli>), because the latest
+Unicode definitions now include... cuneiform.
+
+Think of the possibilities! And to bring those dreams to reality,
+Jarkko provided a patch to update Perl with this information.
+
+  If it dumps core, will it shatter?
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00081.html
+
+=head2 C++ status update
+
+Jarkko also phoned in with the latest reports about compiling the
+perl source with a C++ compiler. He had managed to get quite far
+with Tru64's C++ compiler, because it is reasonably lenient about
+array declarations and disambiguating C<delete> as a keyword.
+Other compilers are more problematic.
+
+Dominic Dunlop took it for a spin on Mac OS X with g++ 4.0.1 but
+ran into problems right away with C<Configure> getting a bit
+confused about compiler capabilities. He then delivered a patch
+that cleared up many of the issues.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00038.html
+
+=head1 New and old bugs from RT
+
+=head2 5.005_62: C<make distclean> problem (#1647)
+
+A bug opened in 1999 was fixed some time in the past seven years.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00085.html
+
+=head2 C<PerlIO::scalar> doesn't know how to truncate (#40241)
+
+Bo Lindbergh and Nick Ing-Simmons continued to explore the issue of
+what file descriptor functionality needs to be implemented to make
+C<PerlIO::Scalar> behave as much as possible like a file handle.
+C<-s> (for file size) would be useful, and last-modified-time would
+probably have to be kluged in, but C<chown> and C<chmod> could
+probably be no-ops. And so forth.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00019.html
+
+=head2 C<Math::BigInt> silently drops lib argument if not available (#40242)
+
+Tels and Andreas König continued to look at this problem, and
+finally agreed on the right approach to take. Now all that has to
+happen is for Tels to implement it.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00007.html
+
+=head2 C<kill( 0, ... )> does not return alive status of child process (#40262)
+
+"M" noted a discrepancy between the documentation and reality of a
+C<kill> call, to determine the status of a child. David Nicol came
+up with a suitable tweak to the documentation, which was applied
+by Rafael.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00004.html
+
+=head2 Bug with C<bignum> (#40263)
+
+Leif Pedersen encountered a strange problem with C<bignum>, whereby
+C<$char = ord($char) - ord('A') + 10> appeared to have no effect.
+Tels twisted the example slightly, and got it to produce a
+C<Modification of a read-only value> error, which led him to conclude
+that it was an aliasing error.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00003.html
+
+=head2 C<xsubpp> ignores C<PREFIX> when wrapping function declared with INTERFACE (#40264)
+
+Salvador Fandiño uncovered a nasty interaction in C<xsubpp> between
+C<PREFIX> and C<INTERFACE>, and proposed a fix. Rafael agreed that
+the change was necessary, even if it was not backwards compatible.
+He suggested that the issue be raised with Ken Williams, who
+maintains C<ExtUtils::ParseXS> (since C<xsubpp> is merely a wrapper
+around that).
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00012.html
+
+=head2 C<PerlIO::scalar> doesn't respect readonly-ness (#40267)
+
+Bo Lindbergh uncovered another beauty in C<PerlIO::scalar>. Mike
+Guy hoped that a couple of variations on the theme would be also
+be fixed by whoever fixed it. Rafael fixed it with change #28798,
+so let's hope it all gets bedded down in the test suite.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00032.html
+
+=head2 subroutine call with C<&> in C<perlop> example (#40272)
+
+Sebastian Schmidt suggested function call in an C<s///e> operation
+should lose its C<&> sigil. Rafael agreed, so now it doesn't.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00037.html
+
+=head2 Perl coredumps on nested C<s///e> (#40274)
+
+Jean-Louis Leroy showed how perl goes all pear-shaped when one
+tries to nest C<s///e> operations. In perl's defence, the code
+does look interestingly abstruse.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00049.html
+
+=head2 C<Configure> problem (#40286)
+
+Howard Shubs had a problem configuring perl on a path containing a space.
+Andy Dougherty came up with a crude patch to backslash-escape spaces in
+paths, but suspected that a number of other places may need similar
+treatment. Kids, this is definitely something you can try at home.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00088.html
+
+=head2 Perl5 Bug Summary
+
+  10 more thrown onto the pile, for a total of 1531.
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00047.html
+
+  Close one today!
+  http://rt.perl.org/rt3/NoAuth/perl5/Overview.html
+
+=head1 New Core Modules
+
+=over 4
+
+=item *
+
+Michael G. Schwern rolled out C<ExtUtils::MakeMaker> version 6.30_02, as
+a release candidate for 6.31. Craig A. Berry reported all green lights
+on VMS.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00023.html
+
+=item *
+
+Michael also push C<Test::Builder/More/Simple> version 0.64_01 out
+the door. Two important changes that people should be aware of:
+5.8.0 threaded builds are no longer supported (because the
+implementation at the time was too buggy) and the report output has
+changed. This later point will be of great importance to any module
+that scrapes test output.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00042.html
+
+=back
+
+=head1 In Brief
+
+One of the reasons B<it is worth pushing for C++-compilable sources>,
+is that it gets us things like inlined functions, IEEE floats and
+other goodnesses. Things that probably exist in a current C++
+compiler, but won't, if ever come to C compilers.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00015.html
+
+Yves Orton responded to B<a problem of C<^C> segfaulting on Win32>
+by pointing out that ^C is weird on Win32, as some of the implementation
+is in fact running in a separate thread.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00017.html
+
+Ask Bjørn Hansen nixed the idea of C<security@> address for the
+B<reporting of security vulnerabilities in perl>, since past
+experience has shown its purpose to be little more than a spam
+magnet.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00033.html
+
+chromatic added handy B<index numbering to the C<caller()>
+documentation> in C<perlfunc>. Useful stuff, applied.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00009.html
+
+Nick Ing-Simmons gave further reasons why it was worth making the
+codebase B< compile with a C++ compiler>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-09/msg00018.html
+
+=head2 About this summary
+
+This summary was written by David Landgren. Yes, this summary covers
+ten days worth of traffic. You lucky people.
+
+If you want a bookmarklet approach to viewing bugs and change
+reports, there are a couple of bookmarklets that you might find
+useful on my page of Perl stuff:
+
+  http://www.landgren.net/perl/
+
+Weekly summaries are published on F<http://use.perl.org/> and posted
+on a mailing list, (subscription: F<perl5-summary-subscribe@perl.org>).
+The archive is at F<http://dev.perl.org/perl5/list-summaries/>.
+Corrections and comments are welcome.
+
+If you found this summary useful, please consider contributing to
+the Perl Foundation to help support the development of Perl.
