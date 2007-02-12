@@ -286,7 +286,7 @@ ErrorDocument 500 /error/500.html
 [% IF config.apache_reload %]
 PerlModule Apache::Reload
 PerlInitHandler Apache::Reload
-[%   IF config.use_apache_reload > 1 %]
+[%   IF config.apache_reload > 1 %]
 PerlSetVar ReloadDebug On
 [%   END %]
 [% END %]
