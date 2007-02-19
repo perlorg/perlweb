@@ -42,6 +42,10 @@ sub uri {
   shift->_r->uri;
 }
 
+sub method {
+  lc shift->_r->method; 
+}
+
 sub get_cookie {
   my ($self, $name) = @_;
   unless ($self->{cookies}) {
