@@ -29,7 +29,13 @@ sub bc_check_login_parameters {
                 $user->$m($bc_user->{$m});
             }
             $user->bitcard_id($bc_user->{id});
-            $user->update;
+            if ($user->can('save')) {
+                $user->save;   # RDBO
+            }
+            else {
+                $user->update; # CDBI
+
+            }
             $self->cookie($cookie_name, $user->id);
             $self->user($user);
             return $user;
