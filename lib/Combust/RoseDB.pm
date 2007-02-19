@@ -39,6 +39,10 @@ BEGIN {
     if ($db_cfg->{sql_mode} and $db_cfg->{sql_mode} =~ /(\S+)/) {
       push @{$opt{post_connect_sql}}, "SET sql_mode = '$1'";
     }
+    if ($db_cfg->{time_zone} and $db_cfg->{time_zone} =~ /(\S+)/) {
+      push @{$opt{post_connect_sql}}, "SET time_zone = '$1'";
+    }
+
 
     __PACKAGE__->register_db(%opt);
     
