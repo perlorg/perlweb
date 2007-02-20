@@ -42,12 +42,19 @@ sub generate_schema {
 
   (my $base_class = $schema_class . "::Object") =~ s/::Model::/::DB::/;
 
+  (my $cm_class = $base_class) =~ s/::Object$/::ConventionManager/;
+  my $has_cm = eval "require $cm_class";
+  warn $@ if $@ and $@ !~ m/^Can't locate/; 
+
+  # local $Rose::DB::Object::Loader::Debug = $Rose::DB::Object::Debug 
+  #    = $Rose::DB::Object::Manager::Debug = 1;
+
   my $loader = Rose::DB::Object::Loader->new(
     db            => $base_class->init_db,
     base_class    => $base_class,
     class_prefix  => "Foo__::$schema_class", # Prevents ::Loader loading existing classes
     with_managers => 0,
-    # convention_manager => 'CN::DB::ConventionManager',
+    ($has_cm ? (convention_manager => $cm_class) : ()),
   );
 
   my @classes = sort grep { $_->isa('Rose::DB::Object') }
