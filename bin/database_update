@@ -64,6 +64,8 @@ $opts{sql} = 1 if $opts{from};
 my $database = shift or die "$0 [database_name]\n";
 my $dbh = db_open($database);
 
+$dbh->{PrintError} = 0; # RaiseError does this already
+
 my %rev;
 {
     my $cur_rev;
@@ -71,10 +73,16 @@ my %rev;
     my $filename = "$ENV{CBROOTLOCAL}/sql/$database.update";
     open my $fh, "<", $filename or die "Could not open $filename: $!";
     while (<$fh>) {
-        if (my ($new_rev) = (m/^\#(\d+)/)) {
-            $rev{$cur_rev} = _split_sql($sql) if $cur_rev and $sql;
+        if (my ($new_rev, $options) = (m/^\#(\d+)\s+(.*)/)) {
+            $rev{$cur_rev}->{sql} = _split_sql($sql) if $cur_rev and $sql;
             $sql = '';
             die "$new_rev revision defined twice!\n" if $rev{$new_rev};
+            $rev{$new_rev} = { map { my $x = $_;
+                                     my ($o, $v) = split /=/, $x, 2;
+                                     $v = 1 unless defined $v;
+                                     ($o, $v)
+                                 } split /,/, $options
+                             };
             $cur_rev = $1;
             next;
         }
@@ -83,7 +91,7 @@ my %rev;
         die "No revision set, line [$_]\n" unless $cur_rev;
         $sql .= $_;
     }
-    $rev{$cur_rev} = _split_sql($sql) if $cur_rev and $sql;
+    $rev{$cur_rev}->{sql} = _split_sql($sql) if $cur_rev and $sql;
 }
 
 
@@ -114,8 +122,11 @@ if ($latest_version > $db_version) {
 
   for my $r ($db_version+1 .. $latest_version) {
     print "\n--\n-- * Updating to v$r...\n--\n";
-    die "Doesn't know how to update from v", $r-1, " to v$r! ABORTING\n" unless $rev{$r};
-    for my $c (@{ $rev{$r} }) {
+    die "Doesn't know how to update from v", $r-1, " to v$r! ABORTING\n" unless $rev{$r} and $rev{$r}->{sql};
+    #my $x = $rev{$r};
+    #warn Data::Dumper->Dump([\$x], [qw(x)]);
+    local $dbh->{RaiseError} = 0 if $rev{$r}->{try};
+    for my $c (@{ $rev{$r}->{sql} }) {
       my @tables;
       do_sql($c);
     }
