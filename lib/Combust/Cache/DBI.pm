@@ -68,7 +68,7 @@ sub store {
 
   my $type = $self->{type};
 
-  my $metadata  = ($args{meta_data} and ref $args{meta_data} eq "HASH"
+  my $metadata  = (ref $args{meta_data} eq "HASH"
   		     ? $args{meta_data}
 		     : undef);
 
@@ -96,14 +96,12 @@ sub store {
       }
   }
 
-
-
   my $dbh = db_open()
       or return;
-  $dbh->do(q[replace into combust_cache
+  return $dbh->do(q[replace into combust_cache
 	     (id, type, purge_key, data, metadata, serialized, expire)
 	     VALUES (?,?,?,?,?,?,FROM_UNIXTIME(?))],
-	   {},
+	   undef,
 	   $id,
            $type,
            $purge_key,
