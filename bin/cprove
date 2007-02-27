@@ -13,7 +13,12 @@ use Combust::Config;
 my $config = Combust::Config->new;
 my $prove = $config->perl;
 $prove =~ s/\/perl/\/prove/;
-$ENV{CBCONFIG} = ($cbrl || $cbr) . '/combust.conf.testing';
+if ($ENV{CBCONFIG}) {
+   $ENV{CBCONFIG} .= '.testing';
+}
+else {
+  $ENV{CBCONFIG} = ($cbrl || $cbr) . '/combust.conf.testing';
+}
 
 my @prove = ("$cbr/bin/perl", $prove, @ARGV);
 
