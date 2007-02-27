@@ -1,6 +1,7 @@
 package Combust::Template::Provider;
 use strict;
-use base qw(Combust::Template::Provider::Base);
+#use base qw(Combust::Template::Provider::Base);
+use base qw(Template::Provider);
 
 sub is_directory {
   my ($self, $name) = @_;
