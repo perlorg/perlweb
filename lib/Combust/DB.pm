@@ -45,6 +45,7 @@ sub db_open {
     my ($host, @args) = read_db_connection_parameters($db);
     
     $dbh = DBI->connect(@args, {
+				ShowErrorStatement => 1,
 				%$attr,
 				RaiseError => 0,    # override RaiseError for connect
 				AutoCommit => 1,    # make it explicit
