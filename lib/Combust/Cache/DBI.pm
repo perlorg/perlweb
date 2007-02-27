@@ -25,22 +25,17 @@ sub fetch {
 
   $self->{fetched_id} = $id;
 
-  my $dbh = db_open('combust');
+  my $dbh = db_open('combust')
+    or return;
 
-  my $row = $dbh->selectrow_hashref
-    (
+  my $sth = $dbh->prepare_cached(
      q[SELECT created, data, metadata, serialized,
               UNIX_TIMESTAMP(created) as created_timestamp
        FROM combust_cache
-       WHERE 
-       id = ?
-       AND type = ?
-       AND expire > NOW()
-      ],
-     {},
-     $id,
-     $type
-    );
+       WHERE id = ? AND type = ? AND expire > NOW()
+      ]
+  );
+  my $row = $dbh->selectrow_hashref($sth, undef, $id, $type);
 
   return undef unless $row;
 
@@ -103,7 +98,8 @@ sub store {
 
 
 
-  my $dbh = db_open();
+  my $dbh = db_open()
+      or return;
   $dbh->do(q[replace into combust_cache
 	     (id, type, purge_key, data, metadata, serialized, expire)
 	     VALUES (?,?,?,?,?,?,FROM_UNIXTIME(?))],
