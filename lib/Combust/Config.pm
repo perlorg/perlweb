@@ -215,7 +215,7 @@ sub modperl_path {
 
 sub log_path {
   my $self = shift;
-  my $path = $cfg->param('log_path') || $self->root_local . '/apache/logs';
+  my $path = $cfg->param('log_path') || $self->root_local . '/logs';
   $path =~ s!/$!!;
   $path;
 }
