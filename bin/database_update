@@ -159,6 +159,7 @@ sub get_db_version {
   if (my $err = $@) {
       if ($err =~ m/doesn't exist/) {
           $dbh->do(q[create table schema_revision (revision smallint unsigned not null default 0) ENGINE=InnoDB DEFAULT CHARSET=utf8;]);
+          $dbh->do(q[insert into schema_revision (revision) values (0)]);
           return get_db_version()
       }
       else {

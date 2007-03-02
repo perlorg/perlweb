@@ -28,6 +28,7 @@ sub _setup_dbs {
   foreach my $section (keys %sections) {
     my $db_name = $section; 
     my $db_config  = $cfg->param(-block => "database-$section"); 
+    $db_config->{name} = $section;
     $dbs{default}  = $db_config and $got_default++ if $db_config->{default};
     $dbs{$db_name} = $db_config;
   }
@@ -135,6 +136,11 @@ sub base_url {
       ? ''
       : ":$port");
   return $base_url;
+}
+
+sub database_names {
+   my $self = shift;
+   sort keys %dbs;
 }
 
 sub database {

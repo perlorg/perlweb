@@ -3,6 +3,8 @@ use strict;
 use Combust::RoseDB;
 # use CN::DB::Column::Point;
 # use CN::DB::ConventionManager;
+use Combust::Config;
+my $config = Combust::Config->new;
 
 {
   package Combust::DB::Object::Metadata::Base;
@@ -20,9 +22,17 @@ use Combust::RoseDB;
 }
 
 # TODO: move this to a configuration file of sorts
-our %class_type = qw(
-  NP::DB::Object          ntppool
-);
+our %class_type = ();
+#   NP::DB::Object          ntppool
+#   ...
+
+for my $db_name ($config->database_names) {
+    my $db = $config->database($db_name);
+    next unless $db->{class};
+    next if $db_name eq 'default';
+    next if $db_name eq 'combust'; # should be "if db_name is an alias"
+    $class_type{$db->{class}} = $db_name;
+}
 
 while (my($class,$type) = each %class_type) {
   (my $schema = $class) =~ s/::Object//;
