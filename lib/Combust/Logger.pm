@@ -182,7 +182,7 @@ sub logtimes {
 sub _format {
     my @args = @_;
     #warn Data::Dumper->Dump([\@_], [qw(_)]);
-    chomp(my $msg = join " ", map { ref $_ ? $json->objToJson($_) : $_ } @args);
+    chomp(my $msg = join " ", map { ref $_ ? $json->objToJson($_) : defined $_ ? $_ : 'UNDEF' } @args);
     $msg;
 }
 
@@ -196,8 +196,8 @@ sub logtofile {
   my $lock_ok;
   carp "Bad lockmode '$lock_mode'" unless $lock_mode =~ m/^(die|warn|none)$/;
 
-  my $dir = "$ENV{CBROOTLOCAL}/logs";
-  -e $dir or mkpath $dir, 0750;
+  my $dir = $config->log_path;
+  -e $dir or mkpath $dir, 0;
   my $path = "$dir/$filename";
   open(STDOUT,">>$path") or die("logtofile: Can't open($path): $!");
   select(STDOUT); $|=1;
