@@ -1,6 +1,6 @@
 package Combust::API;
 use strict;
-
+use Class::Accessor::Class;
 use base qw(Class::Accessor::Class);
 __PACKAGE__->mk_class_accessors(qw(api_classes));
 
