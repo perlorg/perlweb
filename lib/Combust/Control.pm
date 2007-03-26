@@ -29,9 +29,8 @@ my $root = $config->root;
 
 sub r {
   my $self = shift;
-  return $self->{_r} if $self->{_r};
-  # some day we'll deprecate this...
-  $self->{_r} = Apache::Request->instance(Apache->request);
+  # some day we'll deprecate this - it only works for Apache13 and Apache2
+  return $self->request->_r;
 }
 
 sub req_param {

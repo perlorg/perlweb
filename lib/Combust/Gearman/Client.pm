@@ -1,6 +1,6 @@
 package Combust::Gearman::Client;
 use strict;
-use Gearman::Worker ();
+use Gearman::Client ();
 use base qw(Gearman::Client Combust::Gearman);
 
 sub new {

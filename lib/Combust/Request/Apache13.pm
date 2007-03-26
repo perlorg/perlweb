@@ -3,11 +3,17 @@ use strict;
 use base qw(Combust::Request);
 use Apache::Request;
 use Apache::Cookie;
+use Combust::Config;
+
+my $config = Combust::Config->new;
+
 
 sub _r {
   my $self = shift;
   return $self->{_r} if $self->{_r};
-  return $self->{_r} = Apache::Request->instance(Apache->request);
+  return $self->{_r} = Apache::Request->instance(Apache->request,
+                                                 TEMP_DIR => $config->work_path,
+                                                 );
 }
 
 sub req_param {
@@ -20,6 +26,10 @@ sub req_params {
 
 sub notes {
   shift->_r->pnotes(@_);
+}
+
+sub upload {
+  shift->_r->upload(@_);
 }
 
 sub hostname {
