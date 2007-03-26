@@ -19,28 +19,28 @@ sub bc_check_login_parameters {
             warn "Authen::Bitcard error: ", $bc->errstr;
         }
         if ($bc_user and $bc_user->{id}) {
-            my $user;
-            if ($self->bc_user_class->can('username') and $bc_user->{username}) {
-                ($user) = $self->bc_user_class->search( username => $bc_user->{username} );
-            }
-            $user = $self->bc_user_class->find_or_create({ bitcard_id => $bc_user->{id} }) unless $user;
-            for my $m (qw(username email name)) {
-                next unless $user->can($m);
-                $user->$m($bc_user->{$m});
-            }
-            $user->bitcard_id($bc_user->{id});
-            if ($user->can('save')) {
-                $user->save;   # RDBO
-            }
-            else {
-                $user->update; # CDBI
-
-            }
+            my $user = $self->_setup_user($bc_user);
             $self->cookie($cookie_name, $user->id);
             $self->user($user);
             return $user;
         }
     }
+}
+
+sub _setup_user {
+    my ($self, $bc_user) = @_;
+    my $user;
+    if ($self->bc_user_class->can('username') and $bc_user->{username}) {
+        ($user) = $self->bc_user_class->search( username => $bc_user->{username} );
+    }
+    $user = $self->bc_user_class->find_or_create({ bitcard_id => $bc_user->{id} }) unless $user;
+    for my $m (qw(username email name)) {
+        next unless $user->can($m);
+        $user->$m($bc_user->{$m});
+    }
+    $user->bitcard_id($bc_user->{id});
+    $user->update;
+    return $user;
 }
 
 sub is_logged_in {
