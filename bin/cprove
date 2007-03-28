@@ -12,7 +12,7 @@ my $cbrl = $ENV{CBROOTLOCAL};
 use Combust::Config;
 my $config = Combust::Config->new;
 my $prove = $config->perl;
-$prove =~ s/\/perl/\/prove/;
+$prove =~ s!bin/perl!bin/prove!;
 if ($ENV{CBCONFIG}) {
    $ENV{CBCONFIG} .= '.testing';
 }
