@@ -7,14 +7,6 @@
 <LI>  <A HREF="imcc.html">IMCC FAQ</UL>
 </UL>
 
-[%#
-<B>PLACEHOLDER</B><BR>
-
-POD source from 
-<tt>http://svn.perl.org/parrot/trunk/docs/faq.pod</tt>
-and cache for 24 hours.
-%]
-
 [% USE ua = CacheLWPSimple %]
 [% data = ua.get( 'url' =>
       'http://svn.perl.org/parrot/trunk/docs/faq.pod',
