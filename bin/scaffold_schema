@@ -6,80 +6,115 @@ use warnings;
 
 use Getopt::Long qw(GetOptions);
 use Rose::DB::Object::Loader;
-use Combust::RoseDB::Manager;
-use Combust::RoseDB::Object;
 use File::Path qw(mkpath);
+use Combust::Config;
+use Combust::RoseDB;
+use Combust::RoseDB::Manager;
 
 GetOptions(
   'db=s@' => \my @db_name,
   'all'   => \my $all,
 );
 
-my %db_class;
-while (my($class,$type) = each %Combust::RoseDB::Object::class_type) {
- $db_class{$type} = $class->schema;
-}
-
-@db_name = keys %db_class if $all;
+@db_name = grep { $_ ne 'default' } Combust::Config->database_names if $all;
 
 die "Nothing todo, specify a database with --db={prod,feeds,...} or use --all\n" unless @db_name;
 
-if (my @unknown = grep { !exists $db_class{$_} } @db_name) {
+if (my @unknown = grep { !Combust::Config->database($_) } @db_name) {
   warn "Unknown db '$_'\n" for @unknown;
   exit 1;
 }
 
 $| = 1;
 
-generate_schema($_) for @db_name;
+my $scaffold_class = Combust::Config->scaffold_class || 'Combust::RoseDB::Scaffold';
+eval "require $scaffold_class" or die $@;
 
-sub generate_schema {
-  my $db_name = shift;
-  my $schema_class = $db_class{"$db_name"}
-    or die "Bad db_name '$db_name'\n";
+my %done;
+foreach my $db_name (@db_name) {
+  my $db_cfg = Combust::Config->database($db_name);
+  $db_cfg = Combust::Config->database($db_name = $db_cfg->{alias}) if $db_cfg->{alias};
+  my $model_class = $db_cfg->{model_class} || $scaffold_class->db_model_class($db_name)
+    or die "No model_class for '$db_name'\n";
+  next if $done{$model_class}++;
+  $db_cfg->{type} ||= $db_name;
+  generate_model($db_cfg, $model_class);
+}
 
-  print "Generating $schema_class ...\n";
+sub generate_model {
+  my ($db_cfg, $model_class) = @_;
 
-  (my $base_class = $schema_class . "::Object") =~ s/::Model::/::DB::/;
+  print "Generating $model_class ...\n";
 
-  (my $cm_class = $base_class) =~ s/::Object$/::ConventionManager/;
-  my $has_cm = eval "require $cm_class";
-  warn $@ if $@ and $@ !~ m/^Can't locate/; 
+  my $object_class = $db_cfg->{object_class} || ($model_class . "::_Object");
+  my $meta_class   = $db_cfg->{meta_class}   || ($model_class . "::_Meta");
+  my $type         = $db_cfg->{type};
 
-  # local $Rose::DB::Object::Loader::Debug = $Rose::DB::Object::Debug 
-  #    = $Rose::DB::Object::Manager::Debug = 1;
+  my $db_name = $db_cfg->{name};
+  my $cm_class            = $scaffold_class->convention_manager($db_name);
+  my @object_base_classes = $scaffold_class->object_base_classes($db_name);
 
+  (my $base_defn = <<EOS) =~ s/^    //gm;
+    {
+      package $meta_class;
+      use base qw(Combust::RoseDB::Metadata);
+      use $cm_class;
+      sub registry_key { __PACKAGE__ }
+      sub init_convention_manager { $cm_class->new }
+    }
+    {
+      package ${model_class}::_Base;
+      use base qw(@object_base_classes);
+
+      sub init_db    { shift; our \$db ||= Combust::RoseDB->new(\@_, type => '$type') }
+      sub meta_class {'$meta_class'}
+      sub model      { our \$model ||= bless [], '$model_class'}
+    }
+    {
+      package ${model_class}::_Object;
+      use base qw(${model_class}::_Base Rose::DB::Object);
+    }
+    {
+      package ${model_class}::_Object::Cached;
+      use base qw(${model_class}::_Base Rose::DB::Object::Cached);
+    }
+EOS
+  eval $base_defn;
+  die $@ if $@;
+ 
+  my $db = $object_class->init_db;
   my $loader = Rose::DB::Object::Loader->new(
-    db            => $base_class->init_db,
-    base_class    => $base_class,
-    class_prefix  => "Foo__::$schema_class", # Prevents ::Loader loading existing classes
+    db            => $db,
+    base_class    => $object_class,
+    class_prefix  => "Foo__::$model_class", # Prevents ::Loader loading existing classes
     with_managers => 0,
-    ($has_cm ? (convention_manager => $cm_class) : ()),
+    convention_manager => $cm_class,
+    pre_init_hook => sub { $scaffold_class->class_pre_init_hook(@_) },
   );
 
   my @classes = sort grep { $_->isa('Rose::DB::Object') }
     $loader->make_classes(
-      filter_tables => \&filter_tables,
+      filter_tables => sub { $scaffold_class->filter_tables($db, $_) },
     );
 
-  (my $schema_path = $schema_class) =~ s,::,/,g;
-  my $schema_file = $ENV{CBROOTLOCAL} . "/lib/$schema_path.pm";
+  (my $model_path = $model_class) =~ s,::,/,g;
+  my $model_file = $ENV{CBROOTLOCAL} . "/lib/$model_path.pm";
 
-  (my $schema_dir = $schema_file) =~ s,/[^/]+$,,;
-  mkpath($schema_dir) unless -d $schema_dir;
+  (my $model_dir = $model_file) =~ s,/[^/]+$,,;
+  mkpath($model_dir) unless -d $model_dir;
 
-  open(FH,">$schema_file.tmp") or die "Canot open '$schema_file.tmp': $!\n";
+  open(FH,">$model_file.tmp") or die "Canot open '$model_file.tmp': $!\n";
   select(FH);
 
-  print <<EOS;
-package $schema_class;
+  print <<EOS, $base_defn;
+package $model_class;
 ##
 ## This file is auto-generated *** DO NOT EDIT ***
 ##
-use Combust::RoseDB::Object;
-use Combust::RoseDB::Manager;
+use Combust::RoseDB;
 
 our \$SVN = q\$Id\$;
+our \@table_classes;
 
 EOS
 
@@ -91,44 +126,43 @@ EOS
       $col->default('now') if $col->type eq 'datetime' and !$col->default and $col->not_null;
     }
 
-    if (cached_filter($meta->table)) {
-        $meta->cached_objects_expire_in('12 hours');
-    }
+    my $is_cached = $scaffold_class->cache_table($meta);
+    $meta->cached_objects_expire_in('12 hours') if $is_cached;
 
-    my @isa = cached_filter($meta->table)
-      ? ( isa => "${base_class}::Cached") : ();
+    my @isa = $is_cached ? ( isa => "${object_class}::Cached") : ();
     my $t = $meta->perl_class_definition(indent => 2, @isa);
     my $m = $meta->perl_manager_class( isa => 'Combust::RoseDB::Manager');
 
     $t =~ s/^use Foo__.*\n\n?//mg;
     s/\s*^1;$//m for $t, $m;
-    s/Foo__:://g for ($t, $m, $class);;
+    s/Foo__:://g for ($t, $m, $class);
 
     (my $class_path = $class) =~ s,::,/,g;
 
     print <<EOS;
-{ $t}
-
-{ $m}
 
 # Allow user defined methods to be added
 eval { require $class }
   or \$@ !~ m:^Can't locate $class_path.pm: and die \$@;
 
+{ $t
+push \@table_classes, __PACKAGE__;
+}
+
+{ $m}
+
 EOS
 
   }
 
-  my $classes = join("\n    ",'my @classes = qw(',@classes,');');
   print <<EOS;
-{ package $schema_class;
+{ package $model_class;
 
-  sub dbh { shift; $base_class->init_db(\@_)->dbh; }
-  sub db  { shift; $base_class->init_db(\@_);      }
+  sub db  { shift; $object_class->init_db(\@_);      }
+  sub dbh { shift->db->dbh; }
 
-  $classes
   sub flush_caches {
-    \$_->meta->clear_object_cache for \@classes;
+    \$_->meta->clear_object_cache for \@table_classes;
   }
 
 EOS
@@ -137,24 +171,13 @@ EOS
     $class =~ s/Foo__:://g;
     (my $meth = $class) =~ s/([A-Z])/_\l$1/g;
     $meth =~ s/.*::_//;
-    print "  my \$$meth;\n";
-    print "  sub $meth { \$$meth ||= bless [], '${class}::Manager' }\n";
+    print "  sub $meth { our \$$meth ||= bless [], '${class}::Manager' }\n";
   }
   print "\n}\n1;\n";
 
   select(STDOUT);
   close(FH);
 
-  rename("$schema_file.tmp", $schema_file);
+  rename("$model_file.tmp", $model_file);
 }
 
-sub filter_tables {
-  return 0 if /combust/i or /^(old|te?mp)_/;
-  return 0 if /^((index|search)polygons|s_\d+_part_)/;
-  return 1;
-}
-
-
-sub cached_filter {
-  $_[0] =~ /^(groups)$/ ? 1 : 0;
-}

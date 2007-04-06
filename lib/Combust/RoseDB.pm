@@ -65,6 +65,13 @@ sub dbh {
   $dbh;
 }
 
+sub ping {
+  my $self = shift;
+  my $dbh  = $self->dbh;
+
+  $dbh and ($dbh->ping or ($dbh = $self->init_dbh and $dbh->ping));
+}
+
 sub DESTROY { } # Avoid disconnect being called
 
 1;

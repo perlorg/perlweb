@@ -241,6 +241,10 @@ sub perl {
   $cfg->param('perl');
 }
 
+sub scaffold_class {
+  $cfg->param('scaffold_class');
+}
+
 sub apache_libexec {
   $cfg->param('apache_libexec');
 }
