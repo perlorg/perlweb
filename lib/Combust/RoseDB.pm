@@ -2,6 +2,7 @@ package Combust::RoseDB;
 
 use strict;
 use Combust::Config;
+use Combust::RoseDB::Column::Point;
 use DBI;
 use base 'Rose::DB';
 
