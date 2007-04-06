@@ -1,4 +1,4 @@
-package Combust::DB::Object;
+package Combust::RoseDB::Object;
 use strict;
 use Combust::RoseDB;
 # use CN::DB::Column::Point;
@@ -7,7 +7,7 @@ use Combust::Config;
 my $config = Combust::Config->new;
 
 {
-  package Combust::DB::Object::Metadata::Base;
+  package Combust::RoseDB::Object::Metadata::Base;
 
   use base qw(Rose::DB::Object::Metadata);
 
@@ -41,7 +41,7 @@ while (my($class,$type) = each %class_type) {
   my $defn = <<EOS;
     {
       package ${class}::Metadata;
-      our \@ISA = qw(Combust::DB::Object::Metadata::Base);
+      our \@ISA = qw(Combust::RoseDB::Object::Metadata::Base);
       sub registry_key { '${class}::Metadata' }
     }
     {

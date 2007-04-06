@@ -6,8 +6,8 @@ use warnings;
 
 use Getopt::Long qw(GetOptions);
 use Rose::DB::Object::Loader;
-use Combust::DB::Manager;
-use Combust::DB::Object;
+use Combust::RoseDB::Manager;
+use Combust::RoseDB::Object;
 use File::Path qw(mkpath);
 
 GetOptions(
@@ -16,7 +16,7 @@ GetOptions(
 );
 
 my %db_class;
-while (my($class,$type) = each %Combust::DB::Object::class_type) {
+while (my($class,$type) = each %Combust::RoseDB::Object::class_type) {
  $db_class{$type} = $class->schema;
 }
 
@@ -76,8 +76,8 @@ package $schema_class;
 ##
 ## This file is auto-generated *** DO NOT EDIT ***
 ##
-use Combust::DB::Object;
-use Combust::DB::Manager;
+use Combust::RoseDB::Object;
+use Combust::RoseDB::Manager;
 
 our \$SVN = q\$Id\$;
 
@@ -98,7 +98,7 @@ EOS
     my @isa = cached_filter($meta->table)
       ? ( isa => "${base_class}::Cached") : ();
     my $t = $meta->perl_class_definition(indent => 2, @isa);
-    my $m = $meta->perl_manager_class( isa => 'Combust::DB::Manager');
+    my $m = $meta->perl_manager_class( isa => 'Combust::RoseDB::Manager');
 
     $t =~ s/^use Foo__.*\n\n?//mg;
     s/\s*^1;$//m for $t, $m;

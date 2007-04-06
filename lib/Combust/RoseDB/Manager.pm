@@ -1,4 +1,4 @@
-package Combust::DB::Manager;
+package Combust::RoseDB::Manager;
 
 use base qw(Rose::DB::Object::Manager);
 
