@@ -27,7 +27,28 @@ if (my @unknown = grep { !Combust::Config->database($_) } @db_name) {
 
 $| = 1;
 
-my $scaffold_class = Combust::Config->scaffold_class || 'Combust::RoseDB::Scaffold';
+my $scaffold_class = Combust::Config->scaffold_class;
+
+# If not set in combust.conf and only one Scaffold.pm exists 
+# under $ENV{CBROOTLOCAL}/lib then use it
+if (!$scaffold_class and my $cbrootlocal = $ENV{CBROOTLOCAL}) {
+  require File::Find;
+  my @files;
+  File::Find::find(sub {
+    package File::Find;
+    our $name;
+    push @files, $name if /^Scaffold\.pm$/
+  },"$cbrootlocal/lib");
+  die "Cannot determine Scaffold class, found (@files)\n" if @files > 1;
+  if (@files == 1) {
+    (my $file = $files[0]) =~ s,.*/lib/,,;
+    $file =~ s/.pm$//;
+    ($scaffold_class = $file) =~ s,/,::,g;
+  }
+}
+
+die "No Scaffold class found\n" unless $scaffold_class;
+
 eval "require $scaffold_class" or die $@;
 
 my %done;
