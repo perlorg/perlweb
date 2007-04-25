@@ -27,7 +27,7 @@ sub render {
   #    Normally, we want to use DirectoryMatch for this, but URI->File
   #    mapping is handled in this controller and parents.
   return 404
-    if $uri =~ m!/(?:\.svn|/tpl/)/!;
+    if $uri =~ m!/(?:\.svn|tpl)/!;
   # we don't need /\.ht.* here, because they aren't special in
   # combust.
 
