@@ -49,7 +49,7 @@ sub remote_ip {
 }
 
 sub uri {
-  shift->_r->uri;
+  shift->_r->uri(@_);
 }
 
 sub method {
