@@ -5,6 +5,7 @@ use strict;
 use warnings;
 use Combust::DB qw(db_open);
 use Getopt::Long qw(GetOptions);
+use List::Util qw(first);
 
 =head1 database_update
 
@@ -70,7 +71,9 @@ my %rev;
 {
     my $cur_rev;
     my $sql = '';
-    my $filename = "$ENV{CBROOTLOCAL}/sql/$database.update";
+    my @files = ("$ENV{CBROOTLOCAL}/sql/$database.update", "$ENV{CBROOT}/sql/$database.update");
+    my $filename = first { -f $_ } @files;
+    die "Could not find sql/$database.update file\n" unless $filename;
     open my $fh, "<", $filename or die "Could not open $filename: $!";
     while (<$fh>) {
         if (my ($new_rev, $options) = (m/^\#(\d+)\s+(.*)/)) {
@@ -155,12 +158,20 @@ sub get_latest_version {
 }
 
 sub get_db_version {
-  my ($revision) = eval { $dbh->selectrow_array(q[select revision from schema_revision]) };
+  my ($revision) = eval { $dbh->selectrow_array(q[select revision from schema_revision where schema_name=?], 
+                                                undef,
+                                                $database) };
   if (my $err = $@) {
       if ($err =~ m/doesn't exist/) {
-          $dbh->do(q[create table schema_revision (revision smallint unsigned not null default 0) ENGINE=InnoDB DEFAULT CHARSET=utf8;]);
-          $dbh->do(q[insert into schema_revision (revision) values (0)]);
+          do_sql(q[create table schema_revision (revision smallint unsigned not null default 0, ]
+                  .q[schema_name varchar(30) not null primary key) ENGINE=InnoDB DEFAULT CHARSET=utf8;]);
+          do_sql(q[insert into schema_revision (revision,schema_name) values (0,?)], $database);
           return get_db_version()
+      }
+      elsif ($err =~ m/Unknown column 'schema_name'/) {
+          do_sql(q[alter table schema_revision add schema_name varchar(30) not null primary key]);
+          do_sql(q[update schema_revision set schema_name = ?], $database);
+          return get_db_version();
       }
       else {
           die $err
@@ -175,7 +186,8 @@ sub get_db_version {
 
 sub update_db_version {
   my ($revision) = shift or return;
-  do_sql(q[update schema_revision set revision=?], $revision);
+  do_sql(q[insert into schema_revision (revision, schema_name) values (?,?) on duplicate key update revision=?],
+         $revision, $database, $revision);
 }
 
 
