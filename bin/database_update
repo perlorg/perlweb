@@ -23,6 +23,7 @@ doesn't already exists.
 
    $CBROOT/bin/database_update --from 5  database_name 
 
+   $CBROOT/bin/database_update --sql  database_name 
 
 =head2 Strategy
 
@@ -166,15 +167,19 @@ sub get_db_version {
                                                 $database) };
   if (my $err = $@) {
       if ($err =~ m/doesn't exist/) {
+          print " -- Setting up schema_revision table; re-run to continue\n\n";
           do_sql(q[create table schema_revision (revision smallint unsigned not null default 0, ]
                   .q[schema_name varchar(30) not null primary key) ENGINE=InnoDB DEFAULT CHARSET=utf8;]);
           do_sql(q[insert into schema_revision (revision,schema_name) values (0,?)], $database);
-          return get_db_version()
+          print "\n";
+          exit;
       }
       elsif ($err =~ m/Unknown column 'schema_name'/) {
+          print " -- Updating schema_revision table; re-run to continue\n\n";
           do_sql(q[alter table schema_revision add schema_name varchar(30) not null primary key]);
           do_sql(q[update schema_revision set schema_name = ?], $database);
-          return get_db_version();
+          print "\n";
+          exit;
       }
       else {
           die $err
