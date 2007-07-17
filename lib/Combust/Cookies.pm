@@ -3,6 +3,8 @@ use strict;
 use Apache::Cookie;
 use URI::Escape qw(uri_escape uri_unescape);
 
+our $DEBUG = 0;
+
 my $default_cookie_name  = 'c';
 
 my %special_cookies = (
@@ -50,7 +52,7 @@ sub parse_cookies {
  
     $cookie = check_cookie($cookie_name, $cookie);
 
-    #warn "got cookie: [$cookie_name]=[$cookie]";
+    warn "got cookie: [$cookie_name]=[$cookie]" if $DEBUG;
     
     # FIXME: we are unescaping the keys too... hmn 
     $parsed = { %$parsed, map { uri_unescape($_) } split /\/~/, $cookie } if $cookie;
@@ -148,7 +150,7 @@ sub check_cookie {
     return ('', "vers",  (rand(100) < 1) );
   }
   if ($hex_cs ne make_checksum($cookie_name, $cookie)) {
-    warn "Failed checksum";
+    warn "Failed checksum" if $DEBUG;
     return '' unless wantarray;
     return ('', "failed", (rand(100) < 0.1) );
   }

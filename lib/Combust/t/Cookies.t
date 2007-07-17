@@ -28,7 +28,7 @@ is($cookies->cookie('foo', $rand), $rand, 'set foo=$rand');
 is($cookies->cookie('cpruid', 2), 2, 'set cpruid=2');
 is($cookies->cookie('r', 'root'), 'root', 'set r=root');
 ok(my @cookies = $cookies->bake_cookies, 'bake cookies');
-$ENV{COOKIE} = join " ", map { $_->name . "=" . $_->value  } @cookies;
+my $cookie_string = $ENV{COOKIE} = join " ", map { $_->name . "=" . $_->value  } @cookies;
 
 warn "ENV: $ENV{COOKIE}";
 
@@ -46,11 +46,8 @@ ok(my $cookies = Combust::Cookies->new($request), 'new cookies');
 is($cookies->cookie('foo'), '', 'should not get foo cookie (bad checksum)');
 
 use Encode;
-
-my $cookie_string = 'c=2/cpruid/~2/~r/~root/~foo/~0.185078894793154/0298EC24'; 
 Encode::_utf8_off($cookie_string);
 $ENV{COOKIE} = $cookie_string;
-
 ok(my $request = Combust::Control->new->request, 'new request');
 ok(my $cookies = Combust::Cookies->new($request), 'new cookies');
 is($cookies->cookie('cpruid'), '2', 'get cpruid cookie');
