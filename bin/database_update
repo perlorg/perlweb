@@ -76,7 +76,7 @@ my %rev;
     die "Could not find sql/$database.update file\n" unless $filename;
     open my $fh, "<", $filename or die "Could not open $filename: $!";
     while (<$fh>) {
-        if (my ($new_rev, $options) = (m/^\#(\d+)\s+(.*)/)) {
+        if (my ($new_rev, $options) = (m/^\#(\d+|todo)\s*(.*)/i)) {
             $rev{$cur_rev}->{sql} = _split_sql($sql) if $cur_rev and $sql;
             $sql = '';
             die "$new_rev revision defined twice!\n" if $rev{$new_rev};
@@ -86,7 +86,7 @@ my %rev;
                                      ($o, $v)
                                  } split /,/, $options
                              };
-            $cur_rev = $1;
+            $cur_rev = $new_rev;
             next;
         }
         next unless m/\S/;
@@ -94,7 +94,10 @@ my %rev;
         die "No revision set, line [$_]\n" unless $cur_rev;
         $sql .= $_;
     }
+
     $rev{$cur_rev}->{sql} = _split_sql($sql) if $cur_rev and $sql;
+
+    delete $rev{todo};
 }
 
 
