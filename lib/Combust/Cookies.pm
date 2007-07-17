@@ -2,6 +2,7 @@ package Combust::Cookies;
 use strict;
 use Apache::Cookie;
 use URI::Escape qw(uri_escape uri_unescape);
+use Combust::Secret qw(get_secret);
 
 our $DEBUG = 0;
 
@@ -77,7 +78,7 @@ sub update_last_refreshed {
 sub cookie {
   my ($self, $cookie, $val) = @_;
 
-  #warn Data::Dumper->Dump([\$self], [qw(cookie_self)]);
+  warn Data::Dumper->Dump([\$self], [qw(cookie_self)]) if $DEBUG > 1;
 
   my $cookies = $self->parse_cookies;
 
@@ -96,6 +97,8 @@ sub bake_cookies {
   my $r = $self->{r};
 
   #warn Data::Dumper->Dump([\$self], [qw(self)]);
+
+  my $ts = time;
 
   my %cookies_out;
 
@@ -119,10 +122,10 @@ sub bake_cookies {
 
     next unless $encoded;  # TODO - skip the LR cookie ... oh well.
 
-    my $cs = make_checksum($cookie_name, $encoded);
+    my $cs = make_checksum($cookie_name, $ts, $encoded, 1);
  
-    # 2/ is the version
-    $encoded = "2/$encoded/$cs";
+    # 3/ is the version
+    $encoded = "3/$ts/$encoded/$cs";
 
     #warn "[$cookie_name] encoded: [$encoded]";
 
@@ -135,7 +138,7 @@ sub bake_cookies {
 
 sub check_cookie {
   my ($cookie_name, $raw_id) = @_;
-  my ($cookie_version, $cookie, $hex_cs) = $raw_id =~ m!^(.)/(.*?)/([^/]{8})$!;
+  my ($cookie_version, $ts, $cookie, $hex_cs) = $raw_id =~ m!^(.)/(\d+)/(.*?)/([^/]{8})$!;
   #warn "R: $raw_id N: [$cookie_name]  C: [$cookie]  CS: [$hex_cs]\n";
   
   unless ($cookie) { # regex didn't match, probably truncated
@@ -144,25 +147,45 @@ sub check_cookie {
     return '' unless wantarray;
     return ('', "trunc", 0); # don't reset the cookie in this case
   }
-  unless ($cookie_version eq "2") { # corruption or a hacker
+  unless ($cookie_version eq "3") { # corruption or a hacker
     warn "Combust::Cookies got cookie_version $cookie_version != 2 ($raw_id)";
     return 0 unless wantarray;
     return ('', "vers",  (rand(100) < 1) );
   }
-  if ($hex_cs ne make_checksum($cookie_name, $cookie)) {
+  if ($hex_cs ne make_checksum($cookie_name, $ts, $cookie, 0)) {
     warn "Failed checksum" if $DEBUG;
     return '' unless wantarray;
     return ('', "failed", (rand(100) < 0.1) );
   }
-  #warn "cookie ok!";
+  warn "cookie ok!" if $DEBUG;
   return $cookie unless wantarray;
   return ($cookie, "",  0);
 }
 
 
+my %secret_cache;
+
 sub make_checksum {
-  my ($key, $value) = @_;
-  my $pad = "~#[d0oODxz\001>~\250as\250d75~\%,";  # TODO|FIXME: this should be picked up from a local file
+  my ($key, $ts, $value, $create) = @_;
+  warn "KEY: [$key] / TS: [$ts] / VALUE: [$value]" if $DEBUG;
+
+  if (scalar %secret_cache > 2000) {
+      %secret_cache = ();
+  }
+
+  # make sure the cache matches up with what get_secret generates
+  $ts -= $ts % 3600;
+  my $pad = $secret_cache{$ts};
+
+  ($ts, $pad) = get_secret(time => $ts, 
+                           expires_at => ($ts + 86400 * 180),
+                           type => 'cookie'
+                          ) if !$pad;
+  $secret_cache{$ts} = $pad;
+
+  # fail-safe to make sure people can't make up their own cookies
+  $pad = rand unless $pad;  
+
   my $x = "$pad/$key^/$key/$pad/$value/$key\L//$pad/$value";
 
   #warn "UTF8: ", utf8::is_utf8($x);

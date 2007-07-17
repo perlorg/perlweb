@@ -1,0 +1,37 @@
+#1
+create table if not exists combust_cache (
+  `id` varchar(250) NOT NULL,
+  `type` varchar(128) NOT NULL default '',
+  `created` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `purge_key` varchar(20) default NULL,
+  `data` mediumblob NOT NULL,
+  `metadata` mediumblob,
+  `serialized` tinyint(1) NOT NULL default '0',
+  `expire` datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`id`,`type`),
+  KEY `expire_idx` (`expire`),
+  KEY `purge_idx` (`purge_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+alter table combust_cache
+  convert to character set utf8,
+  default character set utf8,
+  modify id varchar(64) not null,
+  modify type varchar(20) not null default '',
+  modify purge_key varchar(16) default null;
+
+#2
+
+create table combust_secrets (
+    secret_ts  int unsigned not null,
+    expires_ts int unsigned not null,
+    type       varchar(32),
+    secret     char(32),
+    PRIMARY KEY (type,secret_ts),
+    key (expires_ts)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+
+ 
+  
