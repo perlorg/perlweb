@@ -1,7 +1,7 @@
 package CPANRatings::Control::ShowAll;
 use strict;
 use base qw(CPANRatings::Control);
-use Develooper::DB qw(db_open);
+use Combust::DB qw(db_open);
 
 sub handler ($$) {
   my ($self, $r) = @_;
