@@ -2,14 +2,21 @@ package Combust::Cache::Memcached;
 use strict;
 use Carp qw(carp);
 use base qw(Combust::Cache);
+use Combust::Config; 
+
+use Digest::MD5 qw(md5_hex);
 use Cache::Memcached;
 
-my $memd = new Cache::Memcached {
-  'servers' => [ "127.0.0.1:11211" ],
-    'debug' => 0,
-      'compress_threshold' => 10_000,
-    };
 
+my $config = Combust::Config->new();
+
+my $memd = new Cache::Memcached {
+  'servers' => [ $config->memcached_servers ],
+  'debug' => 0,
+  'compress_threshold' => 10_000,
+};
+
+# warn Data::Dumper->Dump([\$memd], [qw(memd)]);
 
 sub store {
   my ($self, %args) = @_;
@@ -28,6 +35,8 @@ sub store {
 
   my $expire    = time + ($args{expire} || $args{expires} || 7200);
 
+  $id = md5_hex($id) if length($id) > 64;
+
   $memd->set("$type;$id", { data => $data,
 			    meta_data => $metadata,
 			    created_timestamp => time,
@@ -40,12 +49,21 @@ sub fetch {
   my $id = $args{id} or carp "No id specified" and return;
   my $type = $self->{type};
 
+  $id = md5_hex($id) if length($id) > 64;
+
   $self->{fetched_id} = $id;
 
   local $^W = 0;
   my $row = $memd->get("$type;$id") or return undef;
   
   return $row;
+
+}
+
+sub fetch_multi {
+    my ($self, ) = @_;
+
+    
 
 }
 

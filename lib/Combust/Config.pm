@@ -283,6 +283,13 @@ sub job_server_port {
   $cfg->param('job_server_port') || "7003";
 }
 
+sub memcached_servers {
+  my $self = shift;
+  my $ms = $cfg->param('memcached_servers') || "127.0.0.1:11211";
+  my @ms = ref $ms ? @$ms : ($ms);
+  map { my ($s,$p) = split /\@/; $p ? [$s,$p] : $s } @ms;
+}
+
 
 # apache configuration
 

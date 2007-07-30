@@ -53,6 +53,10 @@ external_port = 0
 # 127.0.0.1 on the default port.
 # job_servers = 10.50.0.100, 10.50.0.101
 
+# Memcached servers (for Combust::Cache memcached backend).
+# Syntax is ip:port@weight, [ip:port@weight]
+# memcached_servers = 10.50.0.100:11211@2, 10.50.0.100:11250@3
+
 # use cronolog for logging:
 # use_cronolog = 1 
 #   activate cronologging
