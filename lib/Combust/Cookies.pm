@@ -8,16 +8,26 @@ our $DEBUG = 0;
 
 my $default_cookie_name  = 'c';
 
-my %special_cookies = (
-  r => [qw(root)],
-);
+my %special_cookies = ();
+my %special_cookies_reverse = ();
 
-my %special_cookies_reverse;
-for my $cookie_name (keys %special_cookies) {
-  for my $cookie (@{$special_cookies{$cookie_name}}) {
-    $special_cookies_reverse{$cookie} = $cookie_name;
-  }
-} 
+# put the "root" cookie into the "r" browser cookie
+__PACKAGE__->add_special_cookie("root" => "r");
+
+sub _setup_special_cookies_reverse {
+    for my $cookie_name (keys %special_cookies) {
+        for my $cookie (@{$special_cookies{$cookie_name}}) {
+            $special_cookies_reverse{$cookie} = $cookie_name;
+        }
+    } 
+}
+
+sub add_special_cookie {
+    my ($class, $cookie, $cookie_name) = @_;
+    $special_cookies{$cookie_name} ||= [];
+    push @{ $special_cookies{$cookie_name} }, $cookie;
+    _setup_special_cookies_reverse();
+}
 
 sub new {
   my $proto = shift;
@@ -56,7 +66,7 @@ sub parse_cookies {
     warn "got cookie: [$cookie_name]=[$cookie]" if $DEBUG;
     
     # FIXME: we are unescaping the keys too... hmn 
-    $parsed = { %$parsed, map { uri_unescape($_) } split /\/~/, $cookie } if $cookie;
+    $parsed = { %$parsed, map { uri_unescape($_) } split /\/~/, $cookie } if defined $cookie;
 
     $self->update_last_refreshed($cookie_name, $parsed);
   }
@@ -88,7 +98,7 @@ sub cookie {
     delete $cookies->{$cookie} if $val eq '';
     $self->changed($special_cookies_reverse{$cookie} || $default_cookie_name, 1);
   }
-  $cookies->{$cookie} || '';
+  defined $cookies->{$cookie} ? $cookies->{$cookie} : '';
 }
 
 sub bake_cookies {
@@ -117,8 +127,15 @@ sub bake_cookies {
 
     #warn "KEYS for $cookie_name: ", join "::", @keys;
 
-    my $encoded = join('/~', map { $_ => (uri_escape(delete $cookies->{$_} || '', "^A-Za-z0-9\-_.!*'()")) }
-		       grep { $cookies->{$_} } @keys);
+    my $encoded = join('/~',
+                       map {
+                           my $val = delete $cookies->{$_};
+                           #warn "VAL for $_: ", (defined $val ? $val : 'undef'), "\n";
+                           ($_ => uri_escape($val, "^A-Za-z0-9\-_.!*'()"))
+                           }
+		       grep { defined $cookies->{$_} } 
+                       @keys
+                      );
 
     next unless $encoded;  # TODO - skip the LR cookie ... oh well.
 
@@ -169,7 +186,7 @@ sub make_checksum {
   my ($key, $ts, $value, $create) = @_;
   warn "KEY: [$key] / TS: [$ts] / VALUE: [$value]" if $DEBUG;
 
-  if (scalar %secret_cache > 2000) {
+  if (keys %secret_cache > 2000) {
       %secret_cache = ();
   }
 
