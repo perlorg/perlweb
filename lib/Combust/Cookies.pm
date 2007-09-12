@@ -155,30 +155,54 @@ sub bake_cookies {
 
 sub check_cookie {
   my ($cookie_name, $raw_id) = @_;
-  my ($cookie_version, $ts, $cookie, $hex_cs) = $raw_id =~ m!^(.)/(\d+)/(.*?)/([^/]{8})$!;
-  #warn "R: $raw_id N: [$cookie_name]  C: [$cookie]  CS: [$hex_cs]\n";
-  
-  unless ($cookie) { # regex didn't match, probably truncated
+
+  my ($cookie_version) = $raw_id =~ m!^(\d+)/!; 
+
+  my $cookie;
+
+  unless ($cookie_version) { # regex didn't match, probably truncated
     # the empty id have a checksum too, but we will never allow that
-    warn "No cookie";
+    warn "No cookie version" if $DEBUG;
     return '' unless wantarray;
     return ('', "trunc", 0); # don't reset the cookie in this case
   }
-  unless ($cookie_version eq "3") { # corruption or a hacker
-    warn "Combust::Cookies got cookie_version $cookie_version != 2 ($raw_id)";
+  if ($cookie_version eq '2') {
+      warn "checking cookie v2" if $DEBUG;
+      ($cookie_version, $cookie, my $hex_cs) = $raw_id =~ m!^(\d+)/(.*?)/([^/]{8})$!;
+      if ($hex_cs ne make_checksum_v2($cookie_name, $cookie)) {
+          warn "Failed checksum (v2)" if $DEBUG;
+          return '' unless wantarray;
+          return ('', "failed", (rand(100) < 0.1) );
+      }
+  }
+  elsif ($cookie_version eq "3") { 
+      ($cookie_version, my $ts, $cookie, my $hex_cs) = $raw_id =~ m!^(\d+)/(\d+)/(.*?)/([^/]{8})$!; 
+      if ($hex_cs ne make_checksum($cookie_name, $ts, $cookie, 0)) {
+          warn "Failed checksum (v3)" if $DEBUG;
+          return '' unless wantarray;
+          return ('', "failed", (rand(100) < 0.1) );
+      }
+  }
+  else {    # corruption or a hacker
+    warn "Combust::Cookies got unknown cookie_version $cookie_version ($raw_id)";
     return 0 unless wantarray;
     return ('', "vers",  (rand(100) < 1) );
-  }
-  if ($hex_cs ne make_checksum($cookie_name, $ts, $cookie, 0)) {
-    warn "Failed checksum" if $DEBUG;
-    return '' unless wantarray;
-    return ('', "failed", (rand(100) < 0.1) );
   }
   warn "cookie ok!" if $DEBUG;
   return $cookie unless wantarray;
   return ($cookie, "",  0);
 }
 
+# TODO: toss this code before the end of the year 2007 or so
+sub make_checksum_v2 {
+    my ($key, $value) = @_;
+    my $pad = "~#[d0oODxz\001>~\250as\250d75~\%,";
+    my $x = "$pad/$key^/$key/$pad/$value/$key\L//$pad/$value";
+    $x = Encode::encode_utf8($x);
+    my $cs = DBI::hash($x, 1);
+    my $hex_cs = unpack("H8", pack("L",$cs));
+    return uc $hex_cs; 
+}
 
 my %secret_cache;
 
