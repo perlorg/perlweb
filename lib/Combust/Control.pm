@@ -15,6 +15,7 @@ use Apache::Util qw();
 
 use Combust::Cache;
 use Combust::Template;
+use Combust::Cookies;
 
 use Combust::Config;
 
