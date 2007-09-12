@@ -16,9 +16,7 @@ sub get_secret {
 
     my $time = $args{time} || time;
     $time -= $time % 3600;
-    my $expires = $args{expires_at} 
-      ? $args{expires_at} 
-      : time + ($args{expires_in} || 86400 * 14);
+    my $expires = $args{expires_at} ? $args{expires_at} : time + 86400 * 14;
 
     my $dbh = db_open('combust');
     return undef unless $dbh;
