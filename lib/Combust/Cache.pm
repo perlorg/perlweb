@@ -1,8 +1,12 @@
 package Combust::Cache;
 use strict;
 use Carp qw(carp);
+use Digest::MD5 qw(md5_hex);
+
 use Combust::Cache::DBI;
 eval { require Combust::Cache::Memcached };
+
+my $id_max_length = 64;
 
 
 # TODO:
@@ -49,6 +53,16 @@ sub backend {
   # return $self->{_backend} if ref $self and $self->{_backend};
   return $default_backend;
 }
+
+sub _normalize_id {
+    my ($self, $id) = @_;
+    return unless defined $id;
+    if (length $id > ($id_max_length - 4)) {
+        $id = "md5-" . md5_hex($id);
+    }
+    $id;
+}
+
 
 1;
 __END__

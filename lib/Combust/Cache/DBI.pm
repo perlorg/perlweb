@@ -5,7 +5,6 @@ use Carp qw(carp);
 use Combust::DB qw(db_open);
 use Storable qw(nfreeze thaw);
 use vars qw($HAVE_ZLIB);
-use Digest::MD5 qw(md5_hex);
 
 BEGIN {
     $HAVE_ZLIB = eval "use Compress::Zlib (); 1;";
@@ -18,17 +17,11 @@ use constant F_COMPRESS => 2;
 use constant COMPRESS_THRESHOLD => 10_000;
 use constant COMPRESS_SAVINGS => 0.20; # percent
 
-my $id_column_length = 64;
-
 sub fetch {
   my ($self, %args) = @_;
 
-  my $id = $args{id} or carp "No id specified" and return;
+  my $id = $self->_normalize_id($args{id}) or carp "No id specified" and return;
   my $type = $self->{type};
-
-  if (length $id > $id_column_length) {
-      $id = "md5-" . md5_hex($id);
-  }
 
   $self->{fetched_id} = $id;
 
@@ -66,12 +59,8 @@ sub fetch {
 
 sub store {
   my ($self, %args) = @_;
-  my $id        = ($args{id} || $self->{fetched_id}) 
+  my $id        = ($self->_normalize_id($args{id}) || $self->{fetched_id}) 
     or carp "No id specified" and return;
-
-  if (length $id > $id_column_length) {
-      $id = "md5-" . md5_hex($id);
-  }
 
   my $purge_key = $args{purge_key} || undef;
   my $data      = defined $args{data}
