@@ -13,11 +13,12 @@ my $default_backend = 'dbi';
 
 sub new {
   my ($proto, %args) = (shift, @_);
-  my $class = ref $proto || $proto;
-  my $type  = $args{type}|| '';
+  my $class   = ref $proto || $proto;
+  my $type    = $args{type}|| '';
+  my $backend = $args{backend};
   my $self = { type => $type };
   # bless( $self, $class);
-  bless_backend($self, $class);
+  bless_backend($self, $class, $backend);
 }
 
 sub bless_backend {
