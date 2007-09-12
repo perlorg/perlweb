@@ -2,15 +2,13 @@ package Combust::API;
 use strict;
 use Class::Accessor::Class;
 use base qw(Class::Accessor::Class);
-__PACKAGE__->mk_class_accessors(qw(api_classes));
-
 use JSON;
-use Data::Dumper::Simple;
 
 my $json = JSON->new(selfconvert => 1, pretty => 1);
 
 sub setup_api {
     my ($class, %classes) = @_;
+    $class->mk_class_accessors(qw(api_classes));
     $class->api_classes({});
     for my $group (keys %classes) {
       my $api_class = $classes{$group};
@@ -41,12 +39,10 @@ sub call {
     
     # TODO:
     #  start DB transaction here (tricky with CDBI, grrh)
-    
+
     my $sc = $subclass->new( args => $args ); # db => $db );
     
     my ($result, $meta) = eval { $sc->$method };
-    
-    #warn Dumper(\$method, \$result, \$meta);
     
     if (my $err = $@) {
         # $db->rollback;
