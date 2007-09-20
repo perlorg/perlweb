@@ -11,7 +11,7 @@ GetOptions(
   "optimize!" => \(my $opt_optimize = 0),
 ) or die "Invalid options";
 
-my $dbh = db_open('ypbot_prod', { lock => 1, lock_name => 'cleanup' });
+my $dbh = db_open('combust', { lock => 1, lock_name => 'cleanup' });
 
 for (1..5) {
    my $limit = $opt_limit;
