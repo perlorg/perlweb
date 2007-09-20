@@ -51,6 +51,6 @@ function getcpanstats () {
 
 getcpanstats
 
-echo 'delete from combust_cache where expire < NOW();' | $CBROOT/bin/cmysql combust
+$CBROOT/bin/cron/hourly
 
 
