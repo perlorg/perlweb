@@ -4,9 +4,6 @@ use Apache::Constants qw(OK);
 use Authen::Bitcard;
 use Carp qw(cluck);
 
-#use base qw(Class::Accessor::Fast);
-#__PACKAGE__->mk_accessors(qw(info_required info_optional));
-
 our $cookie_name = 'bc_u';
 
 sub bc_check_login_parameters {
