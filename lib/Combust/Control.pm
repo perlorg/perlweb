@@ -6,6 +6,7 @@ use Apache::Cookie;
 use Apache::Constants qw(:common :response);
 use Apache::File;
 use Carp qw(confess cluck carp);
+use Digest::SHA1 qw(sha1_hex);
 use Encode qw(encode_utf8);
 require bytes;
 
@@ -16,6 +17,7 @@ use Apache::Util qw();
 use Combust::Cache;
 use Combust::Template;
 use Combust::Cookies;
+use Combust::Secret qw(get_secret);
 
 use Combust::Config;
 
@@ -460,6 +462,30 @@ sub cookies {
 sub cookie {
   my $self = shift;
   $self->cookies->cookie(@_);
+}
+
+sub auth_token {
+    my $self = shift;
+    return $self->{_auth_token} if $self->{_auth_token};
+    my $cookie = $self->cookie('uiq');
+    my ($time, $uid) = split /-/, $cookie || '';
+    # reset the auth_token twice a day
+    $self->cookie('uiq', time . '-' . sha1_hex(time . rand)) unless $time and $time > time - 43200;
+    return $self->{_user_auth_token} = _calc_auth_token( $self->cookie('uiq') );
+}
+
+sub _calc_auth_token {
+    my $cookie = shift;
+    my ($time, $uid) = split /-/, $cookie;
+    # let the old auth tokens be good for up to a day
+    ($time, my $secret) = get_secret(type => 'auth_token', time => $time, expires_at => $time + 86400 );
+    return '2-' . sha1_hex( $secret . $cookie);
+}
+
+sub check_auth_token {
+    my $self = shift;
+    my $token_param = $self->req_param('auth_token') or return 0;
+    return $token_param eq $self->auth_token;
 }
 
 

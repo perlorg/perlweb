@@ -18,6 +18,11 @@ sub get_secret {
     $time -= $time % 3600;
     my $expires = $args{expires_at} ? $args{expires_at} : time + 86400 * 14;
 
+    # if (memcached servers)
+    #    try fetching from memcached
+    #    return $read_only ? $secret : ($time, $secret) if $secret;
+    # } 
+
     my $dbh = db_open('combust');
     return undef unless $dbh;
 

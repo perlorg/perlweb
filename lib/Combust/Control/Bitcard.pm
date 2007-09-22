@@ -22,6 +22,7 @@ sub bc_check_login_parameters {
             return $user;
         }
     }
+    return 0;
 }
 
 sub _setup_user {
