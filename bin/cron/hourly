@@ -13,6 +13,8 @@ GetOptions(
 
 my $dbh = db_open('combust', { lock => 1, lock_name => 'cleanup' });
 
+$dbh->do(q[delete from combust_secrets where expires_ts < UNIX_TIMESTAMP() LIMIT ?], {}, $opt_limit);
+
 for (1..5) {
    my $limit = $opt_limit;
    my $rv = $dbh->do(q[delete from combust_cache where expire < NOW() LIMIT ?], {}, $limit);
@@ -23,4 +25,6 @@ if ($opt_optimize) {
    print "Running optimize table\n" if -t STDIN;
    $dbh->do(q[optimize table combust_cache]);
 }
+
+
 
