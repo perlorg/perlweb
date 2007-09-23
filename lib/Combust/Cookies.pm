@@ -204,25 +204,17 @@ sub make_checksum_v2 {
     return uc $hex_cs; 
 }
 
-my %secret_cache;
-
 sub make_checksum {
   my ($key, $ts, $value, $create) = @_;
   warn "KEY: [$key] / TS: [$ts] / VALUE: [$value]" if $DEBUG;
 
-  if (keys %secret_cache > 2000) {
-      %secret_cache = ();
-  }
-
   # make sure the cache matches up with what get_secret generates
   $ts -= $ts % 3600;
-  my $pad = $secret_cache{$ts};
 
-  ($ts, $pad) = get_secret(time => $ts, 
-                           expires_at => ($ts + 86400 * 180),
-                           type => 'cookie'
-                          ) if !$pad;
-  $secret_cache{$ts} = $pad;
+  ($ts, my $pad) = get_secret(time => $ts, 
+                              expires_at => ($ts + 86400 * 180),
+                              type => 'cookie'
+                              );
 
   # fail-safe to make sure people can't make up their own cookies
   $pad = rand unless $pad;  

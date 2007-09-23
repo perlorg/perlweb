@@ -8,15 +8,28 @@ our @EXPORT_OK = qw(get_secret);
 
 # Loosely inspired by / based on LJ::get_secret
 
+my %secret_cache;
+
 sub get_secret {
     my %args = @_;
     croak "type is required" unless $args{type};
 
     my $read_only = $args{time} && !wantarray;
 
+    if (keys %secret_cache > 200) {
+      %secret_cache = ();
+    }
+    
     my $time = $args{time} || time;
     $time -= $time % 3600;
+    
+    my $cache_key = join ";", $args{type}, $time;
+
     my $expires = $args{expires_at} ? $args{expires_at} : time + 86400 * 14;
+
+    if (my $secret = $secret_cache{$cache_key}) {
+        return $read_only ? $secret : ($time, $secret);
+    }
 
     # if (memcached servers)
     #    try fetching from memcached
@@ -32,7 +45,10 @@ sub get_secret {
          undef, $time, $args{type}
          );
 
-    return $read_only ? $secret : ($time, $secret) if $secret;
+    if ($secret) {
+        $secret_cache{$cache_key} = $secret;
+        return $read_only ? $secret : ($time, $secret);
+    }
 
     return undef if $read_only;
 
@@ -44,6 +60,8 @@ sub get_secret {
 
     # check for races:
     $secret = get_secret(%args, time => $time);
+
+    $secret_cache{$cache_key} = $secret if $secret;
 
     return ($time, $secret);
 }
