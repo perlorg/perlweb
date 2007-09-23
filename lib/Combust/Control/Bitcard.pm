@@ -102,10 +102,13 @@ sub show_login {
 
 sub logout {
     my $self = shift;
+    my $uri  = shift || '/';
     $self->cookie($cookie_name, 0);
     $self->user(undef);
     return OK, $self->onepixelgif, 'image/gif' if $self->req_param('bc-logout');
-    return $self->redirect($self->bitcard->logout_url(r => $self->config->base_url($self->site) . '/'))
+    $uri = $self->config->base_url($self->site) . $uri
+      unless $uri =~ m!^https?://!i;
+    return $self->redirect($self->bitcard->logout_url(r => $uri));
 }
 
 my $GIF = unpack("u", q{K1TE&.#EA`0`!`(```````````"'Y!`$`````+``````!``$```("1`$`.P``});
