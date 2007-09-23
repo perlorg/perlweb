@@ -4,32 +4,34 @@
 <p>
 Name: [% combust.user.name | html %]<br/>
 Email: [% combust.user.email | html %]<br/>
-Username: <b>[% combust.user.username | html %]</b>
-
+Username: <b>[% combust.user.username | html %]</b><br/>
+<a href="[% combust.account_url %]">Change this</a>
 </p>
+
+[% IF reset_password_confirmation %]
+<p style="border: 1px solid red; padding: 5px;">
+Are you sure you want to reset your password?  This will invalidate
+the password stored in your SVN clients etc.  You cannot undo this.
+</p>
+
+[% ELSE %]
 
 <p>On this site you can reset your perl.org Subversion and WebDav
 password.  You can't use the site to get your old password, only to 
 reset it.
 </p>
 
-[% IF reset_password_confirmation %]
-<p>
-Are you sure you want to reset your password?  This will invalidate
-the password stored in your SVN clients etc.
-</p>
 [% END %]
 
 <form action="/account" method="post">
 <input type="hidden" name="auth_token" value="[% combust.auth_token %]" />
-<input type="submit" name="reset_password" value="Reset my password" />
+[% IF reset_password_confirmation %]
+<input type="submit" name="btn" value="Yes, really give me a new password" />
+<input type="hidden" name="reset_password" value="absolutely" />
+[% ELSE %]
+<input type="submit" name="btn" value="Reset my password" />
+<input type="hidden" name="reset_password" value="yes" />
+[% END %]
 </form>
-
-<br/>AT: [% combust.auth_token %]
-<br/>CAT: [% combust.check_auth_token %]
-<br/>PW: <code>[% password %]</code>
-<br/>PI: [% process_info %]
-
-<br/>
 
 <a href="/logout">Logout</a> | <a href="/">Front</a>
