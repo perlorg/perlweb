@@ -24,11 +24,11 @@
 # the path to your PID file
 ROOT=${CBROOTLOCAL:-$CBROOT}
 LOG_PATH=`$CBROOT/bin/perl -MCombust::Config -e 'print Combust::Config->new->log_path'`
+WORK_PATH=`$CBROOT/bin/perl -MCombust::Config -e 'print Combust::Config->new->work_path'`
 PIDFILE=$LOG_PATH/httpd.pid
 #
 # the path to your httpd binary, including options if necessary
-#HTTPD="/usr/local/sbin/httpd -d /home/perlweb/apache -f /home/perlweb/apache/conf/httpd.conf"
-HTTPD="$CBROOT/bin/httpd -d $ROOT/apache -f $ROOT/apache/conf/httpd.conf"
+HTTPD="$CBROOT/bin/httpd -d $ROOT/apache -f $WORK_PATH/httpd.conf"
 #
 # a command that outputs a formatted text version of the HTML at the
 # url given on the command line.  Designed for lynx, however other

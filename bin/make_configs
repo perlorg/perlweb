@@ -66,7 +66,8 @@ EOT
 
 # setup $conf/$params for the template
 
-$tt->process("httpd.tmpl", $params, 
-	     (@local_dir ? "$local_dir[0]/httpd.conf" : "$dir/httpd.conf"))
+my $work_path = $config->work_path;
+
+$tt->process("httpd.tmpl", $params, "${work_path}/httpd.conf")
   or die "Template Error: " . $tt->error();
 
