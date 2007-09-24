@@ -43,11 +43,7 @@ Compress::Zlib
 
 Bundle::LWP
 
-Text::Template
-
 Config::Simple
-
-Mail::Internet
 
 Time::HiRes
 
@@ -88,6 +84,7 @@ String::CRC32
 Cache::Memcached
 
 Class::Accessor::Class
+
 
 =head1 AUTHOR
 
