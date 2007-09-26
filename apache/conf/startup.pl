@@ -1,4 +1,6 @@
-BEGIN { if ($ENV{CBROOTLOCAL}) { unshift(@INC, "$ENV{CBROOTLOCAL}/lib") } }
+BEGIN {
+    if ($ENV{CBROOTLOCAL}) { unshift(@INC, "$ENV{CBROOTLOCAL}/lib") }
+}
 use lib "$ENV{CBROOT}/lib";
 
 use strict;
@@ -44,9 +46,9 @@ sub ProxyIP::handler {
 
     return OK unless $trust_all or trusted_ip($r->connection->remote_ip);
 
-    my @ip = split(/,\s*/, ($r->header_in('X-Forwarded-For')||''));
+    my @ip = split(/,\s*/, ($r->header_in('X-Forwarded-For') || ''));
     while (my $ip = pop(@ip)) {
-	$r->connection->remote_ip($ip);
+        $r->connection->remote_ip($ip);
         last unless trusted_ip($ip);
     }
     return OK;
@@ -61,8 +63,8 @@ sub trusted_ip {
 }
 
 if ($ENV{CBROOTLOCAL}) {
-  my $file = "$ENV{CBROOTLOCAL}/apache/conf/startup.pl";
-  require $file if -e $file;
+    my $file = "$ENV{CBROOTLOCAL}/apache/conf/startup.pl";
+    require $file if -e $file;
 }
 
 
