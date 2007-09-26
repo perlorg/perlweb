@@ -15,17 +15,49 @@ use Apache::Constants qw(OK);
 
 my $config = new Combust::Config;
 
+my $trust_all = 0;
+my $net_netmask_loaded;
+my @forwarders;
+
+for my $ip ($config->proxyip_forwarders) {
+
+    $ip eq '*' and $trust_all = 1 and next;
+
+    unless ($ip =~ m!/!) {
+        push @forwarders, $ip;
+        next;
+    }
+
+    unless ($net_netmask_loaded or ($net_netmask_loaded = eval { require Net::Netmask; 1; })) {
+        warn "Net::Netmask not installed, could not use $ip as a proxyip_forwarder";
+        next;
+    }
+
+    $ip = Net::Netmask->new2($ip);
+    warn "Error defining trusted upstream proxy: " . Net::Netmask::errstr() unless $ip;
+    push @forwarders, $ip if $ip;
+
+}
+
 sub ProxyIP::handler {
     my $r = shift;
 
-    return OK
-     unless grep { $_ eq '*' or $_ eq $r->connection->remote_ip } $config->proxyip_forwarders;
+    return OK unless $trust_all or trusted_ip($r->connection->remote_ip);
 
     my @ip = split(/,\s*/, ($r->header_in('X-Forwarded-For')||''));
-    if (my $ip = pop(@ip)) {
+    while (my $ip = pop(@ip)) {
 	$r->connection->remote_ip($ip);
+        last unless trusted_ip($ip);
     }
     return OK;
+}
+
+sub trusted_ip {
+    my $ip = shift;
+    for my $fw (@forwarders) {
+        return 1 if (ref $fw ? $fw->match($ip) : ($ip eq $fw));
+    }
+    return 0;
 }
 
 if ($ENV{CBROOTLOCAL}) {
