@@ -4,7 +4,7 @@
 
 [% USE ua = CacheLWPSimple %]
 [% data = ua.get( 'url' =>
-      'http://svn.perl.org/parrot/trunk/languages/LANGUAGES.STATUS.pod'
+      'http://svn.perl.org/parrot/trunk/languages/LANGUAGES_STATUS.pod'
            'ttl' => 1 *60 * 60 ) %]
 [% USE PodSimple %]
 [% PodSimple.parse('html', data ) %]
