@@ -60,6 +60,29 @@ sub system_error {
     return 500;
 }
 
+# todo: should these be in Combust::Control ?
+sub no_cache {
+    my $self = shift;
+    my $status = shift;
+    $status = 1 unless defined $status;
+    $self->{no_cache} = $status;
+}
+
+sub post_process {
+    my $self = shift;
+
+    if ($self->{no_cache}) {
+        my $r = $self->r;
+
+        $r->header_out('Expires', HTTP::Date::time2str( time() ));
+        $r->header_out('Cache-Control', 'private, no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
+        $r->header_out('Pragma', 'no-cache');
+    }
+    
+    return OK;
+}
+
+
 
 1;
 
