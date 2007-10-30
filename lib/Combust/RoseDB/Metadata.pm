@@ -1,5 +1,5 @@
 package Combust::RoseDB::Metadata;
-
+use strict;
 use base qw(Rose::DB::Object::Metadata);
 
 sub new {

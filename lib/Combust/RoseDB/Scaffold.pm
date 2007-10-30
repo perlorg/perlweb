@@ -1,4 +1,5 @@
 package Combust::RoseDB::Scaffold;
+use strict;
 
 sub filter_tables { # Return 0 to exclude a table
   my $self  = shift;

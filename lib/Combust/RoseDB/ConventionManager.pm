@@ -1,4 +1,5 @@
 package Combust::RoseDB::ConventionManager;
+use strict;
 
 use base qw(Rose::DB::Object::ConventionManager);
 

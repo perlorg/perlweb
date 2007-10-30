@@ -1,5 +1,5 @@
 package Combust::RoseDB::Manager;
-
+use strict;
 use base qw(Rose::DB::Object::Manager);
 
 sub fetch {
