@@ -56,7 +56,16 @@ sub fetch_multi {
     my ($self, @ids) = @_;
 
     @ids = map { $self->_normalize_id($_) } @ids;
-    return $memd->get_multi(@ids);
+
+    my $rv = $memd->get_multi(@ids);
+    return unless $rv;
+
+    for my $k (keys %$rv) {
+        my $k2 = $k;
+        $k2 =~ s/^$self->{type};//;
+        $rv->{$k2} = delete $rv->{$k};
+    }
+    $rv;
 }
 
 
@@ -71,7 +80,7 @@ sub incr {
 
     # if $id isn't set, incr will fail
     $rv = $memd->add($id, $incr);
-    return $rv if $rv;
+    return $incr if $rv;
 
     # catch unlikely but possible race condition
     return $memd->incr($id, $incr);
