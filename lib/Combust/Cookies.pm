@@ -167,13 +167,8 @@ sub check_cookie {
     return ('', "trunc", 0); # don't reset the cookie in this case
   }
   if ($cookie_version eq '2') {
-      warn "checking cookie v2" if $DEBUG;
-      ($cookie_version, $cookie, my $hex_cs) = $raw_id =~ m!^(\d+)/(.*?)/([^/]{8})$!;
-      if ($hex_cs ne make_checksum_v2($cookie_name, $cookie)) {
-          warn "Failed checksum (v2)" if $DEBUG;
-          return '' unless wantarray;
-          return ('', "failed", (rand(100) < 0.1) );
-      }
+      warn "cookie v2 are disabled now" if $DEBUG;
+      return '';
   }
   elsif ($cookie_version eq "3") { 
       ($cookie_version, my $ts, $cookie, my $hex_cs) = $raw_id =~ m!^(\d+)/(\d+)/(.*?)/([^/]{8})$!; 
@@ -184,8 +179,8 @@ sub check_cookie {
       }
   }
   else {    # corruption or a hacker
-    warn "Combust::Cookies got unknown cookie_version $cookie_version ($raw_id)";
-    return 0 unless wantarray;
+    warn "Combust::Cookies got unknown cookie_version $cookie_version ($raw_id)\n";
+    return '' unless wantarray;
     return ('', "vers",  (rand(100) < 1) );
   }
   warn "cookie ok!" if $DEBUG;
