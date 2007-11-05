@@ -41,6 +41,15 @@ sub render {
   # TODO|FIXME: set last_modified_date properly!  
 
   if ($uri !~ m!/(.*\.(?:html?))$!) {
+
+      if ($uri =~ s!^(/.*)\.v[0-9.]+\.(js|css|gif|png|jpg|ico)$!$1.$2!) {
+        my $max_age = 315360000; # ten years
+        $self->request->header_out('Expires', HTTP::Date::time2str( time() + $max_age ));
+        $self->request->header_out('Cache-Control', "max-age=${max_age},public");
+        $self->request->uri($uri);
+    }
+
+
     # if the filename does not end in .html, then do not process it
     # with TT and just send it.
     my $file = $uri;

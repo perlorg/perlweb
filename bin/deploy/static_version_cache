@@ -1,0 +1,65 @@
+# -*- cperl -*-
+# vim: ts=8:sw=2:expandtab
+eval 'exec $CBROOT/bin/perl $0 ${1+"$@"}'
+  if $running_under_some_shell;
+use strict;
+use warnings;
+use Storable qw(nstore);
+use JSON qw(objToJson);
+use Combust::Config;
+BEGIN { $Combust::StaticFiles::setup = 1 };
+use Combust::StaticFiles;
+
+my $config = Combust::Config->new;
+
+my $root = $ENV{CBROOTLOCAL};
+my $root_dir = $config->root_docs;
+
+my @sites = $config->sites_list;
+
+for my $site (@sites) {
+
+    my $dir = Combust::StaticFiles->find_static_path($site);
+    next unless $dir;
+
+    my $storable_file = "$dir/.static.versions.store";
+    my $json_file     = "$dir/.static.versions.json";
+
+    chdir $dir or die "could not chdir to $dir";
+
+    my $files = {};
+    
+    if (-d "$root/.svn") {
+        my $svn = `svn info -R`;
+        my @files =  map { +{ map { chomp; split /: /, $_, 2 } split /\n/ } } split /\n\n/, $svn;
+        for my $file (@files) {
+            $files->{ "/" . $file->{Path} } = $file->{"Last Changed Rev"};
+        }
+    }
+    elsif (-d "$root/.git") { 
+        my $treeish = `git-rev-list --max-count=1 --all --topo-order`;
+        chomp $treeish;
+        my $command = "git-ls-tree --abbrev -r $treeish .";
+        my $git = `$command`;
+        $files = { map { chomp; my ($version, $file) = (split /\s/, $_)[2,3];
+                         ("/$file" => $version) 
+                     } split /\n/, $git 
+                 };
+    }
+    else { 
+        my $deployment_mode =  $config->site->{$site}->{deployment_mode} || 'test';
+        warn "Could not find .svn or .git directory\n" if $deployment_mode eq 'devel';
+        exit;
+    }
+    
+    #use Data::Dumper;
+    #print Data::Dumper->Dump([\$files], [qw(files)]);
+    
+    nstore($files, $storable_file) or die "could not store $storable_file: $!";
+    my $json = objToJson($files);
+    open my $fh, '>', $json_file or die "could not open $json_file: $!";
+    print $fh $json;
+    close $fh;
+}
+
+1;
