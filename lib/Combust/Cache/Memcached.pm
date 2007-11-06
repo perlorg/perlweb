@@ -17,8 +17,8 @@ my $memd = new Cache::Memcached {
 
 sub store {
   my ($self, %args) = @_;
-  my $id        = ($args{id} ? $self->_normalize_id($args{id}) : $self->{fetched_id})
-      or carp "No id specified" and return;
+  my $id        = ($self->_normalize_id($args{id}) || $self->{fetched_id}) 
+    or carp "No id specified" and return;
 
   my $data      = defined $args{data}
                     ? $args{data}
@@ -97,6 +97,8 @@ sub delete {
 
 sub _normalize_id {
     my ($self, $id) = @_;
+    # allow falling back to using $self->{fetched_id} in the calling methods
+    return unless $id; 
     $id = join ';', $self->{type}, $id;
     $self->SUPER::_normalize_id($id);
 }
