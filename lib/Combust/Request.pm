@@ -41,10 +41,15 @@ sub cookie {
 =head1 NAME
 
 
-
 =head2 METHODS
 
 =over 4
+
+=item content_type([new_content_type])
+
+=item cookie(name, [value], [args])
+
+=item notes(note, [value])
 
 =item req_param
 
@@ -54,3 +59,6 @@ sub cookie {
 Hash ref to all the request parameters.
 
 =back  
+
+=cut
+
