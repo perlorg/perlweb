@@ -6,7 +6,7 @@ sub filter_tables { # Return 0 to exclude a table
   my $db    = shift;
   my $table = shift;
 
-  return $table !~ /combust | ^(old|te?mp)_ | _temp$/ix;
+  return $table !~ /^combust_ | ^(old|te?mp)_ | _te?mp$/ix;
 }
 
 sub cache_table { # Return 1 to make a table be cached
