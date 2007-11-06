@@ -26,7 +26,14 @@ for my $cache_backend (qw(dbi memcached)) {
   is($d->{data}, "T3", "test meta_data test data");
   is_deeply($d->{meta_data}, {m=>"x1"}, "test meta_data"); 
 
-  is($cache->fetch(id => "no_such_key"), undef, "get undefined return from non-existing cache key");
+  ok($cache->store(id => "test4", data => "T4a"), "store");
+  ok($d = $cache->fetch(id => "test4"), "fetch with id");
+  is($d->{data}, "T4a", "test data T4a");
+  ok($cache->store(data => "T4b"), "store without id");
+  ok($d = $cache->fetch(id => "test4"), "fetch data stored without id");
+  is($d->{data}, "T4b", "test data T4b ($cache_backend)");
+
+  is($cache->fetch(id => "no_such_key" . rand), undef, "get undefined return from non-existing cache key");
 
   # 100KB data
   my $large_data = '1234567890' x (10_000);

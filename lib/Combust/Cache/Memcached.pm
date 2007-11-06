@@ -17,8 +17,8 @@ my $memd = new Cache::Memcached {
 
 sub store {
   my ($self, %args) = @_;
-  my $id        = ($self->_normalize_id($args{id}) || $self->{fetched_id}) 
-    or carp "No id specified" and return;
+  my $id        = ($args{id} ? $self->_normalize_id($args{id}) : $self->{fetched_id})
+      or carp "No id specified" and return;
 
   my $data      = defined $args{data}
                     ? $args{data}
