@@ -127,6 +127,10 @@ sub base_url {
   carp "no [$sitename] site configured" and return unless $self->site->{$sitename};
   my $site = $self->site->{$sitename};
   my $servername = $site->{servername};
+  unless ($servername) {
+      cluck "servername not defined for site [$sitename]";
+      return;
+  }
   my $port = $self->external_port || 80;
   my $protocol = 'http';
   $protocol = 'https' if $port and $port == 443;
