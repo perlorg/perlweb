@@ -3,16 +3,17 @@ use strict;
 use base 'Combust::Control';
 use Combust::Config;
 use Combust::Template::Provider;
-use LWP::MediaTypes qw(guess_media_type);;
+use LWP::MediaTypes qw(guess_media_type);
 use Apache::Constants qw(OK DONE);
 
-# FIXME|TODO  
-#   - sub class Template::Service to do the branch magic etc?
-#   - use/take code from Apache::Template? (probably not)
+use base qw(Class::Accessor::Fast);
+__PACKAGE__->mk_accessors(qw(force_template_processing));
 
 my $config = Combust::Config->new();
 
 LWP::MediaTypes::read_media_types( $config->root . "/apache/conf/mime.types");
+LWP::MediaTypes::add_encoding('text/css', 'css');
+
 
 sub render {
   my $self = shift;
@@ -20,8 +21,8 @@ sub render {
   my $r = $self->r;
 
   my $template = '';
-  my $content_type = 'text/html';
-  my $uri = $r->uri;
+
+  my $uri = $self->request->uri;
 
   # Don't serve special files:
   #    Normally, we want to use DirectoryMatch for this, but URI->File
@@ -40,46 +41,15 @@ sub render {
 
   # TODO|FIXME: set last_modified_date properly!  
 
-  if ($uri !~ m!/(.*\.(?:html?))$!) {
-
-      if ($uri =~ s!^(/.*)\.v[0-9.]+\.(js|css|gif|png|jpg|ico)$!$1.$2!) {
-        my $max_age = 315360000; # ten years
-        $self->request->header_out('Expires', HTTP::Date::time2str( time() + $max_age ));
-        $self->request->header_out('Cache-Control', "max-age=${max_age},public");
-        $self->request->uri($uri);
-    }
-
-
-    # if the filename does not end in .html, then do not process it
-    # with TT and just send it.
-    my $file = $uri;
-    substr($file,0,1) = ""; # trim leading slash
-
-    my $data = $self->tt->provider->expand_filename($file);
-    #warn Data::Dumper->Dump([\$data],[qw(data)]);
-    if ($data->{path}) {
-      $r->update_mtime($data->{time} || time);
-      $content_type = guess_media_type($data->{path});
-      $content_type = 'text/css' if $file =~ m/\.css$/;
-      my $fh;
-      open $fh, $data->{path} or warn "Could not open $data->{path}: $!" and return 403;
-      return OK, $fh, $content_type;
-    }
-    else {
-      if ($self->tt->provider->is_directory($file)) {
-	return $self->redirect($uri . "/", 1);
-      }
-      else {
-	return 404;
-      }
-    }
+  if (!$self->force_template_processing and $uri !~ m!/(.*\.(?:html?))$!) {
+      return $self->serve_static_file;
   }
 
-  # FIXME|TODO: disallow nasty characters here, in particular double dots...
   if ($uri =~ m!^/((?:[^/]+/)*[^/]+)$!) {
     $template = $1; 
     $template =~ s/\.\.+//g;
     #warn "TEMPLATE: $template";
+    $content_type = guess_media_type($data->{path});
   }
   else {
     return 404;
@@ -92,10 +62,51 @@ sub render {
     return 500; 
   }
 
+  # TODO: this code can be tossed out, I think ...
   $content_type = $r->pnotes('combust_notes')->{response}{content_type}
     if defined $r->pnotes('combust_notes')->{response}{content_type};
 
   return OK, $output, $content_type;
+}
+
+sub serve_static_file {
+    my $self = shift;
+
+    my $r   = $self->r;
+    my $uri = $self->request->uri; 
+
+    if ($uri =~ s!^(/.*)\.v[0-9.]+\.(js|css|gif|png|jpg|ico)$!$1.$2!) {
+        my $max_age = 315360000; # ten years
+        $self->request->header_out('Expires', HTTP::Date::time2str( time() + $max_age ));
+        $self->request->header_out('Cache-Control', "max-age=${max_age},public");
+        $self->request->uri($uri);
+    }
+
+
+    # if the filename does not end in .html, then do not process it
+    # with TT and just send it.
+    my $file = $uri;
+    substr($file,0,1) = ""; # trim leading slash
+
+    my $content_type;
+
+    my $data = $self->tt->provider->expand_filename($file);
+    #warn Data::Dumper->Dump([\$data],[qw(data)]);
+    if ($data->{path}) {
+        $r->update_mtime($data->{time} || time);
+        $content_type = guess_media_type($data->{path});
+        my $fh;
+        open $fh, $data->{path} or warn "Could not open $data->{path}: $!" and return 403;
+        return OK, $fh, $content_type;
+    }
+    else {
+        if ($self->tt->provider->is_directory($file)) {
+            return $self->redirect($uri . "/", 1);
+        }
+        else {
+            return 404;
+        }
+    }
 }
 
 sub deadlink_handler {
