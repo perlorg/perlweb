@@ -29,9 +29,9 @@ if test -e $CBROOTLOCAL/bin/httpd_setup -a -x $CBROOTLOCAL/bin/httpd_setup; then
    fi
 fi
 
-if ! $CBROOT/bin/deploy/static_version_cache; then
-  echo ERROR: bin/deploy/static_version_cache failed; exit
-fi
+#if ! $CBROOT/bin/deploy/static_version_cache; then
+#  echo ERROR: bin/deploy/static_version_cache failed; exit
+#fi
 
 # TODO: change this to check if the httpd is still running every second
 mkdir -p $WORK_PATH/htdocs && mkdir -p $WORK_PATH/ctpl && mkdir -p $LOG_PATH && \
