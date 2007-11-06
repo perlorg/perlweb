@@ -44,6 +44,8 @@ BEGIN {
       push @{$opt{post_connect_sql}}, "SET time_zone = '$1'";
     }
 
+    $opt{connect_options}{mysql_enable_utf8} = 1;
+    push @{$opt{post_connect_sql}}, 'SET NAMES utf8';
 
     __PACKAGE__->register_db(%opt);
     
