@@ -45,11 +45,13 @@ sub render {
       return $self->serve_static_file;
   }
 
+  my $content_type;
+
   if ($uri =~ m!^/((?:[^/]+/)*[^/]+)$!) {
     $template = $1; 
     $template =~ s/\.\.+//g;
     #warn "TEMPLATE: $template";
-    $content_type = guess_media_type($data->{path});
+    $content_type = guess_media_type($template) || 'text/html';
   }
   else {
     return 404;
