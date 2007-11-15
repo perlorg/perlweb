@@ -11,14 +11,14 @@ my $yahoo = Yahoo::Search->new(AppId => 'perl.org-search');
 sub handler {
   my $self = shift;
 
-  my $query = $self->r->param('q');
-  my $page  = $self->r->param('p') || 1;
-  my $count = $self->r->param('n') || 15;
+  my $query = $self->req_param('q');
+  my $page  = $self->req_param('p') || 1;
+  my $count = $self->req_param('n') || 15;
   my $maxcount = $yahoo->MaxCount('Doc');
   $count = $maxcount if $count > $maxcount;
 
-  $self->param('count_per_page' => $count);
-  $self->param('page_number'    => $page);
+  $self->tpl_param('count_per_page' => $count);
+  $self->tpl_param('page_number'    => $page);
 
   my $start = ($page * $count) - $count;
 
@@ -31,16 +31,16 @@ sub handler {
 
     if ($search->CountAvail < 10) {
       my $spell = $yahoo->Query(Spell => $query);
-      $self->param(spell => $spell);
+      $self->tpl_param(spell => $spell);
       #warn Data::Dumper->Dump([\$spell], [qw(spell)]);
     }
 
     #my $related= $yahoo->Query(Related => $query);
-    #$self->param(related => $related);
+    #$self->tpl_param(related => $related);
     #warn Data::Dumper->Dump([\$related], [qw(related)]);
 
-    $self->param(search  => $search);
-    $self->param(query   => $query);
+    $self->tpl_param(search  => $search);
+    $self->tpl_param(query   => $query);
     #warn Data::Dumper->Dump([\$search], [qw(search)]);
 
     if ($page == 1) {
@@ -52,7 +52,7 @@ sub handler {
       }
       warn Data::Dumper->Dump([\$cpan], [qw(cpan)]);
 	
-      $self->param('cpan', $cpan);
+      $self->tpl_param('cpan', $cpan);
     }
   }
 
