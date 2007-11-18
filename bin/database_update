@@ -72,7 +72,7 @@ my %rev;
 {
     my $cur_rev;
     my $sql = '';
-    my @files = ("$ENV{CBROOTLOCAL}/sql/$database.update", "$ENV{CBROOT}/sql/$database.update");
+    my @files = ($ENV{CBROOTLOCAL} ? ("$ENV{CBROOTLOCAL}/sql/$database.update") : (), "$ENV{CBROOT}/sql/$database.update");
     my $filename = first { -f $_ } @files;
     die "Could not find sql/$database.update file\n" unless $filename;
     open my $fh, "<", $filename or die "Could not open $filename: $!";
