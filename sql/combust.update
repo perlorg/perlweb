@@ -13,6 +13,8 @@ create table if not exists combust_cache (
   KEY `purge_idx` (`purge_key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+delete from combust_cache where length(id) > 64;
+
 alter table combust_cache
   convert to character set utf8,
   default character set utf8,
