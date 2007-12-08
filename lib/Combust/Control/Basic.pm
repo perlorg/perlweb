@@ -12,8 +12,6 @@ __PACKAGE__->mk_accessors(qw(force_template_processing));
 my $config = Combust::Config->new();
 
 LWP::MediaTypes::read_media_types( $config->root . "/apache/conf/mime.types");
-LWP::MediaTypes::add_encoding('text/css', 'css');
-
 
 sub render {
   my $self = shift;
