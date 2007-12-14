@@ -122,9 +122,13 @@ trunk and pull changes forward from there.  You won't get branches,
 but that is probably ok.</p>
 
 <pre>
-  svk mirror //parrot/remote https://svn.perl.org/parrot/trunk
+  svk mirror https://svn.perl.org/parrot/trunk //parrot/remote
   svk sync -s HEAD //parrot/remote
 </pre>
+
+<p><code>//parrot/remote</code> is your local name for the mirrored
+svn repository. You can choose whatever name you want; it won't affect
+the physical filesystem path where svk stores repository data.</p>
 
 <p>If you really need a local copy of all historical revisions on your
 local machine, please use the following process to bootstrap your
