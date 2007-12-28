@@ -1,14 +1,16 @@
-[% page.title = "Perl 5.10.0 Release Announcement" %]
 
+[% page.title = "Perl 5.10.0 Release Announcement" %]
+ 
 <h1>Perl 5.10.0 Released</h1>
 
 <p>
-Today (December 18th, 2007) the Perl Foundation announces the release of Perl 5.10, the
+Today (December 18th, 2007) <a href="http://www.perlfoundation.org/">the Perl Foundation</a>
+announces the release of Perl 5.10, the
 first major upgrade to the wildly popular dynamic programming
 language in over five years.  This latest version builds on the
 successful 5.8.x series by adding powerful new language features
 and improving the Perl interpreter itself.  The Perl development
-team, called the the Perl Porters, have taken features and inspiration
+team, called the Perl Porters, has taken features and inspiration
 from the ambitious <a href="http://dev.perl.org/perl6/">Perl 6</a>
 project, as well as from chiefly academic languages and blended
 them with Perl's pragmatic view to practicality and usefulness.
@@ -17,20 +19,31 @@ them with Perl's pragmatic view to practicality and usefulness.
 <h2>Significant new language features</h2>
 
 <p>
-The new <b>smart match operator</b> implements a new kind of
+The most exciting change is the new <b>smart match operator</b>.
+It implements a new kind of
 comparison, the specifics of which are contextual based on the
-inputs to the operator.  The result is that all comparisons now
-just Do The Right Thing, a hallmark of Perl programming.  Programmers
-can also <b>capture matches based on names</b>, rather than position
-in the expression.  In addition, the regular expression engine has
-been tweaked, tuned and sped up in many cases.
+inputs to the operator.  For example, to find if scalar <tt>$needle</tt> is in array <tt>@haystack</tt>,
+simply use the new <tt>~~</tt> operator:
 </p>
-
+<pre>
+  if ( $needle ~~ @haystack ) ...
+</pre>
 <p>
+The result is that all comparisons now
+just Do The Right Thing, a hallmark of Perl programming.
 Building on the smart-match operator, Perl <b>finally gets a
 <tt>switch</tt> statement</b>, and it goes far beyond the kind
 of traditional <tt>switch</tt> statement found in languages like
 C, C++ and Java.
+</p>
+
+<p>
+Regular expressions are now far more powerful.  Programmers
+can now use <b>named captures</b> in regular expressions, rather than counting parentheses for 
+positional captures.  Perl 5.10 also supports recursive patterns,
+making many useful constructs, especially in parsing, now possible.
+Even with these new features, the regular expression engine has
+been tweaked, tuned and sped up in many cases.
 </p>
 
 <p>
@@ -44,18 +57,26 @@ allow users to write modules to influence the way Perl behaves; a
 <h2> Interpreter improvements </h2>
 
 <p>
-It's not just langauge changes.  The Perl interpreter itself is
-<b>faster with a smaller memory footprint</b>, and several UTF-8 and
+It's not just language changes.  The Perl interpreter itself is
+<b>faster with a smaller memory footprint</b>, and has several UTF-8 and
 threading improvements.  The Perl <b>installation is now
     relocatable</b>, a blessing for systems administrators and operating
-system packagers.
+system packagers.  The source code is more portable, and of course many
+small bugs have been fixed along the way.  It all adds up to the best
+Perl yet.
 </p>
 
 <p>
-Don't think that the Perl Porters are not resting on their laurels.
+For a list of all changes in Perl 5.10, see Perl 5.10's <a href="http://search.cpan.org/dist/perl-5.10.0/pod/perl5100delta.pod">perldelta</a> document included
+with the source distribution.  For a gentler introduction of just the high points, the slides for 
+Ricardo Signes' <a href="http://www.slideshare.net/rjbs/perl-510-for-people-who-arent-totally-insane">Perl 5.10 For People Who Aren't Totally Insane</a> talk are well worth reading.
+</p>
+
+<p>
+Don't think that the Perl Porters are resting on their laurels.
 As Rafael Garcia-Suarez, the release manager for Perl 5.10, said:
 "I would like to thank every one of the Perl Porters for their
-efforts. I hope we'll all be proud of what Perl is becoming. And
+efforts. I hope we'll all be proud of what Perl is becoming, and
 ready to get back to the keyboard for 5.12."
 </p>
 
@@ -67,8 +88,9 @@ except Windows.  Users who don't want to wait for their operating
 system vendor to release a package can dig into Perl 5.10 by
 downloading it from CPAN, the Comprehensive Perl Archive Network,
 at <a href="http://search.cpan.org/dist/perl/">http://search.cpan.org/dist/perl/</a>,
-or from the Perl home page at <a href="http://www.perl.org/">www.perl.org</a>.<br/>
-<a href="http://www.cpan.org/authors/id/R/RG/RGARCIA/perl-5.10.0.tar.gz">Download from CPAN</a>.
+or from the Perl home page at <a href="http://www.perl.org/">www.perl.org</a>.
+<a href="http://www.cpan.org/authors/id/R/RG/RGARCIA/perl-5.10.0.tar.gz">Download the
+source code from CPAN</a>.
 </p>
 
 <p>
@@ -90,7 +112,7 @@ pr@perlfoundation.org.
 
 <p>
 Perl:<br>
-<a href="http://www.perl.org/">perl.org</a><br>
+<a href="http://perl.org">perl.org</a><br>
 Perl is a dynamic programming language created by Larry Wall and
 first released in 1987. Perl borrows features from a variety of
 other languages including C, shell scripting (sh), AWK, sed and
@@ -104,7 +126,7 @@ Rafael Garcia-Suarez<br>
 email: rgarciasuarez@gmail.com<br>
 Rafael Garcia-Suarez is a French software engineer who lives in Paris,
 France, and who is currently employed by Booking.com. He has been a
-contributor to Perl for many years and and has stewarded the birth of
+contributor to Perl for many years and has stewarded the birth of
 Perl 5.10 for the last few.
 </p>
 
@@ -117,13 +139,11 @@ and code. It is a non-profit, 501(c)(3) organization incorporated
 in Holland, Michigan, USA in 2000.
 </p>
 
-
 <p>
-shasums for the tarballs:<br>
+sha1sum for the tarball:<br>
 <code>adf73606dd5248af7ccdd735bcaa0e628ea75b3c  perl-5.10.0.tar.gz</code>
 
-<br><br>md5sums for the tarball:<br>
+<br><br>md5sum for the tarball:<br>
 <code>d2c39b002ebfd2c3c5dba589365c5a71  perl-5.10.0.tar.gz
 </code>
 </p>
-
