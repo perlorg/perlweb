@@ -72,7 +72,7 @@ The api_key is used to set and record who submitted the test results.
 
 =head4 Secret and signature
 
-In addition to the api_key each user also has an C<api_secret>.  On most requests a C<ts> and a C<sig> parameter is required, too.   The C<ts> is a timestamp and C<sig> is 
+In addition to the api_key each user also has an C<api_secret>.  On the submissions two extra parameters are used: C<ts> and C<sig>.  The C<ts> is a timestamp and C<sig> is 
 
    md5( request_string, secret, ts )
 
