@@ -22,29 +22,32 @@ In JSON:
          "submit_id" : "37F91A16-BF10-11DC-B10D-AF04494483B4",
          "human_comments" : null,
          "comments" : "... test output ...",
-         "config" : {
-            "longdblsize" : 16,
-            "ptrsize" : 4,
-            "archname" : "darwin-2level",
-            "cc" : "/usr/bin/gcc-4.0",
-            "byteorder" : 1234,
-            "longlongsize" : 8,
-            "lseeksize" : 8,
-            "libpth" : "/opt/local/lib /usr/lib",
-            "ccflags" : "-I/opt/local/include -fno-common ...",
-            "longsize" : 4,
-            "alignbytes" : 8,
-            "use64bitall" : null,
-            "ccversion" : "",
-            "d_dlsymun" : null,
-            "use5005threads" : null,
-            "perllibs" : "-ldl -lm -lc",
-            "nvsize" : 8,
-            "prefix" : "/opt/local"
-         },
          "distribution" : {
             "version" : "2.3.4",
             "name" : "Acme-Foo"
+         },         
+         "interpreter" : {
+            "name" : "perl",
+            "version" : "5.8.8",
+            "config" : {
+                "longdblsize" : 16,
+                "ptrsize" : 4,
+                "archname" : "darwin-2level",
+                "cc" : "/usr/bin/gcc-4.0",
+                "byteorder" : 1234,
+                "longlongsize" : 8,
+                "lseeksize" : 8,
+                "libpth" : "/opt/local/lib /usr/lib",
+                "ccflags" : "-I/opt/local/include -fno-common ...",
+                "longsize" : 4,
+                "alignbytes" : 8,
+                "use64bitall" : null,
+                "ccversion" : "",
+                "d_dlsymun" : null,
+                "use5005threads" : null,
+                "perllibs" : "-ldl -lm -lc",
+                "nvsize" : 8,
+                "prefix" : "/opt/local"
          }
         },
         { submit_id : "....", .... }
@@ -115,6 +118,10 @@ Hash with "name" and "version", for example:
 =item interpreter
 
 =over 4
+
+=item name
+
+"perl", "raduko", "parrot", ...
 
 =item version
 
