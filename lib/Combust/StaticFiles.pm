@@ -2,7 +2,7 @@ package Combust::StaticFiles;
 use strict;
 use base qw(Class::Accessor::Class);
 use List::Util qw(first max);
-use JSON qw();
+use JSON qw(2.0 from_json);
 use Carp qw(cluck);
 use Combust::Config;
 
@@ -12,7 +12,6 @@ __PACKAGE__->export_tag(all => [ qw(find_static_path setup_static_files static_u
 
 my $config = Combust::Config->new;
 
-my $json = JSON->new(convblessed => 1, pretty => 1);
 my $startup_time = time;
 
 my $static_file_paths = {}; 
@@ -50,7 +49,7 @@ sub setup_static_files {
             my $file = "${static_directory}/.static.versions.json";
             open my $fh, $file or die "Could not open $file: $!";
             my $versions = <$fh>;
-            $json->jsonToObj($versions)
+            from_json($versions)
         };
 
     $static_file_paths->{$site}->{files} = $static_files;
