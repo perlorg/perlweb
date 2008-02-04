@@ -504,8 +504,10 @@ sub api {
              params   => $params,
              ($args ? (%$args) : ()),
        };
-    
-    $api_params->{user} = $self->user if $self->can('user');
+
+    if ( !exists $api_params->{user} and $self->can('user') ) {
+        $api_params->{user} = $self->user;
+    }
 
     return $self->api_class->call
       ($method,
