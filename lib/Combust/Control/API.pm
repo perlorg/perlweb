@@ -2,7 +2,7 @@ package Combust::Control::API;
 use strict;
 use base qw(Combust::Control);
 use Apache::Constants qw(OK NOT_FOUND);
-use JSON;
+use JSON::XS qw(encode_json);
 use Sys::Hostname qw(hostname);
 use Return::Value;
 
@@ -35,17 +35,15 @@ sub api_params {
     shift->request->req_params;
 }
 
-my $json = JSON->new(selfconvert => 1, pretty => 1);
-
 sub _format_error {
     my $self = shift;
     my $time = scalar localtime();
     chomp(my $err = join(" ", $time, @_));
     warn "ERROR: $err\n";
-    $json->objToJson({ system_error => $err,
-                       server       => hostname,
-                       datetime     => $time,
-                     });
+    encode_json({ system_error => $err,
+                  server       => hostname,
+                  datetime     => $time,
+                });
 }
 
 sub show_error {
