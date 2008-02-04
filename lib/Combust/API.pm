@@ -2,9 +2,18 @@ package Combust::API;
 use strict;
 use Class::Accessor::Class;
 use base qw(Class::Accessor::Class);
-use JSON;
+use JSON::XS qw();
 
-my $json = JSON->new(selfconvert => 1, pretty => 1);
+my $json; 
+
+sub _json {
+    return $json if $json;
+    $json = JSON::XS->new;
+    $json->utf8(1);   # we need JSON::XS to handle UTF-8 correctly
+    $json->pretty(1); # should be devel mode only
+    $json->convert_blessed(1);
+    return $json;
+}
 
 sub setup_api {
     my ($class, %classes) = @_;
@@ -19,12 +28,7 @@ sub setup_api {
   }
 }
 
-sub new {
-    my ($class) = shift;
-    bless {@_}, $class;
-}
-
-sub call {
+sub setup_api_call {
     my ($class, $name, $args) = @_;
 
     my ($group, $method) = ($name =~ m!^(\w+)/?([a-z]\w+)?!);
@@ -37,53 +41,39 @@ sub call {
         return die qq[No method "$method"\n];
     }
     
-    # TODO:
-    #  start DB transaction here (tricky with CDBI, grrh)
+    my $sc = $subclass->new( args => $args );
 
-    my $sc = $subclass->new( args => $args ); # db => $db );
+    return bless { 
+                  name   => $name,
+                  api    => $sc, 
+                  method => $method,
+                  args   => $args,
+                 }, $class;
+}
+
+sub call {
+    my $class = shift;
+
+    my $self = $class->setup_api_call(@_);  # ($name, $args)
     
-    my ($result, $meta) = eval { $sc->$method };
+    my ($result, $meta) = eval { 
+        my $method = $self->{method};
+        $self->{api}->$method
+    };
     
     if (my $err = $@) {
-        # $db->rollback;
-        die "$name: $err\n";
+        die  $self->{name} . ": $err\n";
     }
-    
-    #  $db->commit;
     
     #warn Data::Dumper->Dump([\$result], [qw(api_result)]);
-    
-    if ($args->{json}) {
-        $result = $json->objToJson($result);
+
+    if ($self->{args}->{json}) {
+        $result = $class->_json->encode($result);
     }
+
+    #warn Data::Dumper->Dump([\$result], [qw(api_json__)]);
     
     return ($result, $meta);
-
-}
-
-sub user {
-    shift->args->{user}
-}
-
-sub args {
-    shift->{args};
-}
-
-sub _required_param {
-    my $self = shift;
-    my $p = $self->args->{params};
-    if (my @missing = grep { !defined $p->{$_} || $p->{$_} eq '' } @_) {
-      die( (@missing == 1)
-           ? "Required parameter @missing missing\n"
-           : "Required parameters (@missing) missing\n");
-  }
-    return @{$p}{@_};
-}
-
-sub _optional_param {
-    my $self = shift;
-    my $p = $self->args->{params};
-    return @{$p}{@_};
 }
 
 
