@@ -85,6 +85,10 @@ Yes. Unlike Perl 5, Perl 6 will provide:
 
 =item coroutines
 
+=item lazy lists
+
+=item strong module and language versioning
+
 =back
 
 Developers who want to take advantage of those new and/or improved features
@@ -126,8 +130,10 @@ those who don't know how to run a disassembler.
 =head2 Will people be able to develop in Perl 6 and release stand-alone
         executables that don't require any other system resources?
 
-No. In the foreseeable future all Perl 6 programs will require the resources
-of the Parrot engine.
+Maybe. The parrot bytecode requires the parrot to run it, but if you are in
+desperate need for a stand alone executable, you can statically link parrot
+and your program to a single executable.
+
 
 =head2 Is there a release date set for perl 6.0 ?
 
@@ -151,6 +157,8 @@ For more information on the latest re: perl 6, check out:
 =item http://www.pugscode.org/
 
 =item http://www.parrotcode.org/
+
+=item http://rakudo.org/
 
 =back
 
