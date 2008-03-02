@@ -1,12 +1,10 @@
-[% page.title = "Document parrot's security infrastructure" %]
+[% page.title = "Security" %]
 [% page.style = "default.html" %]
 [% page.sidebar = INCLUDE "tpl/navigation.html" %]
 
-<h1>Draft: Pending Verification</h1>
-
 [% USE ua = CacheLWPSimple %]
 [% data = ua.get( 'url' =>
-      'http://svn.perl.org/parrot/trunk/docs/pdds/draft/pdd18_security.pod'
+      'http://svn.perl.org/parrot/trunk/docs/pdds/pdd18_security.pod'
            'ttl' => 1*60*60 ) %]
 [% USE PodSimple %]
 [% PodSimple.parse('html', data ) %]
