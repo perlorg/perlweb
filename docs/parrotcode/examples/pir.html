@@ -98,19 +98,20 @@ which of the &quot;physical&quot; registers that is being used, just the type.
 A trace of this program (<tt>parrot -t 1 temps.pir</tt>) shows:
 </p>
 
-<pre class="pre note">     0 set I0, 1        - I0=0, 
-     3 print I0         - I0=1
-     5 print &quot;, &quot;
-     7 set I0, 2        - I0=1, 
-    10 print I0         - I0=2
-    12 print &quot;, &quot;
-    14 set N0, 4.2      - N0=0.000000, 
-    17 print N0         - N0=4.200000
-    19 print &quot;, &quot;
-    21 set S0, "Resting"        - , 
-    24 print S0         - S0=&quot;Resting&quot;
-    26 print &quot;\n&quot;
-    28 set_returns PMC_C[5]
+<pre class="pre note"> 0 set I1, 1                        I1=-888
+     3 print I1                         I1=1
+     5 print ", "
+     7 set I0, 2                        I0=-888
+    10 print I0                         I0=2
+    12 print ", "
+    14 set N0, 4.2                      N0=-88.800000
+    17 print N0                         N0=4.200000
+    19 print ", "
+    21 set S0, "Resting"                S0="(null)"
+    24 print S0                         S0="Resting"
+    26 print "\n"
+1, 2, 4.200000, Resting
+    28 set_returns PC5
     30 returncc
 </pre>
 
@@ -125,9 +126,9 @@ of any of the registers (from <i>before</i> the opcode is executed).
 So, these temporary registers map to actual registers in the PVM, but 
 using them frees
 the compiler writer from dealing with the details. Parrot's
-PIR assembler will automatically handle variable lifetimes, and reuse 
-actual registers when possible. You can see that both integer registers
-above map to <tt>I0</tt>.
+PIR assembler will automatically handle variable lifetimes, and depending
+on optimization level, may reuse 
+actual registers when possible. 
 </p>
 
 <p>You should also note the last two opcodes: PIR is automatically handling
@@ -251,7 +252,7 @@ contains an invokable PMC. For example, if you wanted to use a subroutine
 from parrot's standard library:
 </p>
 
-<pre class="pre code">.sub main @MAIN
+<pre class="pre code">.sub main :main
   load_bytecode "library/Data/Escape.pbc"
   .local pmc escaper
   .local string result
