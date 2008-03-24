@@ -1,0 +1,483 @@
+=head1 This Week on perl5-porters - 9-15 March 2008
+
+Take our command, strip off the package, pass the short name and
+the calling package to C<_make_fatal()>, and then use magic-goto
+to call our subroutine at the end. It's simple, right?  Yet I
+struggle to find any time when it's B<correct>. -- Paul Fenwick
+and his Fatal attraction.
+
+=head1 Topics of Interest
+
+=head2 Getting blead via git
+
+Nicholas Clark pondered the layout of files in the build directory.
+He thought that it would be useful to have dual-lifed modules
+positioned under F<ext/>, and in git parlance they would become
+submodules. This would simplify managing the changes between the
+CPAN version and blead or maint. But he was wondered how git would
+keep track of the same file that is in F<lib/> for maint but in
+F<ext/> for blead.
+
+Sébastien Aperghis-Tramoni wondered if Nicholas was thinking
+about pragma modules (like C<strict> and C<constant>) too.
+
+Nicholas also wanted to know what support git provided to answer
+questions such as "which changes from this branch have been integrated
+into that branch". Rafael seemed to think it should be possible,
+but no people with strong git-fu responded.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00240.html
+
+Elsewhere, there was some idle chatter of converting everything to
+UTF-8, but no resolution.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00314.html
+
+=head2 A lexical Fatal for Perl 5.10
+
+Now that 5.10 allows people to write lexical pragmas, Paul Fenwick set about
+writing a scoped version of the C<Fatal> module (whereby warnings become
+fatal errors).
+
+He thought that it would be possible to bolt the additional functionality onto
+a dual-lifed C<Fatal> module, but the syntax seemed clumsy, and a better
+idea would be to build on C<Fatal> to produce an all-new C<lethal> pragma.
+
+There was a certain amount of bikeshed discussion to suggest better
+names, such as C<deadly>, C<autodie> and sillier, but C<lethal>
+gathered currency as the thread moved along.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00254.html
+
+=head2 C<Fatal::AUTOLOAD> - Feature or Bug?
+
+In the middle of adding lethal support to Perl, Paul stumbled upon
+a thing of wond'rous beauty. It turns out that you can inherit from
+C<Fatal> in a package, and through the magic of C<AUTOLOAD>, invoke
+Fatal behaviour by prepending an ampersand to a builtin (à la
+C<< &open my $in, '<', '/no/such/file' >>) or not, by omitting it.
+
+Of course, this functionality is not documented anywhere: neither
+the POD, nor code, nor test suite make any allusion to it. As such,
+Rafael Garcia-Suarez and a chorus of porters called for the chain-saw
+to have the beast put out of its misery.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00338.html
+
+=head2 Fedora 9 and 5.10.0
+
+Tom Callaway was happy to announce that, thanks in large part to the efforts of
+Andy Armstrong, Nicholas Clark and Rafael Garcia-Suarez, the upcoming Fedora
+9 release will contain perl 5.10.0. This should be available in late April.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00288.html
+
+=head2 Safely supporting POSIX C<SA_SIGINFO>
+
+POSIX offers various ways to define C routines that may be used as
+signal handlers, one of which gives the routine access to additional
+information. This in turn offers the handler more context with which
+to figure out what is going on. Some years back, Jarkko Hietaniemi
+wrote some code to expose this richer interface to a signal handler
+written in Perl.
+
+Nicholas Clark ran across Jarkko's work this week, and realised
+that it no longer worked in the age of safe signals, because the
+lag between the signal's arrival and its delivery to Perl results
+in the extra information being lost. He thought that there was a
+way to make things work, as one of the allowed system calls in a
+signal handler is C<write>, and with this he could squirrel the
+information away somewhere until it is safe to fetch it.
+
+His scheme was to install a shim at the signal arrival to write the
+information to a conveniently pre-opened pipe, and then after the
+current opcode has been run, see if there are any piped signals
+waiting.  If there are, then the information is pulled out of the
+pipe, unpacked (since it is all intra-host communication, we'd be
+free to write out raw structs), prettied up, and then the safe
+signal handler is called.
+
+Tim Bunce admired the deviousness, but wondered if using pipes was
+overkill, and asked whether a slab of memory could be set aside for
+this use instead. Nicholas pointed out that there is nothing from
+preventing a process from receiving multiple signals simultaneously
+(they are asynchronous after all), so when all is said and done
+one would probably wind up with something that resembled the pipe
+infrastructure anyway, only buggy.
+
+Current flaws in the idea include the fact that on a couple of
+platforms the siginfo structure is larger than 512 bytes, the largest
+atomic write permitted to a pipe. Craig Berry reminded people that
+for multiple deliveries of the same signal during the execution of
+an opcode are thrown away. Nicholas wondered if that was a bug that
+needed fixing. Craig pointed back to previous thoughts he had had on
+the subject perl's signal implementation.
+
+Nicholas also mentioned the hoops one would have to jump through in
+order to deliver the signal to the right thread in a multi-threaded
+environment.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00305.html
+
+=head2 Refine C<make regen> to be more selective
+
+Jim Cromie was annoyed by the fact that running a C<make regen> will
+cause everything to be recompiled (because it generates a slew of
+files that tickle major F<Makefile> target rules). So Jim added smarts
+to F<regen.pl> to have each file built in a holding pen, and only update
+the target file when it differs from previous run.
+
+At first there was considerable debate about using checksums and hash
+digests to check whether the files differed. Ben Morrow pointed out
+that as both the old and new files were present, and read in their
+entirety one could do away with extra trickery and just perform a
+simple byte-for-byte comparison.
+
+  shades of mv-if-diff
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00352.html
+
+=head2 A question of inheritance, encoding and aliases
+
+It started out with H.Merijn Brand tracking down the cause of F<utf8.t>
+(from C<Test::Simple>) failure on HP-UX.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00253.html
+
+This in turn led Michael G. Schwern to discover that there was
+something wrong with F<open.pm> and C<Encode>. Rafael Garcia-Suarez
+realised that the cause of the problem was due to some sort of
+assumption of a routine name being present in the C<Encode> namespace,
+something that the new method dispatch of 5.10 may have broken.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00355.html
+
+Michael G.Schwern extracted the problem and filed it as a bug.
+Rafael fixed that up with change #33486. H. Merijn Brand produced
+a similarly entertaining error message by using C<Encode> and
+C<encoding> without an encoding name. Michael thought the results
+were very pretty, but a better error message wouldn't go astray.
+
+  Encode::Alias + open go boom (#51608)
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00359.html
+
+After the dust settled, Dan Kogai, the Encode maintainer, release
+Encode 2.24. H.Merijn was, however, still having difficulties with
+the F<utf8.t> with open failing to know what to do about C<roman8>
+encoding which appears to be an HP specialty. Michael G. Schwern
+tried, and failed, to understand what C<Encode::Alias> was doing,
+and/or whether it was doing it incorrectly.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00389.html
+
+Unfortunately, at about the same time, David Cantrell discovered
+that his own 5.10 smoke tests were spewing black, and so Rafael and
+H.Merijn suggested he try upgrading to Encode 2.24. Alas, that did
+not solve the problem.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00414.html
+
+Fortunately, Jarkko Hietaniemi came to the rescue with his "646"
+patch, and this had David up and running again. Alas, Jarkko did
+not think that this would help with H.Merijn's roman8 problem.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00425.html
+
+=head2 Taint (C<PL_tainting>, C<SvTAINTED_on>, C<SvTAINTED_off>, C<SvTAINT>)
+
+Bram has a large application that wasn't designed to be taint-clean.
+Nevertheless, in the middle of the code, he wanted to enable taint
+mode briefly in order to bring taint checks to bear on unsafe feeds
+coming into the system.
+
+So he used C<Taint::Util> and C<Taint::Runtime> for his nefarious
+purposes, yet was surprised when reality didn't quite meet his
+expectations, in that a scalar, created before taint mode was
+enabled, reading from C<STDIN> will I<not> be considered to have
+tainted contents.
+
+Paul Fenwick was horrified by the idea of enabling taint mode at
+an arbitrary point during the execution of a program (perhaps missing
+the point that Bram's application wasn't taint-clean in the first
+place, in which case some taint is better than none). He thought
+that the problem of scalars not honouring taint mode if created
+before tainting was enables was probably a performance consideration.
+
+  say it taint so
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00456.html
+
+=head2 5.8.9 for VMS
+
+Craig Berry issued a status report for the current 5.8 snapshot on
+VMS. There are four main problems (three in ExtUtils, one to do
+with threads).  Solutions exist for two problems in ExtUtils, the
+third may be a question of housecleaning. The threads issue is
+related to bug #45053. As this is failing with 5.8.8, Craig suggested
+that it could be left documented that way so as not to hold up
+5.8.9.
+
+  99.63% okay
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00465.html
+
+=head2 Tests failed on PPC64
+
+Sérgio Durigan Júnior reported a couple of failures in the
+test suite when building 5.10 on the PPC64 platform. Dominic Dunlop
+realised that the messages were semi-harmless, being indicative of
+tests making assumptions on the availability of modules that had
+not yet been built.
+
+Since none of the porters run PPC64 machines, it seems likely that
+some new hints will be needed for the configuration process to allow
+building straight out of the box.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00467.html
+
+=head2 C<Perl_ck_op_sanity>
+
+Jim Cromie regretted the lack of a C<Perl_ck_*> routine to check
+all constructed ops, and thought we needed one. The routine would
+check that the C struct of the op had sane values.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00468.html
+
+=head2 Test failures for perl 5.10 on Solaris 10
+
+Ken Williams took 5.10 for a spin on Solaris and discovered a number of
+failures. He traced this down to the fact that the source was built using
+Sun's C<make>, but that some tests wind up running with a different make,
+and they fail.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00486.html
+
+=head1 Patches of Interest
+
+=head2 More F<sv.c> consting
+
+Steve Schubiger continued with his consting crusade, creating a series of
+patches that Rafael applied. At the end of the week, patch number 13 was
+as yet unapplied.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00312.html
+
+=head2 Fix C<ExtUtils::Install> under Cygwin
+
+This problem continued to occupy Steve Hay, Nicholas Clark and Jan
+Dubois this week. The underlying issue is whether a read-only directory
+may not be added to, or may not be deleted. Compounding the problem was
+the fact that different compilers return contradictory information
+concerning the information returned from the operating system.
+
+By the end of the week, things were cleaned up enough to give the
+green light for the release of 5.8.9.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00260.html
+
+=head2 Testing madly
+
+Gerard Goossen set about fixing up the errors with the Perl5-to-Perl5
+conversion that the MAD infrastructure provides.
+
+  mad/t/p55.t
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00279.html
+
+  $[
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00281.html
+
+Gerard also wanted to rip out a chunk of code that was no longer needed for
+guessing if a bareword was a subroutine name. Rafael wondered if this was
+wise, and Gerard explained that changes elsewhere in the MAD codebase had
+rendered the code unnecessary.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00342.html
+
+=head2 Misleading example in perlsyn.pod (given/when/default)
+
+Paul Fenwick looked at C<given> and C<when>, and was misled by the
+documentation.  He proposed removing the ambiguity with a slight
+edit, and Rafael applied it.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00375.html
+
+=head2 Rever cygwin archname hints
+
+Reini Urban reverted the archname tweaks on the Cygwin platform, the main
+reason being to tidy up cpan-testers reports.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00377.html
+
+=head2 Lexical Fatal.pm and autodie.pm
+
+Paul Fenwick delivered a first cut at lexically scoped fatalities.
+The message thread, however, will be summarised next week.
+
+  ENOTIME
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00428.html
+
+=head1 New and old bugs from RT
+
+=head2 Remove revision bread crumbs from short description (#48453)
+
+The perlfaq has, for the longest time, carried the blight of
+revision tags in the titles, causing an unsightly mess in C<perltoc>.
+Rafael explained that that the Perl FAQ was maintained in a separate
+SVN repository, and suggested that it would make sense in the long
+run to bring it back in the fold under git control.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00470.html
+
+=head2 Incorrect calculations (#50072)
+
+Vladislav Malyshkin filed a bug back in January, and at the
+time Abigail explained that the bug was more in Vladislav's
+code rather than Perl (the heart of which was the problem of
+operators having side effects).
+
+Abigail and Michael G. Schwern replied that debating the merits
+of operators and side effects in Perl 5 was a bit of a lost cause
+at this stage of the game.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00475.html
+
+=head2 Problem and "solution" for building 5.10.0 with win32+mingw+dmake (#51562)
+
+Kjetil Skotheim reported a problem (and a fix) when building perl
+on Win32 with MinGW. Jan Dubois wasn't sure how Kjetil encountered
+the error in the first place, suspecting that some other issue was
+coming into play.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00256.html
+
+=head2 C<Scalar::Util::looks_like_number> vs. Optimisation in regex? (#51568)
+
+Steffen Ullrich thought he had found a bug in C<looks_like_number>, but
+he was passing $3 as a parameter. Eric Brine explained that this was
+a dangerous practice, as something was probably interfering with it on
+the way down. It would be wise to interpolate it into a string, and
+pass that instead.
+
+When that is done, the problem goes away.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00285.html
+
+=head2 segmentation fault with array ties (#51636)
+
+"blino" encountered a problem while developing C<Gtk2::SimpleList>
+and reduced it to a bug involving ties within ties. Most remarkable was
+the fact that (s)he was able to pin-point the problem as being change #31770,
+which involved optimising C<push @ISA> and propose a tentative patch to
+correct the problem.
+
+Rafael thought the patch looked safe enough, but wondered if it would not
+be papering over a deeper bug in handling magic. Vincent Pit was able to
+put forward a very good explanation as to what was really happening, and
+produced a better patch and a regression test. Nicholas wondered if Vincent
+should have used heavier machinery for saving and restoring magic; Vincent
+wasn't sure either way.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00396.html
+
+=head2 C<waitpid()> example in perlfunc(1) is bogus (#51642)
+
+"vedge" suggested that the C<waitpid> snippet in the documentation could
+produce an infinite loop, and proposed an alternative. Abigail thought
+that the alternative could also wind up as an infinite loop.
+
+  back to the drawing board
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00416.html
+
+=head2 F<op/alarm.t> hangs on 5.11.0 (Windows Vista only) (#51674)
+
+Sisyphus reported problems with C<alarm> on Vista. Robert May owned up as
+being the probable culprit with some recent changes he had made. With a small
+edit, he was able to recover the correct behaviour.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00427.html
+
+=head2 C<@-> array is incorrect with non matching grouping (#51688)
+
+The bug itself was not a bug, but (and perhaps because of that)
+Paul Fenwick asked for a point of order concerning the handling of
+tickets on the perlbug RT queue.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00433.html
+
+=head2 C<utf8::valid> rejects characters in \x14_FFFF - \x1F_FFFF (#51710)
+
+Chris Hall discovered a discrepancy between C<utf::valid> and
+C<Encode::encode('utf8', ...)>, with C<utf::valid> rejecting characters
+incorrectly. No takers.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00474.html
+
+=head2 Perl5 Bug Summary
+
+  290 new + 1502 open = 1792 (+10 -8)
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00275.html
+  http://rt.perl.org/rt3/NoAuth/perl5/Overview.html
+
+=head1 In Brief
+
+Yitzchak Scott-Thoennes's B<fix for C<Archive::Extract>'s x.lzma> test file
+was applied.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00304.html
+
+Andy Dougherty delivered what he thought was his B<most trivial patch ever>, a
+one line suppression in F<MANIFEST>. Nicholas Clark thought Andy could do much
+better, since Nicholas has made changes that involve only a single character.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00464.html
+
+B<The C<perlbal> issue> of not building for Fedora was sorted out.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00246.html
+
+Daisuke Maki found B<a leak in C<< Text::CSV_XS->getline >> >, which isn't
+part of core, but since (s)he supplied a reasonable patch, H.Merijn Brand,
+C<Text::CSV_XS>'s maintainer, took the time to fix the problem anyway.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00311.html
+
+Elizabeth Mattijsen puzzled over the differences in B< C<builtin()>
+versus C<builtin( () )>> (extra parentheses in the call) and
+discovered that she had been bitten by prototypes.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00369.html
+
+Nicholas Clark believes he has nailed the B<corruptions seen in
+F<ext/threads/t/free.t>>.
+
+  dup shenanigans
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00423.html
+
+In the process of tidying up a bug report for C<CGI>, Nicholas Clark wondered
+if the current B<dual life module bug/patch work-flow> was optimal. The
+distinctly sub-optimal part is having perl bugs reported to an RT queue at
+perl.org, and dual-life module bugs reported to cpan.org RT queues. This alone
+makes it difficult to bounce tickets from one queue to another.
+
+Which begs the question, why are we even using RT in two separate domains?
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00454.html
+
+Paul Fenwick asked for (and received) a point of order concerning
+the B<cleaning out of RT non-bugs>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00469.html
+
+=head2  Last week's summary
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00496.html
+
+=head2 About this summary
+
+This summary was written by David Landgren.
+
+Weekly summaries are published on http://use.perl.org/ and posted on a
+mailing list, (subscription: perl5-summary-subscribe@perl.org). The
+archive is at http://dev.perl.org/perl5/list-summaries/. Corrections
+and comments are welcome.
+
+If you found this summary useful, please consider attending a YAPC
+conference or contributing to the Perl Foundation to help support
+the development of Perl.

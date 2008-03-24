@@ -1,0 +1,321 @@
+=head1 This Week on perl5-porters - 24-29 February 2008
+
+"Is this a bug? Or why is this the expected behaviour?"
+-- Steffen Ullrich, playing with signal handlers.
+
+=head1 Topics of Interest
+
+=head2 C<use encoding 'utf8'> bug for Latin-1 range
+
+The thread about C<use encoding> continued this week. Juerd Waalboer
+gave one of the best concise explanations as to why the current model
+Perl uses for dealing with Unicode is broken, which is that the C<\x>
+hex escape is overloaded for bytes (C<\x2b> I<versus> C<\x{d0b2}>),
+and that it takes place too early, while the source is being read.
+
+The result of which is that a source code file encoded in an
+Asian language cannot embed a latin-1 character like an e-acute.
+
+Much discussion of remarkable civility followed, regarding what
+to do about the matter. Glenn Lindemann put forward the following
+ideas:
+
+=over 4
+
+=item *
+
+Deprecate C<use encoding>.
+
+=item *
+
+Deprecate non-ASCII characters in 5.12 source code, unless a
+source encoding has been specified.
+
+=item *
+
+Allow Unicode semantics to be applied to all character operations
+on strings (case conversion, caseless comparisons and so on),
+regardless of their internal representations.
+
+=item *
+
+Sort out the timing of when C<\x>, C<\x{}> and C<\N> take effect.
+
+=back
+
+No-one appeared to lament the idea of letting C<encoding> go.
+
+Yves Orton pointed out that Microsoft managed to get their Unicode
+handling more or less right, albeit at a certain cost to their API,
+and regretted that Unix-like operating systems supplied the absolute
+strict minimum, pushing all the work onto each and every client
+program. Which meant that nothing really worked at all, not even
+the so-called shebang line.
+
+Juerd and Nicholas put forward that there is a case to be made for
+perl to figure out itself whether a given source file is in ASCII,
+Latin-1 or UTF-8. It turns out that it's just about impossible to
+construct a sensible Latin-1 file that also turns out to be be valid
+UTF-8. The idea is to start out in 7-bit ASCII and carry on until a
+byte with the high bit set is encountered.
+
+If this byte introduces a valid UTF-8 character, the rest of the
+file must be, too.  Any invalid byte sequences thereafter trigger
+a fatal compile-time error. Otherwise it means it must be Latin-1,
+in which case similar but different rules apply which also cause
+the compilation to halt if encodings change mid-stream. The key
+issue is to determine that the encoding does indeed change.
+
+EBCDIC was also mentioned in passing. Sadly, Perl no longer runs
+on EBCDIC due to a general lack of nurturing. Then again, if it was
+important, Nicholas felt that someone from IBM would have been in
+touch at some point.
+
+  for some reason I now have a splitting headache
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-02/msg00765.html
+
+=head2 Interrupting C<system()> with signal depends on signal handler
+
+Steffen Ullrich noticed that an C<alarm> signal handler that does
+a C<syswrite> as opposed to a C<print> behave differently. After
+diving in through F<pp_sys.c>, he noticed that he could make the
+C<print> version (which was working correctly) behave the same
+incorrect way, by setting C<$!> to undef.
+
+He produced a one-line patch that fixed the behaviour (hmm, did we
+get a test?) and Rafael applied it as change #33408.
+
+  handle with care
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-02/msg00751.html
+
+=head2 CPAN NetBIOS broadcasts
+
+Linda W was scratching her head wondering why CPAN installations on
+cygwin were glacially slow. After running a network trace, she
+discovered that what had been a path F</var/cache/cpan> was being
+interpreted as a UNC path (/cache/cpan on host //var).
+
+This caused the local host to send out plaintive calls for host //var
+to please call home. Michael G. Schwern thought that this sounded
+like the same problem described in CPAN bug #32813, as did Linda.
+
+Yves Orton, current maintainer of C<ExtUtils::Install>, which is were
+the problem originated, pushed out a new version and Linda confirmed
+that it solved the problem.
+
+Ken Williams was not around to comment on how hard it is to use
+File::Spec correctly.
+
+  not quite Unix, not quite Windows
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-02/msg00771.html
+
+=head2 Google summer of code
+
+Eric Wilhelm got the ball rolling on Perl's participation in Google's
+Summer of Code project. But you've probably heard about this in other
+venues. All hail Eric.
+
+The Perl 5 Wiki is place to go for the latest information.
+
+  summertime fun
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-02/msg00830.html
+  http://www.perlfoundation.org/perl5/index.cgi?gsoc2008_projects
+
+=head1 Patches of Interest
+
+=head2 F<sv.c> consting goodness
+
+Steven Schubiger's consting patch number 4 from the beginning of the month
+was applied. This lead to patches 5, 6, 7, 8 and 9, all applying ever
+more consting to F<sv.c> being issued by Steven, which in turn were all
+applied by various porters.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-02/msg00832.html
+
+=head2 no archlib in otherlibdirs
+
+After some long, hard thought, Andy Dougherty remembered why Reini
+Urban's plan for organising site and vendor libraries on Cygwin
+wouldn't work in the general case. So Reini withdrew his patch but
+would continue to use it locally.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-02/msg00737.html
+
+On the other hand, his enhancements to C<B::Debug> made it in.
+
+  win some, lose some
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-02/msg00732.html
+
+=head2 warning message for -M:Foo, extended and revised
+
+Robin Barker finally settled on "Invalid module name :Foo with -M
+option: contains single ':'", which was good enough for Rafael
+
+  colonphun
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-02/msg00806.html
+
+=head2 More diagnostics for F<Fatal.pm>
+
+Slaven Rezic enhanced C<Fatal> to name the builtin that could not be
+overridden in its dying message.
+
+  if I told you I would have to kill you
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-02/msg00828.html
+
+=head1 Thread patches
+
+Jerry D. Hedden is doing so much work on threads at the moment, he
+deserves his own section.
+
+First off, the patch to not install threads on non-thread builds was
+reverted (Michael G. Schwern killer argument being that at least that
+way you get a nice error message).
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-02/msg00721.html
+
+Then the CPAN 1.69 version of C<threads> was synch'ed with blead.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-02/msg00727.html
+
+As was C<threads::shared> 1.17.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-02/msg00728.html
+
+At the end of the week, he also delivered version 1.18, which added
+some diagnostics to help track down what's going wrong when
+F<t/stress.t> decides to go belly up.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-02/msg00761.html
+
+Moving along, C<Thread::Semaphore> 2.07 checked in.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-02/msg00729.html
+
+and last but not least, C<Thread::Queue> 2.06 did too.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-02/msg00730.html
+
+=head1 Watching the smoke signals
+
+It looked like F<t/stress.t> in the threads module failed, and so
+Jerry asked if there was any chance of seeing what the new diagnostics
+had to say. Steve Hay discovered that the problem was in fact a TODO
+test that had started to pass, and Test::Smoke got confused and
+recorded it as a failure.
+
+  Smoke [5.11.0] 33390 FAIL(F) MSWin32 WinXP/.Net SP2 (x86/2 cpu)
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-02/msg00808.html
+
+=head1 New and old bugs from RT
+
+=head2 Segfault when calling C<-E<gt>next::method> on non-existing package (#51092)
+
+David Landgren thought that the test that Rafael Garcia-Suarez added as
+part of the fix for this bug should have had the RT bug number embedded
+in it somewhere. In other other news, we discovered that there are 485
+subscribers to perl5-porters.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-02/msg00731.html
+
+=head2 Perl5 Bug Summary
+
+  288 new + 1500 open = 1788 (+3 -2)
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-02/msg00741.html
+  http://rt.perl.org/rt3/NoAuth/perl5/Overview.html
+
+=head1 New Core Modules
+
+=over 4
+
+=item ExtUtils::Install version 1.45
+
+This was the fix for the C<//var> problem noted by Linda W. (But stay
+tuned next week for exciting new developments).
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-02/msg00798.html
+
+=item  ExtUtils::MakeMaker 6.44
+
+Michael G. Schwern rolled out 6.34_01 plus Yves's EU::I 1.45 as
+version 6.44. Other assorted bugfixes made it in, but Michael
+announced that he had declined to put in the fixes required to
+make paths with whitespace work correctly, saying that he wanted
+to think about a better solution.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-02/msg00824.html
+
+=back
+
+=head1 In Brief
+
+Last week, Jim Cromie had the newfound ability to hook XML analysis
+to a test suite (via the C<PERL_XMLDUMP> environment variable). This
+week, Jim wrote a B<patch to test -Dmad's PERL_XMLDUMP= output>. It
+was not applied.
+
+  truly madly
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-02/msg00720.html
+
+On the other hand, Rafael did apply his B<optimisation of the
+C<OP_IS_(FILETEST|SOCKET)> macros>, with some C<OP *>/C<int> fuzz.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-02/msg00733.html
+
+The exact recipe for signalling a non-met prerequisite (such that a perl
+build without threads should B<not attempt to require threads>) was nailed
+down and codified on the CPAN Testers wiki.
+
+  http://cpantest.grango.org/
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-02/msg00759.html
+
+Salvador Fandiño found that the documentation made no mention of
+B<C<av_delete> calling C<sv_2mortal> on the returned C<SV>>. Yet
+C<av_pop> and C<av_shift> don't and so the documentation should probably
+point out the difference.
+
+  quirk quirk
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-02/msg00722.html
+
+Craig Berry reported that maint-5.8 was not compiling on VMS, largely due to
+B<incorrect prototypes in F<re.xs>>. Nicholas Clark determined that
+a subsequent integration fixed the problem.
+
+  a matter of time
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-02/msg00723.html
+
+Steve Peters wanted to know why B<quad words on Win32> weren't configured,
+since all the pieces were in place to allow them to be. Jan Dubois thought
+that it wasn't much of a problem since you really need to have C<IVSIZE>
+defined to be 8 to take any advantage of them.
+
+  mmm, bignums
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-02/msg00743.html
+
+Nicholas Clark hacked C<perlbug> to allow it to B<send thank-you messages>
+back to the porters.
+
+  send more money
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-02/msg00747.html
+
+Nicholas also got his languages mixed up trying to B<write else if in
+C macros>. Fortunately there are only four or five distinct syntaxes
+to master for writing else if constructs in all computer languages.
+
+  as if
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-02/msg00776.html
+
+=head2 About this summary
+
+This summary was written by David Landgren. I chopped a day off this week;
+it makes it easy to start next week on the first of the month.
+
+  17-23 February 2008
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-02/msg00822.html
+
+Weekly summaries are published on F<http://use.perl.org/> and posted
+on a mailing list, (subscription: F<perl5-summary-subscribe@perl.org>).
+The archive is at F<http://dev.perl.org/perl5/list-summaries/>.
+Corrections and comments are welcome.
+
+If you found this summary useful, please consider contributing to
+the Perl Foundation to help support the development of Perl.

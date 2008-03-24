@@ -1,0 +1,473 @@
+=head1 This Week on perl5-porters - 1-8 March 2008
+
+"I personally think that the git tools have far too many ways to
+do the same thing (a complaint levelled against Perl itself at times)
+for the normal human to comprehend, let alone remember." -- John
+Peacock, gitting used to the idea of a new code repository.
+
+=head1 Topics of Interest
+
+=head2 ExtUtils::Install updates
+
+Michael G. Schwern released a new version of the venerable
+C<ExtUtils::MakeMaker> distribution, partly to include C<ExtUtils::Install>
+version 1.45. Unfortunately Yves Orton had, in the meantime, pushed out
+version 1.46 which closed out a number of bug reports which had been
+quietly gathering dust in the RT queue.
+
+The changes caused a ripple of failures to show up in smoke tests. Yves
+had everything squared up again as of version 1.50.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00004.html
+
+A side thread on the same issue was started by Jerry D. Hedden
+concerning problems with the module on Cygwin. One of the problems
+encountered was the broken behaviour of C<Archive::Tar> with
+respect to the WinZip archive tool on Windows. Apparently due to
+concerns with Solaris interoperability, C<Archive::Tar> will
+construct a tar file for which WinZip is unable to discern the
+directory structure, thus causing everything to be extracted
+into the current directory.
+
+  bit of a hassle, that
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00056.html
+
+=head2 Interesting self contained task
+
+In the follow-up to the discussion of getting fresh blood hacking on
+the core, Joshua ben Jore pointed to his perlguts talk with a focus
+on the op-tree. Eric Wilhelm reminded people of the importance of
+the Google Summer of Code with respect to getting new people hacking
+on perl.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00007.html
+
+This lead to further discussion of the Summer of Code, with cross-pver
+from the pm_groups mailing list, about how similar the effort required
+is to herding cats.
+
+  don't be eval
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00009.html
+
+Eric put out a formal call for an official p5p cat-herder to coordinate
+the issues between the SoC and the perl5 porters. I hope he received a
+flood of off-list replies.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00015.html
+
+=head2 C<List::Util::sum()> doesn't handle overloading
+
+Jan Dubois uncovered a glaring inconsistency between the XS and pure-Perl
+implementations of the C<sum> routine: the XS version doesn't deal with
+objects that overload C<+> correctly.
+
+Yves Orton recalled previous discussions on the matter and the concensus
+was that the XS version was built for speed, which leads to things like
+overloading being ignored. Michael G. Schwern thought that he'd rather
+settle for slightly slower and always right, rather than slightly
+faster and sometimes subtly wrong. Nicholas Clark wanted to know how
+much slower an XS version that handles overloading would turn out to
+be.
+
+  premature evil
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00021.html
+
+=head2 F<ext/Time/Piece/Piece.xs> use of C<strptime>
+
+The FreeBSD copyright statement in C<Time::Piece> went from Matt
+Sergeant to blead. A patch from blead to silence a warning on
+Windows with the Borland C compiler was sent back in return to
+Matt.
+
+  two-way street
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00036.html
+
+=head2 C<glob()> implementation
+
+Peter Dintelmann wondered why he kept winding up with csh semantics
+for C<glob> rather than bsd semantics, as the documentation suggested.
+Adriano Ferreira pointed out that C<csh_glob> is implemented in terms
+of C<bsd_glob> anyway.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00040.html
+
+=head2 C<PL_destroyhook> race condition
+
+Dave Mitchell had identified a potential race condition where two
+threads try to destroy an object and in an "After you", "No, after
+you" scenario and the object would be freed but no-one would call
+its destructor.
+
+Jerry D. Hedden thought this was an ugly state of affairs, and
+after mulling a long time over the code, could not see how to
+resolve the issue. He finally began to wonder whether the race
+condition could actually be provoked. So he wrote a program to
+try and exercise it, but didn't encounter the failure.
+
+Jerry wasn't sure whether this was because there was truly no
+was no race condition, or that his program was not subtle enough
+to coax it to the surface.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00050.html
+
+Jerry also wondered whether this patch could be backported to
+the 5.8 track, or whether it broke binary compatibility.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00058.html
+
+=head2 POSIX::access(...) returns "0 but true"
+
+Jerry D. Hedden was having trouble with C<POSIX::access> returning
+the magic value '0 but true' for both writable and non-writable
+directories, so a test was failing when it shouldn't be on Cygwin
+and Win32.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00053.html
+
+=head2 Perl @ 33218 (continued)
+
+The current maintenance snapshot that will lead to 5.8.9 is currently
+stuck on Stratus VOS, since the test suite of C<Module::Pluggable> has
+a file that begins with '-' (dash, hyphen, minus...) and this is a no-go
+on that platform.
+
+Nicholas Clark couldn't remember what the other issues were.
+Consulting previous summaries would lead one to conclude that there
+is an unresolved issue concerning C<POSIX::strftime> as well.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00071.html
+
+A long back-and-forth between Nicholas and Steve Hay finished up with
+a warnings-free build on Win32. The main issue was one of casts causing
+warnings.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00073.html
+
+In another thread, Jerry D. Hedden coordinated with Nicholas to
+quash the remaining 5.8.x build warnings under Cygwin.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00090.html
+
+=head2 From Perforce to git
+
+Sam Vilain reported that he had achieved a complete Perforce-to-git
+migration, and it was now being updated (albeit with a slight lag)
+with changes in real time. He asked for people to have a hard look
+to see if they could find any conversion errors.
+
+Nicholas enquired as to whether there would be an easy way to map
+a Perforce change number to a git commit (answer: yes, a couple).
+He was also wondering how he would be able to cherry pick patches
+from blead for application to the various maint tracks.
+
+  git along
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00078.html
+
+Shortly afterwards, Rafael announced the switch to git. John
+Peacock deeply regretted not having been able to complete the
+Perforce to Subversion project, but a new job in Real Life
+had eaten all his tuits.
+
+One of the main issues that needs to be sorted out is a simple
+"git for perl5 porters" cheat sheet, that supply a minimum list
+of commands one needs to know. The other point for early adopters
+to remember is that the repository is likely to be torn down
+and rebuilt, this time encoded in UTF-8 rather than Latin-1.
+
+(Note to non-native English speakers: the "g" in "git" is pronounced
+with a voiced velar plosive (a hard G), like "give" or "get").
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00138.html
+
+=head2 More TLC for F<opcode.pl>
+
+Jim Cromie continued to tweak F<opcode.pl> this week, by adding
+comments to explain its behaviour and deobfuscating the syntax
+a bit. He reasoned that because it is so rarely used by people
+outside the inner circle that it needs to be able to stand on
+its own two feet a bit better. But the patch got a bit messed up
+and he'll probably have to do it again, since no-one actually
+applied it.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00113.html
+
+=head2 5.10.0 and C<Math::Pari> (and Fedora)
+
+Tom "spot" Callaway wondered if there was a fix for C<Math::Pari>
+on 5.10, since it was broken, but it is also a dependency for a
+couple of C<Crypt::*> modules. Nicholas Clark wondered what the
+authors had to say for themselves, having encountered comments like
+
+  int numargs = ((CV*)cv)->sv_any->xof_off; /* XXXX Nasty of us... */
+
+Nicholas Clark was slightly miffed by the corners cut in the XS
+code. The extensive restructuring of the internals that went into
+the 5.10 release was theoretically "off limits" to client XS
+code, but it turns out that the Pari code was running around
+stuffing pointers and ints in all sorts of places that weren't
+expected to hold them. This caused a variety of failures that
+Nicholas wasn't really inclined to fix.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00124.html
+
+In his race against time, Tom also reported that
+Data::Structure::Util was also failing its tests on 5.10.0.
+Nicholas Clark saw that this (and other) module(s) are
+authored by Fotango, and since Fotango no longer officially
+exists, they are thus all orphan modules.
+
+Ævar Arnfjörð Bjarmason wondered what else was on
+Fedora's list of modules from hell, to which Tom replied that
+C<perlbal> (A Perl-based proxy balancer) was also blowing
+black smoke, but felt that it was not a show-stopper.
+
+Also problematic was C<Sys::Virt>, C<PDL> and C<Test::AutoBuild>.
+
+Yves Orton suggested Tom run with the slow C<@_> parameter
+passing speed-up patch, slated for 5.10.1 (and that Tom should
+make sure that it is clear in the output from C<perl -v> that
+it is in there, to help with future bug reports from Fedora users).
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00146.html
+
+Nicholas Clark did a fine piece of sleuthing work on PDL and
+discovered that a random number generator part of the code was not
+calling a function like C<drand48>, which led to predictable results.
+
+  Not good if you want unpredictable results
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00231.html
+
+He also solved the C<Devel::Profiler> 5.10.0 failure that Tom
+uncovered. As for C<B::TerseSize>, Nicholas suggested Tom get
+in touch with Philip Gollucci.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00195.html
+
+=head2 Perl @ 33444
+
+Nicholas made another snapshot for 5.8.9 and asked what else
+was broken apart from the Stratus VOS issues. Craig A. Berry
+reported that a smoke test from a patchlevel a few changes earlier
+was having problems with threads and ExtUtils. The latter he
+suggested could be marked TODO if necessary, mainly because a
+certain amount of test failures are for tests that weren't
+around in 5.8.8 in the first place.
+
+Jerry D. Hedden listed a number of dual-life CPAN modules that
+were out of date with respect to maint. Nicholas gave them a
+50/50 chance.
+
+Reini Urban summarised the problems on Cygwin. The work Jan
+Dubois made on the compiler switches, to allow gcc to be
+binary compatible with VC probably won't make it in until
+5.12.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00127.html
+
+Problems occurred on Mac OS X 10.5, and the resolution was
+made harder by the lack of C<strace>/C<truss> tool to analyse
+system calls. I think Nicholas had it all sorted out in the end.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00203.html
+
+=head2 File/Glob/t/basic.t intermittently fails test 6
+
+Dominic Dunlop noted that this test would fail from time to
+time on darwin 9.2.0 and he couldn't see why. Nor could Nicholas.
+Dominic and Steve Peters had suspicions about the C implementation
+of C<glob>, as some parts of it remain unchanged since the day
+the code was originally checked in.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00137.html
+
+=head1 Patches of Interest
+
+=head2 make C<Archive::Extract>'s x.lzma test file be lzma'd, not uupacktool'd
+
+Yitzchak Scott-Thoennes noticed that a data file that was supposed to
+be encoded with lzma was in fact encoded with uupack instead. So he
+encoded it the right way, and Rafael applied the patch.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00082.html
+
+=head2 count-only transliteration needlessly makes copy-on-write scalars normal
+
+Yitzchak also made C<tr> behave cleanly in the face of copy-on-write strings.
+
+  moo
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00112.html
+
+=head2 Pushing parent.pm
+
+Yitzchak also thought that now that the issue of the API of C<parent>
+has been settled, then C<base> could be marked as discouraged
+
+  not yet deprecated
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00128.html
+
+=head1 New and old bugs from RT
+
+=head2 C</^.../m> is slower than logical alternatives (#33051)
+
+Rob Kinyon (dragonchild on Perlmonks) reported a problem where one regexp
+was logically equivalent to another... but two orders of magnitude slower.
+
+This was on perl 5.8.4. Steve Peters noted that the difference was lost in
+the noise on 5.10, and 5.8.8 did not appear to be affected either.
+
+  not any more
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00047.html
+
+=head2 pod2usage(-verbose =E<gt> 0) & pod2usage(-verbose =E<gt> 1) (#39775)
+
+Steve Peters also saw that the patch in this bug report had been applied
+to a version of Pod::Parser (version 1.35).
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00049.html
+
+=head2 Counting bug in C<Test::Harness> with unexpected early exit (#43267)
+
+Steve Peters thought that this bug could be marked resolved, since
+its twin sister on the CPAN RT queue was marked as resolved over
+there. Andy Dougherty regretfully informed Steve that the solution
+given for resolving it was "upgrade to C<Test::Harness> version 3".
+
+Alas, in the code freeze during the push to 5.10, Test::Harness 3
+was considered too raw for inclusion, and the bug in the RT ticket
+concerns version 2. Andy, having taken a stab at fixing the bug in
+Test::Harness 2.64, suggested that if the problem was sufficiently
+annoying to people, then they should upgrade to C<Test::Harness>
+3 (which appears to be settling down nicely).
+
+Rafael hinted that C<Test::Harness> 3 will probably be released
+during the 5.10 maintenance track. One of the reasons being, as
+Michael G.  Schwern points out, it's so much nicer to work with
+than screen scraping test output.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00051.html
+
+=head2 make C<Devel::Peek::mstat> always available (#46957)
+
+Slaven Rezic had filed a bug report with a patch. Steve took the
+patch, applied it, and closed the report. The fix will be of
+interest to people who like compiling perl with C<PERL_DEBUGGING_MSTATS>.
+
+Slaven had also noted in the report that compiling with C<PLAIN_MALLOC>
+no longer works. This was not addressed (but I imagine it's not serious).
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00046.html
+
+=head2 5.9.5 fails make test on AIX 5.3 (#47415)
+
+Continuing his trawl through the 1700+ unresolved bugs in the RT queue,
+Steve asked for C<Config> information to help him understand what the
+problem was.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00054.html
+
+=head2 Use of uninitialized value in die at F</opt/perl/lib/perl5/File/Copy.pm> line 224. (#49660)
+
+Steve Peters tried to close this one as well, but Marc Lehmann
+replied that the problem remained, although it was very tricky to
+provoke the bug on demand. And the trouble is that the symptom is
+the removal of the source file.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00026.html
+
+=head2 Not OK: perl 5.11.0 +DEVEL on i686-linux 2.6.22-3-486 (#50080)
+
+No-one begrudged Steve closing this one with some vague waving of hands,
+citing that patch or patches unknown had conspired to fix the issue.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00027.html
+
+=head2 prototypes sneakily break lvalue subs (#51408)
+
+L. Mai filed the only new bug this week, showing how prototypes interact
+with lvalue subs in unexpected ways.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00103.html
+
+=head2 Perl5 Bug Summary
+
+  288 new + 1501 open = 1789 (+4 -2)
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00043.html
+  http://rt.perl.org/rt3/NoAuth/perl5/Overview.html
+
+=head1 In Brief
+
+The Google B<summer of code mentoring> thread was wrapped up this
+week, with Eric Wilhelm explaining a mentor for a GSoC project had
+to do, and what they received in return (a T-shirt).
+
+  what mentoring meant
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00001.html
+
+Jesse Vincent announce the release of the B<rt.cpan.org source code>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00045.html
+
+Back in November 2007, Marcel Grünauer wrote a patch to fix the B<C<NEXT.pm>
+bug within overloaded stringification>. This week Nicholas Clark applied it.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00052.html
+
+In regards to the B<F<op/sprintf.t> and F<op/write.t> failures>
+with mingw-runtime-3.14, Nicholas Clark commented that if Sisyphus
+(or anyone) was able to figure out a test probe to identify if the
+local environment was running with the buggy library, that they
+would be able to work around it during build configuration.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00064.html
+
+B<The C<checkpods> program> is going to face the sound of the
+chain-saw and/or be subsumed into C<podchecker>.
+
+  cruft culler
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00065.html
+
+H.Merijn Brand went B<digging around in C<Devel::PPPort>> and
+C<perlguts>  to get C<Text::CVS_XS> to run on everything from 5.005
+to 5.10. Tim Bunce thought a C<newSVpv> needed to be wrapped in a
+C<sv_2mortal>, but that led to an attempt to free unreferenced
+scalar.
+
+  DDTT
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00111.html
+
+No, the list is B<not blocking inline patches> in messages.
+
+  at least, not on purpose
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00173.html
+
+Jarkko Hietaniemi wondered if he was having an B<attack of the 64-bit perls>.
+Three modules of his, quite different internally, were popping up with
+test failures on 64-bit systems.
+
+  the 64-bit question
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00180.html
+
+=head2 Last week's summary
+
+Juerd Waalboer clarified a couple of points in the Unicode debate,
+and asked a couple of questions. Notably whether it was true that
+Perl on EBCDIC was broken.
+
+Nicholas Clark replied that it was false to state that it doesn't,
+as in actual fact we don't have any information to confirm or refute
+the hypothesis that Perl runs on EBCDIC.
+
+  24-29 February 2008
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2008-03/msg00174.html
+
+=head2 About this summary
+
+This summary was written by David Landgren.
+
+Weekly summaries are published on F<http://use.perl.org/> and posted
+on a mailing list, (subscription: F<perl5-summary-subscribe@perl.org>).
+The archive is at F<http://dev.perl.org/perl5/list-summaries/>.
+Corrections and comments are welcome.
+
+If you found this summary useful, please consider contributing to
+the Perl Foundation to help support the development of Perl.
