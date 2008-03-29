@@ -1,14 +1,23 @@
 package Combust::Secret;
 use strict;
 use Carp qw(croak);
+use Combust;
 use Combust::DB qw(db_open);
 use Exporter 'import';
 our @EXPORT_OK = qw(get_secret);
 
-
 # Loosely inspired by / based on LJ::get_secret
 
 my %secret_cache;
+
+my $cache;
+
+if (Combust->config->memcached_servers) {
+    $cache = Combust::Cache->new
+        (backend => 'memcached',
+         type    => 'secrets',
+        );
+}
 
 sub get_secret {
     my %args = @_;
@@ -31,10 +40,12 @@ sub get_secret {
         return $read_only ? $secret : ($time, $secret);
     }
 
-    # if (memcached servers)
-    #    try fetching from memcached
-    #    return $read_only ? $secret : ($time, $secret) if $secret;
-    # } 
+    if ($cache) {
+        my $data = $cache->fetch( id => $cache_key );
+        if ($data) {
+            return $read_only ? $data->{data} : ($time, $data->{data});
+        }
+    }
 
     my $dbh = db_open('combust');
     return undef unless $dbh;
@@ -47,6 +58,7 @@ sub get_secret {
 
     if ($secret) {
         $secret_cache{$cache_key} = $secret;
+        $cache->store( data => $secret );
         return $read_only ? $secret : ($time, $secret);
     }
 

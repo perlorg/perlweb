@@ -2,10 +2,10 @@ package Combust::Cache::Memcached;
 use strict;
 use Carp qw(carp);
 use base qw(Combust::Cache);
-use Combust::Config; 
+use Combust;
 use Cache::Memcached;
 
-my $config = Combust::Config->new();
+my $config = Combust->config;
 
 my $memd = new Cache::Memcached {
   'servers' => [ $config->memcached_servers ],
