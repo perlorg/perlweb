@@ -4,8 +4,9 @@ eval 'exec $CBROOT/bin/perl $0 ${1+"$@"}'
   if $running_under_some_shell;
 use strict;
 use warnings;
+use DBI ();
 use Storable qw(nstore);
-use JSON qw(objToJson);
+use JSON::XS qw(encode_json);
 use Combust::Config;
 BEGIN { $Combust::StaticFiles::setup = 1 };
 use Combust::StaticFiles;
@@ -51,12 +52,29 @@ for my $site (@sites) {
         warn "Could not find .svn or .git directory\n" if $deployment_mode eq 'devel';
         exit;
     }
+
+    for my $k (keys %$files) {
+        my $version = $files->{$k} || 0;
+        my $server = DBI::hash("$k/$version", 1);
+        $server = ($server % 4) + 1;
+        my $attr = { server => $server };
+        
+        if ($k =~ m/(?<!-min)\.(css|js)/) {
+            my $min = $k;
+            $min =~ s/(\.[^\.]+)$/-min$1/;
+            if (-f "$dir/$min") {
+                $attr->{min} = 1;
+            }
+        }
+        
+        $files->{$k} = [ $version, $attr ];
+    }
     
     #use Data::Dumper;
     #print Data::Dumper->Dump([\$files], [qw(files)]);
     
     nstore($files, $storable_file) or die "could not store $storable_file: $!";
-    my $json = objToJson($files);
+    my $json = encode_json($files);
     open my $fh, '>', $json_file or die "could not open $json_file: $!";
     print $fh $json;
     close $fh;
