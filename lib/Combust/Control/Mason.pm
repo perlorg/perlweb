@@ -28,6 +28,9 @@ sub render {
   my $site = $self->r->dir_config('site');
   $self->r->notes('site', $site);
 
+  # mason documents are always dynamic, so say last-modified "now"
+  $self->r->update_mtime(time);
+
   my $out;
 
   my $ah = HTML::Mason::ApacheHandler->new
