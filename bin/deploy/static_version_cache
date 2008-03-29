@@ -18,10 +18,13 @@ my $root_dir = $config->root_docs;
 
 my @sites = $config->sites_list;
 
+my %paths_done;
+
 for my $site (@sites) {
 
     my $dir = Combust::StaticFiles->find_static_path($site);
     next unless $dir;
+    next if $paths_done{$dir}++;
 
     my $storable_file = "$dir/.static.versions.store";
     my $json_file     = "$dir/.static.versions.json";
