@@ -143,7 +143,7 @@ sub do_request {
     $cache_data = $cache->fetch(id => $cache_info->{id})
       unless $self->req_param('cache_bypass');
 
-    if ($cache_data) {
+    if ($cache_data and $cache_data->{data}) {
       $self->post_process($cache_data->{data});
       $self->r->update_mtime($cache_data->{created_timestamp});
       my ($content_type);
