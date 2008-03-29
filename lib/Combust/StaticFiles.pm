@@ -29,7 +29,7 @@ sub find_static_path {
     my $root_dir = $config->root_docs;
 
     my @static_dirs = ($root_dir . "/$site/static",
-                       # $root_dir . "/$site/st",
+                       $root_dir . "/static",
                       );
     return first { -e $_ && -d _ } @static_dirs;
 }
@@ -53,6 +53,10 @@ sub setup_static_files {
         };
 
     $static_file_paths->{$site}->{files} = $static_files;
+}
+
+sub static_file_paths {
+    return $static_file_paths;
 }
 
 sub static_base {
