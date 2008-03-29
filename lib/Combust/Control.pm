@@ -307,7 +307,8 @@ sub provider {
 
 sub site {
   my $self = shift;
-  $self->r->dir_config("site")
+  return $self->{site} if $self->{site};
+  return $self->{site} = $self->r->dir_config("site");
 }
 
 sub content_type {
