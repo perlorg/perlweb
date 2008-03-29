@@ -192,7 +192,7 @@ ServerSignature Off
 
 <IfModule mod_autoindex.c>
     IndexOptions FancyIndexing NameWidth=*
-    AddIconByEncoding (CMP,/icons/compressed.gif) x-compress x-gzip
+    AddIconByEncoding (CMP,/icons/compressed.gif) compress gzip
 
     AddIconByType (TXT,/icons/text.gif) text/*
     AddIconByType (IMG,/icons/image2.gif) image/*
@@ -230,8 +230,8 @@ ServerSignature Off
 </IfModule>
 
 <IfModule mod_mime.c>
-    AddEncoding x-compress Z
-    AddEncoding x-gzip gz tgz
+    AddEncoding compress Z
+    AddEncoding gzip gz tgz
     AddLanguage da .dk
     AddLanguage nl .nl
     AddLanguage en .en
