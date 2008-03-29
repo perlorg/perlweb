@@ -2,7 +2,7 @@ package Combust::StaticFiles;
 use strict;
 use base qw(Class::Accessor::Class);
 use List::Util qw(first max);
-use JSON qw(2.0 from_json);
+use JSON::XS qw(decode_json encode_json);
 use Carp qw(cluck);
 use Combust::Config;
 
@@ -15,7 +15,6 @@ my $config = Combust::Config->new;
 my $startup_time = time;
 
 my $static_file_paths = {}; 
-
 
 unless ($Combust::StaticFiles::setup) {
     my @sites = $config->sites_list;
@@ -44,15 +43,41 @@ sub setup_static_files {
 
     my $static_files = 
         eval { retrieve("${static_directory}/.static.versions.store") }
-        || eval { 
+        || $class->_load_json("${static_directory}/.static.versions.json");
+
+    # TODO: in devel deployment mode we should reload this
+    # automatically when the .json file changes
+    my $static_groups = $class->_load_json("${static_directory}/.static.groups.json") || {};
+
+    # no relative filenames in the groups
+    for my $name (keys %$static_groups) {
+        my $group = $static_groups->{$name};
+        $group->{files} = [ map { $_ =~ m!^/! ? $_ : "/$_"  } @{ $group->{files} } ];
+    }
+
+    $static_file_paths->{$site}->{groups} = $static_groups;
+    $static_file_paths->{$site}->{files}  = $static_files;
+}
+
+sub _load_json {
+    my ($self, $file) = @_;
+    my $data = 
+        eval { 
             local $/ = undef;
-            my $file = "${static_directory}/.static.versions.json";
             open my $fh, $file or die "Could not open $file: $!";
             my $versions = <$fh>;
-            from_json($versions)
-        };
+            return decode_json($versions)
+    };
+    warn $@ if $@;
+    return $data;
+}
 
-    $static_file_paths->{$site}->{files} = $static_files;
+sub _save_json {
+    my ($self, $file, $data) = @_;
+    my $json = encode_json($data);
+    open my $fh, '>', $file or die "could not open $file: $!";
+    print $fh $json;
+    close $fh or die "Could not close $file: $!";
 }
 
 sub static_file_paths {
@@ -66,6 +91,30 @@ sub static_base {
     $base =~ s!/$!!;
     $base;
 }
+
+sub static_group {
+    my ($self, $name) = @_;
+    my $data = $self->static_group_data($name);
+    return unless $data;
+    return "/.g/$name" if $self->deployment_mode ne 'devel'; 
+    return @{ $data->{files} };
+}
+
+sub static_group_data {
+    my ($self, $name) = @_;
+    my $groups = $static_file_paths->{$self->site} && $static_file_paths->{$self->site}->{groups};
+    return $groups && $groups->{$name};
+}
+
+sub static_groups {
+    my $self = shift;
+    my $groups = $static_file_paths->{$self->site} && $static_file_paths->{$self->site}->{groups};
+    return () unless $groups;
+    return sort keys %$groups;
+}
+
+# so we can semi-fake being a controller from a script ...
+sub site { return shift->{site} } 
 
 sub static_url {
     my ($self, $file) = @_;

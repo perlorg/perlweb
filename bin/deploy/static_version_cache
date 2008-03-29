@@ -56,6 +56,10 @@ for my $site (@sites) {
         exit;
     }
 
+    my $extra = Combust::StaticFiles->_load_json('.static.versions.extra.json') if -e '.static.versions.extra.json';
+    $files = { %$files, %$extra } if $extra;
+    #print Data::Dumper->Dump([\$files], [qw(files)]);
+
     for my $k (keys %$files) {
         my $version = $files->{$k} || 0;
         my $server = DBI::hash("$k/$version", 1);
@@ -72,15 +76,9 @@ for my $site (@sites) {
         
         $files->{$k} = [ $version, $attr ];
     }
-    
-    #use Data::Dumper;
-    #print Data::Dumper->Dump([\$files], [qw(files)]);
-    
+
     nstore($files, $storable_file) or die "could not store $storable_file: $!";
-    my $json = encode_json($files);
-    open my $fh, '>', $json_file or die "could not open $json_file: $!";
-    print $fh $json;
-    close $fh;
+    Combust::StaticFiles->_save_json($json_file, $files) 
 }
 
 1;
