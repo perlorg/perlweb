@@ -85,6 +85,7 @@ Cache::Memcached
 
 Class::Accessor::Class
 
+JSON::XS
 
 =head1 AUTHOR
 
