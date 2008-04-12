@@ -454,7 +454,7 @@ sub cookies {
   $cookies = Combust::Cookies->new($self->request,
                                    # Combust::Request defaults this to r->hostname
                                    # if it is not set
-                                   domain => $self->config->site->{$self->site}->{cookie_domain}
+                                   domain => ($self->config->site->{$self->site}->{cookie_domain} || ''),
                                   );
   $self->request->notes('cookies', $cookies);
   return $cookies;
