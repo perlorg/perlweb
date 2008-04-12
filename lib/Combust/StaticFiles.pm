@@ -47,7 +47,8 @@ sub setup_static_files {
 
     # TODO: in devel deployment mode we should reload this
     # automatically when the .json file changes
-    my $static_groups = $class->_load_json("${static_directory}/.static.groups.json") || {};
+    my $static_groups_file = "${static_directory}/.static.groups.json";
+    my $static_groups = -r $static_groups_file && $class->_load_json($static_groups_file) || {};
 
     # no relative filenames in the groups
     for my $name (keys %$static_groups) {
