@@ -25,9 +25,6 @@ my $config = Combust::Config->new();
 
 sub config { $config }
 
-my $ctemplate = Combust::Template->new()
-  or die "Could not initialize Combust::Template object: $Template::ERROR";
-
 my $root = $config->root;
 
 sub r {
@@ -85,7 +82,7 @@ sub super ($$) {
   # singleton).
 
   my $self = $class->new($r);
-  $ctemplate->set_include_path(sub { $self->get_include_path });
+  $self->tt->set_include_path(sub { $self->get_include_path });
 
   my $status;
   
@@ -282,7 +279,7 @@ sub evaluate_template {
       : 0
     );
 
-  my $output = eval { $ctemplate->process($template, $tpl_params, { site => $tpl_params->{site} } ) };
+  my $output = eval { $self->tt->process($template, $tpl_params, { site => $tpl_params->{site} } ) };
 
   delete $tpl_params->{combust};
 
@@ -295,8 +292,11 @@ sub evaluate_template {
   return $output;
 }
 
+my $ctemplate;
+
 sub tt {
-    $ctemplate;
+    $ctemplate ||= Combust::Template->new()
+      or die "Could not initialize Combust::Template object: $Template::ERROR";
 }
 
 sub provider {
