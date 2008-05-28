@@ -20,7 +20,9 @@ else {
   $ENV{CBCONFIG} = ($cbrl || $cbr) . '/combust.conf.testing';
 }
 
-my @prove = ("$cbr/bin/perl", $prove, @ARGV);
+my @inc = map { "-I$_/lib" } grep { $_ } ($cbrl, $cbr);
+
+my @prove = ("$cbr/bin/perl", $prove, @inc, @ARGV);
 
 print join(" ", @prove), "\n";
 
