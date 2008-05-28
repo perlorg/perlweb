@@ -31,7 +31,6 @@ sub new {
     my $class = shift;
 
     my $self = bless {}, $class;
-    my $root = $ENV{CBROOT};
 
     my $parser = Template::Parser->new();
 
