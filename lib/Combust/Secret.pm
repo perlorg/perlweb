@@ -3,6 +3,8 @@ use strict;
 use Carp qw(croak);
 use Combust;
 use Combust::DB qw(db_open);
+use Combust::Cache ();
+
 use Exporter 'import';
 our @EXPORT_OK = qw(get_secret);
 
