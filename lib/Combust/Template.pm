@@ -24,9 +24,6 @@ $Template::Stash::SCALAR_OPS->{rand} = sub {
     return int( rand(shift) );
 };
 
-# instance-y variable; ugly ugly! :)
-use vars qw($site);
-
 sub new {
     my $class = shift;
 
@@ -69,8 +66,9 @@ sub new {
         'PRE_PROCESS' => 'tpl/defaults',
         'PROCESS'     => 'tpl/wrapper',
         'PLUGIN_BASE' => 'Combust::Template::Plugin',
-
-#'DEBUG'  => DEBUG_VARS|DEBUG_DIRS|DEBUG_STASH|DEBUG_PARSER|DEBUG_PROVIDER|DEBUG_SERVICE|DEBUG_CONTEXT,
+        # 'DEBUG'  => DEBUG_VARS | DEBUG_DIRS | DEBUG_STASH
+        #             | DEBUG_PARSER | DEBUG_PROVIDER | DEBUG_SERVICE
+        #             | DEBUG_CONTEXT,
     );
 
     if ( $config->template_timer ) {
@@ -82,7 +80,8 @@ sub new {
 
     $self->{tt} = Template->new( \%tt_config )
       or croak "Could not initialize Template object: $Template::ERROR";
-    $self;
+
+    return $self;
 }
 
 sub provider {
@@ -96,6 +95,7 @@ sub set_include_path {
 
 sub get_include_path {
     my $self = shift;
+
     if ( my $inc_path = $self->{inc_path} ) {
         return $inc_path if ref $inc_path eq 'ARRAY';
         return $inc_path->() if ref $inc_path eq 'CODE';
@@ -110,7 +110,8 @@ sub default_include_path {
     my $self = shift;
 
     # evil evil; duplication from Combust::Control::get_include_path
-    my $site      = $self->site;
+
+    my $site      = $self->{_site};
     my $root_docs = $config->root_docs;
     my $site_dir =
       ( $site and $config->site->{$site}->{docs_site} )
@@ -118,21 +119,22 @@ sub default_include_path {
       : $site;
 
     my $path = [
-        "$root_docs/$site_dir/", "$root_docs/shared/",
-        "$root_docs/",           "$root/apache/root_templates/",
+                ($site_dir 
+                 ? ("$root_docs/$site_dir/") 
+                 : ()
+                ),
+                "$root_docs/shared/",
+                "$root_docs/",  
+                "$root/apache/root_templates/",
     ];
 
     $path;
 }
 
-sub site {
-    $site;
-}
-
 sub process {
     my ( $self, $template, $tpl_params, $args ) = @_;
 
-    local $site = $args->{site};
+    $self->{_site} = $args->{site};
 
     $tpl_params->{config} = $config unless $tpl_params->{config};
 
@@ -143,7 +145,10 @@ sub process {
 
     # XXX:  Why does $output not get UTF8 bit set correctly ??
     utf8::decode($output) || utf8::upgrade($output);
-    $output;
+
+    delete $self->{_site};
+
+    return $output;
 }
 
 
