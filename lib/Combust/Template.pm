@@ -26,6 +26,7 @@ $Template::Stash::SCALAR_OPS->{rand} = sub {
 
 sub new {
     my $class = shift;
+    my %args = ref $_[0] ? %{ $_[0] } : @_;
 
     my $self = bless {}, $class;
 
