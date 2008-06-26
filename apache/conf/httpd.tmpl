@@ -285,6 +285,8 @@ ServerSignature Off
 
     AddType video/mp4  .mp4
 
+    AddType text/javascript .js
+
     #AddHandler cgi-script .cgi
     #AddType text/html .shtml
     #AddHandler server-parsed .shtml
@@ -311,7 +313,6 @@ ErrorDocument 500 /error/500.html
     BrowserMatch "RealPlayer 4\.0" force-response-1.0
     BrowserMatch "Java/1\.0" force-response-1.0
     BrowserMatch "JDK/1\.0" force-response-1.0
-
 </IfModule>
 
 [% IF config.apache_reload %]
