@@ -1,12 +1,10 @@
 package Combust::Redirect;
 use strict;
 use Apache::Constants qw(REDIRECT MOVED DECLINED OK);
-# use Combust::Config;
-use base qw(Combust::Control);
 
 my $map = {};
 
-sub reload {
+sub redirect_reload {
   my ($self, $file) = @_;
 
   #warn "Checking file $file";
@@ -49,19 +47,13 @@ sub reload {
   $map->{$file}->{rules} = $site_rules;
 }
 
+sub redirect_check {
+  my $self = shift;
 
-#for my $site (keys %sites) {
-#  __PACKAGE__->reload($site);
-#
+  my $site = $self->site;
+  my $uri  = $self->request->uri;
 
-sub handler($$) {
-  my ($self, $r) = @_;
-
-  # this avoids some weirdness I can't otherwise figure out right now.
-  return DECLINED if $r->uri =~ m!^/images!;
-
-  my $site = $r->dir_config('site');
-  #warn join " / ", "REDIRECT CHECK FOR $site", $r->uri, $r->content_type;
+  #warn join " / ", "REDIRECT CHECK FOR $site", $uri;
 
   my $path = $self->get_include_path;
   return unless $path and $path->[0];
@@ -69,12 +61,11 @@ sub handler($$) {
 
   my $file = "$path/.htredirects";
 
-  $self->reload($file);
+  $self->redirect_reload($file);
   my $conf = $map->{$file} ? $map->{$file}->{rules} : undef; 
 
   return DECLINED unless $conf and ref $conf eq "ARRAY";
 
-  my $uri = $r->uri;
   for my $c (@$conf) {
     #warn "matching $uri to $c->[0]";
     if (my @n = ($uri =~ m/$c->[0]/)) {
@@ -82,7 +73,7 @@ sub handler($$) {
       warn "URLMAP ERROR: $c->[1]: $@" and next if $@;
       next unless $url;
       if ($c->[2] eq "I") {
-	$r->uri($url);
+	$self->request->uri($url);
       }
       else {
 	return $self->redirect($url, $c->[2] eq "P" ? 1 : 0);

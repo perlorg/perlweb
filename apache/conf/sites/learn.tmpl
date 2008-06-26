@@ -2,7 +2,6 @@
     ServerName [% config.site.learn.servername %]
     [% expandServerAliases( config.site.learn.aliases ) %]
     PerlSetVar site learn
-    PerlTransHandler Combust::Redirect->super
 
     <Location />
        SetHandler perl-script

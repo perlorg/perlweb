@@ -8,6 +8,9 @@ use Apache::File;
 use Carp qw(confess cluck carp);
 use Digest::SHA1 qw(sha1_hex);
 use Encode qw(encode_utf8);
+use base qw(Combust::Redirect);
+
+# TODO: figure out why we use this; remove it if possible
 require bytes;
 
 use Exception::Class ('Ex_ServerError');
@@ -75,12 +78,6 @@ sub super ($$) {
   confess(__PACKAGE__ . '->super got called without $r') unless $r;
   return unless $r;
 
-  # Combust::Redirect ends up being called a bunch of times and in
-  # turn runs through super here with all the setup required just to
-  # be able to run $self->redirect when it needs to do that.  Not so
-  # great. (in particular because we don't keep it around as a
-  # singleton).
-
   my $self = $class->new($r);
   $self->tt->set_include_path(sub { $self->get_include_path });
 
@@ -95,6 +92,8 @@ sub super ($$) {
     return SERVER_ERROR;
   }
   return $status unless $status == OK;
+
+  $self->redirect_check;
 
   eval {
       ($status) = $self->handler($self->r);

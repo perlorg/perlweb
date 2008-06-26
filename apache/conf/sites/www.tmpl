@@ -2,7 +2,6 @@
     ServerName [% config.site.www.servername %]
     [% expandServerAliases( config.site.www.aliases ) %]
     PerlSetVar site www
-    PerlTransHandler Combust::Redirect->super
 
     PerlRequire [% root %]/apache/conf/sites/www.pl
 
