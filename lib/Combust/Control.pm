@@ -79,10 +79,10 @@ sub super ($$) {
   return unless $r;
 
   my $self = $class->new($r);
-  $self->tt->set_include_path(sub { $self->get_include_path });
+  $self->tt->set_include_path($self->get_include_path);
 
   my $status;
-  
+
   eval {
     $status = OK;
     $status = $self->init if $self->can('init');
@@ -92,8 +92,6 @@ sub super ($$) {
     return SERVER_ERROR;
   }
   return $status unless $status == OK;
-
-  $self->redirect_check;
 
   eval {
       ($status) = $self->handler($self->r);
@@ -114,6 +112,10 @@ sub handler {
     warn $msg;
     die $msg;
   }
+
+  my $redir_status = $self->redirect_check;
+  return $redir_status unless $redir_status == DECLINED;
+
   my ($status, $output, $content_type) = $self->do_request();
   # have to return 'OK' and fake it with r->status or some such to make a custom 404 easily
   return $status unless $status == OK;
