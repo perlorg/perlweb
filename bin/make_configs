@@ -37,8 +37,9 @@ push @$include_path, @local_dir if @local_dir;
 push @$include_path, $dir;
 
 my $tt = new Template({ INCLUDE_PATH => $include_path,
-                        RELATIVE => 0,
-                        ABSOLUTE => 1, 
+                        RELATIVE  => 0,
+                        ABSOLUTE  => 1,
+                        EVAL_PERL => 1,
 		      }) 
   or die "Error: $Template::ERROR\n"; $Template::ERROR = '' if 0;
 
