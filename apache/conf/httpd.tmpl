@@ -79,12 +79,14 @@ PassEnv     DBI_TRACE
 # No idea what this is for ... 
 PerlSetEnv  APACHEROOT [% apache_root %]
 
-<IfDefine PERLDPROF>
+<IfDefine PERLNYTPROF>
     # For performance profiling perl code - per-subroutine timings.
-    # Will write one file per child pid into $ServerRoot/logs/dprof/$pid/tmon.out
+    # Will write one file per child pid into /tmp/nytprof.out.* (override
+    # with the NYTPROF environment variable).
     # Use httpd -X or set MaxClients 1 so only a single process is profiled.
-    # Use the dprofpp command can be used to generate a report from the file.
-    PerlModule Apache::DProf
+    # Use the nytprofhtml command can be used to generate a report from the file.
+    PerlPassEnv NYTPROF
+    PerlModule Devel::NYTProf::Apache
 </IfDefine>
 
 <IfDefine PERLSMALLPROF>
