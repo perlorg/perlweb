@@ -5,6 +5,7 @@ use Digest::MD5 qw(md5_hex);
 
 use Combust::Cache::DBI;
 eval { require Combust::Cache::Memcached };
+die $@ if $@ and $@ !~ m!Can't locate Cache/Memcached.pm!;
 
 my $id_max_length = 64;
 
