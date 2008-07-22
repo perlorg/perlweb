@@ -8,6 +8,7 @@ eval { require Combust::Cache::Memcached };
 
 my $id_max_length = 64;
 
+our $namespace = undef;
 
 # TODO:
 #   - support passing a scalar ref to store() ?
@@ -57,6 +58,7 @@ sub backend {
 sub _normalize_id {
     my ($self, $id) = @_;
     return unless defined $id;
+    $id = "$namespace;$id" if defined $namespace;
     if (length $id > ($id_max_length - 4)) {
         $id = "md5-" . md5_hex($id);
     }

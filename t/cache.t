@@ -48,6 +48,18 @@ for my $cache_backend (qw(dbi memcached)) {
     ok( $cache->delete( id => "test_large" ), "delete" );
     is( $cache->fetch( id => "test_large" ), undef, "deleted data is gone" );
 
+    {
+        local $Combust::Cache::namespace = "test5-a";
+        ok( $cache->store( id => "test5", data => "T5a" ), "store - namespace a" );
+        {
+            local $Combust::Cache::namespace = "test5-b";
+            ok( $cache->store( id => "test5", data => "T5b" ), "store - namespace b" );
+            ok( $d = $cache->fetch( id => "test5" ), "fetch with id - ns b" );
+            is( $d->{data}, "T5b", "test data T5b - ns b" );
+        }
+        ok( $d = $cache->fetch( id => "test5" ), "fetch with id - ns a" );
+        is( $d->{data}, "T5a", "test data T5a - ns a" );
+    }
 
 }
 

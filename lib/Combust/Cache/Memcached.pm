@@ -60,9 +60,12 @@ sub fetch_multi {
     my $rv = $memd->get_multi(@ids);
     return unless $rv;
 
+    my $prefix = join ";", grep { defined } $self->{type}, $Combust::Cache::namespace, "";
+    my $prefixre = qr/^$prefix/;
+
     for my $k (keys %$rv) {
         my $k2 = $k;
-        $k2 =~ s/^$self->{type};//;
+        $k2 =~ s/$prefixre//;
         $rv->{$k2} = delete $rv->{$k};
     }
     $rv;
