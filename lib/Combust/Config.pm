@@ -188,6 +188,9 @@ sub template_timer {
   $cfg->param('template_timer') || 0;
 }
 
+sub reload_langfiles {
+  $cfg->param('reload_langfiles') || 0;
+}
 
 # cronolog settings
 # {{{
