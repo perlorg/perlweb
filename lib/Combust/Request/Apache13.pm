@@ -52,6 +52,15 @@ sub uri {
   shift->_r->uri(@_);
 }
 
+sub get_args {
+  shift->_r->args;
+}
+
+sub request_url {
+  my $self = shift;
+  return 'http://'.$self->_r->hostname.$self->uri.($self->get_args ? '?' . $self->get_args : '');
+}
+
 sub method {
   lc shift->_r->method; 
 }
