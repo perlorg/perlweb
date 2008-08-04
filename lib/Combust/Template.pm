@@ -36,6 +36,8 @@ sub new {
         PARSER      => $parser,
         COMPILE_EXT => '.ttc',
         COMPILE_DIR => $config->work_path . "/ctpl",
+        UNICODE     => 1,
+        ENCODING    => 'utf-8',
 
         #TOLERANT => 1,
         #RELATIVE => 1,
