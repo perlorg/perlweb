@@ -1,0 +1,57 @@
+package CPAN::MyConfig;
+
+$CPAN::Config = {
+          'cpan_home' => '/tmp/cpan',
+          'show_unparsable_versions' => 0,
+          'show_upload_date' => 0,
+          'mbuild_install_build_command' => './Build',
+          'lynx' => '',
+          'yaml_load_code' => 0,
+          'ncftp' => '',
+          'urllist' => [
+                         'http://mirror.uta.edu/CPAN',
+                         'ftp://mirrors.kernel.org/pub/CPAN',
+                         'http://cpan.mirrorgeek.com'
+                       ],
+          'ncftpget' => '',
+          'prefer_installer' => 'MB',
+          'yaml_module' => 'YAML',
+          'build_requires_install_policy' => 'ask/yes',
+          'getcwd' => 'cwd',
+          'no_proxy' => '',
+          'build_cache' => 100,
+          'make_arg' => '',
+          'wget' => '',
+          'auto_commit' => 0,
+          'patch' => '/usr/bin/patch',
+          'ftp_proxy' => '',
+          'ftp_passive' => 1,
+          'tar' => '/usr/bin/tar',
+          'inactivity_timeout' => 0,
+          'use_sqlite' => 0,
+          'scan_cache' => 'atstart',
+          'cache_metadata' => 1,
+          'show_zero_versions' => 0,
+          'term_ornaments' => 1,
+          'build_dir_reuse' => 1,
+          'shell' => '/bin/bash',
+          'prerequisites_policy' => 'ask',
+          'mbuild_arg' => '',
+          'applypatch' => '',
+          'inhibit_startup_message' => 0,
+          'load_module_verbosity' => 'v',
+          'commandnumber_in_prompt' => 1,
+          'mbuild_install_arg' => '',
+          'index_expire' => 1,
+          'check_sigs' => 0,
+          'test_report' => 0,
+          'tar_verbosity' => 'v',
+          'term_is_latin' => 1,
+          'make_install_arg' => '',
+          'histsize' => 100,
+          'colorize_output' => 0,
+          'http_proxy' => ''
+        };
+
+
+1;
