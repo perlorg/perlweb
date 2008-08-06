@@ -9,22 +9,39 @@ ROOT=${CBROOTLOCAL:-$CBROOT}
 
 CONFIGFILE=${CBCONFIG:-$ROOT/combust.conf}
 
+
 if [ ! -f $CONFIGFILE ]; then
   echo Could not find configuration file $CONFIGFILE 1>&2
   exit 2
 fi
 
-MYPERL=`grep ^perl $CONFIGFILE | cut -d= -f2 | sed 's/[[:space:]]//g'`
+MYPERL=`awk '/^ *perl *=/ { print $3 }' $CONFIGFILE`
 
 if [ -z $MYPERL ]; then
-  echo Could not find "perl =" line in the combust.conf 1>&2
+  echo Could not find "perl =" line in $CONFIGFILE 1>&2
   exit 2
 fi
 
-if [ ! -z $CBROOTLOCAL ]; then
-  LLIB=-I$CBROOTLOCAL/lib
+mylib=$CBROOT/lib
+if [ ! -z "$CBROOTLOCAL" ]; then
+  if [ -d $CBROOTLOCAL/lib ]; then
+    mylib=$CBROOTLOCAL/lib:$mylib
+  fi
+  if [ -d $CBROOTLOCAL/cpan/lib/perl5 ]; then
+    mylib=$mylib:$CBROOTLOCAL/cpan/lib/perl5
+  fi
 fi
 
-exec $MYPERL -I$CBROOT/lib $LLIB ${1+"$@"} 
+if [ -d $CBROOT/cpan/lib/perl5 ]; then
+  mylib=$mylib:$CBROOT/cpan/lib/perl5
+fi
 
+if [ -z "$PERL5LIB" ] ; then
+  PERL5LIB=$mylib
+else
+  # perhaps we should just replace it to prevent it growing from recursive calls
+  PERL5LIB=$mylib:$PERL5LIB
+fi
+export PERL5LIB
 
+exec $MYPERL ${1+"$@"} 
