@@ -2,6 +2,7 @@ BEGIN {
     if ($ENV{CBROOTLOCAL}) { unshift(@INC, "$ENV{CBROOTLOCAL}/lib") }
 }
 use lib "$ENV{CBROOT}/lib";
+use lib "$ENV{CBROOTLOCAL}/cpan/lib/perl5";
 
 use strict;
 use Apache::DBI;
