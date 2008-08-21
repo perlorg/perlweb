@@ -1,7 +1,7 @@
 package CPAN::MyConfig;
 
 $CPAN::Config = {
-          'cpan_home' => '/tmp/cpan',
+          'cpan_home' => '/tmp/cpan.' . $ENV{USER},
           'show_unparsable_versions' => 0,
           'show_upload_date' => 0,
           'mbuild_install_build_command' => './Build',
@@ -23,10 +23,8 @@ $CPAN::Config = {
           'make_arg' => '',
           'wget' => '',
           'auto_commit' => 0,
-          'patch' => '/usr/bin/patch',
           'ftp_proxy' => '',
           'ftp_passive' => 1,
-          'tar' => '/usr/bin/tar',
           'inactivity_timeout' => 0,
           'use_sqlite' => 0,
           'scan_cache' => 'atstart',
