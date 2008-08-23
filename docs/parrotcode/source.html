@@ -9,13 +9,13 @@ pre { background: #DDD; border: solid black 1px;
 [% page.sidebar = BLOCK %]
 <ul>
   <li><a href="#Releases">Releases</a>
+  <li><a href="#Packages">Packages</a>
   <li><a href="#VersionControl">Version Control</a>
   <ul>
     <li><a href="#Subversion">Subversion</a>
     <li><a href="#SVK">SVK</a>
   </ul>
   <li><a href="#Snapshots">Snapshots</a>
-  <li><a href="#Packages">Packages</a>
   <li><a href="#Commits">Commit Mailing List</a>
 </ul>
 [% END %]
@@ -31,6 +31,27 @@ slight delay as the release propagates through CPAN.</p>
   <li><a href="http://www.parrotcode.org/release/devel">
  parrot-devel</a>
 </ul>
+
+<a name="Packages"></a>
+<h1>Packages</h1>
+
+<p> As a convenience, some volunteers have provided packages or ports
+of parrot for some platforms.  </p>
+
+<ul>
+<!--  <li><a href="http://ftp.debian.org/debian/pool/main/p/parrot/">Debian Packages</a></li>-->
+ <li><a href="http://alioth.debian.org/projects/pkg-parrot/">Debian Packages</a></li>
+ <li><a href="http://sourceforge.net/project/showfiles.php?group_id=211372">Windows (Win32)</a></li>
+ <li><a href="http://trac.macports.org/browser/trunk/dports/lang/parrot/Portfile">MacPorts</a>
+<pre>
+port install parrot
+</pre>
+</li>
+<!--  <li><a href="http://www.lenin.net/~emile/www.unobe.com/packages/">Pugs (r10396) and Parrot (r12747)</a> OSX package builds.</li> -->
+<!--  <li><a href="http://darwinports.opendarwin.org/ports/?by=name&substr=parrot">DarwinPorts</a> (0.4.0)</li> -->
+  <li><a href="ftp://ftp.uni-siegen.de/pub/parrot.rpms/fedora/">FedoraCore</a> (RPMs)</li>
+</ul>
+
 
 <a name="VersionControl"></a>
 <h1>Version Control</h1>
@@ -166,26 +187,6 @@ can use rsync to synchronize with the latest snapshot:
 <pre>
   rsync -av --delete svn.perl.org::parrot-HEAD parrot
 </pre>
-
-<a name="Packages"></a>
-<h1>Packages</h1>
-
-<p> As a convenience, some volunteers have provided packages or ports
-of parrot for some platforms.  </p>
-
-<ul>
-<!--  <li><a href="http://ftp.debian.org/debian/pool/main/p/parrot/">Debian Packages</a></li>-->
- <li><a href="http://alioth.debian.org/projects/pkg-parrot/">Debian Packages</a></li>
- <li><a href="http://sourceforge.net/project/showfiles.php?group_id=211372">Windows (Win32)</a></li>
- <li><a href="http://trac.macports.org/browser/trunk/dports/lang/parrot/Portfile">MacPorts</a>
-<pre>
-port install parrot
-</pre>
-</li>
-<!--  <li><a href="http://www.lenin.net/~emile/www.unobe.com/packages/">Pugs (r10396) and Parrot (r12747)</a> OSX package builds.</li> -->
-<!--  <li><a href="http://darwinports.opendarwin.org/ports/?by=name&substr=parrot">DarwinPorts</a> (0.4.0)</li> -->
-  <li><a href="ftp://ftp.uni-siegen.de/pub/parrot.rpms/fedora/">FedoraCore</a> (RPMs)</li>
-</ul>
 
 <a name="Commits"></a>
 <h1>Commit Mailing List</h1>
