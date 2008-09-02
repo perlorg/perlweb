@@ -28,7 +28,7 @@
   isindex = r.uri.match('^/(index.html)?$');
 
   UNLESS page.css;
-    page.css = ns4_flag && "/css/perl-ns4.css" || "/css/perl.css";
+    page.css = "/css/perl.css";
   END;
 
 %]
@@ -48,8 +48,6 @@
   [% PROCESS "tpl/googleanalytics.html" %]
 </head>
 <body>
-
-[% IF ns4_flag; INCLUDE "tpl/ns4warning.html"; END %]
 
 <TABLE CELLSPACING="0" WIDTH="690">
 <TR>
