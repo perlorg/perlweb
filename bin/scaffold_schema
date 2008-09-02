@@ -88,7 +88,7 @@ sub generate_model {
       package ${model_class}::_Base;
       use base qw(@object_base_classes);
 
-      sub init_db    { shift; our \$db ||= Combust::RoseDB->new(\@_, type => '$type') }
+      sub init_db    { shift; Combust::RoseDB->new_or_cached(\@_, type => '$type') }
       sub meta_class {'$meta_class'}
       sub model      { our \$model ||= bless [], '$model_class'}
     }
@@ -134,8 +134,8 @@ package $model_class;
 ## This file is auto-generated *** DO NOT EDIT ***
 ##
 use Combust::RoseDB;
+use Combust::RoseDB::Manager;
 
-our \$SVN = q\$Id\$;
 our \@table_classes;
 
 EOS
@@ -149,7 +149,6 @@ EOS
     }
 
     my $is_cached = $scaffold_class->cache_table($meta);
-    $meta->cached_objects_expire_in('12 hours') if $is_cached;
 
     my @isa = $is_cached ? ( isa => "${object_class}::Cached") : ();
     my $t = $meta->perl_class_definition(indent => 2, @isa);
@@ -163,16 +162,15 @@ EOS
 
     print <<EOS;
 
-# Allow user defined methods to be added
-eval { require $class }
-  or \$@ !~ m:^Can't locate $class_path.pm: and die \$@;
-
 { $t
 push \@table_classes, __PACKAGE__;
 }
 
 { $m}
 
+# Allow user defined methods to be added
+eval { require $class }
+  or \$@ !~ m:^Can't locate $class_path.pm: and die \$@;
 EOS
 
   }
@@ -183,8 +181,9 @@ EOS
   sub db  { shift; $object_class->init_db(\@_);      }
   sub dbh { shift->db->dbh; }
 
+  my \@cache_classes = grep { \$_->can('clear_object_cache') } \@table_classes;
   sub flush_caches {
-    \$_->meta->clear_object_cache for \@table_classes;
+    \$_->clear_object_cache for \@cache_classes;
   }
 
 EOS
