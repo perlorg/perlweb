@@ -38,7 +38,7 @@ mkdir -p $WORK_PATH/htdocs && mkdir -p $WORK_PATH/ctpl && mkdir -p $LOG_PATH && 
 rm -fr $WORK_PATH/ctpl/* && \
 $CBROOT/bin/make_configs && \
 $CBROOT/apache/bin/apachectl configtest && \
-$CBROOT/apache/bin/apachectl stop && sleep 6 && $CBROOT/apache/bin/apachectl start
+$CBROOT/apache/bin/apachectl stop && sleep 2 && $CBROOT/apache/bin/apachectl start
 
 if test -e $CBROOTLOCAL/bin/httpd_cleanup -a -x $CBROOTLOCAL/bin/httpd_cleanup; then
    $CBROOTLOCAL/bin/httpd_cleanup || echo WARNING: httpd_cleanup failed

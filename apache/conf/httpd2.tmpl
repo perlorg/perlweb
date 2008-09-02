@@ -1,0 +1,102 @@
+[% # -*- apache -*- %]
+[% dont_edit # add warning; do edit *THIS* file.. ;-) %]
+
+ServerRoot          "[% root_default %]/apache/"
+PidFile             "[% config.log_path %]/httpd.pid"
+
+Listen              [% config.port %]
+
+LoadModule perl_module [% apache_modules %]/mod_perl.so
+LoadModule apreq_module [% apache_modules %]/mod_apreq2.so
+LoadModule log_config_module [% apache_modules %]/mod_log_config.so
+LoadModule alias_module [% apache_modules %]/mod_alias.so
+LoadModule env_module [% apache_modules %]/mod_env.so
+
+PerlOptions +GlobalRequest
+
+PerlPassEnv CBROOT
+PassEnv     CBROOT
+PerlPassEnv CBROOTLOCAL
+PassEnv     CBROOTLOCAL
+PerlPassEnv CBCONFIG
+PassEnv     CBCONFIG
+PerlPassEnv DBI_PROFILE
+PassEnv     DBI_PROFILE
+PerlPassEnv DBI_TRACE
+PassEnv     DBI_TRACE
+
+PerlRequire [% root %]/apache/conf/startup.pl
+PerlWarn On
+
+[% IF config.apache_reload %]
+PerlModule Apache::Reload
+PerlInitHandler Apache::Reload
+[%   IF config.apache_reload > 1 %]
+PerlSetVar ReloadDebug On
+[%   END %]
+[% END %]
+
+#LogLevel warn
+LogLevel debug
+
+LogFormat "%h %V %u %t %{site}n \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
+LogFormat "%h %V %u %t \"%r\" %>s %b" common
+
+[% IF config.use_cronolog %]
+  [% log_path = config.log_path;
+     cronolog_access      = config.cronolog_template.replace("LOGFILE","access");
+     cronolog_error       = config.cronolog_template.replace("LOGFILE","error");
+     cronolog_access_params = config.cronolog_params.replace("LOGFILE","access");
+     cronolog_error_params  = config.cronolog_params.replace("LOGFILE","error");
+     cronolog_access_params = cronolog_access_params.replace("LOGDIR", log_path);
+     cronolog_error_params  = cronolog_error_params.replace("LOGDIR",  log_path);
+  %]
+  ErrorLog  "|[% config.cronolog_path %] [% config.log_path %]/[% cronolog_error  %] [% cronolog_error_params  %]"
+  CustomLog "|[% config.cronolog_path %] [% config.log_path %]/[% cronolog_access %] [% cronolog_access_params %]" combined
+[% ELSE %]
+  ErrorLog  [% config.log_path %]/error_log
+  CustomLog [% config.log_path %]/access_log combined
+[% END %]
+
+
+
+NameVirtualHost *:[% config.port %]
+
+# Default first host (so an unconfigured vhost doesn't fall back to one of the following
+<VirtualHost *:[% config.port %]>
+  ServerName combust-default
+  DocumentRoot [% root %]/apache/root_templates/default_site/
+
+  <Location />
+    SetHandler perl-script
+    PerlSetVar UseDocumentRoot 1
+    PerlResponseHandler Combust::Control::Basic->super
+  </Location>
+
+  <Location /error/>
+     SetHandler   perl-script
+     PerlResponseHandler Combust::Control::Error->super
+  </Location>
+
+</VirtualHost>
+
+# FIXME|TODO: make the site variable be set by a transhandler;
+# likewise dispatch to /error/ - that way most site configurations can
+# be merged into one virtualhost block - maybe.
+
+[% MACRO expandServerAliases( aliasList ) BLOCK %]
+    [%- FOREACH v = aliasList.list %][%- IF v -%]
+    ServerAlias [% v %]
+    [% END -%][%- END -%]
+[% END %]
+
+[% FOREACH site = config.sites_list %]
+  # [% site %] 
+[% IF config.site.$site.servername;
+     PROCESS "sites/${site}.tmpl";
+   ELSE %] 
+    # ServerName for [% site %] not configured in combust.conf!
+[% END;
+   END %]
+
+

@@ -24,13 +24,19 @@ my $dir = "$ENV{CBROOT}/apache/conf/";
 my @local_dir = $ENV{CBROOTLOCAL} ? ("$ENV{CBROOTLOCAL}/apache/conf", "$ENV{CBROOTLOCAL}/apache") : ();
 my $apache_root = $config->apache_root;
 
-my $apxs = $config->httpd;
+my $httpd = $config->httpd;
+
+-x $httpd && `$httpd -V` =~ m!Server version: Apache/([\d.]+)!;
+my $apache_version = $1;
+
+my $apxs = $httpd;
 $apxs =~ s!/httpd!/apxs!;
 my $apache_libexec = $config->apache_libexec;
 $apache_libexec ||= (-x $apxs and !-d _) ? `$apxs -q LIBEXECDIR` : '';
+chomp $apache_libexec;
 
 $apache_root =~ s!/s?bin/httpd$!!;
-$apache_libexec ||= $apache_root . "/libexec";
+$apache_libexec ||= $apache_root . ($apache_version >= 2 ? "/modules" : "/libexec");
 
 my $include_path = []; 
 push @$include_path, @local_dir if @local_dir;
@@ -56,6 +62,7 @@ my $params = { config => $config,
                modperl_path => ($config->modperl_path || "${apache_libexec}/libperl.so"),
 	       apache_root  => $apache_root,
 	       apache_libexec => $apache_libexec,
+	       apache_modules => $apache_libexec,
 	       mod_so       => $mod_so,
 	     };
 
@@ -69,6 +76,6 @@ EOT
 
 my $work_path = $config->work_path;
 
-$tt->process("httpd.tmpl", $params, "${work_path}/httpd.conf")
+$tt->process("httpd2.tmpl", $params, "${work_path}/httpd.conf")
   or die "Template Error: " . $tt->error();
 

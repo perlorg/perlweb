@@ -3,6 +3,7 @@ use strict;
 use base qw(Combust::Request);
 use Apache::Request;
 use Apache::Cookie;
+use Apache::File;
 use Combust::Config;
 
 my $config = Combust::Config->new;
@@ -63,6 +64,14 @@ sub request_url {
 
 sub method {
   lc shift->_r->method; 
+}
+
+sub update_mtime {
+  shift->_r->update_mtime(shift);
+}
+
+sub send_http_header {
+    shift->_r->send_http_header(@_);
 }
 
 sub get_cookie {

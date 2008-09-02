@@ -1,7 +1,7 @@
 package Combust::Control::Trans;
 use strict;
 
-use Apache::Constants qw(DECLINED);
+use Combust::Constant qw(DECLINED);
 
 sub handler {
   my $r = shift;

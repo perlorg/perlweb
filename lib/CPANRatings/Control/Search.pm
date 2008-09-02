@@ -2,7 +2,7 @@ package CPANRatings::Control::Search;
 use strict;
 use base qw(CPANRatings::Control);
 use CPANRatings::Model::SearchCPAN;
-use Apache::Constants qw(OK);
+use Combust::Constant qw(OK);
 
 sub render {
   my $self = shift;

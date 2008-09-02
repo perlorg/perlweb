@@ -3,7 +3,7 @@ use strict;
 use base qw(CPANRatings::Control);
 use CPANRatings::Model::Reviews;
 use CPANRatings::Model::SearchCPAN qw();
-use Apache::Constants qw(OK NOT_FOUND);
+use Combust::Constant qw(OK NOT_FOUND);
 
 sub render {
   my $self = shift;

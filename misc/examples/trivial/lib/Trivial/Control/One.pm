@@ -1,5 +1,5 @@
 package Trivial::Control::One;
-
+use strict;
 use base 'Combust::Control';
 
 sub handler ($$) {

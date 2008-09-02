@@ -1,7 +1,7 @@
 package CPANNotify::Control::Subscriptions;
 use strict;
 use base qw(CPANNotify::Control);
-use Apache::Constants qw(OK);
+use Combust::Constant qw(OK);
 
 sub render {
     my $self = shift;

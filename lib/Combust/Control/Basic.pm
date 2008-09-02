@@ -4,7 +4,7 @@ use base 'Combust::Control';
 use Combust::Config;
 use Combust::Template::Provider;
 use LWP::MediaTypes qw(guess_media_type);
-use Apache::Constants qw(OK DONE);
+use Combust::Constant qw(OK DONE);
 
 use base qw(Class::Accessor::Fast);
 __PACKAGE__->mk_accessors(qw(force_template_processing));

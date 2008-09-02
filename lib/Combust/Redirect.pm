@@ -1,6 +1,6 @@
 package Combust::Redirect;
 use strict;
-use Apache::Constants qw(REDIRECT MOVED DECLINED OK);
+use Combust::Constant qw(REDIRECT MOVED DECLINED OK);
 
 my $map = {};
 

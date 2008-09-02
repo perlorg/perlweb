@@ -1,7 +1,7 @@
 package Combust::Control::API;
 use strict;
 use base qw(Combust::Control);
-use Apache::Constants qw(OK NOT_FOUND);
+use Combust::Constant qw(OK NOT_FOUND);
 use JSON::XS qw(encode_json);
 use Sys::Hostname qw(hostname);
 use Return::Value;

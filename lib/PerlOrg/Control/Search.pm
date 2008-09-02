@@ -2,7 +2,7 @@ package PerlOrg::Control::Search;
 use strict;
 use base qw(Combust::Control);
 use Yahoo::Search; 
-use Apache::Constants qw(OK);
+use Combust::Constant qw(OK);
 use LWP::Simple qw(get);
 use XML::Simple qw(XMLin);
 

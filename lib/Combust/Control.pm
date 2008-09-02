@@ -1,12 +1,10 @@
 package Combust::Control;
 use strict;
 use Exception::Class ('ControllerException');
-use Apache::Request;
-use Apache::Cookie;
-use Apache::Constants qw(:common :response);
-use Apache::File;
+use Combust::Constant qw(OK SERVER_ERROR MOVED DONE DECLINED REDIRECT);
 use Carp qw(confess cluck carp);
 use Digest::SHA1 qw(sha1_hex);
+use URI::Escape qw(uri_escape);
 use Encode qw(encode_utf8);
 use base qw(Combust::Redirect);
 
@@ -14,8 +12,6 @@ use base qw(Combust::Redirect);
 require bytes;
 
 use Exception::Class ('Ex_ServerError');
-
-use Apache::Util qw();
 
 use Combust::Cache;
 use Combust::Template;
@@ -219,8 +215,6 @@ sub get_include_path {
     # ...  why is this in an elsif?  :-)
   }
 
-  $r->pnotes('combust_notes')->{include_root} = ($user) ? "/$user" : '/';
-
   my $path;
 
   my $docs = $config->docs_name;
@@ -270,15 +264,6 @@ sub evaluate_template {
 
   $tpl_params->{site} = $self->site
     unless $tpl_params->{site};
-
-  my $user_agent = $r->header_in("User-Agent") || '';
-  $tpl_params->{user_agent} = $user_agent;
-  $tpl_params->{ns4_flag} =
-    ( $user_agent =~ m!^Mozilla/4!
-      && $user_agent !~ m!compatible!
-      ? 1
-      : 0
-    );
 
   my $output = eval { $self->tt->process($template, $tpl_params, { site => $tpl_params->{site} } ) };
 
@@ -357,7 +342,7 @@ sub send_output {
   $self->cookies->bake_cookies;
 
   # not that we actually have the /w3c/p3p.xml document
-  $r->header_out('P3P',qq[CP="NOI DEVo TAIo PSAo PSDo OUR IND UNI NAV", policyref="/w3c/p3p.xml"]);
+  $self->request->header_out('P3P',qq[CP="NOI DEVo TAIo PSAo PSDo OUR IND UNI NAV", policyref="/w3c/p3p.xml"]);
 
   my $length;
   if (ref $output eq "GLOB") {
@@ -367,7 +352,7 @@ sub send_output {
     $length = bytes::length($output);
   }
 
-  $r->update_mtime(time) if $r->mtime == 0; 
+  $self->request->update_mtime(time) if $r->mtime == 0; 
   
   $r->set_content_length($length);
   $r->set_last_modified();  # set's to whatever update_mtime told us..
@@ -387,7 +372,7 @@ sub send_output {
     return $rc;
   }
 
-  $r->send_http_header;
+  $self->request->send_http_header;
 
   #warn Data::Dumper->Dump([\$output], [qw(output)]);
 
@@ -399,7 +384,7 @@ sub send_output {
     $r->send_fd($output);
   }
   else {
-    $r->print($output);
+    print $output;
   }
 
   # TODO: need to get the status from further up the chain and return it correctly here.
@@ -430,10 +415,10 @@ sub redirect {
   #use Carp qw(cluck);
   #warn "redirecting to [$url]";
 
-  $self->r->header_out('Location' => $url);
+  $self->request->header_out('Location' => $url);
   $self->r->status($permanent ? MOVED : REDIRECT);
 
-  my $url_escaped = Apache::Util::escape_uri($url);
+  my $url_escaped = uri_escape($url);
 
   # TODO: don't we end up double escaping here?
   my $data = <<EOH;
@@ -441,7 +426,7 @@ sub redirect {
 <HTML><HEAD><TITLE>302 Found</TITLE></HEAD><BODY><A HREF="$url_escaped">here</A>.<P></BODY></HTML>
 EOH
 
-  $self->r->header_out('Content-Length' => length($data));
+  $self->request->eaders_out('Content-Length' => length($data));
 
   $self->r->send_http_header("text/html");
   $self->r->print($data);
@@ -552,7 +537,7 @@ sub pick_request_class {
     if ($software eq 'mod_perl') {
       $version =~ s/_//g;
       $version =~ s/(\.[^.]+)\./$1/g;
-      return 'Combust::Request::Apache20' if $version >= 2.000001;
+      return 'Combust::Request::Apache2' if $version >= 2.000001;
       return 'Combust::Request::Apache13'  if $version >= 1.29;
       die "Unsupported mod_perl version: $ENV{MOD_PERL}";
     }

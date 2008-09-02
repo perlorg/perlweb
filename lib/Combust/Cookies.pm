@@ -1,6 +1,5 @@
 package Combust::Cookies;
 use strict;
-use Apache::Cookie;
 use URI::Escape qw(uri_escape uri_unescape);
 use Combust::Secret qw(get_secret);
 

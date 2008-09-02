@@ -5,11 +5,18 @@
     [% expandServerAliases( config.site.${site}.aliases ) %]
     #PerlTransHandler Combust::Redirect->super
 
+	DocumentRoot /tmp/foo/
+
     PerlModule Trivial::Control::One
-    <Location />
+    <Location /one>
        SetHandler perl-script
-       PerlHandler Trivial::Control::One->super
+       PerlResponseHandler Trivial::Control::One->super
     </Location>
 
+  <Location /perl-status>
+      SetHandler modperl
+      PerlOptions +GlobalRequest
+      PerlResponseHandler Apache2::Status
+  </Location>
 
 </VirtualHost>

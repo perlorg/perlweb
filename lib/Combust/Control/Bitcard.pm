@@ -1,6 +1,6 @@
 package Combust::Control::Bitcard;
 use strict;
-use Apache::Constants qw(OK);
+use Combust::Constant qw(OK);
 use Authen::Bitcard;
 use Carp qw(cluck);
 

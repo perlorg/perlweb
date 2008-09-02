@@ -1,6 +1,6 @@
 package CPANNotify::Control::API;
 use strict;
-use Apache::Constants qw(OK);
+use Combust::Constant qw(OK);
 use base qw(CPANNotify::Control);
 use JSON;
 

@@ -2,10 +2,7 @@ package Combust::Notes;
 use strict;
 
 use Combust::Cookies;
-
-use Apache::Cookie;
-use Apache::Request;
-use Apache::Constants qw(OK NOT_FOUND);
+use Combust::Constant qw(OK NOT_FOUND);
 use Time::HiRes qw(time); # let's be accurate about this
 use DBI;		  # for DBI::hash()
 

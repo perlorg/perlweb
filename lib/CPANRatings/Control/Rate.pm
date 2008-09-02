@@ -4,7 +4,7 @@ use base qw(CPANRatings::Control);
 use CPANRatings::Model::Reviews;
 use POSIX qw(strftime);
 use Apache::Util qw();
-use Apache::Constants qw(OK);
+use Combust::Constant qw(OK);
 
 sub render {
 

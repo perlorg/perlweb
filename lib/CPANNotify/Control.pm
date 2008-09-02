@@ -2,7 +2,7 @@ package CPANNotify::Control;
 use strict;
 use base qw(Combust::Control Combust::Control::Bitcard);
 use CPANNotify::User;
-use Apache::Constants qw(OK);
+use Combust::Constant qw(OK);
 use CPANNotify::User;
 use HTML::Prototype;
 

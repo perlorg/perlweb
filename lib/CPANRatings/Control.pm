@@ -8,7 +8,7 @@ use CPANRatings::Model::Reviews;
 use CPANRatings::Model::User;
 use Digest::SHA1 qw(sha1_hex);
 use Encode qw();
-use Apache::Constants qw(OK);
+use Combust::Constant qw(OK);
 use XML::RSS;
 
 sub init {

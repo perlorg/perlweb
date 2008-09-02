@@ -1,7 +1,7 @@
 package CPANRatings::Control::API;
 use strict;
 use base qw(CPANRatings::Control Combust::Control::API);
-use Apache::Constants qw(OK NOT_FOUND);
+use Combust::Constant qw(OK NOT_FOUND);
 use JSON;
 use Sys::Hostname qw(hostname);
 use CPANRatings::API;
