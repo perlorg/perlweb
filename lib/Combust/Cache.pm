@@ -1,10 +1,10 @@
 package Combust::Cache;
 use strict;
-use Carp qw(carp);
+use Carp qw(carp croak);
 use Digest::MD5 qw(md5_hex);
 
 use Combust::Cache::DBI;
-eval { require Combust::Cache::Memcached };
+my $HAS_MEMCACHED = eval { require Combust::Cache::Memcached };
 die $@ if $@ and $@ !~ m!Can't locate Cache/Memcached.pm!;
 
 my $id_max_length = 64;
@@ -32,7 +32,8 @@ sub bless_backend {
   $backend ||= $class->backend;
   my $_class;
   $_class = 'Combust::Cache::DBI' if $backend eq "dbi";
-  $_class = 'Combust::Cache::Memcached' if $backend eq "memcached";
+  $_class = 'Combust::Cache::Memcached' if $backend eq "memcached" and $HAS_MEMCACHED;
+  croak "Cache backend $backend not available" unless $_class;
   bless $self, $_class if $_class;
 }
 
