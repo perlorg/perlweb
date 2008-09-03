@@ -381,7 +381,7 @@ sub send_output {
   return OK if $r->header_only;
 
   if (ref $output eq "GLOB") {
-    $r->send_fd($output);
+    print <$output>;  
   }
   else {
     print $output;
