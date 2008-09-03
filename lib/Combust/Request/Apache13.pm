@@ -74,6 +74,14 @@ sub send_http_header {
     shift->_r->send_http_header(@_);
 }
 
+sub sendfile {
+    my ($self, $file) = @_;
+    open my $fh, "<", $file or die "$!";
+    my $rv = $self->_r->send_fh($fh);
+    close $fh;
+    return $rv;
+}
+
 sub get_cookie {
   my ($self, $name) = @_;
   unless ($self->{cookies}) {

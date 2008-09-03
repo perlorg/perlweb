@@ -76,6 +76,11 @@ sub send_http_header {
     return 1;    # don't need send_http_header in Apache 2
 }
 
+sub sendfile {
+    my ($self, $file) = @_;
+    return $self->_r->sendfile($file);
+}
+
 sub get_cookie {
     my ( $self, $name ) = @_;
     unless ( $self->{cookies} ) {
