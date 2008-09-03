@@ -1,6 +1,6 @@
 package Combust::Request::Apache2;
 use strict;
-use base qw(Combust::Request);
+use base qw(Combust::Request::Apache);
 use Apache2::Request;
 use Apache2::RequestRec ();
 use Apache2::Response   ();
@@ -52,14 +52,6 @@ sub header_out {
     my ( $req, $key, $value ) = @_;
     return $req->_r->headers_out->{$key} = $value if $value;
     return $req->_r->headers_out->{$key};
-}
-
-sub remote_ip {
-    shift->_r->connection->remote_ip;
-}
-
-sub uri {
-    shift->_r->uri(@_);
 }
 
 sub method {

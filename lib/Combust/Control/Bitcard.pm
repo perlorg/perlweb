@@ -82,9 +82,10 @@ sub account_url {
 
 sub _here_url {
     my $self = shift;
+    my $args = $self->request->args || '';
     my $here = URI->new($self->config->base_url($self->site)
-                      . $self->r->uri 
-                      . '?' . $self->r->query_string 
+                      . $self->request->uri 
+                      . '?' . $args
                       );
     $here->as_string;
 }

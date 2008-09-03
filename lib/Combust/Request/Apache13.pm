@@ -1,6 +1,6 @@
 package Combust::Request::Apache13;
 use strict;
-use base qw(Combust::Request);
+use base qw(Combust::Request::Apache);
 use Apache::Request;
 use Apache::Cookie;
 use Apache::File;
@@ -43,23 +43,6 @@ sub header_in {
 
 sub header_out {
     shift->_r->header_out(@_);
-}
-
-sub remote_ip {
-    shift->_r->connection->remote_ip;
-}
-
-sub uri {
-  shift->_r->uri(@_);
-}
-
-sub get_args {
-  shift->_r->args;
-}
-
-sub request_url {
-  my $self = shift;
-  return 'http://'.$self->_r->hostname.$self->uri.($self->get_args ? '?' . $self->get_args : '');
 }
 
 sub method {
