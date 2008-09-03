@@ -349,7 +349,8 @@ sub send_output {
     $length = (stat($output))[7];
   }
   else {
-    $output = encode_utf8($output);
+    # eek - this is certainly not correct
+    $output = encode_utf8($output) if $content_type =~ m!^text/!;
     $length = length($output);
   }
 
@@ -361,8 +362,8 @@ sub send_output {
   # defining the character set helps in handling the CERT advisory
   # regarding  "cross site scripting vulnerabilities" 
   #   http://www.cert.org/tech_tips/malicious_code_mitigation.html
-#  $content_type .= "; charset=" . $self->default_character_set
-#    if $content_type =~ m/^text/ and $content_type !~ m/charset=/;
+  #  $content_type .= "; charset=" . $self->default_character_set
+  #    if $content_type =~ m/^text/ and $content_type !~ m/charset=/;
   $content_type .= "; charset=utf-8" if $content_type =~ m/^text/ and $content_type !~ m/charset=/;
   $r->content_type($content_type);
   #warn "content_type: $content_type";
