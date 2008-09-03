@@ -30,8 +30,8 @@ PerlRequire [% root %]/apache/conf/startup.pl
 PerlWarn On
 
 [% IF config.apache_reload %]
-PerlModule Apache::Reload
-PerlInitHandler Apache::Reload
+PerlModule Apache2::Reload
+PerlInitHandler Apache2::Reload
 [%   IF config.apache_reload > 1 %]
 PerlSetVar ReloadDebug On
 [%   END %]
