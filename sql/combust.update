@@ -1,7 +1,7 @@
 #1
 create table if not exists combust_cache (
-  `id` varchar(250) NOT NULL,
-  `type` varchar(128) NOT NULL default '',
+  `id` varchar(64) NOT NULL,
+  `type` varchar(20) NOT NULL default '',
   `created` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   `purge_key` varchar(20) default NULL,
   `data` mediumblob NOT NULL,
