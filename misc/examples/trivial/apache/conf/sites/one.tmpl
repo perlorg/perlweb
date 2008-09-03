@@ -1,4 +1,3 @@
-[% site = "one" %]
 <VirtualHost *:[% config.port %]>
     PerlSetVar site [% site %]
     ServerName [% config.site.${site}.servername %]
@@ -12,6 +11,13 @@
        SetHandler perl-script
        PerlResponseHandler Trivial::Control::One->super
     </Location>
+
+    PerlModule +Trivial::Control::Two
+    <Location /two>
+       SetHandler perl-script
+       PerlResponseHandler Trivial::Control::Two->super
+    </Location>
+
 
   <Location /perl-status>
       SetHandler modperl
