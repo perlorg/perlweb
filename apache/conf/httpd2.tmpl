@@ -58,7 +58,7 @@ LogFormat "%h %V %u %t \"%r\" %>s %b" common
   CustomLog [% config.log_path %]/access_log combined
 [% END %]
 
-
+PerlPostReadRequestHandler ProxyIP Combust::Notes
 
 NameVirtualHost *:[% config.port %]
 
