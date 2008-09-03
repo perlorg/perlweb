@@ -426,10 +426,10 @@ sub redirect {
 <HTML><HEAD><TITLE>302 Found</TITLE></HEAD><BODY><A HREF="$url_escaped">here</A>.<P></BODY></HTML>
 EOH
 
-  $self->request->eaders_out('Content-Length' => length($data));
+  $self->request->header_out('Content-Length' => length($data));
 
-  $self->r->send_http_header("text/html");
-  $self->r->print($data);
+  $self->request->send_http_header("text/html");
+  print $data;
   return DONE;
 }
 
