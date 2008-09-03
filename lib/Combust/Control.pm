@@ -258,7 +258,7 @@ sub evaluate_template {
   $tpl_params->{r} = $r; 
   $tpl_params->{notes} = $r->pnotes('combust_notes'); 
   $tpl_params->{root} = $root;  # localroot anyone?
-  $tpl_params->{siteconfig} = $self->config->site->{$self->site};
+  $tpl_params->{siteconfig} = $self->site && $self->config->site->{$self->site};
 
   $tpl_params->{combust} = $self;
 
@@ -440,7 +440,7 @@ sub cookies {
   $cookies = Combust::Cookies->new($self->request,
                                    # Combust::Request defaults this to r->hostname
                                    # if it is not set
-                                   domain => ($self->config->site->{$self->site}->{cookie_domain} || ''),
+                                   domain => ($self->site && $self->config->site->{$self->site}->{cookie_domain} || ''),
                                   );
   $self->request->notes('cookies', $cookies);
   return $cookies;
