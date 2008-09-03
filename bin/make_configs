@@ -26,8 +26,14 @@ my $apache_root = $config->apache_root;
 
 my $httpd = $config->httpd;
 
--x $httpd && `$httpd -V` =~ m!Server version: Apache/([\d.]+)!;
+my $httpd_settings = -x $httpd && `$httpd -V`;
+$httpd_settings && $httpd_settings =~ m!Server version: Apache/([\d.]+)!;
+
 my $apache_version = $1;
+if ($apache_version) {
+  $apache_version = sprintf "%i.%02i%02i", ($apache_version =~ m/^(\d+)\.(\d+).(\d+)$/);
+}
+my $mp2 = $apache_version && $apache_version >= 2 ? 1 : 0;
 
 my $apxs = $httpd;
 $apxs =~ s!/httpd!/apxs!;
@@ -35,8 +41,14 @@ my $apache_libexec = $config->apache_libexec;
 $apache_libexec ||= (-x $apxs and !-d _) ? `$apxs -q LIBEXECDIR` : '';
 chomp $apache_libexec;
 
+unless ($apache_libexec) {
+  $httpd_settings =~ m/-D HTTPD_ROOT="([^\"]+)"/;
+  $apache_libexec = "$1/modules" if $1;
+}
+
+
 $apache_root =~ s!/s?bin/httpd$!!;
-$apache_libexec ||= $apache_root . ($apache_version >= 2 ? "/modules" : "/libexec");
+$apache_libexec ||= $apache_root . ($mp2 ? "/modules" : "/libexec");
 
 my $include_path = []; 
 push @$include_path, @local_dir if @local_dir;
@@ -60,10 +72,11 @@ my $params = { config => $config,
 	       root_local   => ($ENV{CBROOTLOCAL} || ''),
 	       root_default => ($ENV{CBROOTLOCAL} || $ENV{CBROOT}),
                modperl_path => ($config->modperl_path || "${apache_libexec}/libperl.so"),
-	       apache_root  => $apache_root,
+	       apache_version => $apache_version,
+	       apache_root    => $apache_root,
 	       apache_libexec => $apache_libexec,
 	       apache_modules => $apache_libexec,
-	       mod_so       => $mod_so,
+	       mod_so         => $mod_so,
 	     };
 
 $params->{dont_edit} = <<EOT;
@@ -76,6 +89,6 @@ EOT
 
 my $work_path = $config->work_path;
 
-$tt->process("httpd2.tmpl", $params, "${work_path}/httpd.conf")
+$tt->process(($mp2 ? "httpd2.tmpl" : "httpd.tmpl"), $params, "${work_path}/httpd.conf")
   or die "Template Error: " . $tt->error();
 
