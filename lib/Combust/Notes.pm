@@ -26,11 +26,11 @@ BEGIN {
 sub handler {
   my $r = shift;
 
-  if (MP2) {
-    $r = Apache2::Request->new( $r );
+ if (MP2) {
+    $r = Apache2::Request->new( $r, TEMP_DIR => Combust->config->work_path );
   }
   else {
-    $r = Apache::Request->instance( $r );
+    $r = Apache::Request->instance( $r, TEMP_DIR => Combust->config->work_path  );
   }
 
   my $ip      = $r->connection->remote_ip;

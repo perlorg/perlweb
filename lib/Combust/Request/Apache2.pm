@@ -17,8 +17,8 @@ sub _r {
 
     my $r = Apache2::RequestUtil->request;
 
-    return $self->{_r} = Apache2::Request->new( $r, TEMP_DIR => $config->work_path, );
-
+    # TEMP_DIR is configured in Combust::Notes
+    return $self->{_r} = Apache2::Request->new( $r ); 
 }
 
 
