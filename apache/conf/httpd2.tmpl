@@ -11,6 +11,7 @@ LoadModule apreq_module [% apache_modules %]/mod_apreq2.so
 LoadModule log_config_module [% apache_modules %]/mod_log_config.so
 LoadModule alias_module [% apache_modules %]/mod_alias.so
 LoadModule env_module [% apache_modules %]/mod_env.so
+LoadModule status_module [% apache_modules %]/mod_status.so
 
 PerlOptions +GlobalRequest
 
