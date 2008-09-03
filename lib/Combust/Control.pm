@@ -349,7 +349,8 @@ sub send_output {
     $length = (stat($output))[7];
   }
   else {
-    $length = bytes::length($output);
+    $output = encode_utf8($output);
+    $length = length($output);
   }
 
   $self->request->update_mtime(time) if $r->mtime == 0; 
