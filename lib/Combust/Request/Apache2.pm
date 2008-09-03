@@ -94,7 +94,7 @@ sub set_cookie {
     my ( $self, $name, $value, $args ) = @_;
 
     my $cookie = Apache2::Cookie->new(
-        $self->{r},
+        $self->_r,
         -name   => $name,
         -value  => $value,
         -domain => $args->{domain},
@@ -110,7 +110,8 @@ sub set_cookie {
 
 sub bake_cookies {
     my $self = shift;
-    $_->bake for @{ $self->{cookies_out} };
+    my $r = $self->_r;
+    $_->bake($r) for @{ $self->{cookies_out} };
 }
 
 
