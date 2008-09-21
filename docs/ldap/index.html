@@ -27,9 +27,9 @@
     <p>The latest ([% ldap.released %]) release of the library is <a href=
           "http://search.cpan.org/CPAN/authors/id/G/GB/GBARR/perl-ldap-[% ldap.version %].tar.gz"> perl-ldap-[% ldap.version %]</a>.
       You may also <a href=
-          "http://svn.goingon.net/viewvc/perl-ldap/tags/perl-ldap-[% ldap.version %]/">browse
-      the individual files</a> in the SVN repository and the <a href=
-          "http://svn.goingon.net/viewvc/perl-ldap/tags/perl-ldap-[% ldap.version %]/Changes?view=markup">Changes</a> file.</p>
+          "http://git.goingon.net/?p=perl-ldap.git;a=shortlog;h=refs/tags/v[% ldap.version %]/">browse
+      the individual files</a> in the Git repository and the <a href=
+          "http://git.goingon.net/?p=perl-ldap.git;a=blob_plain;f=Changes;hb=v[% ldap.version %]">Changes</a> file.</p>
   </div>
   <div class="section">
     <h2>Documentation</h2>
@@ -122,8 +122,7 @@
   </div>
   <div class="section">
     <h2>LDAP RFCs</h2>
-    <p><a href="rfc.html">This page</a> contains links to all the LDAP-related
-      RFCs at the IETF.</p>
+    <p><a href="http://www.bind9.net/rfc-ldap">www.bind9.net</a> has a comprehensive list of LDAP RFCs
   </div>
   <div class="section">
     <h2>FAQ</h2>
@@ -147,123 +146,167 @@
       to subscribe in order to post a question, and the list is filtered for
        spam automatically.</p>
     <h3>To post</h3>
-    <p><a href="mailto:perl-ldap@perl.org">perl-ldap@perl.org</a></p>
+    <ul>
+      <li><a href="mailto:perl-ldap@perl.org">perl-ldap@perl.org</a></li>
+    </ul>
     <h3>To subscribe</h3>
-    <p><a href="mailto:perl-ldap-subscribe@perl.org">perl-ldap-subscribe@perl.org</a></p>
+    <ul>
+      <li><a href="mailto:perl-ldap-subscribe@perl.org">perl-ldap-subscribe@perl.org</a></li>
+    </ul>
     <h3>To unsubscribe</h3>
-    <p><a href="mailto:perl-ldap-unsubscribe@perl.org">perl-ldap-unsubscribe@perl.org</a></p>
+    <ul>
+      <li><a href="mailto:perl-ldap-unsubscribe@perl.org">perl-ldap-unsubscribe@perl.org</a></li>
+    </ul>
     <h3>List archives</h3>
     <ul>
-	<li><a href="http://archive.develooper.com/perl-ldap@perl.org/">http://archive.develooper.com/perl-ldap@perl.org/</a></li>
-     <li><a href="http://nntp.x.perl.org/group/perl.ldap">http://nntp.x.perl.org/group/perl.ldap</a></li>
-     <li><a href="news://nntp.perl.org/perl.ldap">news://nntp.perl.org/perl.ldap</a></li>
-	</ul>
+      <li><a href="http://perl.markmail.org/search/list:perl-ldap">http://perl.markmail.org/search/list:perl-ldap</a>
+      <li><a href="http://groups.google.com/group/perl.ldap/topics">http://groups.google.com/group/perl.ldap/topics</a>
+      <li><a href="http://www.nntp.perl.org/group/perl.ldap/">http://www.nntp.perl.org/group/perl.ldap/</a>
+      <li><a href="news://nntp.perl.org/perl.ldap">news://nntp.perl.org/perl.ldap</a></li>
+    </ul>
   </div>
   <div class="section">
     <h2>Related Projects</h2>
     <ul>
+<!--
       <li><a href="http://fdis.srv.gc.ca/dsml">DSML &hArr; LDAP Gateway</a></li>
+-->
+      <li><a href="http://search.cpan.org/dist/Net-LDAPapi/">Net::LDAPapi</a>
     </ul>
   </div>
   <div class="section">
     <h2>LDAP Web Resources</h2>
     <ul>
       <li><a href="http://www.openldap.org/">OpenLDAP</a></li>
-      <li><a href=
-            "http://www3.innosoft.com/ldapworld/">Innosoft's LDAP World</a></li>
-      <li><a href="http://ltap.bell-labs.com/">LTAP - Lightweight Trigger Access
-          Process</a></li>
+      <li><a href="http://www.bind9.net/ldap">LDAP Howtos, LDAP Links, LDAP Whitepapers (http://www.bind9.net)</a>
+      <li><a href="http://en.wikipedia.org/wiki/Lightweight_Directory_Access_Protocol">LDAP on Wikipedia</a>
+      <li><a href="http://tldp.org/HOWTO/LDAP-HOWTO/">LDAP Linux HOWTO</a>
+<!--
+      <li><a href="http://www3.innosoft.com/ldapworld/">Innosoft's LDAP World</a></li>
+-->
+      <li><a href="http://ltap.bell-labs.com/">LTAP - Lightweight Trigger Access Process</a></li>
     </ul>
   </div>
   <div class="section">
     <h2>Other Publications</h2>
 
-      <a href="http://learn.perl.org/redirect?url=book;bookstore=amazon;bookisbn=1590594134"
-        target="_blank"><img width=106 height=140
-        src="http://images.amazon.com/images/P/1590594134.01.MZZZZZZZ.jpg" align=left hspace=10></a>
-      <a href="http://learn.perl.org/redirect?url=book;bookstore=amazon;bookisbn=1590594134"
-        target="_blank"><i>Deploying OpenLDAP</i></a><BR>
-        (ISBN: 1590594134)<BR>
-        written by Tom Jackiewicz,<BR>
-        published by <a href="http://www.apress.com/"
-        target="_blank">Apress</a>.<BR>
-	Mentions Net::LDAP modules
-<br clear=all>
+      <div>
+        <a href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=1590594134"
+          target="_blank"><img width=106 height=140
+          src="http://images.amazon.com/images/P/1590594134.01.MZZZZZZZ.jpg" align=left hspace=10></a>
+        <a href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=1590594134"
+          target="_blank"><i>Deploying OpenLDAP</i></a><BR>
+          (ISBN: 1590594134)<BR>
+          written by Tom Jackiewicz,<BR>
+          published by <a href="http://www.apress.com/" target="_blank">Apress</a>.<BR>
+          Mentions Net::LDAP modules
+      </div>
 
-      <a href="http://learn.perl.org/redirect?url=book;bookstore=amazon;bookisbn=0849313465"
-        target="_blank"><img width=100 height=127
-        src="http://images.amazon.com/images/P/0849313465.01.MZZZZZZZ.jpg" align=left hspace=10></a>
-      <a href="http://learn.perl.org/redirect?url=book;bookstore=amazon;bookisbn=0849313465"
-        target="_blank"><i>The ABCs of LDAP: How to Install, Run, and Administer LDAP Services</i></a><BR>
-        (ISBN: 0849313465)<BR>
-        written by Reinhard Voglmaier,<BR>
-        published by <a href="http://www.auerbach-publications.com/"
-        target="_blank">Auerbach Pub</a>.<BR>
-	Provides an introduction to Net::LDAP in its chapter on LDAP APIs
-<br clear=all>
-<p>
-      <a href="http://learn.perl.org/redirect?url=book;bookstore=amazon;bookisbn=1861002211"
-        target="_blank"><img width=100 height=127
-        src="http://images.amazon.com/images/P/1861002211.01.MZZZZZZZ.jpg" align=left hspace=10></a>
-      <a href="http://learn.perl.org/redirect?url=book;bookstore=amazon;bookisbn=1861002211"
-        target="_blank"><i>Implementing LDAP</i></a><BR>
-        (ISBN: 1861002211)<BR>
-        written by Mark Wilcox,<BR>
-        published by <a href="http://www.wrox.com/"
-        target="_blank">Wrox Press</a>.<BR>
-        Mentions perl-ldap in Chapter 11.<BR>
-<br clear=all>
-<p>
-      <a href="http://learn.perl.org/redirect?url=book;bookstore=amazon;bookisbn=1565926099"
-        target="_blank"><img width=100 height=131
-        src="http://images.amazon.com/images/P/1565926099.01.MZZZZZZZ.jpg" align=left hspace=10></a>
-      <a href="http://www.oreilly.com/catalog/perlsysadm/"
-        target="_blank"><i>Perl for System Administration</i></a><BR>
-        (ISBN: 1565926099)<BR>
-        written by David N. Blank-Edelman,<BR>
-        published by <a href= "http://www.oreilly.com/"
-        target="_blank">O'Reilly &amp; Associates</a>.<BR>
-        Mentions LDAP and perl-ldap
-        in its chapter on Directory Services.<BR>
-<br clear=all>
-<p>
-      <a href="http://learn.perl.org/redirect?url=book;bookstore=amazon;bookisbn=0672321254" 
-        target="_blank"><img width=100 height=123
-        src="http://images.amazon.com/images/P/0672321254.01.MZZZZZZZ.jpg" align=left hspace=10></a>
-      <a href="http://www.awprofessional.com/catalog/product.asp?product_id={BDE92686-4225-41B6-A818-B477144D8CA1}&amp;session_id={6D4DBC59-6D20-470C-9B9F-207BF1BD4DDD}"
-        target="_blank"><i>Managing Enterprise 
-                           Active Directory Services</i></a><BR>
-        (ISBN: 0672321254)<BR>
-        written by Robbie Allen and Richard Puckett,<BR>
-        published by <a href="http://www.awprofessional.com/"
-        target="_blank">Addison-Wesley</a><BR>
-<br clear=all>
-<p>
-      <a href="http://learn.perl.org/redirect?url=book;bookstore=amazon;bookisbn=1565924916"
-        target="_blank"><img width=100 height=131
-        src="http://images.amazon.com/images/P/1565924916.01.MZZZZZZZ.jpg" align=left hspace=10></a>
-      <a href="http://www.oreilly.com/catalog/ldapsa/"
-        target="_blank"><i>LDAP System Administration</i></a><BR>
-        (ISBN: 1565924916)<BR>
-        written by Gerald Carter,<BR>
-        published by <a href="http://www.oreilly.com/"
-        target="_blank">O'Reilly &amp; Associates</a>.<BR>
-        Has a chapter on Net::LDAP and perl.<BR>
-<br clear=all>
-<p>
-      <a href="http://learn.perl.org/redirect?url=book;bookstore=amazon;bookisbn=0672323168"
-        target="_blank"><img width=100 height=133
-        src="http://images.amazon.com/images/P/0672323168.01.MZZZZZZZ.jpg" align=left hspace=10></a>
-      <a href="http://www.awprofessional.com/catalog/product.asp?product_id={0A213C17-EE78-4AC2-9D72-812B36E94742}"
-        target="_blank"><i>Understanding and Deploying 
-                           LDAP Directory Services</i></a>, Second Edition<BR>
-        (ISBN: 0672323168)<BR> 
-        written by Tim Howes, Mark C Smith and Gordon Good,<BR>
-        published by <a href="http://www.awprofessional.com/"
-        target="_blank">Addison-Wesley</a>.<BR>
-        It only mentions Net::LDAP in passing 
-        but gives good general guidance.<BR>
-<br clear=all>
+      <div>
+        <a href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=0849313465"
+          target="_blank"><img width=100 height=127
+          src="http://images.amazon.com/images/P/0849313465.01.MZZZZZZZ.jpg" align=left hspace=10></a>
+        <a href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=0849313465"
+          target="_blank"><i>The ABCs of LDAP: How to Install, Run, and Administer LDAP Services</i></a><BR>
+          (ISBN: 0849313465)<BR>
+          written by Reinhard Voglmaier,<BR>
+          published by <a href="http://www.auerbach-publications.com/" target="_blank">Auerbach Pub</a>.<BR>
+          Provides an introduction to Net::LDAP in its chapter on LDAP APIs
+      <div>
+
+      <div>
+        <a href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=1861002211"
+          target="_blank"><img width=100 height=127
+          src="http://images.amazon.com/images/P/1861002211.01.MZZZZZZZ.jpg" align=left hspace=10></a>
+        <a href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=1861002211"
+          target="_blank"><i>Implementing LDAP</i></a><BR>
+          (ISBN: 1861002211)<BR>
+          written by Mark Wilcox,<BR>
+          published by <a href="http://www.wrox.com/" target="_blank">Wrox Press</a>.<BR>
+          Mentions perl-ldap in Chapter 11.<BR>
+      <div>
+
+      <div>
+        <a href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=1565926099"
+          target="_blank"><img width=100 height=131
+          src="http://images.amazon.com/images/P/1565926099.01.MZZZZZZZ.jpg" align=left hspace=10></a>
+        <a href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=1565926099"
+          target="_blank"><i>Perl for System Administration</i></a><BR>
+          (ISBN: 1565926099)<BR>
+          written by David N. Blank-Edelman,<BR>
+          published by <a href= "http://www.oreilly.com/" target="_blank">O'Reilly &amp; Associates</a>.<BR>
+          Mentions LDAP and perl-ldap
+          in its chapter on Directory Services.<BR>
+      <div>
+
+      <div>
+        <a href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=0672321254" 
+          target="_blank"><img width=100 height=123
+          src="http://images.amazon.com/images/P/0672321254.01.MZZZZZZZ.jpg" align=left hspace=10></a>
+        <a href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=0672321254"
+          target="_blank"><i>Managing Enterprise Active Directory Services</i></a><BR>
+          (ISBN: 0672321254)<BR>
+          written by Robbie Allen and Richard Puckett,<BR>
+          published by <a href="http://www.awprofessional.com/" target="_blank">Addison-Wesley</a><BR>
+      <div>
+
+      <div>
+        <a href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=1565924916"
+          target="_blank"><img width=100 height=131
+          src="http://images.amazon.com/images/P/1565924916.01.MZZZZZZZ.jpg" align=left hspace=10></a>
+        <a href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=1565924916"
+          target="_blank"><i>LDAP System Administration</i></a><BR>
+          (ISBN: 1565924916)<BR>
+          written by Gerald Carter,<BR>
+          published by <a href="http://www.oreilly.com/" target="_blank">O'Reilly &amp; Associates</a>.<BR>
+          Has a chapter on Net::LDAP and perl.<BR>
+      <div>
+
+      <div>
+        <a href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=0672323168"
+          target="_blank"><img width=100 height=133
+          src="http://images.amazon.com/images/P/0672323168.01.MZZZZZZZ.jpg" align=left hspace=10></a>
+        <a href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=0672323168"
+          target="_blank"><i>Understanding and Deploying LDAP Directory Services</i></a>, Second Edition<BR>
+          (ISBN: 0672323168)<BR> 
+          written by Tim Howes, Mark C Smith and Gordon Good,<BR>
+          published by <a href="http://www.awprofessional.com/" target="_blank">Addison-Wesley Professional</a>.<BR>
+          It only mentions Net::LDAP in passing 
+          but gives good general guidance.<BR>
+      <div>
+
+      <div>
+        <a href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=1578700000"
+          target="_blank"><img width=100 height=133
+          src="http://images.amazon.com/images/P/1578700000.01.MZZZZZZZ.jpg" align=left hspace=10></a>
+        <a href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=1578700000"
+          target="_blank"><i>LDAP: Programming Directory-Enabled Apps</a></i>,<br>
+          (ISBN: 1578700000)<br>
+          written by Tim Howes, Mark C Smith and Gordon Good,<BR>
+          published by <a href="http://www.quepublishing.com/" target="_blank">Que</a>.<BR>
+      <div>
+
+      <div>
+        <a href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=1847191029"
+          target="_blank"><img width=100 height=133
+          src="http://images.amazon.com/images/P/1847191029.01.TZZZZZZZ.jpg" align=left hspace=10></a>
+        <a href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=1847191029"
+          target="_blank"><i>Mastering OpenLDAP: Configuring, Securing and Integrating Directory Services</i></a><br>
+          (ISBN: 1847191029)<BR> 
+          written by Matt Butcher, <br>
+          published by <a href="http://www.packtpub.com/" target="_blank">Packt Publishing</a>.<BR>
+      <div>
+
+      <div>
+        <a href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=020178792X"
+          target="_blank"><img width=100 height=133
+          src="http://images.amazon.com/images/P/020178792X.01.TZZZZZZZ.jpg" align=left hspace=10></a>
+        <a href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=020178792X"
+          target="_blank"><i>LDAP Directories Explained: An Introduction and Analysis </i></a><br>
+          (ISBN: 1847191029)<BR> 
+          written by Brian Arkills,<br>
+          published by <a href="http://www.awprofessional.com/" target="_blank">Addison-Wesley Professional</a>.<BR>
+      <div>
 
   </div>
 </div>
