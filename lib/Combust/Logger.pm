@@ -180,7 +180,7 @@ sub logtimes {
 sub _format {
     my @args = @_;
     #warn Data::Dumper->Dump([\@_], [qw(_)]);
-    chomp(my $msg = join " ", map { ref $_ ? encode_json($_) : defined $_ ? $_ : 'UNDEF' } @args);
+    my $msg = join " ", map { ref $_ ? encode_json($_) : defined $_ ? $_ : 'UNDEF' } @args;
     $msg;
 }
 
