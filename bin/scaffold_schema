@@ -88,7 +88,7 @@ sub generate_model {
       package ${model_class}::_Base;
       use base qw(@object_base_classes);
 
-      sub init_db    { shift; Combust::RoseDB->new_or_cached(\@_, type => '$type') }
+      sub init_db    { shift; Combust::RoseDB->new_or_cached(\@_, type => '$type', combust_model => "$model_class") }
       sub meta_class {'$meta_class'}
       sub model      { our \$model ||= bless [], '$model_class'}
     }

@@ -7,7 +7,21 @@ use Combust::Logger ();
 use DBI;
 use base 'Rose::DB';
 
-use Rose::Class::MakeMethods::Generic (scalar => ['combust_status']);
+use constant DB_DOWN      => 0;
+use constant DB_RECONNECT => 1;
+use constant DB_UP        => 2;
+
+use Rose::Class::MakeMethods::Generic (
+    'scalar' => [
+        qw(combust_status)
+    ]
+);
+
+use Rose::Object::MakeMethods::Generic (
+    'scalar' => [
+        qw(combust_model)
+    ]
+);
 
 BEGIN {
   __PACKAGE__->db_cache; # Force subclasses to inherit cache
@@ -63,38 +77,75 @@ BEGIN {
 
 sub ping {
   my $self   = shift;
-  my $status = $self->combust_status || 1; # Assume we start OK
+  my $status = $self->combust_status || 1;    # Assume we start OK
+
+  # return value
+  # 0 Database is down
+  # 1 Database is up but needed reconnecting
+  # 2 database is up
 
   $self->dbh(undef) if $status < 0;           # Force new connection if down
   my $dbh = $self->dbh;
 
   if ($dbh and $dbh->ping) {
-    if ($status < 1) { # server came back up
+    if ($status < 1) {                        # Server came back up
       Combust::Logger::logwarn("Regained database connection to '" . $self->type . "'\n");
-      $self->combust_status(1) if $status < 1;
+      $self->combust_status(1);
+      return DB_RECONNECT;                    # Server is reconnected
     }
-    return 1;                                 # server is up
+    return DB_UP;                             # Server is up
   }
-  elsif ($status > 0) {                       # Serve has gone down
+  elsif ($status > 0) {                       # Server has gone down
+    if (my $model = $self->combust_model) {
+      $model->flush_caches;
+    }
+    $self->dbh(undef);
+    $dbh = $self->dbh;
+    if ($dbh and $dbh->ping) {                # Managed to reconnect
+      Combust::Logger::logwarn("Reconnected database connection to '" . $self->type . "'\n");
+      return DB_UP;
+    }
     Combust::Logger::logwarn("Lost database connection to '" . $self->type . "'\n");
     $self->combust_status(-1);
   }
-  return 0;                                   # server is down
+  return DB_DOWN;                             # Server is down
 }
 
 sub check_all_db_status {
   my $class = shift;
-  my $status = 1;
+  my $status = 2;
+
+  # return value
+  # 0 = one or more DBs are down
+  # 1 = All DBs are connected, but one or more needed reconnecting
+  # 2 = All DBs are connected
 
   my @db = map { $_->db } __PACKAGE__->db_cache->db_cache_entries;
   foreach my $db (@db) {
-    $status = 0 unless $db->ping;
+    my $ping = $db->ping;
+    $status = $ping if $ping < $status;
   }
 
   return $status;
 }
 
 sub DESTROY { } # Avoid disconnect being called
+
+# Ensure if used inside apache, that we clear the DB connection cache during ChildInit
+if ($ENV{MOD_PERL}) {
+  my ($software, $version) = $ENV{MOD_PERL} =~ /^(\S+)\/(\d+(?:[\.\_]\d+)+)/;
+  my $handler = sub { Combust::RoseDB->db_cache->clear; 0; };
+  if ($version >= 2.0) {
+    require Apache2::ServerUtil;
+    Apache2::ServerUtil->server->push_handlers(PerlChildInitHandler => $handler);
+  }
+  else {
+    require Apache;
+    Apache->push_handlers(PerlChildInitHandler => $handler);
+  }
+
+}
+
 
 1;
 
