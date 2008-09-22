@@ -1,7 +1,7 @@
 package Combust::RoseDB::Object::toJson;
 use strict;
 use Scalar::Util;
-use JSON;
+use JSON::XS;
 
 sub _json_columns {
   shift->meta->columns;
@@ -45,8 +45,7 @@ sub get_data_hash {
     my $is_array = $rel->type =~ /many$/i;
     my $name = $rel->name;
     if ($is_array) {
-      # TODO: make this use the JSON::XS code
-      $hash{$name} = [ map { $_->toJson } $self->$name ];
+      $hash{$name} = [ map { $_->TO_JSON } $self->$name ];
     }
     else {
       $hash{$name} = $self->$name;
@@ -60,13 +59,6 @@ sub get_data_hash {
 sub TO_JSON {
     my $self = shift;
     $self->get_data_hash;
-}
-
-# JSON.pm
-sub toJson {
-    my ($self, $json) = @_;
-    $json ||= JSON::Converter->new(selfconv => 1);
-    $json->hashToJson($self->get_data_hash);
 }
 
 
