@@ -3,10 +3,14 @@ package Combust::RoseDB;
 use strict;
 use Combust::Config;
 use Combust::RoseDB::Column::Point;
+use Combust::Logger ();
 use DBI;
 use base 'Rose::DB';
 
+use Rose::Class::MakeMethods::Generic (scalar => ['combust_status']);
+
 BEGIN {
+  __PACKAGE__->db_cache; # Force subclasses to inherit cache
   __PACKAGE__->use_private_registry;
 
   # Cause DBI to use cached connections. Apache::DBI also sets this
@@ -56,22 +60,38 @@ BEGIN {
   }
 }
 
-our $once;
-sub dbh {
-  my $self = shift;
-  my $dbh = $self->SUPER::dbh(@_);
-  unless ($once) {
-    local $once = 1;
-    $self->retain_dbh; # Prevent RDB calling disconnect
-  }
-  $dbh;
-}
 
 sub ping {
-  my $self = shift;
-  my $dbh  = $self->dbh;
+  my $self   = shift;
+  my $status = $self->combust_status || 1; # Assume we start OK
 
-  $dbh and ($dbh->ping or ($dbh = $self->init_dbh and $dbh->ping));
+  $self->dbh(undef) if $status < 0;           # Force new connection if down
+  my $dbh = $self->dbh;
+
+  if ($dbh and $dbh->ping) {
+    if ($status < 1) { # server came back up
+      Combust::Logger::logwarn("Regained database connection to '" . $self->type . "'\n");
+      $self->combust_status(1) if $status < 1;
+    }
+    return 1;                                 # server is up
+  }
+  elsif ($status > 0) {                       # Serve has gone down
+    Combust::Logger::logwarn("Lost database connection to '" . $self->type . "'\n");
+    $self->combust_status(-1);
+  }
+  return 0;                                   # server is down
+}
+
+sub check_all_db_status {
+  my $class = shift;
+  my $status = 1;
+
+  my @db = map { $_->db } __PACKAGE__->db_cache->db_cache_entries;
+  foreach my $db (@db) {
+    $status = 0 unless $db->ping;
+  }
+
+  return $status;
 }
 
 sub DESTROY { } # Avoid disconnect being called
