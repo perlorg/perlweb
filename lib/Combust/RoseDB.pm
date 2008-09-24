@@ -3,13 +3,11 @@ package Combust::RoseDB;
 use strict;
 use Combust::Config;
 use Combust::RoseDB::Column::Point;
+use Combust::RoseDB::Constants qw(DB_DOWN DB_BOUNCED DB_UP);
 use Combust::Logger ();
 use DBI;
 use base 'Rose::DB';
 
-use constant DB_DOWN      => 0;
-use constant DB_RECONNECT => 1;
-use constant DB_UP        => 2;
 
 use Rose::Class::MakeMethods::Generic (
     'scalar' => [
@@ -79,46 +77,45 @@ sub ping {
   my $self   = shift;
   my $status = $self->combust_status || 1;    # Assume we start OK
 
-  # return value
-  # 0 Database is down
-  # 1 Database is up but needed reconnecting
-  # 2 database is up
-
   $self->dbh(undef) if $status < 0;           # Force new connection if down
   my $dbh = $self->dbh;
 
   if ($dbh and $dbh->ping) {
     if ($status < 1) {                        # Server came back up
-      Combust::Logger::logwarn("Regained database connection to '" . $self->type . "'\n");
+      Combust::Logger::logwarn("Reconnected database connection to '" . $self->type . "'\n");
       $self->combust_status(1);
-      return DB_RECONNECT;                    # Server is reconnected
+      return DB_BOUNCED;                      # Server is reconnected
     }
     return DB_UP;                             # Server is up
   }
   elsif ($status > 0) {                       # Server has gone down
+
+    # Caches may contain objects created within a transaction
+    # that was not committed, and so no longer exist.
     if (my $model = $self->combust_model) {
       $model->flush_caches;
     }
+
+    # Force a reconnect
     $self->dbh(undef);
     $dbh = $self->dbh;
+
     if ($dbh and $dbh->ping) {                # Managed to reconnect
-      Combust::Logger::logwarn("Reconnected database connection to '" . $self->type . "'\n");
-      return DB_UP;
+      Combust::Logger::logwarn("Bounced database connection to '" . $self->type . "'\n");
+      return DB_BOUNCED;
     }
     Combust::Logger::logwarn("Lost database connection to '" . $self->type . "'\n");
     $self->combust_status(-1);
   }
+
   return DB_DOWN;                             # Server is down
 }
 
 sub check_all_db_status {
   my $class = shift;
-  my $status = 2;
+  my $status = DB_UP;
 
-  # return value
-  # 0 = one or more DBs are down
-  # 1 = All DBs are connected, but one or more needed reconnecting
-  # 2 = All DBs are connected
+  # Return minimum status from all Dbs checked
 
   my @db = map { $_->db } __PACKAGE__->db_cache->db_cache_entries;
   foreach my $db (@db) {
