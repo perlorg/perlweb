@@ -11,7 +11,7 @@ use base 'Rose::DB';
 
 use Rose::Class::MakeMethods::Generic (
     'scalar' => [
-        qw(combust_status)
+        qw(combust_thread_id)
     ]
 );
 
@@ -74,42 +74,50 @@ BEGIN {
 
 
 sub ping {
-  my $self   = shift;
-  my $status = $self->combust_status || 1;    # Assume we start OK
+  my $self      = shift;
+  my $thread_id = $self->combust_thread_id;
 
-  $self->dbh(undef) if $status < 0;           # Force new connection if down
-  my $dbh = $self->dbh;
+  my $dbh = eval { local $SIG{__DIE__}; $self->dbh };
+  my $up            = $dbh && $dbh->ping;
+  my $new_thread_id = $up  && $dbh->{mysql_thread_id};
 
-  if ($dbh and $dbh->ping) {
-    if ($status < 1) {                        # Server came back up
-      Combust::Logger::logwarn("Reconnected database connection to '" . $self->type . "'\n");
-      $self->combust_status(1);
-      return DB_BOUNCED;                      # Server is reconnected
-    }
-    return DB_UP;                             # Server is up
-  }
-  elsif ($status > 0) {                       # Server has gone down
-
-    # Caches may contain objects created within a transaction
-    # that was not committed, and so no longer exist.
-    if (my $model = $self->combust_model) {
-      $model->flush_caches;
+  if ($thread_id) {
+    unless ($up) {
+      $self->dbh(undef);    # Force re-connect
+      $dbh = eval { local $SIG{__DIE__}; $self->dbh };
+      $up            = $dbh && $dbh->ping;
+      $new_thread_id = $up  && $dbh->{mysql_thread_id};
     }
 
-    # Force a reconnect
-    $self->dbh(undef);
-    $dbh = $self->dbh;
-
-    if ($dbh and $dbh->ping) {                # Managed to reconnect
-      Combust::Logger::logwarn("Bounced database connection to '" . $self->type . "'\n");
+    if ($up) {
+      return DB_UP if $thread_id == $new_thread_id;
+      $self->combust_thread_id($new_thread_id);
+      Combust::Logger::logwarn( "Bounced database connection to '" . $self->type . "'\n" );
       return DB_BOUNCED;
     }
-    Combust::Logger::logwarn("Lost database connection to '" . $self->type . "'\n");
-    $self->combust_status(-1);
+  }
+  elsif ( defined $thread_id ) {
+    if ($up) {
+      $self->combust_thread_id($new_thread_id);
+      Combust::Logger::logwarn( "Reconnected database connection to '" . $self->type . "'\n" );
+      return DB_BOUNCED;
+    }
+  }
+  else {
+    if ($up) {
+      $self->combust_thread_id($new_thread_id);
+      return $dbh->{auto_reconnects_ok} ? DB_BOUNCED : DB_UP;
+    }
   }
 
-  return DB_DOWN;                             # Server is down
+  $self->combust_thread_id(0);    # Signal connection as down
+
+  Combust::Logger::logwarn( "Lost database connection to '" . $self->type . "'\n" )
+    if $thread_id or !defined($thread_id);
+
+  return DB_DOWN;
 }
+
 
 sub check_all_db_status {
   my $class = shift;
