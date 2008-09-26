@@ -1,6 +1,6 @@
 package Combust::Redirect;
 use strict;
-use Apache::Constants qw(REDIRECT MOVED DECLINED OK);
+use Apache::Constants qw(DECLINED DONE);
 
 my $map = {};
 
@@ -79,6 +79,9 @@ sub redirect_check {
       next unless $url;
       if ($c->[2] eq "I") {
 	$self->request->uri($url);
+        my $subr = $self->request->_r->lookup_uri($url);
+        $subr->run;
+        return DONE;
       }
       else {
 	return $self->redirect($url, $c->[2] eq "P" ? 1 : 0);
