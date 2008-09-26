@@ -37,6 +37,7 @@ sub redirect_reload {
       $option = "P" if $option =~ m/^per/i;
       $option = "" unless $option =~ m/^[IP]$/;
       #warn "regexp: $regexp => $url";
+      $regexp = qr/$regexp/;
       push @{$site_rules}, [$regexp, $url, $option];
     }
     close MAP;
@@ -61,8 +62,12 @@ sub redirect_check {
 
   my $file = "$path/.htredirects";
 
+  #warn "FILE: $file";
+
   $self->redirect_reload($file);
   my $conf = $map->{$file} ? $map->{$file}->{rules} : undef; 
+
+  #warn Data::Dumper->Dump([\$conf],[qw(conf)]);
 
   return DECLINED unless $conf and ref $conf eq "ARRAY";
 
