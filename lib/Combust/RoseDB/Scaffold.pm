@@ -21,7 +21,7 @@ sub object_base_classes {
   my $self = shift;
   my $db_name = shift;
 
-  return qw(Combust::RoseDB::Object::toJson);
+  return qw(Combust::RoseDB::Object Combust::RoseDB::Object::toJson);
 }
 
 sub class_pre_init_hook {

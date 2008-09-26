@@ -1,6 +1,6 @@
 package Combust::Redirect;
 use strict;
-use Combust::Constant qw(REDIRECT MOVED DECLINED OK);
+use Combust::Constant qw(DECLINED DONE);
 
 my $map = {};
 
@@ -37,6 +37,7 @@ sub redirect_reload {
       $option = "P" if $option =~ m/^per/i;
       $option = "" unless $option =~ m/^[IP]$/;
       #warn "regexp: $regexp => $url";
+      $regexp = qr/$regexp/;
       push @{$site_rules}, [$regexp, $url, $option];
     }
     close MAP;
@@ -61,8 +62,12 @@ sub redirect_check {
 
   my $file = "$path/.htredirects";
 
+  #warn "FILE: $file";
+
   $self->redirect_reload($file);
   my $conf = $map->{$file} ? $map->{$file}->{rules} : undef; 
+
+  #warn Data::Dumper->Dump([\$conf],[qw(conf)]);
 
   return DECLINED unless $conf and ref $conf eq "ARRAY";
 
@@ -74,6 +79,9 @@ sub redirect_check {
       next unless $url;
       if ($c->[2] eq "I") {
 	$self->request->uri($url);
+        my $subr = $self->request->_r->lookup_uri($url);
+        $subr->run;
+        return DONE;
       }
       else {
 	return $self->redirect($url, $c->[2] eq "P" ? 1 : 0);

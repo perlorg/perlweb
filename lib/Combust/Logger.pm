@@ -14,9 +14,7 @@ use File::Path qw(mkpath);
 use Combust::Config;
 my $config = Combust::Config->new;
 
-use JSON;  # eventually JSON will use JSON::PC by default and thus be
-           # "pretty fast" (close to Storable-fast).
-my $json = JSON->new(pretty => 0, keysort => 1);
+use JSON::XS qw(encode_json);
 
 our @EXPORT = qw(
   logconfig
@@ -182,7 +180,7 @@ sub logtimes {
 sub _format {
     my @args = @_;
     #warn Data::Dumper->Dump([\@_], [qw(_)]);
-    chomp(my $msg = join " ", map { ref $_ ? $json->objToJson($_) : defined $_ ? $_ : 'UNDEF' } @args);
+    my $msg = join " ", map { ref $_ ? encode_json($_) : defined $_ ? $_ : 'UNDEF' } @args;
     $msg;
 }
 

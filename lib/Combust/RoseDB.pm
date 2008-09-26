@@ -3,10 +3,26 @@ package Combust::RoseDB;
 use strict;
 use Combust::Config;
 use Combust::RoseDB::Column::Point;
+use Combust::RoseDB::Constants qw(DB_DOWN DB_BOUNCED DB_UP);
+use Combust::Logger ();
 use DBI;
 use base 'Rose::DB';
 
+
+use Rose::Class::MakeMethods::Generic (
+    'scalar' => [
+        qw(combust_thread_id)
+    ]
+);
+
+use Rose::Object::MakeMethods::Generic (
+    'scalar' => [
+        qw(combust_model)
+    ]
+);
+
 BEGIN {
+  __PACKAGE__->db_cache; # Force subclasses to inherit cache
   __PACKAGE__->use_private_registry;
 
   # Cause DBI to use cached connections. Apache::DBI also sets this
@@ -56,25 +72,85 @@ BEGIN {
   }
 }
 
-our $once;
-sub dbh {
-  my $self = shift;
-  my $dbh = $self->SUPER::dbh(@_);
-  unless ($once) {
-    local $once = 1;
-    $self->retain_dbh; # Prevent RDB calling disconnect
-  }
-  $dbh;
-}
 
 sub ping {
-  my $self = shift;
-  my $dbh  = $self->dbh;
+  my $self      = shift;
+  my $thread_id = $self->combust_thread_id;
 
-  $dbh and ($dbh->ping or ($dbh = $self->init_dbh and $dbh->ping));
+  my $dbh = eval { local $SIG{__DIE__}; $self->dbh };
+  my $up            = $dbh && $dbh->ping;
+  my $new_thread_id = $up  && $dbh->{mysql_thread_id};
+
+  if ($thread_id) {
+    unless ($up) {
+      $self->dbh(undef);    # Force re-connect
+      $dbh = eval { local $SIG{__DIE__}; $self->dbh };
+      $up            = $dbh && $dbh->ping;
+      $new_thread_id = $up  && $dbh->{mysql_thread_id};
+    }
+
+    if ($up) {
+      return DB_UP if $thread_id == $new_thread_id;
+      $self->combust_thread_id($new_thread_id);
+      Combust::Logger::logwarn( "Bounced database connection to '" . $self->type . "'\n" );
+      return DB_BOUNCED;
+    }
+  }
+  elsif ( defined $thread_id ) {
+    if ($up) {
+      $self->combust_thread_id($new_thread_id);
+      Combust::Logger::logwarn( "Reconnected database connection to '" . $self->type . "'\n" );
+      return DB_BOUNCED;
+    }
+  }
+  else {
+    if ($up) {
+      $self->combust_thread_id($new_thread_id);
+      return $dbh->{auto_reconnects_ok} ? DB_BOUNCED : DB_UP;
+    }
+  }
+
+  $self->combust_thread_id(0);    # Signal connection as down
+
+  Combust::Logger::logwarn( "Lost database connection to '" . $self->type . "'\n" )
+    if $thread_id or !defined($thread_id);
+
+  return DB_DOWN;
+}
+
+
+sub check_all_db_status {
+  my $class = shift;
+  my $status = DB_UP;
+
+  # Return minimum status from all Dbs checked
+
+  my @db = map { $_->db } __PACKAGE__->db_cache->db_cache_entries;
+  foreach my $db (@db) {
+    my $ping = $db->ping;
+    $status = $ping if $ping < $status;
+  }
+
+  return $status;
 }
 
 sub DESTROY { } # Avoid disconnect being called
+
+# Ensure if used inside apache, that we clear the DB connection cache during ChildInit
+if ($ENV{MOD_PERL}) {
+  my ($software, $version) = $ENV{MOD_PERL} =~ /^(\S+)\/(\d+(?:[\.\_]\d+)+)/;
+  my $handler = sub { Combust::RoseDB->db_cache->clear; 0; };
+  if ($version >= 2.0) {
+    require Apache2::ServerUtil;
+    Apache2::ServerUtil->server->push_handlers(PerlChildInitHandler => $handler);
+  }
+  else {
+    require Apache;
+    Apache->push_handlers(PerlChildInitHandler => $handler);
+  }
+
+}
+
 
 1;
 
