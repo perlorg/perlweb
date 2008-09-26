@@ -80,7 +80,7 @@ sub redirect_check {
       if ($c->[2] eq "I") {
 	$self->request->uri($url);
         my $subr = $self->request->_r->lookup_uri($url);
-        $subr->run;
+        $subr->run(1);
         return DONE;
       }
       else {
