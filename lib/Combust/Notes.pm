@@ -5,12 +5,14 @@ use Combust::Cookies;
 
 use Apache::Cookie;
 use Apache::Request;
-use Apache::Constants qw(OK NOT_FOUND);
+use Apache::Constants qw(OK);
 use Time::HiRes qw(time); # let's be accurate about this
 use DBI;		  # for DBI::hash()
 
 sub handler {
   my $r = Apache::Request->instance( shift );
+
+  return OK if $r->pnotes('combust_notes');
 
   my $ip      = $r->connection->remote_ip;
   my $param   = $r->param;

@@ -79,6 +79,9 @@ sub super ($$) {
   return unless $r;
 
   my $self = $class->new($r);
+
+  Combust::Notes::handler($r);
+
   $self->tt->set_include_path($self->get_include_path);
 
   my $status;
@@ -438,7 +441,7 @@ sub redirect {
   # TODO: don't we end up double escaping here?
   my $data = <<EOH;
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<HTML><HEAD><TITLE>302 Found</TITLE></HEAD><BODY><A HREF="$url_escaped">here</A>.<P></BODY></HTML>
+<HTML><HEAD><TITLE>Redirect Found</TITLE></HEAD><BODY><A HREF="$url_escaped">here</A>.<P></BODY></HTML>
 EOH
 
   $self->r->header_out('Content-Length' => length($data));
