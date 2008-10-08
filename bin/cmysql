@@ -94,6 +94,7 @@ else {
     else {
       close(RDR);
       print WTR "[client]\npassword=$passwd\n";
+      print WTR "default-character-set=utf8\n";
       close(WTR);
       exit 0;
     }
