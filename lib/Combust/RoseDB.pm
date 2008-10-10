@@ -81,7 +81,7 @@ sub ping {
   my $up            = $dbh && $dbh->ping;
   my $new_thread_id = $up  && $dbh->{mysql_thread_id};
 
-  if ($thread_id) {
+  if ($thread_id) {    # Last check connection was ok
     unless ($up) {
       $self->dbh(undef);    # Force re-connect
       $dbh = eval { local $SIG{__DIE__}; $self->dbh };
@@ -96,24 +96,42 @@ sub ping {
       return DB_BOUNCED;
     }
   }
-  elsif ( defined $thread_id ) {
+  elsif ( defined $thread_id ) {    # Last check connection was down
     if ($up) {
       $self->combust_thread_id($new_thread_id);
       Combust::Logger::logwarn( "Reconnected database connection to '" . $self->type . "'\n" );
       return DB_BOUNCED;
     }
   }
-  else {
+  else {                            # First time through
     if ($up) {
       $self->combust_thread_id($new_thread_id);
-      return $dbh->{auto_reconnects_ok} ? DB_BOUNCED : DB_UP;
+      if ( $dbh->{auto_reconnects_ok} ) {
+        Combust::Logger::logwarn( "Bounced database connection to '" . $self->type . "'\n" );
+        return DB_BOUNCED;
+      }
+      else {
+        return DB_UP;
+      }
+    }
+    else {
+      $self->dbh(undef);            # Force re-connect
+      $dbh = eval { local $SIG{__DIE__}; $self->dbh };
+      $up = $dbh && $dbh->ping;
+      if ($up) {
+        $new_thread_id = $dbh->{mysql_thread_id};
+        $self->combust_thread_id($new_thread_id);
+        Combust::Logger::logwarn( "Bounced database connection to '" . $self->type . "'\n" );
+        return DB_BOUNCED;
+      }
     }
   }
 
-  $self->combust_thread_id(0);    # Signal connection as down
+  $self->combust_thread_id(0);      # Signal connection as down
+  $self->dbh(undef);                # Force re-connect
 
   Combust::Logger::logwarn( "Lost database connection to '" . $self->type . "'\n" )
-    if $thread_id or !defined($thread_id);
+    if ($thread_id or !defined($thread_id));
 
   return DB_DOWN;
 }
