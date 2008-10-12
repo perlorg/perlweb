@@ -425,10 +425,9 @@ sub redirect {
 
   my $url_escaped = uri_escape($url);
 
-  # TODO: don't we end up double escaping here?
   my $data = <<EOH;
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<HTML><HEAD><TITLE>Redirect Found</TITLE></HEAD><BODY><A HREF="$url_escaped">here</A>.<P></BODY></HTML>
+<HTML><HEAD><TITLE>Redirect...</TITLE></HEAD><BODY>The document has moved <A HREF="$url_escaped">here</A>.<P></BODY></HTML>
 EOH
 
   $self->request->header_out('Content-Length' => length($data));

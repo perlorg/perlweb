@@ -1,0 +1,16 @@
+#!/bin/bash
+
+do_diff() {
+  while [ $# -ge 2 ]; do
+    diff -u --label $1 --label $2 \
+      <( cd $1 ; find . -name \*.pm | sort | xargs md5sum ) \
+      <( cd $2 ; find . -name \*.pm | sort | xargs md5sum )
+    shift
+  done
+}
+
+cd $CBROOTLOCAL/cpan/lib/perl5
+
+do_diff *-*
+
+

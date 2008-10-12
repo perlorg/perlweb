@@ -37,6 +37,7 @@ our $saywarn = 0;
 our $done_syslog;
 our $LogToFile;
 our $ShowExitBanner;
+our %Count;
 
 my @orig_argv;
 
@@ -76,6 +77,7 @@ sub logconfig {
 
 sub _syslog {
   my $type = shift;
+  ++$Count{$type};
   return unless $do_syslog or $type eq 'alert';
   _openlog() unless $opened;
   syslog($type, "%s", $_) for (split /\r?\n/, $_[0]);
