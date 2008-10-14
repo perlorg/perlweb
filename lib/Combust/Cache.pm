@@ -9,7 +9,7 @@ die $@ if $@ and $@ !~ m!Can't locate Cache/Memcached.pm!;
 
 my $id_max_length = 64;
 
-our $namespace = undef;
+our $namespace;
 
 # TODO:
 #   - support passing a scalar ref to store() ?
