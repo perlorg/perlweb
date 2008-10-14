@@ -18,6 +18,7 @@ unless (-d $arch_dir) {
 
 die "$base does not exists" unless -d $base;
 
+use CPAN 1.9205;
 require CPAN::MyConfig;
 require CPAN::FirstTime;
 
