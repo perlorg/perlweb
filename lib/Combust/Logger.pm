@@ -62,7 +62,7 @@ sub _openlog {
 sub logconfig {
   my %p = @_;
 
-  $Verbose = $p{verbose} || 0;
+  $Verbose = $p{verbose} if exists $p{verbose};
   $Prefix  = $p{prefix}  if exists $p{prefix};
   $Domain  = $p{domain}  if exists $p{domain};
   $sayfh   = $p{sayfh}   if exists $p{sayfh};
@@ -138,7 +138,7 @@ sub logwarn {
 # ------ normal and trace messages ------
 
 sub logsay {
-    my $msg = _format(@_);
+  chomp(my $msg = _format(@_));
   _syslog "notice", $msg if $Verbose;
   local $\;
   print $sayfh prefix."$msg\n";
@@ -146,7 +146,7 @@ sub logsay {
 
 sub logtrace {
   return unless $Verbose > 2;
-  my $msg = _format(@_);
+  chomp(my $msg = _format(@_));
   _syslog "info", $msg;
   local $\;
   print $sayfh prefix."$msg\n";
@@ -154,7 +154,7 @@ sub logtrace {
 
 sub logdebug {
   return unless $Verbose > 4;
-  my $msg = _format(@_);
+  chomp(my $msg = _format(@_));
   _syslog "debug", $msg;
   local $\;
   print $sayfh prefix."$msg\n";
