@@ -62,10 +62,11 @@ for my $site (@sites) {
 
     for my $k (keys %$files) {
         my $version = $files->{$k} || 0;
-        my $server = DBI::hash("$k/$version", 1);
-        $server = ($server % 3) + 1;
-        my $attr = { server => $server };
-        
+        my $server = DBI::hash("$k/$version", 1) + 0;
+        my $server_short = ($server % 2) + 1;
+        my $attr = { server     => $server_short,
+                     server_num => $server % 100,
+                   };
         if ($k =~ m/(?<!-min)\.(css|js)/) {
             my $min = $k;
             $min =~ s/(\.[^\.]+)$/-min$1/;
