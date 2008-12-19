@@ -60,9 +60,16 @@ sub redirect_check {
 
   my $path = $self->get_include_path;
   return unless $path and $path->[0];
-  $path = $path->[0];
 
-  my $file = "$path/.htredirects";
+  my $file;
+
+  # TODO: Refactor so the stats are cached!
+  while (1) {
+    my $dir = shift @$path;
+    last unless $dir;
+    $file = "$dir/.htredirects";
+    last if -e $file;
+  }
 
   #warn "FILE: $file";
 
