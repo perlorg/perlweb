@@ -1,82 +1,33 @@
 [% page.title = "Getting and Working With the Perl Source" %]
 
-
 <p>
-The Perl source code is currently kept in a <a
-href="http://www.perforce.com/">Perforce</a> repository.  Generally,
-only the developers with <b>write</b> access to the repository access
-it via the Perforce tools.
+The Perl source code is currently kept in a <a href="http://git.or.cz/">Git</a>
+repository, which is browseable through a web interface at <a
+href="http://perl5.git.perl.org/">http://perl5.git.perl.org/</a>.
 </p>
 
-<p>
-If you want to get a copy of the latest Perl source code, the easiest
-way to do this is to use <i>rsync</i>:</p>
-
+<p>The easiest way to copy the Perl 5 repository is to use git:
 <pre>
-rsync -avz rsync://public.activestate.com/perl-current/ .
+  git clone git://perl5.git.perl.org/perl.git perl
 </pre>
+The master branch, where the development takes places, is named
+<i>blead</i>. The maintenance branches are named <i>perl-5.XXX</i>
+depending on the maintenance version.
+</p>
 
-<p>
-If you want to get the maintenance branch of perl (currently 5.8.x) instead
-of the development branch, the appropriate <i>rsync</i> URL is:</p>
-
+<p>For people who can't or don't want to use git, the latest sources
+are also available through rsync:
 <pre>
-rsync -avz rsync://public.activestate.com/perl-5.8.x/ .
+  rsync -avz rsync://perl5.git.perl.org/APC/perl-current .
 </pre>
-
-<p>
-This takes care of updating every single item in the source tree to
-the latest applied patch level, creating files that are new (to your
-distribution) and setting date/time stamps of existing files to
-reflect the bleadperl status.
-</p>
-
-<p>
-Note that this will not delete any files that were in '.' before
-the rsync. Once you are sure that the rsync is running correctly,
-run it with the --delete and the --dry-run options like this:
-</p>
-
+or, for the maintenance branches:
 <pre>
-rsync -avz --delete --dry-run rsync://public.activestate.com/perl-current/ .
+  rsync -avz rsync://perl5.git.perl.org/APC/perl-5.10.x .
+  rsync -avz rsync://perl5.git.perl.org/APC/perl-5.8.x .
 </pre>
-
-<p>
-This will <i>simulate</i> an rsync run that also deletes files not
-present in the bleadperl master copy. Observe the results from
-this run closely. If you are sure that the actual run would delete
-no files precious to you, you could remove the --dry-run option.
-</p>
-
-<p>
-You can than check what patch was the latest that was applied by
-looking in the file <b>.patch</b>, which will show the number of the
-latest patch.
-</p>
-
-<p>
-If you'd simply like to browse changes online, you can use the <a
-href="http://public.activestate.com/cgi-bin/perlbrowse">Perl Repository Browser</a>.
-</p>
-
-<p>
-You may also find the <a
-href="http://search.cpan.org/dist/Perl-Repository-APC/">Perl::Repository::APC</a>
-module, and the scripts it comes with, helpful when working on the Perl source code.
-</a>
-
-<p>
-Chia-liang Kao has developed a distributed version control system
-called <a href="http://svk.elixus.org/">SVK</a>, which allows one to
-mirror remote repositories locally and then work with them using
-standard version control procedures.  Currently, it only supports
-remote Subversion repositories, but work is being done to include
-support for others, including Perforce.  By the time you read this,
-that support may be implemented.  This will provide yet another way of
-working with the Perl source code.
 </p>
 
 <p>
 For more details on working with the Perl source code, please see the
-<a href="/perl5/docs/perlhack.html">perlhack</a> documentation.
+<a href="/perl5/docs/perlrepository.html">perlrepository</a> documentation.
 </p>
