@@ -1,0 +1,85 @@
+[% page.title = "Perl 5.8.9 Release Announcement" %]
+
+<p>
+The Perl 5 developer team is pleased to announce the Perl Release
+5.8.9, the ninth maintenance release of Perl 5.8.  The CPAN ftp
+multiplexor will pick a mirror close to you, if you select either <a
+href="ftp://ftp.cpan.org/pub/CPAN/src/perl-5.8.9.tar.bz2">bz2</a>
+(11121414 bytes) or <a
+href="ftp://ftp.cpan.org/pub/CPAN/src/perl-5.8.9.tar.gz">gz</a>
+(13954888 bytes) here; or, you can choose your own from one of the <a
+href="http://mirrors.cpan.org/">272 CPAN mirrors worldwide.</a>
+
+</p>
+
+<p>
+
+shasums for the tarballs:<br>
+<code>
+1097fbcd48ceccb2bc735d119c9db399a02a8ab9f7dc53e29e47e6a8d0d72e79 perl-5.8.9.tar.bz2
+<br>
+60dfe024286299b547895b6bc8f41c20c7e83d292f3a406e113ba1951aa38da1 perl-5.8.9.tar.gz
+</code>
+
+<br> <br>md5sums for the tarballs:<br>
+<code>
+1cb52a76ce77fa300218da96577793ec perl-5.8.9.tar.bz2
+<br>
+2c8d78a61fb8c4c2c19fc514eb591500 perl-5.8.9.tar.gz
+</code>
+</p>
+
+<p>5.8.9 is a maintenance release for perl 5.8, incorporating various
+minor bugfixes and optimisations.  Please see the <a
+href="http://search.cpan.org/~nwclark/perl-5.8.9/pod/perl589delta.pod">perldelta</a>
+for the full details. Please report bugs using the
+<code>perlbug</code> utility. If the build or regression tests fail,
+<code>make nok</code>. If the build fails to early to run this, please
+mail perlbug at perl.org directly.
+</p>
+
+<p>If the bug you are reporting has security implications, which make it
+inappropriate to send to a publicly archived mailing list, then please send it
+to <tt>perl5-security-report@perl.org</tt>. This points to a closed subscription
+unarchived mailing list, which includes all the core committers, who be able to
+help assess the impact of issues, figure out a resolution, and help co-ordinate
+the release of patches to mitigate or fix the problem across all platforms on
+which Perl is supported. Please only use this address for security issues in
+the Perl core, not for modules independently distributed on CPAN.
+</p>
+
+<p>We have only limited volunteer labour, and the maintenance burden is getting
+increasingly complex. Hence this will be the last significant release of the
+5.8.x series. Any future releases of 5.8.x will likely only be to deal with
+security issues, and platform build failures. Therefore you should look to
+migrating to 5.10.x, if you have not started already. Alternatively, if
+business requirements constrain you to continue to use 5.8.x, you may wish to
+consider commercial support from firms such as ActiveState.
+</p>
+
+<p>This is a source code release, not a binary release.  You will need
+a C development environment to build the sources.  Binary releases
+will be made available by various vendors.  To build and install Perl,
+and to find out how to report problems, please read the <a
+href="http://search.cpan.org/~nwclark/perl-5.8.9/INSTALL">INSTALL</a>
+file, and any relevant README.platform file.  As specified in the
+licenses for Perl (see the files named <a
+href="http://search.cpan.org/~nwclark/perl-5.8.9/Artistic">Artistic</a>
+or <a
+href="http://search.cpan.org/~nwclark/perl-5.8.9/Copying">Copying</a>),
+THIS PACKAGE IS PROVIDED WITH ABSOLUTELY NO WARRANTY.  As always, you
+should conduct an appropriate level of testing before using any new
+product in your production environment.
+</p>
+
+<p>
+The <a
+href="http://search.cpan.org/~nwclark/perl-5.8.9/pod/perl589delta.pod">perldelta</a>,
+which describes the most important changes for this release is
+available in the source distribution.  You may also be interested <a
+href="http://dev.perl.org/perl5/news/2006/perl-5.8.8.html">Perl 5.8.8
+announcement</a>, and can find out much more about Perl in general at
+<a href="http://www.perl.org/">the Perl home page</a>.
+</p>
+
+<p>-- Nicholas Clark, on behalf of the Perl5 Porters, 2008-12-16</p>
