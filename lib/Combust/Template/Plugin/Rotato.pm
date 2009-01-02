@@ -14,6 +14,10 @@ sub new {
   my $total = 0;
   my @ordered = ();
   for (keys %{$hash}) {
+    if ($hash->{$_}{weight} == 0) {
+      delete $hash->{$_};
+      next;
+    }
     $total += $hash->{$_}{weight};
     push @ordered, [$total,$_];
   }
