@@ -25,8 +25,12 @@ require CPAN::FirstTime;
 $CPAN::Config->{makepl_arg}   = q[INSTALL_BASE=] . $base . q[ INSTALLBASE=] . $base;
 $CPAN::Config->{mbuildpl_arg} = q[--install_base ] . $base;
 
+my $local_mirror = "$ENV{HOME}/src/cpan/mirror/";
+$local_mirror = undef unless -d $local_mirror; 
+
 # Should get this from config
 $CPAN::Config->{urllist} = [
+                         ($local_mirror ? ($local_mirror) : ()),
                          'http://cpan.develooper.com',
                          'ftp://mirrors.kernel.org/pub/CPAN',
                          'http://cpan.mirrorgeek.com'
