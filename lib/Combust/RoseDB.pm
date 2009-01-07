@@ -4,6 +4,7 @@ use strict;
 use Combust::Config;
 use Combust::RoseDB::Column::Point;
 use Combust::RoseDB::Constants qw(DB_DOWN DB_BOUNCED DB_UP);
+use Combust::RoseDB::Transaction;
 use Combust::Logger ();
 use DBI;
 use base 'Rose::DB';
@@ -150,6 +151,12 @@ sub check_all_db_status {
   }
 
   return $status;
+}
+
+
+sub begin_scoped_work {
+  my $db = shift;
+  Combust::RoseDB::Transaction->new($db);
 }
 
 sub DESTROY { } # Avoid disconnect being called
