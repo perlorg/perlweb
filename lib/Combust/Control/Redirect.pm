@@ -23,13 +23,17 @@ my %sites =
 sub find_url {
   my $self = shift;
 
-  if ($self->req_param('type') eq "book") {
-    die "Invalid ISBN" unless $self->req_param('isbn') =~ /^[A-Z0-9]+$/;
-    my $shop = $self->req_param('shop');
+  my $type = $self->req_param('type') || $self->req_param('url');
+
+
+  if ($type eq "book") {
+    my $isbn = $self->req_param('isbn') || $self->req_param('bookisbn');
+    die "Invalid ISBN" unless $isbn =~ /^[A-Z0-9]+$/;
+    my $shop = $self->req_param('shop') || $self->req_param('bookstore');
     die "Unknown Bookstore: $shop"
-      unless exists $bookstores{ $shop };
+     unless exists $bookstores{ $shop };
     my $url = $bookstores{ $shop };
-    $url =~ s/\#ISBN\#/$self->req_param('isbn')/e;
+    $url =~ s/\#ISBN\#/$isbn/e;
     return $url;
   }
   elsif ($self->req_param('type') eq "site") {
