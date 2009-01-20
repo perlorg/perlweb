@@ -13,6 +13,11 @@
        PerlHandler Combust::Control::Error->super
     </Location>
 
+    <Location /redirect>
+       SetHandler   perl-script
+       PerlHandler Combust::Control::Redirect->super
+    </Location>
+
     <Location /server-status>
       SetHandler server-status
     </Location>
