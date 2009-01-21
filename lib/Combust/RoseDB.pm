@@ -73,6 +73,15 @@ BEGIN {
   }
 }
 
+sub init_db_info {
+  my $self = shift;
+  # We must disable mysql auto-reconnects, for two reasons
+  # 1) If a reconnect happens, then the post_connect-sql would not be run, potentially leaving us with a bad connection
+  # 2) After a timeout ->ping would reconnect, by ->{Active} is still false. This causes RDBO issues
+  $self->mysql_auto_reconnect(0);
+  $self->SUPER::init_db_info(@_);
+}
+
 
 sub ping {
   my $self      = shift;
