@@ -10,6 +10,7 @@ my %constant = (
     OK           => 0,
     MOVED        => 301,
     REDIRECT     => 302,
+    FORBIDDEN    => 403,
     NOT_FOUND    => 404,
     SERVER_ERROR => 500,
 );
