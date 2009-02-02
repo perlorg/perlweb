@@ -174,7 +174,7 @@ sub DESTROY { } # Avoid disconnect being called
 if ($ENV{MOD_PERL}) {
   my ($software, $version) = $ENV{MOD_PERL} =~ /^(\S+)\/(\d+(?:[\.\_]\d+)+)/;
   my $handler = sub { Combust::RoseDB->db_cache->clear; 0; };
-  if ($version >= 2.0) {
+  if (($ENV{MOD_PERL_API_VERSION} || 0) >= 2) {
     require Apache2::ServerUtil;
     Apache2::ServerUtil->server->push_handlers(PerlChildInitHandler => $handler);
   }
