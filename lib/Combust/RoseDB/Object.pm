@@ -1,68 +1,52 @@
 package Combust::RoseDB::Object;
 use strict;
-use Combust::RoseDB;
-# use CN::DB::Column::Point;
-# use CN::DB::ConventionManager;
-use Combust::Config;
-my $config = Combust::Config->new;
 
-{
-  package Combust::RoseDB::Object::Metadata::Base;
+# from http://dev.perl.org/perl6/rfc/335.html
+sub methods {
+    my ( $class, $types ) = @_;
+    $class = ref $class || $class;
+    $types ||= '';
+    my %classes_seen;
+    my %methods;
+    my @class = ($class);
 
-  use base qw(Rose::DB::Object::Metadata);
+    no strict 'refs';
+    while ( $class = shift @class ) {
+        next if $classes_seen{$class}++;
+        unshift @class, @{"${class}::ISA"} if $types eq 'all';
 
-  sub new {
-    shift->SUPER::new(
-      auto_load_related_classes   => 0,
-      default_update_changes_only => 1,
-      default_insert_changes_only => 1,
-      @_
-    );
-  }
+        # Based on methods_via() in perl5db.pl
+        for my $method (
+            grep {
+                      not /^[(_]/
+                  and not /^dbh?$/
+                  and not /^[A-Z_]+$/
+                  and defined &{ ${"${class}::"}{$_} }
+            }
+            keys %{"${class}::"}
+          )
+        {
+            $methods{$method} = wantarray ? undef: $class->can($method);
+        }
+    }
+
+    return [ sort keys %methods ];
 }
 
-# TODO: move this to a configuration file of sorts
-our %class_type = ();
-#   NP::DB::Object          ntppool
-#   ...
 
-for my $db_name ($config->database_names) {
-    my $db = $config->database($db_name);
-    next unless $db->{class};
-    next if $db_name eq 'default';
-    next if $db_name eq 'combust'; # should be "if db_name is an alias"
-    $class_type{$db->{class}} = $db_name;
-}
+sub update_if_changed {
+    my $self    = shift;
+    my $changed = 0;
 
-while (my($class,$type) = each %class_type) {
-  (my $schema = $class) =~ s/::Object//;
-  $schema =~ s/::DB/::Model/;
-
-  my $defn = <<EOS;
-    {
-      package ${class}::Metadata;
-      our \@ISA = qw(Combust::RoseDB::Object::Metadata::Base);
-      sub registry_key { '${class}::Metadata' }
+    while ( my ( $k, $v ) = splice( @_, 0, 2 ) ) {
+        my $ov = $self->$k;
+        if ( defined($v) ne defined($ov) or ( defined($v) and $v ne $ov ) ) {
+            $self->$k($v);
+            ++$changed;
+        }
     }
-    {
-      package $class;
-      use base qw(Combust::RoseDB::Object::toJson Rose::DB::Object);
 
-      sub init_db { shift; Combust::RoseDB->new( \@_, type => '$type' ) }
-      sub meta_class { '${class}::Metadata' }
-      sub schema     { '$schema' }
-    }
-    {
-      package ${class}::Cached;
-      use base qw(Combust::RoseDB::Object::toJson Rose::DB::Object::Cached);
-
-      sub init_db { shift; Combust::RoseDB->new( \@_, type => '$type' ) }
-      sub meta_class { '${class}::Metadata' }
-      sub schema     { '$schema' }
-    }
-    1;
-EOS
-  eval $defn or die $defn,$@;
+    $changed;
 }
 
 1;

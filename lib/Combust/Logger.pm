@@ -14,9 +14,7 @@ use File::Path qw(mkpath);
 use Combust::Config;
 my $config = Combust::Config->new;
 
-use JSON;  # eventually JSON will use JSON::PC by default and thus be
-           # "pretty fast" (close to Storable-fast).
-my $json = JSON->new(pretty => 0, keysort => 1);
+use JSON::XS qw(encode_json);
 
 our @EXPORT = qw(
   logconfig
@@ -39,6 +37,7 @@ our $saywarn = 0;
 our $done_syslog;
 our $LogToFile;
 our $ShowExitBanner;
+our %Count;
 
 my @orig_argv;
 
@@ -63,7 +62,7 @@ sub _openlog {
 sub logconfig {
   my %p = @_;
 
-  $Verbose = $p{verbose} || 0;
+  $Verbose = $p{verbose} if exists $p{verbose};
   $Prefix  = $p{prefix}  if exists $p{prefix};
   $Domain  = $p{domain}  if exists $p{domain};
   $sayfh   = $p{sayfh}   if exists $p{sayfh};
@@ -78,6 +77,7 @@ sub logconfig {
 
 sub _syslog {
   my $type = shift;
+  ++$Count{$type};
   return unless $do_syslog or $type eq 'alert';
   _openlog() unless $opened;
   syslog($type, "%s", $_) for (split /\r?\n/, $_[0]);
@@ -138,7 +138,7 @@ sub logwarn {
 # ------ normal and trace messages ------
 
 sub logsay {
-    my $msg = _format(@_);
+  chomp(my $msg = _format(@_));
   _syslog "notice", $msg if $Verbose;
   local $\;
   print $sayfh prefix."$msg\n";
@@ -146,7 +146,7 @@ sub logsay {
 
 sub logtrace {
   return unless $Verbose > 2;
-  my $msg = _format(@_);
+  chomp(my $msg = _format(@_));
   _syslog "info", $msg;
   local $\;
   print $sayfh prefix."$msg\n";
@@ -154,7 +154,7 @@ sub logtrace {
 
 sub logdebug {
   return unless $Verbose > 4;
-  my $msg = _format(@_);
+  chomp(my $msg = _format(@_));
   _syslog "debug", $msg;
   local $\;
   print $sayfh prefix."$msg\n";
@@ -182,7 +182,7 @@ sub logtimes {
 sub _format {
     my @args = @_;
     #warn Data::Dumper->Dump([\@_], [qw(_)]);
-    chomp(my $msg = join " ", map { ref $_ ? $json->objToJson($_) : defined $_ ? $_ : 'UNDEF' } @args);
+    my $msg = join " ", map { ref $_ ? encode_json($_) : defined $_ ? $_ : 'UNDEF' } @args;
     $msg;
 }
 

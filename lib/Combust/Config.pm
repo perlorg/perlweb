@@ -4,6 +4,7 @@ use Config::Simple;
 use Data::Dumper qw();
 use Sys::Hostname qw(hostname);
 use Carp qw(carp croak cluck);
+use Socket qw(inet_ntoa);
 
 my $file = $ENV{CBCONFIG} ? $ENV{CBCONFIG}
            : $ENV{CBROOTLOCAL} ? "$ENV{CBROOTLOCAL}/combust.conf"
@@ -294,7 +295,16 @@ sub memcached_servers {
   my $self = shift;
   my $ms = $cfg->param('memcached_servers') || "127.0.0.1:11211";
   my @ms = ref $ms ? @$ms : ($ms);
-  map { my ($s,$p) = split /\@/; $p ? [$s,$p] : $s } @ms;
+  map {
+    my ($s,$p) = split /\@/;
+    unless ( $s =~ /^[\d\.]+:/) {
+      my ($host,$port) = split /:/, $s;
+      my $ipn = gethostbyname($host) or die "Cannot resolve memcache hostname '$host'\n";
+      my $ip = inet_ntoa($ipn);
+      $s = $ip . ":" . $port;
+    }
+    $p ? [$s,$p] : $s
+  } @ms;
 }
 
 

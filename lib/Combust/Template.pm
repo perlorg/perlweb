@@ -26,9 +26,13 @@ $Template::Stash::SCALAR_OPS->{rand} = sub {
 
 sub new {
     my $class = shift;
-    my %args = ref $_[0] ? %{ $_[0] } : @_;
+    my $obj   = bless {}, $class;
+    return $obj->_init(@_);
+}
 
-    my $self = bless {}, $class;
+sub _init {
+    my $self = shift; 
+    my %args = ref $_[0] ? %{ $_[0] } : @_;
 
     my $parser = Template::Parser->new();
 

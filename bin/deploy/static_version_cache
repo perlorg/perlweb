@@ -7,6 +7,8 @@ use warnings;
 use DBI ();
 use Storable qw(nstore);
 use JSON::XS qw(encode_json);
+use Cwd;
+
 use Combust::Config;
 BEGIN { $Combust::StaticFiles::setup = 1 };
 use Combust::StaticFiles;
@@ -41,14 +43,7 @@ for my $site (@sites) {
         }
     }
     elsif (-d "$root/.git") { 
-        my $treeish = `git rev-list --max-count=1 --all --topo-order`;
-        chomp $treeish;
-        my $command = "git ls-tree --abbrev -r $treeish .";
-        my $git = `$command`;
-        $files = { map { chomp; my ($version, $file) = (split /\s/, $_)[2,3];
-                         ("/$file" => $version) 
-                     } split /\n/, $git 
-                 };
+        $files = get_git_tree($root, $dir);
     }
     else { 
         my $deployment_mode =  $config->site->{$site}->{deployment_mode} || 'test';
@@ -62,10 +57,11 @@ for my $site (@sites) {
 
     for my $k (keys %$files) {
         my $version = $files->{$k} || 0;
-        my $server = DBI::hash("$k/$version", 1);
-        $server = ($server % 3) + 1;
-        my $attr = { server => $server };
-        
+        my $server = DBI::hash("$k/$version", 1) + 0;
+        my $server_short = ($server % 2) + 1;
+        my $attr = { server     => $server_short,
+                     server_num => $server % 100,
+                   };
         if ($k =~ m/(?<!-min)\.(css|js)/) {
             my $min = $k;
             $min =~ s/(\.[^\.]+)$/-min$1/;
@@ -79,6 +75,34 @@ for my $site (@sites) {
 
     nstore($files, $storable_file) or die "could not store $storable_file: $!";
     Combust::StaticFiles->_save_json($json_file, $files) 
+}
+
+sub get_git_tree {
+    my ($root, $dir) = @_;
+
+    my $old_dir = getcwd();
+    chdir("$root/$dir");
+
+    my $treeish = `git rev-list --max-count=1 --all --topo-order`;
+    chomp $treeish;
+    my $command = "git ls-tree --abbrev -r $treeish $dir";
+    my $git = `$command`;
+    my @submodules;
+
+    my $files = { map { chomp; my ($type, $version, $file) = (split /\s/, $_)[1,2,3];
+                     push @submodules, $file if $type eq 'commit';
+                     ("/$file" => $version);
+                     } split /\n/, $git 
+             };
+
+    for my $submodule (@submodules) {
+        my $sub = get_git_tree($submodule, '.');
+        $sub = { map { ("/$submodule$_" => $sub->{$_}) } keys %$sub };
+        $files = { %$files, %$sub };
+    }
+
+    chdir ($old_dir);
+    return $files;
 }
 
 1;

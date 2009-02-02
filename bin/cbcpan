@@ -34,6 +34,9 @@ $CPAN::Config->{urllist} = [
 CPAN::FirstTime::init("/dev/null",
   autoconfig => 1,
 );
-warn Data::Dumper::Dumper($CPAN::Config);
+eval {
+  require Data::Dumper;
+  warn Data::Dumper::Dumper($CPAN::Config);
+};
 require CPAN;
 CPAN::shell();
