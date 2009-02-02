@@ -27,14 +27,14 @@ BEGIN {
 sub handler {
   my $r = shift;
 
+  return OK if $r->pnotes('combust_notes');
+
  if (MP2) {
     $r = Apache2::Request->new( $r, TEMP_DIR => Combust->config->work_path );
   }
   else {
     $r = Apache::Request->instance( $r, TEMP_DIR => Combust->config->work_path  );
   }
-
-  return OK if $r->pnotes('combust_notes');
 
   my $ip      = $r->connection->remote_ip;
   my $param   = $r->param;
