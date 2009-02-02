@@ -2,7 +2,8 @@ package Combust::Notes;
 use strict;
 
 use Combust::Cookies;
-use Combust::Constant qw(OK NOT_FOUND);
+use Combust::Constant qw(OK);
+
 use Time::HiRes qw(time); # let's be accurate about this
 use DBI;		  # for DBI::hash()
 
@@ -32,6 +33,8 @@ sub handler {
   else {
     $r = Apache::Request->instance( $r, TEMP_DIR => Combust->config->work_path  );
   }
+
+  return OK if $r->pnotes('combust_notes');
 
   my $ip      = $r->connection->remote_ip;
   my $param   = $r->param;

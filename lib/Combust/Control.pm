@@ -75,6 +75,9 @@ sub super ($$) {
   return unless $r;
 
   my $self = $class->new($r);
+
+  Combust::Notes::handler($r);
+
   $self->tt->set_include_path($self->get_include_path);
 
   my $status;
