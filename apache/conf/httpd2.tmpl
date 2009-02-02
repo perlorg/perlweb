@@ -24,15 +24,10 @@ TypesConfig [% root %]/apache/conf/mime.types
 PerlOptions +GlobalRequest
 
 PerlPassEnv CBROOT
-PassEnv     CBROOT
 PerlPassEnv CBROOTLOCAL
-PassEnv     CBROOTLOCAL
 PerlPassEnv CBCONFIG
-PassEnv     CBCONFIG
 PerlPassEnv DBI_PROFILE
-PassEnv     DBI_PROFILE
 PerlPassEnv DBI_TRACE
-PassEnv     DBI_TRACE
 
 PerlRequire [% root %]/apache/conf/startup.pl
 PerlWarn On
