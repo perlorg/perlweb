@@ -158,6 +158,9 @@ EOS
     s/\s*^1;$//m for $t, $m;
     s/Foo__:://g for ($t, $m, $class);
 
+    if (my $json_columns = $meta->{__combust_json_columns}) {
+      $t .= "\nuse Combust::RoseDB::JsonFields qw( @{$json_columns} );\n";
+    }
     (my $class_path = $class) =~ s,::,/,g;
 
     print <<EOS;

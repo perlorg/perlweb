@@ -24,10 +24,21 @@ sub object_base_classes {
   return qw(Combust::RoseDB::Object Combust::RoseDB::Object::toJson);
 }
 
+# Gets passed a meta object nd must return a list of columns that are stored as JSON
+sub json_columns { return; }
+
 sub class_pre_init_hook {
   my $self = shift;
   my $meta = shift;
 
+  if (my @columns = $self->json_columns($meta)) {
+    for my $col (@columns) {
+      my $attr = $meta->column($col);
+      $attr->alias("_${col}") if $attr;
+    }
+    $meta->{__combust_json_columns} = \@columns;
+  }
+  
   return;
 }
 
