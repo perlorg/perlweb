@@ -18,6 +18,7 @@ GetOptions(
 );
 
 @db_name = grep { $_ ne 'default' } Combust::Config->database_names if $all;
+@db_name = @ARGV if !@db_name and @ARGV;
 
 die "Nothing todo, specify a database with --db={prod,feeds,...} or use --all\n" unless @db_name;
 
