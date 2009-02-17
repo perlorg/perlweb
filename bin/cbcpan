@@ -39,4 +39,10 @@ eval {
   warn Data::Dumper::Dumper($CPAN::Config);
 };
 require CPAN;
-CPAN::shell();
+
+if (@ARGV) {
+    CPAN::install(@ARGV);
+}
+else {
+    CPAN::shell();
+}
