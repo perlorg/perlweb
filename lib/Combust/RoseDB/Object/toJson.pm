@@ -35,7 +35,8 @@ sub get_data_hash {
     if (Scalar::Util::blessed($v)) {
       if ($v->isa('DateTime')) {
         my $meth = $date_formatter{$column->type};
-        $v = $v->$meth; # strftime($date_format{$column->type});
+        $v = $v->clone->set_time_zone('UTC')->$meth;
+        $v .= "Z" if $meth eq 'iso8601';
       }
     }
     $hash{$name} = $v if defined $v;
