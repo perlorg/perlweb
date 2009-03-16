@@ -18,6 +18,7 @@ GetOptions(
 );
 
 @db_name = grep { $_ ne 'default' } Combust::Config->database_names if $all;
+@db_name = @ARGV if !@db_name and @ARGV;
 
 die "Nothing todo, specify a database with --db={prod,feeds,...} or use --all\n" unless @db_name;
 
@@ -77,28 +78,33 @@ sub generate_model {
   my @object_base_classes = $scaffold_class->object_base_classes($db_name);
 
   (my $base_defn = <<EOS) =~ s/^    //gm;
-    {
+    BEGIN {
       package $meta_class;
       use base qw(Combust::RoseDB::Metadata);
       use $cm_class;
+      our \$VERSION = 0;
+
       sub registry_key { __PACKAGE__ }
       sub init_convention_manager { $cm_class->new }
     }
-    {
+    BEGIN {
       package ${model_class}::_Base;
       use base qw(@object_base_classes);
+      our \$VERSION = 0;
 
       sub init_db       { shift; Combust::RoseDB->new_or_cached(\@_, type => '$type', combust_model => "$model_class") }
       sub meta_class    {'$meta_class'}
       sub combust_model { our \$model ||= bless [], '$model_class'}
     }
-    {
+    BEGIN {
       package ${model_class}::_Object;
       use base qw(${model_class}::_Base Rose::DB::Object);
+      our \$VERSION = 0;
     }
-    {
+    BEGIN {
       package ${model_class}::_Object::Cached;
       use base qw(${model_class}::_Base Rose::DB::Object::Cached);
+      our \$VERSION = 0;
     }
 EOS
   eval $base_defn;
@@ -158,6 +164,9 @@ EOS
     s/\s*^1;$//m for $t, $m;
     s/Foo__:://g for ($t, $m, $class);
 
+    if (my $json_columns = $meta->{__combust_json_columns}) {
+      $t .= "\nuse Combust::RoseDB::JsonFields qw( @{$json_columns} );\n";
+    }
     (my $class_path = $class) =~ s,::,/,g;
 
     print <<EOS;
