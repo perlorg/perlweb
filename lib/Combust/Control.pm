@@ -163,7 +163,7 @@ sub do_request {
   return $status unless $status == OK;
 
   # sometimes we end up here with "OK" but with no content ... gah.
-  if ($cache and $output and $status != SERVER_ERROR) {
+  if ($cache and $output and $status != SERVER_ERROR and !$self->no_cache) {
     $cache_info->{meta_data}->{content_type} = $content_type if $content_type;
     $cache_info->{meta_data}->{status}       = $status || $self->r->status;
     $cache->store( %$cache_info, data => $output );
@@ -172,6 +172,13 @@ sub do_request {
   $status = $self->post_process($output);
 
   return ($status, $output, $content_type);
+}
+
+sub no_cache {
+    my $self   = shift;
+    my $status = shift;
+    $self->{no_cache} = $status if defined $status;
+    return $self->{no_cache};
 }
 
 sub cache_info {}
