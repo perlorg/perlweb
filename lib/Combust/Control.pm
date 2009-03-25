@@ -420,7 +420,7 @@ sub redirect {
 
   # this should really check for a complete URI or some such; we'll do
   # that when it breaks on a ftp:// or whatever redirect :-)
-  unless ($url =~ m!^https?://!) {
+  unless ($url =~ m!^https?://!i) {
     $url = $config->base_url($self->site) . $url;
   }
 
