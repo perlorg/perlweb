@@ -1,4 +1,4 @@
-[% page.title = "Big Numbers" %]
+[% page.title = "Numbers" %]
 [% page.style = "default.html" %]
 [% page.sidebar = INCLUDE "tpl/navigation.html" %]
 
@@ -6,7 +6,7 @@
 
 [% USE ua = CacheLWPSimple %]
 [% data = ua.get( 'url' =>
-      'http://svn.perl.org/parrot/trunk/docs/pdds/draft/pdd14_bignum.pod'
+      'http://svn.perl.org/parrot/trunk/docs/pdds/draft/pdd14_numbers.pod'
            'ttl' => 1*60*60 ) %]
 [% USE PodSimple %]
 [% PodSimple.parse('html', data ) %]
