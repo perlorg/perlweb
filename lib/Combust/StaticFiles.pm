@@ -95,8 +95,8 @@ sub static_base {
 
 sub static_base_ssl {
     my ($class, $site) = @_;
-    my $base = $class->config->site->{$site} && $class->config->site->{$site}->{static_base_ssl}
-      || $class->static_base;
+    my $base = $class->config->site->{$site} && $class->config->site->{$site}->{static_base_ssl};
+    return $class->static_base($site) unless $base;
     $base ||= '/static';
     $base =~ s!/$!!;
     $base;
