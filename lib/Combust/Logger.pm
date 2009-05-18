@@ -198,6 +198,12 @@ sub logtofile {
 
   my $dir = $config->log_path;
   -e $dir or mkpath $dir, 0;
+  if ($p{hierarchical}) {
+    my ($year,$month) = $filename =~ / (\d{4}) (\d{2}) \d{2} $/x;
+    my $subdir = "$dir/$year/$month";
+    -e $subdir or mkpath $subdir, 0;
+    $filename = "$year/$month/$filename";
+  }
   my $path = "$dir/$filename";
   open(STDOUT,">>$path") or die("logtofile: Can't open($path): $!");
   select(STDOUT); $|=1;

@@ -8,7 +8,7 @@ use Combust::Config;
 
 use Rose::Object::MixIn();
 our @ISA = qw(Rose::Object::MixIn);
-__PACKAGE__->export_tag(all => [ qw(find_static_path setup_static_files static_url static_base) ]);
+__PACKAGE__->export_tag(all => [ qw(find_static_path setup_static_files static_url static_base static_base_ssl) ]);
 
 my $config = Combust::Config->new;
 
@@ -92,6 +92,16 @@ sub static_base {
     $base =~ s!/$!!;
     $base;
 }
+
+sub static_base_ssl {
+    my ($class, $site) = @_;
+    my $base = $class->config->site->{$site} && $class->config->site->{$site}->{static_base_ssl};
+    return $class->static_base($site) unless $base;
+    $base ||= '/static';
+    $base =~ s!/$!!;
+    $base;
+}
+
 
 sub static_group {
     my ($self, $name) = @_;
