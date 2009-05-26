@@ -2,14 +2,14 @@ package Combust::DB;
 use strict;
 use DBI;
 use Carp;
-use Combust::Config;
+use Combust;
 
 use Exporter;
 use vars qw(@ISA @EXPORT_OK);
 @EXPORT_OK = qw(db_open);
 @ISA = qw(Exporter);
 
-my $config = Combust::Config->new();
+my $config = Combust->config;
 
 my %dbh = ();
 
