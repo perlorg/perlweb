@@ -62,6 +62,7 @@ sub setup_static_files {
 
 sub _load_json {
     my ($self, $file) = @_;
+    return {} unless -r $file;
     my $data = 
         eval { 
             local $/ = undef;
@@ -131,15 +132,23 @@ sub static_url {
     my ($self, $file) = @_;
     $file or cluck "no filename specified to static_url" and return "";
     $file = "/$file" unless $file =~ m!^/!;
+
     my $regexp = qr/(\.(js|css|gif|png|jpg|ico))$/;
+
+    my $file_attr;
+
     if ($file =~ m/$regexp/ and my $static_files = $static_file_paths->{$self->site}) {
         my $version;
         if ($self->deployment_mode eq 'devel') {
             my $static_directory = $static_files->{path};
             $version = max($startup_time, (stat("${static_directory}$file"))[9]);
         }
-        else {
-            $version = $static_files->{files}->{$file};
+        elsif (ref $static_files->{files}->{$file}) {
+            ($version, $file_attr) = (@{$static_files->{files}->{$file}});
+        }
+
+        if ($file_attr and $file_attr->{min}) {
+            $file =~ s!$regexp!-min$1!;
         }
 
         $file =~ s!$regexp!.v$version$1! if $version;
