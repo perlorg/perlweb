@@ -4,7 +4,7 @@ use Exception::Class ('ControllerException');
 use Combust::Constant qw(OK SERVER_ERROR MOVED DONE DECLINED REDIRECT);
 use Carp qw(confess cluck carp);
 use Digest::SHA1 qw(sha1_hex);
-use URI::Escape qw(uri_escape);
+use HTML::Entities ();
 use Encode qw(encode_utf8);
 use base qw(Combust::Redirect);
 
@@ -430,7 +430,7 @@ sub redirect {
   $self->request->header_out('Location' => $url);
   $self->r->status($permanent ? MOVED : REDIRECT);
 
-  my $url_escaped = uri_escape($url);
+  my $url_escaped = HTML::Entities::encode_entities($url);
 
   my $data = <<EOH;
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
