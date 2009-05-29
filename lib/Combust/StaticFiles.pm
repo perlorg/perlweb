@@ -29,6 +29,7 @@ sub find_static_path {
 
     my @static_dirs = ($root_dir . "/$site/static",
                        $root_dir . "/static",
+                       $root_dir . "/shared/static",
                       );
     return first { -e $_ && -d _ } @static_dirs;
 }
