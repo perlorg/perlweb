@@ -10,7 +10,7 @@ my $config = Combust->config;
 my $memd = new Cache::Memcached {
   'servers' => [ $config->memcached_servers ],
   'debug' => 0,
-  'compress_threshold' => 10_000,
+  'compress_threshold' => 5_000,
 };
 
 # warn Data::Dumper->Dump([\$memd], [qw(memd)]);
@@ -24,16 +24,22 @@ sub store {
                     ? $args{data}
                     : (carp "No data passed to cache" and return);
 
-  my $metadata  = ($args{meta_data} and ref $args{meta_data} eq "HASH"
-  		     ? $args{meta_data}
-		     : undef);
-
   my $expire    = time + ($args{expire} || $args{expires} || 7200);
+      
+  if ($args{plain}) {
+      return $memd->set($id, $data, $expire);
+  }
 
-  $memd->set($id, { data => $data,
-                    meta_data => $metadata,
-                    created_timestamp => time,
-                  }, $expire);
+  my $metadata  = ($args{meta_data} and ref $args{meta_data} eq "HASH"
+                   ? $args{meta_data}
+                   : undef);
+  
+  return $memd->set($id, { data => $data,
+                           meta_data => $metadata,
+                           created_timestamp => time,
+                         }, 
+                    $expire
+                   );
 }
 
 sub fetch {
