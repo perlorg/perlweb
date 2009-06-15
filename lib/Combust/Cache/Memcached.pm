@@ -3,15 +3,29 @@ use strict;
 use Carp qw(carp);
 use base qw(Combust::Cache);
 use Combust;
-use Cache::Memcached;
+
+my $libmemcached;
+
+BEGIN {
+    $libmemcached = eval { require Cache::Memcached::libmemcached };
+    unless ($libmemcached) {
+        require Cache::Memcached;
+    }
+}
 
 my $config = Combust->config;
 
-my $memd = new Cache::Memcached {
-  'servers' => [ $config->memcached_servers ],
-  'debug' => 0,
-  'compress_threshold' => 5_000,
-};
+my $module =
+  $libmemcached
+  ? 'Cache::Memcached::libmemcached'
+  : 'Cache::Memcached';
+
+my $memd = $module->new(
+    {   'servers'            => [$config->memcached_servers],
+        'debug'              => 0,
+        'compress_threshold' => 5_000,
+    }
+);
 
 # warn Data::Dumper->Dump([\$memd], [qw(memd)]);
 
