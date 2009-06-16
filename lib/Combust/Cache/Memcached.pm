@@ -4,23 +4,11 @@ use Carp qw(carp);
 use base qw(Combust::Cache);
 use Combust;
 
-my $libmemcached;
-
-BEGIN {
-    $libmemcached = eval { require Cache::Memcached::libmemcached };
-    unless ($libmemcached) {
-        require Cache::Memcached;
-    }
-}
+use Cache::Memcached;
 
 my $config = Combust->config;
 
-my $module =
-  $libmemcached
-  ? 'Cache::Memcached::libmemcached'
-  : 'Cache::Memcached';
-
-my $memd = $module->new(
+my $memd = Cache::Memcached->new(
     {   'servers'            => [$config->memcached_servers],
         'debug'              => 0,
         'compress_threshold' => 5_000,
