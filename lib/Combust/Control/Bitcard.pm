@@ -17,12 +17,17 @@ sub bc_check_login_parameters {
         }
         if ($bc_user and $bc_user->{id}) {
             my $user = $self->_setup_user($bc_user);
-            $self->cookie($cookie_name, $user->id);
-            $self->user($user);
+            $self->_login_user($user);
             return $user;
         }
     }
     return 0;
+}
+
+sub _login_user {
+    my ($self, $user) = @_;
+    $self->cookie($cookie_name, $user->id);
+    $self->user($user);
 }
 
 sub _setup_user {
