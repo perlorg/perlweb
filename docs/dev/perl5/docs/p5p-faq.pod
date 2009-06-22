@@ -45,13 +45,13 @@ F<http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/>.
 
 =head2 perl5-porters is too big! Is there a digest?
 
-Funny you should mention that. Rafael Garcia-Suarez compiles a weekly
-summary of the highlights, with links to the archive where more
-extensive reading is recommended. These can be found at
-F<http://use.perl.org/> and at
-F<http://nntp.x.perl.org/group/perl.perl5.summary>.
-You can also choose to receive them by mail by subscribing to the
-<perl5-summary@perl.org> mailing list.
+Funny you should mention that. Rafael Garcia-Suarez and afterwards
+David Landgren used to compile a weekly summary of the highlights, with links
+to the archive where more extensive reading is recommended. These can be found 
+at F<http://use.perl.org/> and at 
+F<http://nntp.x.perl.org/group/perl.perl5.summary>. You can also choose to 
+receive them by mail by subscribing to the <perl5-summary@perl.org> mailing 
+list.
 
 If you want to receive all the messages but batched into a single mail
 per day, you can subscribe to <perl5-porters-digest@perl.org> instead;
@@ -154,50 +154,41 @@ pumpking for the area you're patching, or one of the referees.
 
 =head2 Is Perl in CVS?
 
-Perl isn't available by anonymous CVS. Perl is, however, kept under
-development control - it's using a Perforce server which is currently
-hosted for us at ActiveState. Some pumpkings have write access to this
-server. There is no public read access to this server - see 3.6 below.
+Perl is actually available inside a git repository. git 
+( L<http://git-scm.com/> ) is a popular, distributed and open-source version 
+control system. To learn more about checking out the Perl source using
+git see: 
+
+L<http://perl5.git.perl.org/perl.git/blob/HEAD:/pod/perlrepository.pod>
 
 =head2 What is the APC?
 
-When a change is made on the Perforce server, a patch is generated and
+When a change was made on the Perforce server, a patch was generated and
 placed in the Archive of Perl Changes. This is located at
 ftp://ftp.linux.activestate.com/pub/staff/gsar/APC/
 
 The directory diffs/ contains patches against the latest release.
 
+All of this has probably became irrelevant after the switch to git.
+
 =head2 What is perl-current?
 
-There's also a directory called "perl-current" in the APC, which
-contains the very latest Perforce snapshot of Perl. This is the closest
-it gets to an anonymous CVS, and this snapshot is what, ideally, you
-should patch against.
-
-Since downloading the whole thing from FTP is wasteful, you can either
-keep yourself up-to-date using the diffs as mentioned above, or you can
-use rsync - the following command will update the directory "bleadperl"
-on your computer to match perl-current:
-
-rsync -auvz rsync://ftp.linux.activestate.com/perl-current/ bleadperl/
+perl-current used to bet the very latest Perforce snapshot of Perl. Now
+the recommended way is to use git.
 
 =head2 What is bleadperl? maintperl?
 
-The repository of the Perl Perforce server is laid out something like
-this:
+bleadperl is the term that is now used for the git C<blead> branch.
 
-  /----+-----perl
-       +-----... (older or private branches)
-       +-----maint-5.6------perl
-       +-----maint-5.6------perl-5.6.2
-       +-----maint-5.8------perl
+maintperl are the various maintenance branches:
 
-Each "branch" contains an independent version of Perl, but Perforce
-knows how to integrate patches between them.
+  remotes/origin/maint-5.004
+  remotes/origin/maint-5.005
+  remotes/origin/maint-5.10
+  remotes/origin/maint-5.6
+  remotes/origin/maint-5.8
 
-The current development version of perl, otherwise known as bleadperl,
-lives in the mainline, /perl. See Porting/repository.pod in your perl
-distribution for more details.
+One for each released version of Perl.
 
 =head1 Who's Who
 
@@ -216,7 +207,7 @@ Sanden.
 
 =head1 AUTHORS
 
-The FAQ was last updated Fri Sep 26 2003.
+The FAQ was last updated Mon  Jun 22 2009.
 
 Its primary author was Simon Cozens. It's currently maintained by Rafael
 Garcia-Suarez.
