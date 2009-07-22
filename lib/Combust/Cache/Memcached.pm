@@ -110,6 +110,9 @@ sub _normalize_id {
     my ($self, $id) = @_;
     # allow falling back to using $self->{fetched_id} in the calling methods
     return unless $id; 
+    # replace ' ' by '+', because memcached keys can't have spaces
+    $id =~ tr/ /+/;
+    # prepend "$type;"
     $id = join ';', $self->{type}, $id;
     $self->SUPER::_normalize_id($id);
 }
