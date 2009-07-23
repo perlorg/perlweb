@@ -30,7 +30,7 @@ sub get_data_hash {
   my %hash;
 
   foreach my $column ($self->_json_columns) {
-    my $name = ref($column) ? $column->name : $column;
+    my $name = ref($column) ? $column->accessor_method_name : $column;
     my $v = $self->$name; 
     if (Scalar::Util::blessed($v)) {
       if ($v->isa('DateTime')) {
