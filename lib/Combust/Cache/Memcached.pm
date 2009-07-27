@@ -63,18 +63,18 @@ sub fetch {
 sub fetch_multi {
     my ($self, @ids) = @_;
 
-    @ids = map { $self->_normalize_id($_) } @ids;
+    # map from normalized id's to id's
+    my %id_for = map { $self->_normalize_id($_) => $_ } @ids;
+    if (keys %id_for < @ids) {
+        carp "Two or more ids coincide when normalized";
+    }
 
-    my $rv = $memd->get_multi(@ids);
+    my $rv = $memd->get_multi(keys %id_for);
     return unless $rv;
 
-    my $prefix = join ";", grep { defined } $Combust::Cache::namespace, $self->{type}, "";
-    my $prefixre = qr/^$prefix/;
-
-    for my $k (keys %$rv) {
-        my $k2 = $k;
-        $k2 =~ s/$prefixre//;
-        $rv->{$k2} = delete $rv->{$k};
+    for my $nk (keys %$rv) {
+        my $k = $id_for{$nk};
+        $rv->{$k} = delete $rv->{$nk};
     }
     $rv;
 }
