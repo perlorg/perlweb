@@ -30,14 +30,6 @@ sub json_columns { return; }
 sub class_pre_init_hook {
   my $self = shift;
   my $meta = shift;
-
-  if (my @columns = $self->json_columns($meta)) {
-    for my $col (@columns) {
-      my $attr = $meta->column($col);
-      $attr->alias("_${col}") if $attr;
-    }
-    $meta->{__combust_json_columns} = \@columns;
-  }
   
   return;
 }

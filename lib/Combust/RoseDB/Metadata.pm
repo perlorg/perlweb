@@ -1,6 +1,7 @@
 package Combust::RoseDB::Metadata;
 use strict;
 use base qw(Rose::DB::Object::Metadata);
+use JSON::XS qw( encode_json decode_json );
 
 sub new {
   shift->SUPER::new(
@@ -31,6 +32,27 @@ sub initialize {
   my $meth = $class->can('COMBUST_PRE_INIT');
 
   $meta->SUPER::initialize( $meth ? $meth->($meta, @_) : @_ );
+}
+
+sub setup_json_columns {
+  my $meta = shift;
+
+  foreach my $column ( map { $meta->column($_) } @_ ) {
+    $column->add_trigger(
+      inflate => sub {
+        shift;    # object;
+        my $v = shift or return undef;
+        return ref($v) ? $v : eval { decode_json($v) };
+      }
+    );
+    $column->add_trigger(
+      deflate => sub {
+        shift;    # object;
+        my $h = shift or return undef;
+        encode_json($h);
+      }
+    );
+  }
 }
 
 1;

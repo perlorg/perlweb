@@ -164,8 +164,8 @@ EOS
     s/\s*^1;$//m for $t, $m;
     s/Foo__:://g for ($t, $m, $class);
 
-    if (my $json_columns = $meta->{__combust_json_columns}) {
-      $t .= "\nuse Combust::RoseDB::JsonFields qw( @{$json_columns} );\n";
+    if (my @json_columns = $scaffold_class->json_columns($meta)) {
+      $t .= "\n__PACKAGE__->meta->setup_json_columns(qw< @json_columns >);\n";
     }
     (my $class_path = $class) =~ s,::,/,g;
 
