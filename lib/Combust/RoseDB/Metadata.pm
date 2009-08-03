@@ -2,6 +2,8 @@ package Combust::RoseDB::Metadata;
 use strict;
 use base qw(Rose::DB::Object::Metadata);
 use JSON::XS qw( encode_json decode_json );
+use Carp qw(cluck);
+use namespace::clean;
 
 sub new {
   shift->SUPER::new(
@@ -42,7 +44,11 @@ sub setup_json_columns {
       inflate => sub {
         shift;    # object;
         my $v = shift or return undef;
-        return ref($v) ? $v : eval { decode_json($v) };
+        return $v if ref($v);
+        utf8::encode($v) if utf8::is_utf8($v);
+        my $r = eval { decode_json($v) }
+          or cluck($meta->table,".",$column->name,": ", $@);
+        $r;
       }
     );
     $column->add_trigger(
