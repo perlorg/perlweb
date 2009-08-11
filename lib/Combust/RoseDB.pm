@@ -26,10 +26,6 @@ BEGIN {
   __PACKAGE__->db_cache; # Force subclasses to inherit cache
   __PACKAGE__->use_private_registry;
 
-  # Cause DBI to use cached connections. Apache::DBI also sets this
-  # and we don't want to override that
-  $DBI::connect_via = "connect_cached" if $DBI::connect_via eq 'connect';
-  
   my %dbs = Combust::Config::_setup_dbs();
   
   (values %dbs)[0]->{default} = 1 if 1 == keys %dbs;
