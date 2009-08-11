@@ -3,15 +3,17 @@ use strict;
 use Carp qw(carp);
 use base qw(Combust::Cache);
 use Combust;
+
 use Cache::Memcached;
 
 my $config = Combust->config;
 
-my $memd = new Cache::Memcached {
-  'servers' => [ $config->memcached_servers ],
-  'debug' => 0,
-  'compress_threshold' => 10_000,
-};
+my $memd = Cache::Memcached->new(
+    {   'servers'            => [$config->memcached_servers],
+        'debug'              => 0,
+        'compress_threshold' => 5_000,
+    }
+);
 
 # warn Data::Dumper->Dump([\$memd], [qw(memd)]);
 
@@ -24,16 +26,22 @@ sub store {
                     ? $args{data}
                     : (carp "No data passed to cache" and return);
 
-  my $metadata  = ($args{meta_data} and ref $args{meta_data} eq "HASH"
-  		     ? $args{meta_data}
-		     : undef);
-
   my $expire    = time + ($args{expire} || $args{expires} || 7200);
+      
+  if ($args{plain}) {
+      return $memd->set($id, $data, $expire);
+  }
 
-  $memd->set($id, { data => $data,
-                    meta_data => $metadata,
-                    created_timestamp => time,
-                  }, $expire);
+  my $metadata  = ($args{meta_data} and ref $args{meta_data} eq "HASH"
+                   ? $args{meta_data}
+                   : undef);
+  
+  return $memd->set($id, { data => $data,
+                           meta_data => $metadata,
+                           created_timestamp => time,
+                         }, 
+                    $expire
+                   );
 }
 
 sub fetch {
@@ -55,18 +63,18 @@ sub fetch {
 sub fetch_multi {
     my ($self, @ids) = @_;
 
-    @ids = map { $self->_normalize_id($_) } @ids;
+    # map from normalized id's to id's
+    my %id_for = map { $self->_normalize_id($_) => $_ } @ids;
+    if (keys %id_for < @ids) {
+        carp "Two or more ids coincide when normalized";
+    }
 
-    my $rv = $memd->get_multi(@ids);
+    my $rv = $memd->get_multi(keys %id_for);
     return unless $rv;
 
-    my $prefix = join ";", grep { defined } $Combust::Cache::namespace, $self->{type}, "";
-    my $prefixre = qr/^$prefix/;
-
-    for my $k (keys %$rv) {
-        my $k2 = $k;
-        $k2 =~ s/$prefixre//;
-        $rv->{$k2} = delete $rv->{$k};
+    for my $nk (keys %$rv) {
+        my $k = $id_for{$nk};
+        $rv->{$k} = delete $rv->{$nk};
     }
     $rv;
 }
@@ -102,6 +110,9 @@ sub _normalize_id {
     my ($self, $id) = @_;
     # allow falling back to using $self->{fetched_id} in the calling methods
     return unless $id; 
+    # replace ' ' by '+', because memcached keys can't have spaces
+    $id =~ tr/ /+/;
+    # prepend "$type;"
     $id = join ';', $self->{type}, $id;
     $self->SUPER::_normalize_id($id);
 }
