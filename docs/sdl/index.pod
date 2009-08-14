@@ -6,14 +6,19 @@ Welcome to the new SDL Perl pages, graciously hosted by Perl.org.
 
 B<11 August 2009> SDL_Perl is on Github
 
+The bleeding edge code http://github.com/kthakore/SDL_Perl/
+
+The master branch is stable on CPAN as v2.2.0. This only Builds on Linux and Darwin platforms.
+Work is being done on v2.2.1 to add building support for other platforms.
+
 The bleeding edge code is available from
 L<http://github.com/kthakore/SDL_Perl/>.
 
-The master branch is stable on CPAN as v2.2.0. Work is being done on the v2.2.1
-branch.  Please test this branch on Windows with MinGW.
+See
+L<http://search.cpan.org/dist/SDL_Perl/>.  Please report any strange behavior
+to the list. 
 
-See L<http://search.cpan.org/dist/SDL_Perl/>.  Please report any strange
-behavior to the list.
+
 
 =head2 Tutorials Online!
 
@@ -48,14 +53,17 @@ each tutorial!  It's very fun.
 Why are these pages new?  In October, David GE<ouml>hrig, the creator and
 maintainer of SDL Perl, announced that he was quitting his job, selling all his
 stuff, and going backpacking in Europe for a few months.  That left SDL Perl
-without a maintainer or a home.
+without a maintainer or a home. But SDL Perl is back and running with Kartik and 
+David's help.
 
 =head2 Future Plans
 
-We're working on polishing the latest code available to make the 1.20.4
-release, as the newest version on the CPAN is rather old.  Then, it's
-miscellaneous cleanups, more documentation and tutorials, bugfixes, and new
-features.
+We're working on polishing the latest code available to make the v2.2.1
+release. One of our goals after a working build is to have a Parrot parser 
+with Perl 5 NCI to make installing even simpler.
+
+Here is the roadmap so far. 
+L<http://wiki.github.com/cthulhuology/SDLPerl>
 
 Hopefully, Perl will soon be a wonderful language in which to write media
 applications -- including games.
@@ -72,5 +80,9 @@ C<sdl-changes-subscribe@perl.org>.
 =item L<http://www.libsdl.org/>
 
 The SDL Homepage
+
+=item L<http://wiki.github.com/kthakore/SDL_perl/dependencies>
+
+Where to find SDL dependencies
 
 =back
