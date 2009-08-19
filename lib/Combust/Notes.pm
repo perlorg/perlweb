@@ -2,6 +2,7 @@ package Combust::Notes;
 use strict;
 
 use Combust::Cookies;
+use Combust::Control;
 
 use Apache::Cookie;
 use Apache::Request;
@@ -10,7 +11,7 @@ use Time::HiRes qw(time); # let's be accurate about this
 use DBI;		  # for DBI::hash()
 
 sub handler {
-  my $r = Apache::Request->instance( shift );
+  my $r = Combust::Control->new(shift)->r;
 
   my $ip      = $r->connection->remote_ip;
   my $param   = $r->param;
