@@ -320,18 +320,12 @@ sub send_cached {
 }
 
 sub default_character_set {
-  'iso-8859-1'
+  'utf-8'
 }
 
 sub send_output {
   my $self = shift;
   
-  # we used to take $r as the first parameter
-  if (ref $_[0] eq "Apache::Request") {
-    cluck "send_output doesn't need \$r passed anymore"; 
-    shift @_;
-  }
-
   my $output = shift;
   my $content_type = shift || $self->content_type || 'text/html';
 
@@ -370,10 +364,9 @@ sub send_output {
   # defining the character set helps in handling the CERT advisory
   # regarding  "cross site scripting vulnerabilities" 
   #   http://www.cert.org/tech_tips/malicious_code_mitigation.html
-  #  $content_type .= "; charset=" . $self->default_character_set
-  #    if $content_type =~ m/^text/ and $content_type !~ m/charset=/;
-  $content_type .= "; charset=utf-8" if $content_type =~ m/^text/ and $content_type !~ m/charset=/;
-  $r->content_type($content_type);
+  $content_type .= "; charset=" . $self->default_character_set
+    if $content_type =~ m/^text/ and $content_type !~ m/charset=/;
+  $self->content_type($content_type);
   #warn "content_type: $content_type";
 
   if ((my $rc = $r->meets_conditions) != OK) {
