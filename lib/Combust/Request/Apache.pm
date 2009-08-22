@@ -19,6 +19,9 @@ sub request_url {
   return 'http://'.$self->_r->hostname.$self->uri.($self->args ? '?' . $self->args : '');
 }
 
+sub content_type {
+    shift->_r->content_type(@_);
+}
 
 
 1;

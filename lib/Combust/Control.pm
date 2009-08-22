@@ -209,11 +209,8 @@ sub get_include_path {
 
   my $cookies = $self->cookies;
 
-  #warn "param:root: ", $r->param('root');
-  #warn "root coookie : ", $cookies->cookie('root');
-
   my ($user);
-  my $root_param = $r->param('root') || '';
+  my $root_param = $self->request->req_param('root') || '';
   if (($user) = ($root_param =~ m!^/?([a-zA-Z]+)$!)) {
     $cookies->cookie('root', "$user");
   } 
@@ -366,8 +363,9 @@ sub send_output {
 
   $self->request->update_mtime(time) if $r->mtime == 0; 
   
-  $r->set_content_length($length);
   $r->set_last_modified();  # set's to whatever update_mtime told us..
+
+  $self->request->header_out('Content-Length' => $length);
 
   # defining the character set helps in handling the CERT advisory
   # regarding  "cross site scripting vulnerabilities" 
@@ -384,7 +382,7 @@ sub send_output {
     return $rc;
   }
 
-  $self->request->send_http_header;
+  $self->request->send_http_header($content_type);
 
   #warn Data::Dumper->Dump([\$output], [qw(output)]);
 

@@ -2,6 +2,8 @@ package Combust::Redirect;
 use strict;
 use Combust::Constant qw(DECLINED DONE);
 
+eval { require Apache2::SubRequest };
+
 my $map = {};
 
 sub redirect_reload {
@@ -80,7 +82,7 @@ sub redirect_check {
       if ($c->[2] eq "I") {
 	$self->request->uri($url);
         my $subr = $self->request->_r->lookup_uri($url);
-        $subr->run(1);
+        my $rc = $subr->run();
         return DONE;
       }
       else {

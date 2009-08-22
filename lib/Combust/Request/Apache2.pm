@@ -64,7 +64,10 @@ sub update_mtime {
 
 sub send_http_header {
     my ( $self, $ct ) = @_;
-    $self->_r->content_type($ct) if $ct;
+    $ct ||= $self->content_type;
+    my $r = $self->_r;
+    $r = $r->main || $r;
+    $r->content_type($ct) if $ct;
     return 1;    # don't need send_http_header in Apache 2
 }
 
