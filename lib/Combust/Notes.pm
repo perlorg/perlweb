@@ -11,7 +11,9 @@ use Time::HiRes qw(time); # let's be accurate about this
 use DBI;		  # for DBI::hash()
 
 sub handler {
-  my $r = Combust::Control->new(shift)->r;
+  my $apr = shift;
+  Apache->request($apr); # ensure Apache->request returns current request
+  my $r = Combust::Control->new($apr)->r;
 
   my $ip      = $r->connection->remote_ip;
   my $param   = $r->param;
