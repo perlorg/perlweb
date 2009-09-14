@@ -14,7 +14,8 @@ use File::Path qw(mkpath);
 use Combust::Config;
 my $config = Combust::Config->new;
 
-use JSON::XS qw(encode_json);
+use JSON::XS;
+my $json = JSON::XS->new;
 
 our @EXPORT = qw(
   logconfig
@@ -34,6 +35,7 @@ our $Verbose = 0 && $Apache::Server::Starting; # avoid used once warning
 our $Domain  = 'udp';
 our $sayfh   = \*STDERR;
 our $saywarn = 0;
+our $utf8    = 1;
 our $done_syslog;
 our $LogToFile;
 our $ShowExitBanner;
@@ -67,10 +69,16 @@ sub logconfig {
   $Domain  = $p{domain}  if exists $p{domain};
   $sayfh   = $p{sayfh}   if exists $p{sayfh};
   $saywarn = $p{saywarn} if exists $p{saywarn};
+  $utf8    = $p{utf8}    if exists $p{utf8};
   $do_syslog = $p{syslog} if exists $p{syslog};
   $only_syslog = $p{only_syslog} if exists $p{only_syslog};
   $SIG{__WARN__} = (ref $p{sigwarn}) ? $p{sigwarn} : \&_sigwarn if $p{sigwarn};
   logbanner() if $p{banner};
+
+  if ($utf8) {
+    binmode(STDERR,":utf8");
+    binmode($sayfh,":utf8");
+  }
 
   _openlog();
 }
@@ -182,7 +190,17 @@ sub logtimes {
 sub _format {
     my @args = @_;
     #warn Data::Dumper->Dump([\@_], [qw(_)]);
-    my $msg = join " ", map { ref $_ ? encode_json($_) : defined $_ ? $_ : 'UNDEF' } @args;
+    my $msg = join " ", map { ref $_ ? $json->encode($_) : defined $_ ? $_ : 'UNDEF' } @args;
+    if ($utf8) {
+        # Our output streams are utf8. If string is not already utf8 and
+        # does not decode as valid utf8, then upgrade from latin1
+        utf8::upgrade($msg) unless utf8::is_utf8($msg) or utf8::decode($msg);
+    }
+    else {
+        # Our output streams cannot handle wide-characters. If msg is utf8 then
+        # attempt to downgrade to latin1, otherwise just ensure the utf8 flag is not set
+        utf8::encode($msg) unless utf8::downgrade($msg,1);
+    }
     $msg;
 }
 
