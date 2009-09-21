@@ -1,6 +1,11 @@
-use Test::More qw(no_plan);
-use lib "$ENV{CBROOT}/lib";
-BEGIN { 
+use Test::More;
+use strict;
+
+BEGIN {
+  unless ($ENV{CBROOT}) {
+    plan skip_all => 'ENV{CBROOT} not set';
+    exit 0;
+  }
   $ENV{CBCONFIG} = "$ENV{CBROOT}/t/config/20.conf";
   use_ok('Combust::Config');
 }
@@ -12,4 +17,4 @@ isa_ok($c->sites, "HASH", "sites hashref"); # TODO - check the data
 
 is($c->base_url('test1'), 'http://test1.local', 'base_url');
 
-
+done_testing();

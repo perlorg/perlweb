@@ -1,10 +1,21 @@
-use Test::More qw(no_plan);
+use Test::More;
 use strict;
 use Data::Dumper;
+
+unless ($ENV{CBROOT} or $ENV{CBCONFIG}) {
+    plan skip_all => 'ENV{CBROOT} or ENV{CBCONFIG} not set';
+    exit 0;
+}
+
+my $has_mysql = eval { require DBD::mysql };
+my $has_memcached = eval { require DBD::memcached };
 
 use_ok('Combust::Cache');
 
 for my $cache_backend (qw(dbi memcached)) {
+    next if $cache_backend eq 'dbi'       and !$has_mysql;
+    next if $cache_backend eq 'memcached' and !$has_memcached;
+
     ok( Combust::Cache->backend($cache_backend), "set backend to $cache_backend" );
     ok( my $cache = Combust::Cache->new( type => "test" ),
         "new Cache object (backend $cache_backend)"
@@ -16,7 +27,7 @@ for my $cache_backend (qw(dbi memcached)) {
 
     my $long_id = '1234567890' x (100);
     ok( $cache->store( id => $long_id, data => "T1" ), "store long key" );
-    ok( my $d = $cache->fetch( id => $long_id ), "fetch simple data" );
+    ok( $d = $cache->fetch( id => $long_id ), "fetch simple data" );
     is( $d->{data}, "T1", "test simple data" );
 
     ok( $cache->store( id => "test2", data => ["T2"] ), "store reference data" );
@@ -42,7 +53,7 @@ for my $cache_backend (qw(dbi memcached)) {
     # 100KB data
     my $large_data = '1234567890' x (10_000);
     ok( $cache->store( id => "test_large", data => $large_data ), "store large data" );
-    ok( my $d = $cache->fetch( id => "test_large" ), "fetch large data" );
+    ok( $d = $cache->fetch( id => "test_large" ), "fetch large data" );
     ok( $d->{data} eq $large_data, "test large data" );
 
     ok( $cache->delete( id => "test_large" ), "delete" );
@@ -74,6 +85,7 @@ isa_ok( $cache, "Combust::Cache::DBI" );
 
 #warn Data::Dumper->Dump([\$d], [qw(d)]);
 
+done_testing();
 
 __END__
 

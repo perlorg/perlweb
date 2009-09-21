@@ -1,9 +1,11 @@
-use Test::More qw(no_plan);
-use lib "$ENV{CBROOT}/lib";
+use Test::More;
+use strict;
 
-BEGIN { 
-  # test Combust::Config bug in picking up the right config file
-  $ENV{CBROOTLOCAL} = $ENV{CBROOT};
+BEGIN {
+  unless ($ENV{CBROOT}) {
+    plan skip_all => 'ENV{CBROOT} not set';
+    exit 0;
+  }
   $ENV{CBCONFIG} = "$ENV{CBROOT}/t/config/51.conf";
   use_ok('Combust::Config');
 }
@@ -13,3 +15,4 @@ is($c->config_file, $ENV{CBCONFIG}, 'config_file');
 
 is($c->base_url('test'), 'http://test.local:8000', 'base_url');
 
+done_testing();

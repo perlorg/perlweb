@@ -1,6 +1,11 @@
-use Test::More qw(no_plan);
-use lib "$ENV{CBROOT}/lib";
-BEGIN { 
+use Test::More;
+use strict;
+
+BEGIN {
+  unless ($ENV{CBROOT}) {
+    plan skip_all => 'ENV{CBROOT} not set';
+    exit 0;
+  }
   $ENV{CBCONFIG} = "$ENV{CBROOT}/t/config/30.conf";
   use_ok('Combust::Config');
 }
@@ -12,4 +17,4 @@ is($c->db_data_source, 'dbi:driver2:database=database2;host=host2', 'db_data_sou
 # If Test::Warning is installed we should test we get the warning...
 is($c->database('not_here'), $c->database('test2'), q[unconfigured database (get default, with warning)]);
 
-
+done_testing();

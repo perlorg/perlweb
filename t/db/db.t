@@ -28,10 +28,3 @@ is(($dbh2->selectrow_array($select))[0], "n2", "select n2");
 
 unlink "t/db/test1.db";
 unlink "t/db/test2.db";
-
-
-
-
-
-
-
