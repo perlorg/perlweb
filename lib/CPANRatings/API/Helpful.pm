@@ -1,6 +1,6 @@
 package CPANRatings::API::Helpful;
 use strict;
-use base qw(CPANRatings::API);
+use base qw(Combust::API::Base);
 
 sub vote {
   my $self = shift;

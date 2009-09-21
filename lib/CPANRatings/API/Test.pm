@@ -1,6 +1,6 @@
 package CPANRatings::API::Test;
 use strict;
-use base qw(CPANRatings::API);
+use base qw(Combust::API::Base);
 
 sub echo {
     my ($self) = @_;
