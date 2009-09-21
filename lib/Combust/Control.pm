@@ -1,6 +1,5 @@
 package Combust::Control;
 use strict;
-use Exception::Class ('ControllerException');
 use Combust::Constant qw(OK SERVER_ERROR MOVED DONE DECLINED REDIRECT);
 use Carp qw(confess cluck carp);
 use Digest::SHA1 qw(sha1_hex);
@@ -10,8 +9,6 @@ use base qw(Combust::Redirect);
 
 # TODO: figure out why we use this; remove it if possible
 require bytes;
-
-use Exception::Class ('Ex_ServerError');
 
 use Combust::Cache;
 use Combust::Template;

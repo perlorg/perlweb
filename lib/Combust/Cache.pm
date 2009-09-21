@@ -53,7 +53,10 @@ sub backend {
     }
   }
 
-  # return $self->{_backend} if ref $self and $self->{_backend};
+  if (my $class = ref $self) {
+      $class =~ s/.*:://;
+      return lc $class;
+  }
   return $default_backend;
 }
 

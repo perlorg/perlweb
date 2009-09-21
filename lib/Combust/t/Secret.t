@@ -1,5 +1,12 @@
-use Test::More tests => 8;
+use Test::More;
 use strict;
+
+unless (eval { require DBD::mysql } ) {
+    plan skip_all => 'Could not load DBD::mysql module';
+    exit 0;
+}
+
+plan tests => 8;
 
 use_ok('Combust::Secret');
 
