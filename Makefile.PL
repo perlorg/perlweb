@@ -23,12 +23,13 @@ test_requires 'Test::More' => '0.88';
 test_requires 'HTML::TagCloud';
 test_requires 'Template::Plugin::Number::Format';
 
-#requires       'File::Spec'  => '0.80';
-#test_requires  'Test::More'  => '0.42';
+tests_recursive;
+
 #recommends     'Text::CSV_XS'=> '0.50';
 #no_index       'directory'   => 'demos';
 
 #install_script 'myscript';
+
   
 postamble("
 
