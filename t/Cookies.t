@@ -37,30 +37,30 @@ is($cookies->cookie('r', 'root'), 'root', 'set r=root');
 ok(my @cookies = $cookies->bake_cookies, 'bake cookies');
 my $cookie_string = $ENV{COOKIE} = join " ", map { $_->name . "=" . $_->value  } @cookies;
 
-warn "ENV: $ENV{COOKIE}";
+#warn "ENV: $ENV{COOKIE}";
 
 #warn Data::Dumper->Dump([\@cookies], [qw(cookies)]);
 
-ok(my $request = Combust::Control->new->request, 'new request');
-ok(my $cookies = Combust::Cookies->new($request), 'new cookies');
+ok($request = Combust::Control->new->request, 'new request');
+ok($cookies = Combust::Cookies->new($request), 'new cookies');
 is($cookies->cookie('foo'), $rand, 'is cookie the same still?');
 is($cookies->cookie('r'), 'root', 'is the special cookie the same still?');
 
 $ENV{COOKIE} = join " ", map { my $v = $_->value; $v =~ s/.$/x/; $_->name . "=" . $v } @cookies;
 
-ok(my $request = Combust::Control->new->request, 'new request');
-ok(my $cookies = Combust::Cookies->new($request), 'new cookies');
+ok($request = Combust::Control->new->request, 'new request');
+ok($cookies = Combust::Cookies->new($request), 'new cookies');
 is($cookies->cookie('foo'), '', 'should not get foo cookie (bad checksum)');
 
 use Encode;
 Encode::_utf8_off($cookie_string);
 $ENV{COOKIE} = $cookie_string;
-ok(my $request = Combust::Control->new->request, 'new request');
-ok(my $cookies = Combust::Cookies->new($request), 'new cookies');
+ok($request = Combust::Control->new->request, 'new request');
+ok($cookies = Combust::Cookies->new($request), 'new cookies');
 is($cookies->cookie('cpruid'), '2', 'get cpruid cookie');
 
 Encode::_utf8_on($cookie_string);
 $ENV{COOKIE} = $cookie_string;
-ok(my $request = Combust::Control->new->request, 'new request');
-ok(my $cookies = Combust::Cookies->new($request), 'new cookies');
+ok($request = Combust::Control->new->request, 'new request');
+ok($cookies = Combust::Cookies->new($request), 'new cookies');
 is($cookies->cookie('cpruid'), '2', 'get cpruid cookie');
