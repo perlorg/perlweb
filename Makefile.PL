@@ -21,6 +21,7 @@ requires  'Sub::Install';
 test_requires 'Data::Dumper';
 test_requires 'Test::More' => '0.88';
 test_requires 'HTML::TagCloud';
+test_requires 'Template::Plugin::Number::Format';
 
 #requires       'File::Spec'  => '0.80';
 #test_requires  'Test::More'  => '0.42';
@@ -29,5 +30,16 @@ test_requires 'HTML::TagCloud';
 
 #install_script 'myscript';
   
+postamble("
+
+.PHONY: testcover
+
+cover:
+\tcover -delete
+\tHARNESS_PERL_SWITCHES=-MDevel::Cover make test
+\tcover
+
+");
+
 WriteAll;
 
