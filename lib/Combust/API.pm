@@ -31,16 +31,18 @@ sub setup_api {
 sub setup_api_call {
     my ($class, $name, $args) = @_;
 
-    my ($group, $method) = ($name =~ m!^(\w+)/?([a-z]\w+)?!);
-    die "Invalid method name\n" unless $group and $method;
-    
+    my ($group, $method) = ($name =~ m!^(\w+)(?:/(\w+))?!);
+    die "Invalid method name\n" if !$group or $method && $method =~ m/^_/;
+
     my $subclass = $class->api_classes->{$group}
       or die qq[No class "$group"\n];
-    
+
+    $method = 'index' if $method eq '';
+
     unless ($method and $subclass->can($method)) {
         return die qq[No method "$method"\n];
     }
-    
+
     my $sc = $subclass->new( args => $args );
 
     return bless { 
