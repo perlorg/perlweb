@@ -28,10 +28,10 @@ BEGIN {
 sub handler {
   my $apr = shift;
 
-  return OK if $r->pnotes('combust_notes');
+  return OK if $apr->pnotes('combust_notes');
 
  if (MP2) {
-    $r = Apache2::RequestUtil->request($apr);
+    Apache2::RequestUtil->request($apr);
   }
   else {
     Apache->request($apr); # ensure Apache->request returns current request
