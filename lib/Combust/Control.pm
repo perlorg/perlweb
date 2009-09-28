@@ -276,7 +276,7 @@ sub evaluate_template {
   if ($@) {
       warn( (ref $self ? ref $self : $self) . "  - ". $r->uri . ($r->args ? '?' .$r->args : '')
             . " - error processing template $template: $@");
-      Ex_ServerError->throw( error => $@ );
+      die $@;
   }
 
   return $output;
