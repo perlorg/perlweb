@@ -20,7 +20,12 @@ sub request_url {
 }
 
 sub content_type {
-    shift->_r->content_type(@_);
+    my $req = shift;
+    my $ct = $req->_r->content_type(@_);
+    if ($ct eq 'httpd/unix-directory') {
+        return 'text/html';
+    }
+    return $ct;
 }
 
 
