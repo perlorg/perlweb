@@ -3,6 +3,7 @@ use strict;
 
 use Combust::Cookies;
 use Combust::Constant qw(OK);
+use Combust::Control;
 
 use Time::HiRes qw(time); # let's be accurate about this
 use DBI;		  # for DBI::hash()
@@ -25,16 +26,17 @@ BEGIN {
 
 
 sub handler {
-  my $r = shift;
+  my $apr = shift;
 
   return OK if $r->pnotes('combust_notes');
 
  if (MP2) {
-    $r = Apache2::Request->new( $r, TEMP_DIR => Combust->config->work_path );
+    $r = Apache2::RequestUtil->request($apr);
   }
   else {
-    $r = Apache::Request->instance( $r, TEMP_DIR => Combust->config->work_path  );
+    Apache->request($apr); # ensure Apache->request returns current request
   }
+  my $r = Combust::Control->new($apr)->r;
 
   my $ip      = $r->connection->remote_ip;
   my $param   = $r->param;
