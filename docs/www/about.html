@@ -1,101 +1,112 @@
 [% META title = 'About Perl' %]
 [% page.style = "perl-directory.html" %]
 
+[% PROCESS tpl/stats.html %]
+
 [% page.sidebar = BLOCK %]
-
-
-
-  <DIV class="NAVITEM">
-   <H3>More about Perl</H3>
-        <a href="/about/style-guide.html">"perl" or "Perl"?</A>
-    <BR><a href="http://www.oreillynet.com/pub/a/oreilly/perl/news/success_stories.html">Success stories</a>
-    <BR><a href="http://history.perl.org/">Perl's history</a>
-    <BR><a href="/about/reduce-risks.html">Reducing Business Risks</A>
-  </div>
-  <DIV class="NAVITEM">
-   <H3>Who uses Perl?</H3>
-<A HREF="http://www.tpj.com">The Perl Journal</A> estimated that there
-are over 1,000,000 Perl users.  More than 200 local <A
-HREF="http://www.pm.org">Perl user groups</A> exist on six continents.
-   </div>
-
-<DIV class="NAVITEM" ALIGN="CENTER">
-<A HREF="http://www.linuxjournal.com/article/6995">
- <IMG SRC="/images/LJEditorsChoice2003.png" BORDER=0
-  ALT="Linux Journal, Editors' Choice, 2003"
-  >
-</A>
-</DIV>
-
-  <DIV class="NAVITEM">
-<h3>Larry Wall,
-<br>
-Perl's Creator</h3>
-Larry received the Dr. Dobbs Journal
-<A HREF="http://www.ddj.com/documents/s=963/ddj9603a/"
->Excellence in Programming Award</A> (March 1996)
-and was awarded the first Free Software Foundation
-<A HREF="http://www.gnu.org/award/award-1998.html"
->Award for the Advancement of Free Software.</A> (October 1998)
+<div class="NAVITEM">
+    <h3>
+        More about Perl
+    </h3><a href="/about/style-guide.html">"perl" or "Perl"?</a><br>
+    <a href="http://www.oreillynet.com/pub/a/oreilly/perl/news/success_stories.html">Success stories</a><br>
+    <a href="http://history.perl.org/">Perl's history</a><br>
+    <a href="/about/reduce-risks.html">Reducing Business Risks</a>
+</div>
+<div class="NAVITEM">
+    <h3>
+        Who uses Perl?
+    </h3><a href="http://www.tpj.com">The Perl Journal</a> estimated that there are over 1,000,000 Perl users. More than [% perl_stats.monger_groups %] local <a href="http://www.pm.org">Perl user groups</a> exist on six continents.
+</div>
+<div class="NAVITEM" align="center">
+    <a href="http://www.linuxjournal.com/article/6995"><img src="/images/LJEditorsChoice2003.png" border="0" alt="Linux Journal, Editors' Choice, 2003"></a>
+</div>
+<div class="NAVITEM">
+    <h3>
+        Larry Wall,<br>
+        Perl's Creator
+    </h3>Larry received the Dr. Dobbs Journal <a href="http://www.ddj.com/documents/s=963/ddj9603a/">Excellence in Programming Award</a> (March 1996) and was awarded the first Free Software Foundation <a href="http://www.gnu.org/award/award-1998.html">Award for the Advancement of Free Software.</a> (October 1998)
+</div>
 
 </div>
 
 [% END %]
 
-
-<P>
-<h3>Perl Facts</H3>
+<h3>
+    Perl Features
+</h3>
 <ul>
-<li>Perl is a stable, cross platform programming language.
-<li>It is used for mission critical projects in the public and private sectors.
-<li>Perl is <A HREF="http://www.opensource.org/">Open Source</A> software, 
-    <A HREF="http://dev.perl.org/licenses/">licensed</A>
-     under its <A HREF="http://dev.perl.org/licenses/artistic.html">Artistic License</A>, or the
-    <A HREF="http://dev.perl.org/licenses/gpl1.html">GNU General Public License (GPL)</A>.
-<li>Perl was created by Larry Wall.
-<li>Perl 1.0 was released to usenet's alt.comp.sources in 1987
-<li><i>PC Magazine</i> named Perl a finalist for its 1998 Technical Excellence Award in the Development Tool category.
-<li>Perl is listed in the <A HREF="http://www.oed.com"
-    >Oxford English Dictionary</A>.
+    <li>Perl is a <strong>stable</strong>, <strong>cross platform</strong> programming language.
+    </li>
+    <li>It is used for <strong>mission critical</strong> projects in the public and private sectors.
+    </li>
+    
+    <li>Perl supports both <strong>procedural</strong> and <strong>object-oriented</strong> programming.
+    </li>
+    <li>Perl supports <a href="http://www.unicode.org"><strong>Unicode</strong></a>.
+    </li>
+    <li>Perl is <strong>extensible</strong>. There are over <strong>[% perl_stats.cpan_dists %] open source third party modules</strong> available from the Comprehensive Perl Archive Network (<a href="http://cpan.perl.org">CPAN</a>).
+    </li>
+
+    <li>Perl works with HTML, XML, and other mark-up languages.
+    </li>
+    
+    
+    <li>Perls <strong>database</strong> integration interface (<a href="http://dbi.perl.org">DBI</a>) supports third-party databases including Oracle, Sybase, <a href="http://www.postgresql.org">Postgres</a>, <a href="http://www.mysql.com">MySQL</a> and others.
+    </li>
+    <li>Perl <strong>interfaces</strong> with external C/C++ libraries through XS or <a href="http://www.swig.org">SWIG</a>.
+    </li>
+    <li>The Perl interpreter can be <strong>embedded</strong> into other systems.
+    </li>
+    <li>Perl is <a href="http://www.opensource.org/"><strong>Open Source</strong></a> software, <a href="http://dev.perl.org/licenses/">licensed</a> under its <a href="http://dev.perl.org/licenses/artistic.html">Artistic License</a>, or the <a href="http://dev.perl.org/licenses/gpl1.html">GNU General Public License (GPL)</a>.
+    </li>
+
 </ul>
 
-<h3>Supported Operating Systems</h3>
+<h3>
+    Perl and the Web
+</h3>
 <ul>
-<li>Unix systems
-<li>Macintosh - (OS 7-9 and X)  see <a href="http://www.macperl.com">The MacPerl Pages</a>.
-<li>Windows - see <a href="http://www.activestate.com/Products/ActivePerl/">ActiveState Tools Corp.</a>
-<li>VMS
-<li><A HREF="http://www.cpan.org/ports/index.html">And many more...</A>
+    <li>Perl is an ideal web programming language due to its <strong>text manipulation capabilities</strong> and <strong>rapid development cycle</strong>.
+    </li>
+    <li>There are many <strong>web frameworks</strong> written in Perl, a leading one is <a href="http://www.catalystframework.org/">Catalyst</a>. 
+    </li>
+    <li><a href="http://search.cpan.org/">CPAN</a> offers <strong>thousands of modules</strong>, so almost any task you need to accomplish will be made easier, from URL or Image manipulation, to Amazon EC2 APIs and much more.
+    </li>
+    <li>Perl has long been known as " <a href="http://www.google.com/search?q=the%20duct-tape%20of%20the%20Internet">the duct-tape of the Internet</a>", however many <strong>large web based applications are also written solely in Perl</strong>.
+    </li>
+    <li>Perl can handle <strong>encrypted Web data</strong>, including <strong>e-commerce transactions</strong>.
+    </li>
+    <li>Perl can be embedded into web servers to <strong>speed up</strong> processing by as much as 2000%, <a href="http://perl.apache.org">mod_perl</a> allows the <strong>Apache</strong> web server to embed a Perl interpreter.
+    </li>
+    <li>Perl's <a href="http://dbi.perl.org">DBI</a> package makes <strong>web-database integration easy</strong>.
+    </li>
 </ul>
 
-<h3>Perl Features</h3>
+<h3>
+    Supported Operating Systems
+</h3>
 <ul>
-<li>Perl takes the best features from other languages, such as
-C, awk, sed, sh, and BASIC, among others.
-<li>Perls database integration interface (<A HREF="http://dbi.perl.org">DBI</A>) supports third-party databases including Oracle, Sybase, <A HREF="http://www.postgresql.org">Postgres</A>, <A HREF="http://www.mysql.com">MySQL</A> and others.
-<li>Perl works with HTML, XML, and other mark-up languages.
-<li>Perl supports <A HREF="http://www.unicode.org">Unicode</A>.
-<li>Perl is <A HREF="/about/y2k.html">Y2K compliant</A>.
-<li>Perl supports both procedural and object-oriented programming.
-<li>Perl interfaces with external C/C++ libraries through XS or <A HREF="http://www.swig.org">SWIG</A>.
-<LI>Perl is extensible. There are over 500 third party modules available
-from the Comprehensive Perl Archive Network (<a href="http://cpan.perl.org">CPAN</a>).
-<li>The Perl interpreter can be embedded into other systems.
+    <li>Unix systems
+    </li>
+    <li>Macintosh - (OS 7-9 and X).
+    </li>
+    <li>Windows - see <a href="http://www.activestate.com/Products/ActivePerl/">ActiveState Tools Corp.</a>
+    </li>
+    <li>VMS
+    </li>
+    <li>
+        <a href="http://www.cpan.org/ports/index.html">And many more...</a>
+    </li>
 </ul>
 
-<h3>Perl and the Web</h3>
+<h3>
+    Perl Facts
+</h3>
 <ul>
-<li>Perl is the most popular web programming language due to its 
-text manipulation capabilities and rapid development cycle.
-<li>Perl is widely known as &quot;
-    <A HREF="http://www.google.com/search?q=the%20duct-tape%20of%20the%20Internet"
-       >the duct-tape of the Internet</A>&quot;.
-<li>Perl's CGI.pm module, part of Perl's standard distribution, makes handling 
-    HTML forms simple.
-<li>Perl can handle encrypted Web data, including e-commerce transactions.
-<li>Perl can be embedded into web servers to speed up processing by as much
-as 2000%. 
-<li><a href="http://perl.apache.org">mod_perl</A> allows the Apache web server to embed a Perl interpreter.
-<li>Perl's <A HREF="http://dbi.perl.org">DBI</A> package makes web-database integration easy.
+    <li>Perl was created by Larry Wall.
+    </li>
+    <li>Perl 1.0 was released to usenet's alt.comp.sources in 1987
+    </li>
+    <li>Perl is listed in the <a href="http://www.oed.com">Oxford English Dictionary</a>.
+    </li>
 </ul>
-
