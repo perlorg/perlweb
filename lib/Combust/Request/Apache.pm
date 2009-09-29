@@ -22,7 +22,7 @@ sub request_url {
 sub content_type {
     my $req = shift;
     my $ct = $req->_r->content_type(@_);
-    if ($ct eq 'httpd/unix-directory') {
+    if ($ct and $ct eq 'httpd/unix-directory') {
         return 'text/html';
     }
     return $ct;
