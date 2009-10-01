@@ -9,7 +9,7 @@ my $json;
 sub _json {
     return $json if $json;
     $json = JSON::XS->new;
-    $json->utf8(1);   # we need JSON::XS to handle UTF-8 correctly
+    $json->ascii(1);   # we need JSON::XS to handle UTF-8 correctly, encode unicode chars with \uXXXX
     $json->pretty(1); # should be devel mode only
     $json->convert_blessed(1);
     return $json;
