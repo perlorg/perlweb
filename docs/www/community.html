@@ -1,53 +1,79 @@
 [% META title = 'The Perl Community' %]
 [% page.style = "perl-directory.html" %]
 
+[% PROCESS tpl/stats.html %]
 
 [% page.sidebar = BLOCK %]
-
-<DIV CLASS="NAVITEM">
-<H3>Many ways to particpate</H3>
-Perl's great strength lies within
-the active community of Perl
-developers and users.
+<div class="NAVITEM">
+    <h3>
+        Many ways to particpate
+    </h3>Perl's great strength lies within the active community of Perl developers and users.
 </div>
 [% END %]
+<p>One of Perls biggest strengths is it's community...</p>
 
-<P>
-<H3>Community Web Sites</H3>
-
-<UL>
-<LI><a href="http://planet.perl.org/">Planet Perl</A> - an aggregation of selected perl journals
-<LI><a href="http://perlsphere.net/">Perlsphere</a> - another aggregation of selected perl blogs
-<LI><a href="http://use.perl.org/">use Perl;</a> - read community news and personal journals, or start your own journal
-<LI><a href="http://www.perlmonks.com/">PerlMonks</a> - the wisdom of the Monks can guide you on your Perl Quests
-<LI><a href="http://www.perl.org/">perl.org</a> - your current location
-</UL>
-
-<H3>Local Communities</H3>
-   <UL>
-     <LI><a href="http://www.pm.org/">Perl Mongers</a> - find your local Perl user group</LI>
-     <LI><A HREF="http://www.mongueurs.net/">French Perl Mongers</A></LI>
-     <LI><A HREF="http://www.perl.it">Italian Perl Mongers</A></LI>
-     <LI><A HREF="http://www.perlmongers.de/">German Perl Mongers</A></LI>
-     <LI><A HREF="http://www.perlunity.de/">German Perl Unity</A></LI>
-     <LI><A HREF="http://www.perl-community.de">German Perl Community</A></LI>
-   </UL>
-
-
-<H3>Mail Lists</H3>
-<a href="http://lists.perl.org/">lists.perl.org</a> has information on all 
-the Perl mail lists you can join.  Here are a few of note:
-<UL>
-<LI><a href="http://lists.perl.org/showlist.cgi?name=beginners">perl-beginners</a> - need help?  try here!
-<LI><a href="http://lists.perl.org/showlist.cgi?name=beginners-cgi">beginners-cgi</a> - cgi specific help
-<LI><a href="http://lists.perl.org/showlist.cgi?name=bioperl-l">BioPerl</a> - bioinformatics
-<LI><a href="http://lists.perl.org/showlist.cgi?name=macperl">Mac Perl</a> - OS9 perl discussion
-<LI><a href="http://lists.perl.org/showlist.cgi?name=perl-win32-users">Win32 Perl</a> - for windows Perl users
-</UL>
-
-<h3>IRC</h3>
+<h3>
+    Local Communities
+</h3>
 <ul>
-  <li><a href="http://www.irc.perl.org">irc.perl.org</a></li>
+    <li>
+        <a href="http://www.pm.org/">Perl Mongers</a> - find your local perl group from over [% perl_stats.monger_groups %] groups world wide.
+    </li>
+    <li>Or go directly to: 
+        <a href="http://www.mongueurs.net/">French Perl Mongers</a>, 
+        <a href="http://www.perl.it">Italian Perl Mongers</a>,
+        <a href="http://www.perlmongers.de/">German Perl Mongers</a> websites
+    </li>
+</ul>
+
+<h3>
+    Community Web Sites
+</h3>
+<ul>
+    <li>
+        <a href="http://www.perlmonks.com/">PerlMonks</a> - A community committed to sharing Perl knowledge and coding tips. The site contains questions and answers, useful snippets, and a library of code.
+    </li>
+    <li>
+        <a href="http://www.perl.org/">perl.org</a> - your current location
+    </li>
+    <li>
+        <a href="http://planet.perl.org/">Planet Perl</a> - an aggregation of selected perl journals
+    </li>
+    <li>
+        <a href="http://perlsphere.net/">Perlsphere</a> - another aggregation of selected perl blogs
+    </li>
+    <li>
+        <a href="http://use.perl.org/">use Perl;</a> - read community news and personal journals, or start your own journal
+    </li>
+</ul>
+
+<h3>
+    Mail Lists
+</h3>
+<p>
+    <a href="http://lists.perl.org/">lists.perl.org</a> has information on all the Perl mail lists you can join. Here are a few of note:
+</p>
+<ul>
+    <li>
+        <a href="http://lists.perl.org/showlist.cgi?name=beginners">perl-beginners</a> - need help? try here!
+    </li>
+    <li>
+        <a href="http://lists.perl.org/showlist.cgi?name=beginners-cgi">beginners-cgi</a> - cgi specific help
+    </li>
+    <li>
+        <a href="http://lists.perl.org/showlist.cgi?name=bioperl-l">BioPerl</a> - bioinformatics
+    </li>
+    <li>
+        <a href="http://lists.perl.org/showlist.cgi?name=perl-win32-users">Win32 Perl</a> - for windows Perl users
+    </li>
+</ul>
+<h3>
+    IRC
+</h3>
+<ul>
+    <li>
+        <a href="http://www.irc.perl.org">irc.perl.org</a>
+    </li>
 </ul>
 
 
