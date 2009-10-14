@@ -13,6 +13,9 @@ LoadModule alias_module [% apache_modules %]/mod_alias.so
 LoadModule env_module [% apache_modules %]/mod_env.so
 LoadModule status_module [% apache_modules %]/mod_status.so
 
+LoadModule deflate_module [% apache_modules %]/mod_deflate.so
+LoadModule logio_module [% apache_modules %]/mod_logio.so
+
 LoadModule authn_file_module [% apache_modules %]/mod_authn_file.so
 LoadModule authz_host_module [% apache_modules %]/mod_authz_host.so
 
@@ -20,6 +23,10 @@ LoadModule rewrite_module [% apache_modules %]/mod_rewrite.so
 
 LoadModule mime_module [% apache_modules %]/mod_mime.so
 TypesConfig [% root %]/apache/conf/mime.types
+
+AddOutputFilterByType DEFLATE text/html text/plain text/xml
+AddOutputFilterByType DEFLATE text/javascript text/css 
+AddOutputFilterByType DEFLATE application/xhtml+xml application/rss+xml
 
 PerlOptions +GlobalRequest
 
