@@ -53,128 +53,144 @@ of online books, including many of your favorite Perl books.</p>
 <h2>
     Full Text
 </h2>
+
+[% BLOCK book_block %]
 <p>
-    <a name="beginningperl" id="beginningperl"></a>
+    <a name="[% name %]" id="[% name %]"></a>
 </p>
 <div class="book">
-    <b><a class="booktitle" href="/books/beginning-perl/">Beginning Perl</a></b> (click on title to read)<br>
-    <font size="-2">by Simon Cozens, Peter Wainwright. 700 pages. Wrox Press Inc. (May 25, 2000).<br></font>
+    [% IF isbn %]
+        <iframe align="right" src="http://rcm.amazon.com/e/cm?lt1=_blank&bc1=FFFFFF&IS2=1&bg1=FFFFFF&fc1=000000&lc1=0000FF&t=develooper&o=1&p=8&l=as1&m=amazon&f=ifr&asins=[% isbn %]" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>[% END %]
+    <b><a class="booktitle"[% IF link %] href="[% link %]"[% END %]>[% title %]</a></b> <br />
+    <font size="-2">[% author %]<br></font>
     <p>
-        Beginning Perl is a different kind of Perl book. It's written particularly with the beginning programmer in mind, but it doesn't treat you like an idiot, and experienced programmers will not feel patronised. It covers a lot of ground, from the very basics of programming, right through to developing CGI applications for the web. More importantly, it emphasises good Perl practice, and readable and maintainable code.
-    </p>Buy from: [% INCLUDE "tpl/bookstore-links" isbn="1861003145" style="text" %]
+        [% IF link %]<a href="[% link %]"><strong>Read [% IF sample %]sample chapters[% ELSE %]entire book free[% END %] online...</strong></a><br />[% END %]
+[% description %]
+        
+    </p>[% IF isbn %]Buy from: [% INCLUDE "tpl/bookstore-links" style="text" %][% END %]
 </div>
-<p>
-    <a name="impatientperl" id="impatientperl"></a>
-</p>
-<div class="book">
-    <b><a class="booktitle" href="/books/impatient-perl/">Impatient Perl</a></b> (click on title to read)<br>
-    <font size="-2">by Greg London (Feb 7, 2004).<br></font>
-    <p>
-        You write code for a living, and your inherit a legacy program written in perl. You can program in your native language in your sleep. But you don't know perl at all, or you've only dabbled with it. Your deadline doesn't give you enough time to rewrite the legacy program in your native language, but it needs new features. You need to learn perl, and you need to learn it NOW. "Impatient Perl" was written for you.
-    </p>
-</div>
-<p>
-    <a name="extremeperl" id="extremeperl"></a>
-</p>
-<div class="book">
-    <b><a class="booktitle" href="http://www.extremeperl.org/">Extreme Perl</a></b> (click on title to read)<br>
-    <font size="-2">by Robert Nagler<br></font>
-    <p>
-        This book is about a marriage of two compatible yet unlikely partners. Extreme Programming (XP) is a software development methodology that enables users, business people, programmers, and computers to communicate effectively. Perl is a dynamic programming language that lets an XP team embrace the inevitable change caused by effective communication. Perl is the fixer and doer of the pair, and XP is the organizer and facilitator. Together they help you build robust software applications efficiently.
-    </p>
-</div>
-<p>
-    <a name="macperlpe" id="macperlpe"></a>
-</p>
-<div class="book">
-    <b><a class="booktitle" href="http://macperl.com/ptf_book/r/MP/i2.html">MacPerl: Power &amp; Ease</a></b> (click on title to read)<br>
-    <font size="-2">by Vicky Brown and Chris Nandor. 372 pages. (1998).<br></font>
-    <p>
-        MacPerl: Power and Ease is designed for both the beginner to Perl, and those who want to take advantage of Perl on Mac OS. It's divided into three primary sections: learning about programming, learning about Perl, and advanced topics. The latter includes brief sections on objects and references, and more complete information on how to use the Mac toolbox modules for making windows and dialog boxes and using AppleScript with Perl. It covers the MacPerl based on perl 5.004, and Mac OS (Classic), but much of the first two parts apply to any platform, and much of the third part applies to Mac OS X
-    </p>Buy from: [% INCLUDE "tpl/bookstore-links" isbn="1881957322" style="text" %]
-</div>
-<p>
-    <a name="masonbook" id="masonbook"></a>
-</p>
-<div class="book">
-    <b><a class="booktitle" href="http://www.masonbook.com">Embedding Perl in HTML with Mason</a></b> (click on title to read)<br>
-    <font size="-2">by Dave Rolsky, Ken Williams. 318 pages. O'Reilly &amp; Associates. (October 2002).<br></font>
-    <p>
-        This book shows you how to create large, complex, dynamically driven web sites that look good and are a snap to maintain. You'll learn how to visualize multiple Mason-based solutions to any given problem and select among them. The book covers the latest line of Mason development 1.1x, which has many new features, including line number reporting based on source files, sub-requests, and easier use as a CGI.
-    </p>Buy from: [% INCLUDE "tpl/bookstore-links" isbn="0596002254" style="text" %]
-</div>
-<p>
-    <a name="pup" id="pup"></a>
-</p>
-<div class="book">
-    <b><a class="booktitle" href="http://www.linuxtopia.org/online_books/perl/index.html">Picking Up Perl</a></b> (click on title to read)<br>
-    <font size="-2">by Bradley M. Kuhn and Neil Smyth. self published. second edition. (July 2005).<br></font>
-    <p>
-        This book has been created for a number of reasons. The primary reason is to provide a freely redistributable tutorial for the Perl language. In writing this freely redistributable tutorial, it is our hope that the largest number of people can have access to it and share it.
+[% END %]
+
+[% PROCESS book_block
+    name => 'beginningperl',
+    title => 'Beginnng Perl',
+    isbn => '1861003145',
+    link => '/books/beginning-perl/',
+    author => 'by Simon Cozens, Peter Wainwright. 700 pages. Wrox Press Inc. (May 25, 2000).',
+    description => "
+    Beginning Perl is a different kind of Perl book. It's written particularly with the beginning programmer in mind, but it doesn't treat you like an idiot, and experienced programmers will not feel patronised. It covers a lot of ground, from the very basics of programming, right through to developing CGI applications for the web. More importantly, it emphasises good Perl practice, and readable and maintainable code.
+    ",
+%]
+
+[% PROCESS book_block
+    name => 'impatientperl',
+    title => 'Impatient Perl',
+    isbn => '',
+    link => '/books/impatient-perl/',
+    author => 'by Greg London (Feb 7, 2004).',
+    description => "You write code for a living, and your inherit a legacy program written in perl. You can program in your native language in your sleep. But you don't know perl at all, or you've only dabbled with it. Your deadline doesn't give you enough time to rewrite the legacy program in your native language, but it needs new features. You need to learn perl, and you need to learn it NOW. \"Impatient Perl\" was written for you.",
+%]
+
+
+[% PROCESS book_block
+    name => 'extremeperl',
+    title => 'Extreme Perl',
+    isbn => '',
+    link => 'http://www.extremeperl.org/',
+    author => 'by Robert Nagler',
+    description => "This book is about a marriage of two compatible yet unlikely partners. Extreme Programming (XP) is a software development methodology that enables users, business people, programmers, and computers to communicate effectively. Perl is a dynamic programming language that lets an XP team embrace the inevitable change caused by effective communication. Perl is the fixer and doer of the pair, and XP is the organizer and facilitator. Together they help you build robust software applications efficiently.",
+%]
+
+
+
+
+[% PROCESS book_block
+    name => 'macperlpe',
+    title => 'MacPerl: Power &amp; Ease',
+    isbn => '1881957322',
+    link => 'http://macperl.com/ptf_book/r/MP/i2.html',
+    author => 'by Vicky Brown and Chris Nandor. 372 pages. (1998).',
+    description => "MacPerl: Power and Ease is designed for both the beginner to Perl, and those who want to take advantage of Perl on Mac OS. It's divided into three primary sections: learning about programming, learning about Perl, and advanced topics. The latter includes brief sections on objects and references, and more complete information on how to use the Mac toolbox modules for making windows and dialog boxes and using AppleScript with Perl. It covers the MacPerl based on perl 5.004, and Mac OS (Classic), but much of the first two parts apply to any platform, and much of the third part applies to Mac OS X",
+%]
+
+[% PROCESS book_block
+    name => 'masonbook',
+    title => 'Embedding Perl in HTML with Mason',
+    isbn => '0596002254',
+    link => 'http://www.masonbook.com/',
+    author => 'by Dave Rolsky, Ken Williams. 318 pages. O\'Reilly &amp; Associates. (October 2002).',
+    description => "This book shows you how to create large, complex, dynamically driven web sites that look good and are a snap to maintain. You'll learn how to visualize multiple Mason-based solutions to any given problem and select among them. The book covers the latest line of Mason development 1.1x, which has many new features, including line number reporting based on source files, sub-requests, and easier use as a CGI.",
+%]
+
+
+[% PROCESS book_block
+    name => 'pup',
+    title => 'Picking Up Perl',
+    isbn => '',
+    link => 'http://www.linuxtopia.org/online_books/perl/index.html',
+    author => 'by Bradley M. Kuhn and Neil Smyth. self published. second edition. (July 2005).',
+    description => "This book has been created for a number of reasons. The primary reason is to provide a freely re-distributable tutorial for the Perl language. In writing this freely re-distributable tutorial, it is our hope that the largest number of people can have access to it and share it.
     </p>
     <p>
         In the Perl community, we have discovered ways to save time by writing Perl programs that make our jobs and lives easier. Surely, Perl is not a panacea, but it has certainly made our lives a little bit better. It is hoped that you can use Perl to make your jobs and lives easier, too.
     </p>
     <p>
-        <a href="http://www.ebb.org/PickingUpPerl">First Edition (July 1999)</a>
-    </p>
-</div>
-<p>
-    <a name="perl5int" id="perl5int"></a>
-</p>
-<div class="book">
-    <b><a class="booktitle" href="http://www.faqs.org/docs/perl5int/">Perl 5 Internals</a></b> (click on title to read)<br>
-    <font size="-2">by Simon Cozens (2001).<br></font>
-    <p>
-        A hands-on introduction to how the perl interpreter works internally, how to go about testing and fixing bugs in the interpreter, and what the internals are likely to look like in the future of Perl, Perl 6.
-    </p>
-</div>
-<p>
-    <a name="pmp" id="pmp"></a>
-</p>
-<div class="book">
-    <b><a class="booktitle" href="http://www.modperlbook.org">Practical mod_perl</a></b> (click on title to read)<br>
-    <font size="-2">by Stas Bekman &amp; Eric Cholet. 924 pages. O'Reilly &amp; Associates. (May 27, 2003).<br></font>
-    <p>
-        Mod_perl embeds the popular programming language Perl in the Apache web server, giving rise to a fast and powerful web programming environment. Written for Perl web developers and web administrators, Practical mod_perl is an extensive guide to the nuts and bolts of the powerful and popular combination of Apache and mod_perl. From writing and debugging scripts to keeping your server running without failures, the techniques in this book will help you squeeze every ounce of power out of your server. True to its title, this is the practical guide to mod_perl. <a target="_blank" href="http://www.oreilly.com/cgi-bin/reviews?bookident=pmodperl">review</a>
-    </p>Buy from: [% INCLUDE "tpl/bookstore-links" isbn="0596002270" style="text" %]
-</div>
+        <a href=\"http://www.ebb.org/PickingUpPerl\">First Edition (July 1999)</a>",
+%]
+
+
+[% PROCESS book_block
+    name => 'perl5int',
+    title => 'Perl 5 Internals',
+    isbn => '',
+    link => 'http://www.faqs.org/docs/perl5int/',
+    author => 'by Simon Cozens (2001)',
+    description => " A hands-on introduction to how the perl interpreter works internally, how to go about testing and fixing bugs in the interpreter, and what the internals are likely to look like in the future of Perl, Perl 6.",
+%]
+
+
+[% PROCESS book_block
+    name => 'pmp',
+    title => 'Practical mod_perl',
+    isbn => '0596002270',
+    link => 'http://www.modperlbook.org/',
+    author => "by Stas Bekman &amp; Eric Cholet. 924 pages. O'Reilly &amp; Associates. (May 27, 2003)",
+    description => "Mod_perl embeds the popular programming language Perl in the Apache web server, giving rise to a fast and powerful web programming environment. Written for Perl web developers and web administrators, Practical mod_perl is an extensive guide to the nuts and bolts of the powerful and popular combination of Apache and mod_perl. From writing and debugging scripts to keeping your server running without failures, the techniques in this book will help you squeeze every ounce of power out of your server. True to its title, this is the practical guide to mod_perl. <a target=\"_blank\" href=\"http://www.oreilly.com/cgi-bin/reviews?bookident=pmodperl\">review</a>",
+%]
+
 <p>
     <a name="sampletext" id="sampletext"></a>
 </p>
 <h2>
     Sample Chapters Only
 </h2>
-<p>
-    <a name="wampc" id="wampc"></a>
-</p>
-<div class="book">
-    <b><a class="booktitle" href="http://www.modperl.com">Writing Apache Modules with Perl and C: The Apache API and mod_perl</a></b> (click on title to read)<br>
-    <font size="-2">by Lincoln Stein, Doug MacEachern, Linda Mui (Editor). 724 pages. O'Reilly &amp; Associates. (March 1999).<br></font>
-    <p>
-        Writing Apache Modules with Perl and C will allow you to enhance your Apache HTTP server in just about any way you'd like. Overall, it is an excellent book, and it has a lot of good information and terrific examples on everything from "Content Handlers" to customizing the Apache server configuration process. <i>-- Doug Beaver</i>.
-    </p>Buy from: [% INCLUDE "tpl/bookstore-links" isbn="156592567X" style="text" %]
-</div>
-<p>
-    <a name="mpc" id="mpc"></a>
-</p>
-<div class="book">
-    <b><a class="booktitle" href="http://www.modperlcookbook.org">mod_perl Developer's Cookbook</a></b> (click on title to read)<br>
-    <font size="-2">by Geoffrey Young, Paul Lindner, Randy Kobes. 650 pages. Sams Publishing. (January 2002).<br></font>
-    <p>
-        A practical, hands-on guide that shows you how to exploit the power of mod_perl. <a target="_blank" href="http://www.modperlcookbook.org/reviews.html">reviews</a>
-    </p>Buy from: [% INCLUDE "tpl/bookstore-links" isbn="0672322404" style="text" %]
-</div>
-<p>
-    <a name="lwp" id="lwp"></a>
-</p>
-<div class="book">
-    <b><a class="booktitle" href="http://www.oreilly.com/catalog/perllwp/chapter/">Perl &amp; LWP</a></b> (click on title to read)<br>
-    <font size="-2">by Sean M. Burke. 264 pages. O'Reilly &amp; Associates. (June 2002).<br></font>
-    <p>
-        The LWP (Library for WWW in Perl) suite of modules lets your programs download and extract information from the Web. Perl &amp; LWP shows how to make web requests, submit forms, and even provide authentication information, and it demonstrates using regular expressions, tokens, and trees to parse HTML. This book is a must have for Perl programmers who want to automate and mine the Web.
-    </p>Buy from: [% INCLUDE "tpl/bookstore-links" isbn="0596001789" style="text" %]
-</div>
 
+[% PROCESS book_block
+    name => 'wampc',
+    sample => 1,
+    title => 'Writing Apache Modules with Perl and C: The Apache API and mod_perl',
+    isbn => '156592567X',
+    link => 'http://www.modperl.com/',
+    author => "by Lincoln Stein, Doug MacEachern, Linda Mui (Editor). 724 pages. O'Reilly &amp; Associates. (March 1999)",
+    description => "Writing Apache Modules with Perl and C will allow you to enhance your Apache HTTP server in just about any way you'd like. Overall, it is an excellent book, and it has a lot of good information and terrific examples on everything from "Content Handlers" to customizing the Apache server configuration process. <i>-- Doug Beaver</i>",
+%]
 
+[% PROCESS book_block
+    name => 'mpc',
+    sample => 1,
+    title => "mod_perl Developer's Cookbook",
+    isbn => '0672322404',
+    link => 'http://www.modperlcookbook.org/',
+    author => 'by Geoffrey Young, Paul Lindner, Randy Kobes. 650 pages. Sams Publishing. (January 2002)',
+    description => "A practical, hands-on guide that shows you how to exploit the power of mod_perl. The mod_perl Developer's Cookbook teaches programming with the mod_perl API by example. The book takes you from the basics of mod_perl to the development of advanced Web applications.  You'll learn tricks, solutions and mod_perl idioms gleaned from our experience as developers and expert users of mod_perl.",
+%]
 
+[% PROCESS book_block
+    name => "lwp",
+    sample => 1,
+    title => "Perl &amp; LWP",
+    isbn => "0596001789",
+    link => "http://www.oreilly.com/catalog/perllwp/chapter/",
+    author => "by Sean M. Burke. 264 pages. O'Reilly &amp; Associates. (June 2002)",
+    description => "The LWP (Library for WWW in Perl) suite of modules lets your programs download and extract information from the Web. Perl &amp; LWP shows how to make web requests, submit forms, and even provide authentication information, and it demonstrates using regular expressions, tokens, and trees to parse HTML. This book is a must have for Perl programmers who want to automate and mine the Web.",
+%]
