@@ -5,8 +5,7 @@ use Carp qw(confess cluck carp);
 use Digest::SHA1 qw(sha1_hex);
 use HTML::Entities ();
 use Encode qw(encode_utf8);
-use base qw(Combust::Redirect);
-
+use Scalar::Util qw(looks_like_number);
 # TODO: figure out why we use this; remove it if possible
 require bytes;
 
@@ -14,8 +13,11 @@ use Combust::Cache;
 use Combust::Template;
 use Combust::Cookies;
 use Combust::Secret qw(get_secret);
-
 use Combust::Config;
+
+use namespace::clean;
+
+use base qw(Combust::Redirect);
 
 my $config = Combust::Config->new();
 
@@ -153,9 +155,14 @@ sub do_request {
   }
 
   ($status, $output, my $content_type) = eval { $self->render };
-  if ($@) {
-      warn "render failed: $@";
-      $status = SERVER_ERROR;
+  if (my $err = $@) {
+      if (looks_like_number($err)) {
+          $status = $err;
+      }
+      else {
+          warn "render failed: $err";
+          $status = SERVER_ERROR;
+      }
   }
   return $status unless $status == OK;
 

@@ -16,7 +16,7 @@ requires  'Digest::SHA1';
 requires  'URI::Escape';
 requires  'HTML::Entities';
 requires  'Sub::Install';
-
+requires  'namespace::clean';
 
 test_requires 'Data::Dumper';
 test_requires 'Test::More' => '0.88';
