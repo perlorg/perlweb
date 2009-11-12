@@ -1,120 +1,101 @@
-[% page.banner = BLOCK %]<span CLASS="title"><a href="/">Perl DBI</a></span>[% END %]
-[% page.style = "dbi.html" %]
-[% page.site = "dbi.perl.org" %]
-[% page.title = "Perl DBI" %]
-
-[% page.sidebar = BLOCK%]
-          <DIV class="MENU">
-            <a href="http://search.cpan.org/author/TIMB/DBI/">Download latest DBI</a> </DIV>
-          <DIV class="NAVITEM"> 
-            <h3>Questions about DBI? <a href="http://dbi.tiddlyspot.com/">See the DBI FAQ.</a></h3>
-            <h3>What is DBI?</h3>
-            <p>&quot;The DBI is the standard database interface module for Perl. It defines 
-              a set of methods, variables and conventions that provide a consistent 
-              database interface independent of the actual database being used.&quot;</p>
-            <p align="center">-- Tim Bunce</p>
-          </DIV>
-
-        <DIV class="NAVITEM"></DIV>
-        
-[% END %]        
+[% 
+    page.import({
+        include_sifr => 1,
+        title    => 'Perl DBI',
+        section  => 'home',
+        description 
+            => 'Database programming with Perl',
+    });
     
-      <table width="530" cellspacing="10" cellpadding="5" border="0">
-        <tr valign="TOP"> 
-          <td colspan="2" style="color: red;">In the next few weeks this site will undergo major reconstruction.  We would like to hear
-            your comments in this regard.  What would you like to see that would be helpful to others as well.  We really appreciate 
-            your help and hope that the future of this site will help you in your Perl and DBI endeavors.<br />
-            <br />
-            Please send any comments/suggestions to dbi-webmaster [at] perl.org.<br />
-            <br />
-            Thanks.<br />
-            <br />
-            Your dbi.perl.org team (Tim Bunce and Ilya Sterin)<br />
-            <br /><br />
-          </td>
-        </tr>
-        <tr valign="TOP">
-          <td  valign="top" width="265"  class="NOVERTPAD"> 
-            <p><DIV class="TOPIC"><a href="/about/"><u>About 
-            DBI</u></a></DIV>
-            <DIV class="ITEMS">
-            </DIV></p>
-            <p><DIV class="TOPIC">DBI 
-              Releases</DIV>
-              <DIV class="ITEMS">
-              <a href="http://search.cpan.org/author/TIMB/DBI/DBI.pm">Perldoc</a>, 
-              <a href="http://search.cpan.org/author/TIMB/DBI/Changes">Changes</a>, 
-              <a href="http://search.cpan.org/author/TIMB/DBI/">Full content, 
-              </a><a href="http://backpan.cpan.org/authors/id/T/TI/TIMB/">Old 
-              versions</a></DIV></p>
-            <p><DIV class="TOPIC">DBI Drivers</DIV><DIV class="ITEMS">
-              <a href="http://search.cpan.org/search?query=DBD%3A%3A&mode=module">Find 
-              latest DBD modules</a><br><a href="http://search.cpan.org/author/TIMB/dbd-summaries/">Summaries 
-              (1999)</a></DIV></p>                    
+    # Add big donate link
+%]
 
-			<p><DIV class="TOPIC">DBI Extensions</DIV>
-			<DIV class="ITEMS">
-              <a href="http://search.cpan.org/search?query=DBIx%3A%3A&mode=module">Find 
-              latest DBIx modules</a></DIV></p>
+<div class="masthead">
+ 	<p class="headline">DBI</p>
 
-            </td>
-          
-          	
-          	<td class="NOVERTPAD" width="265">
-            <p><DIV class="TOPIC"><a href="/support/"><u>Support</u></a></DIV>
-            <DIV class="ITEMS">
-              <a href="/support/">Community</a>,
-              <a href="/support/">Commercial</a>
-	    </DIV>
-            
-            <p><DIV class="TOPIC"><a href="/docs/"><u>Online Documentation</u></a></DIV>
-            <DIV class="ITEMS"> <a href="http://search.cpan.org/author/TIMB/DBI/DBI.pm">Manual 
-              pages</a>, <a href="http://dbi.tiddlyspot.com/">FAQs</a>, 
-            </DIV></p>
+ 	<p class="strap">Perl's Database Interface</p>
+</div>
+      
+<table class="content_table">
+    <tr>
+        <td>
+            <h4>
+                <a href="/about/">About DBI</a>
+            </h4>
+            <p>
+                The DBI is the standard database interface module for Perl. It defines a set of methods, variables and conventions that provide a consistent database interface independent of the actual database being used.
+            </p>
+            <h4>
+                DBI Releases
+            </h4>
+            <ul>
+                <li>
+                    <a href="http://search.cpan.org/author/TIMB/DBI/DBI.pm">Perldoc</a>
+                </li>
+                <li>
+                    <a href="http://search.cpan.org/author/TIMB/DBI/Changes">Changes</a>
+                </li>
+                <li>
+                    <a href="http://search.cpan.org/author/TIMB/DBI/">Full content</a>
+                </li>
+                <li>
+                    <a href="http://backpan.cpan.org/authors/id/T/TI/TIMB/">Old versions</a>
+                </li>
+            </ul>
+            <h4>
+                DBI Drivers
+            </h4>
+            <ul>
+                <li>
+                    <a href="http://search.cpan.org/search?query=DBD%3A%3A&amp;mode=module">Find latest DBD modules</a>
+                </li>
+                <li>
+                    <a href="http://search.cpan.org/author/TIMB/dbd-summaries/">Summaries (1999)</a>
+                </li>
+            </ul>
+            <h4>
+                DBI Extensions
+            </h4>
+            <ul>
+                <li>
+                    <a href="http://search.cpan.org/search?query=DBIx%3A%3A&amp;mode=module">Find latest DBIx modules</a>
+                </li>
+            </ul>
+        </td>
+        <td>
+            <h4>
+                <a href="/support/">Support</a>
+            </h4>
+            <p>
+                There is both community and commercial support available
+            </p>
+            <h4>
+                <a href="/docs/">Online Documentation</a>
+            </h4>
+            <ul>
+                <li>
+                    <a href="http://search.cpan.org/author/TIMB/DBI/DBI.pm">Manual pages</a>
+                </li>
+                <li>
+                    <a href="http://dbi.tiddlyspot.com/">FAQs</a>
+                </li>
+            </ul>
+            <h4>
+                <a href="/contributing/">Contributing</a>
+            </h4>
+            <p>
+                Please contribute, Time, Patches, Sponsorship or Donations.
+            </p>
+        </td>
+    </tr>
+</table>
 
-            <p><DIV class="TOPIC"><a href="/contributing/"><u>Contributing</u></a></DIV>
-            <DIV class="ITEMS">
-              <a href="/contributing/">Time</a>,
-              <a href="/contributing/">Patches</a>,
-              <a href="/contributing/">Sponsorship</a>,
-              <a href="/contributing/">Donations</a>
-	    </DIV>
+<script type="text/javascript">
+//<![CDATA[
+if(typeof sIFR == "function"){
+	sIFR.replaceElement(named({sSelector:".masthead .headline", sFlashSrc:"/flash/sifr/tradegothic.swf", sColor:"#004065", sLinkColor:"#004065", sBgColor:"#f0f0f0", sHoverColor:"#004065", nPaddingTop:0, nPaddingBottom:0, sFlashVars:"textalign=leftoffsetTop=6"}));
+	sIFR.replaceElement(named({sSelector:".masthead .strap", sFlashSrc:"/flash/sifr/tradegothic.swf", sColor:"#8FB7E5", sLinkColor:"#8FB7E5", sBgColor:"#f0f0f0", sHoverColor:"#8FB7E5", nPaddingTop:0, nPaddingBottom:0, sFlashVars:"textalign=leftoffsetTop=6"}));
+};
+//]]>
+</script>
 
-		  </td>
-        </tr>
-        <tr> 
-          <td colspan=2  class="NOVERTPAD"> 
-            <DIV align="center"> 
-              
-        <table cellspacing=0 border=0 width="100%">
-          <tr> 
-            <td colspan="2"><span class="TOPIC">Programming the Perl DBI</span></td>
-          </tr>
-          <tr>
-            <td><DIV align="center">                
-                <img src="http://books.perl.org/covers/4/1565926994.medium.jpg"> 
-              </DIV></td>
-            <td>
-            <span class="ITEMS">
-            	<a href="http://books.perl.org/book/154"><I>The</I> Book</a><BR>
-  				<a href="http://books.perl.org/category/4">Other database books</a><BR>
-  				<a href="http://books.perl.org/">Other Perl books</a>
-            </span>
-            </td>
-          </tr>
-          <tr> 
-            <td width="15%">&nbsp;</td>
-            <td>&nbsp;</td>
-          </tr>
-          <tr> 
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
-          </tr>
-        </table>
-            </DIV></td>
-        </tr>
-        <tr> 
-          <td colspan=22 valign="BOTTOM" align="center">&nbsp;</td>
-        </tr>
-      </table>
-  

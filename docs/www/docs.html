@@ -1,68 +1,130 @@
-[% META title = 'Online Documentation' %]
-[% page.style = "perl-directory.html" %]
+[%- 
+    page.import({
+        title    => 'Online Perl Documentation',
+        section  => 'docs',
+        description 
+            => 'Online Perl documentation',
+    });
+    
+-%]
 
-[% page.sidebar = BLOCK %]
-<DIV CLASS="NAVITEM">
-<H3>Reading Material</H3>
 
-  Perl comes with over 600,000 words of documentation.  If you have a
-  Perl question, there's a good chance its answered somewhere in
-  there.  Good places to start looking are the <A
-  HREF="http://faq.perl.org">Perl FAQ</A> and the main <A
-  HREF="http://perldoc.perl.org/perl.html">Perl manual
-  page</A>.
+<table class="content_table">
+    <tr>
+        <td>
+            <h4>
+                Perl Documentation
+            </h4>
+            
+            <p>
+                The <a href="http://perldoc.perl.org">perldoc.perl.org</a> contains the official documentation from the Perl distribution(s). Here are some direct links which maybe of interest.
+            </p>
+            <ul>
+                <li>
+                    <a href="http://perldoc.perl.org/perl.html">Manual Pages</a>
+                </li>
+                <li>
+                    <a href="http://perldoc.perl.org/index-modules-A.html">Core Modules</a>
+                </li>
+                <li>
+                    <a href="http://perldoc.perl.org/index-tutorials.html">Tutorials</a>
+                </li>
+            </ul>
+            <h4>
+                Module Documentation
+            </h4>
+            <p>
+                Perl modules come with their own documentation. This includes modules installed from <a href="/cpan.html">CPAN</a>. On Unix-like (including Linux and Mac OS X) systems, you can access the documentation (for installed modules) with the <code>perldoc</code> command.
+            </p>
+            <p>
+                For example, to get the documentation for <a href="http://search.cpan.org/perldoc?IO::File ">IO::File</a>, enter<br />
+                <code>perldoc IO::File</code> from your command prompt.
+            </p>
+            <ul>
+                <li>Module documentation is also available on <a href="http://search.cpan.org">search.cpan.org</a>
+                </li>
+            </ul>
 
-</div>
+        </td>
+        <td>
+            <h4>
+                The Perl FAQ
+            </h4>
+            <p>
+                Perl FAQs are available as part of your Perl distribution with the<br />
+                <code>perldoc perlfaq</code> command.
+            </p>
+            <ul>
+                <li>Read FAQs online at <a href="http://faq.perl.org">faq.perl.org</a>
+                </li>
+            </ul>
+            <h4>
+                Mailing List Archives
+            </h4>
+            <p>
+                Perl-related mail lists are archived in several places.
+            </p>
+            <ul>
+                <li>
+                    <a href="http://www.nntp.perl.org">perl.org archives</a> <small><a href="nntp://nntp.perl.org">(via NNTP)</a></small>
+                </li>
+                <li>
+                    <a href="http://perl.markmail.org">Perl lists on MarkMail</a>
+                </li>
+                <li>
+                    <a href="http://groups.google.com/groups/dir?q=perl">Google Groups</a> - Perl newsgroups
+                </li>
+                <li>
+                    <a href="http://lists.cpan.org/">Perl Mailing Lists</a> - a list of lists
+                </li>
+            </ul>
 
-<DIV CLASS="NAVITEM">
-<H3>If documentation just isn't enough</H3>
-Many companies offer 
-<a href="http://www.google.com/search?q=perl+training&amp;sourceid=perl.org"
-   >Perl&nbsp;training</a>.  
-On-site and open-enrollment options are available.
-</DIV>
-[% END %]
+            <h4>
+                Translations
+            </h4>
+            <ul>
+                <li>
+                    <a href="http://perldoc.jp">perldoc.jp</a>
+                </li>
+                <li>
+                    <a href="http://www.perl.it/documenti/index.html">Italian</a> (Also <a href="http://pod2it.sourceforge.net/">pod2it</a>)
+                </li>
+                <li>
+                    <a href="http://perl.enstimac.fr/DocFr.html">French</a>
+                </li>
+            </ul>
+        </td>
+    </tr>
+</table>
 
-<P>
-    <H3>Documentation at <a href="http://perldoc.perl.org">perldoc.perl.org</a></h3>
-	<UL>
-	<LI><A href="http://perldoc.perl.org/perl.html">Manual Pages</a>
-	<LI><a href="http://perldoc.perl.org/index-modules-A.html">Core Modules</a>
-    <LI><a href="http://perldoc.perl.org/perlintro.html">A brief introduction</a>
-    <LI><a href="http://perldoc.perl.org/index-tutorials.html">Tutorials</a>
-	</UL>
 
-    <H3>Module Documentation</h3>
-	Perl modules come with their own documentation.  On UNIX systems, 
-	you can access the documentation with the <code>perldoc</code> command.  
-	<P>
-	For example, to get the documentation for <A HREF="http://search.cpan.org/author/JHI/perl-5.8.0/ext/IO/lib/IO/File.pm">IO::File</A>, enter 
-	<code>perldoc IO::File</code> from your command prompt.
-	<UL>
-	<LI>Module documentation is also available at <a href="http://search.cpan.org">search.cpan.org</a>
-	</UL>
+[%
+    asins = [
+        '1430223650',  # The Definitive Guide to Catalyst
+        '1558607013',  # Higher-Order Perl
+        '1884777791',  # Object Oriented Perl
+        '0596004761',  # Template Toolkit
+        '0596001738',  # Perl Best Practices        '0596520107',  # Learning Perl
+        '1565922433',  # Perl Cookbook
+        '1930110006',  # Data Munging
+        '0596100922',  # Perl Testing
+    ];
+%]
 
-    <H3>The Perl FAQ</h3>
-	Perl FAQs are available as part of your perl distribution with the
-	<br><code>perldoc perlfaq</code> command.
-	<P>
-	<UL>
-	<LI>Read FAQs online at <a href="http://faq.perl.org">faq.perl.org</a>
-	</UL>
+<script type='text/javascript'>
+var amzn_wdgt={widget:'Carousel'};
+amzn_wdgt.tag='develooper';
+amzn_wdgt.widgetType='ASINList';
+amzn_wdgt.title='Reference and other Perl books';
+amzn_wdgt.width='600';
+amzn_wdgt.height='200';
+amzn_wdgt.ASIN='[% asins.join(',') %]';
+amzn_wdgt.shuffleProducts='True';
+amzn_wdgt.marketPlace='US';
+</script>
+<script type='text/javascript' src='http://wms.assoc-amazon.com/20070822/US/js/swfobject_1_5.js'>
+</script>
 
-    <H3>Translations</H3>
-      <UL>
-        <LI><A HREF="http://member.nifty.ne.jp/hippo2000/perltips/index.htm">Japanese</A> (Also <A HREF="http://perldoc.jp">perldoc.jp</A> and <A HREF="/!dl/http://www.cpan.jp/">cpan.jp</A>)</LI>
-        <LI><A HREF="http://www.perl.it/documenti/index.html">Italian</A> (Also <A HREF="http://pod2it.sourceforge.net/">pod2it</A>)</LI>
-        <LI><A HREF="http://perl.enstimac.fr/DocFr.html">French</A></LI>
-      </UL>
 
-    <H3>Mailing List Archives</h3>
-	<P>
-	Perl-related mail lists are archived in several places.
-	<UL>
-	  <LI><a href="http://www.nntp.perl.org">perl.org archives</A> <small><A HREF="nntp://nntp.perl.org">(via NNTP)</a></small></LI>
-      <LI><a href="http://perl.markmail.org">Perl lists on MarkMail</a></LI>
-	  <LI><a href="http://groups.google.com/groups?group=perl">Google Groups</a> - Perl newsgroups</LI>
-	  <LI><a href="http://lists.cpan.org/">The Perl Mailing List Database</a> - a list of lists</LI>
-	</UL>
+
+

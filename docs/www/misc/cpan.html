@@ -71,15 +71,15 @@ TD#middle {
   </HEAD>
 <BODY>
 
-  <BR>
-  <TABLE COLUMNS=3 BORDER=0 WIDTH="90%" 
+  <br />
+  <TABLE COLUMNS=3 BORDER=0 width="90%" 
          CELLSPACING=0 CELLPADDING=1
          ALIGN=CENTER
   >
     <TR>
       <TD COLSPAN=3>
         <DIV ALIGN="CENTER">
-          <IMG SRC="http://www.perl.org/images/cpan_banner.png"><BR>
+          <IMG SRC="http://www.perl.org/images/cpan_banner.png"><br />
           <SPAN CLASS=big>The Comprehensive Perl Archive Network</SPAN>
         </DIV>
 
@@ -110,7 +110,7 @@ TD#middle {
     </TR>
 
     <TR>
-      <TD WIDTH="30%" id="left">
+      <TD width="30%" id="left">
         <H1>Recent Uploads</H1>
         <!-- 
 [% MACRO quicknews(shortname,count) BLOCK %]
@@ -120,7 +120,7 @@ TD#middle {
 [%- TRY %]
   [%- USE news = XML.RSS("${root}/var/rss/${shortname}.rss") %]
   [% FOREACH item = news.items %]
-     - <a href="[% item.link %]">[% item.title %]</a><BR>
+     - <a href="[% item.link %]">[% item.title %]</a><br />
      [% count = count - 1 %]
      [% LAST IF count == 0 %]
   [% END %]
@@ -135,17 +135,17 @@ TD#middle {
        </DIV>
       </TD>
 
-      <TD  WIDTH="30%" ID="middle">
+      <TD  width="30%" ID="middle">
         <H1>Welcome to CPAN!</H1>
         <DIV id="quote" ALIGN="CENTER">
           <P>
             Here you will find <i>All Things Perl</i>.
           </P>
           <P>Yours Eclectically, The Self-Appointed Master Librarian
-            (OOK!) of the CPAN<BR>
+            (OOK!) of the CPAN<br />
             Jarkko Hietaniemi 
-            &lt;<A HREF="mailto:cpan@perl.org">cpan at perl.org</A>&gt;<BR>
-            <A HREF="http://cpan.perl.org/disclaimer.html">[Disclaimer]</A> 2001-04-01
+            &lt;<A HREF="mailto:cpan@perl.org">cpan at perl.org</A>&gt;<br />
+            <A href="http://cpan.perl.org/disclaimer.html">[Disclaimer]</A> 2001-04-01
         </DIV>
         
         <DIV id="stats" ALIGN="CENTER">
@@ -153,18 +153,18 @@ TD#middle {
           [% USE cpanstat = datafile("${root}/var/rss/cpan.dat") %]
           [% c = cpanstat.first %]
 
-          online since 1995-10-26<BR>
-          [% c.mb %] MB [% c.mirrors %] mirrors<BR>
-          [% c.authors %] authors [% c.modules %] modules<BR>
+          online since 1995-10-26<br />
+          [% c.mb %] MB [% c.mirrors %] mirrors<br />
+          [% c.authors %] authors [% c.modules %] modules<br />
         </DIV>
       </TD>
 
-      <TD  WIDTH="30%" >
+      <TD  width="30%" >
         <DIV ID="sponsor" ALIGN=CENTER>
           <H1>This Mirror Hosted By</H1>
-          <A HREF="http://www.perl.org">
-            <IMG SRC="http://www.perl.org/simages/lcamel.gif" BORDER=0><BR>
-            perl.org</A><BR>
+          <A href="http://www.perl.org">
+            <IMG SRC="http://www.perl.org/simages/lcamel.gif" BORDER=0><br />
+            perl.org</A><br />
           [% # <H1>perl.org Sponsor</H1> %]
           [% # INCLUDE "tpl/sponsor-rotato.html" 
              #  rotato_image_base = 'http://www.perl.org/'
@@ -182,27 +182,27 @@ TD#middle {
       <TD ID="left">
         <H1>Searching</H1>
         <DIV style="margin-left: 10px">
-          - <A HREF="http://cpan.uwinnipeg.ca/htdocs/cpan-search.html"
-            >Kobesearch</A><BR>
-          - <A HREF="http://search.cpan.org">CPAN Search</A><BR>
+          - <A href="http://cpan.uwinnipeg.ca/htdocs/cpan-search.html"
+            >Kobesearch</A><br />
+          - <A href="http://search.cpan.org">CPAN Search</A><br />
         </DIV>
       </TD>
 
       <TD ID="middle">
         <H1>Perl Links</H1>
         <DIV style="margin-left: 10px">
-          - <A HREF="http://faq.perl.org/">Perl FAQ</A><BR>
-          - <A HREF="http://lists.perl.org/">Mailing Lists</A><BR>
-          - <A HREF="http://www.perl.org/">The Perl Directory</A><BR>
-          - <A HREF="http://perldoc.perl.org/">Documentation</A><BR>
+          - <A href="http://faq.perl.org/">Perl FAQ</A><br />
+          - <A href="http://lists.perl.org/">Mailing Lists</A><br />
+          - <A href="http://www.perl.org/">The Perl Programming Language</A><br />
+          - <A href="http://perldoc.perl.org/">Documentation</A><br />
         </DIV>
       </TD>
 
       <TD ID="right" ALIGN="CENTER" VALIGN="MIDDLE">
-        <A HREF="http://cpan.perl.org/index.html"
-        >the standard CPAN front page</A><BR>
-        <BR>
-        <A HREF="http://cpan.perl.org/SITES.html">other CPAN mirrors</A><BR>
+        <A href="http://cpan.perl.org/index.html"
+        >the standard CPAN front page</A><br />
+        <br />
+        <A href="http://cpan.perl.org/SITES.html">other CPAN mirrors</A><br />
       </TD>
     </TR>
   </TABLE>

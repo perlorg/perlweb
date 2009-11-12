@@ -1,8 +1,15 @@
-[% page.title = "Ideas" %]
+[% 
+    page.import({
+        title    = 'The Perl Spoofathon: What might you advocate?',
+        section  = 'about',
+        description 
+            = '',
+    });
+%]
+
 [% PROCESS advocacy/spoofathon/tpl/navigation.html %]
 
 
-<h1>What might you advocate?</h1>
 <p>If you're not sure what sort of <em>$foo</em> is silly enough to advocate, take a
 look at the languages at the <a href="http://www.geocities.com/ResearchTriangle/Station/2266/tarpit/tarpit.html">Turing Tar pit</a>. Plenty of languages there
 which could well be better than perl.</p>

@@ -12,7 +12,7 @@
   shops = { amazon => "Amazon.com",
             amazonuk => "Amazon UK",
             powells => "Powells",
-            bn     => "Barnes & Noble",
+            bn     => "Barnes &amp; Noble",
             bookpool => "Bookpool",
           }
 -%]
@@ -23,17 +23,17 @@
 [%- IF !loop.first() -%]
  -
 [%- END -%]
- <U><A TARGET="_blank" 
-   HREF="/redirect/?type=book&shop=[% shop %]&isbn=[% isbn %]"
->[% shops.$shop %]</A></U>
+ <a target="_blank" 
+   href="/redirect/?type=book&amp;shop=[% shop %]&amp;isbn=[% isbn %]"
+>[% shops.$shop %]</a>
 [%- END -%]
 [% CASE "ul" -%]
-<UL>
+<ul>
 [%- FOREACH shop IN shops.keys.sort -%]
-<LI><A TARGET="_blank" 
-   HREF="/redirect/?type=book&shop=[% shop %]&isbn=[% isbn %]"
->[% shops.$shop %]</A></LI>
+<li><a target="_blank" 
+   href="/redirect/?type=book&amp;shop=[% shop %]&amp;isbn=[% isbn %]"
+>[% shops.$shop %]</a></li>
 [%- END -%]
-</UL>
+</ul>
 [% END %]
 <!-- end of redirect-bookstore -->

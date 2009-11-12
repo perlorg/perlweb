@@ -1,15 +1,12 @@
-[% page.banner = "Summer of Code Ideas" %]
-[% page.title = page.banner %]
-[% page.sidebar = BLOCK %]
-&lArr; <A HREF="index.html">back to Summer of Code</A>
-[% END -%]
-[% page.morehead = BLOCK %]
-<style type="text/css">
- ul.ideas li ul { list-style: disc; }
- ul.ideas li { padding-top: .8em; }
- ul.ideas li ul li { padding-top: .2em; }  
-</style>
-[% END -%]
+[% 
+    page.import({
+        title    = 'Summer of Code: Ideas',
+        section  = 'about',
+        description 
+            = 'Summer of Code Ideas',
+    });
+    
+%]
 
 <p>Good projects...</p>
 <ul>
@@ -21,23 +18,23 @@
 
 <p>Some ideas...</p>
 
-<ul class="ideas">
+<ul>
   <li><a href="http://svk.elixus.org/"><code>svk</code></a> has several tasks
   which would make <a href="http://svk.elixus.org/?SVKTasks">good Summer of
   Code projects</a>:
-  <ul><li>Fully implement svk Public Key infrastructure.<br>
+  <ul><li>Fully implement svk Public Key infrastructure.<br />
           svk allows you to sign and verify changesets. Implement the public
           key and policy infrastructure on top of it.</li>
-      <li>Web GUI for svk users.<br>
+      <li>Web GUI for svk users.<br />
           A web tool that at least allows svk users to merge one branch to
           another. Much of this could be re-used elsewhere. For example, a web
           implementation of 3 way-merge would benefit wikis and other online
           edit+versioning applications</li>
-      <li>Thin client for svk.<br>
+      <li>Thin client for svk.<br />
           Make the command layer of svk networked. This allows svk users in
           well-connected environment to use a specialized svk server without
           mirroring the repository.</li>
-      <li>Revamp foreign version control system support.<br>
+      <li>Revamp foreign version control system support.<br />
           We are currently using VCP which is not actively developed, and it
           also suffers from complicated abstraction to cope with the CVS
           model. Investigate and integrate tailor or other technology to
@@ -86,14 +83,14 @@
   </ul>
   <p>You can discuss your ideas with the POE developers on <code>#poe</code> on
   irc.perl.org</p></li>
-  <li>Reimplement the DBI v1 API in Pugs<br>
+  <li>Reimplement the DBI v1 API in Pugs<br />
   Design an implementation of the DBI API in Perl 6 using Pugs.
   The goal is to maintain the familiar DBI API while radically
   refactoring the internals to make best use of Perl 6 and so
   enable greater functionality and extensibility. (Likely mentor: Tim Bunce)
   </li>
   <li>Create a "Web Application Toolkit" for the <a href="
-  http://nms-cgi.sourceforge.net/">NMS project</a>.<br>
+  http://nms-cgi.sourceforge.net/">NMS project</a>.<br />
 
   NMS has been very successful at providing well-written re-implementations of
   certain popular but insecure CGI scripts, but the requirement to be
@@ -103,7 +100,7 @@
   on the part of the person configuring it, and it should be simply
   installed on the majority of shared web hosting that supports Perl CGI
   programs.  The work has been started - <code>TFmail</code> is the recommended
-  replacement for the <code>FormMail</code> program.<br>
+  replacement for the <code>FormMail</code> program.<br />
 
   The project would be to write this toolkit and scripts that use it. The
   toolkit should incorporate all <code>TFmail</code>'s functionality, but
@@ -123,7 +120,7 @@
  (likely mentors: Dave Cross, Jonathan Stowe)</li>
 
   <li>Using Parrot and the compiler tools, write a parser for C header files
-      that can generate Perl 5 NCI or Parrot NCI code.<br>
+      that can generate Perl 5 NCI or Parrot NCI code.<br />
       It should let the developer write an SDL binding for either language by
       running the parser against SDL.h and its friends. For output, it would
       generate either or both Perl 5 and Parrot code that:
@@ -139,7 +136,7 @@
 
   <li>Implement a Perl 5 regular expression module for Parrot along the same
       lines as the Perl 6 grammar engine. This will allow the use of current
-      Perl 5 regular expression syntax with the new engine.<br>
+      Perl 5 regular expression syntax with the new engine.<br />
       There is an initial Perl 5 syntax parser to build from, which already
       passes some 600 tests, although the Perl 5 test suite provides plenty
       more! Of course, the tests that it's not yet passing are the ones that
@@ -149,7 +146,7 @@
       next stage is to analyze and start to port over the optimizations from 
       the Perl 5 engine. (likely mentor: Patrick Michaud)</li>
 
-  <li>A Perl 5 to Perl 6 translator.<br>
+  <li>A Perl 5 to Perl 6 translator.<br />
       As the first stage of of translating Perl 5 to Perl 6, Larry Wall has
       been working on adapting the existing Perl 5 parser to output a complete
       abstract syntax tree, something it had never needed to do before. The
@@ -211,12 +208,12 @@
   Good examples:
 
     <ul>
-      <li>"A decent benchmark" + "Profile Perl"<br>
+      <li>"A decent benchmark" + "Profile Perl"<br />
       Measure the performance of the Perl interpreter using free tools such
       as <code>cachegrind</code>, <code>gprof</code>, and <code>dtrace</code>,
        and work to reduce the bottlenecks they reveal.</li>
       <li>"The regexp optimizer is not optional" + "Make the peephole
-      optimizer optional"<br>
+      optimizer optional"<br />
       Perl 5's parser and the Perl 5 regexp engine both have optimizers.
       However, both optimizers are somewhat misnamed - as well as performing
       optimizations, they also perform transformations that are essential parts
@@ -226,7 +223,7 @@
       non-essential optimizations. This would allow the optimizations to be
       made optional, which allows the occasional bugs found in the optimizer
       to be more easily traced and eliminated.</li>
-      <li>"iCOW" -- a plan for Copy-On-Write to speed up thread creation.<br>
+      <li>"iCOW" -- a plan for Copy-On-Write to speed up thread creation.<br />
       Perl 5's threading model runs each thread in a distinct interpreter.
       This has the benefit of low contention between threads, but the
       disadvantage that thread creation is slow. Sarathy and Arthur have a
@@ -236,7 +233,7 @@
       Copy-On-Write within a single thread. With the technology proven and
       debugged, the project would then move on to implementing the full COW
       semantics for thread creation.</li>
-      <li>"Properly Unicode safe tokeniser and pads"<br>
+      <li>"Properly Unicode safe tokeniser and pads"<br />
       The tokeniser isn't actually very UTF-8 clean. Whilst Perl provides
       <code>use utf8;</code> to allow scripts to be written with variable names
       in UTF-8, globals are actually stored in stashes as raw bytes, without
@@ -244,7 +241,7 @@
       API to access them is all bytes. If the input file handle for the
       program source code is marked by the IO system as UTF-8, the tokenizer
       ignores this. All this should be fixed.</li>
-      <li>"Attach/detach debugger from running program"<br>
+      <li>"Attach/detach debugger from running program"<br />
       Debuggers such as <code>gdb</code> and other tools such as
       <code>truss</code> can be attached to an existing running program.
       It should be possible to provide similar functionality with the
@@ -253,12 +250,12 @@
       address security concerns about connecting unrelated processes by using
       named pipes in <code>/tmp</code>. Maybe Perl can too. This project is
       likely to also evolve into many more debugger related improvements.</li>
-      <li>"fix tainting bugs" + "Make tainting consistent"<br>
+      <li>"fix tainting bugs" + "Make tainting consistent"<br />
       Running the test suite with the taint warnings enabled reveals that
       many tests and some core modules are not written to be taint safe. It
       would be good for someone to work through these, identify and address
       the issues, so that as much of the core as possible can be used under
-      the added protection that <code>-T</code> provides.<br>
+      the added protection that <code>-T</code> provides.<br />
       Related to this, tainting is documented as being able to take shortcuts,
       which allows the implementation to be more efficient. As computers have
       become faster but humans remain immune to Moore's law, this tradeoff
@@ -273,7 +270,7 @@
    href="http://use.perl.org/~chromatic/journal/20481">Perl 5 Native Call
    Interface.</a> (likely mentor: chromatic).</li>
 
-  <li>Automated testing for binary compatibility between versions of Perl.<br>
+  <li>Automated testing for binary compatibility between versions of Perl.<br />
   Stable minor releases of Perl should be binary compatible, but there is no
   formal testing of this. The project would develop a testing architecture to
   verify that XS modules compiled with earlier minor versions still pass all
@@ -300,7 +297,7 @@
   testing Perl packages against a wide variety of different platforms
   (possible mentor: Adam Kennedy).</li>
   <li>Build tools capable of migrating the Perl source repository from
-  perforce to subversion.<br>
+  perforce to subversion.<br />
   This isn't a trivial task to get right. Existing tools such as <a
   href="http://search.cpan.org/~autrijus/VCP-autrijus-snapshot/">VCP</a> are
   great for migrating most repositories, but every tool chokes when asked to

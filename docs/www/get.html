@@ -1,72 +1,148 @@
-[% META title = 'Get Perl' %]
-[% page.style = "perl-directory.html" %]
+[%
+    page.import({
+        title    => 'Download Perl',
+        section  => 'download',
+        description
+            => 'Downloading Perl',
+    });
 
-[% PROCESS tpl/stats.html %]
-
-[% page.sidebar = BLOCK %]
-<div class="NAVITEM">
-    <h3>
-        Stable Release
-    </h3><a href="http://dev.perl.org/perl5/news/2009/perl-5.10.1.html">Perl 5.10.1</a> (<a href="http://www.cpan.org/src/perl-5.10.1.tar.bz2">Download</a>)
-</div>
-<div class="NAVITEM">
-    <h3>
-        Previous Release
-    </h3><a href="http://dev.perl.org/perl5/news/2008/perl-5.8.9.html">Perl 5.8.9</a>
-</div>
-
-
-[% END %]
-
-<h3>
+    # Add note recommending either building your own perl or using local::lib.
+%]
+<h2>
     Download Perl Distributions
-</h3>
+</h2>
 <p>
-    <img border="0" src="/images/perl_logo_tm-40x130.gif" alt="The Perl Onion Logo" width="130" height="40" style="float:right; padding-right: 10%">
+    If you are running a Linux system (or most UNIX systems, including Mac OS X), you probably <i>already have an installation of perl</i>. Type <code>perl&nbsp;-v</code> at the command line to find out which version. Perl runs on over [% perl_stats.platforms %] platforms
 </p>
-<p>
-    If you are running a Linux system (or most UNIX systems, including Mac OS X), you probably <i>already have an installation of perl</i>. Type <tt>perl&nbsp;-v</tt> at the command line to find out which version.
-</p>
+<h4>
+    Getting started quickly:
+</h4>
 
-<h3>
-Perl runs on over [% perl_stats.platforms %] platforms
-</h3>
+<style type="text/css">
+	.highlight{
+		background-color:#f0f0f0;
+	}
+	.download_table{
+		margin:20px 0;
+	}
+	.download_table th,
+	.download_table td{
+		padding:10px;
+		text-align:center;
+		vertical-align:top;
+		font-size:0.90em;
+		border-right:1px dashed #fff;
 
-<table border="1" cellspacing="5" cellpadding="5" width="100%">
-    <tr><th>OS</th><th>Included in OS?</th><th>Latest Binaries</th></tr>
-    <tr><td>Unix-like</td>
-        <td>Usually</td>
-        <td><a href="http://www.cpan.org/ports/">Ports</a></td>
-    </tr>
-    <tr><td>Windows</td>
-        <td>No</td>
-        <td><a href="http://www.strawberryperl.com">Strawberry Perl for Windows</a>,<br /> <a href="http://www.activestate.com/Products/ActivePerl/">ActivePerl for Windows</a></td>
-    </tr>
-    <tr><td>Mac OS X</td>
-        <td>Yes</td>
-        <td><a href="http://www.cpan.org/ports/#macosx">Ports</a></td>
-    </tr>
-
-    <tr><td>MacOS 7-9</td>
-        <td>No</td>
-        <td><a href="http://www.macperl.org/">MacPerl for MacOS 7-9</a></td>
-    </tr>
+	}
+	.download_table th{
+		text-align:left;
+		font-size:0.85em;
+		border-bottom:1px dashed #f0f0f0;
+	}
+	.download_table td img{
+		vertical-align:middle;
+	}
+	.download_logos td{
+		color:#999;
+	}
+	td .logo{
+		margin-bottom:3px;
+		display:block;
+		border:1px solid #f0f0f0;
+	}
+	.button{
+		float:none;
+		margin:0 10px;
+	}
+	.button .extlink{
+		display:none;
+	}
+    .button.no-table {
+        width: 25%;
+        float: right;
+        clear: right;
+    }
+    .button .download img {
+      float: right;
+      margin-top: 5px;
+    }
+</style>
+<table class="download_table highlight" cellspacing="0" cellpadding="0" width="100%">
+	<tr class="download_logos">
+		<th>Operating system</th>
+		<td><img src="/i/logos/linux.gif" class="logo" alt="Unix like..." />Unix like</td>
+		<td><img src="/i/logos/mac.gif" class="logo" alt="Mac" />Mac OS X</td>
+		<td><img src="/i/logos/windows.gif" class="logo" alt="Windows" />Windows</td>
+	</tr>
+	<tr>
+		<th>Installed?</th>
+		<td><img src="/i/icons/tick.png" alt="Included" /> Included</td>
+		<td><img src="/i/icons/tick.png" alt="Included" /> Included</td>
+        <td><img src="/i/icons/download_arrow.gif" alt="Download Needed"
+                 /> Download Needed</td>
+	</tr>
 </table>
 
-<h3>Other Binary</h3>
-<a href="http://www.cpan.org/ports/">Other Binary Distributions and Ports</a> are available from CPAN.
+<h4>Perl on Windows</h4>
 
-<h3>Source</h3>
-You can access <a href="http://www.cpan.org/src/README.html">Perl source code</a>
-if you wish to build your own version.
+<p>There are two primary binary distributions available for Windows:</p>
+  <ul>
+    <li>
+      <p class="button no-table"><a href="http://strawberryperl.com"
+      class="download" title="Strawberry Perl">
+          <img src="/i/strawberry_small.png" />
+          Download Strawberry Perl</a></p>
+      <a href="http://strawberryperl.com">Strawberry Perl</a>: A
+      100% Open Source Perl for Windows that is exactly the same as Perl
+      everywhere else.
+    </li>
+    <li>
+      <p
+      class="button no-table"><a href="http://www.activestate.com/activeperl/"
+      class="download" title="Download ActivePerl">
+          <img src="/i/activestate.png" />
+          Download ActivePerl</a></p>
+      <a href="http://www.activestate.com/"
+         >ActiveState's</a> <a href="http://www.activestate.com/activeperl/"
+                               >ActivePerl</a>: A commercially supported Perl distribution,
+      available for Windows, Linux, Mac OS X, Solaris, AIX and
+      HP-UX. Developers worldwide rely on ActivePerl's completeness and
+      ease-of-use.
+    </li>
+  </ul>
 
-<h3>
-    Perl Modules from CPAN
-</h3>
+<h4>
+    Other Platforms
+</h4>
 <p>
-    The <a href="http://cpan.perl.org">Comprehensive Perl Archive Network</a> (CPAN) is a large repository of perl software, modules, and documentation. On CPAN, you'll find modules organized by author, name, or category. CPAN is <a href="http://mirrors.cpan.org/">mirrored</a> in over [% perl_stats.cpan_mirrors %] locations around the world.
+    <a href="http://www.cpan.org/ports/">More binary distributions
+    and ports to other platforms</a> are available on CPAN.
 </p>
+<h4>
+    Source
+</h4>
 
+<ul>
+  <li>
+    <p class="button no-table">
+      <a href="http://www.cpan.org/src/5.0/latest.tar.bz2"
+         class="download" title="Latest Source Tarball">Download Latest Stable Source</a>
+    </p>You can also download the
+    the <a href="http://www.cpan.org/src/README.html">Perl source
+    code</a> if you wish to build your own version.
+  </li>
+  <li><a href="http://dev.perl.org/perl5/source.html">Latest
+    under-development source code</a>
+</li>
+</ul>
+<p>
+</p>
+<h4>
+    Perl Modules from CPAN
+</h4>
+<p>
+    The <a href="http://cpan.perl.org">Comprehensive Perl Archive Network</a> (CPAN) is a large repository of Perl software, modules, and documentation. On CPAN, you'll find modules organized by author, name, or category. CPAN is <a href="http://mirrors.cpan.org/">mirrored</a> in over [% perl_stats.cpan_mirrors %] locations around the world.
+</p>
 <ul>
     <li>
         <a href="http://search.cpan.org/">Search CPAN</a>
@@ -87,3 +163,10 @@ if you wish to build your own version.
         <a href="http://www.cpan.org/misc/cpan-faq.html#How_contribute_modules">Learn how to contribute modules</a>
     </li>
 </ul>
+<h4>
+    Recommended modules
+</h4>
+<p>
+    If you are after a list of recommended modules, look at <a href="http://search.cpan.org/perldoc?Task::Kensho">Task::Kensho</a>.
+</p>
+

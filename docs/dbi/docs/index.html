@@ -1,37 +1,36 @@
-[% page.banner = BLOCK %]<span CLASS="title"><a href="/">Perl DBI</a></span>[% END %]
-[% page.style = "dbi.html" %]
-[% page.site = "dbi.perl.org" %]
-[% page.title = "Perl DBI - Documentation" %]
+[% 
+    page.import({
+        title    => 'Documentation',
+        section  => 'docs',
+        description 
+            => 'Database programming with Perl - how to contribute',
+    });
+%]
+<h4>
+    DBI Articles
+</h4>
+<ul>
+    <li>
+        <a href="http://search.cpan.org/perldoc?DBI">DBI Module Documentation</a>
+    </li>
 
-[% page.sidebar = BLOCK%]
-          <div class="MENU">
-            <a href="http://search.cpan.org/author/TIMB/DBI/">Download latest DBI</a> </div>
-          <div class="NAVITEM"> 
-            <h3>Questions about DBI? <a href="http://dbi.tiddlyspot.com/">See the DBI FAQ.</a></h3>
-            <h3>What is DBI?</h3>
-            <p>&quot;The DBI is the standard database interface module for Perl. It defines 
-              a set of methods, variables and conventions that provide a consistent 
-              database interface independent of the actual database being used.&quot;</p>
-            <p align="center">-- Tim Bunce</p>
-          </div>
-
-        <div class="NAVITEM"></div>
-        
-[% END %]        
-
-      <table width="530" cellspacing="10" cellpadding="5" border="0">
-        <tr valign="TOP"> 
-          <td  valign="top" width="265"  class="NOVERTPAD"> 
-              <p><DIV class="TOPIC">DBI Articles</DIV>
-              <DIV class="ITEMS"><a href="http://www.perl.com/pub/1999/10/DBI.html">A Short Guide to DBI on perl.com</a><br>
-              <a href="http://www.saturn5.com/%7Ejwb/dbi-examples.html">Jeffrey Baker's DBI Examples and Performance Tuning</a></DIV></p>
-          </td>
-          <td width="265"> <p><DIV class="TOPIC"><a href="http://dbi.tiddlyspot.com/">DBI Frequently Asked Questions</a></DIV>
-             <DIV class="ITEMS"><a href="http://dbi.tiddlyspot.com/">FAQ</a></p>
-            <p> <DIV class="TOPIC">DBI Presentations</DIV>
-            <DIV class="ITEMS">
-              <a href="http://search.cpan.org/author/TIMB/DBI_AdvancedTalk/">Advanced DBI Tutorial</a></DIV></p>
-            </p></td>
-        </tr>
-      </table>
-      
+    <li>
+        <a href="http://www.perl.com/pub/1999/10/DBI.html">A Short Guide to DBI on perl.com</a>
+    </li>
+</ul>
+<h4>
+    <a href="http://dbi.tiddlyspot.com/">DBI Frequently Asked Questions</a>
+</h4>
+<ul>
+    <li>
+        <a href="http://dbi.tiddlyspot.com/">FAQ</a> (not maintained)
+    </li>
+</ul>
+<h4>
+    DBI Presentations
+</h4>
+<ul>
+    <li>
+        <a href="http://search.cpan.org/author/TIMB/DBI_AdvancedTalk/">Advanced DBI Tutorial</a>
+    </li>
+</ul>

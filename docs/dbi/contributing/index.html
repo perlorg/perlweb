@@ -1,98 +1,74 @@
-[% page.banner = BLOCK %]<span CLASS="title"><a href="/">Perl DBI</a></span>[% END %]
-[% page.style = "dbi.html" %]
-[% page.site = "dbi.perl.org" %]
-[% page.title = "Perl DBI - Contributing" %]
-
-[% page.sidebar = BLOCK%]
-          <div class="MENU">
-            <a href="http://search.cpan.org/author/TIMB/DBI/">Download latest DBI</a> </div>
-          <div class="NAVITEM"> 
-            <h3>Questions about DBI? <a href="http://dev.isystek.com/dbi/fom.cgi">See 
-              the DBI FAQ.</a></h3>
-            <h3>What is DBI?</h3>
-            <p>&quot;The DBI is the standard database interface module for Perl. It defines 
-              a set of methods, variables and conventions that provide a consistent 
-              database interface independent of the actual database being used.&quot;</p>
-            <p align="center">-- Tim Bunce</p>
-          </div>
-
-        <div class="NAVITEM"></div>
-        
-[% END %]        
-
-      <table width="530" cellspacing="10" cellpadding="5" border="0">
-        <tr valign="TOP"> 
-          <td  valign="top"  class="ITEMS"> 
-            <div class="ITEMS"> 
-              <h2>Contributing</h2>
-	      Many people have contributed to the DBI and its
-	      database drivers in many ways over many years.<p>
-
-              <p> <span class="TOPIC">Contributing Help on the dbi-users Mailing List</span><br>
-              <p>The dbi-users <a href="/support">mailing list</a> is the heart of the DBI user community.
-              There are typically over two thousand users subscribed, ranging from novices to
-              experienced users and driver developers.
-              Messages are on-topic and the list is widely regarded as being of very high quality.
-              It's a great way to learn about the DBI and, as you learn from the
-              list and your own experience, you can help others along their path.
-
-              <p> <span class="TOPIC">Contributing Changes and Enhancements</span><br>
-		<p>If you'd like the DBI to do something new, or different, a good way
-		to make that happen is to do it yourself and send me a patch (diff)
-		to the source code that shows the changes. Information about how
-		to do that can be found <a href="http://search.cpan.org/~timb/DBI/DBI.pm#CONTRIBUTING">here</a>,
-		(including an important note about talking to me first to avoid duplicated or wasted effort).
-
-              <p><span class="TOPIC">Sponsoring a DBI Enhancement</span><br>
-		<p>If your company would benefit from a specific new DBI
-		feature or change, please consider sponsoring its development through my
-		consulting company.
-		The addition of the swap_inner_handle() method, for example,
-		was sponsored by BizRate.com.  Work is performed rapidly, and
-		usually on a fixed-price payment-on-delivery basis.
-		Contact <a href="mailto:Tim.Bunce@pobox.com">me</a> for details.
-
-		<p>Using such targeted financing allows you to contribute to DBI
-		development, and rapidly get something specific and valuable in return.
-
-              <p><span class="TOPIC">Sponsoring DBI Development</span><br>
-		<p>Almost all the development of the DBI over the last
-		10 years has been done in my own spare time.
-		My consultancy work and family commitments limit my spare time now.
-
-		<p>The enhancements I have planned are documented in the
-		<a href="http://search.cpan.org/~timb/DBI/Roadmap.pod">DBI Roadmap</a>.
-
-		<p>In order to implement these changes and enhancements myself
-		(and devote time to effectively coordinate others who may help me)
-		I would like to be able to take some time each week away from my consultancy
-		business and devote it to making DBI enhancements that everyone can benefit from.
-
-		<p>The Perl Foundation (<a href="http://www.perlfoundation.org/">TPF</a>)
-		has kindly agreed to setup a
-		DBI Development fund to which contributions can be made (tax-deductible in the US).
-		An assigned Grant Manager will manage the fund and make payments from it
-		in response to agreed enhancements being implemented from the Roadmap.
-
-		<p>If your company has benefited from the DBI then this is an opportunity to
-		both give back, by way of thanks, and help ensure even greater benefits in the future.
-		Please take time out to consider if your company could make a contribution.
-		Links:<ul>
-		<li><a href="../donate/">Contribute</a> to the DBI Development fund,
-		<li>Contribution <a href="https://donate.perlfoundation.org/index.pl?node=Contribution%20FAQ">FAQ</a>,
-		<li>The Perl Foundation <a href="http://www.perlfoundation.org/">home page</a>.
-		</ul>
-		Thank you.
-
-              <p><span class="TOPIC">Purchase a Support Agreement</span><br>
-		<p>My company also offers annual and multi-annual support contracts
-		for the DBI. These provide longer-term sustained support for DBI
-		development, and long-term security and value for you in return.
-
-		<p>Contact <a href="mailto:Tim.Bunce@pobox.com">me</a> for details.
-
-              <br></p>
-            </div></td>
-        </tr>
-      </table>
-      
+[% 
+    page.import({
+        title    => 'Contributing',
+        section  => 'contribute',
+        description 
+            => 'Database programming with Perl - how to contribute',
+    });
+%]
+<h2>
+    Contributing
+</h2>
+<p>
+    Many people have contributed to the DBI and its database drivers in many ways over many years.
+</p>
+<h4>
+    Contributing Help on the dbi-users Mailing List
+</h4>
+<p>
+    The dbi-users <a href="/support/">mailing list</a> is the heart of the DBI user community. There are typically over two thousand users subscribed, ranging from novices to experienced users and driver developers. Messages are on-topic and the list is widely regarded as being of very high quality. It's a great way to learn about the DBI and, as you learn from the list and your own experience, you can help others along their path.
+</p>
+<h4>
+    Contributing Changes and Enhancements
+</h4>
+<p>
+    If you'd like the DBI to do something new, or different, a good way to make that happen is to do it yourself and send me a patch (diff) to the source code that shows the changes. Information about how to do that can be found <a href="http://search.cpan.org/~timb/DBI/DBI.pm#CONTRIBUTING">here</a>, (including an important note about talking to me first to avoid duplicated or wasted effort).
+</p>
+<h4>
+    Sponsoring a DBI Enhancement
+</h4>
+<p>
+    If your company would benefit from a specific new DBI feature or change, please consider sponsoring its development through my consulting company. The addition of the swap_inner_handle() method, for example, was sponsored by BizRate.com. Work is performed rapidly, and usually on a fixed-price payment-on-delivery basis. Contact <a href="mailto:Tim.Bunce@pobox.com">me</a> for details.
+</p>
+<p>
+    Using such targeted financing allows you to contribute to DBI development, and rapidly get something specific and valuable in return.
+</p>
+<h4>
+    Sponsoring DBI Development
+</h4>
+<p>
+    Almost all the development of the DBI over the last 10 years has been done in my own spare time. My consultancy work and family commitments limit my spare time now.
+</p>
+<p>
+    The enhancements I have planned are documented in the <a href="http://search.cpan.org/~timb/DBI/Roadmap.pod">DBI Roadmap</a>.
+</p>
+<p>
+    In order to implement these changes and enhancements myself (and devote time to effectively coordinate others who may help me) I would like to be able to take some time each week away from my consultancy business and devote it to making DBI enhancements that everyone can benefit from.
+</p>
+<p>
+    The Perl Foundation (<a href="http://www.perlfoundation.org/">TPF</a>) has kindly agreed to setup a DBI Development fund to which contributions can be made (tax-deductible in the US). An assigned Grant Manager will manage the fund and make payments from it in response to agreed enhancements being implemented from the Roadmap.
+</p>
+<p>
+    If your company has benefited from the DBI then this is an opportunity to both give back, by way of thanks, and help ensure even greater benefits in the future. Please take time out to consider if your company could make a contribution. Links:
+</p>
+<ul>
+    <li>
+        <a href="../donate/">Contribute</a> to the DBI Development fund,
+    </li>
+    <li>Contribution <a href="https://donate.perlfoundation.org/index.pl?node=Contribution%20FAQ">FAQ</a>,
+    </li>
+    <li>The Perl Foundation <a href="http://www.perlfoundation.org/">home page</a>.
+    </li>
+</ul>
+<p>
+    Thank you.
+</p>
+<h4>
+    Purchase a Support Agreement
+</h4>
+<p>
+    My company also offers annual and multi-annual support contracts for the DBI. These provide longer-term sustained support for DBI development, and long-term security and value for you in return.
+</p>
+<p>
+    Contact <a href="mailto:Tim.Bunce@pobox.com">me</a> for details.
+</p>

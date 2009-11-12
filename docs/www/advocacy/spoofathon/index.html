@@ -1,9 +1,13 @@
-[% PROCESS advocacy/spoofathon/tpl/navigation.html %]
-[% page.title = "The Perl Spoofathon";
-   page.bhead = "";
-   page.banner = page.title %]
+[% 
+    page.import({
+        title    = 'The Perl Spoofathon',
+        section  = 'about',
+        description 
+            = '',
+    });
+%]
 
-<h1><blink>$$$</blink> Make The Perl Foundation money fast <blink>$$$</blink></h1>
+[% PROCESS advocacy/spoofathon/tpl/navigation.html %]
 
 <p>I, <a href="http://www.ccl4.org/~nick/">Nicholas Clark</a>, hereby offer
 <strong>6 rewards</strong>, each of 100 guineas, to be paid to the Perl

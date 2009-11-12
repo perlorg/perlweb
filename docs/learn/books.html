@@ -1,5 +1,13 @@
-[% page.title = "Books for Beginners" %]
-[% page.forcenavigation =1 %]
+[% 
+    page.import({
+        title    => 'Perl Books',
+        section  => 'books',
+        description 
+            => 'Perl Books',
+    });
+    
+%]
+
 
 [% PROCESS books_content.html %]
 

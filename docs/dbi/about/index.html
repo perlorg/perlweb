@@ -1,44 +1,33 @@
-[% page.banner = BLOCK %]<span CLASS="title"><a href="/">Perl DBI</a></span>[% END %]
-[% page.style = "dbi.html" %]
-[% page.site = "dbi.perl.org" %]
-[% page.title = "Perl DBI - About" %]
+[% 
+    page.import({
+        title    => 'About DBI',
+        section  => 'about',
+        description 
+            => 'Database programming with Perl',
+    });
+%]
 
-[% page.sidebar = BLOCK%]
-          <div class="MENU">
-            <a href="http://search.cpan.org/author/TIMB/DBI/">Download latest DBI</a> </div>
-          <div class="NAVITEM"> 
-            <h3>Questions about DBI? <a href="http://dev.isystek.com/dbi/fom.cgi">See 
-              the DBI FAQ.</a></h3>
-            <h3>What is DBI?</h3>
-            <p>&quot;The DBI is the standard database interface module for Perl. It defines 
-              a set of methods, variables and conventions that provide a consistent 
-              database interface independent of the actual database being used.&quot;</p>
-            <p align="center">-- Tim Bunce</p>
-          </div>
-
-        <div class="NAVITEM"></div>
-        
-[% END %]        
-
-      <table width="530" cellspacing="10" cellpadding="5" border="0">
-        <tr valign="TOP"> 
-          <td  valign="top"  class="NOVERTPAD"> <p> The DBI module enables your 
-              Perl applications to access<br>
-              multiple database types transparently. You can connect to<br>
-              MySQL, MSSQL, Oracle, Informix, Sybase, ODBC etc. without<br>
-              having to know the different underlying interfaces of each.<br>
-              The API defined by DBI will work on all these database types<br>
-              and many more. </p>
-            <p> You can connect to multiple databases of different types<br>
-              at the same time and easily move data between them.<br>
-              The DBI layer allows you to do this simply and powerfully.<br>
-              Here's a diagram that demonstrates the principle:<br>
+<table class="content_table">
+    <tr>
+        <td>
+            <p>
+                The DBI module enables your Perl applications to access
+                multiple database types transparently. You can connect to
+                MySQL, MSSQL, Oracle, Informix, Sybase, ODBC etc. without
+                having to know the different underlying interfaces of each.
+                The API defined by DBI will work on all these database types
+                and many more.
             </p>
-            <div class="ITEMS">
-              <p> <img src="/images/dbiarch.gif" width="451" height="321"></div></td>
-        </tr>
-        <tr> 
-          <td colspan=21 valign="BOTTOM" align="center"> </td>
-        </tr>
-      </table>
-      
+            <p>
+                You can connect to multiple databases of different types
+                at the same time and easily move data between them.
+                The DBI layer allows you to do this simply and powerfully.
+                Here's a diagram that demonstrates the principle:
+            </p>
+                <p>
+                    <img src="/images/dbiarch.gif" width="451" height="321">
+                </p>
+        </td>
+    </tr>
+</table>
+

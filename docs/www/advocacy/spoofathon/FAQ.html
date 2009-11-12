@@ -1,7 +1,14 @@
-[% page.title = "FAQ" %]
-[% PROCESS advocacy/spoofathon/tpl/navigation.html %]
+[% 
+    page.import({
+        title    = 'The Perl Spoofathon: FAQ',
+        section  = 'about',
+        description 
+            = '',
+    });
 
-<h1>Frequently Asked Questions</h1>
+%]
+
+[% PROCESS advocacy/spoofathon/tpl/navigation.html %]
 
 <h2>Should the article follow a given structure?</h2>
 <p>There's no need to have any particular structure. The many <i>"$foo is

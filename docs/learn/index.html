@@ -1,83 +1,46 @@
-[%
-page.title = "Learn Perl";
-page.banner = "Learn Perl";
+[% 
+    page.import({
+        include_sifr => 1,
+        title    => 'Learn Perl',
+        section  => 'home',
+        description 
+            => 'Learn Perl, useful tutorials and links',
+    });
+    
 %]
 
 
-[% MACRO quicknews(shortname,count) BLOCK %]
-[%- IF count < 1 %]
-  [%  count = 2 %]
-[% END %]
-[%- TRY %]
-   [%- USE news = XML.RSS("${root}/var/rss/${shortname}.rss") %]
-   [% FOREACH item = news.items %]
-       - <a href="[% item.link | html %]">[% item.title %]</a><BR>
-       [% count = count - 1 %]
-       [% LAST IF count == 0 %]
-    [% END %]
-[%- CATCH %]
-    [Error Processing Directive]
-  [%- FILTER stderr %][% error.info %][% END %]
-[%- END %]
-[%- END %]
+<div class="masthead">
+ 	<p class="headline">Learning perl</p>
 
-<h2>Learn Perl</h2>
-
-So, you want to learn perl?  Where to start?  A good place is 
-<A HREF="http://perldoc.perl.org/perlintro.html"
-   TITLE="A Perl Introduction for Beginners"
->this introduction
-</A> or any of the books in the Beginners section below.  As you learn more, you can move down the book lists and visit <A HREF="http://www.perl.org/" TITLE="The Perl Resource Directory">www.perl.org</A> and <A HREF="http://www.cpan.org">www.cpan.org</A> for more information.
-<p>
-
-<p>
-You can read the <a href="http://perldoc.perl.org/">perl documentation</a> on our perldoc site!
-Did  you know that you can also access the perl documentation with the <tt>perldoc</tt> command?  Try "<tt>perldoc <a href="http://perldoc.perl.org/perlreftut.html">perlreftut</a></tt>" at your command line prompt.
-
-</p>
-
-<h2>Mailing Lists</h2>
-
-<p>
-There are many Perl related mailing lists.  An exhaustive list is available at <a href="http://lists.perl.org/">lists.perl.org</a>.
-</p>
-<p>
-If you're new to Perl, consider joining the <a href="faq/beginners.html">beginners list.</a>  
-</p>
-
-<h2>News</h2>
-
-
-<div style="float:right; border:solid 1px black; width: 30%; padding: 1em; margin: 1em;">
-<H3 align="center"><a href="http://use.perl.org">use.perl.org</a></H3>
-[% quicknews ("useperl",4) %]
-<H3 align="center"><a href="http://www.perl.com">perl.com</a></H3>
-[% quicknews ("perlcom",4) %]
-<H3 align="center"><a href="http://jobs.perl.org">jobs.perl.org</a></H3>
-[% quicknews ("jobs",4) %]
+ 	<p class="strap">Resources and references for learning Perl</p>
 </div>
 
-<P>Announcing the <tt>learn.perl.org</tt> <A HREF="/library">Online
-Library</A> where you can read your favorite perl books.</P>
-
-<!-- 
-The <a href="/tips/">tips</a> list is now active. Sign up and get Perl
-tips sent by email a few times a month.
--->
 <p>
+    So, you want to learn perl? A good place is <a href="http://perldoc.perl.org/perlintro.html" title="A Perl Introduction for Beginners">this introduction</a> or any of the <a href="/books.html">books</a> we recommend.
+</p>
+<p>
+    You can read the <a href="http://perldoc.perl.org/">perl documentation</a> on our perldoc site. Did you know that you can also access the perl documentation with the <code>perldoc</code> command? Try "<code>perldoc <a href="http://perldoc.perl.org/perlreftut.html">perlreftut</a></code>" at your command line prompt.
+</p>
+<h4>
+    Mailing Lists
+</h4>
+<p>
+    There are many Perl related mailing lists. An exhaustive list is available at <a href="http://lists.perl.org/">lists.perl.org</a>.
+</p>
+<p>
+    If you're new to Perl, consider joining the <a href="faq/beginners.html">beginners list.</a>
+</p>
+<p>
+    You can read the beginners lists (and all other perl.org mailinglists) with your newsreader (<a href="http://freshmeat.net/browse/39/">Unix</a>, <a href="http://www.tucows.com/downloads/Windows/Internet/NewsgroupsNewsReaders/NewsReaders/">Windows</a> or <a href="http://www.smfr.org/mtnw/">MacOS</a> readers) from the news server <a href="news://nntp.perl.org/perl.beginners">nntp.perl.org</a>. You can also browse it <a href="http://nntp.perl.org/group/perl.beginners/">on the web</a>
+</p>
 
-You can now read the beginners lists (and all other perl.org
-mailinglists) with your newsreader (<a
-href="http://freshmeat.net/browse/39/">Unix</a>, <a
-href="http://www.tucows.com/downloads/Windows/Internet/NewsgroupsNewsReaders/NewsReaders/"
->Windows</a> or
-
-<a href="http://www.smfr.org/mtnw/">MacOS</a> readers) from the news
-server
-<a href="news://nntp.perl.org/perl.beginners">nntp.perl.org</a>.  You can
-also browse it <a href="http://nntp.perl.org/group/perl.beginners/">on
-the web</a>
-
-
-[% PROCESS books_content.html %]
+<script type="text/javascript">
+//<![CDATA[
+if(typeof sIFR == "function"){
+	sIFR.replaceElement(named({sSelector:".masthead .headline", sFlashSrc:"/flash/sifr/tradegothic.swf", sColor:"#004065", sLinkColor:"#004065", sBgColor:"#f0f0f0", sHoverColor:"#004065", nPaddingTop:0, nPaddingBottom:0, sFlashVars:"textalign=leftoffsetTop=6"}));
+	sIFR.replaceElement(named({sSelector:".masthead .strap", sFlashSrc:"/flash/sifr/tradegothic.swf", sColor:"#8FB7E5", sLinkColor:"#8FB7E5", sBgColor:"#f0f0f0", sHoverColor:"#8FB7E5", nPaddingTop:0, nPaddingBottom:0, sFlashVars:"textalign=leftoffsetTop=6"}));
+};
+//]]>
+</script>
 

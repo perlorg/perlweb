@@ -1,0 +1,69 @@
+[%-
+    tips = [
+        # Real Tips -----------------------------------------
+        {
+            title => 'Database interfaces',
+            desc => '<a 
+            href="http://search.cpan.org/dist/DBIx-Class/">DBIx::Class</a> 
+            provides an Object Relational Mapper (ORM) to databases
+             (e.g. Oracle, SQL Server, MySQL,
+             Postgress, Access etc)',
+        },
+        {
+            title => 'Object Oriented programming',
+            desc => '<a href="http://search.cpan.org/dist/Moose/">Moose</a> 
+            (and associated MooseX modules) are a postmodern object system for
+            Perl 5',
+        },
+        {
+            title => 'Web frameworks',
+            desc => '<a
+             href="http://search.cpan.org/dist/Catalyst-Runtime/">Catalyst</a>
+            is a Model View Controller (MVC) Web application framework',
+        },
+        {
+            title => 'Need templates?',
+            desc => 'look at... <a
+             href="http://search.cpan.org/dist/Template-Toolkit/">Template Toolkit</a>',
+        },
+        {
+            title => 'Need a Job?',
+            desc => '<a href="http://jobs.perl.org/">jobs.perl.org</a> has the job for you!',
+        },
+        # Funny Tips ---------------------------------------
+        {
+            title => 'Perl',
+            desc => '-- For when you care enough to program the very best!',
+        },
+        {
+            title => 'Perl',
+            desc => '-- When the best is good enough.',
+        },
+        {
+            title => 'Perl',
+            desc  => '-- It\'s like Java, only it lets you deliver on time and under budget.',
+        },
+        {
+            title => 'Perl',
+            desc => '-- Because life\'s too short to code without punctuation.',
+        },
+        {
+            title => 'Perl',
+            desc => '-- Program <i>Different</i>',
+        },
+        {
+            title => 'Perl',
+            desc => '-- More braces.  Fewer spaces.',
+        },
+    ];
+
+    rand_num = tips.size.rand;
+    tip = tips.$rand_num;
+
+    # Consider switching this to using combust's Rotato, which wants a
+    # hash of hashes instad of a list of hashes, but also lets us use
+    # weights.
+    # That would let us weight the "good tips" above the funny tips.
+
+
+-%]

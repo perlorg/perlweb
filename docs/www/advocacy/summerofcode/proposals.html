@@ -1,8 +1,12 @@
-[% page.banner = "Summer of Code Proposals" %]
-[% page.title = page.banner %]
-[% page.sidebar = BLOCK %]
-&lArr; <A HREF="index.html">back to Summer of Code</A>
-[% END %]
+[% 
+    page.import({
+        title    = 'Summer of Code: Proposals',
+        section  = 'about',
+        description 
+            = 'Summer of Code Proposals',
+    });
+    
+%]
 
 <p>All proposals must be submitted through the Google Summer of Code
 website.  The below is a suggested format, but not required.  What's
@@ -11,13 +15,13 @@ Technical details don't all need to be figured out, they can be ironed
 out on the mailing lists after the project starts.  Remember, all
 Summer of Code projects should be large enough for you to work on full
 time for almost three months.  Be sure that you've read the <A
-HREF="http://code.google.com/soc/studentfaq.html">FAQ</A>.  Proposals
+class="ext" href="http://code.google.com/soc/studentfaq.html">FAQ</A>.  Proposals
 without enough information will be rejected.</p>
 
 <p>The Drupal project wrote up two wonderful pages on <A
-HREF="http://drupal.org/node/59963">Student Requirements</A> and <A
-HREF="http://drupal.org/node/59037">How to Write a Proposal</A>.  <A
-HREF="http://wiki.python.org/moin/SummerOfCode/Proposals">Python's</A>
+class="ext" href="http://drupal.org/node/59963">Student Requirements</A> and <A
+class="ext" href="http://drupal.org/node/59037">How to Write a Proposal</A>.  <A
+class="ext" href="http://wiki.python.org/moin/SummerOfCode/Proposals">Python's</A>
 is good as well.  We suggest you read them all.</p>
  
 <p>Plain-text is best, following something like this format:</p>

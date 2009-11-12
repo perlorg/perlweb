@@ -1,14 +1,19 @@
-[% page.banner = "Perl Advocacy" %]
-[% page.title  = "Perl Advocacy" %]
-[% page.style = "default.html" %]
-[% page.sidebar = BLOCK %][% END %]
+[% 
+    page.import({
+        title    = 'Perl Advocacy',
+        section  = 'about',
+        description 
+            = 'Perl Advocacy',
+    });
+    
+%]
 
-<UL>
-   <LI><a href="whyperl.html" CLASS="TOPIC">Why Perl?</a> (by Jim Brandt)
-   <LI><a href="http://perltraining.com.au/whyperl.html" CLASS="TOPIC">Why Perl?</a> (from Perl Training Australia)
-   <LI><a href="white_camel" CLASS="TOPIC">White Camel Awards</a>
-   <LI><a href="summerofcode/" CLASS="TOPIC">Summer of Code</a>
-   <LI><a href="http://lists.cpan.org/showlist.cgi?name=advocacy" CLASS="TOPIC">The Perl Advocacy Mailing List</a>
-</UL>
-
-<br><br><br><br><br><br>
+<ul>
+   <li><a href="whyperl.html">Why Perl?</a> (by Jim Brandt)</li>
+   <li><a href="http://perltraining.com.au/whyperl.html"
+            >Why Perl?</a> (from Perl Training Australia)</li>
+   <li><a href="white_camel/">White Camel Awards</a></li>
+   <li><a href="summerofcode/">Summer of Code</a></li>
+   <li><a href="http://lists.cpan.org/showlist.cgi?name=advocacy"
+            >The Perl Advocacy Mailing List</a></li>
+</ul>

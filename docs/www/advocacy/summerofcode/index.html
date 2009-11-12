@@ -1,79 +1,83 @@
-[% page.banner = "Summer of Code" %]
-[% page.title = page.banner %]
-[% page.style = "default.html" %]
-[% page.sidebar = BLOCK %][% END %]
+[% 
+    page.import({
+        title    = 'Summer of Code',
+        section  = 'about',
+        description 
+            = 'Summer of Code',
+    });
+    
+%]
 
 
-
-<p style="font-size: 200%; border: solid 2px black; padding: 1em; text-align: center;">
-<a href="http://xrl.us/perlgsoc08">
-We are participating in the 2008 Summer of Code.<br><br>
-<small>(click for details)</small>
-</a>
-
+<p>
+    <a href="http://xrl.us/perlgsoc08">We are participating in the 2008 Summer of Code.<br />
+    <br />
+    <small>(click for details)</small></a>
 </p>
-
-<IMG SRC="http://code.google.com/images/code_sm.png" 
-     style="float: right; padding-top: 3em; ">
-
-
-
-
-<p style="font-size: 125%">
-We did <b>not</b> participate in the 2007 Summer of Code.
+<p>
+    <img src="http://code.google.com/images/code_sm.png" style="float: right; padding-top: 3em;">
 </p>
-
-<p style="font-size: 125%"><A HREF="http://www.perlfoundation.org">The
-Perl Foundation</A> was proud to participate in <br> <A
-HREF="http://code.google.com/soc/">Google's Summer of Code</A> 2006.
-
-
-
-<H3 class="BEGINNER">
-
-We're extremely excited to announce that we have 5 projects this year:<br />
+<p>
+    We did <b>not</b> participate in the 2007 Summer of Code.
+</p>
+<p>
+    <a href="http://www.perlfoundation.org">The Perl Foundation</a> was proud to participate in<br />
+    <a href="http://code.google.com/soc/">Google's Summer of Code</a> 2006.
+</p>
+<h4>
+    We're extremely excited to announce that we have 5 projects this year:<br />
+</h4>
 <ul>
-  <li><A HREF="http://code.google.com/soc/tpf/appinfo.html?csaid=2CEA85C4F16766F9" 
-      >Complete Perl 5 Parser and Perl 6 Output</A>
-    <ul>
-      <li>Student: Sage LaTorra</li>
-      <li>Mentor: Larry Wall</li>
-    </ul>
-  </li>
-  <li><A HREF="http://code.google.com/soc/tpf/appinfo.html?csaid=2724C0CE12822D61" 
-      >Perl 6 DBI Module</A>
-    <ul>
-      <li>Student: Szilakszi Bálint</li>
-      <li>Mentor: Tim Bunce</li>
-    </ul>
-  </li>
-  <li><A HREF="http://code.google.com/soc/tpf/appinfo.html?csaid=11D28EAE85D36E9B" 
-      >POE 1.0 Milestone</A>
-    <ul>
-      <li>Student: Benjamin Smith</li>
-      <li>Mentor: Rocco Caputo</li>
-    </ul>
-  </li>
-  <li><A HREF="http://code.google.com/soc/tpf/appinfo.html?csaid=E166DA908BC1393B"
-      >Pugs Self-hosting Bootstrap From Perl 5 and Rules</A>
-    <ul>
-      <li>Student: Shu-chun Weng</li>
-      <li>Mentor: Patrick R. Michaud</li>
-    </ul>
-  </li>
-  <li><A HREF="http://code.google.com/soc/tpf/appinfo.html?csaid=92ED8A3EEED1FBDF"
-      >Software Transactional Memory for Parrot</A>
-    <ul>
-      <li>Student: Charles Albert Reiss</li>
-      <li>Mentor: Leopold Toetsch</li>
-    </ul>
-  </li>
+    <li>
+        <a href="http://code.google.com/soc/tpf/appinfo.html?csaid=2CEA85C4F16766F9">Complete Perl 5 Parser and Perl 6 Output</a>
+        <ul>
+            <li>Student: Sage LaTorra
+            </li>
+            <li>Mentor: Larry Wall
+            </li>
+        </ul>
+    </li>
+    <li>
+        <a href="http://code.google.com/soc/tpf/appinfo.html?csaid=2724C0CE12822D61">Perl 6 DBI Module</a>
+        <ul>
+            <li>Student: Szilakszi Bálint
+            </li>
+            <li>Mentor: Tim Bunce
+            </li>
+        </ul>
+    </li>
+    <li>
+        <a href="http://code.google.com/soc/tpf/appinfo.html?csaid=11D28EAE85D36E9B">POE 1.0 Milestone</a>
+        <ul>
+            <li>Student: Benjamin Smith
+            </li>
+            <li>Mentor: Rocco Caputo
+            </li>
+        </ul>
+    </li>
+    <li>
+        <a href="http://code.google.com/soc/tpf/appinfo.html?csaid=E166DA908BC1393B">Pugs Self-hosting Bootstrap From Perl 5 and Rules</a>
+        <ul>
+            <li>Student: Shu-chun Weng
+            </li>
+            <li>Mentor: Patrick R. Michaud
+            </li>
+        </ul>
+    </li>
+    <li>
+        <a href="http://code.google.com/soc/tpf/appinfo.html?csaid=92ED8A3EEED1FBDF">Software Transactional Memory for Parrot</a>
+        <ul>
+            <li>Student: Charles Albert Reiss
+            </li>
+            <li>Mentor: Leopold Toetsch
+            </li>
+        </ul>
+    </li>
 </ul>
 
-</H3>
 
 <H2>Blog</H2>
-<A HREF="http://perlsoc2006.blogspot.com/">http://perlsoc2006.blogspot.com/</A><BR>
+<A href="http://perlsoc2006.blogspot.com/">http://perlsoc2006.blogspot.com/</A><br />
 [%- TRY %]
    [% count = 10 %]
    [%- USE news = XML.RSS("${root}/var/rss/perlsoc2006.rss") %]
@@ -94,15 +98,15 @@ We're extremely excited to announce that we have 5 projects this year:<br />
 
 <H2>Links</H2>
 <UL>
-  <LI><A HREF="http://perlsoc2006.blogspot.com">Perl Summer of Code 2006 Blog</A></LI>
+  <LI><A href="http://perlsoc2006.blogspot.com">Perl Summer of Code 2006 Blog</A></LI>
   <LI><A HREF="ideas.html">Project Ideas</A></LI>
   <LI><A HREF="proposals.html"
       >How to Write a Proposal</A></LI>
-  <LI><A HREF="http://code.google.com/soc/studentfaq.html"
+  <LI><A href="http://code.google.com/soc/studentfaq.html"
       >Google's Student FAQ</A></LI>
-  <LI><A HREF="http://code.google.com/soc/tos.html"
+  <LI><A href="http://code.google.com/soc/tos.html"
       >Google's Terms of Service</A></LI>
-  <LI><A HREF="http://www.perlfoundation.org/gc/grants/2005-googlesoc.html"
+  <LI><A href="http://www.perlfoundation.org/gc/grants/2005-googlesoc.html"
       >2005 Summer of Code Perl Projects</A></LI>
 </UL>
 

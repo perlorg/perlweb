@@ -1,13 +1,15 @@
-[% page.title = "Impatient Perl" %]
-[% page.sidebar = BLOCK %]
-<A HREF="/books/library.html">Library</A>
-[% END %]
+[% 
+    page.import({
+        title    = 'Impatient Perl (free)',
+        section  = 'learn',
+        description 
+            = 'Perl.org free online Perl books: Impatient Perl',
+    });
+%]
 
-<H1>Impatient Perl</H1>
-<H2>by Greg London</H2>
+<h2>by Greg London</h2>
 
-<div style="float:right; clear: bottom; border: 1px solid #191970; margin-left: 1em;
-padding: 1em">
+<div class="feature_list">
 
   <ul>
     <li><a href="http://blob.perl.org/books/impatient-perl/iperl.html"
@@ -16,37 +18,34 @@ padding: 1em">
     <li><a href="http://blob.perl.org/books/impatient-perl/iperl.pdf">Download (PDF)</a></li>
     </ul>
 
-     <br>
-    <br>
-
-
 </div>
+
 
 <p>
 You write code for a living, and your inherit a legacy program written
-in perl. You can program in your native language in your sleep. But
-you don't know perl at all, or you've only dabbled with it. Your
+in Perl. You can program in your native language in your sleep. But
+you don't know Perl at all, or you've only dabbled with it. Your
 deadline doesn't give you enough time to rewrite the legacy program in
 your native language, but it needs new features. You need to learn
-perl, and you need to learn it NOW. "Impatient Perl" was written for
+Perl, and you need to learn it NOW. "Impatient Perl" was written for
 you.
 </p>
 
-<b>The Impatient Introduction to Perl</b>
+<h4>The Impatient Introduction to Perl</h4>
 <p>
-This document is for people who either want to learn perl or are
-already programming in perl and just don't have the patience to
-scrounge for information to learn and use perl.  This document should
+This document is for people who either want to learn Perl or are
+already programming in Perl and just don't have the patience to
+scrounge for information to learn and use Perl.  This document should
 also find use as a handy desk reference for some of the more common
 perl related questions.
 </p>
 
-<b>The history of perl in 100 words or less</b>
+<h4>The history of Perl in 100 words or less</h4>
 
 <p>
 In the mid 1980's, Larry Wall was working as a sysadmin and found that
 he needed to do a number of common, yet oddball functions over and
-over again. And he didn't l ike any of the scripting languages that
+over again. And he didn't like any of the scripting languages that
 were around at the time, so he invented Perl. Version 1 was released
 circa 1987. A few changes have occurred between then and now. The
 current version of Perl has exceeded 5.8.0 and is a highly recommended

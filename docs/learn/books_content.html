@@ -1,443 +1,331 @@
-<h2>Books for Beginners</h2>
-
-Books commonly recommended on the beginners lists. If a book isn't
-mentioned in this list it might still be good, but there is a good
-chance it isn't.  :-)
-
-
-<h3>Beginners</h3>
-
-<b>Learning Perl, Fifth Edition</b><br>
-
-<font size="-2">
-by Randal L. Schwartz, Tom Phoenix, brian d foy;
-348 pages;
-O'Reilly Media, Inc.;
-(June 2008)
-<br>
-</font>
-
-<i class="book_title">Learning Perl</i> is the tutorial book, covering how
-   you could spend the first 30 to 40 hours with Perl. The fifth edition
-   covers up to Perl 5.10.
-<br> 
-
-Buy from: 
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=0596520107">Amazon</a> -
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=powells;isbn=0596520107">Powells</a> -
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=amazonuk;isbn=0596520107">Amazon UK</a> 
-</p>
-<br />
-
-<!-- ####################################### -->
-<p>
-<b>Intermediate Perl</b><br>
-
-<font size="-2">
-by Randal L. Schwartz and brian d foy, with Tom Phoenix;
-278 pages;
-O'Reilly Media, Inc.;
-(March 2006)
-<br>
-</font>
-
-<i class="book_title">Intermediate Perl</i> picks up where  
-<i class="book_title">Learning Perl</i> leaves off. This new book offers a gentle introduction to the  
-world of references, object-oriented programming, and the use of Perl  
-modules that form the backbone of any effective Perl program. Following the  
-successful format of <i class="book_title">Learning Perl</i>, each chapter in the book is designed to  
-be small enough to be read in just an hour or two. Each chapter ends with a  
-series of exercises to help you practice what you've learned with answers  
-in an appendix for your reference. In short, this book covers everything  
-that separates the Perl dabbler from the Perl programmer.
-<br> 
-
-Buy from: 
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=0596102062">Amazon</a> -
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=powells;isbn=0596102062">Powells</a> -
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=amazonuk;isbn=0596102062">Amazon UK</a> 
-</p>
-<br />
-
-<!-- ####################################### -->
-<p>
-<b>Beginning Perl, 2nd Edition</b><br>
-
-<font size="-2">
-by James Lee;
-464 pages;
-Apress, LLC;
-(August 2004)
-<br>
-</font>
+[% BLOCK book_block %]
+<div class="book">
+    [% IF isbn %]
+        <iframe class="amazon" src="http://rcm.amazon.com/e/cm?lt1=_blank&amp;bc1=FFFFFF&amp;IS2=1&amp;bg1=FFFFFF&amp;fc1=000000&amp;lc1=0000FF&amp;t=develooper&amp;o=1&amp;p=8&amp;l=as1&amp;m=amazon&amp;f=ifr&amp;asins=[% isbn %]" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>[% END %]
+    <b><a name="[% name %]" class="title"[% IF link %] href="[% link %]"[% END %]>[% title %]</a></b> <br />
+    <span class="author">[% author %]</span><br />
+    <p class="description">
+        [% IF link %]<a [% IF link.match('http') %] [% END %] href="[% link %]"><strong>Read [% IF sample %]sample chapters[% ELSE %]entire book free[% END %] online...</strong></a><br />[% END %]
+[% description %]
+        
+    </p>
+    [% IF isbn %]
+    <p class="buy">
+        Buy from: [% INCLUDE "tpl/bookstore-links" style="text" %]
+    </p>
+    [% END %]
+</div>
+[% END %]
 
 
-<i class="book_title">Beginning Perl</i> is a different kind of Perl book. It's written
-particularly with the beginning programmer in mind, but  experienced programmers will not feel patronised.
-It covers a lot of ground, from the very basics of programming, right
-through to developing CGI applications for the web. More importantly, it
-emphasises good Perl practice, and readable and maintainable code.
-   
-<br> 
+<h2>Beginner books</h2>
 
-Buy from: 
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=159059391X">Amazon</a> -
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=powells;isbn=159059391X">Powells</a> -
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=amazonuk;isbn=159059391X">Amazon UK</a> 
-</p>
-<br />
+<p>Books commonly recommended</p>
 
-<!-- ####################################### -->
+[% PROCESS book_block
+    name => 'beginningperl',
+    title => 'Beginning Perl',
+    isbn => '1861003145',
+    link => 'http://www.perl.org/books/beginning-perl/',
+    author => 'by Simon Cozens, Peter Wainwright. 700 pages. Wrox Press Inc. (May 25, 2000).',
+    description => "
+    Beginning Perl is a different kind of Perl book. It's written particularly with the beginning programmer in mind, but it doesn't treat you like an idiot, and experienced programmers will not feel patronized. It covers a lot of ground, from the very basics of programming, right through to developing CGI applications for the web. More importantly, it emphasizes good Perl practice, and readable and maintainable code.
+    ",
+%]
 
-<h3>Essentials</h3>
+[% PROCESS book_block
+    name => 'learnperl',
+    title => 'Learn Perl, Fifth Edition',
+    isbn => '0596520107',
+    link => '',
+    author => 'by Randal L. Schwartz, Tom Phoenix, brian d foy;
+    348 pages;
+    O\'Reilly Media, Inc.;
+    (June 2008)',
+    description => "
+    A tutorial book, covering how
+       you could spend the first 30 to 40 hours with Perl. The fifth edition
+       covers up to Perl 5.10.
+    ",
+%]
 
-<b>Programming Perl, 3rd Edition</b><br>
+<h2>Intermediate books</h2>
 
-<font size="-2">
-by Larry Wall, Tom Christiansen, Jon Orwant;
-1092 pages;
-O'Reilly Media, Inc.;
-(July 2000)
-<br>
-</font>
+[% PROCESS book_block
+    name => 'intermediateperl',
+    title => 'Intermediate Perl',
+    isbn => '0596102062',
+    link => '',
+    author => 'by Randal L. Schwartz and brian d foy, with Tom Phoenix;
+    278 pages;
+    O\'Reilly Media, Inc.;
+    (March 2006)',
+    description => "
+    <i>Intermediate Perl</i> picks up where  
+    <i>Learning Perl</i> leaves off. This new book offers a gentle introduction to the  
+    world of references, object-oriented programming, and the use of Perl  
+    modules that form the backbone of any effective Perl program. Following the  
+    successful format of <i>Learning Perl</i>, each chapter in the book is designed to  
+    be small enough to be read in just an hour or two. Each chapter ends with a  
+    series of exercises to help you practice what you've learned with answers  
+    in an appendix for your reference. In short, this book covers everything  
+    that separates the Perl dabbler from the Perl programmer.
+    ",
+%]
 
+[% PROCESS book_block
+    name => 'beginningperl2nd',
+    title => 'Beginning Perl, 2nd Edition',
+    isbn => '159059391X',
+    link => '',
+    author => 'by James Lee;
+    464 pages;
+    Apress, LLC;
+    (August 2004)',
+    description => "
+    <i>Beginning Perl</i> is a different kind of Perl book. It's written
+    particularly with the beginning programmer in mind, but  experienced programmers will not feel patronised.
+    It covers a lot of ground, from the very basics of programming, right
+    through to developing CGI applications for the web. More importantly, it
+    emphasises good Perl practice, and readable and maintainable code.
+    ",
+%]
+
+
+<h2>Essentials</h2>
+
+[% PROCESS book_block
+    name => 'programmingperl',
+    title => 'Programming Perl, 3rd Edition',
+    isbn => '0596000278',
+    link => '',
+    author => 'by Larry Wall, Tom Christiansen, Jon Orwant;
+    1092 pages;
+    O\'Reilly Media, Inc.;
+    (July 2000)',
+    description => "
 The reference book for Perl 5.
-<br> 
+    ",
+%]
 
-Buy from: 
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=0596000278">Amazon</a> -
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=powells;isbn=0596000278">Powells</a> -
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=amazonuk;isbn=0596000278">Amazon UK</a> 
-</p>
-<br />
+[% PROCESS book_block
+    name => 'perlcookbook',
+    title => 'The Perl Cookbook, 2nd Edition',
+    isbn => '0596003137',
+    link => '',
+    author => 'by Tom Christiansen, Nathan Torkington, Larry Wall;
+    964 pages;
+    O\'Reilly Media, Inc.;
+    (August 21, 2003)',
+    description => "
 
-<!-- ####################################### -->
-<p>
-<b>The Perl Cookbook, 2nd Edition</b><br>
+    'Precious few books can meet the needs of novices and experts
+           simultaneously. <i>The Perl Cookbook</i> does, and on nearly every
+           page. It has the perfect mix of instruction, revelation, and
+           attitude.' --Jon Orwant, editor of The Perl Journal
+    ",
+%]
 
-<font size="-2">
-by Tom Christiansen, Nathan Torkington, Larry Wall;
-964 pages;
-O'Reilly Media, Inc.;
-(August 21, 2003)
-<br>
-</font>
 
-"Precious few books can meet the needs of novices and experts
-       simultaneously. <i  class="book_title">The Perl Cookbook</i> does, and on nearly every
-       page. It has the perfect mix of instruction, revelation, and
-       attitude." --Jon Orwant, editor of The Perl Journal
+<h2>Advanced</h2>
 
-<br> 
+[% PROCESS book_block
+    name => 'advancedperlprogramming',
+    title => 'Advanced Perl Programming',
+    isbn => '0596004567',
+    link => '',
+    author => 'by Simon Cozens;
+    298 pages;
+    O\'Reilly Media, Inc.;
+    (June 28, 2005)',
+    description => "
+    Perl has proven to be the most effective language for the latest trends
+    in computing and business. Every programmer must keep up with the
+    latest tools and techniques. This updated version of Advanced Perl
+    Programming from O'Reilly gives you the essential knowledge of the
+    modern Perl programmer. Whatever your current level of Perl expertise,
+    this book will help you push your skills to the next level and become a
+    more accomplished programmer.
+    ",
+%]
 
-Buy from: 
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=0596003137">Amazon</a> -
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=powells;isbn=0596003137">Powells</a> -
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=amazonuk;isbn=0596003137">Amazon UK</a> 
-</p>
+[% PROCESS book_block
+    name => 'perldebugged',
+    title => 'Perl Debugged',
+    isbn => '0201700549',
+    link => '',
+    author => 'by Peter J. Scott, Ed Wright;
+    288 pages;
+    Addison-Wesley;
+    (March 27, 2001)',
+    description => "
+        I <i>highly</i> recommend Perl Debugged to anyone at
+                        the beginning or intermediate stage in Perl
+                        programming, particularly to programmers who have
+                        less than 2-4 years of debugging experience in
+                        general. An experienced programmer, on the other
+                        hand, will want to buy a copy (copies?) to browse
+                        and then hand to his junior co-worker(s) with
+                        stern instructions to 'read first, code later.'
+                        &mdash; <i>Joseph N. Hall</i> (author of Effective Perl
+                        Programming)
+    ",
+%]
 
-<!-- ####################################### -->
-<h3>Advanced</h3>
+[% PROCESS book_block
+    name => 'effectiveperl',
+    title => 'Effective Perl Programming',
+    isbn => '0201419750',
+    link => '',
+    author => 'by Joseph N. Hall;
+    288 pages;
+    Addison-Wesley;
+    (January 1998)',
+    description => "
 
-<p>
-<b>Advanced Perl Programming</b><br>
+    ",
+%]
 
-<font size="-2">
-by Simon Cozens;
-298 pages;
-O'Reilly Media, Inc.;
-(June 28, 2005)
-<br>
-</font>
-Perl has proven to be the most effective language for the latest trends
-in computing and business. Every programmer must keep up with the
-latest tools and techniques. This updated version of Advanced Perl
-Programming from O'Reilly gives you the essential knowledge of the
-modern Perl programmer. Whatever your current level of Perl expertise,
-this book will help you push your skills to the next level and become a
-more accomplished programmer.
-<br> 
+[% PROCESS book_block
+    name => 'apacheapimod_perl',
+    title => 'Writing Apache Modules with Perl and C: The Apache API and mod_perl',
+    isbn => '156592567X',
+    link => '',
+    author => 'by Lincoln Stein, Doug MacEachern, Linda Mui (Editor);
+    724 pages;
+    O\'Reilly Media, Inc.;
+    (March 1999)',
+    description => "
+    Writing Apache Modules with Perl and C will allow you to enhance
+    your Apache HTTP server in just about any way you'd like. Overall, it
+    is an excellent book, and it has a lot of good information and terrific
+    examples on everything from "Content Handlers" to customizing the
+    Apache server configuration process. <i>&mdash; Doug Beaver</i>
+    ",
+%]
 
-Buy from: 
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=0596004567">Amazon</a> -
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=powells;isbn=0596004567">Powells</a> -
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=amazonuk;isbn=0596004567">Amazon UK</a> 
-</p>
-<br />
 
-<!-- ####################################### -->
-<p>
-<b>Perl Debugged</b><br>
+[% PROCESS book_block
+    name => 'practicalmod_perl',
+    title => 'Practical mod_perl',
+    isbn => '0596002270',
+    link => '',
+    author => 'by Stas Bekman &amp; Eric Cholet;
+    924 pages;
+    O\'Reilly Media, Inc.;
+    (May 27, 2003)',
+    description => "
+    Mod_perl embeds the popular programming language Perl in 
+    the Apache web server, giving rise to a fast and powerful web programming 
+    environment. Written for Perl web developers and web administrators, 
+    Practical mod_perl is an extensive guide to the nuts and bolts of the 
+    powerful and popular combination of Apache and mod_perl. From writing and 
+    debugging scripts to keeping your server running without failures, the 
+    techniques in this book will help you squeeze every ounce of power out of 
+    your server. True to its title, this is the practical guide to mod_perl.
+    ",
+%]
 
-<font size="-2">
-by Peter J. Scott, Ed Wright;
-288 pages;
-Addison-Wesley;
-(March 27, 2001)
-<br>
-</font>
+[% PROCESS book_block
+    name => 'mod_perl2_user',
+    title => 'mod_perl2 User Guide',
+    isbn => '0977920119',
+    link => '',
+    author => 'by Stas Bekman &amp; Jim Brandt;
+    OnyxNeon;
+    (August 2007)',
+    description => "
+    mod_perl 2, the next generation of the Apache Perl module, gives you full access to the Apache 2 internals via the Perl programming language, just as mod_perl 1 gave you access to Apache 1. New features in Apache and Perl make mod_perl 2 even more powerful and useful than before, allowing you to quickly write and deploy fast, robust web applications.
+    As with any major upgrade, there are new features and key changes to mod_perl from the 1.x generation. The mod_perl 2 User's Guide explains these key changes and demonstrates the tools that you can use to port modules and migrate your existing code.
+    ",
+%]
 
-I <i>highly</i> recommend Perl Debugged to anyone at
-                    the beginning or intermediate stage in Perl
-                    programming, particularly to programmers who have
-                    less than 2-4 years of debugging experience in
-                    general. An experienced programmer, on the other
-                    hand, will want to buy a copy (copies?) to browse
-                    and then hand to his junior co-worker(s) with
-                    stern instructions to "read first, code later."
-                    &mdash; <i>Joseph N. Hall</i> (author of Effective Perl
-                    Programming)
-<br> 
+[% PROCESS book_block
+    name => 'mod_perlcookbook',
+    title => "mod_perl Developer's Cookbook",
+    isbn => '0672322404',
+    link => '',
+    author => 'by Geoffrey Young, Paul Lindner, Randy Kobes;
+    650 pages;
+    Sams Publishing;
+    (January 2002)',
+    description => "
+        A practical, hands-on guide that shows you how to exploit
+        the power of mod_perl.
+    ",
+%]
 
-Buy from: 
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=0201700549">Amazon</a> -
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=powells;isbn=0201700549">Powells</a> -
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=amazonuk;isbn=0201700549">Amazon UK</a> 
-</p>
-<br />
 
-<!-- ####################################### -->
-<p>
-<b>Effective Perl Programming</b><br>
+[% PROCESS book_block
+    name => 'masteringregexs',
+    title => 'Mastering Regular Expressions, 3nd edition',
+    isbn => '0596528124',
+    link => '',
+    author => 'by Jeffrey E. Friedl;
+    542 pages;
+    O\'Reilly Media, Inc.;
+    (August 2006)',
+    description => "
+    <i>Mastering Regular Expressions, Third Edition</i> has been thoroughly
+    updated to include all the new features of Perl 5.8, as well as several
+    other languages, including Java, VB.NET, C#, Python, JavaScript, Tcl,
+    and Ruby. Written in the lucid, entertaining tone that made a complex,
+    dry topic crystal-clear to thousands of programmers, and sprinkled with
+    solutions to complex real-world problems, Mastering Regular Expressions
+    offers a wealth information that you can put to immediate use.
+    ",
+%]
 
-<font size="-2">
-by Joseph N. Hall;
-288 pages;
-Addison-Wesley;
-(January 1998)
-<br>
-</font>
+[% PROCESS book_block
+    name => 'extendandembeddperl',
+    title => 'Extended and Embedding Perl',
+    isbn => '1930110820',
+    link => '',
+    author => 'by Tim Jenness and Simon Cozens;
+    384 pages;
+    Manning Publications Company;
+    (July 2002)',
+    description => "
+    Extending and Embedding Perl explains how to expand the
+    functionality and usefulness of the Perl programming language and how
+    to use Perl from C programs. It begins simply but also covers complex
+    issues using real code examples from the Perl source. The book
+    discusses how to write interfaces to C libraries (as well as C++ and
+    Fortran libraries). It shows you how to implement Perl callbacks for C
+    libraries, how to pass Perl hashes and arrays between Perl and C, and
+    how to use the Perl Data Language infrastructure to improve the speed
+    of array operations.
+    ",
+%]
 
-Buy from: 
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=0201419750">Amazon</a> -
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=powells;isbn=0201419750">Powells</a> -
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=amazonuk;isbn=0201419750">Amazon UK</a> 
-</p>
-<br />
 
-<!-- ####################################### -->
-<p>
-<b>Embedding Perl in HTML with Mason</b><br>
+[% PROCESS book_block
+    name => 'perldbi',
+    title => 'Programming the Perl DBI',
+    isbn => '1565926994',
+    link => '',
+    author => 'by Alligator Descartes, Tim Bunce;
+    346 pages;
+    O\'Reilly Media, Inc.;
+    (February 2000)',
+    description => "
 
-<font size="-2">
-by Dave Rolsky, Ken Williams;
-318 pages;
-O'Reilly Media, Inc.;
-(October 2002)
-<br>
-</font>This book shows you how to create large, complex, dynamically
-driven web sites that look good and are a snap to maintain. You'll
-learn how to visualize multiple Mason-based solutions to any given
-problem and select among them. The book covers the latest line of Mason
-development 1.1x, which has many new features, including line number
-reporting based on source files, sub-requests, and easier use as a CGI.
-<br> 
+    ",
+%]
 
-Buy from: 
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=0596002254">Amazon</a> -
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=powells;isbn=0596002254">Powells</a> -
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=amazonuk;isbn=0596002254">Amazon UK</a> 
-</p>
-<br />
 
-<!-- ####################################### -->
-<p>
-<b>Writing Apache Modules with Perl and C: The Apache API and mod_perl</b><br>
-
-<font size="-2">
-by Lincoln Stein, Doug MacEachern, Linda Mui (Editor);
-724 pages;
-O'Reilly Media, Inc.;
-(March 1999)
-<br>
-</font>Writing Apache Modules with Perl and C will allow you to enhance
-your Apache HTTP server in just about any way you'd like. Overall, it
-is an excellent book, and it has a lot of good information and terrific
-examples on everything from "Content Handlers" to customizing the
-Apache server configuration process. <i>&mdash; Doug Beaver</i>.
-<br> 
-
-Buy from: 
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=156592567X">Amazon</a> -
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=powells;isbn=156592567X">Powells</a> -
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=amazonuk;isbn=156592567X">Amazon UK</a> 
-</p>
-<br />
-
-<!-- ####################################### -->
-<p>
-<b>Practical mod_perl</b> - <a href="http://modperlbook.org/">http://modperlbook.org/</a>
-<br>
-
-<font size="-2">
-by Stas Bekman &amp; Eric Cholet;
-924 pages;
-O'Reilly Media, Inc.;
-(May 27, 2003)
-<br>
-</font>
-
-Mod_perl embeds the popular programming language Perl in 
-the Apache web server, giving rise to a fast and powerful web programming 
-environment. Written for Perl web developers and web administrators, 
-Practical mod_perl is an extensive guide to the nuts and bolts of the 
-powerful and popular combination of Apache and mod_perl. From writing and 
-debugging scripts to keeping your server running without failures, the 
-techniques in this book will help you squeeze every ounce of power out of 
-your server. True to its title, this is the practical guide to mod_perl.
-<br> 
-
-Buy from: 
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=0596002270">Amazon</a> -
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=powells;isbn=0596002270">Powells</a> -
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=amazonuk;isbn=0596002270">Amazon UK</a> 
-</p>
-<br />
-
-<!-- ####################################### -->
-<p>
-<b>mod_perl2 User Guide</b> - <a href="http://modperl2book.org/">http://modperl2book.org/</a>
-<br>
-
-<font size="-2">
-by Stas Bekman &amp; Jim Brandt;
-OnyxNeon;
-(August 2007)
-<br>
-</font>
-
-mod_perl 2, the next generation of the Apache Perl module, gives you full access to the Apache 2 internals via the Perl programming language, just as mod_perl 1 gave you access to Apache 1. New features in Apache and Perl make mod_perl 2 even more powerful and useful than before, allowing you to quickly write and deploy fast, robust web applications.
-As with any major upgrade, there are new features and key changes to mod_perl from the 1.x generation. The mod_perl 2 User's Guide explains these key changes and demonstrates the tools that you can use to port modules and migrate your existing code. 
-<br> 
-
-Buy from: 
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=0977920119">Amazon</a> -
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=powells;isbn=0977920119">Powells</a> -
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=amazonuk;isbn=0977920119">Amazon UK</a> 
-</p>
-<br />
-
-<!-- ####################################### -->
-<p>
-<b>mod_perl Developer's Cookbook</b><br>
-
-<font size="-2">
-by Geoffrey Young, Paul Lindner, Randy Kobes;
-650 pages;
-Sams Publishing;
-(January 2002)
-<br>
-</font>
-
-A practical, hands-on guide that shows you how to exploit
-       the power of mod_perl.
-<a target="_blank" href="http://www.modperlcookbook.org/reviews.html">review</a>
-<br> 
-
-Buy from: 
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=0672322404">Amazon</a> -
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=powells;isbn=0672322404">Powells</a> -
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=amazonuk;isbn=0672322404">Amazon UK</a> 
-</p>
-<br />
-
-<!-- ####################################### -->
-<p>
-<b>Mastering Regular Expressions, 3nd edition</b><br>
-
-<font size="-2">
-by Jeffrey E. Friedl;
-542 pages;
-O'Reilly Media, Inc.;
-(August 2006)
-<br>
-</font>
-<i class="book_title">Mastering Regular Expressions, Third Edition</i> has been thoroughly
-updated to include all the new features of Perl 5.8, as well as several
-other languages, including Java, VB.NET, C#, Python, JavaScript, Tcl,
-and Ruby. Written in the lucid, entertaining tone that made a complex,
-dry topic crystal-clear to thousands of programmers, and sprinkled with
-solutions to complex real-world problems, Mastering Regular Expressions
-offers a wealth information that you can put to immediate use.
-<a target="_blank" href="http://oreilly.com/catalog/9780596528126/index.html#rr">reviews</a>
-<br> 
-
-Buy from: 
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=0596528124">Amazon</a> -
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=powells;isbn=0596528124">Powells</a> -
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=amazonuk;isbn=0596528124">Amazon UK</a> 
-</p>
-
-<br />
-
-<!-- ####################################### -->
-<p>
-<b>Extended and Embedding Perl</b><br>
-
-<font size="-2">
-by Tim Jenness and Simon Cozens;
-384 pages;
-Manning Publications Company;
-(July 2002)
-<br>
-</font>Extending and Embedding Perl explains how to expand the
-functionality and usefulness of the Perl programming language and how
-to use Perl from C programs. It begins simply but also covers complex
-issues using real code examples from the Perl source. The book
-discusses how to write interfaces to C libraries (as well as C++ and
-Fortran libraries). It shows you how to implement Perl callbacks for C
-libraries, how to pass Perl hashes and arrays between Perl and C, and
-how to use the Perl Data Language infrastructure to improve the speed
-of array operations.
-<br> 
-
-Buy from: 
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=1930110820">Amazon</a> -
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=powells;isbn=1930110820">Powells</a> -
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=amazonuk;isbn=1930110820">Amazon UK</a> 
-</p>
-<br />
-
-<!-- ####################################### -->
-<p>
-<b>Programming the Perl DBI</b><br>
-
-<font size="-2">
-by Alligator Descartes, Tim Bunce;
-346 pages;
-O'Reilly Media, Inc.;
-(February 2000)
-<br>
-</font>
-
-Database programming with Perl
-<br> 
-
-Buy from: 
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=1565926994">Amazon</a> -
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=powells;isbn=1565926994">Powells</a> -
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=amazonuk;isbn=1565926994">Amazon UK</a> 
-</p>
-<br />
-
-<!-- ####################################### -->
-<p>
-<b>Object Oriented Perl</b><br>
-
-<font size="-2">
-by Damian Conway;
-490 pages;
-Manning Publications Company;
-(August 1999)
-<br>
-</font>Filled with syntactic tips and tricks, Object Oriented Perl is a
-sure bet for any programmer who wants to learn how to use Perl objects
-effectively.
-<a target="_blank" href="http://perl.plover.com/reviews/conway.html">review</a>
-<br> 
-
-Buy from: 
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=amazon;isbn=1884777791">Amazon</a> -
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=powells;isbn=1884777791">Powells</a> -
-<a target="_blank" href="http://www.perl.org/redirect/?type=book;shop=amazonuk;isbn=1884777791">Amazon UK</a> 
-</p>
+[% PROCESS book_block
+    name => 'ooperl',
+    title => 'Object Oriented Perl',
+    isbn => '1884777791',
+    link => '',
+    author => 'by Damian Conway;
+    490 pages;
+    Manning Publications Company;
+    (August 1999)',
+    description => "
+    Filled with syntactic tips and tricks, Object Oriented Perl is a
+    sure bet for any programmer who wants to learn how to use Perl objects
+    effectively.
+    ",
+%]

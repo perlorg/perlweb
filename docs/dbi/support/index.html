@@ -1,63 +1,73 @@
-[% page.banner = BLOCK %]<span CLASS="title"><a href="/">Perl DBI</a></span>[% END %]
-[% page.style = "dbi.html" %]
-[% page.site = "dbi.perl.org" %]
-[% page.title = "Perl DBI - Support" %]
+[% 
+    page.import({
+        title    => 'Support',
+        section  => 'support',
+        description 
+            => 'Support for DBI and Database programming with Perl',
+    });
+%]
 
-[% page.sidebar = BLOCK%]
-          <div class="MENU">
-            <a href="http://search.cpan.org/author/TIMB/DBI/">Download latest DBI</a> </div>
-          <div class="NAVITEM"> 
-            <h3>Questions about DBI? <a href="http://dev.isystek.com/dbi/fom.cgi">See 
-              the DBI FAQ.</a></h3>
-            <h3>What is DBI?</h3>
-            <p>&quot;The DBI is the standard database interface module for Perl. It defines 
-              a set of methods, variables and conventions that provide a consistent 
-              database interface independent of the actual database being used.&quot;</p>
-            <p align="center">-- Tim Bunce</p>
-          </div>
-
-        <div class="NAVITEM"></div>
-        
-[% END %]        
-
-      <table width="530" cellspacing="10" cellpadding="5" border="0">
-        <tr valign="TOP"> 
-          <td  valign="top"  class="ITEMS"> 
-            <div class="ITEMS"> 
-              <p> <span class="TOPIC">DBI Announce Mailing List</span><br>
-              Very low volume moderated mailing list for announcements such as new releases of the DBI and driver modules.</p> 
-              <p> <a href="http://lists.perl.org/showlist.cgi?name=dbi-announce">Details</a><br> 
-                <a href="http://nntp.x.perl.org/group/perl.dbi.announce">Archives 
-                at nntp.perl.org</a><br><a href="http://www.mail-archive.com/dbi-announce@perl.org/">Archives 
-                at mail-archive.com</a><br>                
-                <br></p>
-
-                <p><span class="TOPIC">DBI Users Mailing List</span><br>
-                Medium volume mailing list for general discussion of DBI issues.</p>
-              <p> <a href="http://lists.perl.org/showlist.cgi?name=dbi-users">Details</a>
-		<br><a href="http://groups.google.com/groups?hl=en&lr=&group=perl.dbi.users">Archives at groups.google.com</a>
-		<br><a href="http://nntp.x.perl.org/group/perl.dbi.users">Archives at nntp.perl.org</a>
-		<br><a href="http://www.mail-archive.com/dbi-users@perl.org/">Archives at mail-archive.com</a>
-                <br></p>
-
-              <p> <span class="TOPIC">DBI Developers Mailing List</span><br>
-                Mailing list for developers of DBI drivers etc. (This is not the 
-                place for users to report problems with the DBI or drivers. Use the dbi-users 
-                list for that.)</p>
-              <p> <a href="http://lists.perl.org/showlist.cgi?name=dbi-dev">Details</a>
-		<br><a href="http://groups.google.com/groups?hl=en&lr=&group=perl.dbi.dev">Archives at groups.google.com</a>
-		<br><a href="http://nntp.x.perl.org/group/perl.dbi.dev">Archives at nntp.perl.org</a>
-		<br><a href="http://www.mail-archive.com/dbi-dev@perl.org/">Archives at mail-archive.com</a>
-              <br></p>
-
-              <p> <span class="TOPIC">Commercial Support from the Author</span><br>
-		Professional commercial annual and multi-annual support agreements are available
-		from the author of the DBI, through his consulting company.
-		These offer a first-class support and consultancy service for you,
-		and long-term support for ongoing DBI development.
-		Contact <a href="mailto:Tim.Bunce@pobox.com">Tim Bunce</a> for details.
-              <br></p>
-
-            </div></td>
-        </tr>
-      </table>
+<h2>There is commercial and open source support for DBI...</h2>
+<h4>
+    DBI Announce Mailing List
+</h4>
+<p>
+    Very low volume moderated mailing list for announcements such as new releases of the DBI and driver modules.
+</p>
+<ul>
+    <li>
+        <a href="http://lists.perl.org/showlist.cgi?name=dbi-announce">Details</a>
+    </li>
+    <li>
+        <a href="http://nntp.x.perl.org/group/perl.dbi.announce">Archives at nntp.perl.org</a>
+    </li>
+    <li>
+        <a href="http://www.mail-archive.com/dbi-announce@perl.org/">Archives at mail-archive.com</a>
+    </li>
+</ul>
+<h4>
+    DBI Users Mailing List
+</h4>
+<p>
+    Medium volume mailing list for general discussion of DBI issues.
+</p>
+<ul>
+    <li>
+        <a href="http://lists.perl.org/showlist.cgi?name=dbi-users">Details</a>
+    </li>
+    <li>
+        <a href="http://groups.google.com/groups?hl=en&amp;lr=&amp;group=perl.dbi.users">Archives at groups.google.com</a>
+    </li>
+    <li>
+        <a href="http://nntp.x.perl.org/group/perl.dbi.users">Archives at nntp.perl.org</a>
+    </li>
+    <li>
+        <a href="http://www.mail-archive.com/dbi-users@perl.org/">Archives at mail-archive.com</a>
+    </li>
+</ul>
+<h4>
+    DBI Developers Mailing List
+</h4>
+<p>
+    Mailing list for developers of DBI drivers etc. (This is not the place for users to report problems with the DBI or drivers. Use the dbi-users list for that.)
+</p>
+<ul>
+    <li>
+        <a href="http://lists.perl.org/showlist.cgi?name=dbi-dev">Details</a>
+    </li>
+    <li>
+        <a href="http://groups.google.com/groups?hl=en&amp;lr=&amp;group=perl.dbi.dev">Archives at groups.google.com</a>
+    </li>
+    <li>
+        <a href="http://nntp.x.perl.org/group/perl.dbi.dev">Archives at nntp.perl.org</a>
+    </li>
+    <li>
+        <a href="http://www.mail-archive.com/dbi-dev@perl.org/">Archives at mail-archive.com</a>
+    </li>
+</ul>
+<h4>
+    Commercial Support from the Author
+</h4>
+<p>
+    Professional commercial annual and multi-annual support agreements are available from the author of the DBI, through his consulting company. These offer a first-class support and consultancy service for you, and long-term support for ongoing DBI development. Contact <a href="mailto:Tim.Bunce@pobox.com">Tim Bunce</a> for details.
+</p>

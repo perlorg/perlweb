@@ -1,173 +1,66 @@
-[% META title = 'Events' %]
-[% page.style = "perl-directory.html" %]
+[%- 
+    page.import({
+        title    => 'Perl events',
+        section  => 'events',
+        description 
+            => 'Perl events around the world',
+    });
+    
+-%]
 
-[% PROCESS tpl/stats.html %]
-
-[%
-events2004 = [
- ["YAPC::Israel", "http://www.perl.org.il/YAPC/2004/", 
-  "Israel. February 26"],
- ["Dutch Perl Workshop", "http://workshop.perlpromo.nl/",
-  "Arnhem, Netherlands. March 5"],
- ["Nordic Perl Workshop", "http://www.perlworkshop.dk/",
-  "Copenhagen. March 27-28"],
- ["YAPC::Taipei", "/!dl/http://yapc.elixus.org/YAPC/2004/",
-  "Taipei, Taiwan. March 27-28"],
- ["&Ouml;sterreichischer Perl Workshop", 
-  "http://vienna.pm.org/workshops.html",
-  "Vienna, Austria.  May 20-22"],
- ["YAPC::NA", "http://www.yapc.org/America/",
-  "Buffalo, NY. June 16-18"],
- ["German Perl Workshop", "http://www.perl-workshop.de/2004/",
-  "Schorndorf. June 29-July 1"],
- ["Italian Perl Workshop", "/!dl/http://www.perl.it/workshop/",  
-   "Pisa, Italy.  Jul 19-20"],
- ["O'Reilly Open Source Convention / The Perl Conference",
-  "http://conferences.oreillynet.com/os2004/",
-  "Portland, OR, USA.  July 26-30"],
- ["YAPC::Europe", "http://www.yapc.org/Europe/2004/",
-  "Belfast, Ireland.  Sep 15-17"],
- ["Perl Whirl '04", "http://www.geekcruises.com/top/pw4_top.htm",
-  "Mediteranean Sea.  Oct 10-17"],
- ["Brazillian Perl Users Meeting", "/!dl/http://brazil.pm.org",
-  "Rio de Janeiro, Brazil.  Oct 18-20"],
- ["YAPC::AU", "http://www.yapc.org/Australia/",
-  "Melbourne, Australia. Dec 1-3"],
-# ["YAPC::Canada", "http://www.yapc.ca",  
-#  "TBA"],
-];
-events2005 = [
- ["German Perl Workshop", "http://www.perl-workshop.de/2005/",
-  "Dresden, Germany. Feb 9-11 1"],
- ["YAPC::Israel", "http://www.perl.org.il/YAPC/2005/", 
-  "Herzliya, Israel. February 17"],
- ["Dutch Perl Workshop", "http://workshop.perlpromo.nl/",
-  "Arnhem, Netherlands. Feb 25"],
- ["Austrian Perl Workshop","http://conferences.yapceurope.org/apw2005/",
-  "Vienna, Austria. June 9-10" ],
- ["YAPC::NA", "http://www.yapc.org/America/",
-  "Toronto, Canada. June 22-25"],
- ["Italian Perl Workshop", "http://www.perl.it/workshop/",  
-   "Pisa, Italy.  June 23-24"],
- ["O'Reilly Open Source Convention / The Perl Conference",
-  "http://conferences.oreillynet.com/os2005/",
-  "Portland, OR, USA.  Aug 1-5"],
- ["YAPC::Europe", "/!dl/http://www.yapc.org/Europe/2005/",
-  "Braga, Portugal. Aug 31-Sep 2"],
- ["Perl Whirl '05", "http://www.geekcruises.com/top/pw05_top.htm",
-  "Southwestern Carribean.  Oct 2-9"],
- ["Nordic Perl Workshop", "http://perlworkshop.dk/2005/",
-  "Stockholm, Sweeden.  Oct 22-23"],
- ["London Perl Workshop", "http://london.pm.org/lpw/",
-  "London, England.  Nov 26"],
- ];
-events2006 = [
- ["YAPC::Israel (OSDC)", "/!dl/http://www.perl.org.il/YAPC/2006/", 
-  "Netanya, Israel. February 26-28"],
- ["German Perl Workshop", "http://www.perl-workshop.de/2006/",
-  "Mittwoch, Germany. Mar 1-3"],
- ["YAPC::Asia", "http://tokyo.yapcasia.org/",
-  "Tokyo, Japan.  March 29-30"],
- ["YAPC::Taiwan (OSDC)", "http://osdc.tw/",
-  "Taiwan.  April 8-9"],
- ["Nordic Perl Workshop", "http://perlworkshop.dk/2006/",
-  "Oslo, Norway.  Jun 15-16"],
- ["YAPC::NA", "http://yapcchicago.org/",
-  "Chicago, USA.  Jun 26-28"],
- ["O'Reilly Open Source Convention / The Perl Conference",
-  "http://conferences.oreillynet.com/oscon/",
-  "Portland, OR, USA.  July 24-28"],
- ["YAPC::Europe", "/!dl/http://www.yapc.org/Europe/2006/",
-  "Birmingham, England. Aug 30-Sep 1"],
-]
-%]
-
-
-
-[% page.sidebar = BLOCK %]
-
-
-<div CLASS="NAVITEM">
-
-</div>
-
-
+<table class="content_table">
+    <tr>
+        <td>
+            <h4>
+                <a href="http://www.pm.org">Local Perl Mongers meetings</a>
+            </h4>
+            <ul>
+                <li>Over [% perl_stats.monger_groups %] local Perl Monger groups spread over six continents.
+                </li>
+                <li>Technical and social meetings.
+                </li>
+                <li>Organizational support from The Perl Foundation.
+                </li>
+                <li>
+                    <a href="http://www.pm.org/">Find a group near you!</a>
+                </li>
+            </ul>
+            <h4>
+                <a href="http://www.yapc.org/">Yet Another Perl Conference (YAPC)</a>
+            </h4>
+            <ul>
+                <li>A series of popular annual conferences with roots in the Perl user community.
+                </li>
+                <li>Annual conferences in <a href="http://www.yapc.org/America/">North America</a> and and <a href="http://www.yapc.org/Europe/">Europe</a> (and other continents, see the <a href="http://www.yapc.org/">YAPC site</a> for more).
+                </li>
+                <li>An inexpensive alternative to other conferences with prohibitive registration fees.
+                </li>
+                <li>Registration fees at YAPC average less than $100.
+                </li>
+                <li>A friendly venue for sharing research, learning new techniques, and talking with leading developers. <!-- <LI>Access <a href="http://www.perl.org/yapc/">images, audio and video</a> from YAPCs. -->
+                </li>
+            </ul>
+            <h4>
+                <a href="http://conferences.oreillynet.com/oscon/">The Perl Conference</a>
+            </h4>
+            <ul>
+                <li>An annual event since 1997.
+                </li>
+                <li>Now part of the <a href="http://conferences.oreillynet.com/oscon/">O'Reilly Open Source Convention</a>.
+                </li>
+                <li>The largest annual gathering of Perl users and developers.
+                </li>
+                <li>Tutorials, technical presentations, social events, and more.
+                </li>
+            </ul>
+        </td>
+        <td>
+<iframe src="https://www.google.com/calendar/embed?showDate=0&amp;showPrint=0&amp;showTabs=0&amp;showCalendars=0&amp;showTz=0&amp;mode=AGENDA&amp;height=400&amp;wkst=1&amp;bgcolor=%23FFFFFF&amp;src=jfhefset4pbvu5vd7tu7i17ric7fe5p1%40import.calendar.google.com&amp;color=%23AB8B00&amp;ctz=Europe%2FLondon" style=" border-width:0 " width="220" height="400" frameborder="0" scrolling="no"></iframe>
+        </td>
+    </tr>
+</table>
 <p>
-<div class="NAVITEM">
-    "I attend Perl Monger meetings because it gives me a chance to learn from many knowledgeable people. I have become a much better developer as a result of joining Perl Mongers."
-    <div class="RIGHT">
-        <p>
-            Julian Cook<br>
-            US Army Corps of Engineers
-        </p>
-    </div>
-</div>
-<p>
-    [% END %]
+    <iframe src="http://www.google.com/calendar/embed?src=ngctmrd1cac35061mrjt3hpgng%40group.calendar.google.com&amp;chrome=NONE&amp;mode=AGENDA&amp;height=220&amp;" style=" border-withh:0" width="600" frameborder="0" height="220"></iframe><br />
+    (from <a href="http://www.theperlreview.com">The Perl Review</a>)
 </p>
-<h3>
-    <a href="http://www.pm.org">Local Perl Mongers meetings</a>
-</h3>
-<ul>
-    <li>Over [% perl_stats.monger_groups %] local Perl Monger groups spread over six continents.
-    </li>
-    <li>Technical and social meetings.
-    </li>
-    <li>Organizational support from The Perl Foundation.
-    </li>
-    <li>
-        <a href="http://www.pm.org/">Find a group near you!</a>
-    </li>
-</ul>
-
-<h3>
-    <a href="http://www.yapc.org/">Yet Another Perl Conference (YAPC)</a>
-</h3>
-<ul>
-    <li>A series of popular annual conferences with roots in the Perl user community.
-    </li>
-    <li>Annual conferences in <a href="http://www.yapc.org/America/">North America</a> and and <a href="http://www.yapc.org/Europe/">Europe</a> (and other continents, see the <a href="http://www.yapc.org/">YAPC site</a> for more).
-    </li>
-    <li>An inexpensive alternative to other conferences with prohibitive registration fees.
-    </li>
-    <li>Registration fees at YAPC average less than $100.
-    </li>
-    <li>A friendly venue for sharing research, learning new techniques, and talking with leading developers. <!-- <LI>Access <a href="http://www.perl.org/yapc/">images, audio and video</a> from YAPCs. -->
-    </li>
-</ul>
-
-
-<h3>
-    <a href="http://conferences.oreillynet.com/oscon/">The Perl Conference</a>
-</h3>
-<ul>
-    <li>An annual event since 1997.
-    </li>
-    <li>Now part of the <a href="http://conferences.oreillynet.com/oscon/">O'Reilly Open Source Convention</a>.
-    </li>
-    <li>The largest annual gathering of Perl users and developers.
-    </li>
-    <li>Tutorials, technical presentations, social events, and more.
-    </li>
-</ul>
-
-
-<h3>
-    <a href="http://www.perlworkshop.de/">The German Perl Workshop</a>
-</h3>
-<ul>
-    <li>Brings together Perl module developers and advanced Perl users in the German-speaking Perl community.
-    </li>
-    <li>Also draws participants from the Perl community at large.
-    </li>
-    <li>Like YAPC, this is a grassroots effort with minimal registration fees.
-    </li>
-</ul>
-
-<h3><a href="http://www.google.com/calendar/embed?src=ngctmrd1cac35061mrjt3hpgng%40group.calendar.google.com">The Perl Review Community Calendar</a> </h3>
-<iframe
-src="http://www.google.com/calendar/embed?src=ngctmrd1cac35061mrjt3hpgng%40group.calendar.google.com&amp;chrome=NONE&amp;mode=AGENDA&amp;height=220&amp;"
-style=" border-width:0 " width="480" frameborder="0"
-height="220"></iframe>
-(from <A HREF="http://www.theperlreview.com">The Perl Review</A>)
 
