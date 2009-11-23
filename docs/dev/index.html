@@ -1,22 +1,61 @@
-[% page.title = "Perl Development" %]
+[%- 
+    page.import({
+        include_sifr => 1,
+        title    => 'Perl Core Development',
+        section  => 'home',
+        description 
+            => 'Developing the Perl Core',
+    });
+%]
+<div class="masthead">
+	<p class="headline">Perl Core Development</p>
+	
+	<p class="strap">Perl for the next [% perl_stats.perl_age %] years</p>
 
-<p align="center">
-<img src="http://dev.perl.org/simages/sm_camel.gif"></p>
+</div>
 
-<p align="center">
-<table cellmargin="10" cellpadding="20">
-
-<tr>
-  <td><font size="+2"><a href="perl5/">Perl 5</a></font></td>
-  <td><font size="+2"><a href="perl6/">Perl 6</a></font></td>
-</tr>
-<tr>
-  <td><font size="+2"><a href="perl1/">Perl 1</a></font></td>
-  <td><font size="+2"><a href="http://www.parrot.org/">Parrot</a></font></td>
-</tr>
-<tr>
-  <td><font size="+2"><a href="http://www.pugscode.org/">Pugs</a></font></td>
-</tr>
+<table class="content_table">
+    <tr>
+        <td>
+            <h2>
+                Perl 5 - Production-ready, under active development
+            </h2>
+            <div class="box">
+                <h4>
+                    <a href="/perl5/">Perl 5</a>
+                </h4>
+                <p>
+                    Perl <a href="[% perl_stats.perl_version_link %]">[% perl_stats.perl_version %]</a> is the current stable version of Perl. Perl is <a href="https://www.ohloh.net/p/perl/commits">actively maintained</a> by a large group of <a href="https://www.ohloh.net/p/perl/contributors">dedicated volunteers</a>. Perl 5 will be developed and maintained for many years to come.
+                </p>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <h2>
+                Perl 6 - In development
+            </h2>
+            <div class="box">
+                <h4>
+                    <a href="/perl6/">Perl 6</a>
+                </h4>
+                <p>
+                     The <a href="http://www.perl6.org/">Perl 6</a> project is a new language. Perl 5 and Perl 6 are two languages in the Perl family, but of different lineages. There is no current release schedule for Perl 6.
+                </p>
+            </div>
+        </td>
+    </tr>
 </table>
 
-</p>
+[%# Not needed?
+  <td><font size="+2"><a href="http://www.pugscode.org/">Pugs</a></font></td>
+%]
+
+<script type="text/javascript">
+//<![CDATA[
+if(typeof sIFR == "function"){
+	sIFR.replaceElement(named({sSelector:".masthead .headline", sFlashSrc:"/flash/sifr/tradegothic.swf", sColor:"#004065", sLinkColor:"#004065", sBgColor:"#f0f0f0", sHoverColor:"#004065", nPaddingTop:0, nPaddingBottom:0, sFlashVars:"textalign=leftoffsetTop=6"}));
+	sIFR.replaceElement(named({sSelector:".masthead .strap", sFlashSrc:"/flash/sifr/tradegothic.swf", sColor:"#8FB7E5", sLinkColor:"#8FB7E5", sBgColor:"#f0f0f0", sHoverColor:"#8FB7E5", nPaddingTop:0, nPaddingBottom:0, sFlashVars:"textalign=leftoffsetTop=6"}));
+};
+//]]>
+</script>
