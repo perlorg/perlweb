@@ -60,8 +60,8 @@ sub setup_json_columns {
     $column->add_trigger(
       deflate => sub {
         shift;    # object;
-        my $h = shift or return undef;
-        $json->encode($h);
+        my $h = shift;
+        ref($h) ? $json->encode($h) : $h;
       }
     );
 
