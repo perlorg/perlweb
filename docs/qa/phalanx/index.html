@@ -1,100 +1,122 @@
-[% page.style = 'default.html' %]
-[% page.title = 'The Phalanx Project' %]
-[% page.footer = 'You carry your helmet for you, but you carry your shield for the entire line.' %]
-
-<img alt="[KWALITEE!]" src="/images/phalanx-kwalitee.jpg" width="520" height="232" align="right">
-
-<h1>Phalanx</H1>
-
-<UL>
-    <LI><A HREF="/phalanx/100/">The Phalanx 100</A>: The 100 (or so) modules we're focusing on</LI>
-    <LI><A HREF="http://pjcj.sytes.net/cpancover/">CPAN Coverage</A>: Paul Johnson's stats of test suite code coverage</LI>
-    <LI><A HREF="kwalitee.html">What is kwalitee?</A></LI>
-    <LI><A HREF="modules.html">Testing of modules</A></LI>
-    <LI><A HREF="tasks.html">Tasks to be done</A></LI>
-    <LI><A HREF="faq.html">The Phalanx FAQ</A></LI>
-    <LI><A HREF="history.html">A brief history of the hoplite phalanx</A>, as inspiration for the name</LI>
-</UL>
+[% 
+    page.import({
+        title    => 'The Phalanx Project',
+        section  => 'phalanx',
+        description 
+            => 'The Perl Phalanx Project',
+    });
     
-<H2>About Phalanx</h2>
-
-The Phalanx project has three goals:
-
-<OL>
-    <LI>Strengthen CPAN's tests, coverage and documentation
-    <LI>Strengthen Perl's tests and coverage
-    <LI>Bring in newcomers to the Perl development process
-</OL>
-
-When <A HREF="/!dl/http://poniecode.org/">Ponie</A>
-was announced in July 2003, we knew that it would require
-a regression test suite larger than Perl had ever had before.
-Fortunately, with the CPAN, we have a huge selection to choose
-from.  Based on the assumption that the 80/20 rule holds true for
-CPAN usage, we shifted it to the 98/2 rule.  We're hoping that the
-100 distributions we've selected, mostly on rough statistical
-analysis of usage, will cover a huge part of the CPAN that's used
-by the Perl community.
-
-<P>
-
-As the Phalanx project continues, we'll start looking at the modules
-distributed with Perl, as well as the tests that test Perl itself.
-For now, we're focusing on the modules in
-<A HREF="/phalanx/100/">The Phalanx 100</A>.
-
-
-<h2>What Phalanx will do</h2>
-
-<UL>
-<LI>Improve the tests and test coverage in Perl
-<LI>Improve the tests, test coverage and documentation of the CPAN
-</UL>
-
-Bugs will be found.  They're out there.
-
-<h2>Coordination</h2>
-
-<UL>
-<LI>http://qa.perl.org/phalanx/
-<LI>perl-qa@perl.org
-<LI>IRC meetings at #phalanx on irc.perl.org
+%]
+<p>
+    <img alt="[KWALITEE!]" src="/images/phalanx-kwalitee.jpg" width="520" height="232" align="right">
+</p>
+<h2>
+    Phalanx
+</h2>
+<ul>
+    <li>
+        <a href="/phalanx/100/">The Phalanx 100</a>: The 100 (or so) modules we're focusing on
+    </li>
+    <li>
+        <a href="http://pjcj.sytes.net/cpancover/">CPAN Coverage</a>: Paul Johnson's stats of test suite code coverage
+    </li>
+    <li>
+        <a href="kwalitee.html">What is kwalitee?</a>
+    </li>
+    <li>
+        <a href="modules.html">Testing of modules</a>
+    </li>
+    <li>
+        <a href="tasks.html">Tasks to be done</a>
+    </li>
+    <li>
+        <a href="faq.html">The Phalanx FAQ</a>
+    </li>
+    <li>
+        <a href="history.html">A brief history of the hoplite phalanx</a>, as inspiration for the name
+    </li>
+</ul>
+<h3>
+    About Phalanx
+</h3>
+<p>
+    The Phalanx project has three goals:
+</p>
+<ol>
+    <li>Strengthen CPAN's tests, coverage and documentation
+    </li>
+    <li>Strengthen Perl's tests and coverage
+    </li>
+    <li>Bring in newcomers to the Perl development process
+    </li>
+</ol>
+<p>
+    When <a href="/!dl/http://poniecode.org/">Ponie</a> was announced in July 2003, we knew that it would require a regression test suite larger than Perl had ever had before. Fortunately, with the CPAN, we have a huge selection to choose from. Based on the assumption that the 80/20 rule holds true for CPAN usage, we shifted it to the 98/2 rule. We're hoping that the 100 distributions we've selected, mostly on rough statistical analysis of usage, will cover a huge part of the CPAN that's used by the Perl community.
+</p>
+<p>
+    As the Phalanx project continues, we'll start looking at the modules distributed with Perl, as well as the tests that test Perl itself. For now, we're focusing on the modules in <a href="/phalanx/100/">The Phalanx 100</a>.
+</p>
+<h3>
+    What Phalanx will do
+</h3>
+<ul>
+    <li>Improve the tests and test coverage in Perl
+    </li>
+    <li>Improve the tests, test coverage and documentation of the CPAN
+    </li>
+</ul>
+<p>
+    Bugs will be found. They're out there.
+</p>
+<h3>
+    Coordination
+</h3>
+<ul>
+    <li>http://qa.perl.org/phalanx/
+    </li>
+    <li>perl-qa@perl.org
+    </li>
+    <li>IRC meetings at #phalanx on irc.perl.org
+    </li>
+</ul>
+<h3>
+    Author involvement
+</h3>
+<p>
+    Phalanx will only work WITH module authors, not against or instead of them. If an author is not interested in our help, then we'll move on to another module. We're not here to take over.
+</p>
+<p>
+    Also, remember that your modules are not getting singled out as "needing help". Every module can use improvement. The <a href="/phalanx/100/">Phalanx 100</a> is based roughly on popularity and importance.
+</p>
+<p>
+    Read more about <a href="modules.html">how we plan to work</a>.
+</p>
+<h3>
+    Creating testing guidelines
+</h3>
+<ul>
+    <li>Come up with good guidelines
+    </li>
+    <li>Test the edge cases
+    </li>
+    <li>Work it into the core.
+    </li>
+</ul>
+<h3>
+    Unfiled
+</h3>
+<ul>
+    <li>Tests will get folded into the main distribution of the module. We'll create the patches and feed 'em back.
+    </li>
+    <li>We'll check documentation vs. tests vs. code, too.
+    </li>
+    <li>Need a tracking mechanism to track progress. maybe an RT queue.
+    </li>
+    <li>Stats are approximate: Kwalitee
+    </li>
+    <li>Use Devel::Cover and gconv
+    </li>
+    <li>How much of the perl code and C code in the core is acutally covered by the core tests?
+    </li>
 </ul>
 
-<h2>Author involvement</h2>
-
-Phalanx will only work WITH module authors, not against or instead
-of them.  If an author is not interested in our help, then we'll
-move on to another module.  We're not here to take over.
-<P>
-Also, remember that your modules are not getting singled out as
-"needing help".  Every module can use improvement.  The
-<A HREF="/phalanx/100/">Phalanx 100</A> is based roughly on popularity
-and importance.
-<P>
-Read more about <A HREF="modules.html">how we plan to work</A>.
-
-<h2>Creating testing guidelines</h2>
-
-<UL>
-<LI>Come up with good guidelines
-<LI>Test the edge cases
-<LI>Work it into the core.
-</UL>
-
-<h2>Unfiled</h2>
-
-<UL>
-<LI>Tests will get folded into the main distribution of the module.
-We'll create the patches and feed 'em back.
-
-<LI>We'll check documentation vs. tests vs. code, too.
-
-<LI>Need a tracking mechanism to track progress.  maybe an RT queue.
-
-<LI>Stats are approximate: Kwalitee
-
-<LI>Use Devel::Cover and gconv
-
-<LI>How much of the perl code and C code in the core is acutally covered by the core tests?
-</UL>

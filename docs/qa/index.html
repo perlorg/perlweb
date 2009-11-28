@@ -1,121 +1,116 @@
-[% page.style = "default.html" %]
-[% META title = 'Perl Quality Assurance Projects' %]
-
-<img alt="[QA]" src="images/qa.png" width="150" height="150" align="right">
-<h2>Perl Quality Assurance Projects</h2>
+[% 
+    page.import({
+        include_sifr => 1,
+        title    => 'Perl Quality Assurance Projects',
+        section  => 'home',
+        description 
+            => 'Perl Quality Assurance Projects',
+    });
+    
+%]
 
 <p>
-There are multiple projects in the Perl community related to
+    <img alt="[QA]" src="images/qa.png" width="150" height="150" align="right">
+</p>
+<h3>
+    Perl Quality Assurance Projects
+</h3>
+<p>
+    There are multiple projects in the Perl community related to
+</p>
 <ul>
     <li>improving and testing the quality and portability of Perl modules and Perl itself, and
-    <li>using Perl's QA tools for general software development. 
+    </li>
+    <li>using Perl's QA tools for general software development.
+    </li>
+</ul>
+<h3>
+    Perl-QA
+</h3>
+<p>
+    The <a href="mailto:perl-qa-subscribe@perl.org">perl-qa</a> mailing list is the general discussion list for the QA of Perl, and of using Perl for QA. (<a href="http://www.nntp.perl.org/group/perl.qa">Web archive</a>) There is also a <a href="http://perl-qa.hexten.net/wiki/">Perl-QA wiki</a> available.
+</p>
+<h3>
+    Testing cheat sheets
+</h3>
+<p>
+    Ian Langworth, author of the upcoming <cite>Perl Testing: A Developer's Notebook</cite> has put together a tremendous <a href="http://langworth.com/downloads/perl_test_refcard.pdf">Perl testing quick reference card</a>.
+</p>
+<h3>
+    Testing articles
+</h3>
+<p>
+    <a href="http://perl.com/">perl.com</a> has published a number of articles on specific testing techniques:
+</p>
+<ul>
+    <li>
+        <a href="http://www.perl.com/pub/a/2004/10/21/taint_testing_kata.html">Testing Taint</a>
+    </li>
+    <li>
+        <a href="http://www.perl.com/pub/a/2004/12/16/import_kata.html">Testing Imports</a>
+    </li>
+    <li>
+        <a href="http://www.perl.com/lpt/a/2005/02/10/database_kata.html">Testing Databases</a>
+    </li>
+    <li>
+        <a href="http://www.perl.com/pub/a/2005/04/07/mockobject_kata.html">Mocking Objects</a>
+    </li>
+</ul>
+<h3>
+    Testing Modules
+</h3>
+<p>
+    The CPAN has a wide variety of modules to help with your automated testing. Here's a <a href="test-modules.html">summary of what's available</a>.
+</p>
+<p>
+    Here's a <a href="testing-guidelines.html">handy summary of guidelines for writing effective tests</a>, compiled from lessons learned when improving the tests for DBI.
+</p>
+<h3>
+    Phalanx
+</h3>
+<p>
+    Join the team to help improve tests and documentation for Perl and the CPAN. It's a big step on the way to Ponie and Perl 6. It's <a href="/phalanx/">the Phalanx project</a>.
+</p>
+<h3>
+    Daily Build
+</h3>
+<p>
+    The "smokers" do <a href="http://www.catb.org/~esr/jargon/html/S/smoke-test.html">smoke tests</a> of the bleading edge Perl on various platforms to help the developers spot new bugs as fast as possible.
+</p>
+<p>
+    Get involved by subscribing to the daily-build list by sending mail to <a href="mailto:daily-build-subscribe@perl.org">daily-build-subscribe@perl.org</a> (<a href="http://archive.develooper.com/daily-build%40perl.org/">Web archive</a> and <a href="news://nntp.perl.org/perl.daily-build.reports">nntp server</a>). After subscribing you would probably like to get the <a href="http://search.cpan.org/dist/Test-Smoke/">smoke toolkit</a>, see the <a href="http://search.cpan.org/dist/Test-Smoke/README">README</a> and <a href="http://search.cpan.org/dist/Test-Smoke/lib/Test/Smoke/FAQ">smoke FAQ</a> for information on that.
+</p>
+<h3>
+    CPAN testers
+</h3>
+<p>
+    <a href="http://www.cpantesters.org">cpan-testers</a> is a volunteer group of people, that test as many distributions uploaded to CPAN as possible, across many different platforms and version of Perl. CPAN Testers was started by Graham Barr and Chris Nandor.
+</p>
+<p>
+    For more information about CPAN Testers and how to become a tester, please visit the <a href="http://wiki.cpantesters.org">CPAN Testers Wiki</a> or subscribe to the cpan-testers discussion mailinglist by sending a mail to cpan-testers-discuss-subscribe@perl.org.
+</p>
+<p>
+    The <a href="http://www.cpantesters.org">CPAN Testers Reports</a> and <a href="http://stats.cpantesters.org">CPAN Testers Statistics</a> websites, along with several other supporting websites are available to search and analyse report results.
+</p>
+<h3>
+    Automated testing with Perl
+</h3>
+<p>
+    Automated testing is a key part of software development, especially in environments that have embraced extreme programming. Perl's <a href="http://search.cpan.org/dist/Test-Harness/">Test::Harness</a> framework, along with <a href="http://search.cpan.org/dist/Test-Simple/">Test::Simple and Test::More</a>, allow flexible testing of all parts of your development projects.
+</p>
+<p>
+    A starter list of resources:
+</p>
+<ul>
+    <li>
+        <a href="http://magnonel.guild.net/~schwern/talks/Test_Tutorial/Test-Tutorial.pdf">Test::Tutorial</a>, a presentation by Michael Schwern &amp; chromatic
+    </li>
+    <li>
+        <a href="http://search.cpan.org/dist/Test-Simple/lib/Test/Tutorial.pod">Test::Tutorial</a>, part of the Test::Simple distro
+    </li>
+    <li>
+        <a href="http://petdance.com/perl/automated-testing/">Automated Testing With Perl</a>, a presentation by Andy Lester
+    </li>
 </ul>
 
-</p>
-
-<h2>Perl-QA</h2>
-<p>
-The <a href="mailto:perl-qa-subscribe@perl.org">perl-qa</a> mailing list is the
-general discussion list for the QA of Perl, and of using Perl for QA.
-(<a href="http://www.nntp.perl.org/group/perl.qa">Web archive</a>)
-
-There is also a 
-<a href="http://perl-qa.hexten.net/wiki/">Perl-QA wiki</A>
-available.
-
-
-<h2>Testing cheat sheets</h2>
-Ian Langworth, author of the upcoming <CITE>Perl Testing: A Developer's
-Notebook</CITE> has put together a tremendous
-<A HREF="http://langworth.com/downloads/perl_test_refcard.pdf">Perl testing quick reference card</A>.
-
-<h2>Testing articles</h2>
-<A HREF="http://perl.com/">perl.com</A> has published a number of
-articles on specific testing techniques:
-<UL>
-<LI>
-<A HREF="http://www.perl.com/pub/a/2004/10/21/taint_testing_kata.html">Testing Taint</A>
-<LI>
-<A HREF="http://www.perl.com/pub/a/2004/12/16/import_kata.html">Testing Imports</A>
-<LI>
-<A HREF="http://www.perl.com/lpt/a/2005/02/10/database_kata.html">Testing Databases</A>
-<LI>
-<A HREF="http://www.perl.com/pub/a/2005/04/07/mockobject_kata.html">Mocking Objects</A>
-</UL>
-
-<h2>Testing Modules</h2>
-
-The CPAN has a wide variety of modules to help with your automated
-testing.  Here's a <A HREF="test-modules.html">summary of what's
-available</A>.
-<P>
-Here's a <A HREF="testing-guidelines.html">handy summary of guidelines for writing effective tests</A>,
-compiled from lessons learned when improving the tests for DBI.
-
-<h2>Phalanx</h2>
-Join the team to help improve tests and documentation for Perl and
-the CPAN.  It's a big step on the way to Ponie and Perl 6.  It's
-<A HREF="/phalanx/">the Phalanx project</A>.
-
-</p>
-
-<h3>Daily Build</h3>
-
-<p>
-The "smokers" do
-<a href="http://www.catb.org/~esr/jargon/html/S/smoke-test.html">smoke
-tests</a> of the bleading edge Perl on various platforms to help the
-developers spot new bugs as fast as possible.
-
-</p>
-
-<p>
-
-Get involved by subscribing to the daily-build list by sending mail to
-<a href="mailto:daily-build-subscribe@perl.org">daily-build-subscribe@perl.org</a> (<a href="http://archive.develooper.com/daily-build%40perl.org/">Web
-archive</a> and <a
-href="news://nntp.perl.org/perl.daily-build.reports">nntp server</a>).
-After subscribing you would probably like to get the
-<a href="http://search.cpan.org/dist/Test-Smoke/">smoke
-toolkit</a>, see the
-<a
-href="http://search.cpan.org/dist/Test-Smoke/README">README</a>
-and <a href="http://search.cpan.org/dist/Test-Smoke/lib/Test/Smoke/FAQ">smoke
-FAQ</a>
-for information on that.
-</p>
-
-<h3>CPAN testers</h3>
-
-<p><a href="http://www.cpantesters.org">cpan-testers</a> is a
-volunteer group of people, that test as many distributions uploaded to
-CPAN as possible, across many different platforms and version of
-Perl. CPAN Testers was started by Graham Barr and Chris Nandor.</p>
-
-<p>For more information about CPAN Testers and how to become a tester,
-please visit the <a href="http://wiki.cpantesters.org">CPAN Testers
-Wiki</a> or subscribe to the cpan-testers discussion mailinglist by
-sending a mail to cpan-testers-discuss-subscribe@perl.org.</p>
-
-<p>The <a href="http://www.cpantesters.org">CPAN Testers Reports</a>
-and <a href="http://stats.cpantesters.org">CPAN Testers Statistics</a>
-websites, along with several other supporting websites are available
-to search and analyse report results.</p>
-
-<h3>Automated testing with Perl</h3>
-Automated testing is a key part of software development, especially in environments
-that have embraced extreme programming.
-Perl's
-<A HREF="http://search.cpan.org/dist/Test-Harness/">Test::Harness</A> framework,
-along with
-<A HREF="http://search.cpan.org/dist/Test-Simple/">Test::Simple and Test::More</A>,
-allow flexible testing of all parts of your development projects.
-<P>
-A starter list of resources:
-<ul>
-    <li><A HREF="http://magnonel.guild.net/~schwern/talks/Test_Tutorial/Test-Tutorial.pdf">Test::Tutorial</A>,
-    a presentation by Michael Schwern &amp; chromatic</li>
-    <li><A HREF="http://search.cpan.org/dist/Test-Simple/lib/Test/Tutorial.pod">Test::Tutorial</A>, part of the Test::Simple distro</li>
-    <li><A HREF="http://petdance.com/perl/automated-testing/">Automated Testing With Perl</A>, a presentation by Andy Lester</LI>
-</UL>
 <!-- These links should get their own page -->

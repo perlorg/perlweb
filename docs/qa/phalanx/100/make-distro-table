@@ -13,7 +13,7 @@ while ( <> ) {
 
     if ( /^=head1 (.+)/ ) {
         $tier = $1;
-        push( @rows, Tr( td( {class=>"banner", colspan=>3}, span( {class=>"title"}, $tier ) ) ) );
+        push( @rows, Tr( td( {class=>"banner", colspan=>3}, h3( $tier ) ) ) );
         next;
     }
     my ($dist,$author) = split;
@@ -34,4 +34,4 @@ while ( <> ) {
 }
 
 @rows = map { "$_\n" } @rows;
-print table( {border=>0, cellspacing=>0, cellpadding=>5}, @rows );
+print table( {class=>'phalanx_table'}, @rows );

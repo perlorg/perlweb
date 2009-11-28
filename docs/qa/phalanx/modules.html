@@ -1,55 +1,79 @@
-[% page.style = "default.html" %]
-[% page.title = 'Improving modules' %]
-[% page.footer = 'You carry your helmet for you, but you carry your shield for the entire line.' %]
-
-<h1>The life cycle of module improvement on Phalanx</h1>
-
-<UL>
-    <LI>Check for interest
-	<UL>
-	<LI>Pick a module from the list
-	<LI>Contact the author to see if he is interested
-	</UL>
-    <LI>Keep track of "Before"
-	<UL>
-	<LI>How many tests?  How many bugs in RT?  Report to Andy.
-	</UL>
-    <LI>Plan the improvements
-	<UL>
-	<LI>Check the RT queue for the module.  See if there are any big bugs or documentation problems to take care of.</LI>
-	<LI>Determine weak points in the module.
-	<LI>Decide who will work on what.
-	</UL>
-    <LI>Construction
-	<UL>
-	<LI>Fix (and write tests for) any bugs that we choose to attack.
-	<LI>Make the module pass the <A HREF="kwalitee.html">Kwalitee Standards</A>.
-	</UL>
-    <LI>Back to the author
-	<UL>
-	<LI>Pass the patches back to the author.
-	<LI>Author can accept or reject changes as he chooses.
-	<LI>Author releases the changed version back to the CPAN.
-	</UL>
-</UL>
-
-
-<h2>How much should I change?</h2>
-
-That's between you and the module author.  We are <B>not</B> here
-to take over modules.
-
-<P>
-
-Maybe the author wants an overhaul.  Maybe the author is very
-particular about indentation.  Maybe the author just needs some
-bugs fixed.  It's up to the author.
-
-<h2>What if a module's author isn't interested?</h2>
-
-Then we'll note that on the checklist and move on.  It's up to the author.
-We will not make changes against the author's will.  We are not here to take over modules.
-
-<h2>What if we can't contact the author?</h2>
-
-Hmm, I dunno.  This is really a big CPAN issue.
+[% 
+    page.import({
+        title    => 'Improving modules',
+        section  => 'phalanx',
+        description 
+            => 'The Perl Phalanx Project - Improving modules',
+    });
+    
+%]
+<h2>
+    The life cycle of module improvement on Phalanx
+</h2>
+<p>
+<ul>
+    <li>Check for interest
+        <ul>
+            <li>Pick a module from the list
+            </li>
+            <li>Contact the author to see if he is interested
+            </li>
+        </ul>
+    </li>
+    <li>Keep track of "Before"
+        <ul>
+            <li>How many tests? How many bugs in RT? Report to Andy.
+            </li>
+        </ul>
+    </li>
+    <li>Plan the improvements
+        <ul>
+            <li>Check the RT queue for the module. See if there are any big bugs or documentation problems to take care of.
+            </li>
+            <li>Determine weak points in the module.
+            </li>
+            <li>Decide who will work on what.
+            </li>
+        </ul>
+    </li>
+    <li>Construction
+        <ul>
+            <li>Fix (and write tests for) any bugs that we choose to attack.
+            </li>
+            <li>Make the module pass the <a href="kwalitee.html">Kwalitee Standards</a>.
+            </li>
+        </ul>
+    </li>
+    <li>Back to the author
+        <ul>
+            <li>Pass the patches back to the author.
+            </li>
+            <li>Author can accept or reject changes as he chooses.
+            </li>
+            <li>Author releases the changed version back to the CPAN.
+            </li>
+        </ul>
+    </li>
+</ul>
+</p>
+<h3>
+    How much should I change?
+</h3>
+<p>
+    That's between you and the module author. We are <b>not</b> here to take over modules.
+</p>
+<p>
+    Maybe the author wants an overhaul. Maybe the author is very particular about indentation. Maybe the author just needs some bugs fixed. It's up to the author.
+</p>
+<h3>
+    What if a module's author isn't interested?
+</h3>
+<p>
+    Then we'll note that on the checklist and move on. It's up to the author. We will not make changes against the author's will. We are not here to take over modules.
+</p>
+<h3>
+    What if we can't contact the author?
+</h3>
+<p>
+    Hmm, I dunno. This is really a big CPAN issue.
+</p>

@@ -1,44 +1,54 @@
-[% page.style = 'default.html' %]
-[% page.title = 'The Phalanx FAQ' %]
-[% page.footer = 'You carry your helmet for you, but you carry your shield for the entire line.' %]
+[% 
+    page.import({
+        title    => 'The Phalanx FAQ',
+        description 
+            => 'The Perl Phalanx Project - The Phalanx FAQ',
+    });
+    
+%]
 
-<h1>Q&amp;A about the Phalanx Project</h1>
-
-<h2>How did you come up with the <A HREF="/phalanx/100/">Phalanx 100</A> list?</h2>
-
-The specifics of how we derived the list isn't really important.
-We don't want the focus of the project to become which modules are
-getting attention.  We'll be working on a wide variety of CPAN
-modules, as well as Perl itself, to improve their tests and
-documentation.
-
-<h2>No, but really, did you look at logs or something?</h2>
-
-It really doesn't matter.  The list is made and that's what we're
-going with.  We think you'll agree that the 100 modules are a good
-cross-section of what's popular on the CPAN.  Maybe some got missed,
-maybe some shouldn't be on the list.  Still, it's a good start.
-
-<h2>Why 100?</h2>
-
-It's a nice round number that is about 2.5% of CPAN.  We figure
-that the 80/20 rule applies, but in this case, 97.5/2.5 will have
-to do.
-
-<h2>So, I bet you got logs from somewhere, right? Did you look at CPANTS?</h2>
-
-OK, ok, we'll tell you!  It's a combination of:
-<UL>
-<LI>Log analysis of search.cpan.org for the last 45 days of 2004
-<LI>Some manual editorial adjustments
-</UL>
-
-<h2>Well, you know, you could have...</h2>
-
-Yes, yes, we know.  The list has been made and will probably not
-change.
-
-<h2>But Foo::Bar is a LOT more important than DBI!</h2>
-
-That's fine.  We can include Foo::Bar in the Phalanx project as
-well.  The list of 100 is just a starting point.
+<h2>
+    Q&amp;A about the Phalanx Project
+</h2>
+<h3>
+    How did you come up with the <a href="/phalanx/100/">Phalanx 100</a> list?
+</h3>
+<p>
+    The specifics of how we derived the list isn't really important. We don't want the focus of the project to become which modules are getting attention. We'll be working on a wide variety of CPAN modules, as well as Perl itself, to improve their tests and documentation.
+</p>
+<h3>
+    No, but really, did you look at logs or something?
+</h3>
+<p>
+    It really doesn't matter. The list is made and that's what we're going with. We think you'll agree that the 100 modules are a good cross-section of what's popular on the CPAN. Maybe some got missed, maybe some shouldn't be on the list. Still, it's a good start.
+</p>
+<h3>
+    Why 100?
+</h3>
+<p>
+    It's a nice round number that is about 2.5% of CPAN. We figure that the 80/20 rule applies, but in this case, 97.5/2.5 will have to do.
+</p>
+<h3>
+    So, I bet you got logs from somewhere, right? Did you look at CPANTS?
+</h3>
+<p>
+    OK, ok, we'll tell you! It's a combination of:
+</p>
+<ul>
+    <li>Log analysis of search.cpan.org for the last 45 days of 2004
+    </li>
+    <li>Some manual editorial adjustments
+    </li>
+</ul>
+<h3>
+    Well, you know, you could have...
+</h3>
+<p>
+    Yes, yes, we know. The list has been made and will probably not change.
+</p>
+<h3>
+    But Foo::Bar is a LOT more important than DBI!
+</h3>
+<p>
+    That's fine. We can include Foo::Bar in the Phalanx project as well. The list of 100 is just a starting point.
+</p>
