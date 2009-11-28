@@ -95,21 +95,13 @@
     END;
 -%]
 [% END -%]
-[%- BLOCK quick_links_3;
+[%- BLOCK quick_links_3 %]
 
-    SET source = {};
+<div id="sponsor">
 
-    IF page.quick_links_3_title;
-        source = page;
-    ELSIF section_data && section_data.quick_links_3_title;
-        source = section_data;
-    END;
-
-    IF source.quick_links_3_title;
-        PROCESS quick_link_creator
-            quick_link_title => source.quick_links_3_title,
-            quick_link_list => source.quick_links_3_list; 
-    END;
--%]
+<p>
+    <img alt="[QA]" src="/images/qa.png" width="150" height="150" align="center">
+</p>
+</div>
 [% END -%]
 
