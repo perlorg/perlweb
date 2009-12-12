@@ -22,7 +22,6 @@
 	<link type="text/css" rel="stylesheet" href="/css/sIFR-print.css" media="print" />
 	<script src="/js/sifr.js" type="text/javascript"></script>
 [% END %]
-[%- PROCESS "tpl/googleanalytics.html" -%]
 </head>
 <body[% ' class="section_' _ page.section _ '"' IF page.section %]>
 
@@ -70,16 +69,9 @@
                 [% INCLUDE tip %]
             [% END %]
             
-            [%#
-                # Leave out until Robert has checked quality
-            <div id="google_translate_element"></div><script>
-            function googleTranslateElementInit() {
-              new google.translate.TranslateElement({
-                pageLanguage: 'en'
-              }, 'google_translate_element');
-            }
-            </script><script src="http://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-            %]
+
+            <div id="spacer_for_google"></div>
+            
         </div>
     </div>
 </div>
@@ -88,15 +80,26 @@
 <div id="footer">
     <div class="sub_holder">
         <p class="sites">
-            &nbsp;When you need <em>Perl</em> think <strong>Perl.org</strong>: <a href="http://www.perl.org/">www</a> | <a href="http://jobs.perl.org/">jobs</a> | <a href="http://learn.perl.org/">learn</a> <!-- | <a href="http://lists.perl.org/">lists</a> --> | <a href="http://dev.perl.org/">dev</a> 
+            &nbsp;When you need <em>Perl</em> think <strong>Perl.org</strong>: <a href="http://www.perl.org/">www</a> | <a href="http://jobs.perl.org/">jobs</a> | <a href="http://learn.perl.org/">learn</a> <!-- | <a href="http://lists.perl.org/">lists</a> --> | <a href="http://dev.perl.org/">dev</a>
         </p>
         <p class="copyright">
-          <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/us/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/us/80x15.png" /></a>
-          &copy; 2002-[% USE date; date.format(date.now, '%Y') %] Perl.org | <a href="/siteinfo.html">Site Info</a></p>
+            <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/us/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/us/80x15.png"></a> © 2002-[% USE date; date.format(date.now, '%Y') %] Perl.org | <a href="/siteinfo.html">Site Info</a>
+        </p>
+        <div style="clear:both"></div>
+        <div id="google_translate_element"></div><script type="text/javascript">
+function googleTranslateElementInit() {
+          new google.translate.TranslateElement({
+            pageLanguage: 'en'
+          }, 'google_translate_element');
+        }
+        </script><script src="http://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" type="text/javascript">
+</script>
     </div>
 </div>
 
+
 [% PROCESS "tpl/ie6nomore.html" -%]
 
+[%- PROCESS "tpl/googleanalytics.html" -%]
 </body>
 </html>
