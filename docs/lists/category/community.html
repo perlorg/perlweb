@@ -1,0 +1,59 @@
+[% 
+    page.import({
+        title    => 'Community Perl Mailing lists',
+        section  => 'community',
+        description 
+            => 'Perl mailing lists for the Perl Community',
+    });
+%]
+
+<h2>Local events and community mailing lists, Perl advocacy
+    and core development</h2>
+
+<table class="content_table">
+    <tr>
+        <td><h4>Events</h4>
+            [% categories = [
+                'conference',
+                'conference-misc-tools',
+                'advocacy-yapc',
+                'yapc',
+                'yapc-conference',
+            ]; %]
+            [% PROCESS tpl/category_page.html categories => categories %]
+        </td>
+        <td><h4>Local groups</h4>
+            [% categories = [
+                'mongers',
+                'mongers-non-english',
+                'non-english',
+                ];
+            %]
+            [% PROCESS tpl/category_page.html categories => categories %]
+        </td>
+    </tr>
+    <tr>
+        <td><h4>Advocacy</h4>
+            [% categories = [
+            'advocacy',
+            'developer-advocacy',
+            'perl-advocacy',
+            'www-mod_perl-advocacy',
+            ]; %]
+            [% PROCESS tpl/category_page.html categories => categories %]
+        </td>
+        
+        <td><h4>Core development</h4>
+            [% categories = [
+            'perl',
+            'developer-perl',
+            'developer-perl6',
+            'documentation',
+            'perl-developer',
+            'perl-qa',
+            'perl6-perl',            
+            ]; %]
+            [% PROCESS tpl/category_page.html categories => categories %]
+        </td>
+</tr>
+</table>

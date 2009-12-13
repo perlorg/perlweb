@@ -1,0 +1,45 @@
+[%- USE JSON -%]
+[%- json_file = "data/lists/" _ list _ ".json" -%]
+[%- json_string = PROCESS $json_file -%]
+[%- list = JSON.json_decode(json_string) -%]
+[%-
+    page.import({
+        title    => 'List: ' _ list.name,
+        section  => 'home',
+        description 
+            => list.summary || 'Perl mailing lists for ' _ list.name,
+    });
+-%]
+<h2>List: [% list.name %]</h2>
+
+<div id="[% list.name %]" class="mailinglist">
+    [% IF list.url %]
+    <p><a href="[% list.url %]">[% list.url %]</a></p>
+    [% END %]
+    [% IF list.date_last_confirmed_active %]
+    Last confirmed active: [% list.date_last_confirmed_active %]
+    [% END %]
+    [% '<p>' _ list.summary _ '</p>' IF list.summary %]
+    [% '<p>' _ list.comments _ '</p>' IF list.comments %]
+
+    <h5>Subscribing and help</h5>
+    <dl>
+    [% FOREACH field = ['unsub','sub','help' ] %]
+    [% IF list.$field %]
+    <dt>[% field %]</dt>
+    <dd>[% list.$field | lower | trim %]</dd>
+    [% END %]
+    [% END %]
+    </dl>
+
+    <h5>Feeds and archives</h5>
+    <dl>
+     [% FOREACH field = ['rssfeed','archive','nntp' ] %]
+    [% IF list.$field %]
+    <dt>[% field %]</dt>
+    <dd><a href="[% list.$field | trim %]" >[% list.$field %]</a></dd>
+    [% END %]
+    [% END %]
+    </dl>
+
+</div>

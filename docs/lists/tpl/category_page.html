@@ -1,0 +1,10 @@
+[% PROCESS data/categories.html %]
+[% FOREACH cat = categories %]
+[% category = cat_list.$cat %]
+<h4>[% category.title %]</h4>
+<ul>
+    [% FOREACH list = category.lists %]
+        <li><a href="/list/[% list %].html">[% list %]</a></li>
+    [% END %]
+</ul>
+[% END %]

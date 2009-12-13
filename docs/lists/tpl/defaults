@@ -20,6 +20,24 @@
     <li[% ' class="selected"' IF page.section == 'home' %]>
         <a href="/">Home</a>
     </li>
+    <li[% ' class="selected"' IF page.section == 'beginners' %]>
+        <a href="/category/beginners.html">Beginners</a>
+    </li>
+    <li[% ' class="selected"' IF page.section == 'os' %]>
+        <a href="/category/os.html">OS</a>
+    </li>
+    <li[% ' class="selected"' IF page.section == 'db' %]>
+        <a href="/category/db.html">DB</a>
+    </li>
+    <li[% ' class="selected"' IF page.section == 'modules' %]>
+        <a href="/category/modules.html">Modules</a>
+    </li>
+    <li[% ' class="selected"' IF page.section == 'community' %]>
+        <a href="/category/community.html">community</a>
+    </li>
+    <li[% ' class="selected"' IF page.section == 'misc' %]>
+        <a href="/category/misc.html">Misc</a>
+    </li>
 
 </ul>
 [% END -%]

@@ -13,7 +13,20 @@
 
  	<p class="strap">Perl mailing lists</p>
 </div>
+[% USE JSON %]
       
+      
+[% json_string = PROCESS "data/lists/template-toolkit.json" %]
+[% list = JSON.json_decode(json_string) %]
+[%# lists = JSON.json_decode(json_string) %]
+[%# FOREACH list = lists.sort('category','name') %]
+[% list.category %] - [% list.name %]<br />
+[%# END %]
+<hr />
+
+[% PROCESS cat.html %]
+
+[% PROCESS tpl/item.html list => list %]
 
 
 <h4>
