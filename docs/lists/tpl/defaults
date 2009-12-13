@@ -13,6 +13,10 @@
         name            => 'lists.perl.org',
         tag_line        => 'Perl, modern programming',
     }; 
+    
+   USE JSON;
+   json_string = PROCESS "data/lists.json";
+   lists = JSON.json_decode(json_string);
  
 -%]
 [%- BLOCK nav_tabs %]

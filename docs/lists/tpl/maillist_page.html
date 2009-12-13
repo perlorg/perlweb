@@ -1,8 +1,6 @@
-[%- USE JSON -%]
-[%- json_file = "data/lists/" _ list _ ".json" -%]
-[%- json_string = PROCESS $json_file -%]
-[%- list = JSON.json_decode(json_string) -%]
 [%-
+    list = lists.$list;
+
     page.import({
         title    => 'List: ' _ list.name,
         section  => 'home',
