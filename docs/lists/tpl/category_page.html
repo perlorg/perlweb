@@ -4,7 +4,8 @@
 <h4>[% category.title %]</h4>
 <ul>
     [% FOREACH list = category.lists %]
-        <li><a href="/list/[% list %].html">[% list %]</a></li>
+        
+        <li><a href="/list/[% list %].html">[% 'DEFUNCT ' IF list.defunct %][% list %]</a></li>
     [% END %]
 </ul>
 [% END %]

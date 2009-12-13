@@ -10,7 +10,9 @@
             => list.summary || 'Perl mailing lists for ' _ list.name,
     });
 -%]
-<h2>List: [% list.name %]</h2>
+<h2>[% IF list.defunct %]DEFUNCT[% END %] List: [% list.name %]</h2>
+
+[% IF list.defunct %]<div class="defunct">No longer active</div>[% END %]
 
 <div id="[% list.name %]" class="mailinglist">
     [% IF list.url %]
