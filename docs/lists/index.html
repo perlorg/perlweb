@@ -18,9 +18,23 @@
     Mailing lists
 </h4>
 <p>
-    There are many Perl related mailing lists, choose from the sections above.
+    There are many Perl related mailing lists, choose from the sections above,
+    or from the list below:
 </p>
 
+<script type="text/javascript" charset="utf-8">
+    function go_to_list() {
+        var list = $('#selectList').val();
+        document.location = '/list/' + list + '.html';
+    }
+</script>
+<form name="chooselist">
+<select id="selectList" onchange="return go_to_list()">
+[% FOREACH list_name = lists.keys.sort %]
+<option name="[% list_name %]">[% list_name %]</option>
+[% END %]
+</select>
+</form>
 
 <!--
 <h4>
