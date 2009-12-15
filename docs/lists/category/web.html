@@ -1,0 +1,18 @@
+[% 
+    page.import({
+        title    => 'Web related mailing lists',
+        section  => 'web',
+        description 
+            => 'Perl mailing lists related to the web',
+    });
+%]
+
+<h2>Perl web related mailing lists</h2>
+
+[% categories = [
+    'www',
+    'www-tools-sysadmin-networking',
+    ];
+%]
+
+[% PROCESS tpl/category_page.html categories => categories %]

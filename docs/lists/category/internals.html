@@ -1,0 +1,23 @@
+[% 
+    page.import({
+        title    => 'Perl Internals Mailing lists',
+        section  => 'internals',
+        description 
+            => 'Perl Internals mailing lists',
+    });
+%]
+
+<h2>Perl internals mailing lists</h2>
+
+[% categories = [
+    'perl',
+    'developer-perl',
+    'developer-perl6',
+    'documentation',
+    'perl-developer',
+    'perl-qa',
+    'perl6-perl',   
+    ];
+%]
+
+[% PROCESS tpl/category_page.html categories => categories %]
