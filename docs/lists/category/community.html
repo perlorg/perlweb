@@ -12,7 +12,7 @@
 
 <table class="content_table">
     <tr>
-        <td><h4>Events</h4>
+        <td>
             [% categories = [
                 'conference',
                 'conference-misc-tools',
@@ -22,7 +22,7 @@
             ]; %]
             [% PROCESS tpl/category_page.html categories => categories %]
         </td>
-        <td><h4>Local groups</h4>
+        <td>
             [% categories = [
                 'mongers',
                 'mongers-non-english',
@@ -33,7 +33,7 @@
         </td>
     </tr>
     <tr>
-        <td><h4>Advocacy</h4>
+        <td>
             [% categories = [
             'advocacy',
             'developer-advocacy',
@@ -43,17 +43,7 @@
             [% PROCESS tpl/category_page.html categories => categories %]
         </td>
         
-        <td><h4>Core development</h4>
-            [% categories = [
-            'perl',
-            'developer-perl',
-            'developer-perl6',
-            'documentation',
-            'perl-developer',
-            'perl-qa',
-            'perl6-perl',            
-            ]; %]
-            [% PROCESS tpl/category_page.html categories => categories %]
+        <td>
         </td>
 </tr>
 </table>

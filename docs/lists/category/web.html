@@ -9,10 +9,25 @@
 
 <h2>Perl web related mailing lists</h2>
 
-[% categories = [
-    'www',
-    'www-tools-sysadmin-networking',
-    ];
-%]
-
-[% PROCESS tpl/category_page.html categories => categories %]
+<table class="content_table">
+    <tr>
+        <td>
+            [% categories = [
+                'www',
+                'www-tools-sysadmin-networking',
+                'www-mod_perl',
+                ];
+            %]
+            [% PROCESS tpl/category_page.html categories => categories %]
+        </td>
+        <td>
+            [% categories = [
+            'www-mod_perl-developer',
+            'www-mod_perl-documentation',
+            'www-module',
+                ];
+            %]
+            [% PROCESS tpl/category_page.html categories => categories %]
+        </td>
+    </tr>
+</table>

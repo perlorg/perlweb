@@ -1,10 +1,9 @@
 [% PROCESS data/categories.html %]
 [% FOREACH cat = categories %]
 [% category = cat_list.$cat %]
-<h4>[% category.title %]</h4>
+<h5>[% category.title %]</h5>
 <ul>
     [% FOREACH list = category.lists %]
-        
         <li><a href="/list/[% list %].html">[% 'DEFUNCT ' IF list.defunct %][% list %]</a></li>
     [% END %]
 </ul>

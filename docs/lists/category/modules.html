@@ -9,28 +9,35 @@
 
 <h2>Perl mailing lists for specific modules</h2>
 
-[% categories = [
-    'cpan',
-    'lingua',
-    'module',
-    'module-cpan-developer',
-    'module-developer',
-    'module-developer-documentation',
-    'module-graphics',
-    'module-mod_perl',
-    'module-networking',
-    'module-www',
-    'module-xml',
-    'networking',
-    'tk-beginners',
-    'tk-tools',
-    'www-mod_perl',
-    'www-mod_perl-developer',
-    'www-mod_perl-documentation',
-    'www-module',
-    'xml',
-    
-    ];
-%]
+<table class="content_table">
+    <tr>
+        <td>
+            [% categories = [
+                'cpan',
+                'lingua',
+                'module',
+                    ];
+            %]
+            [% PROCESS tpl/category_page.html categories => categories %]    
+        </td>
+        <td>
+            [% categories = [
+                'module-cpan-developer',
+                'module-developer',
+                'module-developer-documentation',
+                'module-graphics',
+                'module-mod_perl',
+                'module-networking',
+                'module-www',
+                'module-xml',
+                'networking',
+                'tk-beginners',
+                'tk-tools',
+                'xml',
+                ];
+            %]
+            [% PROCESS tpl/category_page.html categories => categories %]
+        </td>
+    </tr>
+</table>
 
-[% PROCESS tpl/category_page.html categories => categories %]
