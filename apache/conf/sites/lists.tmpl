@@ -1,0 +1,24 @@
+  <VirtualHost *:[% config.port %]>
+    ServerName [% config.site.lists.servername %]
+    [% expandServerAliases( config.site.lists.aliases ) %]
+    PerlSetVar site lists
+
+    <Location />
+       SetHandler perl-script
+       PerlHandler Combust::Control::Basic->super
+    </Location>
+
+    <Location /server-status>
+      SetHandler server-status
+    </Location>
+
+    <Location /redirect/>
+       SetHandler   perl-script
+       PerlHandler Combust::Control::Redirect->super
+    </Location>
+
+    <Location /error/>
+       SetHandler   perl-script
+       PerlHandler Combust::Control::Error->super
+    </Location>
+  </VirtualHost>
