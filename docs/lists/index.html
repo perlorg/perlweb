@@ -31,6 +31,7 @@
 <form name="chooselist">
 <select id="selectList" onchange="return go_to_list()">
 [% FOREACH list_name = lists.keys.sort %]
+[% IF lists.$list_name.defunct %][% NEXT %][% END %]
 <option name="[% list_name %]">[% list_name %]</option>
 [% END %]
 </select>
