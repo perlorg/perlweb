@@ -29,6 +29,8 @@ Yes. Unlike Perl 5, Perl 6 will provide:
 
 =item declarative classes with strong encapsulation
 
+=item roles
+
 =item full OO exception handling
 
 =item support for the concurrent use of multiple versions of a module
@@ -89,6 +91,8 @@ Yes. Unlike Perl 5, Perl 6 will provide:
 
 =item strong module and language versioning
 
+=item concurrent object pipes
+
 =back
 
 Developers who want to take advantage of those new and/or improved features
@@ -120,19 +124,12 @@ specified using distinctive syntactic forms.
 =head2  Will people be able to develop in Perl 6 and release stand-alone
          executables, so as to protect their original code?
 
-Parrot (the virtual machine on which Perl 6 will run) can compile your
-program to bytecode and -- on commonly used platforms -- to native
-executable files. So Perl 6 will be exactly like every other compiled
-language: it will be possible to protect your source code, but only from
-those who don't know how to run a disassembler.
+Since Perl 6 is a language specification, the details will depend on the
+specific compilers.
 
-
-=head2 Will people be able to develop in Perl 6 and release stand-alone
-        executables that don't require any other system resources?
-
-Maybe. The parrot bytecode requires the parrot to run it, but if you are in
-desperate need for a stand alone executable, you can statically link parrot
-and your program to a single executable.
+Rakudo, a Perl 6 compiler based on Parrot, allows compilation to bytecode, and
+a small wrapper exists that can pack up a bytecode file and parrot into a
+single executable.
 
 
 =head2 Is there a release date set for perl 6.0 ?
@@ -142,9 +139,11 @@ ready".  There is no major commercial sponsor for the language
 development so the majority of the work is driven by volunteers 
 and donations from the Perl Foundation (L<http://www.perlfoundation.org/>). 
 
-That said, there is much progress being made in the last year, 
-including the Pugs project which allows you to start testing 
-experimenting with some perl 6 features .. now! 
+That said, there is a release date for Rakudo: In Q2 2010 Patrick Michaud will
+release a useful and usable (but not feature complete) Perl 6 compiler, see
+L<http://use.perl.org/~pmichaud/journal/39411>. Rakudo is mature enough that
+you can play with it today, and provide valuable feedback to both the
+implementers and the language designers.
 
 For more information on the latest re: perl 6, check out: 
 
