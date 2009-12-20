@@ -32,14 +32,23 @@
     [% END %]
     </dl>
 
+
+[% MACRO format_content(name,field) BLOCK %]
+    <dt>[% name %]</dt>
+    <dd>
+      <ul>
+      [% FOREACH url = list.$field.list %]
+      <li><a href="[% url | trim %]" >[% url %]</a></li>
+      [% END %]
+      </ul>
+    </dd>
+[% END %]
+
     <h5>Feeds and archives</h5>
     <dl>
-     [% FOREACH field = ['rssfeed','archive','nntp' ] %]
-    [% IF list.$field %]
-    <dt>[% field %]</dt>
-    <dd><a href="[% list.$field | trim %]" >[% list.$field %]</a></dd>
-    [% END %]
-    [% END %]
+     [% format_content("Archives","archive") IF list.archive %]
+     [% format_content("Feeds","rssfeed") IF list.rssfeed %]
+     [% format_content("NNTP","nntp") IF list.rssfeed %]
     </dl>
 
 </div>
