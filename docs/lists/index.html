@@ -37,6 +37,12 @@
 </select>
 </form>
 
+<p></p>
+<p>Or by first letter...</p>
+[% FOR c = [ 'A' .. 'Z' ] %]
+<a href="all.html#[% c | lower %]">[% c %]</a>&nbsp;
+[% END %]
+
 <!--
 <h4>
     Help needed

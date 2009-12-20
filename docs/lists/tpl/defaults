@@ -14,10 +14,13 @@
         tag_line        => 'Perl, modern programming',
     }; 
     
-   USE JSON;
-   json_string = PROCESS "data/lists.json";
-   lists = JSON.json_decode(json_string);
- 
+   # we want to get the parsed datastructure cached in mod_perl, but
+   # if we don't have it there, generate it here
+   IF not lists;
+     USE JSON;
+     json_string = PROCESS "data/lists.json";
+     lists = JSON.json_decode(json_string);
+   END;
 -%]
 [%- BLOCK nav_tabs %]
 <ul>

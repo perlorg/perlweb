@@ -1,0 +1,24 @@
+[% 
+    page.import({
+        title    => 'Perl Mailing lists - Alphabetical',
+        section  => '',
+        description 
+            => 'Aplhabetical List of Mailing Lists',
+    });
+%]
+
+<h2>Perl mailing lists</h2>
+
+[% 
+   current_char = "";
+   FOREACH list = lists.keys.sort;
+   first_char = list.substr(0,1);
+   IF first_char != current_char; 
+%]
+<a NAME="[% first_char %]"></a>
+<h3>[% first_char %]</h3>
+[%  current_char = first_char;
+    END %]
+<a href="/list/[% list %].html">[% lists.$list.name %]</a><br>
+[% END %]
+
