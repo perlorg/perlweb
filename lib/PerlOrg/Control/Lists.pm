@@ -20,7 +20,7 @@ sub render {
 
    if (!$data || time() > $next_data) {
      my $rawjson = slurp($file);
-     $data ||= $JSON->decode($rawjson);
+     $data = $JSON->decode($rawjson);
      $next_data = time() + 5 * 60;
    }
 
