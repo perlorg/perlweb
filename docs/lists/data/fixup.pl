@@ -13,7 +13,8 @@ for my $list (keys %{$data}) {
         $data->{$list}{archive} = [ @archives ];
     }
 
-    if ($data->{$list}{nntp}) {
+    if ($data->{$list}{nntp} && 
+        !ref $data->{$list}{nntp} && $data->{$list}{nntp} !~ /^nntp:/) {
         my $nntp = $data->{$list}{nntp};
         my ($nntpgroup) = $nntp =~ m!group/(.+)$!;
         my $oldarchive = $data->{$list}{archive};
@@ -27,6 +28,15 @@ for my $list (keys %{$data}) {
         my ($nntpgroup) = $rssfeed =~ m!/rss/(.+).rdf$!;
         $data->{$list}{nntp} = ["nntp://nntp.perl.org/$nntpgroup"];
     }
+}
+
+# lowercase list names
+for my $list (keys %{$data}) {
+    if (lc $list ne $list) {
+        $data->{lc $list} = $data->{$list};
+        delete $data->{$list};
+    }
+    warn "$list has spaces in it\n" if $list =~ / /;
 }
 
 my $json = new JSON;
