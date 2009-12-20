@@ -1,25 +1,26 @@
 [% 
     page.import({
         include_sifr => 1,
-        title    => 'Perl Mailing lists',
+        title    => 'Perl Mailing Lists',
         section  => 'home',
         description 
-            => 'Perl mailing lists',
+            => 'Perl Mailing Lists',
     });
 %]
 
 <div class="masthead">
- 	<p class="headline">Mailing lists</p>
-
- 	<p class="strap">Perl mailing lists</p>
+ 	<p class="headline" style="text-transform: none">Perl Mailing Lists</p>
+<!-- 	<p class="strap">Perl Mailing Lists</p> -->
+    <p class="strap"></p>
 </div>
 
 <h4>
-    Mailing lists
+    Mailing Lists
 </h4>
 <p>
-    There are many Perl related mailing lists, choose from the sections above,
-    or from the list below:
+    We have a database of over [% lists.size - (lists.size % 10) %]
+    Perl related mailing lists, choose by category above, or from the
+    list below:
 </p>
 
 <script type="text/javascript" charset="utf-8">
@@ -39,27 +40,31 @@
 
 <p></p>
 <p>Or by first letter...</p>
+<p>
 [% FOR c = [ 'A' .. 'Z' ] %]
 <a href="all.html#[% c | lower %]">[% c %]</a>&nbsp;
 [% END %]
+</p>
 
-<!--
+
+<br><br><br>
 <h4>
-    Help needed
+    Help Needed!
 </h4>
 <p>
-    We are in the process of cleaning up this list of sites, if you find
-    one that is inactive please let us know by...
+  We're working on updating the underlying data in this list, if you
+  find information that is wrong or just
+  outdated, <a href="data.html">please let us know</a>.
 </p>
--->
 
 
+<!-- 
 <script type="text/javascript">
 //<![CDATA[
 if(typeof sIFR == "function"){
 	sIFR.replaceElement(named({sSelector:".masthead .headline", sFlashSrc:"/flash/sifr/tradegothic.swf", sColor:"#004065", sLinkColor:"#004065", sBgColor:"#f0f0f0", sHoverColor:"#004065", nPaddingTop:0, nPaddingBottom:0, sFlashVars:"textalign=leftoffsetTop=6"}));
-	sIFR.replaceElement(named({sSelector:".masthead .strap", sFlashSrc:"/flash/sifr/tradegothic.swf", sColor:"#8FB7E5", sLinkColor:"#8FB7E5", sBgColor:"#f0f0f0", sHoverColor:"#8FB7E5", nPaddingTop:0, nPaddingBottom:0, sFlashVars:"textalign=leftoffsetTop=6"}));
+//	sIFR.replaceElement(named({sSelector:".masthead .strap", sFlashSrc:"/flash/sifr/tradegothic.swf", sColor:"#8FB7E5", sLinkColor:"#8FB7E5", sBgColor:"#f0f0f0", sHoverColor:"#8FB7E5", nPaddingTop:0, nPaddingBottom:0, sFlashVars:"textalign=leftoffsetTop=6"}));
 };
 //]]>
 </script>
-
+-->

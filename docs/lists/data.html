@@ -1,0 +1,35 @@
+[% 
+    page.import({
+        title    => 'Perl Mailing Lists - Data and Contributing',
+        section  => 'home',
+        description 
+            => 'lists.perl.org database',
+    });
+%]
+
+<h2>Contributing Changes</h2>
+
+<p>We know that a lot of the data is out of date, as it has been
+collected from a variety of sources.  Updates are welcome and
+encouraged.</p>
+
+<p>Please send patches to lists.json as unified diffs (<code>diff
+-u</code>) to webmaster at perl.org.</p>
+
+
+<h2>Data</h2>
+
+<p>The underlying data for lists.perl.org is available for download in
+JSON format: <a href="data/lists.json">lists.json</a>.
+</p>
+
+
+<p>
+Key points:
+<ul>
+  <li>All tags should be sorted. (i.e. <code>$json->canonical(1);</code>)</li>
+  <li>Top level keys should match <code>/^[a-z0-9_.-]+$/</code></li>
+  <li><tt>archive, nntp, rssfeed</tt> may be lists.</li>
+</ul>
+</p>
+

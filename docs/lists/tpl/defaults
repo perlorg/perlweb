@@ -91,12 +91,14 @@
 
 [%- BLOCK quick_links_1;
 
-    SET source = {
-        quick_links_1_title => 'Related sites',
-        quick_links_1_list => [
-            '<a href="http://www.perl.org">Perl.org</a>',
-        ],
-    };
+   SET source = {};
+
+#    SET source = {
+#        quick_links_1_title => 'Related sites',
+#        quick_links_1_list => [
+#            '<a href="http://www.perl.org">Perl.org</a>',
+#        ],
+#    };
 
     IF page.quick_links_1_title;
         source = page;
