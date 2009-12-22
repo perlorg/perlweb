@@ -27,6 +27,12 @@ sub render {
    # all pages get access to list data
    $self->tpl_param( lists => $data );
 
+   if ($self->request->uri =~ m!^/showlist\.cgi!) {
+       my $list = $self->req_param("name");
+       $list =~ s/[^A-Za-z0-9_-]//g;
+       return $self->redirect("/list/" . $list . ".html" ) if $list;
+   }
+
    # request for a specific list? - special case
    if ($self->request->uri =~ m!^/list/([a-z0-9_.-]+).html!) {
        my $listid = $1;
