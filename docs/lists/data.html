@@ -20,14 +20,13 @@ diffs (<code>diff -u</code>) to webmaster at perl.org.</p>
 your JSON parses correctly.  The <code>-d</code> flag dumps out a
 properly formatted file.</p>
 
-<p>Here's a suggested workflow:
+<p>Here's a suggested workflow:</p>
 <pre>
 cp lists.json lists.json.orig
 edit lists.json
 validate.pl -d lists.json > lists.json.new
 diff -u lists.json.old lists.json.new
 </pre>
-</p>
 
 <h2>Data</h2>
 
@@ -35,15 +34,12 @@ diff -u lists.json.old lists.json.new
 JSON format: <a href="data/lists.json">lists.json</a>.
 </p>
 
-
-<p>
-Key points:
+<p>Key points:</p>
 <ul>
   <li>All tags should be sorted. (i.e. <code>$json->canonical(1);</code>)</li>
   <li>Top level keys should match <code>/^[a-z0-9_.-]+$/</code></li>
   <li><tt>archive, nntp, rssfeed</tt> may be lists.</li>
 </ul>
-</p>
 
 <h2>TODO List</h2>
 

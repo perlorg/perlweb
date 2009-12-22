@@ -29,7 +29,7 @@
         document.location = '/list/' + list + '.html';
     }
 </script>
-<form name="chooselist">
+<form name="chooselist" action="">
 <select id="selectList" onchange="return go_to_list()">
 [% FOREACH list_name = lists.keys.sort %]
 [% IF lists.$list_name.defunct %][% NEXT %][% END %]
@@ -46,8 +46,7 @@
 [% END %]
 </p>
 
-
-<br><br><br>
+<br /><br /><br />
 <h4>
     Help Needed!
 </h4>
