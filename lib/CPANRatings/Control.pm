@@ -67,7 +67,6 @@ sub as_rss {
                        subject    => "Perl",
                        creator    => 'ask@perl.org',
                        publisher  => 'ask@perl.org',
-                       rights     => 'Copyright 2004-' . ((gmtime)[5]+1900) .', The Perl Foundation',
                        language   => 'en-us',
                       },
                 syn => {
@@ -79,8 +78,8 @@ sub as_rss {
 
   my $i; 
   while (my $review = $reviews->next) {
-    my $text = substr($review->review, 0, 150);
-    $text .= " ..." if (length $text < length $review->review);
+    my $text = $review->review; # substr($review->review, 0, 150);
+    #$text .= " ..." if (length $text < length $review->review);
     $text = "Rating: ". $review->rating_overall . " stars\n" . $text
       if ($review->rating_overall);
     $rss->add_item(
