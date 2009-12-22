@@ -19,6 +19,8 @@
 <h3>[% first_char %]</h3>
 [%  current_char = first_char;
     END %]
-<a href="/list/[% list %].html">[% lists.$list.name %]</a><br>
+<a href="/list/[% list %].html">[% lists.$list.name %]</a> 
+  -- [% lists.$list.summary.substr(0, 50) 
+   %][% IF lists.$list.summary.length > 50; %]...[% END %]<br>
 [% END %]
 
