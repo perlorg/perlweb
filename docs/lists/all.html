@@ -20,7 +20,7 @@
 [%  current_char = first_char;
     END %]
 <a href="/list/[% list %].html">[% lists.$list.name %]</a> 
-  -- [% lists.$list.summary.substr(0, 50) 
+  &mdash; [% lists.$list.summary.substr(0, 50) 
    %][% IF lists.$list.summary && lists.$list.summary.length > 50; %]...[% END %]<br>
 [% END %]
 
