@@ -16,6 +16,18 @@ encouraged.</p>
 <p>Please send patches to lists.json (available below) as unified
 diffs (<code>diff -u</code>) to webmaster at perl.org.</p>
 
+<p>You can use <a href="data/validate.pl">validate.pl</a> to make sure
+your JSON parses correctly.  The <code>-d</code> flag dumps out a
+properly formatted file.</p>
+
+<p>Here's a suggested workflow:
+<pre>
+cp lists.json lists.json.orig
+edit lists.json
+validate.pl -d lists.json > lists.json.new
+diff -u lists.json.old lists.json.new
+</pre>
+</p>
 
 <h2>Data</h2>
 
