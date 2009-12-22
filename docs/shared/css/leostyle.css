@@ -9,7 +9,10 @@ body {
       this was here to prevent jitter when jumping between a long page and a short page.  turning it off to see if Robert notices anymore.
       height: 1600px;
     */
-	font-size: 100%;
+
+    /* set a default absolute font-size so if people change the
+    default fonts/sizes in their browser, we're immune. */
+	font-size: 12pt;
     background: white;
 }
 img{
