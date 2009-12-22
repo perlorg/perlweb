@@ -20,10 +20,10 @@ AUTO_UPDATE="live"
 
 for branch in $AUTO_UPDATE
 do
-  cd $CBROOT/docs/$branch && /usr/local/bin/svn update
+  cd $CBROOT/docs/$branch && /usr/local/bin/svn update 2>&1
 done
 
 if [ -d $CBROOT/planets/ ]
 then
-  cd $CBROOT/planets/sites/ && /usr/local/bin/svn update
+  cd $CBROOT/planets/sites/ && /usr/local/bin/svn update 2>&1
 fi
