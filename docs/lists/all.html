@@ -1,26 +1,25 @@
-[% 
+[%
     page.import({
         title    => 'Perl Mailing Lists - Alphabetical',
         section  => 'home',
-        description 
+        description
             => 'Aplhabetical List of Mailing Lists',
     });
 %]
 
 <h2>Perl Mailing Lists</h2>
 
-[% 
+[%
    current_char = "";
    FOREACH list = lists.keys.sort;
    first_char = list.substr(0,1);
-   IF first_char != current_char; 
+   IF first_char != current_char;
 %]
 <a NAME="[% first_char %]"></a>
 <h3>[% first_char %]</h3>
 [%  current_char = first_char;
     END %]
-<a href="/list/[% list %].html">[% lists.$list.name %]</a> 
+<a href="/list/[% list %].html">[% lists.$list.name %]</a>
   &mdash; [% lists.$list.summary.substr(0, 50) 
    %][% IF lists.$list.summary && lists.$list.summary.length > 50; %]...[% END %]<br>
 [% END %]
-

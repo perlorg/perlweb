@@ -1,7 +1,7 @@
 [%-  page = {
             title = template.title,
             style = template.style or 'leo.html',
-	    site  = "lists.perl.org"
+            site  = "lists.perl.org"
     };
 
     # don't include any whitespace from here...
@@ -12,8 +12,8 @@
     SET site = {
         name            => 'lists.perl.org',
         tag_line        => 'Perl, modern programming',
-    }; 
-    
+    };
+
    # we want to get the parsed datastructure cached in mod_perl, but
    # if we don't have it there, generate it here
    IF not lists;
@@ -50,7 +50,7 @@
     </li>
     <li[% ' class="selected"' IF page.section == 'internals' %]>
         <a href="/category/internals.html">Internals</a>
-    </li>    
+    </li>
     <li[% ' class="selected"' IF page.section == 'misc' %]>
         <a href="/category/misc.html">Misc</a>
     </li>
@@ -70,7 +70,7 @@
         </h4>
         <div class="list">
         [% FOREACH p = quick_link_list %]
-        <p>[% p %]</p>        
+        <p>[% p %]</p>
         [% END %]
         </div>
 </div>
@@ -147,4 +147,3 @@
     END;
 -%]
 [% END -%]
-
