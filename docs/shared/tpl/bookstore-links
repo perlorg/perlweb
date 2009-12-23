@@ -12,8 +12,10 @@
   shops = { amazon => "Amazon.com",
             amazonuk => "Amazon UK",
             powells => "Powells",
-            bn     => "Barnes &amp; Noble",
-            bookpool => "Bookpool",
+            # our b&n codes don't work anymore
+            # bn     => "Barnes &amp; Noble",
+            # bookpool is out of business
+            # bookpool => "Bookpool",
           }
 -%]
 [% IF !style; style="text"; END -%]
