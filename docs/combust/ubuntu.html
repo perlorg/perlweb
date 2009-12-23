@@ -1,0 +1,67 @@
+[% page.title = 'Simple Ubuntu Install' %]
+
+<h2>Simple Instructions for Installing a Combust/Perl.Org Dev
+Environment on Ubuntu</h2>
+
+<pre>
+
+
+# ***  Ubuntu Jaunty
+
+# ***  check out combust
+git clone git://git.develooper.com/combust.git combust
+# ***  check out content and setup tree
+cd combust
+svn co https://svn.perl.org/perl.org/docs/live perl.org-docs-live
+mkdir docs
+cd docs
+ln -s ../perl.org-docs-live live
+cd ..
+# ***  patch combust
+--- a/apache/conf/httpd2.tmpl
++++ b/apache/conf/httpd2.tmpl
+@@ -11 +11,2 @@ LoadModule apreq_module [% apache_modules %]/mod_apreq2.so
+-LoadModule log_config_module [% apache_modules %]/mod_log_config.so
++#LoadModule log_config_module [% apache_modules %]/mod_log_config.so
++LoadModule autoindex_module [% apache_modules %]/mod_autoindex.so
+# ***  make config file
+cat > combust.conf <<EOF
+perl  = /usr/bin/perl
+httpd = /usr/sbin/apache2
+modperl_path = /usr/lib/apache2/modules/mod_perl.so
+apache_libexec = /usr/lib/apache2/modules/
+servername = combust.mydomain.com
+sites = www, dev
+port = 8225
+#external_port = 80
+apache_reload = 1 
+proxyip_forwarders = 127.0.0.1
+use_apache_statinc = 1
+[www]
+servername = www.mydomain.com
+aliases    = wwwperl.mydomain.com
+
+[dev]
+servername = dev.mydomain.com
+
+EOF
+# ***  setup nameservice
+- edit /etc/hosts or setup DNS for the mydomain.com addresses above.  If you're just working on your local machine, you can set them to 127.0.0.1
+# ***  start the server
+# from the combust checkout dir
+export CBROOT=$PWD CBROOTLOCAL=$PWD
+bin/run_httpd
+- you will probably have perl errors in your logs/error_log
+- now play "install all the CPAN dependencies"
+- if your perl is local, you can try Bundle::Combust (but it is probably out of date)
+- or apt-ify
+    apt-get install libconfig-simple-perl libapache2-mod-perl2 \
+     libapache2-mod-apreq2 libapache-dbi-perl libexception-class-perl \
+     libcache-memcached-perl libcache-cache-perl \
+     libapache2-request-perl 
+    dh-make-perl libyahoo-search-perl
+# *** try it
+ point your web browser at http://www.mydomain.com/ 
+
+
+</pre>
