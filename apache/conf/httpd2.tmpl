@@ -6,22 +6,15 @@ PidFile             "[% config.log_path %]/httpd.pid"
 
 Listen              [% config.port %]
 
+[%# We always need mod_perl, and apreq is weird (module is apreq but
+file is apreq2) so don't allow it to be configured. %]
 LoadModule perl_module [% apache_modules %]/mod_perl.so
 LoadModule apreq_module [% apache_modules %]/mod_apreq2.so
-LoadModule log_config_module [% apache_modules %]/mod_log_config.so
-LoadModule alias_module [% apache_modules %]/mod_alias.so
-LoadModule env_module [% apache_modules %]/mod_env.so
-LoadModule status_module [% apache_modules %]/mod_status.so
 
-LoadModule deflate_module [% apache_modules %]/mod_deflate.so
-LoadModule logio_module [% apache_modules %]/mod_logio.so
+[% FOR apache_module = config.apache_modules %]
+LoadModule [% apache_module %]_module   [% apache_libexec %]/mod_[% apache_module %].so
+[% END %]
 
-LoadModule authn_file_module [% apache_modules %]/mod_authn_file.so
-LoadModule authz_host_module [% apache_modules %]/mod_authz_host.so
-
-LoadModule rewrite_module [% apache_modules %]/mod_rewrite.so
-
-LoadModule mime_module [% apache_modules %]/mod_mime.so
 TypesConfig [% root %]/apache/conf/mime.types
 
 AddOutputFilterByType DEFLATE text/html text/plain text/xml

@@ -318,7 +318,29 @@ sub minspareservers     { $cfg->param('apache.minspareservers') || 1 }
 sub maxspareservers     { $cfg->param('apache.maxspareservers') || 10 }
 sub maxrequestsperchild { $cfg->param('apache.maxrequestsperchild') || 500 }
 
+sub apache_modules {
+  my $self = shift;
 
+  my @default = $self->apache_version < 2 
+    ? qw(env config_log mime_magic mime negotiation status 
+         autoindex dir cgi alias rewrite access auth setenvif)
+    : qw(log_config alias env status deflate logio authn_file
+         authz_host rewrite mime);
 
+  my $add = $cfg->param('apache.modules_add');
+  my $del = $cfg->param('apache.modules_del');
+  my $modules = 
+    $cfg->param('apache.modules') || 
+      join(",", @default, ref $add ? @$add : ($add));
+  my %modules_del = map { $_ => 1 } (ref $del ? @$del : ($del));
+  return grep { !exists $modules_del{$_} } split /,/, $modules;
+}
+
+sub apache_version {
+  my ($self, $version) = @_;
+  $self->{apache_version} = $version if defined $version;
+  return defined $self->{apache_version} ? $self->{apache_version} : 1.0;
+}
 
 1;
+

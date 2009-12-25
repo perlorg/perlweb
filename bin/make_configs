@@ -34,6 +34,7 @@ if ($apache_version) {
   $apache_version = sprintf "%i.%02i%02i", ($apache_version =~ m/^(\d+)\.(\d+).(\d+)$/);
 }
 my $mp2 = $apache_version && $apache_version >= 2 ? 1 : 0;
+$config->apache_version( $apache_version );
 
 my $apxs = $httpd;
 $apxs =~ s!/httpd!/apxs!;
