@@ -3,9 +3,9 @@
     [% expandServerAliases( config.site.lists.aliases ) %]
     PerlSetVar site lists
 
+    PerlModule  PerlOrg::Control::Lists
     <Location />
        SetHandler perl-script
-       PerlModule  PerlOrg::Control::Lists
        PerlHandler PerlOrg::Control::Lists->super
     </Location>
 
