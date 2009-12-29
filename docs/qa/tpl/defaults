@@ -27,8 +27,7 @@
     <li class="[% ' selected' IF page.section == 'phalanx' %]">
     <a href="/phalanx/">Phalanx</a></li>
     <li class="[% ' selected' IF page.section == 'testing' %]"><a href="/testing/">Testing your code</a></li>
-<!--    <li><a href="/">Testing CPAN</a></li>
-    <li><a href="/">Mailing list</a></li> -->
+    <li class="[% ' selected' IF page.section == 'cpan' %]"><a href="/cpan-testers/">Testing CPAN</a></li>
 </ul>
 [% END -%]
 
