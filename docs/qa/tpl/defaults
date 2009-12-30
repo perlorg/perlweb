@@ -15,8 +15,9 @@
     # Configuration for this site
     SET site = {
         name            => 'qa.perl.org',
-    }; 
- 
+    };
+     
+    PROCESS tpl/stats.html;
 
 -%]
 [%- BLOCK nav_tabs %]
