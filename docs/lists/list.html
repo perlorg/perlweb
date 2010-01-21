@@ -27,6 +27,12 @@
     [% '<p>' _ list.summary _ '</p>' IF list.summary %]
     [% '<p>' _ list.comments _ '</p>' IF list.comments %]
 
+    [% IF list.tags %]
+    Tags:
+    [% FOREACH tag = list.tags %]
+      <a href="/tag/[% tag %].html">[% tag %]</a>
+    [% END %]
+    [% END %]
     <h5>Subscribing and help</h5>
     <dl>
     [% FOREACH field = ['unsub','sub','help' ] %]
