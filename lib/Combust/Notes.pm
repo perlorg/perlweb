@@ -17,6 +17,7 @@ use constant MP2 => ( exists $ENV{MOD_PERL_API_VERSION} and
 BEGIN {
     if (MP2) {
 	require Apache2::Request;
+	require Apache2::RequestUtil;
 	require Apache2::Connection;
     }
     else {

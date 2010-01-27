@@ -27,7 +27,7 @@ sub req_param {
 }
 
 sub req_params {
-    shift->_r->parms;
+    scalar shift->_r->param;
 }
 
 sub notes {

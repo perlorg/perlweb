@@ -1,9 +1,7 @@
 package CPANRatings::Control;
 use strict;
 use base qw(Combust::Control Combust::Control::Bitcard);
-use Apache::Cookie;
 use LWP::Simple qw(get);
-use Apache::Util qw();
 use CPANRatings::Model::Reviews;
 use CPANRatings::Model::User;
 use Digest::SHA1 qw(sha1_hex);
@@ -110,11 +108,10 @@ sub post_process {
     my $self = shift;
 
     if ($self->{no_cache}) {
-        my $r = $self->r;
+        my $r = $self->request;
 
         $r->header_out('Expires', HTTP::Date::time2str( time() ));
-        # $r->header_out('Cache-Control', 'max-age=0,private');
-        $r->header_out('Cache-Control', 'no-cache');
+        $r->header_out('Cache-Control', 'max-age=0,private,no-cache');
         $r->header_out('Pragma', 'no-cache');
     }
     
