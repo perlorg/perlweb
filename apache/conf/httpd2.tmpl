@@ -42,8 +42,7 @@ PerlSetVar ReloadDebug On
 
 ExtendedStatus On
 
-#LogLevel warn
-LogLevel debug
+LogLevel [% config.apache_loglevel %]
 
 LogFormat "%h %V %u %t %{site}n \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
 LogFormat "%h %V %u %t \"%r\" %>s %b" common

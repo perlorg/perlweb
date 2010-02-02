@@ -342,5 +342,9 @@ sub apache_version {
   return defined $self->{apache_version} ? $self->{apache_version} : 1.0;
 }
 
+sub apache_loglevel {
+  $cfg->param('apache.loglevel') || "debug";
+}
+
 1;
 
