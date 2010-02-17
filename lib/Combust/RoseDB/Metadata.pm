@@ -3,6 +3,10 @@ use strict;
 use base qw(Rose::DB::Object::Metadata);
 use JSON::XS;
 use Carp qw(cluck);
+use Sub::Install qw(install_sub);
+use Rose::DB::Object::Constants
+  qw(STATE_LOADING STATE_SAVING);
+
 use namespace::clean;
 
 my $json = JSON::XS->new;
@@ -40,6 +44,7 @@ sub initialize {
 
 sub setup_json_columns {
   my $meta = shift;
+  my $class = $meta->class;
 
   foreach my $column ( map { $meta->column($_) } @_ ) {
     $column->add_trigger(
@@ -55,10 +60,28 @@ sub setup_json_columns {
     $column->add_trigger(
       deflate => sub {
         shift;    # object;
-        my $h = shift or return undef;
-        $json->encode($h);
+        my $h = shift;
+        ref($h) ? $json->encode($h) : $h;
       }
     );
+
+    {
+      my $accessor = $column->accessor_method_name;
+      my $code     = sub {
+        my $self = shift;
+        $self->$accessor([]) if @_;    # make sure marked as dirty when setting
+        my $key = @_ ? STATE_LOADING : STATE_SAVING;
+        local $self->{$key} = 1;      # Fake DB access so we can set/get raw JSON value
+        $self->$accessor(@_);
+      };
+
+      install_sub(
+        { into => $class,
+          as   => "${accessor}_json",
+          code => $code,
+        }
+      );
+    }
   }
 }
 

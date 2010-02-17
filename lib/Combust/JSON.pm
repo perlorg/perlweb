@@ -18,24 +18,28 @@ sub _json_key {
 }
 
 sub decode_class {
-    my ($self, $class) = @_;
+    my ( $self, $class ) = @_;
     my $key = $for_class{$class}{key} ||= _json_key($class);
-    $self->filter_json_single_key_object($key => sub { bless shift, $class });
+    my $thaw_sub = $class->can('JSON_thaw') || sub { bless shift, $class };
+    $self->filter_json_single_key_object( $key => $thaw_sub );
     $self;
 }
 
 sub encode_class {
-    my ($self, $class) = @_;
+    my ( $self, $class ) = @_;
     $self->allow_blessed(1);
     $self->convert_blessed(1);
 
     # install ::TO_JSON in $class
-    if (!exists $for_class{$class}{to_json}) {
+    if ( !exists $for_class{$class}{to_json} ) {
         my $key = $for_class{$class}{key} ||= _json_key($class);
-        my $TO_JSON = $for_class{$class}{to_json} = sub {
-            my %h = %{+shift};    # copy the object as an unblessed hash
-            +{$key => \%h};       # stuff it in a single-key hash
-        };
+        my $TO_JSON = $for_class{$class}{to_json} =
+          $class->can('JSON_freeze')
+          ? sub { +{ $key => shift->JSON_freeze } }
+          : sub {
+            my %h = %{ +shift };    # copy the object an an unblessed ref
+            +{ $key => \%h };       # stuff it in a single-key hash
+          };
         Sub::Install::install_sub(
             {   code => $TO_JSON,
                 into => $class,
@@ -47,7 +51,7 @@ sub encode_class {
 }
 
 sub handle_class {
-    my ($self, $class) = @_;
+    my ( $self, $class ) = @_;
     $self->encode_class($class);
     $self->decode_class($class);
     $self;

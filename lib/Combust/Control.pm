@@ -356,7 +356,8 @@ sub send_output {
   else {
     # eek - this is certainly not correct
     $output = encode_utf8($output) if $content_type =~ m!^text/!;
-    $length = length($output);
+    # length in bytes
+    $length = do { use bytes; length($output) };
   }
 
   $self->request->update_mtime(time) if $r->mtime == 0; 

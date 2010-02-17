@@ -151,6 +151,7 @@ sub check_all_db_status {
 
   my @db = map { $_->db } __PACKAGE__->db_cache->db_cache_entries;
   foreach my $db (@db) {
+    next unless $db->has_dbh or defined($db->combust_thread_id); # only ping if were previously connected
     my $ping = $db->ping;
     $status = $ping if $ping < $status;
   }
