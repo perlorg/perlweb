@@ -38,6 +38,9 @@ CoreDumpDirectory   "[% config.work_path %]"
 [% FOR apache_module = config.apache_modules %]
 LoadModule [% apache_module %]_module   [% apache_libexec %]/mod_[% apache_module %].so
 [% END %]
+
+LoadModule config_log_module [% apache_libexec %]/mod_log_config.so
+
 [%# We always need mod_perl, so don't let people filter it out. %]
 LoadModule perl_module        [% modperl_path %]
 [% END %]

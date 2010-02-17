@@ -322,7 +322,7 @@ sub apache_modules {
   my $self = shift;
 
   my @default = $self->apache_version < 2 
-    ? qw(env config_log mime_magic mime negotiation status 
+    ? qw(env mime_magic mime negotiation status 
          autoindex dir cgi alias rewrite access auth setenvif)
     : qw(log_config alias env status deflate logio authn_file
          authz_host rewrite mime);
