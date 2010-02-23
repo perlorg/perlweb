@@ -156,8 +156,8 @@ sub do_request {
 
   ($status, $output, my $content_type) = eval { $self->render };
   if (my $err = $@) {
-      if (looks_like_number($err)) {
-          $status = $err;
+      if ($err =~ m{^(-?\d+)($|\sat\s\/)}) {
+          $status = $1;
       }
       else {
           warn "render failed: $err";
