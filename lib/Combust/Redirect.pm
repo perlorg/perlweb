@@ -50,6 +50,9 @@ sub redirect_reload {
   $map->{$file}->{rules} = $site_rules;
 }
 
+my $stat_check = 0;
+my %files;
+
 sub redirect_check {
   my $self = shift;
 
@@ -63,12 +66,19 @@ sub redirect_check {
 
   my $file;
 
-  # TODO: Refactor so the stats are cached!
+  if (time - 30 > $stat_check) {
+      %files = ();
+      $stat_check = time;
+  }
+      
   while (1) {
     my $dir = shift @$path;
     last unless $dir;
     $file = "$dir/.htredirects";
-    last if -e $file;
+    my $exists = defined $files{$file} 
+      ? $files{$file} 
+      : $files{$file} = -e $file || 0;
+    last if $exists;
   }
 
   #warn "FILE: $file";
