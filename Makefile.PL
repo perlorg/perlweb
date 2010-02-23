@@ -7,7 +7,7 @@ resources  repository  => 'http://github.com/abh/combust';
 
 requires  'Config::Simple';
 requires  'DBI';
-requires  'Cache::Memcached';
+requires  'Cache::Memcached' => '1.27';
 requires  'JSON::XS';
 requires  'Template';
 requires  'Pod::Simple';

@@ -4,7 +4,7 @@ use Carp qw(carp);
 use base qw(Combust::Cache);
 use Combust;
 
-use Cache::Memcached;
+use Cache::Memcached '1.27';
 
 my $config = Combust->config;
 
