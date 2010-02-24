@@ -47,6 +47,9 @@ sub fetch {
   if ($row->{serialized} & F_STORABLE) {
     $row->{data} = thaw $row->{data};
   }
+  else {
+      utf8::decode($row->{data});
+  }
   
   $row->{meta_data} = delete $row->{metadata};
   $row->{meta_data} = $row->{meta_data}
