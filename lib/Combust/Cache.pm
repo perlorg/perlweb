@@ -7,6 +7,8 @@ use Combust::Cache::DBI;
 my $HAS_MEMCACHED = eval { require Combust::Cache::Memcached };
 die $@ if $@ and $@ !~ m!Can't locate Cache/Memcached.pm!;
 
+use namespace::clean;
+
 my $id_max_length = 64;
 
 our $namespace;

@@ -1,6 +1,5 @@
 package Combust::Cache::DBI;
 use strict;
-use base qw(Combust::Cache);
 use Carp qw(carp);
 use Combust::DB qw(db_open);
 use Storable qw(nfreeze thaw);
@@ -16,6 +15,10 @@ use constant F_COMPRESS => 2;
 # size savings required before saving compressed value
 use constant COMPRESS_THRESHOLD => 10_000;
 use constant COMPRESS_SAVINGS => 0.20; # percent
+
+use namespace::clean;
+
+use base qw(Combust::Cache);
 
 sub fetch {
   my ($self, %args) = @_;

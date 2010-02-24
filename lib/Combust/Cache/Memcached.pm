@@ -1,10 +1,13 @@
 package Combust::Cache::Memcached;
 use strict;
 use Carp qw(carp);
-use base qw(Combust::Cache);
 use Combust;
 
 use Cache::Memcached '1.27';
+
+use namespace::clean;
+
+use base qw(Combust::Cache);
 
 my $config = Combust->config;
 
