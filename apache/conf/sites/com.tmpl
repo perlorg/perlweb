@@ -1,0 +1,36 @@
+  <VirtualHost *:[% config.port %]>
+    ServerName [% config.site.com.servername %]
+    [% expandServerAliases( config.site.com.aliases ) %]
+    PerlSetVar site com
+
+    <Location />
+       SetHandler perl-script
+       PerlHandler Combust::Control::Basic->super
+    </Location>
+
+    <Location /error/>
+       SetHandler   perl-script
+       PerlHandler Combust::Control::Error->super
+    </Location>
+
+    <Location /redirect/>
+       SetHandler   perl-script
+       PerlHandler Combust::Control::Redirect->super
+    </Location>
+
+    <Location /server-status>
+      SetHandler server-status
+    </Location>
+
+    # <Location /cgi-bin/>
+    #    SetHandler cgi-script
+    # </Location>
+    # ScriptAlias /cgi-bin/ "[% root %]/apache/cgi-bin/"
+    # <Directory "[% root %]/apache/cgi-bin">
+    #     AllowOverride None
+    #     Options None
+    #     Order allow,deny
+    #     Allow from all
+    # </Directory>
+
+  </VirtualHost>
