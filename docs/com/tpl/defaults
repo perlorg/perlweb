@@ -14,8 +14,9 @@
         logo            => '/i/camel_head.png',
         tag_line        => 'Perl, modern programming',
         crum            => '<a href="/">Home</a>',
-        footer          => 'com',
+        brand          => 'com',
     }; 
+    PROCESS tpl/stats.html;
  
 -%]
 [%- BLOCK nav_tabs %]
