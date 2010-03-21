@@ -11,15 +11,9 @@
 <div class="masthead">
  	<p class="headline">Perl</p>
 
- 	<p class="strap">&nbsp;</p>
+ 	<p class="strap">Find out why and how you should be using Perl</p>
 </div>
 
-<p>
-    We should have some copy here!
-</p>
-
-
-<div class="bar">&nbsp; &nbsp; &nbsp; &nbsp;</div>
 
 [% MACRO quicknews(shortname,title) BLOCK %]
 [%- UNLESS count %]
@@ -44,10 +38,10 @@
 <table class="content_table">
   <tr>
     <td>
-        [% quicknews ("useperl", 'Chromatic <a href="/articles/">Artciles</a>') %]
+        <p>Some content here</p>
     </td>
     <td>
-        [% quicknews ("cpanrecent"'Latest Uploads to <a href="http://cpan.perl.org/">CPAN</a>') %]
+        [% quicknews ("useperl", 'Perl Pub <a href="/articles/">Artciles</a>') %]
     </td>
   </tr>
 </table>
