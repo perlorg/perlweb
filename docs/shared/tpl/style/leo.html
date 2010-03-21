@@ -28,8 +28,10 @@
         </h1>
         <div id="logo_holder">
            
+            [% IF site.brand != 'com' %]
 
             <a href="/"><img src="[% site.logo || '/i/camel_head.png' %]" id="logo" alt="[% site.tag_line || 'Perl programming' %]" height="65" align="right" /></a>
+            [% END %]
 
 			 <span>[% site.name %]</span>
 
@@ -75,7 +77,7 @@
 <div id="footer">
     <div class="sub_holder">
         
-[% IF site.footer == 'com' %]
+[% IF site.brand == 'com' %]
 <p class="copyright">
     <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/us/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/us/80x15.png"></a> © 2002-[% USE date; date.format(date.now, '%Y') %] Perl.com | <a href="/siteinfo.html">Site Info</a>
 </p>
