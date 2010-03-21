@@ -14,7 +14,6 @@
  	<p class="strap">Why and how you should be using Perl</p>
 </div>
 
-
 [% MACRO quicknews(shortname,title) BLOCK %]
 [%- UNLESS count %]
 [%  count = 5 %]
@@ -39,9 +38,18 @@
   <tr>
     <td>
         <p>Some content here</p>
+        <div id="result" />
+        
     </td>
     <td>
-        [% quicknews ("useperl", 'Perl Pub <a href="/articles/">Artciles</a>') %]
+        [% quicknews ("useperl", 'Perl Pub Articles (<a href="/articles/">more</a>)') %]
+        <br />
+        <ul>
+            <li class="rss round">Technical Showcases (<a href="/articles/whitepapers/">more</a>)</li>
+            <li class="rss_content"><a href="/articles/whitepapers/perl-webframework.html">Web Framework</a></li>
+            <li class="rss_content"><a href="/articles/whitepapers/perl-database-orm.html">Database ORM</a></li>
+            <li class="rss_content"><a href="/articles/whitepapers/perl-profiling.html">Profiling</a></li>
+        </ul>
     </td>
   </tr>
 </table>
