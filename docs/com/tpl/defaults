@@ -18,6 +18,15 @@
     }; 
     PROCESS tpl/stats.html;
  
+    SET section_data = {
+        quick_links_2_title => 'Technical Showcases',
+        quick_links_2_list => [
+        '<a href="/articles/whitepapers/perl-webframework.html">Web Framework</a>',
+        '<a href="/articles/whitepapers/perl-database-orm.html">Database ORM</a>',
+        '<a href="/articles/whitepapers/perl-profiling.html">Profiling</a>',
+        '(<a href="/articles/whitepapers/">more</a>)'
+        ],
+};
 -%]
 [%- BLOCK nav_tabs %]
 <ul>
