@@ -8,11 +8,6 @@
     
 %]
 
-<div class="masthead">
- 	<p class="headline">Perl.com</p>
-
- 	<p class="strap">Why and how you should be using Perl</p>
-</div>
 
 [% MACRO quicknews(shortname,title) BLOCK %]
 [%- UNLESS count %]
@@ -53,11 +48,11 @@
 </tr>
 </table>
 
+<ul>
+    <li class="rss round">Perl Pub Articles</li>
+</ul>
 
-[% quicknews ("useperl", 'Perl Pub Articles (<a href="/articles/">more</a>)') %]
-
-
-        <h3><a href="http://www.perl.org/pub/2010/03/idioms-or-how-to-write-perlish-perl.html" rel="bookmark">Idioms, or How to Write Perlish Perl</a></h3>
+        <h3 id="title"><a href="http://www.perl.org/pub/2010/03/idioms-or-how-to-write-perlish-perl.html" rel="bookmark">Idioms, or How to Write Perlish Perl</a></h3>
           <p>Any language&mdash;programming or natural&mdash;develops <em>idioms</em>,
         or common patterns of expression. The earth revolves, but we speak of the
         sun rising or setting. We talk of clever hacks and nasty hacks and slinging
@@ -303,3 +298,4 @@
         <p>Phrased that way, the technique is so obvious as to seem trivial... but
         what is an idiom but a brilliant idea made vulgar by its ubiquity?</p> 
         
+        [% quicknews ("useperl", '<a href="/articles/">More Perl Pub Articles</a>)') %]

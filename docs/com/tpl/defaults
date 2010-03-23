@@ -85,7 +85,6 @@
             '<a href="http://perldoc.perl.org">Documentation</a>',
             '<a href="http://www.perl.org/">Community: Perl.org</a>',
             '<a href="http://blogs.perl.org/">Perl Blogs</a>',
-            '<a href="/training/">Training</a>',
         ],
     };
 
@@ -134,6 +133,15 @@
 
 [% rand_idx = asins.size.rand %]
 [% asin = asins.$rand_idx %]
+
+<div class="quick_links dbi_book">
+        <h4 class="round">
+            Sponsor
+        </h4>
+        <div class="list">
+           <p><a href="http://training.perl.com/">Perl Training</a></p>
+        </div>
+
 
 <div class="quick_links dbi_book">
         <h4 class="round">
