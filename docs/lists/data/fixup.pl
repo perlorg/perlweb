@@ -1,8 +1,11 @@
+#!/usr/bin/perl
+
 use JSON;
 use File::Slurp qw(slurp);
 use strict;
 
 # Helper script used to cleanup data
+# can also use as a diff: diff -u lists.json <(./fixup.pl) 
 
 my $data  = from_json(slurp("lists.json"));
 
