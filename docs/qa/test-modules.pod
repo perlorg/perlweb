@@ -8,11 +8,11 @@ C<andy@petdance.com>.
 
 =head1 General testing modules
 
-=head2 Test::AtRuntime
+=head3 Test::AtRuntime
 
 Assertion-like testing while your program runs.
 
-=head2 Test::Benchmark
+=head3 Test::Benchmark
 
 Compares two functions to ensure one is faster than another:
 
@@ -20,29 +20,29 @@ Compares two functions to ensure one is faster than another:
 
     is_faster(-10, sub {...}, sub {...}, "this is faster than that")
 
-=head2 Test::Class
+=head3 Test::Class
 
 xUnit style testing that works well with C<Test::Builder> based modules
 (the majority of other testing modules). This means it can integrate
 into an existing setup relatively easily.
 
-=head2 Test::Cmd
+=head3 Test::Cmd
 
 Testing of scripts/programs by their external interface rather than
 innards.
 
-=head2 Test::Data
+=head3 Test::Data
 
 Comprises 4 submodules that provide a number of functions to test the
 contents of arrays, hashes, scalars and functions.  These make it easy
 to test various boundaries and edge cases without writing much code.
 
-=head2 Test::Debugger
+=head3 Test::Debugger
 
 Emits a trace of the test script to file, for perusal in the event
 of failures.
 
-=head2 Test::Deep
+=head3 Test::Deep
 
 Extremely flexible and powerful deep comparisons of data structures. Ideal
 for testing that a given structure not only is equal to an ideal model,
@@ -50,32 +50,32 @@ but also for determining whether they are similar. Also good for checking
 lightly nested structures (e.g. that a response from an address book
 query has well formed records).
 
-=head2 Test::Differences
+=head3 Test::Differences
 
 Tests long strings and data structures, giving a readable output (unlike
 testing long strings with C<Test::More>'s C<is> function).
 
-=head2 Test::Extreme
+=head3 Test::Extreme
 
 Another xUnit-ish testing framework. Very easy to use.  Able to output
 both xUnit style and traditional Perl style.
 
-=head2 Test::FIT
+=head3 Test::FIT
 
 Provides a CGI interface to writing and running test suites.
 
-=head2 Test::File
+=head3 Test::File
 
 Tests file attributes (empty, of particular sizes, readable, executable,
 writeable, etc.).
 
-=head2 Test::Inline
+=head3 Test::Inline
 
 Allows you to embed your tests in your POD in your program file, thus
 allowing you to test while you document, or test while you code, or
 both. One sideeffect is that your sample code can be test code.
 
-=head2 Test::LectroTest
+=head3 Test::LectroTest
 
 LectroTest is an automatic, specification-based testing tool for Perl.
 The project was inspired by Koen Claessen and John Hughes's QuickCheck
@@ -88,64 +88,64 @@ Testing a hypothetical square function:
           square( $x ) == $x * $x;
     }, name => "Finding $x's square";
 
-=head2 Test::LongString
+=head3 Test::LongString
 
 Testing of long strings, allowing one to see precisely where the
 inequality, or non-match, is with ease.
 
-=head2 Test::ManyParams
+=head3 Test::ManyParams
 
 Combinatorial subroutine argument testing. Lets you test every combination
 of arguments to a function.
 
-=head2 Test::MockModule
+=head3 Test::MockModule
 
 Easily override subroutines in a module for unit testing.
 
-=head2 Test::MockObject
+=head3 Test::MockObject
 
 Lets you create objects that respond to methods in particular ways,
 thus letting you test how your own code handles objects with such
 return values.
 
-=head2 Test::More
+=head3 Test::More
 
 The most common testing module to use. Appropriate feature set for the
 majority of test cases and now standard in Perl (from 5.6.2 and 5.8.0).
 
-=head2 Test::Reporter
+=head3 Test::Reporter
 
 Module to let you send F<make test> results to the CPAN testers.  Includes
 the handy F<cpantest> program to make command-line reporting easy.
 
-=head2 Test::Simple
+=head3 Test::Simple
 
 The basic testing module, which you'll rarely want to use on its own,
 since C<Test::More> completely supercedes it.
 
-=head2 Test::SimpleUnit
+=head3 Test::SimpleUnit
 
 Unit test wrapper functions around the standard testing functions.
 Allows you to specify setup functions, plus teardown functions to get
 run in the case of failure.
 
-=head2 Test::Smoke
+=head3 Test::Smoke
 
 Framework for testing distributions of Perl itself.  Not normally used
 by the general public.
 
-=head2 Test::Unit
+=head3 Test::Unit
 
 JUnit testing for Perl.
 
-=head2 Test::Verbose
+=head3 Test::Verbose
 
 Runs verbose tests on a test file.  Seems to be obviated by the F<prove>
 program now included with C<Test::Harness>.
 
 =head1 Database testing modules
 
-=head2 DBD::Mock
+=head3 DBD::Mock
 
 DBD::Mock is a DBI-compliant database driver that allows you to prepare
 and execute SQL statements, seed resultsets, and inspect the results of
@@ -168,7 +168,7 @@ An example from the SYNOPSIS:
     print "Used statement: ", $sth->{mock_statement}, "\n",
           "Bound parameters: ", join( ', ', @{ $params } ), "\n";
 
-=head2 Test::DatabaseRow
+=head3 Test::DatabaseRow
 
 Given a DBI database handle, can test to see if the database contains
 tables with particular rows. Useful for testing that database
@@ -187,30 +187,30 @@ modifications went well.
 
 =head1 Data-specific testing modules
 
-=head2 Test::Env
+=head3 Test::Env
 
 Tests that one's environment has appropriate data.
 
-=head2 Test::Files
+=head3 Test::Files
 
 Tests files and directories have particular contents.
 
-=head2 Test::ISBN
+=head3 Test::ISBN
 
 Verify ISBNs and parts of ISBNs against C<Business::ISBN>.
 
-=head2 Test::Mail
+=head3 Test::Mail
 
 Testing that email is sent and received properly.
 
-=head2 Test::XML
+=head3 Test::XML
 
 Helper functions for testing XML for syntactic equivalency, even if the
 strings themselves are different.
 
 =head1 Web testing modules
 
-=head2 Apache::Test
+=head3 Apache::Test
 
 Allows you to run tests for Apache-based software.  Also lets you run
 tests inside Apache.  Not limited to mod_perl.
@@ -231,89 +231,89 @@ L<http://perl.apache.org/docs/general/testing/testing.html>
 
 =back
 
-=head2 Test::HTML::Content
+=head3 Test::HTML::Content
 
 Tests HTML has (or hasn't) particular links, text, tags, comments and
 such. Very useful for testing websites (see also C<WWW::Mechanize> and
 C<Test:HTML::Lint>).
 
-=head2 Test::HTML::Lint
+=head3 Test::HTML::Lint
 
 Checks that HTML is well formed as per C<HTML::Lint>.
 
-=head2 Test::HTML::Tidy
+=head3 Test::HTML::Tidy
 
 Checks that HTML is well formed as per C<HTML::Tidy>.
 
-=head2 Test::HTTPStatus
+=head3 Test::HTTPStatus
 
 Ensures HTTP responses have appropriate values.
 
-=head2 Test::WWW::Mechanize
+=head3 Test::WWW::Mechanize
 
 Subclass of C<WWW::Mechanize> with convenience methods for automated testing.
 
 =head1 Module-testing modules
 
-=head2 Test::Builder::Tester
+=head3 Test::Builder::Tester
 
 Runs tests on other C<Test::> modules based on C<Test::Builder>.
 
-=head2 Test::Distribution
+=head3 Test::Distribution
 
 Performs basic Kwalitee checking on modules: checks that they have well
 formed POD, they compile, they all define the same C<$VERSION>, they
 have their prerequisites in the F<Makefile.PL> and that some standard
 files exist.
 
-=head2 Test::Exception
+=head3 Test::Exception
 
 Testing that bits of code die or don't die appropriately, and with the
 right errors.
 
-=head2 Test::Manifest
+=head3 Test::Manifest
 
 Executes your tests in a particular non-alphabetic order without having
 to name them with numeric prefixes.
 
-=head2 Test::NoWarnings
+=head3 Test::NoWarnings
 
 Test for making sure that your test didn't emit any warnings.
 
-=head2 Test::Pod
+=head3 Test::Pod
 
 Checks a given POD or Perl file for syntactic validity.  Also has a
 function to let you easily check all files in your distribution at once.
 
-=head2 Test::Pod::Coverage
+=head3 Test::Pod::Coverage
 
 Checks a given POD or Perl file for syntactic validity.  Also has a
 function to let you easily check all files in your distribution at once.
 
-=head2 Test::Portability::Files
+=head3 Test::Portability::Files
 
 Checks the portability the names of the files in a distribution.
 The tests use the advice listed in F<perlport>, section "Files and
 Filesystems".
 
-=head2 Test::Prereq
+=head3 Test::Prereq
 
 Checks that your F<Makefile.PL> has the proper prerequisites specified.
 
-=head2 Test::Signature
+=head3 Test::Signature
 
 Verifies that the signature of a module, as created by
 C<Module::Signature>, is correct.
 
-=head2 Test::Tester
+=head3 Test::Tester
 
 Runs tests on other C<Test::> modules based on C<Test::Builder>.
 
-=head2 Test::Version
+=head3 Test::Version
 
 Checks module files for proper version information.
 
-=head2 Test::Warn
+=head3 Test::Warn
 
 Handy module for testing code that might throw a warning.  The testing
 function captures any warnings, so you can check them against a regex.
@@ -329,7 +329,7 @@ does indeed throw a warning.
     } qr/Something bad.+line \d+/, 
         "Passes the message, and includes the line number";
 
-=head2 Test::Without::Module
+=head3 Test::Without::Module
 
 Allows you to deliberately hide modules from a program even though they
 are installed. This is mostly useful for testing modules that have a

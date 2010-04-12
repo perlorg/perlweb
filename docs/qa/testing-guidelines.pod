@@ -5,13 +5,13 @@
 The following is a list of ways to improve existing tests as well as a
 guideline for creating new ones.
 
-=head2 Always specify a plan
+=head3 Always specify a plan
 
 It is okay to use C<no_plan> during test development, but once you are
 done, or even when you are sending patches/commiting to repositories,
 specify your plan.
 
-=head2 Check your C<use> statements with C<use_ok()>.
+=head3 Check your C<use> statements with C<use_ok()>.
 
 Wrap your C<use> statements in a C<use_ok()> inside a C<BEGIN> block.
 
@@ -24,7 +24,7 @@ module only partially compiles and some tests fail even though the code is
 correct.  Besides, if the module won't even compile, there's no point in
 testing it, right?
 
-=head2 All object creation is checked with C<isa_ok()>.
+=head3 All object creation is checked with C<isa_ok()>.
 
 If you instantiate an object, check it with C<isa_ok()>.
 
@@ -42,7 +42,7 @@ object should be checked that the object is of the expected type.
 In this case, the C<next()> method should return a C<MARC::Record>
 every time.
 
-=head2 All temporary files are cleaned up.
+=head3 All temporary files are cleaned up.
 
 Check the return code from C<unlink()>, and then check that the file is
 actually gone.
@@ -56,7 +56,7 @@ C<unlink()> several times the same file until it's completely deleted;
 and the C<is()> test above will succeed only if C<$filename> was actually
 present, which might not be what you wanted to test.)
 
-=head2 All tests should have a label
+=head3 All tests should have a label
 
 The last argument in all the Test::More functions is for the test's label,
 or description.  If you write a test you should know what it is doing,
@@ -65,7 +65,7 @@ so label it.
 The only exception to this can be C<isa_ok> and C<can_ok> as they are
 pretty self explanatory and provide default messages for you.
 
-=head2 Object Equivalence testing
+=head3 Object Equivalence testing
 
 All object equality tests are done with C<is>:
 
@@ -82,7 +82,7 @@ compare the objects, which might happen if overloading the equality or
 stringification operators (either directly or indirectly), find something
 that does (e.g. use the function C<overload::StrVal()>).
 
-=head2 Use the right function for the job
+=head3 Use the right function for the job
 
 We should pay attention to types with comparisons we are doing. For
 comparing strings, use C<is> and C<isnt> and use C<cmp_ok> for any numeric
@@ -104,7 +104,7 @@ or, even better, since these values are numeric:
 It makes the test much more explicit and takes advantage of C<is>,
 C<isnt> and C<cmp_ok>'s error messages.
 
-=head2 Use C<is_deeply> to test things other than scalars
+=head3 Use C<is_deeply> to test things other than scalars
 
 When it is possible, we should check the contents of a data structure
 explicity, rather than the implicit testing of just element/key counts
@@ -135,7 +135,7 @@ which return a boolean when called. These can be utilized as such:
 C<is_deeply> is not suitable for comparing objects that overload
 dereferences to their implementation type.
 
-=head2 Test B<all> your assumptions.
+=head3 Test B<all> your assumptions.
 
 Assumptions that are tested after the fact, should also be tested
 before the fact. By this I mean that if you are assuming that after
@@ -144,7 +144,7 @@ was false. Confirm the initial false-ness first, then run your code,
 and test the truth after. This may seem like overkill to some, but in
 fact the first test only serves to strengthen the second test.
 
-=head2 Test code is still code
+=head3 Test code is still code
 
 Avoid the (heavy) use of globals. You wouldn't do it in regular code,
 so why do it in tests?
