@@ -2,7 +2,7 @@ package Combust::StaticFiles;
 use strict;
 use base qw(Class::Accessor::Class);
 use List::Util qw(first max);
-use JSON::XS qw(decode_json encode_json);
+use JSON::XS ();
 use Carp qw(cluck);
 use Combust::Config;
 
@@ -15,6 +15,8 @@ my $config = Combust::Config->new;
 my $startup_time = time;
 
 my $static_file_paths = {}; 
+
+my $json = JSON::XS->new->relaxed(1);
 
 unless ($Combust::StaticFiles::setup) {
     my @sites = $config->sites_list;
@@ -69,7 +71,7 @@ sub _load_json {
             local $/ = undef;
             open my $fh, $file or die "Could not open $file: $!";
             my $versions = <$fh>;
-            return decode_json($versions)
+            return $json->decode($versions)
     };
     warn $@ if $@;
     return $data;
@@ -77,7 +79,7 @@ sub _load_json {
 
 sub _save_json {
     my ($self, $file, $data) = @_;
-    my $json = encode_json($data);
+    my $json = $json->encode($data);
     open my $fh, '>', $file or die "could not open $file: $!";
     print $fh $json;
     close $fh or die "Could not close $file: $!";
