@@ -8,6 +8,7 @@ use Template::Stash;
 # use Template::Constants split /\|/, 'DEBUG_VARS|DEBUG_DIRS|DEBUG_STASH|DEBUG_PARSER|DEBUG_PROVIDER|DEBUG_SERVICE|DEBUG_CONTEXT';
 
 use Carp qw(croak);
+use Scalar::Util;
 
 use Combust::Config;
 
@@ -54,9 +55,10 @@ sub _init {
 
     );
 
+    Scalar::Util::weaken(my $weak_self = $self);
     my $provider =
       Combust::Template::Provider->new( %provider_config,
-        INCLUDE_PATH => [ sub { $self->get_include_path } ], );
+        INCLUDE_PATH => [ sub { $weak_self->get_include_path } ], );
 
     my %tt_config = (
         FILTERS =>
