@@ -45,6 +45,10 @@ sub header_out {
     shift->_r->header_out(@_);
 }
 
+sub is_main {
+    shift->_r->is_main;
+}
+
 sub method {
   lc shift->_r->method; 
 }

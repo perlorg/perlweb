@@ -54,6 +54,10 @@ sub header_out {
     return $req->_r->headers_out->{$key};
 }
 
+sub is_main {
+    !shift->_r->main();
+}
+
 sub method {
     lc shift->_r->method;
 }

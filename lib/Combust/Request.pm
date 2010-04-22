@@ -36,6 +36,11 @@ sub cookie {
   }
 }
 
+sub is_main {
+    # do something smarter when supporting sub-requests
+    return 1;
+}
+
 1;
 
 =head1 NAME
