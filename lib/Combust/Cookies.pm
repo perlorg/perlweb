@@ -171,8 +171,8 @@ sub check_cookie {
   }
   elsif ($cookie_version eq "3") { 
       ($cookie_version, my $ts, $cookie, my $hex_cs) = $raw_id =~ m!^(\d+)/(\d+)/(.*?)/([^/]{8})$!; 
-      if ($hex_cs ne make_checksum($cookie_name, $ts, $cookie, 0)) {
-          warn "Failed checksum (v3)" if $DEBUG;
+      unless($hex_cs and $hex_cs eq make_checksum($cookie_name, $ts, $cookie, 0)) {
+          warn "Failed checksum ($raw_id)" if $DEBUG;
           return '' unless wantarray;
           return ('', "failed", (rand(100) < 0.1) );
       }
