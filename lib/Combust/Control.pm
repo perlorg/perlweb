@@ -266,19 +266,16 @@ sub evaluate_template {
 
   my $r = $self->r;
 
-  $tpl_params->{r} = $r; 
-  $tpl_params->{notes} = $r->pnotes('combust_notes'); 
-  $tpl_params->{root} = $root;  # localroot anyone?
-  $tpl_params->{siteconfig} = $self->site && $self->config->site->{$self->site};
+  local $tpl_params->{r} = $r;
+  local $tpl_params->{notes} = $r->pnotes('combust_notes');
+  local $tpl_params->{root} = $root;  # localroot anyone?
+  local $tpl_params->{siteconfig} = $self->site && $self->config->site->{$self->site};
 
-  $tpl_params->{combust} = $self;
+  local $tpl_params->{combust} = $self;
 
-  $tpl_params->{site} = $self->site
-    unless $tpl_params->{site};
+  local $tpl_params->{site} = $tpl_params->{site} || $self->site;
 
   my $output = eval { $self->tt->process($template, $tpl_params, { site => $tpl_params->{site} } ) };
-
-  delete $tpl_params->{combust};
 
   if ($@) {
       warn( (ref $self ? ref $self : $self) . "  - ". $r->uri . ($r->args ? '?' .$r->args : '')

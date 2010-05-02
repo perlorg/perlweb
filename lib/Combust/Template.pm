@@ -145,7 +145,7 @@ sub default_include_path {
 sub process {
     my ( $self, $template, $tpl_params, $args ) = @_;
 
-    $self->{_site} = $args->{site};
+    local $self->{_site} = $args->{site};
 
     $tpl_params->{config} = $config unless $tpl_params->{config};
 
@@ -156,8 +156,6 @@ sub process {
 
     # XXX:  Why does $output not get UTF8 bit set correctly ??
     utf8::decode($output) || utf8::upgrade($output);
-
-    delete $self->{_site};
 
     return $output;
 }
