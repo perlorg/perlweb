@@ -8,7 +8,7 @@ resources  repository  => 'http://github.com/abh/combust';
 requires  'Config::Simple';
 requires  'DBI';
 requires  'Cache::Memcached' => '1.27';
-requires  'JSON::XS';
+requires  'JSON::XS' => '2.29';
 requires  'Template';
 requires  'Pod::Simple';
 requires  'Class::Accessor::Class';
@@ -17,6 +17,12 @@ requires  'URI::Escape';
 requires  'HTML::Entities';
 requires  'Sub::Install';
 requires  'namespace::clean';
+
+requires  'Authen::Bitcard';
+
+# for mod_perl only ...
+requires   'Apache::DBI';
+requires   'Apache::Reload';
 
 test_requires 'Data::Dumper';
 test_requires 'Test::More' => '0.88';
