@@ -343,7 +343,7 @@ sub apache_version {
 }
 
 sub apache_loglevel {
-  $cfg->param('apache.loglevel') || "debug";
+  $cfg->param('apache.loglevel') || "info";
 }
 
 1;
