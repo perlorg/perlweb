@@ -95,6 +95,10 @@ sub _init {
     return $self;
 }
 
+sub error {
+    shift->{tt}->error;
+}
+
 sub provider {
     shift->{provider};
 }
@@ -151,7 +155,7 @@ sub process {
 
     my $output;
     unless ( $self->{tt}->process( $template, $tpl_params, \$output, { binmode => ":utf8" } ) ) {
-        croak $self->{tt}->error . "\n";
+        die $self->{tt}->error . "\n";
     }
 
     # XXX:  Why does $output not get UTF8 bit set correctly ??

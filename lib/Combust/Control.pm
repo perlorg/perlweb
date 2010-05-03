@@ -277,10 +277,11 @@ sub evaluate_template {
 
   my $output = eval { $self->tt->process($template, $tpl_params, { site => $tpl_params->{site} } ) };
 
-  if ($@) {
+  unless(defined $output) {
+      my $err = $self->tt->error || $@;
       warn( (ref $self ? ref $self : $self) . "  - ". $r->uri . ($r->args ? '?' .$r->args : '')
-            . " - error processing template $template: $@");
-      die $@;
+            . " - error processing template $template: $err");
+      die $err;
   }
 
   return $output;
