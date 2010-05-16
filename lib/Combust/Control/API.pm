@@ -18,9 +18,14 @@ sub render {
             return $self->system_error("$auth_setup" || 'Authentication failure');
         }
     }
+
+    my $api_options = eval { $self->api_options } || {};
+    if ($@) {
+        return $self->system_error($@);
+    }
     
     my ($result, $meta) = eval {
-        $self->api($method, $self->api_params, { json => 1 });
+        $self->api($method, $self->api_params, { json => 1, %$api_options });
     };
     if ($@) {
         return $self->system_error($@);
@@ -33,6 +38,10 @@ sub render {
 
 sub api_params {
     shift->request->req_params;
+}
+
+sub api_options {
+    return {};
 }
 
 sub _format_error {
