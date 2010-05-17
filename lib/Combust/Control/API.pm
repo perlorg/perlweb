@@ -79,7 +79,7 @@ sub post_process {
     my $self = shift;
 
     if ($self->{no_cache}) {
-        my $r = $self->r;
+        my $r = $self->request;
 
         $r->header_out('Expires', HTTP::Date::time2str( time() ));
         $r->header_out('Cache-Control', 'private, no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
