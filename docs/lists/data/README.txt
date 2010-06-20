@@ -1,6 +1,7 @@
 How to add a new mailing list to http://lists.perl.org/
 
-1) Create JSON data/lists/<name>.json e.g.:
+1) Edit lists.json and add info for the new list.  (Look at other
+   entries for more examples.)
 
 {
    "name" : "template-toolkit",
@@ -19,10 +20,15 @@ How to add a new mailing list to http://lists.perl.org/
    "module" : "Template-toolkit"
 }
 
-2) Create list/<name>.html
+2) Validate
 
-[%- PROCESS tpl/maillist_page.html list => 'activeperl' -%]
+Please use validate.pl to make sure your JSON parses correctly (requires JSON from CPAN). The -d flag dumps out a properly formatted file.
 
-3) Add to category config, edit...
+Here's a suggested workflow:
 
-data/categories.html
+cp lists.json lists.json.orig
+edit lists.json
+validate.pl -d lists.json > lists.json.new
+diff -u lists.json lists.json.new
+
+if there are any diffs, edit lists.json and repeat.
