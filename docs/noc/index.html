@@ -80,7 +80,7 @@ HREF="http://www.perlfoundation.org/">The Perl Foundation</A> umbrella.
 
 [% MACRO site(s) BLOCK -%]
 <A HREF="http://[% s %]">[% s %]</A>
-[% END %]
+[%- END %]
 
 
 <table width="100%">
@@ -101,7 +101,8 @@ Some of the services we provide:
 <td>
 
 <ul>
-  <li>[% site("perl.org") %] 
+  <li>[% site("www.perl.org") %] 
+  <li>[% site("www.perl.com") %] 
   <li>[% site("dev.perl.org") %]
   <li>[% site("jobs.perl.org") %]
   <li>[% site("parrotcode.org") %]
@@ -110,7 +111,9 @@ Some of the services we provide:
   <li>[% site("search.cpan.org") %]
   <li>[% site("bitcard.org") %] perl.org authentication service
   <li>[% site("books.perl.org") %]
-  <li>[% site("planet.perl.org") %], [% site("planetsix.perlfoundation.org") %], [% site("planet.parrotcode.org") %] planets
+  <li>[% site("planet.perl.org") -%], 
+      [% site("planetsix.perlfoundation.org") -%], 
+      [% site("planet.parrotcode.org") %]
   <li><A HREF="ftp://ftp.cpan.org/">ftp.cpan.org</A> multiplexer
   <li>[% site("cpan.org") %] email
   <li>[% site("pm.org") %]
@@ -124,7 +127,6 @@ Some of the services we provide:
  <li>email forwarding
  <li>websites
  <li>DNS
- <li><A HREF="http://cvs.perl.org">CVS</A>
  <li><A HREF="http://svn.perl.org">Subversion</A>
  <li>Jabber
  <li>Mirroring
@@ -149,29 +151,18 @@ websites, and saying nice things about them.
 </style>
 
 <div class="spons" align="center">
-<A HREF="http://www.ticketmaster.com/">
-<IMG BORDER=0 SRC="http://www.perl.org/images/friends/ticketmaster.png" HEIGHT="27" WIDTH="145" ALT="Ticketmaster"></A>
 
-<A HREF="http://www.internap.com/">
-<IMG BORDER=0 SRC="http://www.perl.org/images/friends/internap.gif" WIDTH="154" HEIGHT="31" ALT="Internap"></A>
+<A HREF="http://www.phyber.com/">
+<IMG BORDER=0 SRC="http://www.perl.org/images/friends/phyber.png" WIDTH="150" HEIGHT="54" ALT="Phyber"></A>
 
 <A HREF="http://www.redhat.com/">
 <IMG BORDER=0 SRC="http://www.perl.org/images/friends/rhn.png" WIDTH="139" HEIGHT="48" ALT="Powered By Red Hat"></A>
 
-<A HREF="http://www.bizrate.com/">
-<IMG BORDER=0 SRC="http://www.perl.org/images/friends/bizrate_logo.png" WIDTH="160 HEIGHT="39" ALT="BizRate"></A>
-
 <A HREF="http://www.yellowbot.com/">
 <IMG BORDER=0 SRC="http://www.perl.org/images/friends/yellowbot.gif" HEIGHT="40" WIDTH="150" ALT="YellowBot Yellow Pages"></A>
 
-<A HREF="http://www.thalasar.com">
-<IMG BORDER=0 SRC="http://www.perl.org/images/friends/thalasar_logo.gif" WIDTH="83" HEIGHT="104" ALT="Thalasar"></A>
-
 <A HREF="http://www.ix2.net/">
 <IMG BORDER=0 SRC="http://www.perl.org/images/friends/ix2.png" HEIGHT="75" WIDTH="75" ALT="IX2"></A>
-
-<A HREF="http://www.cyclades.com/">
-<IMG BORDER=0 SRC="http://www.perl.org/images/friends/cyclades.png" WIDTH="85 HEIGHT="55" ALT="Cyclades"></A>
 
 <A HREF="http://develooper.com/">
 <IMG BORDER="0" SRC="http://www.perl.org/images/friends/develooperlogo-160t.png" HEIGHT="36" WIDTH="160" ALT="Develooper"></A>
@@ -181,6 +172,20 @@ websites, and saying nice things about them.
 
 <A HREF="http://www.oreilly.com/">
 <IMG BORDER=0 SRC="http://www.perl.org/images/friends/oreilly-160.png" WIDTH="160" HEIGHT="48"  ALT="O'Reilly and Associates"></A>
+
+<BR>
+
+<A HREF="http://www.ticketmaster.com/">
+<IMG BORDER=0 SRC="http://www.perl.org/images/friends/ticketmaster.png" HEIGHT="27" WIDTH="145" ALT="Ticketmaster"></A>
+
+<A HREF="http://www.bizrate.com/">
+<IMG BORDER=0 SRC="http://www.perl.org/images/friends/bizrate_logo.png" WIDTH="160 HEIGHT="39" ALT="BizRate"></A>
+
+<A HREF="http://www.thalasar.com">
+<IMG BORDER=0 SRC="http://www.perl.org/images/friends/thalasar_logo.gif" WIDTH="83" HEIGHT="104" ALT="Thalasar"></A>
+
+<A HREF="http://www.cyclades.com/">
+<IMG BORDER=0 SRC="http://www.perl.org/images/friends/cyclades.png" WIDTH="85 HEIGHT="55" ALT="Cyclades"></A>
 
 <A HREF="http://www.valueclick.com/">
 <IMG BORDER=0 SRC="http://www.perl.org/images/friends/valueclick_logo.gif" WIDTH="128" HEIGHT="65"  ALT="ValueClick"></A>
