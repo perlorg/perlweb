@@ -40,6 +40,9 @@ sub get_data_hash {
         $v = $v->clone->set_time_zone('UTC')->$meth;
         $v .= "Z" if $meth eq 'iso8601';
       }
+      elsif ($v->isa('Time::Clock')) {
+        $v = $v->as_string;
+      }
     }
     $hash{$name} = $v if defined $v;
   }
