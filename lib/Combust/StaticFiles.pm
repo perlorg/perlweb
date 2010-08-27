@@ -1,32 +1,46 @@
 package Combust::StaticFiles;
 use strict;
-use base qw(Class::Accessor::Class);
 use List::Util qw(first max);
 use JSON::XS ();
-use Carp qw(cluck);
+use Carp qw(cluck croak);
 use Combust::Config;
 
-use Rose::Object::MixIn();
-our @ISA = qw(Rose::Object::MixIn);
-__PACKAGE__->export_tag(all => [ qw(find_static_path setup_static_files static_url static_base static_base_ssl) ]);
+use namespace::clean;
 
 my $config = Combust::Config->new;
-
 my $startup_time = time;
-
 my $static_file_paths = {}; 
-
 my $json = JSON::XS->new->relaxed(1);
 
-unless ($Combust::StaticFiles::setup) {
-    my @sites = $config->sites_list;
-    for my $site (@sites) {
-        __PACKAGE__->setup_static_files($site);
+sub new {
+    my $proto = shift;
+    my %args = (
+        # defaults go here ...
+        @_,
+    );
+
+    croak "site or setup parameter required"
+      unless $args{site} or $args{setup};
+
+    my $self = bless \%args, $proto;
+
+    unless ($self->{setup}) {
+        my @sites = $config->sites_list;
+        for my $site (@sites) {
+            $self->setup_static_files($site);
+        }
     }
+
+    return $self;
+}
+
+sub deploymxent_mode {
+    my $self = shift;
+    return $config->site->{$self->site}->{deployment_mode} || 'test';
 }
 
 sub find_static_path {
-    my ($class, $site) = @_;
+    my ($self, $site) = @_;
     my $root_dir = $config->root_docs;
 
     my @static_dirs = ($root_dir . "/$site/static",
@@ -37,21 +51,21 @@ sub find_static_path {
 }
 
 sub setup_static_files {
-    my ($class, $site) = @_;
+    my ($self, $site) = @_;
 
-    my $static_directory = $class->find_static_path($site);
+    my $static_directory = $self->find_static_path($site);
     return unless $static_directory;
 
     $static_file_paths->{$site}->{path} = $static_directory;
 
     my $static_files = 
         eval { retrieve("${static_directory}/.static.versions.store") }
-        || $class->_load_json("${static_directory}/.static.versions.json");
+        || $self->_load_json("${static_directory}/.static.versions.json");
 
     # TODO: in devel deployment mode we should reload this
     # automatically when the .json file changes
     my $static_groups_file = "${static_directory}/.static.groups.json";
-    my $static_groups = -r $static_groups_file && $class->_load_json($static_groups_file) || {};
+    my $static_groups = -r $static_groups_file && $self->_load_json($static_groups_file) || {};
 
     # no relative filenames in the groups
     for my $name (keys %$static_groups) {
@@ -86,22 +100,24 @@ sub _save_json {
 }
 
 sub static_file_paths {
-    return $static_file_paths;
+    my $self = shift;
+    return $static_file_paths->{$self->site};
 }
 
 sub static_base {
-    my ($class, $site) = @_;
-    my $base = $class->config->site->{$site} && $class->config->site->{$site}->{static_base};
+    my ($self, $site) = @_;
+    $site = $site || $self->site;
+    my $base = $config->site->{$site} && $config->site->{$site}->{static_base};
     $base ||= '/static';
     $base =~ s!/$!!;
     $base;
 }
 
 sub static_base_ssl {
-    my ($class, $site) = @_;
-    my $base = $class->config->site->{$site} && $class->config->site->{$site}->{static_base_ssl};
-    return $class->static_base($site) unless $base;
-    $base ||= '/static';
+    my ($self, $site) = @_;
+    $site = $site || $self->site;
+    my $base = $config->site->{$site} && $config->site->{$site}->{static_base_ssl};
+    return $self->static_base($site) unless $base;
     $base =~ s!/$!!;
     $base;
 }
@@ -128,7 +144,6 @@ sub static_groups {
     return sort keys %$groups;
 }
 
-# so we can semi-fake being a controller from a script ...
 sub site { return shift->{site} } 
 
 sub static_url {

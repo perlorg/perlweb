@@ -10,8 +10,9 @@ use JSON::XS qw(encode_json);
 use Cwd;
 
 use Combust::Config;
-BEGIN { $Combust::StaticFiles::setup = 1 };
 use Combust::StaticFiles;
+
+my $static = Combust::StaticFiles->new(setup => 1);
 
 my $config = Combust::Config->new;
 
@@ -24,7 +25,7 @@ my %paths_done;
 
 for my $site (@sites) {
 
-    my $dir = Combust::StaticFiles->find_static_path($site);
+    my $dir = $static->find_static_path($site);
     next unless $dir;
     next if $paths_done{$dir}++;
 
@@ -51,7 +52,7 @@ for my $site (@sites) {
         exit;
     }
 
-    my $extra = Combust::StaticFiles->_load_json('.static.versions.extra.json') if -e '.static.versions.extra.json';
+    my $extra = $static->_load_json('.static.versions.extra.json') if -e '.static.versions.extra.json';
     $files = { %$files, %$extra } if $extra;
     #print Data::Dumper->Dump([\$files], [qw(files)]);
 
@@ -74,7 +75,7 @@ for my $site (@sites) {
     }
 
     nstore($files, $storable_file) or die "could not store $storable_file: $!";
-    Combust::StaticFiles->_save_json($json_file, $files) 
+    $static->_save_json($json_file, $files);
 }
 
 sub get_git_tree {

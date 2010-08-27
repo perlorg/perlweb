@@ -228,11 +228,10 @@ sub get_include_path {
 
   my $path;
 
-  my $docs = $config->docs_name;
-
   if ($user) {
     # FIXME|TODO: should expand on ~ instead of using /home
     $user = "/home/$user";
+    my $docs = $config->docs_name;
     $path = [
 	     (map { "$user/$docs/$_/" } @site_dirs),
 	     "$user/$docs/shared/",
