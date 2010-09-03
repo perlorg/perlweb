@@ -34,7 +34,7 @@ sub new {
     return $self;
 }
 
-sub deploymxent_mode {
+sub deployment_mode {
     my $self = shift;
     return $config->site->{$self->site}->{deployment_mode} || 'test';
 }
