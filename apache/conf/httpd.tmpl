@@ -66,36 +66,6 @@ PassEnv     DBI_TRACE
 # No idea what this is for ... 
 PerlSetEnv  APACHEROOT [% apache_root %]
 
-<IfDefine PERLNYTPROF>
-    # For performance profiling perl code - per-subroutine timings.
-    # Will write one file per child pid into /tmp/nytprof.out.* (override
-    # with the NYTPROF environment variable).
-    # Use httpd -X or set MaxClients 1 so only a single process is profiled.
-    # Use the nytprofhtml command can be used to generate a report from the file.
-    PerlPassEnv NYTPROF
-    PerlModule Devel::NYTProf::Apache
-</IfDefine>
-
-<IfDefine PERLSMALLPROF>
-    # For performance profiling perl code - per-statement timings.
-    # Will write many small files into $ServerRoot/logs/smallprof/
-    # one per package name. Use "sort -k 2nr,2 FOO.prof | head" to sort
-    # a single file into elapsed-time order, or "sort -k 3nr,3" for cpu order.
-    # Use "perl -ipwl -e 's/$/\t# $ARGV/' *.prof" to append the name of each
-    # file to each line of the file so "sort -k 2nr,2 * | less" becomes useful.
-    # The results tend to be 'noisy' so don't put too much faith in them.
-    # It's best to use Apache::DProf first and then use Apache::SmallProf only
-    # if you need to narrow down where time is being spent inside a particular
-    # subroutine.
-    <Perl>
-        use Apache::DB ();
-        Apache::DB->init;
-    </Perl>
-    <Location />
-        PerlFixupHandler Apache::SmallProf
-    </Location>
-</IfDefine>
-
 #MimeMagicFile [% apache_root %]/conf/magic
 
 ExtendedStatus On
@@ -306,6 +276,36 @@ ErrorDocument 500 /error/500.html
 
 PerlRequire [% root %]/apache/conf/startup.pl
 PerlWarn On
+
+<IfDefine PERLNYTPROF>
+    # For performance profiling perl code - per-subroutine timings.
+    # Will write one file per child pid into /tmp/nytprof.out.* (override
+    # with the NYTPROF environment variable).
+    # Use httpd -X or set MaxClients 1 so only a single process is profiled.
+    # Use the nytprofhtml command can be used to generate a report from the file.
+    PerlPassEnv NYTPROF
+    PerlModule Devel::NYTProf::Apache
+</IfDefine>
+
+<IfDefine PERLSMALLPROF>
+    # For performance profiling perl code - per-statement timings.
+    # Will write many small files into $ServerRoot/logs/smallprof/
+    # one per package name. Use "sort -k 2nr,2 FOO.prof | head" to sort
+    # a single file into elapsed-time order, or "sort -k 3nr,3" for cpu order.
+    # Use "perl -ipwl -e 's/$/\t# $ARGV/' *.prof" to append the name of each
+    # file to each line of the file so "sort -k 2nr,2 * | less" becomes useful.
+    # The results tend to be 'noisy' so don't put too much faith in them.
+    # It's best to use Apache::DProf first and then use Apache::SmallProf only
+    # if you need to narrow down where time is being spent inside a particular
+    # subroutine.
+    <Perl>
+        use Apache::DB ();
+        Apache::DB->init;
+    </Perl>
+    <Location />
+        PerlFixupHandler Apache::SmallProf
+    </Location>
+</IfDefine>
 
 [% IF config.apache_reload %]
 PerlModule Apache::Reload
