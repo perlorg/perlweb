@@ -12,6 +12,8 @@ my $startup_time = time;
 my $static_file_paths = {}; 
 my $json = JSON::XS->new->relaxed(1);
 
+my %singletons;
+
 sub new {
     my $proto = shift;
     my %args = (
@@ -22,6 +24,8 @@ sub new {
     croak "site or setup parameter required"
       unless $args{site} or $args{setup};
 
+    return $singletons{$args{site}} if $args{site} and $singletons{$args{site}};
+
     my $self = bless \%args, $proto;
 
     unless ($self->{setup}) {
@@ -30,6 +34,8 @@ sub new {
             $self->setup_static_files($site);
         }
     }
+
+    $singletons{$args{site}} = $self if $args{site};
 
     return $self;
 }
