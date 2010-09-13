@@ -61,7 +61,7 @@ sub fetch {
 
     my ($data, $error) = $self->SUPER::fetch(@_);
 
-    if ($error) {
+    if ($error and $error != Template::Constants::STATUS_ERROR) {
         # no extension to rip off ...
         return ($data, $error) unless $name =~ s/\.[^.]+$//;
         
