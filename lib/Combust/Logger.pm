@@ -32,7 +32,7 @@ our @EXPORT = qw(
 
 our $Prefix  = $Apache::Server::Starting ? 'httpd' : ($0 =~ m:([^/]+)$:)[0];
 our $Verbose = 0 && $Apache::Server::Starting; # avoid used once warning
-our $Domain  = 'udp';
+our $Domain  = 'unix';
 our $sayfh   = \*STDERR;
 our $saywarn = 0;
 our $utf8    = 1;
@@ -46,7 +46,7 @@ my @orig_argv;
 BEGIN { @orig_argv = ($0, @ARGV) } # record original argv before options are removed
 
 my $opened;
-my $do_syslog;
+our $do_syslog;
 my $only_syslog;
 
 sub prefix {
@@ -132,6 +132,7 @@ sub logdie {
 }
 
 sub logalert {
+  local $do_syslog = 1;
   _dowarn("alert", _format(@_));
 }
 
