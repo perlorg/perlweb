@@ -107,7 +107,7 @@ sub _save_json {
 
 sub static_file_paths {
     my $self = shift;
-    return $static_file_paths->{$self->site};
+    return $static_file_paths->{$self->site} || {};
 }
 
 sub static_base {
@@ -139,13 +139,13 @@ sub static_group {
 
 sub static_group_data {
     my ($self, $name) = @_;
-    my $groups = $static_file_paths->{$self->site} && $static_file_paths->{$self->site}->{groups};
+    my $groups = $self->static_file_paths->{groups};
     return $groups && $groups->{$name};
 }
 
 sub static_groups {
     my $self = shift;
-    my $groups = $static_file_paths->{$self->site} && $static_file_paths->{$self->site}->{groups};
+    my $groups = $self->static_file_paths->{groups};
     return () unless $groups;
     return sort keys %$groups;
 }
