@@ -56,9 +56,10 @@ sub render {
   }    
 
   my $output = eval { $self->evaluate_template($template); };
-  if ($@) {
-    $r->pnotes('error', $@);
-    return 404 if $@ =~ m/: not found/;
+  unless(defined $output) {
+    my $err = $self->tt->error || $@;
+    $r->pnotes('error', $err);
+    return 404 if $err =~ m/: not found/;
     return 500; 
   }
 

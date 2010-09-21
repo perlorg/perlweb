@@ -1,6 +1,6 @@
 package Combust::Cookies;
 use strict;
-use URI::Escape qw(uri_escape uri_unescape);
+use URI::Escape qw(uri_escape_utf8 uri_unescape);
 use Combust::Secret qw(get_secret);
 
 our $DEBUG = 0;
@@ -130,7 +130,7 @@ sub bake_cookies {
                        map {
                            my $val = delete $cookies->{$_};
                            #warn "VAL for $_: ", (defined $val ? $val : 'undef'), "\n";
-                           ($_ => uri_escape($val, "^A-Za-z0-9\-_.!*'()"))
+                           ($_ => uri_escape_utf8($val, "^A-Za-z0-9\-_.!*'()"))
                            }
 		       grep { defined $cookies->{$_} } 
                        @keys

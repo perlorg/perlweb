@@ -57,6 +57,20 @@ sub handler {
     site        => $r->dir_config("site"),
   );
 
+  # When there is an internal redirect (eg handler for 404)
+  # it seems the pnotes on the redirect handler do not get
+  # cleared. So we put an explicit cleanup handler here
+  $r->push_handlers(
+    PerlCleanupHandler => sub {
+      my $cr = shift;
+      while ($cr) {
+        %{$cr->pnotes} = ();
+        $cr = $cr->next;
+      }
+      return 0;
+    }
+  );
+
   $r->pnotes(combust_notes => \%combust_notes);
 
   return OK;
