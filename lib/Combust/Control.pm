@@ -409,6 +409,9 @@ sub redirect {
 
   $self->cookies->bake_cookies;
 
+  # not that we actually have the /w3c/p3p.xml document
+  $self->request->header_out('P3P',qq[CP="NOI DEVo TAIo PSAo PSDo OUR IND UNI NAV", policyref="/w3c/p3p.xml"]);
+
   $url = $url->abs if ref $url =~ m/^URI/;
 
   # this should really check for a complete URI or some such; we'll do
