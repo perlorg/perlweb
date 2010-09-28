@@ -407,11 +407,6 @@ sub redirect {
 
   my $permanent = shift;
 
-  $self->cookies->bake_cookies;
-
-  # not that we actually have the /w3c/p3p.xml document
-  $self->request->header_out('P3P',qq[CP="NOI DEVo TAIo PSAo PSDo OUR IND UNI NAV", policyref="/w3c/p3p.xml"]);
-
   $url = $url->abs if ref $url =~ m/^URI/;
 
   # this should really check for a complete URI or some such; we'll do
@@ -433,11 +428,7 @@ sub redirect {
 <HTML><HEAD><TITLE>Redirect...</TITLE></HEAD><BODY>The document has moved <A HREF="$url_escaped">here</A>.<P></BODY></HTML>
 EOH
 
-  $self->request->header_out('Content-Length' => length($data));
-
-  $self->request->send_http_header("text/html");
-  print $data;
-  return DONE;
+  return $self->send_output( $data, 'text/html' );
 }
 
 sub cookies {
