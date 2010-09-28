@@ -407,6 +407,11 @@ sub redirect {
 
   my $permanent = shift;
 
+  # allow setting custom headers etc - this doesn't bail out if the
+  # status is wrong, unlike on the regular requests. (Just because we
+  # don't care for that feature anyway).
+  $self->post_process();
+
   $url = $url->abs if ref $url =~ m/^URI/;
 
   # this should really check for a complete URI or some such; we'll do
