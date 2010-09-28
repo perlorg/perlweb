@@ -433,7 +433,8 @@ sub redirect {
 <HTML><HEAD><TITLE>Redirect...</TITLE></HEAD><BODY>The document has moved <A HREF="$url_escaped">here</A>.<P></BODY></HTML>
 EOH
 
-  return $self->send_output( $data, 'text/html' );
+  $self->send_output( $data, 'text/html' );
+  return DONE;
 }
 
 sub cookies {
