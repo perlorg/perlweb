@@ -6,6 +6,8 @@ use Digest::SHA1 qw(sha1_hex);
 use HTML::Entities ();
 use Encode qw(encode_utf8);
 use Scalar::Util qw(looks_like_number);
+use IO::Compress::Gzip qw(gzip $GzipError);
+
 # TODO: figure out why we use this; remove it if possible
 require bytes;
 
@@ -348,13 +350,31 @@ sub send_output {
 
   my $length;
   if (ref $output eq "GLOB") {
-    $length = (stat($output))[7];
+      $length = (stat($output))[7];
   }
   else {
-    # eek - this is certainly not correct
-    $output = encode_utf8($output) if $content_type =~ m!^text/!;
-    # length in bytes
-    $length = do { use bytes; length($output) };
+    if ($content_type =~ m!^text/!) {
+
+       # eek - this is certainly not correct, but seems to have worked for us...
+        $output = encode_utf8($output);
+
+        if ($self->request->header_in('Accept-Encoding') =~ m/\bgzip\b/) {
+            my $compressed;
+            gzip \$output => \$compressed
+              or die "gzip failed: $GzipError\n";
+            $output = $compressed;
+
+            $self->request->header_out('Content-Encoding' => 'gzip');
+            $self->request->header_out(
+                'Vary' => join ", ",
+                grep {$_} $self->request->header_out('Vary'), 'Accept-Encoding'
+            );
+
+        }
+    }
+
+      # length in bytes
+      $length = do { use bytes; length($output) };
   }
 
   $self->request->update_mtime(time) if $r->mtime == 0; 
