@@ -358,7 +358,7 @@ sub send_output {
        # eek - this is certainly not correct, but seems to have worked for us...
         $output = encode_utf8($output);
 
-        if ($self->request->header_in('Accept-Encoding') =~ m/\bgzip\b/) {
+        if (($self->request->header_in('Accept-Encoding') || '') =~ m/\bgzip\b/) {
             my $compressed;
             gzip \$output => \$compressed
               or die "gzip failed: $GzipError\n";
