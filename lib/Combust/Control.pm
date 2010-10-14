@@ -6,6 +6,8 @@ use Digest::SHA1 qw(sha1_hex);
 use HTML::Entities ();
 use Encode qw(encode_utf8);
 use Scalar::Util qw(looks_like_number);
+use IO::Compress::Gzip qw(gzip $GzipError);
+
 # TODO: figure out why we use this; remove it if possible
 require bytes;
 
@@ -348,13 +350,31 @@ sub send_output {
 
   my $length;
   if (ref $output eq "GLOB") {
-    $length = (stat($output))[7];
+      $length = (stat($output))[7];
   }
   else {
-    # eek - this is certainly not correct
-    $output = encode_utf8($output) if $content_type =~ m!^text/!;
-    # length in bytes
-    $length = do { use bytes; length($output) };
+    if ($content_type =~ m!^text/!) {
+
+       # eek - this is certainly not correct, but seems to have worked for us...
+        $output = encode_utf8($output);
+
+        if ($self->request->header_in('Accept-Encoding') =~ m/\bgzip\b/) {
+            my $compressed;
+            gzip \$output => \$compressed
+              or die "gzip failed: $GzipError\n";
+            $output = $compressed;
+
+            $self->request->header_out('Content-Encoding' => 'gzip');
+            $self->request->header_out(
+                'Vary' => join ", ",
+                grep {$_} $self->request->header_out('Vary'), 'Accept-Encoding'
+            );
+
+        }
+    }
+
+      # length in bytes
+      $length = do { use bytes; length($output) };
   }
 
   $self->request->update_mtime(time) if $r->mtime == 0; 
@@ -407,8 +427,6 @@ sub redirect {
 
   my $permanent = shift;
 
-  $self->cookies->bake_cookies;
-
   $url = $url->abs if ref $url =~ m/^URI/;
 
   # this should really check for a complete URI or some such; we'll do
@@ -430,10 +448,12 @@ sub redirect {
 <HTML><HEAD><TITLE>Redirect...</TITLE></HEAD><BODY>The document has moved <A HREF="$url_escaped">here</A>.<P></BODY></HTML>
 EOH
 
-  $self->request->header_out('Content-Length' => length($data));
+  # allow setting custom headers etc - this doesn't bail out if the
+  # status is wrong, unlike on the regular requests. (Just because we
+  # don't care for that feature anyway).
+  $self->post_process( $data );
 
-  $self->request->send_http_header("text/html");
-  print $data;
+  $self->send_output( $data, 'text/html' );
   return DONE;
 }
 
@@ -462,7 +482,7 @@ sub auth_token {
     my ($time, $uid) = split /-/, $cookie || '';
     # reset the auth_token twice a day
     $self->cookie('uiq', time . '-' . sha1_hex(time . rand)) unless $time and $time > time - 43200;
-    return $self->{_user_auth_token} = _calc_auth_token( $self->cookie('uiq') );
+    return $self->{_auth_token} = _calc_auth_token( $self->cookie('uiq') );
 }
 
 sub _calc_auth_token {
