@@ -4,6 +4,12 @@
 ServerRoot          "[% root_default %]/apache/"
 PidFile             "[% config.log_path %]/httpd.pid"
 
+Timeout             300
+KeepAlive           [% config.keepalive %]
+KeepAliveTimeout    [% config.keepalivetimeout %]
+StartServers        [% config.startservers %]
+MaxClients          [% config.maxclients %]
+MaxRequestsPerChild [% config.maxrequestsperchild %]
 Listen              [% config.port %]
 
 [%# We always need mod_perl, and apreq is weird (module is apreq but
