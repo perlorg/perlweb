@@ -482,7 +482,7 @@ sub auth_token {
     my ($time, $uid) = split /-/, $cookie || '';
     # reset the auth_token twice a day
     $self->cookie('uiq', time . '-' . sha1_hex(time . rand)) unless $time and $time > time - 43200;
-    return $self->{_user_auth_token} = _calc_auth_token( $self->cookie('uiq') );
+    return $self->{_auth_token} = _calc_auth_token( $self->cookie('uiq') );
 }
 
 sub _calc_auth_token {
