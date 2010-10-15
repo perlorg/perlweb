@@ -1,8 +1,13 @@
 package Combust::Redirect;
 use strict;
-use Combust::Constant qw(DECLINED DONE);
+use Combust::Constant qw(DECLINED OK);
 
 eval { require Apache2::SubRequest };
+
+use constant MP2 =>
+  (exists $ENV{MOD_PERL_API_VERSION} && $ENV{MOD_PERL_API_VERSION} == 2)
+  ? 1 : 0;
+
 
 my $map = {};
 
@@ -97,10 +102,18 @@ sub redirect_check {
       warn "URLMAP ERROR: $c->[1]: $@" and next if $@;
       next unless $url;
       if ($c->[2] eq "I") {
+        # Not sure if this still works on Apache 1, but we used to
+        # just change the URI. Alternatively maybe this is needed:
+        #  my $subr = $self->request->_r->lookup_uri($url);
+        #  $subr->run(1);
+        #  return DONE;
+
 	$self->request->uri($url);
-        my $subr = $self->request->_r->lookup_uri($url);
-        my $rc = $subr->run();
-        return DONE;
+
+        if (MP2) {
+            $self->request->_r->internal_redirect($url);
+            return OK;
+        }
       }
       else {
 	return $self->redirect($url, $c->[2] eq "P" ? 1 : 0);
