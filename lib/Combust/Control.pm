@@ -5,7 +5,7 @@ use Carp qw(confess cluck carp);
 use Digest::SHA1 qw(sha1_hex);
 use HTML::Entities ();
 use Encode qw(encode_utf8);
-use Scalar::Util qw(looks_like_number);
+use Scalar::Util qw(looks_like_number reftype);
 use IO::Compress::Gzip qw(gzip $GzipError);
 
 # TODO: figure out why we use this; remove it if possible
@@ -339,7 +339,7 @@ sub send_output {
 
   # for some reason mod_perl will sometimes forget to dereference
   # a reference, so let's not try printing those anymore.
-  $output = $$output if ref $output and ref $output ne 'GLOB';
+  $output = $$output if ref $output and reftype($output) ne 'GLOB';
 
   my $r = $self->r;
 
@@ -349,8 +349,9 @@ sub send_output {
   $self->request->header_out('P3P',qq[CP="NOI DEVo TAIo PSAo PSDo OUR IND UNI NAV", policyref="/w3c/p3p.xml"]);
 
   my $length;
-  if (ref $output eq "GLOB") {
-      $length = (stat($output))[7];
+  if (reftype($output) eq "GLOB") {
+    $length = ( stat($output) )[7]
+      unless tied(*$output);    # stat does not work on tied handles
   }
   else {
     if ($content_type =~ m!^text/!) {
@@ -381,7 +382,8 @@ sub send_output {
   
   $r->set_last_modified();  # set's to whatever update_mtime told us..
 
-  $self->request->header_out('Content-Length' => $length);
+  $self->request->header_out('Content-Length' => $length)
+    if defined $length;
 
   # defining the character set helps in handling the CERT advisory
   # regarding  "cross site scripting vulnerabilities" 
@@ -405,8 +407,11 @@ sub send_output {
   # don't send the body
   return OK if $r->header_only;
 
-  if (ref $output eq "GLOB") {
-    print <$output>;  
+  if (reftype($output) eq "GLOB") {
+    my $buffer;
+    while(read($output,$buffer,40960)) {
+      print $buffer;
+    }
   }
   else {
     print $output;
