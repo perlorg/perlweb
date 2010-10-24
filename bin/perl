@@ -18,8 +18,7 @@ fi
 MYPERL=`awk '/^ *perl *=/ { print $3 }' $CONFIGFILE`
 
 if [ -z $MYPERL ]; then
-  echo Could not find "perl =" line in $CONFIGFILE 1>&2
-  exit 2
+   MYPERL=perl
 fi
 
 mylib=$CBROOT/lib
