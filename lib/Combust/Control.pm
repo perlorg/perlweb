@@ -1,5 +1,6 @@
 package Combust::Control;
-use strict;
+use Moose;
+
 use Combust::Constant qw(OK SERVER_ERROR MOVED DONE DECLINED REDIRECT);
 use Carp qw(confess cluck carp);
 use Digest::SHA1 qw(sha1_hex);
@@ -17,7 +18,7 @@ use Combust::Cookies;
 use Combust::Secret qw(get_secret);
 use Combust::Config;
 
-use namespace::clean;
+use namespace::clean -except => 'meta';
 
 use base qw(Combust::Redirect);
 
@@ -27,11 +28,10 @@ sub config { $config }
 
 my $root = $config->root;
 
-sub r {
-  my $self = shift;
-  # some day we'll deprecate this - it only works for Apache13 and Apache2
-  return $self->request->_r;
-}
+has 'site' => (
+   isa => 'Combust::Site',
+   is  => 'ro',
+);
 
 sub req_param {
   my $self = shift;
@@ -57,78 +57,47 @@ sub tpl_params {
   $self->{params} || {};
 }
 
-sub new {
-  my ($class, $r) = @_;
+sub run {
+    my $self   = shift;
+    my $method = shift;
 
-  # return if we are already blessed
-  return $class if ref $class;
+    $self->tt->set_include_path($self->get_include_path);
+    my $init_status = OK;
 
-  my $self = bless( { } , $class);
-  
-  $self;
+    eval {
+        $init_status = $self->init if $self->can('init');
+    };
+    if ($@) {
+        cluck "$self->init died: $@";
+        return SERVER_ERROR;
+    }
+    return $init_status unless $init_status == OK;
+
+    my $redir_status = $self->redirect_check;
+    return $redir_status unless $redir_status == DECLINED;
+
+    my ($status, $output, $content_type) = eval { $self->do_request($method) };
+    if (my $err = $@) {
+        cluck "Combust::Control: oops, class handler died with: $err";
+        return SERVER_ERROR;
+    }
+
+    # old mp-era comment:
+    # have to return 'OK' and fake it with r->status or some such to make a custom 404 easily
+    return $status unless $status == OK;
+
+    if ($self->can('cleanup')) {
+        eval { $self->cleanup };
+        warn "CLEANUP method failed: $@" if $@;
+    }
+
+    return $self->send_output($output, $content_type);
 }
 
-sub super ($$) {
-  my $class   = shift;
-  my $r = shift;
-
-  confess(__PACKAGE__ . '->super got called without $r') unless $r;
-  return unless $r;
-
-  my $self = $class->new($r);
-
-  Combust::Notes::handler($r);
-
-  $self->tt->set_include_path($self->get_include_path);
-
-  my $status;
-
-  eval {
-    $status = OK;
-    $status = $self->init if $self->can('init');
-  };
-  if ($@) {
-    cluck "$self->init died: $@";
-    return SERVER_ERROR;
-  }
-  return $status unless $status == OK;
-
-  eval {
-      ($status) = $self->handler($self->r);
-  };
-  cluck "Combust::Control: oops, class handler died with: $@" if $@;
-  return SERVER_ERROR if $@;
-
-  # should we do this to make it harder for people to shoot themselves in the foot?
-  # $self->_cleanup_params;
-
-  return $status;
-}
-
-sub handler {
-  my $self = shift;
-  unless ($self->can('render')) {
-    my $msg = "$self doesn't have a render method; you probably got the inheritance order messed up somewhere.";
-    warn $msg;
-    die $msg;
-  }
-
-  my $redir_status = $self->redirect_check;
-  return $redir_status unless $redir_status == DECLINED;
-
-  my ($status, $output, $content_type) = $self->do_request();
-  # have to return 'OK' and fake it with r->status or some such to make a custom 404 easily
-  return $status unless $status == OK;
-  my @r = $self->send_output($output, $content_type);
-  if ($self->can('cleanup')) {
-      eval { $self->cleanup };
-      warn "CLEANUP method failed: $@" if $@; 
-  }
-  return @r;
-}
 
 sub do_request {
-  my $self = shift;
+  my $self   = shift;
+  my $method = shift || 'render';
 
   my $cache_info = $self->cache_info || {};
 
@@ -156,7 +125,7 @@ sub do_request {
     }
   }
 
-  ($status, $output, my $content_type) = eval { $self->render };
+  ($status, $output, my $content_type) = eval { $self->$method };
   if (my $err = $@) {
       if ($err =~ m{^(-?\d+)($|\sat\s\/)}) {
           $status = $1;
@@ -197,15 +166,17 @@ sub _cleanup_params {
   }
 }
 
+sub r {
+    cluck "r called";
+    return shift->request;
+}
+
 sub get_include_path {
   my $self = shift;
-
-  my $r = $self->r;
 
   my $site = $self->site;
   unless ($site) {
     my @path = ("$root/apache/root_templates/");
-    unshift @path, $r->document_root if $r->dir_config('UseDocumentRoot');
     return \@path;
   }
 
@@ -249,8 +220,6 @@ sub get_include_path {
 	    ];
   }
 
-
-  $path = [ $r->document_root ] if $r->dir_config('UseDocumentRoot');
   push @$path, "$root/apache/root_templates/";
 
   #warn Data::Dumper->Dump([\$path], [qw(path)]);
@@ -265,10 +234,6 @@ sub evaluate_template {
 
   my $tpl_params    = { %{$self->tpl_params }, ($_[0] and ref $_[0] eq 'HASH') ? %{$_[0]} : @_ };
 
-  my $r = $self->r;
-
-  local $tpl_params->{r} = $r;
-  local $tpl_params->{notes} = $r->pnotes('combust_notes');
   local $tpl_params->{root} = $root;  # localroot anyone?
   local $tpl_params->{siteconfig} = $self->site && $self->config->site->{$self->site};
 
@@ -280,7 +245,7 @@ sub evaluate_template {
 
   unless(defined $output) {
       my $err = $self->tt->error || $@;
-      warn( (ref $self ? ref $self : $self) . "  - ". $r->uri . ($r->args ? '?' .$r->args : '')
+      warn( (ref $self ? ref $self : $self) . "  - ". $self->request->request_url
             . " - error processing template $template: $err");
       die $err;
   }
@@ -299,12 +264,6 @@ sub provider {
     my $self = shift;
     cluck "combust->provider is deprecated; use combust->tt->provider";
     $self->tt->provider(@_);
-}
-
-sub site {
-  my $self = shift;
-  return $self->{site} if $self->{site};
-  return $self->{site} = $self->r->dir_config("site");
 }
 
 sub content_type {
@@ -328,6 +287,8 @@ sub default_character_set {
 
 sub send_output {
   my $self = shift;
+
+  warn "in send output!";
   
   my $output = shift;
   my $content_type = shift || $self->content_type || 'text/html';
@@ -340,8 +301,6 @@ sub send_output {
   # for some reason mod_perl will sometimes forget to dereference
   # a reference, so let's not try printing those anymore.
   $output = $$output if ref $output and reftype($output) ne 'GLOB';
-
-  my $r = $self->r;
 
   $self->cookies->bake_cookies;
 
@@ -378,58 +337,34 @@ sub send_output {
       $length = do { use bytes; length($output) };
   }
 
-  $self->request->update_mtime(time) if $r->mtime == 0; 
-  
-  $r->set_last_modified();  # set's to whatever update_mtime told us..
-
   $self->request->header_out('Content-Length' => $length)
     if defined $length;
 
-  # defining the character set helps in handling the CERT advisory
-  # regarding  "cross site scripting vulnerabilities" 
-  #   http://www.cert.org/tech_tips/malicious_code_mitigation.html
   $content_type .= "; charset=" . $self->default_character_set
     if $content_type =~ m/^text/ and $content_type !~ m/charset=/;
   $self->content_type($content_type);
   #warn "content_type: $content_type";
 
-  if ((my $rc = $r->meets_conditions) != OK) {
-    # this didn't work with just returning $rc -- need to check if it works now.
-    $r->status($rc);
-    return $rc;
-  }
-
-  $self->request->send_http_header($content_type);
-
-  #warn Data::Dumper->Dump([\$output], [qw(output)]);
+  #if ((my $rc = $r->meets_conditions) != OK) {
+  #  $r->status($rc);
+  #  return $rc;
+  #}
 
   # if all that is requested is HEAD
   # don't send the body
-  return OK if $r->header_only;
+  # return OK if $r->header_only;
 
-  if (reftype($output) eq "GLOB") {
-    my $buffer;
-    while(read($output,$buffer,40960)) {
-      print $buffer;
-    }
-  }
-  else {
-    print $output;
-  }
+  warn "FOO: ", reftype($output);
+  
+  $self->request->response->status(200) unless $self->request->response->status;
 
-  # TODO: need to get the status from further up the chain and return it correctly here.
-  return OK;
+  $self->request->response->content( reftype($output) eq "GLOB" ? $output : [ $output ] );
+  $self->request->response->finalize;
 }
 
 sub redirect {
   my $self = shift;
   my $url = shift;
-  my $ref_url = ref $url || '';
-  if ($ref_url =~ m/^Apache/) {  # if we got passed an $r as the first parameter
-    cluck "You don't need to pass \$r to the redirect method";
-    $url = shift;
-  }
-
   my $permanent = shift;
 
   $url = $url->abs if ref $url =~ m/^URI/;
@@ -464,15 +399,14 @@ EOH
 
 sub cookies {
   my $self = shift;
-  my $cookies = $self->request->notes('cookies');
-  return $cookies if $cookies;
-  $cookies = Combust::Cookies->new($self->request,
+  return $self->{_cookies} if $self->{_cookies};
+  my $cookies = Combust::Cookies->new($self->request,
                                    # Combust::Request defaults this to r->hostname
                                    # if it is not set
                                    domain => ($self->site && $self->config->site->{$self->site}->{cookie_domain} || ''),
                                   );
-  $self->request->notes('cookies', $cookies);
-  return $cookies;
+  
+  return $self->{_cookies} = $cookies;
 }
 
 sub cookie {
@@ -538,7 +472,13 @@ sub deployment_mode {
     $dm;
 }
 
-sub request {
+
+has 'request' => (
+    is         => 'ro',
+    lazy_build => 1,
+);
+
+sub _build_request {
   my $self = shift;
   return $self->{_request} if $self->{_request};
   # should we pass any parameters to the request class when we open it up? Hmn.

@@ -55,7 +55,7 @@ sub parse_cookies {
   my $parsed = {};
 
   for my $cookie_name ($default_cookie_name, keys %special_cookies) {
-    my $cookie = $self->{r}->cookie($cookie_name);
+    my $cookie = $self->{r}->cookies->{$cookie_name};
     next unless $cookie;
 
     $cookie =~ s/\r$// if $cookie;  # remove occasional trailing ^M
@@ -103,8 +103,6 @@ sub cookie {
 sub bake_cookies {
   my $self = shift;
 
-  my $r = $self->{r};
-
   #warn Data::Dumper->Dump([\$self], [qw(self)]);
 
   my $ts = time;
@@ -145,10 +143,11 @@ sub bake_cookies {
 
     #warn "[$cookie_name] encoded: [$encoded]";
 
-    $self->{r}->cookie($cookie_name, $encoded, { expires => '+180d',
-                                                 domain => $self->{domain} });
+    $self->{r}->cookies->{$cookie_name} = { value =>  $encoded, 
+                                            expires => ( time + 180 * 60 * 60 ),
+                                            domain => $self->{domain}
+                                          };
   }
-  $self->{r}->bake_cookies;
 }
 
 

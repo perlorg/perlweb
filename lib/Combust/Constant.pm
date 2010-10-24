@@ -7,7 +7,7 @@ require constant;
 my %constant = (
     DONE         => -2,
     DECLINED     => -1,
-    OK           => 0,
+    OK           => 200,
     MOVED        => 301,
     REDIRECT     => 302,
     FORBIDDEN    => 403,

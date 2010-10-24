@@ -18,11 +18,9 @@
        PerlResponseHandler Trivial::Control::Two->super
     </Location>
 
-
-  <Location /perl-status>
-      SetHandler modperl
-      PerlOptions +GlobalRequest
-      PerlResponseHandler Apache2::Status
-  </Location>
+    <Location />
+       SetHandler perl-script
+       PerlResponseHandler Combust::Control::Basic->super
+    </Location>
 
 </VirtualHost>
