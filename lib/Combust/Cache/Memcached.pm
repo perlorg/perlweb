@@ -2,6 +2,7 @@ package Combust::Cache::Memcached;
 use strict;
 use Carp qw(carp);
 use Combust;
+use Data::Dumper ();
 
 use Cache::Memcached '1.27';
 
@@ -67,7 +68,7 @@ sub fetch_multi {
     my ($self, @ids) = @_;
 
     # map from normalized id's to id's
-    my %id_for = map { $self->_normalize_id($_) => $_ } grep { defined } @ids;
+    my %id_for = map { $self->_normalize_id($_) => $_ } @ids;
     if (keys %id_for < @ids) {
         carp "Two or more ids coincide when normalized";
     }
@@ -77,6 +78,9 @@ sub fetch_multi {
 
     for my $nk (keys %$rv) {
         my $k = $id_for{$nk};
+        carp "\$k was unexpectedly undefined: ",
+          Data::Dumper->Dump([\%id_for, $rv], [qw(id_for rv)])
+          unless defined $k;
         $rv->{$k} = delete $rv->{$nk};
     }
     $rv;
