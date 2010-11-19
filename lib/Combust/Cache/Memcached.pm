@@ -67,7 +67,7 @@ sub fetch_multi {
     my ($self, @ids) = @_;
 
     # map from normalized id's to id's
-    my %id_for = map { $self->_normalize_id($_) => $_ } @ids;
+    my %id_for = map { $self->_normalize_id($_) => $_ } grep { defined } @ids;
     if (keys %id_for < @ids) {
         carp "Two or more ids coincide when normalized";
     }
