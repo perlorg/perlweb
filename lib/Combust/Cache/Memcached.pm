@@ -119,6 +119,7 @@ sub _normalize_id {
     return unless $id; 
     # replace ' ' by '+', because memcached keys can't have spaces
     $id =~ tr/ /+/;
+    utf8::encode($id) if utf8::is_utf8($id);
     # prepend "$type;"
     $id = join ';', $self->{type}, $id;
     $self->SUPER::_normalize_id($id);
