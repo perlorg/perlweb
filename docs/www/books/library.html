@@ -7,14 +7,6 @@
     });
 
 
-#        <div class="NAVITEM" style="text-align: center">
-#            </p><a href="http://safari.oreilly.com/"><img class="border" style="padding:0" src="/images/friends/safari_logo.gif"></a>
-#        </div>
-#
-#        <p>
-#        O'Reilly offers subscriptions to allow you to search through hundreds
-#        of online books, including many of your favorite Perl books.</p>
-#        </div>
 
 %]
 
@@ -29,6 +21,7 @@
     <a href="#fulltext"><b><u>Full Text</u></b></a> 
     [%
        booklink("beginningperl","Beginning Perl"); 
+       booklink("modernperl","Modern Perl"); 
        booklink("impatientperl","Impatient Perl"); 
        booklink("masonbook","Embedding Perl in HTML with Mason"); 
        booklink("pup","Picking Up Perl"); 
@@ -77,6 +70,18 @@
     Beginning Perl is a different kind of Perl book. It's written particularly with the beginning programmer in mind, but it doesn't treat you like an idiot, and experienced programmers will not feel patronized. It covers a lot of ground, from the very basics of programming, right through to developing CGI applications for the web. More importantly, it emphasizes good Perl practice, and readable and maintainable code.
     ",
 %]
+
+[% PROCESS book_block
+    name => 'modernperl',
+    title => 'Modern Perl',
+    isbn => '0977920151',
+    link => 'http://www.onyxneon.com/books/modern_perl/index.html',
+    author => 'by Chromatic (2010).',
+    description => "
+    Modern Perl is one way to describe how experienced and effective Perl 5 programmers work. They use language idioms. They take advantage of the CPAN. They're recognizably Perlish, and they show good taste and craftsmanship and a full understanding of Perl. You can learn this too, whether you've dabbled with Perl for a decade or someone just handed you this book and said "Fix this code by Friday."
+    ",
+%]
+
 
 [% PROCESS book_block
     name => 'impatientperl',
