@@ -150,7 +150,7 @@
 
 <div class="bar">&nbsp; &nbsp; &nbsp; &nbsp;</div>
 
-[% MACRO quicknews(shortname,title) BLOCK %]
+[% MACRO quicknews(shortname,title,count) BLOCK %]
 [%- UNLESS count %]
 [%  count = 5 %]
 [% END %]
@@ -159,7 +159,7 @@
     <li class="rss round">[% title %]</li>
 [%- USE news = XML.RSS("${root}/var/rss/${shortname}.rss") %]
 [% FOREACH item = news.items %]
-<li class="rss_content"><a href="[% item.link | html %]">[% item.title %]</a></li>
+<li class="rss_content rss_content_col"><a href="[% item.link | html %]">[% item.title %]</a></li>
 [% count = count - 1 %]
 [% LAST IF count == 0 %]
 [% END %]
@@ -172,11 +172,8 @@
 
 <table class="content_table">
   <tr>
-    <td>
-        [% quicknews ("useperl", 'News from <a href="http://use.perl.org/">use Perl</a>') %]
-    </td>
-    <td>
-        [% quicknews ("cpanrecent"'Latest Uploads to <a href="http://cpan.perl.org/">CPAN</a>') %]
+    <td colspan=2>
+        [% quicknews ("cpanrecent"'Latest Uploads to <a href="http://cpan.perl.org/">CPAN</a>', 10) %]
     </td>
   </tr>
 </table>
