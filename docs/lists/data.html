@@ -24,10 +24,11 @@ file.</p>
 
 <p>Here's a suggested workflow:</p>
 <pre>
-cp lists.json lists.json.orig
-edit lists.json
-validate.pl -d lists.json > lists.json.new
-diff -u lists.json.old lists.json.new
+cp lists.json lists.json.old
+cp lists.json lists.json.new
+edit lists.json.new
+validate.pl -d lists.json.new > lists.json
+diff -u lists.json.old lists.json
 </pre>
 
 <h2>Data</h2>

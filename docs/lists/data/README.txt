@@ -26,9 +26,10 @@ Please use validate.pl to make sure your JSON parses correctly (requires JSON fr
 
 Here's a suggested workflow:
 
-cp lists.json lists.json.orig
-edit lists.json
-validate.pl -d lists.json > lists.json.new
-diff -u lists.json lists.json.new
+cp lists.json lists.json.old
+cp lists.json lists.json.new
+edit lists.json.new
+validate.pl -d lists.json.new > lists.json
+diff -u lists.json.old lists.json
 
-if there are any diffs, edit lists.json and repeat.
+if there are any inappropriate diffs, edit lists.json.new and repeat.
