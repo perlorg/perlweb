@@ -40,6 +40,8 @@ $(document).ready(function(){
             
         $('.round').corner("7px top");
 		$('.module').corner("10px top");
-		//$('.button').corner("7px");   
+		//$('.button').corner("7px");
+		// Any divs that should get hidden onload should have this as a class
+		$('.hidediv').toggle();
 });
 
