@@ -86,7 +86,7 @@
 		<th>More info</th>
 		<td><a href="#unix_like" onClick="$('#unix_like').toggle();">Perl on Unix like OSes </td>
     	<td><a href="#osx" onClick="$('#osx').toggle();">Perl on Mac OS X</td>
-        <td><a href="#win32" onClick="$('#win32').toggle();">Perl on Win32</td>
+        <td><a href="#win32" onClick="$('#win32').toggle();">Perl on Windows</td>
 	</tr>
 </table>
 
@@ -175,9 +175,13 @@
 </div>
 
 <div id="win32" class="hidediv">
-    <h2>Perl on Win32</h2>
+    <h2>Perl on Windows</h2>
     <p>
-        Win32 does not have Perl installed by default.
+        Windows does not have Perl installed by default. If you do have it installed
+	and want to find the version, open the <code>Cmd.exe</code> program 
+	(goto 'start' menu, then 'run' option, type 'cmd' and click 'ok'), then 
+	type <code>perl -v</code> followed by return, this will show your 
+	installed version.
     </p>
 
     [% INCLUDE versions %]
@@ -192,7 +196,7 @@
                 <img src="/i/activestate.png" />
           ActiveState Binaries</a>
           </p><a href="http://www.activestate.com/activeperl/downloads">ActiveState Perl</a> 
-          has binary distributions of Perl for Win32 (including 64 bit versions).
+          has binary distributions of Perl for Win32 (and Perl for Win64).
         </li>
 
       <li>
