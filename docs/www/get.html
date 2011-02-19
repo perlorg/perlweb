@@ -82,11 +82,25 @@
             <a href="http://www.activestate.com/activeperl/downloads" class="download" title="ActiveState Perl">ActiveState Perl</a>
         </td>
 	</tr>
+</table>
+
+
+<p>
+    Perl runs on over [% perl_stats.platforms %] platforms. The latest version ([% perl_stats.perl_version %]) is recommended where possible. Any version over 5 is enough to get started, 5.8.3 is suggested as a good minimum (several CPAN modules now require this) for production, although not required.</p>
+
+
+<table class="download_table highlight" cellspacing="0" cellpadding="0" width="100%">
 	<tr>
-		<th>More info</th>
-		<td><a href="#unix_like" onClick="$('#unix_like').toggle();">Perl on Unix like OSes </td>
-    	<td><a href="#osx" onClick="$('#osx').toggle();">Perl on Mac OS X</td>
-        <td><a href="#win32" onClick="$('#win32').toggle();">Perl on Windows</td>
+	    <script type="text/javascript" charset="utf-8">
+	       function toggle_os_view(id) {
+	           $('.osinfo').hide();
+       		   $(id).toggle();
+	       }
+	    </script>
+		<th id="more">More info,<br />Download</th>
+		<td><a href="#more" onClick="toggle_os_view('#unix_like');">Perl on Unix like OSes </td>
+    	<td><a href="#more" onClick="toggle_os_view('#osx');">Perl on Mac OS X</td>
+        <td><a href="#more" onClick="toggle_os_view('#win32');">Perl on Windows</td>
 	</tr>
 </table>
 
@@ -112,25 +126,12 @@
 </ul>
 [% END %]
 
-[% BLOCK versions %]
-<h4>Learning</h2>
-  <p>As long as you have version 5 this is sufficient to get started.</p>
-
-<h4>Production / deployment</h4>
-  <p>The latest stable version of perl ([% perl_stats.perl_version %]) is recommended where possible,
-     5.8.3 is considered a good minimum version (several CPAN modules now require this).</p>
-[% END %]
-
-<p>
-    Perl runs on over [% perl_stats.platforms %] platforms. The latest version ([% perl_stats.perl_version %]) is recommended where possible.</p>
     
-<div id="unix_like" class="hidediv">
+<div id="unix_like" class="hidediv osinfo">
     <h2>Perl on Unix like systems</h2>
     <p>
         You probably <i>already have an installation of perl</i>. Type <code>perl&nbsp;-v</code> on a command line (use a 'terminal' application) to find out which version.
     </p>
-    
-    [% INCLUDE versions %]
     
     <h3>Binaries (pre-compiled versions of Perl)</h3>
     <ul>
@@ -149,13 +150,11 @@
 
 </div>
 
-<div id="osx" class="hidediv">
+<div id="osx" class="hidediv osinfo">
     <h2>Perl on Mac OS X</h2>
     <p>
         Mac OS X already has Perl installed. Open a <i>Terminal</i> application (in the Utilities folder of your Applications folder)</i>. Type <code>perl&nbsp;-v</code> followed by return to find out which version.
     </p>
-
-    [% INCLUDE versions %]
     
     <h3>Binaries (pre-compiled versions of Perl)</h3>
     <ul>
@@ -174,7 +173,7 @@
 
 </div>
 
-<div id="win32" class="hidediv">
+<div id="win32" class="hidediv osinfo">
     <h2>Perl on Windows</h2>
     <p>
         Windows does not have Perl installed by default. If you do have it installed
@@ -183,8 +182,6 @@
 	type <code>perl -v</code> followed by return, this will show your 
 	installed version.
     </p>
-
-    [% INCLUDE versions %]
     
     <h3>Binaries (pre-compiled versions of Perl)</h3>
     
