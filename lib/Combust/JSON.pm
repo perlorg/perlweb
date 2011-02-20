@@ -6,22 +6,18 @@ use warnings;
 
 use base qw(JSON::XS);
 
-use Sub::Install ();
-
-my %for_class;
-
-# turns 'HTML::TagCloud' => '__HTML_TagCloud__'
-sub _json_key {
-    my $class = shift;
-    $class =~ s/::/_/g;
-    return '__' . $class . '__';
-}
+use Combust::JSON::Object ();
 
 sub decode_class {
     my ( $self, $class ) = @_;
-    my $key = $for_class{$class}{key} ||= _json_key($class);
-    my $thaw_sub = $class->can('JSON_thaw') || sub { bless shift, $class };
+
+    # Inject JSON-ness into the class (if it is not there)
+    Combust::JSON::Object->inject_into($class);
+
+    my $key = $class->JSON_key;
+    my $thaw_sub = $class->can('JSON_thaw');
     $self->filter_json_single_key_object( $key => $thaw_sub );
+
     $self;
 }
 
@@ -30,23 +26,9 @@ sub encode_class {
     $self->allow_blessed(1);
     $self->convert_blessed(1);
 
-    # install ::TO_JSON in $class
-    if ( !exists $for_class{$class}{to_json} ) {
-        my $key = $for_class{$class}{key} ||= _json_key($class);
-        my $TO_JSON = $for_class{$class}{to_json} =
-          $class->can('JSON_freeze')
-          ? sub { +{ $key => shift->JSON_freeze } }
-          : sub {
-            my %h = %{ +shift };    # copy the object an an unblessed ref
-            +{ $key => \%h };       # stuff it in a single-key hash
-          };
-        Sub::Install::install_sub(
-            {   code => $TO_JSON,
-                into => $class,
-                as   => 'TO_JSON'
-            }
-        );
-    }
+    # Inject JSON-ness into the class (if it is not there)
+    Combust::JSON::Object->inject_into($class);
+
     $self;
 }
 
@@ -76,6 +58,9 @@ Combust::JSON - a subclass of JSON::XS which decodes/encodes certain classes
     $data    = $decoder->decode($json); # a clone of { cloud => $tag_cloud }
 
 =head1 DESCRIPTION
+
+    FIXME The documentation below regarding implementation details is outdated
+    after the introduction of Combust::JSON::Object
 
 This module is a very thin wrapper (implemented as a subclass)
 of JSON::XS which makes easy to define a mapping to blessed

@@ -349,7 +349,7 @@ sub send_output {
   $self->request->header_out('P3P',qq[CP="NOI DEVo TAIo PSAo PSDo OUR IND UNI NAV", policyref="/w3c/p3p.xml"]);
 
   my $length;
-  if (reftype($output) eq "GLOB") {
+  if (ref($output) and reftype($output) eq "GLOB") {
     $length = ( stat($output) )[7]
       unless tied(*$output);    # stat does not work on tied handles
   }
@@ -407,7 +407,7 @@ sub send_output {
   # don't send the body
   return OK if $r->header_only;
 
-  if (reftype($output) eq "GLOB") {
+  if (ref($output) and reftype($output) eq "GLOB") {
     my $buffer;
     while(read($output,$buffer,40960)) {
       print $buffer;

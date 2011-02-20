@@ -68,7 +68,8 @@ sub JSON_freeze {
 }
 
 sub JSON_thaw {
-    my $self = bless shift;
+    my $obj = shift;
+    my $self = bless $obj, delete $obj->{__class__};
     $self->{sub} = $SUBS{ $self->{num} };
     $self;
 }
