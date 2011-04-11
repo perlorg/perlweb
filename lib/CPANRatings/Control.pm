@@ -4,7 +4,7 @@ use base qw(Combust::Control Combust::Control::Bitcard);
 use LWP::Simple qw(get);
 use CPANRatings::Model::Reviews;
 use CPANRatings::Model::User;
-use Digest::SHA1 qw(sha1_hex);
+use Digest::SHA qw(sha1_hex);
 use Encode qw();
 use Combust::Constant qw(OK);
 use XML::RSS;

@@ -4,7 +4,7 @@ extends 'Combust::Base';
 
 use Combust::Constant qw(OK SERVER_ERROR MOVED DONE DECLINED REDIRECT);
 use Carp qw(confess cluck carp);
-use Digest::SHA1 qw(sha1_hex);
+use Digest::SHA qw(sha1_hex);
 use HTML::Entities ();
 use Encode qw(encode_utf8);
 use Scalar::Util qw(looks_like_number reftype);

@@ -12,7 +12,7 @@ requires  'JSON::XS' => '2.29';
 requires  'Template';
 requires  'Pod::Simple';
 requires  'Class::Accessor::Class';
-requires  'Digest::SHA1';
+requires  'Digest::SHA';
 requires  'URI::Escape';
 requires  'HTML::Entities';
 requires  'Sub::Install';

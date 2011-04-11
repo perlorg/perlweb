@@ -61,7 +61,7 @@ Pod::Escapes
 
 Pod::Simple
 
-Digest::SHA1
+Digest::SHA
 
 Apache::DBI
 

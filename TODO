@@ -2,14 +2,15 @@
 In rough order of priority
 ==========================
 
-Replace Digest::SHA1 with Digest::SHA
+Make ApacheRouter configurions work (right now everything falls back
+to the '/' handler).
+
+
+--- old stuff below ---
 
 Make tests using the database skip_all if it can't connect to the test db
 
 Make tests using the database setup the basic shema automatically 
-
-
---- old stuff below ---
 
 Sort out where mime.types is being found.  Is what it says in the
 sample configuration right?  What is apache_config used for anyway?

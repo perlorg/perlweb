@@ -39,7 +39,7 @@ sub render {
   $uri =~ s!/$!/index.html!;
 
   if (!$self->force_template_processing and $uri !~ m!/(.*\.(?:html?))$!) {
-      warn "goign to serve a static file";
+      warn "going to serve a static file";
       return $self->serve_static_file;
   }
 
