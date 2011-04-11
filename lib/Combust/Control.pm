@@ -1,5 +1,6 @@
 package Combust::Control;
 use Moose;
+extends 'Combust::Base';
 
 use Combust::Constant qw(OK SERVER_ERROR MOVED DONE DECLINED REDIRECT);
 use Carp qw(confess cluck carp);
@@ -20,18 +21,11 @@ use Combust::Config;
 
 use namespace::clean -except => 'meta';
 
-use base qw(Combust::Redirect);
-
 my $config = Combust::Config->new();
 
 sub config { $config }
 
-my $root = $config->root;
-
-has 'site' => (
-   isa => 'Combust::Site',
-   is  => 'ro',
-);
+sub site { shift->request->site }
 
 sub req_param {
   my $self = shift;
@@ -57,6 +51,10 @@ sub tpl_params {
   $self->{params} || {};
 }
 
+sub init {
+    return OK;
+}
+
 sub run {
     my $self   = shift;
     my $method = shift;
@@ -72,9 +70,6 @@ sub run {
         return SERVER_ERROR;
     }
     return $init_status unless $init_status == OK;
-
-    my $redir_status = $self->redirect_check;
-    return $redir_status unless $redir_status == DECLINED;
 
     my ($status, $output, $content_type) = eval { $self->do_request($method) };
     if (my $err = $@) {
@@ -135,6 +130,11 @@ sub do_request {
           $status = SERVER_ERROR;
       }
   }
+  if ($status == DONE) {
+    return $self->{_response_ref}
+      ? delete $self->{_response_ref}
+      : [ $self->request->response->status ]
+  }
   return $status unless $status == OK;
 
   # sometimes we end up here with "OK" but with no content ... gah.
@@ -171,62 +171,6 @@ sub r {
     return shift->request;
 }
 
-sub get_include_path {
-  my $self = shift;
-
-  my $site = $self->site;
-  unless ($site) {
-    my @path = ("$root/apache/root_templates/");
-    return \@path;
-  }
-
-  my @site_dirs = split /:/, ($config->site->{$site}->{docs_site} || $site);
-
-  #warn Data::Dumper->Dump([\$r], [qw(r)]);
-
-  my $cookies = $self->cookies;
-
-  my ($user);
-  my $root_param = $self->request->req_param('root') || '';
-  if (($user) = ($root_param =~ m!^/?([a-zA-Z]+)$!)) {
-    $cookies->cookie('root', "$user");
-  } 
-  elsif ($root_param eq "/") {
-    # don't set user, reset the cookie
-    $cookies->cookie('root', "/");
-  }
-  elsif (($user) = (($cookies->cookie('root')||'') =~ m!^([a-zA-Z]+)$!)) {
-    # ...  why is this in an elsif?  :-)
-  }
-
-  my $path;
-
-  if ($user) {
-    # FIXME|TODO: should expand on ~ instead of using /home
-    $user = "/home/$user";
-    my $docs = $config->docs_name;
-    $path = [
-	     (map { "$user/$docs/$_/" } @site_dirs),
-	     "$user/$docs/shared/",
-	     "$user/$docs/",
-	    ];
-  }
-  else {
-    my $root_docs = $config->root_docs;
-    $path = [
-	     (map { "$root_docs/$_/" } @site_dirs),
-	     "$root_docs/shared/",
-	     "$root_docs/",
-	    ];
-  }
-
-  push @$path, "$root/apache/root_templates/";
-
-  #warn Data::Dumper->Dump([\$path], [qw(path)]);
-  
-  return $path;
-
-}
 
 sub evaluate_template {
   my $self      = shift;
@@ -234,7 +178,7 @@ sub evaluate_template {
 
   my $tpl_params    = { %{$self->tpl_params }, ($_[0] and ref $_[0] eq 'HASH') ? %{$_[0]} : @_ };
 
-  local $tpl_params->{root} = $root;  # localroot anyone?
+  local $tpl_params->{root} = $config->root;  # localroot anyone?
   local $tpl_params->{siteconfig} = $self->site && $self->config->site->{$self->site};
 
   local $tpl_params->{combust} = $self;
@@ -295,7 +239,7 @@ sub send_output {
 
   unless (defined $output) {
     cluck "send_output called with undefined output";
-    return 404;
+    return [404];
   }
 
   # for some reason mod_perl will sometimes forget to dereference
@@ -354,12 +298,12 @@ sub send_output {
   # don't send the body
   # return OK if $r->header_only;
 
-  warn "FOO: ", reftype($output);
-  
   $self->request->response->status(200) unless $self->request->response->status;
 
   $self->request->response->content( reftype($output) eq "GLOB" ? $output : [ $output ] );
-  $self->request->response->finalize;
+  my $response_ref = $self->request->response->finalize;
+  $self->{_response_ref} = $response_ref;
+  return $response_ref;
 }
 
 sub redirect {
@@ -379,7 +323,7 @@ sub redirect {
   #warn "redirecting to [$url]";
 
   $self->request->header_out('Location' => $url);
-  $self->r->status($permanent ? MOVED : REDIRECT);
+  $self->request->status($permanent ? MOVED : REDIRECT);
 
   my $url_escaped = HTML::Entities::encode_entities($url);
 
@@ -471,52 +415,5 @@ sub deployment_mode {
     warn "INVALID deployment_mode CONFIG for ", $self->site, "! Use devel, test or prod\n" unless $dm =~ m/^(devel|test|prod)$/;
     $dm;
 }
-
-
-has 'request' => (
-    is         => 'ro',
-    lazy_build => 1,
-);
-
-sub _build_request {
-  my $self = shift;
-  return $self->{_request} if $self->{_request};
-  # should we pass any parameters to the request class when we open it up? Hmn.
-  $self->{_request} = $self->request_class->new;
-}
-
-my $request_class;
-sub request_class {
-  return $request_class if $request_class;
-  my $class = shift;
-  $request_class = $class->pick_request_class;
-  eval "require $request_class";
-  die qq[Could not load "$request_class": $@] if $@;
-  $request_class;
-}
-
-sub pick_request_class {
-  my ( $class, $request_class ) = @_;
-
-  return 'Combust::Request::' . $request_class if $request_class;
-  return "Combust::Request::$ENV{COMBUST_REQUEST_CLASS}" if $ENV{COMBUST_REQUEST_CLASS};
-
-  if ($ENV{MOD_PERL}) {
-    my ($software, $version) = $ENV{MOD_PERL} =~ /^(\S+)\/(\d+(?:[\.\_]\d+)+)/;
-    if ($software eq 'mod_perl') {
-      $version =~ s/_//g;
-      $version =~ s/(\.[^.]+)\./$1/g;
-      return 'Combust::Request::Apache2' if $version >= 2.000001;
-      return 'Combust::Request::Apache13'  if $version >= 1.29;
-      die "Unsupported mod_perl version: $ENV{MOD_PERL}";
-    }
-    else {
-      die "Unsupported mod_perl: $ENV{MOD_PERL}"
-    }
-  }
-
-  return 'Combust::Request::CGI';
-}
-
 
 1;
