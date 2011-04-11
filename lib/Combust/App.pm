@@ -46,16 +46,31 @@ sub map_domain_site {
     return $site ? $site : $self->sites->{'combust-default'};
 }
 
-sub app {
+sub setup_request {
     my ($self, $env) = @_;
 
-    #warn "ENV: ", Data::Dumper::Dumper(\$env);
-
     my $request = Combust::Request::Plack->new($env);
-
     my $site = $self->map_domain_site($request);
-    
-    my $match = $site->router->match($request->env);
+    $request->site($site);
+
+    return $request;
+}
+
+has 'rewriter' => (
+    is => 'rw',
+    required => 0,
+);
+
+sub app {
+
+    my ($self, $env) = @_;
+    my $request = $self->setup_request($env);
+
+    warn "ENV: ", pp(\$env);
+
+    $self->rewriter->rewrite($request) if $self->rewriter;
+
+    my $match = $request->site->router->match($request->env);
 
     {
         my $module = $match->{controller};
@@ -63,16 +78,27 @@ sub app {
         require "$module.pm";
     }
 
-    my $controller = $match->{controller}->new(request => $request,
-                                               site => $site,
-                                              );
-    return $controller->run($match->{action} || 'render');
+    my $controller = $match->{controller}->new(request => $request);
+
+    warn "calling controller!";
+
+    my $r = $controller->run($match->{action} || 'render');
+
+    use Data::Dump qw(pp);
+    warn "RETURN: ", pp($r);
+
+    return $r;
+}
+
+sub init {
+    my $self = shift;
+    $self->setup_mappings;
 }
 
 sub reference {
     my $self = shift;
-    $self->setup_mappings;
-    sub { $self->app(@_) }
+    $self->init;
+    sub { $self->app(@_); }
 }
 
 1;

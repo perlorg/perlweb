@@ -22,9 +22,10 @@ sub BUILD {}
 before 'BUILD' => sub {
     my $self   = shift;
 
-    warn "ApacheRouters Buikd";
+    warn "ApacheRouters Build";
 
     my $apache = $self->apache_config;
+
     if (%$apache) {
 
         my @virt;
@@ -36,7 +37,7 @@ before 'BUILD' => sub {
 
         for my $virt (@virt) {
             
-            #warn Dumper(\$virt);
+            warn Dumper(\$virt);
 
             my @vars;
             if ($virt->{PerlSetVar}) {
@@ -98,6 +99,8 @@ sub _connect_locations {
         }
 
         if ($loc_data->{SetHandler} eq 'perl-script') {
+
+            Data::Dump::pp("loc_data for $location", $loc_data);
 
             my $handler = $loc_data->{PerlHandler} || $loc_data->{PerlResponseHandler};
             die "no PerlHandler for $location" unless $handler;

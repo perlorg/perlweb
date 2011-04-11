@@ -12,15 +12,16 @@
        PerlResponseHandler Trivial::Control::One->super
     </Location>
 
+    <Location />
+       SetHandler perl-script
+       PerlResponseHandler Combust::Control::Basic->super
+    </Location>
+
     PerlModule +Trivial::Control::Two
     <Location /two>
        SetHandler perl-script
        PerlResponseHandler Trivial::Control::Two->super
     </Location>
 
-    <Location />
-       SetHandler perl-script
-       PerlResponseHandler Combust::Control::Basic->super
-    </Location>
 
 </VirtualHost>

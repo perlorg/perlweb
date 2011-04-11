@@ -1,13 +1,7 @@
 package Combust::Redirect;
-use strict;
+use Moose::Role;
+# extends 'Combust::Base';
 use Combust::Constant qw(DECLINED OK);
-
-eval { require Apache2::SubRequest };
-
-use constant MP2 =>
-  (exists $ENV{MOD_PERL_API_VERSION} && $ENV{MOD_PERL_API_VERSION} == 2)
-  ? 1 : 0;
-
 
 my $map = {};
 
@@ -58,15 +52,15 @@ sub redirect_reload {
 my $stat_check = 0;
 my %files;
 
-sub redirect_check {
-  my $self = shift;
+sub rewrite {
+    my ($self, $request) = @_;
 
-  my $site = $self->site;
-  my $uri  = $self->request->uri;
+  my $site = $request->site;
+  my $uri  = $request->uri;
 
   #warn join " / ", "REDIRECT CHECK FOR $site", $uri;
 
-  my $path = $self->get_include_path;
+  my $path = $self->get_include_path($request);
   return unless $path and $path->[0];
 
   my $file;
@@ -93,7 +87,7 @@ sub redirect_check {
 
   #warn Data::Dumper->Dump([\$conf],[qw(conf)]);
 
-  return DECLINED unless $conf and ref $conf eq "ARRAY";
+  return unless $conf and ref $conf eq "ARRAY";
 
   for my $c (@$conf) {
     #warn "matching $uri to $c->[0]";
@@ -102,25 +96,14 @@ sub redirect_check {
       warn "URLMAP ERROR: $c->[1]: $@" and next if $@;
       next unless $url;
       if ($c->[2] eq "I") {
-        # Not sure if this still works on Apache 1, but we used to
-        # just change the URI. Alternatively maybe this is needed:
-        #  my $subr = $self->request->_r->lookup_uri($url);
-        #  $subr->run(1);
-        #  return DONE;
-
-	$self->request->uri($url);
-
-        if (MP2) {
-            $self->request->_r->internal_redirect($url);
-            return OK;
-        }
+          warn "rewriting to $url";
+          $request->env->{PATH_INFO} = $url; 
       }
       else {
 	return $self->redirect($url, $c->[2] eq "P" ? 1 : 0);
       }
     }
   }
-  return DECLINED;
 
 }
 

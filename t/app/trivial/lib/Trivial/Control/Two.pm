@@ -1,10 +1,11 @@
 package Trivial::Control::Two;
 use strict;
-use base 'Combust::Control';
+use base 'Trivial::Control';
 use Combust::Constant qw(OK);
 
 sub render {
     my $self = shift;
+    warn "TWO Controller!";
     $self->tpl_param('now', scalar localtime );
     return OK, $self->evaluate_template('two');
 }

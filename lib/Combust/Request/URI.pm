@@ -1,7 +1,10 @@
 package Combust::Request::URI;
 use strict;
 use URI;
-use overload '""' => sub { shift->[0]->path };
+use overload
+  '""'  => sub { shift->[0]->path },
+  'cmp' => sub { shift->[0]->path cmp shift }
+  ;
 
 sub new {
     my $class = shift;

@@ -20,6 +20,12 @@ sub _build_response {
     shift->new_response;
 }
 
+has 'site' => (
+    is       => 'rw',
+    isa      => 'Combust::Site',
+    required => 0,
+);
+
 has 'notes' => (
     is  => 'rw',
     isa => 'Str',
