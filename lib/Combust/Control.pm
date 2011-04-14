@@ -77,9 +77,25 @@ sub run {
         return SERVER_ERROR;
     }
 
-    # old mp-era comment:
-    # have to return 'OK' and fake it with r->status or some such to make a custom 404 easily
-    return $status unless $status == OK;
+    unless ($status == OK) {
+        $self->request->response->status($status || 500);
+        unless ($output) {
+
+            my $error_header = "";
+            $error_header = 'File not found' if $status == 404;
+            $error_header = 'Server Error'   if $status == 500;
+
+            my $error_text = $self->request->notes('error') || '';
+
+            $self->tpl_param('error'        => $status);
+            $self->tpl_param('error_header' => $error_header);
+            $self->tpl_param('error_text'   => $error_text);
+            $self->tpl_param('error_uri'    => $self->request->uri);
+
+            $output = $self->evaluate_template("error/error.html")
+              || "Error $status";
+        }
+    }
 
     if ($self->can('cleanup')) {
         eval { $self->cleanup };

@@ -87,11 +87,6 @@ NameVirtualHost *:[% config.port %]
     PerlResponseHandler Combust::Control::Basic->super
   </Location>
 
-  <Location /error/>
-     SetHandler   perl-script
-     PerlResponseHandler Combust::Control::Error->super
-  </Location>
-
 </VirtualHost>
 
 # FIXME|TODO: make the site variable be set by a transhandler;
