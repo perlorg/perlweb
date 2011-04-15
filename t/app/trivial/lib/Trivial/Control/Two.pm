@@ -5,7 +5,6 @@ use Combust::Constant qw(OK);
 
 sub render {
     my $self = shift;
-    warn "TWO Controller!";
     $self->tpl_param('now', scalar localtime );
     return OK, $self->evaluate_template('two');
 }

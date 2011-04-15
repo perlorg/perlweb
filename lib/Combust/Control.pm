@@ -268,7 +268,7 @@ sub send_output {
   $self->request->header_out('P3P',qq[CP="NOI DEVo TAIo PSAo PSDo OUR IND UNI NAV", policyref="/w3c/p3p.xml"]);
 
   my $length;
-  if (reftype($output) eq "GLOB") {
+  if (ref $output && reftype($output) eq "GLOB") {
     $length = ( stat($output) )[7]
       unless tied(*$output);    # stat does not work on tied handles
   }
@@ -316,7 +316,9 @@ sub send_output {
 
   $self->request->response->status(200) unless $self->request->response->status;
 
-  $self->request->response->content( reftype($output) eq "GLOB" ? $output : [ $output ] );
+$self->request->response->content(ref $output
+      && reftype($output) eq "GLOB" ? $output : [$output]);
+
   my $response_ref = $self->request->response->finalize;
   $self->{_response_ref} = $response_ref;
   return $response_ref;
