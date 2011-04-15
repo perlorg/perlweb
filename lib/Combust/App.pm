@@ -40,9 +40,9 @@ sub setup_mappings {
 
 sub map_domain_site {
     my ($self, $request) = @_;
-    my $domain = $request->base->host;
-    my $site_name = $self->domain_mapping->{$domain};
-    my $site = $site_name && $self->sites->{$site_name};
+    my $domain    = $request->base->host;
+    my $site_name = $self->domain_mapping->{$domain} || $self->domain_mapping->{'*'};
+    my $site      = $site_name && $self->sites->{$site_name};
     return $site ? $site : $self->sites->{'combust-default'};
 }
 
