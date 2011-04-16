@@ -48,6 +48,9 @@ function getcpanstats () {
     if [ $? -eq 0 ]; then
       mv $targettemp $targetpath/$target
     fi
+
+    # Switch over to using this:
+    /usr/bin/lwp-mirror http://www.cpan.org/indices/cpan-stats.json $targetpath/cpan-stats.json
 }
 
 getcpanstats
