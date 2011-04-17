@@ -10,6 +10,7 @@ requires  'DBI';
 requires  'Cache::Memcached' => '1.27';
 requires  'JSON::XS' => '2.29';
 requires  'Template';
+requires  'Template::Plugin::JSON';
 requires  'Pod::Simple';
 requires  'Class::Accessor::Class';
 requires  'Digest::SHA1';
