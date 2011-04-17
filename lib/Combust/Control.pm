@@ -316,7 +316,7 @@ sub send_output {
 
   $self->request->response->status(200) unless $self->request->response->status;
 
-$self->request->response->content(ref $output
+  $self->request->response->content(ref $output
       && reftype($output) eq "GLOB" ? $output : [$output]);
 
   my $response_ref = $self->request->response->finalize;
@@ -355,8 +355,7 @@ EOH
   # don't care for that feature anyway).
   $self->post_process( $data );
 
-  $self->send_output( $data, 'text/html' );
-  return DONE;
+  return $self->send_output( $data, 'text/html' );
 }
 
 sub cookies {

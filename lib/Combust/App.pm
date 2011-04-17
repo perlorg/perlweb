@@ -66,9 +66,12 @@ sub app {
     my ($self, $env) = @_;
     my $request = $self->setup_request($env);
 
-    warn "ENV: ", pp(\$env);
+    #warn "ENV: ", pp(\$env);
 
-    $self->rewriter->rewrite($request) if $self->rewriter;
+    {
+        my $r = $self->rewriter->rewrite($request) if $self->rewriter;
+        return $r if $r;
+    }
 
     my $match = $request->site->router->match($request->env);
 
@@ -80,12 +83,10 @@ sub app {
 
     my $controller = $match->{controller}->new(request => $request);
 
-    warn "calling controller!";
-
     my $r = $controller->run($match->{action} || 'render');
 
     use Data::Dump qw(pp);
-    warn "RETURN: ", pp($r);
+    # warn "RETURN: ", pp($r);
 
     return $r;
 }

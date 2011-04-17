@@ -5,7 +5,7 @@ use Combust::Config;
 my $config = Combust::Config->new();
 
 has 'request' => (
-    is       => 'ro',
+    is       => 'rw',
     required => 0,
 );
 
