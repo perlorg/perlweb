@@ -15,7 +15,7 @@
 
     <Location /redirect>
        SetHandler   perl-script
-       PerlHandler Combust::Control::Redirect->super
+       PerlHandler +PerlOrg::Control::Books->super
     </Location>
 
     <Location /server-status>

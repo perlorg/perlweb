@@ -7,7 +7,6 @@ use lib "$ENV{CBROOTLOCAL}/cpan/lib/perl5";
 use strict;
 use Apache::DBI;
 use Data::Dumper;
-use Combust::Control::Redirect;
 use Combust::Control::Basic;
 use Combust::Control::Error;
 use Combust::Notes;

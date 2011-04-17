@@ -1,18 +1,11 @@
-package Combust::Control::Redirect;
+package PerlOrg::Control::Books;
 use strict;
 use base 'Combust::Control';
-
-# this should really be more extensible and dispatch to subclasses
-# instead of hardcoding things here.
 
 my %bookstores =
   ( 'amazon' => 'http://www.amazon.com/exec/obidos/ASIN/#ISBN#/develooper',
     'amazonuk' => 'http://www.amazon.co.uk/exec/obidos/ASIN/#ISBN#/develooper-21',
-    'fatbrain' => 'http://www1.fatbrain.com/asp/bookinfo/bookinfo.asp?theisbn=#ISBN#&from=VFK102',
-    'bn' => 'http://service.bfast.com/bfast/click?bfmid=2181&sourceid=38537477&bfpid=#ISBN#&bfmtype=book',
     'powells' => 'http://www.powells.com/partner/25774/biblio/#ISBN#',
-    # bookpool appears to have gone under
-    'bookpool' => 'http://www.bookpool.com/.x/SSSSSS_C200/sm/#ISBN#',
   );
 
 my %sites =
@@ -41,7 +34,7 @@ sub find_url {
     # can't use straight URLs, because they let us become an open
     # bouncepoint for things.  So.. we've got to code sites.
     # Eventually this should be in a .ht file or something.
-    die "Uniknown Site"
+    die "Unknown Site"
       unless exists $sites{ $self->req_param('id') };
     return $sites{ $self->req_param('id') };
   }
@@ -49,8 +42,8 @@ sub find_url {
 }
 
 
-sub render ($$) {
-  my ($self) = @_;
+sub render {
+  my $ self = shift;
 
   my $url;
   eval { $url = $self->find_url() };
@@ -60,10 +53,7 @@ sub render ($$) {
     return $self->redirect($url);
   }
   else {
-    # If we can't handle it, pass it to CC::Error, which will default
-    # to a 404.
     return 404;
-    # return $self->Combust::Control::Error::render();
   }
 
 }
