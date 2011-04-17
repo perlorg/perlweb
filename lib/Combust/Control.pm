@@ -359,15 +359,21 @@ EOH
 }
 
 sub cookies {
-  my $self = shift;
-  return $self->{_cookies} if $self->{_cookies};
-  my $cookies = Combust::Cookies->new($self->request,
-                                   # Combust::Request defaults this to r->hostname
-                                   # if it is not set
-                                   domain => ($self->site && $self->config->site->{$self->site}->{cookie_domain} || ''),
-                                  );
-  
-  return $self->{_cookies} = $cookies;
+    my $self = shift;
+    return $self->{_cookies} if $self->{_cookies};
+
+    my $domain =
+      $self->site && $self->config->site->{$self->site}->{cookie_domain}
+      || ''
+
+      my $cookies = Combust::Cookies->new(
+        $self->request,
+
+        # Combust::Request defaults this to r->hostname if it is not set
+        domain => $domain,
+      );
+
+    return $self->{_cookies} = $cookies;
 }
 
 sub cookie {
