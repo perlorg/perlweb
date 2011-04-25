@@ -1,0 +1,72 @@
+[%
+    page.import({
+        title    => 'Perl supports IPv6',
+        section  => 'about',
+        description
+            => 'Perl and IPv6 support',
+        keywords => 'perl, ipv6, perl ipv6, perl ipv6 support, perl and ipv6',
+    });
+%]
+<h2>
+    Perl and IPv6 - Perl supports IPv6
+</h2>
+<p>
+    <em>How to use both IPv4 and IPv6 networks from Perl</em>
+</p>
+<p>
+    To enable IPv6 in Perl, replace any use of IO::Socket::INET with <a href=
+    "http://search.cpan.org/dist/IO-Socket-IP/">IO::Socket::IP</a> and you will
+    be able to use both <a href="http://en.wikipedia.org/wiki/Ipv4">IPv4</a>
+    and <a href="http://en.wikipedia.org/wiki/IPv6">IPv6</a>. Perl 5.14 has the
+    full set of IPv6 functions as part of it's core Socket module.
+</p>
+<p>
+    The Perl community is currently in the process of converting older modules
+    to use this, if you use a module which has not been converted please report
+    it to the module author.
+</p>
+<p>
+    The IO::Socket::IP class provides a general-purpose socket that can provide
+    <a href=
+    "http://en.wikipedia.org/wiki/Transmission_Control_Protocol">TCP</a>
+    connections or <a href="http://en.wikipedia.org/wiki/UDP_packet">UDP</a>
+    packets using either IPv4 or IPv6. It is an API-compatible replacement for
+    its IPv4-only predecessor, IO::Socket::INET.
+</p>
+<p>
+    IO::Socket::IP should be a direct drop-in replacement for IO::Socket::INET.
+    It supports the same constructor arguments and the same methods as
+    IO::Socket::INET, most programs only need to change the 'use' line and
+    constructor calls, allowing them to support IPv6.
+</p>
+<p>
+    Perl 5.14 ships with a complete set of IPv6-related functions in the Socket
+    module. It provides the AF_INET6 constant, sockaddr_in6 address structure
+    handling functions, and the getaddrinfo and getnameinfo functions.
+    IO::Socket::IP uses these on Perl 5.14, making it an easy install requiring
+    no other modules, nor compiling any <a href=
+    "http://en.wikipedia.org/wiki/XS_(Perl)">XS</a> code.
+</p>
+<p>
+    On earlier versions of Perl, IO::Socket::IP uses <a href=
+    "http://search.cpan.org/dist/Socket-GetAddrInfo/">Socket::GetAddrInfo</a>
+    to provide the IP protocol-neutral support by way of the getaddrinfo and
+    getnameinfo functions. This requires XS code to build.
+</p>
+<h4>
+    Resources:
+</h4>
+<ul>
+    <li>
+        <a href="http://search.cpan.org/dist/IO-Socket-IP/">IO::Socket::IP</a>
+    </li>
+</ul>
+<h4>
+    Article Authors
+</h4>
+<p>
+    <a href="http://www.leonerd.org.uk/">Paul "LeoNerd" Evans</a> and <a href=
+    "http://leo.cuckoo.org/">Leo Lapworth</a>
+</p>
+
+
