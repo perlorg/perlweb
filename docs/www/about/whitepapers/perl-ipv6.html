@@ -40,6 +40,11 @@
     constructor calls, allowing them to support IPv6.
 </p>
 <p>
+    Unfortunately IO::Socket::INET could not be upgraded in such a way that
+    would not cause backwards incompatibilities, existing code may expect
+    IO::Socket::INET to always return IPv4 sockets.
+</p>
+<p>
     Perl 5.14 ships with a complete set of IPv6-related functions in the Socket
     module. It provides the AF_INET6 constant, sockaddr_in6 address structure
     handling functions, and the getaddrinfo and getnameinfo functions.
