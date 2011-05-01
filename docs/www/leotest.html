@@ -1,0 +1,42 @@
+[%-
+    cpan_stats = {};
+    
+-%]
+[%- TRY -%]
+[%- json_data = INSERT "${root}/var/rss/cpan-stats.json" %]
+[% 
+   USE JSON;
+   data = JSON.json_decode(json_data);
+   cpan_stats.import(data);
+%]
+[%- CATCH -%]
+[%- END -%]
+[%-
+
+    perl_stats = {
+        # Over
+        cpan_modules => cpan_stats.modules.count || '92000',
+        cpan_dists => '21,000',
+        cpan_mirrors => '200',
+        # over
+        monger_groups => 300,
+        # over
+        platforms => 100,
+        
+        # Years since December 18, 1987
+        perl_age => 23,
+        
+        # Perl version
+        perl_version => '5.12.3',
+	# Make sure to change the perlXXXXXdelta.pod, as well as well ad the dist/perl..
+        perl_version_link => 'http://search.cpan.org/dist/perl-5.12.3/pod/perl5123delta.pod',
+        perl_download_link => 'http://search.cpan.org/dist/perl-5.12.3/',
+        
+        # Perl testing
+        perl_core_tests => '92,000',
+        perl_core_and_extra_lib_tests => '142,000',
+        
+    };
+-%]
+[% USE Comma %]
+S: [% perl_stats.cpan_modules | comma %]
