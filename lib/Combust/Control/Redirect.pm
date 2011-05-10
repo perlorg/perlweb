@@ -8,7 +8,7 @@ my $map = {};
 sub redirect_reload {
   my ($self, $file) = @_;
 
-  warn "Checking file $file";
+  #warn "Checking file $file";
 
   my $mtime = (stat($file))[9];
   unless ($mtime) {
@@ -53,16 +53,14 @@ my $stat_check = 0;
 my %files;
 
 sub rewrite {
-    my ($self, $request) = @_;
+  my ($self, $request) = @_;
 
-    $self->request($request);
-
-    warn "redirecting!?!";
+  $self->request($request);
 
   my $site = $request->site;
   my $uri  = $request->uri;
 
-  warn join " / ", "REDIRECT CHECK FOR $site", $uri;
+  # warn join " / ", "REDIRECT CHECK FOR $site", $uri;
 
   my $path = $self->get_include_path($request);
   return unless $path and $path->[0];
@@ -94,25 +92,24 @@ sub rewrite {
   return unless $conf and ref $conf eq "ARRAY";
 
   for my $c (@$conf) {
-    warn "matching $uri to $c->[0]";
     if (my @n = ($uri =~ m/$c->[0]/)) {
-        warn "matched";
       my $url = eval qq["$c->[1]"];
-      warn "URLMAP ERROR: $c->[1]: $@" and next if $@;
-      warn "URL: [$url]";
+      #warn "need [$url]";
       next unless $url;
       if ($c->[2] eq "I") {
-          warn "rewriting to $url";
           $request->env->{PATH_INFO} = $url; 
+          # warn "PATH1: ", $request->env->{PATH_INFO};
       }
       else {
 	return $self->redirect($url, $c->[2] eq "P" ? 1 : 0);
       }
     }
     else {
-        warn "no match";
+        # warn "no match";
     }
   }
+
+  return;
 
 }
 
