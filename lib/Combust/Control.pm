@@ -77,8 +77,14 @@ sub run {
         return SERVER_ERROR;
     }
 
-    unless ($status == OK) {
-        $self->request->response->status($status || 500);
+    # warn "STATUS RETURNED: $status";
+    # warn "output returned: [$output]";
+
+    unless ($status and $output) {
+
+        $self->request->response->status or
+          $self->request->response->status($status || 500);
+
         unless ($output) {
 
             my $error_header = "";
@@ -151,7 +157,7 @@ sub do_request {
       ? delete $self->{_response_ref}
       : [ $self->request->response->status ]
   }
-  return $status unless $status == OK;
+  return ($status, $output, $content_type) unless $status == OK;
 
   # sometimes we end up here with "OK" but with no content ... gah.
   if ($cache and $output and $status != SERVER_ERROR and !$self->no_cache) {
@@ -173,7 +179,7 @@ sub no_cache {
 }
 
 sub cache_info {}
-sub post_process { OK }
+sub post_process { return OK }
 
 sub _cleanup_params {
   my $self = shift;
@@ -248,7 +254,7 @@ sub default_character_set {
 sub send_output {
   my $self = shift;
 
-  warn "in send output!";
+  #cluck "in send output!";
   
   my $output = shift;
   my $content_type = shift || $self->content_type || 'text/html';
@@ -321,6 +327,10 @@ sub send_output {
 
   my $response_ref = $self->request->response->finalize;
   $self->{_response_ref} = $response_ref;
+
+  #use Data::Dump qw(pp);
+  #warn "RESP REF: ", pp($response_ref);
+
   return $response_ref;
 }
 
@@ -341,7 +351,9 @@ sub redirect {
   #warn "redirecting to [$url]";
 
   $self->request->header_out('Location' => $url);
-  $self->request->status($permanent ? MOVED : REDIRECT);
+
+  my $status = $permanent ? MOVED : REDIRECT;
+  $self->request->response->status($status);
 
   my $url_escaped = HTML::Entities::encode_entities($url);
 
@@ -364,7 +376,7 @@ sub cookies {
 
     my $domain =
       $self->site && $self->config->site->{$self->site}->{cookie_domain}
-      || ''
+      || '';
 
       my $cookies = Combust::Cookies->new(
         $self->request,
