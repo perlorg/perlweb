@@ -112,7 +112,7 @@ sub _connect_locations {
               : "(?:/.*)?";
 
             $router->connect(
-                qr{($location)} => {
+                qr{^($location)} => {
                     controller => $handler,
                     action     => 'render',
                 }
