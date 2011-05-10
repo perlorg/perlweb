@@ -97,7 +97,7 @@ sub get_cookie {
 sub set_cookie {
     my ($self, $name, $value, $args) = @_;
 
-    $self->psgi_response->cookies->{$name} = {
+    $self->response->cookies->{$name} = {
         value  => $value,
         domain => $args->{domain},
         (   $args->{expires}
