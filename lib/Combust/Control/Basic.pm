@@ -21,8 +21,6 @@ sub render {
 
   my $uri = $self->request->path;
 
-  warn "URI: $uri";
-
   # Don't serve special files:
   #    Normally, we want to use DirectoryMatch for this, but URI->File
   #    mapping is handled in this controller and parents.
@@ -39,7 +37,6 @@ sub render {
   $uri =~ s!/$!/index.html!;
 
   if (!$self->force_template_processing and $uri !~ m!/(.*\.(?:html?))$!) {
-      warn "going to serve a static file";
       return $self->serve_static_file;
   }
 
