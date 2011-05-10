@@ -55,7 +55,7 @@ sub is_logged_in {
 
 sub bitcard {
   my $self = shift;
-  my $site = $self->r->dir_config("site");
+  my $site = $self->request->site;
   my $bitcard_token = $self->config->site->{$site}->{bitcard_token};
   my $bitcard_url   = $self->config->site->{$site}->{bitcard_url};
   unless ($bitcard_token) {
