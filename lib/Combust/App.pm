@@ -117,11 +117,10 @@ sub reference {
 
     $logfh->autoflush(1);
 
-    use Plack::Middleware::AccessLog;
-    my $logger = Plack::Middleware::AccessLog->new;
-    $logger->wrap( $app, logger => sub { $logfh->print(@_) } );
-
-    return $app;
+    builder {
+        enable "AccessLog", logger => sub { print $logfh @_ };
+        return $app;
+    }
 }
 
 1;
