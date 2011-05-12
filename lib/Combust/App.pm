@@ -3,6 +3,7 @@ use Moose;
 use Plack;
 use Plack::Builder;
 use Plack::Request;
+use Combust::Config;
 use Combust::Site;
 use Combust::Request::Plack;
 
@@ -61,7 +62,7 @@ has 'rewriter' => (
     required => 0,
 );
 
-sub app {
+sub exec {
 
     my ($self, $env) = @_;
     my $request = $self->setup_request($env);
@@ -99,7 +100,27 @@ sub init {
 sub reference {
     my $self = shift;
     $self->init;
-    sub { $self->app(@_); }
+    my $app = sub { $self->exec(@_) };
+
+    my $config = Combust::Config->new;
+    my $log_path = $config->log_path;
+
+    my $file = $log_path . "/access_log";
+
+    my $use_cronolog = $config->use_cronolog;
+    # cronolog_path
+    # config.cronolog_template.replace("LOGFILE","access");
+    # cronolog_params
+
+    open my $logfh, ">>", $file
+      or die "Could not open $file: $!";
+
+    $logfh->autoflush(1);
+
+    builder {
+        enable "AccessLog", logger => sub { print $logfh @_ };
+        return $app;
+    }
 }
 
 1;
