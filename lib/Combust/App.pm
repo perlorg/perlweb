@@ -105,17 +105,41 @@ sub reference {
     my $config = Combust::Config->new;
     my $log_path = $config->log_path;
 
-    my $file = $log_path . "/access_log";
+    my $logfh;
 
-    my $use_cronolog = $config->use_cronolog;
-    # cronolog_path
-    # config.cronolog_template.replace("LOGFILE","access");
-    # cronolog_params
+    if ($config->use_cronolog) {
 
-    open my $logfh, ">>", $file
-      or die "Could not open $file: $!";
+        my $path     = $config->cronolog_path;
+        my $log_file = $log_path . "/" . $config->cronolog_template;
+        my $err_file = $log_file;
+        $log_file =~ s/LOGFILE/access/;
+        $err_file =~ s/LOGFILE/error/;
+
+        my $log_params = $config->cronolog_params;
+        $log_params =~ s/LOGDIR/$log_path/;
+        my $err_params = $log_params;
+        $log_params =~ s/LOGFILE/access/;
+        $err_params =~ s/LOGFILE/error/;
+
+        open $logfh, "|-", "$path $log_params $log_file"
+          or die "Could not run $path: $!";
+
+        open STDERR, "|-", "$path $err_params $err_file"
+          or die "Could not run $path: $!";
+
+    }
+    else {
+        my $log_file = $log_path . "/access_log";
+        my $err_file = $log_path . "/error_log";
+
+        open $logfh, ">>", $log_file
+          or die "Could not open $log_file: $!";
+
+        open STDERR, ">>", $err_file or die $!;
+    }
 
     $logfh->autoflush(1);
+    STDERR->autoflush(1);
 
     builder {
         enable "AccessLog", logger => sub { print $logfh @_ };

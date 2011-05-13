@@ -209,7 +209,7 @@ sub cronolog_template {
 }
 
 sub cronolog_params {
-  $cfg->param('cronolog_params') || "";
+  $cfg->param('cronolog_params') || "-l LOGDIR/LOGFILE.latest";
 }
 
 
