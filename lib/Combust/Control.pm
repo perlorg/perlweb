@@ -367,7 +367,7 @@ EOH
   # don't care for that feature anyway).
   $self->post_process( $data );
 
-  return $self->send_output( $data, 'text/html' );
+  return ($status, $data, 'text/html');
 }
 
 sub cookies {

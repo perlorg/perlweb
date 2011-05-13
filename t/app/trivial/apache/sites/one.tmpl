@@ -23,5 +23,9 @@
        PerlResponseHandler Trivial::Control::Two->super
     </Location>
 
+    <Location /two/redirect>
+       SetHandler perl-script
+       PerlResponseHandler Trivial::Control::Two->super
+    </Location>
 
 </VirtualHost>

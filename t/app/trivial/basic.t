@@ -23,6 +23,8 @@ ok(my $app = Trivial::App->new, 'new app');
        $res = $cb->(GET "/three");
        like $res->content, qr/Hello Static/;
 
+       $res = $cb->(GET "/two/redirect");
+       like $res->content, qr/The document has moved/;
 
    };
 
