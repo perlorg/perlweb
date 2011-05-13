@@ -23,22 +23,6 @@ LogLevel [% config.apache_loglevel %]
 LogFormat "%h %V %u %t %{site}n \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
 LogFormat "%h %V %u %t \"%r\" %>s %b" common
 
-[% IF config.use_cronolog %]
-  [% log_path = config.log_path;
-     cronolog_access      = config.cronolog_template.replace("LOGFILE","access");
-     cronolog_error       = config.cronolog_template.replace("LOGFILE","error");
-     cronolog_access_params = config.cronolog_params.replace("LOGFILE","access");
-     cronolog_error_params  = config.cronolog_params.replace("LOGFILE","error");
-     cronolog_access_params = cronolog_access_params.replace("LOGDIR", log_path);
-     cronolog_error_params  = cronolog_error_params.replace("LOGDIR",  log_path);
-  %]
-  ErrorLog  "|[% config.cronolog_path %] [% config.log_path %]/[% cronolog_error  %] [% cronolog_error_params  %]"
-  CustomLog "|[% config.cronolog_path %] [% config.log_path %]/[% cronolog_access %] [% cronolog_access_params %]" combined
-[% ELSE %]
-  ErrorLog  [% config.log_path %]/error_log
-  CustomLog [% config.log_path %]/access_log combined
-[% END %]
-
 PerlPostReadRequestHandler ProxyIP
 
 ErrorDocument 404 /error/404.html
