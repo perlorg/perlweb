@@ -2,6 +2,7 @@ package Combust::Cache::Memcached;
 use strict;
 use Carp qw(carp);
 use Combust;
+use Data::Dumper ();
 
 use Cache::Memcached '1.27';
 
@@ -77,6 +78,9 @@ sub fetch_multi {
 
     for my $nk (keys %$rv) {
         my $k = $id_for{$nk};
+        carp "\$k was unexpectedly undefined: ",
+          Data::Dumper->Dump([\%id_for, $rv], [qw(id_for rv)])
+          unless defined $k;
         $rv->{$k} = delete $rv->{$nk};
     }
     $rv;
@@ -115,6 +119,7 @@ sub _normalize_id {
     return unless $id; 
     # replace ' ' by '+', because memcached keys can't have spaces
     $id =~ tr/ /+/;
+    utf8::encode($id) if utf8::is_utf8($id);
     # prepend "$type;"
     $id = join ';', $self->{type}, $id;
     $self->SUPER::_normalize_id($id);

@@ -25,9 +25,7 @@ function getrss () {
 
 }
 
-getrss "useperl" "http://use.perl.org/index.rss";
 getrss "cpanrecent" "http://search.cpan.org/uploads.rdf"
-getrss "perlcom" "http://www.perl.com/pace/perlnews.rdf";
 getrss "perl-foundation" "http://www.perlfoundation.org/news/tpf_rss_10.rss"
 getrss "tpfblog" "http://news.perlfoundation.org/index.xml"
 getrss "noc" "http://log.perl.org/index.rdf"
@@ -48,6 +46,9 @@ function getcpanstats () {
     if [ $? -eq 0 ]; then
       mv $targettemp $targetpath/$target
     fi
+
+    # Switch over to using this:
+    /usr/bin/lwp-mirror http://www.cpan.org/indices/cpan-stats.json $targetpath/cpan-stats.json
 }
 
 getcpanstats
