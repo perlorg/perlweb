@@ -6,9 +6,9 @@ use strict;
 use warnings;
 
 use Combust::Config;
+my $config = Combust::Config->new;
 
 my $param = shift;
 
-my $value = eval { Combust::Config->$param };
+my $value = eval { $config->$param };
 print "",(defined($value) ? $value : ''),"\n";
-

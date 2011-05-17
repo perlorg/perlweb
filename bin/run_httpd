@@ -33,19 +33,14 @@ fi
 #  echo ERROR: bin/deploy/static_version_cache failed; exit
 #fi
 
-# TODO: change this to check if the httpd is still running every second
+PIDFILE=${LOG_PATH}/httpd.pid
+
 mkdir -p $WORK_PATH/htdocs && mkdir -p $WORK_PATH/ctpl && mkdir -p $LOG_PATH && \
 rm -fr $WORK_PATH/ctpl/* && \
-$CBROOT/bin/make_configs && \
-$CBROOT/apache/bin/apachectl configtest && \
-$CBROOT/apache/bin/apachectl stop && RESTART=1
+$CBROOT/bin/make_configs &&
 
-if [ $RESTART ]
-then
 
-  PIDFILE=${LOG_PATH}/httpd.pid
-
-  if [ -f $PIDFILE ]; then
+if [ -f $PIDFILE ]; then
 
      PID=`cat ${PIDFILE}`
 
@@ -56,6 +51,9 @@ then
          rm $PIDFILE
      fi
 
+     echo "Shutting down process $PID"
+     kill $PID
+
      # give it a chance to stop, so we don't spam the console with "still running"
      sleep 0.8
 
@@ -64,10 +62,28 @@ then
        echo "Server still running, $PIDFILE exists"
        sleep 0.5
      done
-  fi
 
-  $CBROOT/apache/bin/apachectl start
+     kill -0 $PID 2> /dev/null
+     if [ $? -eq 0 ]; then
+        echo pid still running...
+     fi
+
 fi
+
+WORKERS=`$CBROOT/bin/cbconfig maxclients`
+PORT=`$CBROOT/bin/cbconfig port`
+
+# Net::Server can't figure out to daemonize when we're using the
+# AccessLog middleware, hence the & ...
+$CBROOT/bin/perl `which starman` \
+    --preload-app \
+    --pid=$PIDFILE \
+    -I$CBROOT/lib -I$CBROOTLOCAL/lib \
+    --daemonize \
+    --workers=$WORKERS \
+    --port=$PORT \
+    app.psgi &
+
 
 if test -e $CBROOTLOCAL/bin/httpd_cleanup -a -x $CBROOTLOCAL/bin/httpd_cleanup; then
    $CBROOTLOCAL/bin/httpd_cleanup || echo WARNING: httpd_cleanup failed
