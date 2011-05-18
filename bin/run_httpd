@@ -85,6 +85,3 @@ $CBROOT/bin/perl `which starman` \
     app.psgi &
 
 
-if test -e $CBROOTLOCAL/bin/httpd_cleanup -a -x $CBROOTLOCAL/bin/httpd_cleanup; then
-   $CBROOTLOCAL/bin/httpd_cleanup || echo WARNING: httpd_cleanup failed
-fi
