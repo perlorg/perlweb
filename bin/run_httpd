@@ -37,8 +37,7 @@ PIDFILE=${LOG_PATH}/httpd.pid
 
 mkdir -p $WORK_PATH/htdocs && mkdir -p $WORK_PATH/ctpl && mkdir -p $LOG_PATH && \
 rm -fr $WORK_PATH/ctpl/* && \
-$CBROOT/bin/make_configs &&
-
+$CBROOT/bin/make_configs
 
 if [ -f $PIDFILE ]; then
 
@@ -72,6 +71,8 @@ fi
 
 WORKERS=`$CBROOT/bin/cbconfig maxclients`
 PORT=`$CBROOT/bin/cbconfig port`
+
+# TODO: just use bin/httpd with --pid and --daemonize options
 
 # Net::Server can't figure out to daemonize when we're using the
 # AccessLog middleware, hence the & ...

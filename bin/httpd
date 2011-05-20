@@ -13,14 +13,48 @@ if [ ! -f $CONFIGFILE ]; then
   exit 2
 fi
 
-HTTPD=`grep ^httpd $CONFIGFILE | cut -d= -f2 | sed 's/[[:space:]]//g'`
+#!/bin/sh
 
-if [ -z $HTTPD ]; then
-  echo Could not find "httpd = /path/bin/httpd" line in the combust.conf 1>&2
+if test -z $CBROOT
+ then
+  echo FATAL ERROR: \$CBROOT not set
+  exit 
+fi
+
+if test ! -z $CBROOTLOCAL 
+ then
+   cd $CBROOTLOCAL
+else
+   cd $CBROOT
+fi
+
+
+LOG_PATH=`$CBROOT/bin/cbconfig log_path`
+WORK_PATH=`$CBROOT/bin/cbconfig work_path`
+
+if [ -z $LOG_PATH -o -z $WORK_PATH ]; then
+  echo log_path and work_path configuration required 1>&2
   exit 2
 fi
 
-$HTTPD ${1+"$@"}
+if test -e $CBROOTLOCAL/bin/httpd_setup -a -x $CBROOTLOCAL/bin/httpd_setup; then
+   if ! $CBROOTLOCAL/bin/httpd_setup; then
+      echo ERROR: httpd_setup failed; exit
+   fi
+fi
 
-#echo ${1+"$@"} -X
-#gdb $HTTPD 
+mkdir -p $WORK_PATH/htdocs && mkdir -p $WORK_PATH/ctpl && mkdir -p $LOG_PATH && \
+rm -fr $WORK_PATH/ctpl/* && \
+$CBROOT/bin/make_configs
+
+WORKERS=`$CBROOT/bin/cbconfig maxclients`
+PORT=`$CBROOT/bin/cbconfig port`
+
+$CBROOT/bin/perl `which starman` \
+    --preload-app \
+    --pid=$PIDFILE \
+    -I$CBROOT/lib -I$CBROOTLOCAL/lib \
+    --workers=$WORKERS \
+    --port=$PORT \
+    app.psgi
+
