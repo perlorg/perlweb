@@ -145,7 +145,7 @@ sub reference {
     my $trust_all = _get_forwarders();
 
     builder {
-        # TODO: match combust setting
+        enable "Options";
         enable_if {
             my $remote_ip = $_[0]->{REMOTE_ADDR};
             $trust_all or _trusted_ip($remote_ip)
