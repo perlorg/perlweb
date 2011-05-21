@@ -291,12 +291,13 @@ sub send_output {
             $output = $compressed;
 
             $self->request->header_out('Content-Encoding' => 'gzip');
-            $self->request->header_out(
-                'Vary' => join ", ",
-                grep {$_} $self->request->header_out('Vary'), 'Accept-Encoding'
-            );
-
         }
+
+        $self->request->header_out(
+            'Vary' => join ", ",
+            grep {$_} $self->request->header_out('Vary'), 'Accept-Encoding'
+        );
+
     }
 
       # length in bytes
