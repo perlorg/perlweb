@@ -320,6 +320,11 @@ sub send_output {
           'Last-Modified' => HTTP::Date::time2str($self->request->modified_time));
   }
 
+  if (!$self->request->header_out('Server')) {
+      $self->request->header_out(Server => 'Combust/Plack (Perl)');
+  }
+
+
   #if ((my $rc = $r->meets_conditions) != OK) {
   #  $r->status($rc);
   #  return $rc;
