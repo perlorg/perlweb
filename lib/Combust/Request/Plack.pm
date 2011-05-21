@@ -77,7 +77,16 @@ sub method {
 }
 
 sub update_mtime {
-    # noop
+    my $self = shift;
+    my $old = $self->{_mtime} || 0;
+    my $new = shift || time;
+    $self->{_mtime} = $new if $new > $old;
+    $self->{_mtime};
+}
+
+sub modified_time {
+    my $self = shift;
+    return $self->{_mtime};
 }
 
 sub send_http_header { 

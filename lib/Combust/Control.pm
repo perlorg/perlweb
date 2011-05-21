@@ -6,6 +6,7 @@ use Combust::Constant qw(OK SERVER_ERROR MOVED DONE DECLINED REDIRECT);
 use Carp qw(confess cluck carp);
 use Digest::SHA qw(sha1_hex);
 use HTML::Entities ();
+use HTTP::Date ();
 use Encode qw(encode_utf8);
 use Scalar::Util qw(looks_like_number reftype);
 use IO::Compress::Gzip qw(gzip $GzipError);
@@ -311,6 +312,13 @@ sub send_output {
     if $content_type =~ m/^text/ and $content_type !~ m/charset=/;
   $self->content_type($content_type);
   #warn "content_type: $content_type";
+
+  $self->request->update_mtime(time) unless $self->request->modified_time;
+
+  if (!$self->request->header_out('Last-Modified')) {
+      $self->request->header_out(
+          'Last-Modified' => HTTP::Date::time2str($self->request->modified_time));
+  }
 
   #if ((my $rc = $r->meets_conditions) != OK) {
   #  $r->status($rc);
