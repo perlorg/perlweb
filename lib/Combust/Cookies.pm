@@ -148,6 +148,7 @@ sub bake_cookies {
     $self->request->set_cookie( $cookie_name, $encoded,
                                 { expires => ( time + 180 * 60 * 60 ),
                                   domain => $self->{domain},
+                                  path  => '/',
                                 }
                               );
   }

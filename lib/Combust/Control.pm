@@ -376,7 +376,8 @@ sub cookies {
 
     my $domain =
       $self->site && $self->config->site->{$self->site}->{cookie_domain}
-      || '';
+        || $self->request->uri->host
+        || '';  
 
       my $cookies = Combust::Cookies->new(
         $self->request,
