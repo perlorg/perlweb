@@ -23,6 +23,12 @@ has domain_mapping => (
   default => sub { {} },
 );
 
+has errorlog_stderr => (
+  is      => 'ro',
+  isa     => 'Bool',
+  default => sub { 1 },
+);
+
 sub setup_mappings {
     my $self = shift;
 
@@ -125,8 +131,10 @@ sub reference {
         open $logfh, "|-", "$path $log_params $log_file"
           or die "Could not run $path: $!";
 
-        open STDERR, "|-", "$path $err_params $err_file"
-          or die "Could not run $path: $!";
+        unless ($self->errorlog_stderr) {
+            open STDERR, "|-", "$path $err_params $err_file"
+              or die "Could not run $path: $!";
+        }
 
     }
     else {
@@ -136,7 +144,9 @@ sub reference {
         open $logfh, ">>", $log_file
           or die "Could not open $log_file: $!";
 
-        open STDERR, ">>", $err_file or die $!;
+        unless ($self->errorlog_stderr) {
+            open STDERR, ">>", $err_file or die $!;
+        }
     }
 
     $logfh->autoflush(1);
