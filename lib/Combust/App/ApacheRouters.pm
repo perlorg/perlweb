@@ -90,17 +90,19 @@ sub _connect_locations {
 
     for my $location (@locations) {
         my $loc_data = $locations->{$location};
+
+        Data::Dump::pp("loc_data for $location", $loc_data);
+
         next if $loc_data->{SetHandler} eq 'server-status';
         next if $loc_data->{SetHandler} eq 'cgi-script';
 
-        if ($loc_data->{SetHandler} eq 'default-handler') {
+        if ($loc_data->{SetHandler} =~ m/^default(-handler)?$/) {
             $loc_data->{SetHandler}  = 'perl-script';
-            $loc_data->{PerlHandler} = 'Combust::Control::Static';
+            # TODO: make a separate handler that always just serves the files as-is
+            $loc_data->{PerlHandler} = 'Combust::Control::Basic';
         }
 
         if ($loc_data->{SetHandler} eq 'perl-script') {
-
-            Data::Dump::pp("loc_data for $location", $loc_data);
 
             my $handler = $loc_data->{PerlHandler} || $loc_data->{PerlResponseHandler};
             die "no PerlHandler for $location" unless $handler;

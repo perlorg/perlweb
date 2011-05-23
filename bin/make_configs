@@ -38,6 +38,7 @@ my $params = { config => $config,
 	       root         => $ENV{CBROOT},
 	       root_local   => ($ENV{CBROOTLOCAL} || ''),
 	       root_default => ($ENV{CBROOTLOCAL} || $ENV{CBROOT}),
+               PH           => 'PerlResponseHandler',
 	     };
 
 $params->{dont_edit} = <<EOT;
