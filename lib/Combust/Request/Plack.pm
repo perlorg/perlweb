@@ -26,9 +26,14 @@ has 'site' => (
     required => 0,
 );
 
-has 'notes' => (
-    is  => 'rw',
-    isa => 'Str',
+has 'notes_container' => (
+    traits => ['Hash'],
+    is  => 'ro',
+    isa => 'HashRef[Any]',
+    default => sub { {} },
+    handles => {
+       notes => 'accessor',
+    },
 );
 
 sub remote_ip {
