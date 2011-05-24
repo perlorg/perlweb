@@ -60,7 +60,7 @@ sub args {
 sub uri {
     my $self = shift;
     my $uri = $self->SUPER::uri(@_);
-    $uri = Combust::Request::URI->new( $uri->as_string );
+    $uri = Combust::Request::URI->new( $uri->as_string, $self->path );
     return $uri;
 }
 
