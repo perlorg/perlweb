@@ -1,5 +1,8 @@
 # Upgrade notes from Apache to Plack version
 
+* request->cookie for "plain" cookies is deprecated; use
+  request->(response->)cookies instead (see Plack::Response for details).
+
 * request->uri now returns a URI object with some extra code to have
   it emulate the old behavior of just returning the path when
   stringified.
