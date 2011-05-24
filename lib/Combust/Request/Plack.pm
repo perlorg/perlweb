@@ -30,7 +30,10 @@ has 'notes_container' => (
     traits => ['Hash'],
     is  => 'ro',
     isa => 'HashRef[Any]',
-    default => sub { {} },
+    default => sub { 
+        my $self = shift;
+        return do { $self->env->{'combust.notes'} ||= {} }
+    },
     handles => {
        notes => 'accessor',
     },
