@@ -130,7 +130,7 @@ sub do_request {
 
     if ($cache_data and $cache_data->{data}) {
       $self->post_process($cache_data->{data});
-      $self->r->update_mtime($cache_data->{created_timestamp});
+      $self->request->update_mtime($cache_data->{created_timestamp});
       my ($content_type);
       $content_type = $cache->{meta_data}->{content_type}
 	if $cache->{meta_data}->{content_type};
@@ -240,7 +240,7 @@ sub content_type {
 sub send_cached {
   my ($self, $cache, $content_type) = @_;
 
-  $self->r->update_mtime($cache->{created_timestamp});
+  $self->request->update_mtime($cache->{created_timestamp});
 
   $content_type = $cache->{meta_data}->{content_type}
       if $cache->{meta_data}->{content_type};

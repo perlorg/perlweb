@@ -89,6 +89,9 @@ sub serve_static_file {
         $content_type = guess_media_type($data->{path});
         my $fh = IO::File->new($data->{path}, "r")
           or warn "Could not open $data->{path}: $!" and return 403;
+
+        my $mtime = (stat($fh))[9];
+        $self->request->update_mtime($mtime);
         return OK, $fh, $content_type;
     }
     else {
