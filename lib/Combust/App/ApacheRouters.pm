@@ -9,8 +9,6 @@ sub BUILD {}
 before 'BUILD' => sub {
     my $self   = shift;
 
-    warn "ApacheRouters Build";
-
     my $apache = $self->apache_config;
 
     if (%$apache) {
@@ -20,11 +18,9 @@ before 'BUILD' => sub {
             push @virt, ref $data ? @{$data} : $data;
         }
 
-        use Data::Dumper qw(Dumper);
-
         for my $virt (@virt) {
             
-            warn Dumper(\$virt);
+            # warn Dumper(\$virt);
 
             my @vars;
             if ($virt->{PerlSetVar}) {
