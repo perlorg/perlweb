@@ -2,20 +2,7 @@ package Combust::App::ApacheRouters;
 use Moose::Role;
 use Config::General ();
 use Combust::Config ();
-
-has 'apache_config_file' => (
-  is => 'ro',
-  isa => 'Str',
-  default => sub { my $work_path = Combust::Config->new->work_path;
-                   return $work_path . '/httpd.conf';
-               }
-);
-
-has 'apache_config' => (
-   is => 'rw',
-   isa => 'HashRef',
-   lazy_build => 1,
-);
+with 'Combust::ApacheConfig';
 
 sub BUILD {}
 
@@ -70,18 +57,6 @@ before 'BUILD' => sub {
 
 };
 
-sub _build_apache_config {
-    my $self = shift;
-    
-    my $config = Config::General->new(
-        -ConfigFile       => $self->apache_config_file,
-        -ApacheCompatible => 1
-    );
-
-    my %config = $config->getall;
-
-    return \%config;
-}
 
 sub _connect_locations {
     my ($self, $router, $locations) = @_;
@@ -125,5 +100,6 @@ sub _connect_locations {
         die "Unsupported handler $loc_data->{SetHandler}";
     }
 }
+
 
 1;

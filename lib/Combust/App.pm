@@ -6,6 +6,7 @@ use Plack::Request;
 use Combust::Config;
 use Combust::Site;
 use Combust::Request::Plack;
+use File::Path qw(mkpath);
 
 my $config = Combust::Config->new;
 
@@ -113,6 +114,10 @@ sub reference {
     my $log_path = $config->log_path;
 
     my $logfh;
+
+    unless (-e $log_path) {
+        mkpath($log_path, 1) or die qq[Could not create "$log_path": $!];
+    }
 
     if ($config->use_cronolog) {
 

@@ -10,7 +10,6 @@ BEGIN {
 }
 
 use_ok('Trivial::App');
-system("$ENV{CBROOT}/bin/make_configs");
 ok(my $app = Trivial::App->new, 'new app');
 
    test_psgi
