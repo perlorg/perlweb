@@ -2,7 +2,7 @@ package Combust::App::ApacheRouters;
 use Moose::Role;
 use Config::General ();
 use Combust::Config ();
-with 'Combust::ApacheConfig';
+with 'Combust::ApacheConfig::Role';
 
 sub BUILD {}
 
