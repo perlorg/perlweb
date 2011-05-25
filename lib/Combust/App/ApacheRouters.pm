@@ -84,6 +84,13 @@ sub _connect_locations {
               ? ".*"
               : "(?:/.*)?";
 
+            {
+                my $module = $handler;
+                $module =~ s{::}{/}g;
+                require "$module.pm"
+                  or die "Could not load $handler: $!";
+            }
+
             $router->connect(
                 qr{^($location)} => {
                     controller => $handler,
