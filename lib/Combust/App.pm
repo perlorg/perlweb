@@ -160,12 +160,12 @@ sub reference {
     my $trust_all = _get_forwarders();
 
     builder {
-        enable "Options";
         enable_if {
             my $remote_ip = $_[0]->{REMOTE_ADDR};
             $trust_all or _trusted_ip($remote_ip)
         } "Plack::Middleware::ReverseProxy";
         enable "AccessLog", logger => sub { print $logfh @_ };
+        enable "Options";
         inner();
         $app;
     }
