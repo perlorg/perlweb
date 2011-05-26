@@ -2,13 +2,13 @@
 exec </dev/null
 exec 2>&1
 
-find .nospin.start -mmin -1 -exec echo "*** rate limiting restart ***" \; -exec sleep 2 \;
+find .nospin.start -mmin -1 -exec echo "*** rate limiting restart ***" \; -exec sleep 3 \;
 touch .nospin.start
 
 echo Starting
 
 # some rough assumptions here
-cd ../../
+cd ../../..
 
 if [ -z $CBROOT ]; then
   export CBROOTLOCAL=`pwd`
