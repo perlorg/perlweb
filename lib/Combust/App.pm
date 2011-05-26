@@ -164,7 +164,9 @@ sub reference {
             my $remote_ip = $_[0]->{REMOTE_ADDR};
             $trust_all or _trusted_ip($remote_ip)
         } "Plack::Middleware::ReverseProxy";
-        enable "AccessLog", logger => sub { print $logfh @_ };
+        enable "AccessLog",
+          logger => sub { print $logfh @_ },
+          format => "%h %V %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-agent}i\"";
         enable "Options";
         inner();
         $app;
