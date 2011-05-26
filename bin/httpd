@@ -52,7 +52,6 @@ PORT=`$CBROOT/bin/cbconfig port`
 
 exec $CBROOT/bin/perl `which starman` \
     --preload-app \
-    --pid=$PIDFILE \
     -I$CBROOT/lib -I$CBROOTLOCAL/lib \
     --workers=$WORKERS \
     --port=$PORT \
