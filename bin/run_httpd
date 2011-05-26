@@ -69,20 +69,9 @@ if [ -f $PIDFILE ]; then
 
 fi
 
-WORKERS=`$CBROOT/bin/cbconfig maxclients`
-PORT=`$CBROOT/bin/cbconfig port`
-
-# TODO: just use bin/httpd with --pid and --daemonize options
-
 # Net::Server can't figure out to daemonize when we're using the
 # AccessLog middleware, hence the & ...
-$CBROOT/bin/perl `which starman` \
-    --preload-app \
+$CBROOT/bin/httpd \
     --pid=$PIDFILE \
-    -I$CBROOT/lib -I$CBROOTLOCAL/lib \
-    --daemonize \
-    --workers=$WORKERS \
-    --port=$PORT \
-    app.psgi &
-
+    --daemonize &
 
