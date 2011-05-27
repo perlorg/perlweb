@@ -61,18 +61,31 @@ sub run {
     my $method = shift;
 
     $self->tt->set_include_path($self->get_include_path);
-    my $init_status = OK;
 
-    eval {
-        $init_status = $self->init if $self->can('init');
-    };
-    if ($@) {
-        cluck "$self->init died: $@";
-        return SERVER_ERROR;
+    my ($status, $output, $content_type);
+
+    if ($self->can('init')) {
+        ($status, $output, $content_type) = eval { $self->init };
+        if ($@) {
+            cluck "$self->init died: $@";
+            return SERVER_ERROR;
+        }
+
+        # normalize various returns slightly
+        # the API here (and for do_request) is either
+        #   [ plack_response ]
+        # or
+        #   ( status, content, content_type )
+
+        my $init_status = ref $status ? $status->[0] : $status;
+
+        unless ($init_status == 1 or $init_status == OK) {
+            $self->_process_status($status, \$output);
+            return $self->send_output($output, $content_type);
+        }
     }
-    return $init_status unless $init_status == OK;
 
-    my ($status, $output, $content_type) = eval { $self->do_request($method) };
+    ($status, $output, $content_type) = eval { $self->do_request($method) };
     if (my $err = $@) {
         cluck "Combust::Control: oops, class handler died with: $err";
         return SERVER_ERROR;
@@ -81,12 +94,25 @@ sub run {
     # warn "STATUS RETURNED: $status";
     # warn "output returned: [$output]";
 
-    unless ($status and $output) {
+    $self->_process_status($status, \$output);
+
+    if ($self->can('cleanup')) {
+        eval { $self->cleanup };
+        warn "CLEANUP method failed: $@" if $@;
+    }
+
+    return $self->send_output($output, $content_type);
+}
+
+sub _process_status {
+    my ($self, $status, $output, $content_type) = @_;
+
+    unless ($status and $$output) {
 
         $self->request->response->status or
           $self->request->response->status($status || 500);
 
-        unless ($output) {
+        unless ($$output) {
 
             my $error_header = "";
             $error_header = 'File not found' if $status == 404;
@@ -99,18 +125,12 @@ sub run {
             $self->tpl_param('error_text'   => $error_text);
             $self->tpl_param('error_uri'    => $self->request->uri);
 
-            $output = $self->evaluate_template("error/error.html")
+            $$output = $self->evaluate_template("error/error.html")
               || "Error $status";
         }
     }
-
-    if ($self->can('cleanup')) {
-        eval { $self->cleanup };
-        warn "CLEANUP method failed: $@" if $@;
-    }
-
-    return $self->send_output($output, $content_type);
 }
+
 
 
 sub do_request {
