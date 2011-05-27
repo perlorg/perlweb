@@ -1,5 +1,11 @@
 # Upgrade notes from Apache to Plack version
 
+* Should use "use Moose; extends 'Combust::Control';" instead of just
+  "use base 'Combust::Control'"
+
+* The Apache configuration template gets a 'plack' variable set to
+  true when the configuration is built for plack.
+
 * request->cookie for "plain" cookies is deprecated; use
   request->(response->)cookies instead (see Plack::Response for details).
 

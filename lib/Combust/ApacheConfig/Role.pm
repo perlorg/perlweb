@@ -63,6 +63,7 @@ sub generate_apache_configuration {
         root_local   => ($ENV{CBROOTLOCAL} || ''),
         root_default => ($ENV{CBROOTLOCAL} || $ENV{CBROOT}),
         PH           => 'PerlResponseHandler',
+        plack        => 1,
     };
 
     $params->{dont_edit} = <<EOT;
