@@ -160,6 +160,9 @@ sub reference {
     my $trust_all = _get_forwarders();
 
     builder {
+        if ($config->apache_reload) {
+            enable "Refresh", cooldown => 2;
+        }
         enable_if {
             my $remote_ip = $_[0]->{REMOTE_ADDR};
             $trust_all or _trusted_ip($remote_ip)
