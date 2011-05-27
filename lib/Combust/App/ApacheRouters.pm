@@ -76,6 +76,7 @@ sub _connect_locations {
         if ($loc_data->{SetHandler} eq 'perl-script') {
 
             my $handler = $loc_data->{PerlHandler} || $loc_data->{PerlResponseHandler};
+            $handler =~ s/^\+//;
             die "no PerlHandler for $location" unless $handler;
             $handler =~ s/->super//;
 
