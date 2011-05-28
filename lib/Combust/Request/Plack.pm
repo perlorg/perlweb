@@ -81,7 +81,7 @@ sub header_in {
 }
 
 sub method {
-    shift->env->{REQUEST_METHOD};
+    lc shift->env->{REQUEST_METHOD};
 }
 
 sub update_mtime {
