@@ -294,6 +294,19 @@ sub send_output {
   # not that we actually have the /w3c/p3p.xml document
   $self->request->header_out('P3P',qq[CP="NOI DEVo TAIo PSAo PSDo OUR IND UNI NAV", policyref="/w3c/p3p.xml"]);
 
+  if ($self->no_cache) {
+      my $req = $self->request;
+
+      $req->header_out('Expires', HTTP::Date::time2str(time() - 300))
+        unless $req->header_out('Expires');
+
+      $req->header_out('Cache-Control', 'no-cache,must-revalidate')
+        unless $req->header_out('Cache-Control');
+
+      $req->header_out('Pragma', 'no-cache')
+        unless $req->header_out('Pragma');
+  }
+
   my $length;
   if (ref($output) and reftype($output) eq "GLOB") {
     $length = ( stat($output) )[7]
