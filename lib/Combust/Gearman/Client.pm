@@ -7,7 +7,8 @@ sub new {
     my $class = shift;
     my $self = $class->SUPER::new(@_);
     $self->job_servers( @{ $self->_c_job_servers } );
-    $self;
+    $self->prefix( $self->_prefix );
+    return $self;
 }
 
 1;

@@ -10,4 +10,8 @@ sub _c_job_servers {
     $job_servers
 }
 
+sub _prefix {
+    return $http_port . "_";
+}
+
 1;
