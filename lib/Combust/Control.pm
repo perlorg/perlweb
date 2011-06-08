@@ -291,8 +291,7 @@ sub send_output {
 
   $self->cookies->bake_cookies;
 
-  # not that we actually have the /w3c/p3p.xml document
-  $self->request->header_out('P3P',qq[CP="NOI DEVo TAIo PSAo PSDo OUR IND UNI NAV", policyref="/w3c/p3p.xml"]);
+  $self->request->header_out('P3P', q[CP="There's no P3P policy. Learn why here: http://www.w3.org/P3P/"]);
 
   if ($self->no_cache) {
       my $req = $self->request;
