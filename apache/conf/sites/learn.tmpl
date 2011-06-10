@@ -8,17 +8,9 @@
        PerlHandler Combust::Control::Basic->super
     </Location>
 
-    <Location /error/>
-       SetHandler   perl-script
-       PerlHandler Combust::Control::Error->super
-    </Location>
-
     <Location /redirect>
        SetHandler   perl-script
        PerlHandler +PerlOrg::Control::Books->super
     </Location>
 
-    <Location /server-status>
-      SetHandler server-status
-    </Location>
   </VirtualHost>

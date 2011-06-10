@@ -9,11 +9,6 @@
        PerlHandler +PerlOrg::Control::Books->super
     </Location>
 
-    <Location /error/>
-       SetHandler   perl-script
-       PerlHandler Combust::Control::Error->super
-    </Location>
-
     <Location />
        SetHandler perl-script
        PerlHandler Combust::Control::Basic->super
