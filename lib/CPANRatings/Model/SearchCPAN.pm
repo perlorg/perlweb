@@ -2,7 +2,10 @@ package CPANRatings::Model::SearchCPAN;
 use strict;
 use LWP::Simple qw(get);
 use XML::XPath;
+use JSON;
 use Combust::Cache;
+
+my $json = JSON->new->utf8;
 
 sub new {
   my ($proto, %args) = (shift, @_);
@@ -84,7 +87,7 @@ sub _distribution_page {
     return $data->{data};
   }
 
-  $data = get("http://cpansearch.perl.org/dist/$distribution/");
+  $data = get("http://search.cpan.org/dist/$distribution/");
 
   my $ttl = $data =~ m/cannot be found, did you mean one of these/ ? 3 * 3600 : 24 * 3600;
 
@@ -105,19 +108,18 @@ sub get_releases {
 
   my $cache = Combust::Cache->new(type => 'CR.search');
 
-  if (my $data = $cache->fetch(id => "releases;d:$distribution")) {
+  if (my $data = $cache->fetch(id => "releases;d:$distribution;2")) {
     return $data->{data};
   }
 
-  my $xml = get "http://search.cpan.org/ask/$distribution";
+  my $json_data = get "http://search.cpan.org/api/dist/$distribution";
+  my $data = $json->decode($json_data);
 
-  use XML::Simple;
-  my $data = XMLin($xml, ForceArray => ['release']);
   #warn Data::Dumper->Dump([\$data], [qw(data)]);
 
-  $cache->store(data => $data->{release}, expires => 9 * 3600);
+  $cache->store(data => $data->{releases}, expires => 3 * 3600);
 
-  $data->{release};
+  $data->{releases};
 
 }
 
