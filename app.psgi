@@ -6,4 +6,3 @@ use PerlOrg::App;
 
 my $app = PerlOrg::App->new;
 return $app->reference;
-
