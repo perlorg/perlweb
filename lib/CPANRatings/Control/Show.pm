@@ -8,9 +8,7 @@ use Combust::Constant qw(OK NOT_FOUND);
 sub render {
   my $self = shift;
 
-  my $r = $self->r;
-
-  my ($mode, $id, $format) = ($r->uri =~ m!^/([ad]|user|dist)/([^/]+?)(?:\.(html|rss))?$!);
+  my ($mode, $id, $format) = ($self->request->path =~ m!^/([ad]|user|dist)/([^/]+?)(?:\.(html|rss))?$!);
   return 404 unless $mode and $id;
 
   $format = $self->req_param('format') || $format || 'html';

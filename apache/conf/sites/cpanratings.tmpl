@@ -1,6 +1,4 @@
 
-  PerlRequire [% root %]/apache/conf/sites/cpanratings.pl
-
   <VirtualHost *:[% config.port %]>
     ServerName [% config.site.$site.servername %]
     [% expandServerAliases( config.site.$site.aliases ) %]
@@ -26,10 +24,15 @@
        PerlHandler CPANRatings::Control::Search->super
     </Location>
 
-    <LocationMatch ^/([da]|dist|user)/>
+    [% show_locations = [ 'd', 'a', 'dist', 'user' ];
+       FOR loc = show_locations %]
+
+    <Location /[% loc %]/>
        SetHandler perl-script
        PerlHandler CPANRatings::Control::Show->super
     </LocationMatch>
+
+    [% END %]
 
     <Location /csv/all_ratings.csv>
        SetHandler perl-script

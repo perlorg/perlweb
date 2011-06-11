@@ -3,8 +3,8 @@ use strict;
 use base qw(CPANRatings::Control);
 use Combust::DB qw(db_open);
 
-sub handler ($$) {
-  my ($self, $r) = @_;
+sub render {
+  my $self = shift;
 
   my $dbh = db_open;
   
@@ -13,13 +13,15 @@ sub handler ($$) {
 
   $sth->execute;
 
-  print qq["distribution","rating","review_count"\n\n];
+  my @data;
+
+  push @data, qq["distribution","rating","review_count"\n\n];
 
   while (my $a = $sth->fetchrow_arrayref) {
-    print join(",", map { qq["$_"] } @$a), "\n";
+      push @data, join(",", map { qq["$_"] } @$a), "\n";
   }
 
-  return 200;
+  return 200, join("", @data), 'text/plain';
 }
 
 1;
