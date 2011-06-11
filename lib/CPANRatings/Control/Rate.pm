@@ -10,9 +10,7 @@ sub render {
 
   my $self = shift;
 
-  my $r = $self->r;
-
-  my ($submit) = $r->uri =~ m!^/rate/submit!;
+  my ($submit) = $self->request->uri =~ m!^/rate/submit!;
 
   my $template = 'rate/rate_form.html';
 
@@ -43,7 +41,7 @@ sub render {
     my @fields = qw(rating_1 rating_2 rating_3 rating_4 rating_overall review version_reviewed module distribution);
     my %data;
     for my $f (@fields) {
-      $data{$f} = encode_entities($r->param($f) || '');
+      $data{$f} = encode_entities($self->req_param($f) || '');
       if (grep { $f eq $_ } qw(distribution version_reviewed review)) {
 	$errors->{$f} = "Required field"
 	  unless defined $data{$f} and $data{$f} ne "";
