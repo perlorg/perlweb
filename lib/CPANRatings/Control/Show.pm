@@ -59,7 +59,7 @@ sub render {
     return OK, $self->evaluate_template($template), 'text/html';
   }
   elsif ($format eq "rss") {
-    my $output = $self->as_rss($reviews, $mode, $id);
+    my $output = $self->as_rss($reviews, $mode, ($mode eq 'user' ? $user->username : $id));
     return OK, $output, 'application/rss+xml';
   }
 
