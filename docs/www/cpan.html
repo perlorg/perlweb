@@ -43,24 +43,4 @@ CPAN can denote either the archive network itself, or the <a href="http://search
 </p>
 
 
-[% MACRO quicknews(shortname,title) BLOCK %]
-[%- UNLESS count %]
-[%  count = 10 %]
-[% END %]
-[%- TRY %]
-<ul>
-    <li class="rss round">[% title %]</li>
-[%- USE news = XML.RSS("${root}/var/rss/${shortname}.rss") %]
-[% FOREACH item = news.items %]
-<li class="rss_content"><a href="[% item.link | html %]">[% item.title %]</a></li>
-[% count = count - 1 %]
-[% LAST IF count == 0 %]
-[% END %]
-[%- CATCH %]
-<li class="rss_content">RSS config broken</li>
-[%- FILTER stderr %][% error.info %][% END %]
-[%- END %]
-</ul>
-[%- END %]
-
-[% quicknews ("cpanrecent"'Latest Uploads to <a href="http://cpan.perl.org/">CPAN</a>') %]
+[% quicknews ("cpanrecent", 'Latest Uploads to <a href="http://cpan.perl.org/">CPAN</a>', 10) %]

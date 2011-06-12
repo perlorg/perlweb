@@ -80,7 +80,7 @@
 <A href="http://perlsoc2006.blogspot.com/">http://perlsoc2006.blogspot.com/</A><br />
 [%- TRY %]
    [% count = 10 %]
-   [%- USE news = XML.RSS("${root}/var/rss/perlsoc2006.rss") %]
+   [%- USE news = XML.RSS(combust.config.work_path _ "/rss/perlsoc2006.rss") %]
    <UL>
    [% FOREACH item = news.items %]
        <LI> <a href="[% item.link | html %]">[% item.title %] 

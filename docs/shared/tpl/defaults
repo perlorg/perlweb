@@ -3,7 +3,9 @@
             style = template.style or 'default.html'
     };
 
+    PROCESS "tpl/quicknews";
+
     # don't include any whitespace from here...
- #   RETURN;
+    RETURN;
 -%]
 

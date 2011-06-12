@@ -3,25 +3,7 @@
 <h3>News</h3>
 <p>
 
-[% MACRO quicknews(shortname,count) BLOCK %]
-[%- IF count < 1 %]
-  [%  count = 2 %]
-[% END %]
-[%- TRY %]
-   [%- USE news = XML.RSS("${root}/var/rss/${shortname}.rss") %]
-   [% FOREACH item = news.items %]
-       <LI> <a href="[% item.link | html %]">[% item.title %]</a>
-       [% count = count - 1 %]
-       [% LAST IF count == 0 %]
-    [% END %]
-[%- CATCH %]
-    [Error Processing Directive]
-  [%- FILTER stderr %][% error.info %][% END %]
-[%- END %]
-[%- END %]
-
 [% quicknews('cpanratings',5) %]
-
 
 <h3>Release Notes</h3>
 

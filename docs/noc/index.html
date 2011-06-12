@@ -4,22 +4,7 @@
 [% page.title = "The Perl NOC" %]
 [% page.description = '' %]
 [% page.tagline = 'Suppliers of camel and parrot food' %]
-[% MACRO quicknews(shortname,count) BLOCK %]
-[%- IF count < 1 %]
-  [%  count = 2 %]
-[% END %]
-[%- TRY %]
-   [%- USE news = XML.RSS("${root}/var/rss/${shortname}.rss") %]
-   [% FOREACH item = news.items %]
-       <LI> <a href="[% item.link | html %]">[% item.title %]</a>
-       [% count = count - 1 %]
-       [% LAST IF count == 0 %]
-    [% END %]
-[%- CATCH %]
-    [Error Processing Directive]
-  [%- FILTER stderr %][% error.info %][% END %]
-[%- END %]
-[%- END %]
+
 [% page.sidebar = BLOCK %]
 
 [% ask = BLOCK %]
@@ -50,7 +35,7 @@
   <u>news and status</u><br>
  </div>
 <UL>
-[% quicknews('noc',5) %]
+[% quicknews('noc', '', 5) %]
 </UL>
 </div>
 <br>
