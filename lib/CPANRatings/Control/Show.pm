@@ -22,13 +22,19 @@ sub render {
     return $self->redirect("/dist/$id" . ($format ne "html" ? ".$format" : ''));
   }
 
-  $mode = "distribution" if $mode eq "dist";
+
+  my $mode_element = $id;
 
   my $user;
   if ($mode eq 'user') {
     ($user) = CPANRatings::Model::User->search(username => $id) or return NOT_FOUND;
     $id = $user->id;
+    $mode_element = $user->username;
   }
+
+  $self->tpl_param('this_url' => join("/", "", $mode, $mode_element));
+
+  $mode = "distribution" if $mode eq "dist";
 
   my $template = 'display/list.html';
 
@@ -59,7 +65,7 @@ sub render {
     return OK, $self->evaluate_template($template), 'text/html';
   }
   elsif ($format eq "rss") {
-    my $output = $self->as_rss($reviews, $mode, ($mode eq 'user' ? $user->username : $id));
+    my $output = $self->as_rss($reviews, $mode, $mode_element);
     return OK, $output, 'application/rss+xml';
   }
 
