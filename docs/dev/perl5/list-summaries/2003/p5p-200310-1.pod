@@ -1,0 +1,149 @@
+=head1 This Week on perl5-porters (6-12 October 2003)
+
+    summary++ # new week.
+
+=head2 5.8.x binary compatibility
+
+Chip Salzenberg notices some binary incompatibility issues between perl
+5.8.0 and perl 5.8.1 : some XS modules built under 5.8.0 don't run
+properly with 5.8.1 without being recompiled. This is due to the new hash
+randomization feature. Running perl 5.8.1 with the environment variable
+C<PERL_HASH_SEED=0> fixes it. Chip suggests a more general fix --
+basically to move the hash seed to a global variable instead of a function
+argument -- and says that 5.8.2 should be released quickly. His idea is
+further discussed.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg00394.html
+
+=head2 XS Constants and threads
+
+Michael J.Pomraning reports (bug #24138) that the value returned by
+File::Glob::GLOB_ERROR() does not seem to be isolated between differents
+threads. Rafael tries to trace the bug up to ExtUtils::Constant, with no
+success.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg00221.html
+
+=head2 When you load UNIVERSAL
+
+Slaven Rezic reports that explicitely loading the UNIVERSAL module
+breaks things, because F<UNIVERSAL.pm> defines an import() method (aliased
+to Exporter::import()), which is thus inherited by all classes whenever
+F<UNIVERSAL.pm> has been C<use>'d.  Michael G Schwern provides a patch,
+ensuring that UNIVERSAL::import() does nothing when invoked on anything
+else than the UNIVERSAL package.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg00163.html
+
+=head2 C<set*uid> calls broken on Mac OS X
+
+Bug report #24122 details how the C library calls C<setruid>, C<setrgid>,
+C<setreuid>, and C<setregid> are broken on Mac OS X, and how they affect,
+consequently, perl's C<< $< >> and C<$(> variables, for scripts that want
+to drop privileges. Slaven Rezic suggested that they should be disabled
+at configuration time.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg00129.html
+
+=head2 Filetest operators syntax
+
+Ton Hospel reported (bug #24127) that filetest operators don't follow the
+rule that applies to other named unary operators, I<if it looks like a
+function it's a function>. Rafael Garcia-Suarez documented this fact more
+clearly in the perlop manpage.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg00218.html
+
+Following his internal stream of consciousness, Rafael then submitted a
+patch to allow to stack filetest operators, i.e. to write :
+
+    -f -w -x $file
+
+instead of :
+
+    -x $file && -w _ && -f _
+
+although he doesn't think that allowing C<-fwx $file> in Perl 5 would be a
+good idea.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg00440.html
+
+=head2 Extending the defined() and exists() syntax
+
+Roy Johnson posted some insteresting ideas about possible extensions to
+defined() and exists().
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg00334.html
+
+=head2 Handling attributes at runtime
+
+Daisuke Maki found out that attribute handlers are not invoked when
+defined in a file sourced at run-time. That's because they're by default
+run at CHECK-time, and CHECK blocks are only invoked once during the
+lifetime of the perl interpreter : just after the global compilation
+phase.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg00142.html
+
+=head2 When you C<goto +foo>
+
+Juerd reported (bug #24108) that you can't C<goto +foo> to go to the label
+whose name is returned by the function foo(), because perl actually tries
+to go to SCALAR(0xDEADBEEF), the stringified form of the reference to the
+return value of foo(). xmath proposed a fix, that got applied.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg00124.html
+
+=head2 When C<ref($foo) == 0>
+
+Abigail remarked that Perl's documentation says that C<ref> returns a true
+value if its argument is a reference, and false otherwise, and that this
+statement is not entirely true, since it's possible to bless a reference
+into a class named C<0>. This edge case was sufficient to give birth to a
+long thread.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg00150.html
+
+=head2 When a module loses its XS part
+
+James FitzGibbon notices that pure-perl modules are installed later in the
+@INC path than XS modules. Consequently, if an XS module on CPAN is
+replaced by a pure-perl version, it won't be seen by the users who will
+upgrade it, hidden by the earlier version, still on the hard disk. Nick
+Ing-Simmons proposes a solution : that this module still insists to be
+installed in the architecture-dependent directory. Michael G Schwern also
+points out that the prudent user can issue a C<make install UNINST=1>,
+that searches @ISA for other versions of the same files and remove them.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg00165.html
+
+=head2 When you use a Turkish locale
+
+Ismail Donmez reported (bug #24121) that perl's C<Configure> script can't
+be run under a Turkish locale, because it actually tests for the uppercase
+form of the letter 'i', which is not 'I' in Turkish (it actually
+corresponds to Unicode character U+0130, also known as C<"\N{LATIN CAPITAL
+LETTER I WITH DOT ABOVE}">).
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg00130.html
+
+=head2 In Brief
+
+Hugo van der Sanden is planning to release the first development version
+after the 5.8 branch, i.e. perl 5.9.0, during next week.
+
+Jos Boumans reports as bug #24182 that objects seem to loose their
+overload magic during destruction (except when the DESTROY method is
+called explicitely).
+
+Gisle Aas, by (ab)using an undocumented feature (not unrelated to source
+filters and @INC hooks), made perl dump core; later, he provided a fix.
+
+Nick Ing-Simmons compared MANIFEST files to mitochondrial DNA.
+
+=head2 About this summary
+
+This week's summary was written by your regular summarizer, Rafael
+Garcia-Suarez. Summaries are published weekly on F<http://use.perl.org/>
+and on a mailing list, which subscription address is
+F<perl5-summary-subscribe@perl.org>. Corrections and comments are welcome.

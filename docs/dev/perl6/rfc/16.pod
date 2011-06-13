@@ -1,0 +1,103 @@
+=head1 TITLE
+
+Keep default Perl free of constraints such as warnings and strict.
+
+=head1 VERSION
+
+  Maintainer: Daniel Chetlin <daniel@chetlin.com>
+  Date: 3 Aug 2000
+  Last Modified: 28 Sep 2000
+  Mailing List: perl6-language-strict@perl.org
+  Number: 16
+  Version: 3
+  Status: Frozen
+
+=head1 ABSTRACT
+
+Perl5 is usable with no hassle as a quick-and-dirty problem-solver by
+default. It is ideal for one-liners, short scripts, and quick hacks
+that have no need for extra protection or error-checking. It is also
+great for large projects by making use of the C<warnings> and
+C<strict> pragmas.
+
+Perl6 should not make the one-liners, short scripts and hacks need to
+jump through extra hoops to get the "lax" behaviour which is default in
+Perl5; the point of using Perl as a quick-and-dirty tool is that you
+don't have to do anything extra.
+
+=head1 CHANGES
+
+This RFC, along with RFC 6, sparked a fair amount of discussion on
+perl6-language-strict over a month ago. Since then, traffic on -strict
+has died down, and nothing new has really been brought to the table that
+would affect this RFC.
+
+The only major change to the text of this RFC was to remove a paragraph
+stating that this RFC is particularly targeted to keep C<strict 'vars'>
+off by default. This paragraph stated that instead of making that
+change, the problem with dynamic variables being default be fixed. It
+has been removed for two reasons:
+
+=over 4
+
+=item *
+
+The author, having seen proposals like RFCs 6, 64, and 106, has
+decided that making lexical variables default is unlikely to work
+correctly and usefully.
+
+=item *
+
+The specifics on lexical vs. dynamic variable defaults have little to do
+with the real point of this RFC, which is to keep B<all> strictifying
+pragmas from becoming default.
+
+=back
+
+While an RFC discussing/debating/expanding on any of RFCs 6, 64, and 106
+might be useful, this RFC is expressly B<not> such a document.
+
+In terms of changes to the real focus of this RFC, there has been little
+progress made. The camps are fairly significantly divided between those
+who want to make C<warnings> and C<strict> the default for ease of
+learning and debugging Perl as well as deploying it for large projects,
+and those who want to keep quick, dirty, and easy from becoming harder.
+Since the author does not forsee much progress in this disagreement,
+this RFC is in a just-pre-frozen state, and is expected to be frozen
+within a few days.
+
+=head1 DESCRIPTION
+
+Perl provides two main ways to ensure "safer", cleaner, more
+maintainable code: the C<-w> switch/C<warnings> pragma and the C<strict>
+pragma. It appears likely that Perl6 will improve upon, expand, or add
+to this area. Extra functionality and power for these pragmas as well as
+additional pragmas (such as the C<stricter> pragma mentioned at TPC)
+seem to be a good thing, but none should become default for Perl.
+
+In large projects which require the constraining pragmas, it is not an
+issue to take the extra steps and 'use' them. But in quick solutions and
+one-liners, it is a major drawback to have to add C<no strict> or
+C<-M-strict> for every quick hack or one-liner that would violate the
+C<strict> pragma. Some have suggested a shortcut command-line switch
+that would disable the constraining pragmas, and others have suggested
+that one-liners be exempt from the default. Both of these solutions
+would make things somewhat better, but it still does not fit what seems
+to have been the philosophy of Perl from day 1: be _lax_ by default, and
+allow constrictions to be added by hand.
+
+Perl6 is intended to make the easy things easier and the hard things
+possible, just like Perl5 only moreso. While making the constraining
+pragmas the default might make hard things very slightly more possible,
+it would also make lots of easy things harder, and that is something to
+avoid at all costs.
+
+=head1 IMPLEMENTATION
+
+There should be no implementation issues.
+
+=head1 REFERENCES
+
+perlrun(1)
+
+strict(3)

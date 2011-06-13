@@ -1,0 +1,45 @@
+=head1 TITLE
+
+Unrolling loops and tail recursion
+
+=head1 VERSION
+
+  Maintainer: Simon Cozens <simon@brecon.co.uk>
+  Date: 25 Sep 2000
+  Mailing List: perl6-internals@perl.org
+  Number: 302
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+Implement loop unrolling and tail recursion elimination as optional
+optimisations.
+
+=head1 DESCRIPTION
+
+Tail recursion elimination is something which has been on the todo for a
+long time, but I think nobody's done it because it's really really hard.
+I'd suggest
+
+    use optimize 'recursion';
+
+would be a natural syntax, if C<less> turns into C<optimize>.
+
+Unrolling of loops is something that becomes important for compiling to
+standalone executables; I think
+
+    use optimize 'unroll-loops';
+
+would be the way to signify that. If we have a standalone compiler, I'd
+suggest the cc-style C<-f...> command-line options.
+
+=head1 IMPLEMENTATION
+
+I have no idea how to implement tail recursion elimination, and I'd
+dearly love to learn. Unrolling loops with constant indices shouldn't be
+too hard.
+
+=head1 REFERENCES
+
+RFC 303: Keep C<use less>, but make it work.

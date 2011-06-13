@@ -1,0 +1,137 @@
+[%
+    page.import({
+        title    => 'Perl CPAN',
+        section  => 'about',
+        description
+            => 'Perl and IPv6 support',
+        keywords => 'perl, cpan, modules',
+    });
+%]
+<h2>
+    CPAN - complete, mature ecosystem for Perl developers
+</h2>
+<p>
+    <em>Stop reinventing wheels, start building space rockets</em>
+</p>
+
+<p>
+    The <a href="http://www.cpan.org/">Comprehensive Perl Archive Network</a>
+    (CPAN) is <em>the</em> place to go to find, download and install any of
+    the incredible (and still growing) collection of Perl libraries. What other
+    programming environment today offers [% perl_stats.cpan_dists %] modules of reusable
+    code, for free, from one central repository?
+</p>
+<p>
+    CPAN offers an integrated toolchain for developers to find the tools they
+    need to get their jobs done. Far more than just an archive of code
+    libraries, CPAN is a complete, mature ecosystem for the Perl developer.
+</p>
+
+<h3>
+    Key features
+</h3>
+<ul>
+    <li>[% perl_stats.cpan_dists %] modules available
+    </li>
+    <li>Single location to find Perl libraries
+    </li>
+    <li>Mirrored on [% c.mirrors %] servers around the world
+    </li>
+    <li>Automated testing: cross platform and on multiple versions of Perl
+    </li>
+    <li>Bug tracking for every library
+    </li>
+</ul>
+
+<h4>Automated testing</h4>
+<p>
+    Following Perl's strong tradition of <a href=
+    "perl-testing.html">testing</a>, every distribution of modules uploaded to
+    CPAN is automatically <a href="http://www.cpantesters.org/">tested</a> on a
+    <a href="http://stats.cpantesters.org/">variety of platforms and Perl</a>
+    configurations. This happens without any intervention or effort from the
+    developer: members of the community have set up a <a href=
+    "http://www.cpantesters.org/">testing network</a> and donate their
+    resources to making every Perl module as robust as possible on every
+    platform they have available. This will typically include configurations
+    developers hadn't anticipated or cannot access themselves: testers run code
+    against many different Unixes (commercial and free) and various versions of
+    Windows. This can provide invaluable debugging information for developers.
+    Beyond just testing modules and reporting failures to developers, anyone
+    can browse and search the full report database, to inform decisions about a
+    module's maturity and suitability for their purpose.
+</p>
+
+<h4>Searching CPAN</h4>
+<p>
+    There are a number of Web sites focusing
+    on searching the ever-growing collection of code comprising CPAN. These
+    sites provide more services than just searching for a library to use: they
+    also provide developer tools (grep, version-to-version diff). Another core
+    feature of these sites is Web-based access to module API and usage
+    documentation, written in Perl's integrated <a href=
+    "http://perldoc.perl.org/perlpod.html">POD</a> (Plain Old Documentation)
+    format.
+</p>
+<ul>
+    <li><a href="http://search.cpan.org/">http://search.cpan.org/</a>
+    </li>
+    <li><a href="http://search.metacpan.org/">http://search.metacpan.org/</a>
+    </li>
+</ul>
+
+<h4>
+    Bug tracking
+</h4>
+<p>
+    In addition to integrated testing and searching, every module uploaded to
+    CPAN is given free access to a ticket queue in <a href=
+    "http://bestpractical.com/">Best Practical's</a> Request Tracker system.
+    Using this ticket queue, users can report problems they've encountered with
+    any Perl library, and communicate with the developer throughout the
+    development cycle. This ticket queue is created and the RT instance
+    maintained free of charge and with no effort required of the developer,
+    just like the other services provided by the Perl community for all modules
+    uploaded.
+</p>
+
+<h4>World wide mirrors</h4>
+<p>
+    In tandem with all of the above, every module uploaded to CPAN is mirrored
+    around the world. This provides developers and administrators with mirrors
+    close to them, for fast and robust installation. The mirroring process is
+    open, as is access to the repository contents. This enables administrators
+    to configure local mirrors to enforce policy or minimize network usage. In
+    this way, CPAN is both centralized but distributed: it is the one place to
+    go for Perl libraries, but the files themselves are mirrored worldwide.
+</p>
+
+<h4>Different from any other language</h4>
+<p>
+    All of these efforts combined give Perl an advantage that no other modern
+    programming environment can claim.
+</p>
+
+<h4>
+    Resources:
+</h4>
+<ul>
+    <li>
+        <a href="http://search.cpan.org/">http://search.cpan.org/</a>
+    </li>
+    <li>
+        <a href="http://www.cpantesters.org/">http://www.cpantesters.org/</a>
+    </li>
+    <li>
+        <a href="http://rt.cpan.org/">http://rt.cpan.org/</a>
+    </li>
+    <li>
+        <a href="http://search.metacpan.org/">http://search.metacpan.org/</a>
+    </li>
+</ul>
+<h4>
+    Article Author
+</h4>
+<p><a href="http://shadowcat.co.uk/">Chris Nehren</a></p>
+
+

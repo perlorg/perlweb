@@ -1,0 +1,128 @@
+=head1 TITLE
+
+lvalue subs: parameters, explicit assignment, and wantarray() changes
+
+=head1 VERSION
+
+  Maintainer: Nathan Torkington <gnat@frii.com>
+  Date: 16 Aug 2000
+  Last Modified: 6 Sep 2000
+  Mailing List: perl6-language-subs@perl.org
+  Number: 118
+  Version: 2
+  Status: Retired
+
+=head1 ABSTRACT
+
+RFC 107 proposed that lvalue subs should receive their rvalues as
+subroutine arguments.  I counter-propose that lvalue subs should
+receive their rvalues as lexical variables named in a prototype
+associated with the :lvalue modifier.  The lvalue-ness of a given
+subroutine call should be discoverable with the wantarray() function
+(or its replacement), and the assignment behaviour should be written
+in the subroutine rather than implicitly done by Perl.
+
+=head1 DESCRIPTION
+
+Subroutines may be called with multiple values.  Lvalue subroutines
+may be assigned multiple values.  Simple passing on the argument
+list conflates the two:
+
+  foo(@args) = @rvalues;
+
+would be identical to:
+
+  foo(@args, @rvalues);
+
+Perl's list flattening would prevent the subroutine from knowing where
+one began and the other ended.  Better would be if the rvalue were
+passed as a last or first argument, making it equivalent to:
+
+  foo(\@rvalues, @args);
+
+or
+
+  foo(@args, \@rvalues);
+
+I don't think this is appropriate, either.  Perl's OO tried implicit
+arguments, and now we're rebelling against them.  Better would be to
+have the values magically appear as lexicals in the subroutine.
+
+=head2 Prototypes
+
+To the language it would appear as a prototype associated with the
+:lvalue modifier:
+
+  sub foo (@) : lvalue ($first, $second, @rest) {
+    print "My first rvalue is $first\n";
+    print "My second rvalue is $second\n";
+    print "The rest of my rvalues are: @rest\n";
+    print "My arguments are: @_\n";
+  }
+
+=head2 Explicit assignment
+
+This would change the perl5 meaning of lvalue subroutines.  Currently
+you must have the lvalue as the last value before the return, and the
+assignment is implicitly done by Perl.  I advocate making it explicit:
+
+  # this is perl5
+  sub foo :lvalue {
+    $variable;		# am I rvalue or lvalue sub?  I don't know
+  }
+  foo = 5;		# implicitly $variable = 5
+
+I would now have this as:
+
+  # this is perl6
+  sub foo :lvalue ($new) {
+    $variable = $new;
+  }
+
+=head2 Lvalue context discoverable
+
+Then the wantarray() replacement, whatever it may be, can be used
+to say whether you're lvalue or rvalue and what to do.  That makes
+an lvalue sub more like the STORE method of a tied variable, where
+you can decide whether the storage is acceptable:
+
+  # still perl6
+  sub foo :lvalue ($new) {
+    if (want("lvalue")) {
+      if ($new >= 0) {
+        $variable = $new;
+      } else {
+	croak "Attempt to store negative number in foo";
+      }
+    } else {
+      return $variable;
+    }
+  }
+
+=head1 IMPLEMENTATION
+
+Straightforward.  Requires changes to:
+
+=over 4
+
+=item prototypes
+
+Permit named function prototypes.  On the lvalue modifier.
+
+=item wantarray
+
+Identify lvalue context.
+
+=back
+
+=head1 NOTES
+
+This RFC has been retired as an historical artifiact of discussion.
+
+=head1 REFERENCES
+
+RFC 107: lvalue subs should receive the rvalue as an argument
+
+RFC 57: Subroutine prototypes and parameters
+
+RFC 21: Replace wantarray with a generic want function

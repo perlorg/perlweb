@@ -1,0 +1,43 @@
+[%
+    page.import({
+        title    => 'Various Perl Mailing lists',
+        section  => 'misc',
+        description
+            => 'Various Perl mailing lists',
+    });
+%]
+
+<h2>Various Perl mailing lists</h2>
+
+<table class="content_table">
+    <tr>
+        <td>
+            [% categories = [
+                'crypto',
+                'games-misc',
+                'jobs',
+                'lingua-interntl-unicode',
+                'misc-non-english',
+                'misc-perl',
+
+                ];
+            %]
+            [% PROCESS tpl/category_page.html categories => categories %]
+        </td>
+        <td>
+            [% categories = [
+                'module-cpan-developer',
+                'module-tools',
+                'newsgroup',
+                'oop',
+                'tools',
+                'tools-developer',
+                'tools-x10',
+                'xp',
+                'zope',
+                ];
+            %]
+            [% PROCESS tpl/category_page.html categories => categories %]
+        </td>
+    </tr>
+</table>

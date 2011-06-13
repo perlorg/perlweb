@@ -1,0 +1,139 @@
+=head1 TITLE
+
+my() syntax extensions and attribute declarations
+
+=head1 VERSION
+
+  Maintainer: Nathan Wiger <nate@wiger.org>
+  Date: 24 Sep 2000
+  Last Modified: 30 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 279
+  Version: 2
+  Status: Frozen
+
+=head1 ABSTRACT
+
+This RFC fleshes out variable declarations with C<my>, and also proposes
+a way to assign attributes without the need for a C<my> anywhere. Much
+of this stuff has been hinted at, so this is just a formalization.
+
+Please note this entire document is B<optional>, intended for those that
+need this type of control. Perl is not a B&D language (by default, at
+least :).
+
+=head1 DESCRIPTION
+
+Camel-3 shows some interesting hints of what's been proposed for C<my>
+declarations:
+
+   my type $var :attr1 :attr2 = $value;
+
+And we all know that you can use C<my> to declare a group of variables:
+
+   my($x, $y, $z);
+
+Here's the issues:
+
+   1. How do the two jive together?
+  
+   2. Should it be possible to assign attributes to individual elements
+      of hashes/arrays? (yes)
+
+=head2 Cohesive C<my> syntax
+
+This RFC proposes that you be able to group multiple variables of the
+same type within parens:
+
+   my int ($x, $y, $z);
+   my int ($x :64bit, $y :32bit, $z);
+
+It seems most logical that:
+
+   1. The type will be the same across variables; this is common
+      usage in other languages because it makes sense.
+
+   2. The attributes will be different for different variables.
+
+As such, multiple attributes can be assigned and grouped flexibly:
+
+   my int ($x, $y, $z) :64bit;           # all are 64-bit
+   my int ($x, $y, $z :unsigned) :64bit; # plus $z is unsigned
+
+Note that multiple types cannot be specified on the same line. To
+declare variables of multiple types, you must use separate statements:
+
+   my int ($x, $y, $z) :64bit;
+   my string ($firstname, $lastname :long);
+
+This is consistent with other languages and also makes parsing
+realistic.
+
+=head2 Assigning attributes to individual elements of hashes/arrays
+
+This is potentially very useful. ":laccess", ":raccess", ":public",
+":private", and others spring to mind as potential candidates for this.
+This RFC proposes that in addition to attributes being assigned to a
+whole entity on declaration:
+
+   my int @a :64bit;       # makes each element a 64-bit int
+   my string %h :long;     # each key/val is long string
+
+They can also be declared on individual elements, without the need for
+C<my> or C<our>:
+
+   $a[0] :32bit = get_val;           # 32-bit
+   $r->{name} :private = "Nate";     # privatize single value
+   $s->{VAL} :laccess('data') = "";  # lvalue autoaccessor
+
+Assigning attributes to individual elements has the advantage over
+keywords of allowing them to be grouped:
+
+   $self->{name} :public :roaccess('getname') = "Nathan Wiger";
+
+However, a problem arises in how to assign types to singular elements,
+since this requires a C<my>:
+
+   my int $a[0] :64bit;     # just makes that single element
+                            # a lexically-scoped 64-bit int?
+
+   my string $h{name} = ""; # cast $h{name} to string, rescope %h?
+
+Currently, lexical scope has no meaning for individual elements of
+hashes and arrays. However, assigning attributes and even types to
+individual elements seems useful. There's two ways around this that I
+see:
+
+   1. On my'ing of an individual hash/array element, the
+      entire hash/array is rescoped to the nearest block.
+
+   2. Only the individual element is rescoped, similar
+      to what happens when you do this:
+
+          my $x = 5;
+          {
+             my $x = 10;
+          }
+
+Either of these solutions is acceptable, and they both have their pluses
+and minuses. The second one seems more consistent, but is potentially
+extremely difficult to implement.
+
+=head1 IMPLEMENTATION
+
+Hold on.
+
+=head1 MIGRATION
+
+None. This introduces a more flexible syntax but does not break old
+ones.
+
+=head1 REFERENCES
+
+RFC 337: Common attribute system to allow user-defined, extensible attributes
+
+RFC 319: Transparently integrate C<tie>
+
+Camel for the C<my> syntax.
+
+C<attributes> man page for details on attributes.

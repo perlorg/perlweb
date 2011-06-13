@@ -1,0 +1,2418 @@
+=head1 TITLE
+
+    Omnibus Structured Exception/Error Handling Mechanism
+
+=head1 VERSION
+
+  Maintainer: Tony Olekshy <olekshy@avrasoft.com>
+  Date: 8 Aug 2000
+  Last Modified: 1 Oct 2000
+  Mailing List: perl6-language-errors@perl.org
+  Number: 88
+  Version: 3
+  Status: Frozen
+
+=head1 NOTES
+
+    RFC 88 as HTML   http://www.avrasoft.com/perl6/rfc88.htm
+    RFC 88 as Text   http://www.avrasoft.com/perl6/rfc88.txt
+    RFC 88 as POD    http://www.avrasoft.com/perl6/rfc88-pod.txt
+
+    Perl 5 Try.pm    http://www.avrasoft.com/perl6/try6-ref5.txt
+    Regression Test  http://www.avrasoft.com/perl6/try-tests.htm
+
+=head1 ABSTRACT
+
+"The Encyclopedia of Software Engineering" [ESE-1994] says (p.847):
+
+=over 4
+
+=item Z<>
+
+Inevitably, no matter how carefully a programmer behaves when writing a
+program and no matter how thoroughly its verification is carried out,
+errors remain in the program and program execution may result in a
+failure.  [...] The programming language may provide a framework for
+detecting and then handling faults, so that the program either fails
+gracefully or continues to work after some remedial action has been
+taken to recover from the error.  Such a linguistic framework is usually
+called exception handling.
+
+=back
+
+The I<structured exception handling mechanism> described in this RFC
+satisfies the following requirements.
+
+=over 4
+
+=item 1
+
+It does not, by default, interfere with traditional Perl programming
+styles.  When explicitly used, it simply adds functionality to better
+support other programming styles, which currently have to undertake
+some contortions to get the desired effect.
+
+Z<>
+
+=item 1
+
+It is simple in the cases in which it is commonly used.
+
+Z<>
+
+=item 1
+
+It is capable enough to handle the needs of production applications,
+frameworks, and modules, including the ability to hook into the
+mechanism itself.
+
+Z<>
+
+=item 1
+
+It is suitable for "error" handling via exceptions.
+
+Z<>
+
+=item 1
+
+It is suitable for light-weight exceptions that may not involve errors
+at all.
+
+=back
+
+This RFC describes a collection of changes and additions to Perl,
+which together support a built-in base class for Exception objects,
+and exception/error handling code like this:
+
+    exception 'Alarm';
+
+    try {
+	throw Alarm "a message", tag => "ABC.1234", ... ;
+	}
+
+    catch Alarm => { ... }
+
+    catch Error::DB, Error::IO => { ... }
+
+    catch $@ =~ /divide by 0/ => { ... }
+
+    catch { ... }
+
+    finally { ... }
+
+Any exceptions that are raised within an enclosing try, catch, or
+finally block, where the enclosing block can be located anywhere up
+the subroutine call stack, are trapped and processed according to
+the semantics described in this RFC.
+
+The new built-in Exception base class is designed to be used by Perl
+for raising exceptions for failed operators or functions, but this
+RFC can be used with the Exception base class whether or not that
+happens.
+
+Readers who are not familiar with the technique of using exception
+handling to handle errors should refer to the L<CONVERSION> section
+of this document first.
+
+It is not the intent of this RFC to interfere with traditional Perl
+scripts; the intent is only to facilitate the availability of a more
+controllable, pragmatic, and yet robust mechanism when such is found
+to be appropriate.
+
+=over 4
+
+=item *
+
+Nothing in this RFC impacts the tradition of simple Perl scripts.
+
+=item *
+
+C<eval {die "Can't foo."}; print $@;> continues to work as before.
+
+=item *
+
+There is no need to use C<try>, C<throw>, C<catch>, or C<finally> at
+all, if one doesn't want to.
+
+=item *
+
+This RFC does not require core Perl functions to use exceptions
+for signalling errors.
+
+=back
+
+=head1 DEFINITIONS
+
+B<raise>
+
+=over 4
+
+=item Z<>
+
+An exception is raised to begin call-stack unwinding according to the
+semantics described herein.  This provides for controlled non-local
+flow-control.  This is what C<die> does.
+
+=back
+
+B<propagate>
+
+=over 4
+
+=item Z<>
+
+The passing of an exception up the call stack for further processing
+is called propagation.  Raising an exception starts propagation.
+Propagation stops when the exception is trapped.
+
+=back
+
+B<unwinding>
+
+=over 4
+
+=item Z<>
+
+The overall process of handling the propagation of an exception,
+from the point it is raised until the point it is trapped, is
+called unwinding.
+
+=back
+
+B<trap>
+
+=over 4
+
+=item Z<>
+
+The termination of unwinding, for the purpose of attempting further
+processing using local flow-control semantics, is called trapping.
+This is what C<eval> does, as do C<try>, C<catch>, and C<finally>.
+
+=back
+
+B<cleanly caught>
+
+=over 4
+
+=item Z<>
+
+This means the trapping and handling of an exception did not itself
+raise an exception.  Cleanly handling exceptions raised while handling
+exceptions is difficult, tedious, and error-prone given only C<eval>.
+
+=back
+
+B<exception>
+
+=over 4
+
+=item Z<>
+
+An exception is a collection of informaton about a particular non-local
+goto, captured at raise-time, for use by trap-time handling based on
+said informaton.  This is what C<$@> is.  It can be any structured data;
+a reference to a blessed hash works well in practice, uses minimal OO
+concepts, and can be made to stringify just like the Perl 5 C<$@>.
+
+=back
+
+B<error>
+
+=over 4
+
+=item Z<>
+
+A fuzzy concept, an error is essentially an exception with a negative
+connotation.  A traditional definition might be, "an exception raised to
+signal an assertion failure that typically indicates the inability of an
+algorithm to complete the request it has been given".  Ultimately,
+whether or not an exception is considered to be an error depends on the
+trapper, not the raiser.
+
+=back
+
+=head1 DESCRIPTION
+
+The most common forms of structured exception handling are straight-
+forward.  Here they are:
+
+  try { ... } catch { ... }
+
+=over 4
+
+=item Z<>
+
+Invoke the catch block only if the try block raises an exception (aka
+dies), otherwise, there is nothing to catch.
+
+Continue unwinding (propagate C<$@>) only if the catch block was invoked
+and it raises an exception too.
+
+Otherwise, execute the next statement according to local flow-control,
+because either no exception has been raised by either block, or one was
+raised in try but it was cleanly caught.
+
+=back
+
+  try { ... } finally { ... }
+
+=over 4
+
+=item Z<>
+
+Invoke the finally block whether or not the try block raises an
+exception.
+
+Continue unwinding (propagate C<$@>) if either the try block or the
+finally block raised an exception.
+
+Otherwise, execute the next statement according to local flow control,
+because no exception has been raised.
+
+=back
+
+  try { ... }
+  catch Exception::Foo => { ... }
+  catch Exception::Bar => { ... }
+  catch                   { ... } # everything else
+  finally { ... }
+
+=over 4
+
+=item Z<>
+
+In this case if the try raises an exception then the first matching
+catch is invoked, and then whether or not the try (or any catch) raised
+any exception, the finally is invoked.
+
+Once a catch clause matches, subsequent catch clauses are skipped (like
+elsif/elsif/else) up to the next finally clause.
+
+This try statement unwinds only if try raises an exception and the
+exception's matching catch block raises an exception, or finally raises
+an exception.  Otherwise no-one raised an exception, or it was in the
+try and it was cleanly caught.
+
+This means that all exceptions propagate unless they are cleanly caught,
+just as in Perl 5.  To prevent this, use:
+
+    try { fragile(); } catch { } # Go on no matter what.
+
+More complicated constructs should be avoided unless the rules in
+L<Unwinding Semantics> make sense to you and your target audience.
+
+=back
+
+=head2 Walkthrough
+
+ throw Exception::IO "a message", tag => "ABC.1234", ... ;
+
+=over 4
+
+=item Z<>
+
+Throw is both a class method and an instance method of the built-in
+Exception class.  The indirect object syntax is used to make the
+throw imperative.  As a class method, it is syntactic sugar for:
+
+    die Exception::IO->new(
+
+	    message => "a message", tag => "ABC.1234", ...);
+
+As an instance method it is syntactic sugar for copying over any values
+given as arguments, and then effecting S<C<die $self>>.  This allows
+S<C<throw $@>> to be used to re-raise exceptions.
+
+Note that a derived class can override its constructor to preprocess the
+optional arguments, so that (for example) tags are parsed out of the
+message, which allows something like this to work for developers who
+prefer it (such as the author):
+
+	throw MyError "ABC.1234: A message.";
+
+This also illustrates why the message is a required argument to the
+throw method.  It should not have to be more complicated than that to
+raise an exception of a given type with a given annotation, in common
+use.  One should not have to always add S<C<message =>>> just for that.
+
+If C<throw> is followed by a <string>, rather than a class, like this:
+
+	throw "A Message.", ...;
+
+it is the equivalent of:
+
+	throw Exception "A Message.", ...;
+
+=back
+
+ try { ... } catch <test> => { ... } finally { ... }
+
+=over 4
+
+=item Z<>
+
+A try statement starts with a block and is followed by zero or more
+catch and/or finally clauses.
+
+The <test> argument of the catch clause is optional, and is described
+below.
+
+C<try>, C<catch>, and C<finally> blocks should share the same lexical
+scope, in the way that C<while> and C<continue> do.  This is so that
+variables defined in the C<try> block can be operated on in the other
+blocks, which allows one to say:
+
+	try   { my $fh = open $file }
+	finally { $fh and close $fh }
+
+Note that C<try> is a keyword, not a function.  This is so that a
+C<;> is not needed at the end of the last block.  This is because a
+try/catch/finally now looks more like an if/elsif/else, which does not
+require such a C<;>, than like an eval, which does).
+
+=back
+
+ catch { ... }
+
+=over 4
+
+=item Z<>
+
+Traps all exceptions, according to the unwind semantics described below.
+
+It is a syntax error for a catch all clause like this to be immediately
+followed by another catch clause, because that would be dead code that
+could never be executed.
+
+Otherwise, it is syntactic sugar for:
+
+    catch 1 => { ... }
+
+To signal failure in a catch block, throw an exception.
+
+=back
+
+ catch Exception::DB => { ... }
+
+=over 4
+
+=item Z<>
+
+When catch is followed by a class name, the catch block is invoked only
+if the current error is an instance of said class.  It is syntactic
+sugar for:
+
+    catch $@->isa($string) => { ... }
+
+=back
+
+ catch Exception::DB, Exception::IO => { ... }
+
+=over 4
+
+=item Z<>
+
+When catch is followed by a comma-separated list of class names, the
+catch block is invoked only if the current is an instance of one of the
+given classes.  It is syntactic sugar for:
+
+    catch grep { $@->isa($_) } @list => { ... }
+
+=back
+
+ catch <expr> => { ... }
+
+=over 4
+
+=item Z<>
+
+Traps exceptions for which the expression <expr> returns true, when
+evaluated at the time the catch clause is attempted, according to
+the unwinding semantics described below.
+
+If multiple statements are required to compute the value of the
+<expr>, use this form: S<C<catch do { a; b } =E<gt> { ... }>>
+
+In order to prevent developers from accidentally writing
+S<C<catch "Exception:DB" =E<gt> { ... }>> (which would be seen as a
+test that is always true, while they almost certainly were looking
+for a class name), the compiler should detect that special literal
+case and issue a compilation warning.
+
+=back
+
+ finally { ... }
+
+=over 4
+
+=item Z<>
+
+Once the try block is entered, every finally block is guaranteed
+to be entered before the try statement completes, whether or not
+any exceptions have been raised since the try block was entered.
+
+=back
+
+ die
+
+=over 4
+
+=item Z<>
+
+If passed a single argument that isa C<Exception>, raise it as the
+new exception and dies in the fashion that Perl 5 does.
+
+Otherwise, the arguments are stringified and joined with C<''> (as
+in Perl 5), the resulting string is wrapped up in a new Exception
+object (setting the C<message> instance variable to said string),
+the original unstringified arguments are saved in a list ref in the
+object's C<data> instance variable, and the new C<Exception> object
+is raised.
+
+The above guarantees that C<$@ isa Exception> (so developers can
+depend on that when writing short conditional catch expressions),
+but because of Exception object stringification, in simple scripts
+one can still write:
+
+	open F, $file or die "Can't open $file";
+
+When an exception C<$e> is raised, the equivalent of the following
+is automatically done, using the variables described below:
+
+	unshift @@, $@ = $e;
+
+This provides the mechanism we use to keep track of raised
+exceptions while unwinding.
+
+=back
+
+ $@ and @@
+
+=over 4
+
+=item Z<>
+
+C<$@> contains the current exception, and C<@@> contains the current
+exception stack, as defined above under C<die>.  The C<unshift> rule
+guarantees that C<$@ == $@[0]>.
+
+C<$@> and C<@@> can I<only> be set by die, which guarantees that C<$@>
+and C<$@[$i]> are instances of Exception, as described above.
+
+Unlike eval, try does not start by clearing C<$@>.  The successful
+completion of a catch clause clears C<$@> and C<@@>.
+
+Tracking C<@@> information is going to become more important if Perl
+starts using exceptions for error handling.  For example, if an C<open>
+throws and then a calling DB module throws, and then your UI catches it,
+you are (in many cases) going to want to know why the open threw.
+
+=back
+
+ eval
+
+=over 4
+
+=item Z<>
+
+Unchanged from Perl 5.
+
+=back
+
+ exception 'Exception::Foo::Bar';
+
+=over 4
+
+=item Z<>
+
+Makes C<Exception::Foo::Bar> into a class that inherits from the
+built-in C<Exception> class, something like:
+
+    @Exception::Foo::Bar::ISA = 'Exception::Foo';
+
+=back
+
+ exception 'MyError::App::DB::Foo';
+
+=over 4
+
+=item Z<>
+
+Makes C<MyError::App::DB::Foo> into a class that inherits from the
+built-in C<Exception> class.
+
+If the given name matches C</::/>, something like this happens:
+
+    @MyError::App::DB::Foo::ISA = 'MyError::App::DB';
+
+and all non-existent parent classes are automatically created as
+inheriting from their parent, or Exception in the tail case.  If
+a parent class is found to exist and not inherit from Exception,
+a run-time error exception is raised.
+
+If the given name does not match C</::/> (say it's just C<Alarm>),
+this happens instead:
+
+    @Alarm::ISA = 'Exception';
+
+This means that every exception class isa Exception, even if
+C<Exception::> is not used at the beginning of the class name.
+
+The exception function can also take optional arguments, along the
+lines of
+
+    exception 'Error_DB', isa => "MyError::App";
+
+which results (after error checking) in something like
+
+    @Error_DB::ISA = 'MyError::App';
+
+Other options may possibly be given to C<exception> to control things
+like the raise-time stack traceback.
+
+=back
+
+=head2 Examples
+
+The first three of these examples cover the most common uses of try,
+catch, and finally.
+
+  try { my $f = open "foo"; ... } finally { $f and close $f; }
+
+=over 4
+
+=item Z<>
+
+If the open completed successfully (so defining C<$f>), C<close $f>
+is attempted no matter what else happens.
+
+If anything in the try or finally clauses raises an exception, said
+exception is propagated after attempting the finally block.  Otherwise
+execution continues locally.
+
+This sort of functionality is commonly required, not just with files and
+close, but (for example) with objects that don't want to rely on garbage
+collection for the invocation of cleanup code.
+
+=back
+
+  try { fragile(); } catch { print "$@\n"; }
+
+=over 4
+
+=item Z<>
+
+If the try block raises an exception, the catch block is entered.  No
+exception is propagated, unless the catch block raises an exception
+(because if it doesn't the exception raised by try is considered
+"cleanly caught").
+
+In this example, if C<fragile()> raises an exception it's shown on
+C<STDOUT>, and then execution continues normally (unless C<print> raises
+an exception).  The stringification method of the exception object is
+used to generate the output.  Note that S<C<print $@-E<gt>show;>> can be
+used to dump the entire exception unwind stack, as described elsewhere
+herein.
+
+=back
+
+  try { ... }
+  catch Exception::Foo => { ... }
+  finally { ... }
+
+=over 4
+
+=item Z<>
+
+If the try block raises an C<Exception::Foo> exception then the catch
+block is invoked.  Whether or not try or catch raised an exception, the
+finally block is invoked.
+
+If try and catch both raised exceptions, or finally raised an exception,
+then it is propagated, but if try raised an exception and catch and
+finally didn't, then no exception is propagated (because the exception
+was cleanly caught).
+
+=back
+
+Here's another simple yet quite robust example based on the first two
+examples.
+
+    sub attempt_closure_after_successful_candidate_file_open
+    {
+	my ($closure, @fileList) = @_; local (*F);
+	foreach my $file (@fileList) {
+	    try { open F, $file; } catch { next; }
+	    try { &$closure(*F); } finally { close F; }
+	    return;
+	    }
+	throw Exception "Can't open any file.",
+	       debug => @fileList . " tried.";
+	}
+
+Most developers will usually only find need for cases like those
+shown above.  The following examples can be used when circumstances
+merit, but they should be avoided by those looking for maximal
+simplicity.  Anything can be done with state variables and nested
+simple trys, at least until you run off the right of the page or
+forget a re-throw.  The following examples are provided for your
+convenience, not as a requirement to understanding this RFC or
+using its mechanism.
+
+  try { ... }
+  catch Exception::Foo => { ... }
+  catch Exception::Bar => { ... }
+  catch                   { ... }
+  finally { ... }
+
+=over 4
+
+=item Z<>
+
+If the try block raises an exception then: if the first catch matches it
+is invoked, if the second catch matches it is invoked, otherwise the
+third catch is invoked.
+
+The finally block is entered no matter what happens.
+
+No exception is propagated unless one of the catch blocks raises an
+exception, or the finally block does (because otherwise any exception
+raised by try is considered to have been "cleanly caught").
+
+=back
+
+  try { ... } catch $@->{message} =~ /.../ => { ... }
+
+=over 4
+
+=item Z<>
+
+Any exception object instance variable, such as message, tag, or
+severity, can be used to test whether or not the exception should be
+caught.  The result of the stringification of C<$@> can be similarly
+tested.
+
+This also allows one to define a convenience subroutine to make, for
+example, the following work:
+
+	catch not &TooSevere => { ... }
+
+=back
+
+  try { ... } catch ref $@ =~ /.../ => { ... }
+
+=over 4
+
+=item Z<>
+
+Catches the current exception if has a class name that matches the
+given regular expression!
+
+=back
+
+  try { ... } catch grep { $_->isa("Foo") } @@ => { ... }
+
+=over 4
+
+=item Z<>
+
+The catch clause is invoked only if any exception on the exception
+unwind stack, aka C<@@>, isa Foo.  Note that developers of applications
+that need to search the stack a lot can define a simple convenience
+subroutine to allow
+
+	catch AnyException("Error::IO") => { ... }
+
+which is an excellent example of the utility of the
+S<C<catch E<lt>exprE<gt>>> form.
+
+=back
+
+  try { ... } catch grep { $@->isa($_) } @list => { ... }
+
+=over 4
+
+=item Z<>
+
+Rather that repeating a long list of exceptions that you need to catch
+in multiple places, this form allows you to put them in a list.  Again,
+in practice, a convenience subroutine would probably be defined to hold
+the list and compute the predicate.
+
+=back
+
+  try { ... } catch $@->isa("Foo") && $@->CanBar => { ... }
+
+=over 4
+
+=item Z<>
+
+Derived exception classes can add new instance variables and methods to
+do things like test new predicates.  The above form allows these
+predicates to be used with try.  If polymorphism is desired, use
+
+    catch $@->can("CanBar") && $@->CanBar => { ... }
+
+=back
+
+  try { my $p = P->new; my $q = Q->new; ... }
+  finally { $p and $p->Done; }
+  finally { $q and $q->Done; }
+
+=over 4
+
+=item Z<>
+
+This construct makes sure that if C<$q> is successfully constructed,
+then C<$q-E<gt>Done> is invoked even if C<$p-E<gt>Done> raises an
+exception.  Works for opening and closing a pair of files too.
+
+=back
+
+  try     { TryToFoo; }
+  catch   { TryToHandle; }
+  finally { TryToCleanUp; }
+  catch   { throw Exception "Can't cleanly Foo."; }
+
+=over 4
+
+=item Z<>
+
+Unshifts a new exception onto C<@@> if any of the first three blocks
+throws, unless successfully handled.  Use of this technique at major API
+entry points can result in the availability of better information when
+unwinding is eventually caught, like this:
+
+    UIM.1234: Can't add a new person to the database.
+    APP.2345: Can't update Company relationship.
+    DBM.3456: Trouble processing SQL UPDATE clause.
+    DBM.4567: Unable to write to Locations table.
+    IOM.5678: Can't open file ".../locations.ndx".
+    IOM.6789: File ".../locations.ndx" not found.
+
+The following table shows the details of this construct.
+The key is S<1 = succeeds>, S<0 = fails>, S<x = skipped>.
+
+ TryTo  TryTo    TryTo   | Throw After Finally
+  Foo   Handle  CleanUp  |      Description
+ ------------------------+--------------------------------------
+   1      x        1     | No.  We did Foo and cleaned up.
+   1      x        0     | Yes. We did Foo but didn't clean up.
+   0      1        1     | No.  We didn't Foo but did Handle it,
+ 			 |      and then we cleaned up.
+   0      1        0     | Yes. We didn't Foo but did Handle it,
+ 			 |      but then we didn't clean up.
+   0      0        1     | Yes. We didn't Foo and didn't Handle
+ 			 |      it, even though we did clean up.
+   0      0        0     | Yes. We didn't do anything right!
+
+=back
+
+  try {
+      ...
+      $avoidCatches_JustUnwind = predicate();
+      ...
+      }
+  catch $avoidCatches_JustUnwind => { throw $@ }
+  catch { ... }
+  finally { ... }
+
+=over 4
+
+=item Z<>
+
+This construction allows a try to dynamically decide to avoid its catch
+clauses and just propagate any error that occurs in the try block (after
+invoking the finally block).
+
+=back
+
+=head2 Syntax
+
+    <exception> := exception <string> <options> ;
+
+    <throw> := throw <class> <message> <options> ;
+             | throw <string> <options> ;
+             | throw ;
+
+    <message> := # empty
+               | <string>
+	       | <string> <options>
+
+    <try> := try <block> <clauses>
+
+    <clauses> := # empty
+               | <clause> <clauses>
+
+    <clause> := <catch> | <finally>
+
+    <catch> := catch <block>
+	     | catch <classes> <comma> <block>
+             | catch <expr> <comma> <block>
+
+    <finally> := finally <block>
+
+    <classes> := <class> | <class> , <classes>
+
+    <class>	# Unquoted name of a class that inherits from the
+                # built-in Exception class, such as Exception::Foo.
+
+    <options> := # empty
+               | , <string> => <value>
+               | , <string> => <value> <options>
+
+    <block> := { ... }	# A Perl code block.
+
+    <comma> := , | =>
+
+    <expr>	# A Perl expression which is evaluated when
+    		# the relevant clause is processed.
+
+    <string>	# A Perl expression which is evaluated and
+    		# stringified.
+
+=head2 Unwinding Semantics
+
+"Computer Architecture, Hardware and Software" [RYK-1989] says (p.347):
+
+=over 4
+
+=item Z<>
+
+Three basic design issues concerning exceptions are (1) whether or not
+the exception is permitted to return to the point where the exception is
+taken, (2) how the execution context to be used during the the handler's
+execution is found, and (3) how the association of an exception handler
+with and exception event is established.
+
+=back
+
+Perl's behaviour after a C<die> starts call-stack unwinding, as
+envisioned by this RFC, is as described by the following rules.
+The "current exception" is the value of C<$@>.
+
+=over 4
+
+=item 1
+
+Whenever an exception is raised Perl looks for the first enclosing
+try/catch/finally block, or eval.  If none is found program shutdown
+is initiated.
+
+If a try/catch/finally clause is found Perl traps the exception and
+proceeds as per rule 2.
+
+If the exception is trapped by an eval the eval returns locally,
+preserving the value of C<$@>, according to the usual Perl 5 rules
+(regardless of any outer try/catch/finally clauses).
+
+Z<>
+
+=item 2
+
+The try block's "next" associated trap/catch or finally clause is
+processed according to rules 3 and 4.  When there are no more clauses
+rule 5 is used.
+
+Z<>
+
+=item 3
+
+If a catch <test> returns true (without itself raising an exception),
+its associated catch block is entered.
+
+If the catch block is entered and it completes without itself raising an
+exception, the current exception and stack are cleared.  But if a catch
+<test> or a block raises an exception, it becomes the current exception,
+but it does not propagate out of the try statement (at this point).
+
+If a catch <test> raises an exception or returns true, then whether or
+not the catch block raises an exception, any succeeding try/catch
+clauses up to the next finally clause are skipped (for the purpose of
+the "next" iterator in rule 2).  This makes sequential catches work like
+switch/case.
+
+Processing then continues with rule 2.
+
+Z<>
+
+=item 4
+
+When a finally clause is encountered its block is entered.
+
+If the finally block raises an exception it becomes the current
+exception, but it does not propagate out of the statement (at this
+point).
+
+Processing continues with rule 2.
+
+Z<>
+
+=item 5
+
+After the catch and finally blocks are processed, if there is a current
+exception then it is re-raised and propagated as per Rule 1 (beginning
+above the current try statement in the call stack).
+
+Otherwise the current exception and stack are cleared, the try statement
+completes normally, and Perl continues with the statement after the try
+statement.
+
+=back
+
+=head2 Built-In Exception Class
+
+Exceptions raised by the guts of Perl are envisioned by this RFC to
+all be instances of derived classes that inherit from Exception (so
+the class hierarchy can be used for exception classification).
+This is discussed below under L<IMPACT> + RFC 80.
+
+The built-in Exception class and unwinding functionality described
+in this RFC can be used whether or not Perl 6 goes to internal
+exceptions.
+
+Instances of the actual (non-subclassed) Exception class itself are
+used for simple exceptions, for those cases in which one more or
+less just wants to say S<C<throw Exception "My message.">>, without a
+lot of extra tokens, and without getting into higher levels of the
+taxonomy of exceptions.
+
+=head2 Instance Variables
+
+The built-in Exception class reserves all instance variable and
+method names matching C</^[_a-z]/>.  The following instance
+variables are defined.
+
+B<C<message>>
+
+=over 4
+
+=item Z<>
+
+This is a description of the exception in language intended for the
+"end user".  Potentially sensitive information should not be included
+here.
+
+This instance variable is also used to record the string given when
+S<C<die "Can't foo.">> is used.  Because of stringification (described
+below), such a C<die> will result in
+
+	"$@" =~ /Can't foo\./
+
+=back
+
+B<C<tag>>
+
+=over 4
+
+=item Z<>
+
+This is a string which package developers can use to assign a unique
+"identifier" to each exception object constructor invocation in their
+package.  A package-based namespace control mechanism that helps ensure
+the uniqueness of tags is described below, under the C<tag> and
+C<settag> methods.  The tag instance variable always contains the fully
+qualified tag value.
+
+=back
+
+B<C<debug>>
+
+=over 4
+
+=item Z<>
+
+This is a place for additional description that is not intended for
+the end user (because it is "too technical" or "sensitive").
+
+For example, in a web application, internal file names might be
+considered sensitive information, but you would still like to get
+the name of the file that couldn't be opened into the server log.
+
+=back
+
+B<C<data>>
+
+=over 4
+
+=item Z<>
+
+If the exception is related to some particular object, or the developer
+wants to associate other information with this exception, said $data can
+be specified via:
+
+    throw Exception "...", data => $data;
+
+=back
+
+B<C<trace>>
+
+=over 4
+
+=item Z<>
+
+This is a listref containing a snapshot of the Perl call-stack as at the
+time the exception is first raised.  The array contains hashes (one per
+call stack level), each containing one key-value pair for each snapshot
+value at that level.  Here are some examples:
+
+	$e->{trace}->[0]->{file}
+	$e->{trace}->[0]->{line}
+	$e->{trace}->[0]->{package}
+
+Alternatively, C<$e-E<gt>{trace}> could be some sort of snapshot object
+thingy.  Similar stuff has been done by the Perl 5 C<Devel> bundle;
+perhaps there should be a Perl 6 RFC for it.
+
+The functionality of C<caller()> is used to populate this snapshot data,
+but said snapshot has to be taken early and held for possible historic
+debugging use, because usually we want to know where we were when things
+went wrong, I<not> where we were when we caught that (by which time, the
+raise-time stack snapshot data is irrecoverable).
+
+This snapshot data is set up by the C<snapshot> method described below,
+so that derived classes that don't want this overhead can override that
+method to do nothing.  This can be important to applications that want
+to use a large number of light-weight exceptions to implement non-local
+success-based flow-control gotos, where the cost of taking and
+maintaining the snapshots could prove to be prohibitive, especially
+since they would normally never be used.
+
+The snapshot method is an overrideable built-in rather than a stub
+though, because in fact in most cases one does want to pay the price for
+being able to debug exceptions, because said price is small (in most
+cases).
+
+=back
+
+B<C<sysmsg>>
+
+=over 4
+
+=item Z<>
+
+This a place for the internal exceptions raised by Perl to record
+system information, along the lines of C<$!>, C<$?>, and C<$^E>.
+
+Note that the sysmsg instance variable is properly the province
+of the various "exceptions for built-ins" proposals, such as RFC 80.
+However, if the C<%@> concept described under L<ISSUES> becomes a
+part of Perl 6, then C<sysmsg> could just be a reference to a copy
+of that hash.
+
+=back
+
+=head2 Methods
+
+The built-in Exception base class defines the following methods.
+
+B<C<new>>
+
+=over 4
+
+=item Z<>
+
+Constructs a new object instance, using its arguments as a hash to
+initialize the instance variables by name.
+
+The C<tag> instance variable is treated specially in order to control
+the namespace for tags, as follows:
+
+    $self->{tag} = $self->settag($arg{tag});
+
+=back
+
+B<C<throw>>
+
+=over 4
+
+=item Z<>
+
+As a class method a new instance is constructed, passing any arguments
+to the constructor.  This object becomes C<$self>, and we now have an
+instance method.
+
+As an instance method, any arguments are used to update the instance
+variables (unless just constructed), and this method effects
+S<C<die $self>>.
+
+This method does not return to local flow control (modulo the
+C<on_raise> mechanism described below).
+
+=back
+
+B<C<overload '""'>>
+
+=over 4
+
+=item Z<>
+
+Stringification produces a concatenation of various Exception object
+instance variables and certain delimiters.  The message instance
+variable is always to be included.  The details are to be worked out,
+but an example would be:
+
+    ABC.1234 [Warning]: Confirmed but not acknowledged.
+
+=back
+
+B<C<settag>>
+
+=over 4
+
+=item Z<>
+
+This method effects whatever operations are performed on the tag
+short form given in a throw like this
+
+    throw Exception "a message", tag => "My/Tag/Scheme"
+
+in order to come up with fully qualified value to be stored in the
+tag instance variable.
+
+These operations are properly the province of RFC 80, but the default
+could be something like this:
+
+	$self->{tag} = (ref $self) .".". $_[0];
+
+or equivalent, as described below.
+
+This would mean that the tags provided to exception constructors need
+only be unique across a class, file, or package, which is often
+constrained enough to make uniqueness relatively easy in practice.
+
+The example of exception class constructor overriding given later in
+this RFC needs to set the tag, while maintaining namespace control,
+without knowing the namespace control details, so this method is
+provided for that.
+
+Perhaps all this instance variable accessor method stuff can be
+cleaned up with other changes to the Perl 6 OO mechanism.
+
+=back
+
+B<C<tag>>
+
+=over 4
+
+=item Z<>
+
+This method returns true if the object's tag instance variable matches
+its argument.  This allows us to easily trap by namespace-controlled
+tag, using a form like this:
+
+	catch $@->tag("Foo") => { ... }
+
+The definition of "matches" can be changed, for an exception class
+hierarchy, by overriding this method.  The default rule properly is the
+province of RFC 80, but it could be something like this (for unique tags
+across all throws of the same class):
+
+	$self->{tag} eq (ref $self) .".". $_[0]
+
+or for unique tags across all throws in the same package:
+
+	$self->{tag} eq (caller(0))[0] ."\t".$_[0]
+
+or for unique tags across all throws in the same file:
+
+	$self->{tag} eq (caller(0))[1] ."\t".$_[0]
+
+=back
+
+B<C<show>>
+
+=over 4
+
+=item Z<>
+
+This class method and instance method generates a string formatted
+version of the exception unwinding stack based on the contents of
+C<@@>, stringifying each exception object as it goes.  For example,
+S<C<print $@-E<gt>show>> produces something like this:
+
+    UIM.1234: Can't add a new person to database.
+    APP.2345: Can't update Company relationship.
+    DBM.4567: Unable to write to Company table.
+    IOM.5678: Can't open file ".../company.db".
+
+C<show> takes the following optional parameters.
+
+C<label =E<gt> 1>
+
+If set, the formatted exception stack is annotated with the classes
+of the objects therein, as in:
+
+    Exception::UI: UIM.1234: Can't add a new person to database.
+    Exception::DB: APP.2345: Can't update Company relationship.
+    Exception::DB: DBM.4567: Unable to write to Company table.
+    Exception::IO: IOM.5678: Can't open file ".../company.db".
+
+C<trace =E<gt> 1>
+
+If set, the value returned by C<show> includes the Perl stack traceback
+using the information from the I<last> exception in the stack, that is
+C<$@[-1]>.  Something like this:
+
+    UIM.1234: Can't add a new person to database.
+    APP.2345: Can't update Company relationship.
+    DBM.4567: Unable to write to Company table.
+    IOM.5678: Can't open file ".../company.db".
+
+    Try::throw called from test-403.pl[7].
+    Try::try called from test-403.pl[9].
+    Try::try called from test-403.pl[11].
+    Try::try called from test-403.pl[14].
+
+C<debug =E<gt> 1>
+
+Annotates entries in the unwind stack with the values from their
+C<debug> instance variables, if any.  For example:
+
+    UIM.1234: Can't add a new person to database.
+    Debug: Fred Flintstone
+    APP.2345: Can't update Company relationship.
+    DBM.4567: Unable to write to Company table.
+    IOM.5678: Can't open Company file.
+    Debug: /foo/bar/company.dat
+
+Developers who need alternative output can override C<show>.
+
+=back
+
+B<C<snapshot>>
+
+=over 4
+
+=item Z<>
+
+Used internally to generate the C<trace> instance variable.  Designed
+to be overridden in derived classes for performance or extension
+purposes.  See the description of the trace instance variable, above.
+
+=back
+
+B<C<on_raise>>
+
+=over 4
+
+=item Z<>
+
+Derived classes may override this method to attempt to "handle" an
+exception or otherwise manipulate it, just before it is raised.  If
+C<on_raise> throws or returns true the exception is raised, otherwise it
+is not.  An exception can be manipulated or replaced and then propagated
+in modified form simply by re-raising it in C<on_raise>.
+
+In the C<Exception> base class this method returns true, so by default
+exceptions are always raised.
+
+Unraised throws make no sense for "error" exceptions and are abhorrent
+to users of exception handling for error handling, but that's ok because
+Exception's C<on_raise> method returns true by default, you have to
+actually override a method to change that behaviour, and, well, error
+classes could use C<on_raise> for instance variable munging at
+propagate-time, as long as they return true.
+
+Nevertheless, other uses for Exception objects may want this
+functionality, at least based on the reference and text books
+which say that classically, an exception has such a handler hook.
+
+If we do provide it, it need not be used, but if we don't provide it
+the functionality cannot otherwise be provided, should it be deemed
+desirable for some application.
+
+=back
+
+B<C<on_catch>>
+
+=over 4
+
+=item Z<>
+
+In the name of symmetric hooks, an C<on_catch> method is called just
+before an exception object is cleared from C<@@>.  on_catch may be
+overridden by a derived exception class to perform additional debug
+logging, or (in fact), to refuse the completion of the catch (by
+raising a new exception).
+
+=back
+
+=head2 Custom Exceptions
+
+In addition to the C<exception 'MyException'> mechanism described
+above, custom exception and/or error classes can be created along
+the following lines:
+
+    File main.pl:
+
+	use Error::App;
+
+	exception 'Error_DB', isa => 'Error::App';
+
+	throw Error_DB "ABC.1234: Can't foo.";
+
+    File Error/App.pm:
+
+	package Error::App;  @Error::App::ISA = 'Error';
+
+	use Error;  # It inherits from Exception.
+
+	sub new
+	{
+	    my ($C, $msg, %opt) = @_;  $C = ref $C || $C;
+
+	    my $self = $C->SUPER::new($msg, %opt);
+
+	    $self->{message} =~ s/^([A-Z]+\/\d+):\s+//
+	    and
+		$self->settag($1);
+
+	    return bless($self, $C);
+	    }
+
+Note that the scope of classes like C<Error::App> is is limited to
+packages that use it, which presumably want such functionality.
+
+=head1 MOTIVATION
+
+Over the last ten years, the author has come to rely on exception
+handling as a relatively robust mechanism for error handling, and
+has used exception handling to implement other, non-error related,
+non-local flow-control algorithms, in Scheme, C++, Visual Objects,
+Delphi, and Perl.  He has developed a relatively complete
+implementation of the functionality described herein, in Perl 5, in
+the Try.pm module and its associated regression tests [TRY-2000].
+A similar version of Try.pm is in use in production applications.
+
+The authors' motivation is to help Perl 6 achieve a relatively robust
+exception handling mechanism that is suitable for error handling via
+exceptions, is still capable enough to handle the needs of production
+programs, and is still suitable for light-weight exceptions that may
+not involve errors at all.
+
+"The Encyclopedia of Software Engineering" [ESE-1994] says (p.847):
+
+=over 4
+
+=item Z<>
+
+Among the features offered by programming languages to support exception
+handling are the following.
+
+Z<>
+
+=over 4
+
+=item 1
+
+The ability to distinguish the normal control flow from the exception
+handling flow to make the structure of the program clear.
+
+Z<>
+
+=item 2
+
+The ability to detect faults as they occur in the program, not only by
+explicitly raising an exception but also by implicitly raising it on
+account of the run-time environment.  [...] Both kinds of faults should
+be handled uniformly.
+
+Z<>
+
+=item 3
+
+The ability to transfer control to a programmer-definable exception
+handler when the fault is detected.  The language should specify the
+rules by which this detected fault is bound to its corresponding
+exception-handling routine.
+
+Z<>
+
+=item 4
+
+The ability to specify how control flows after the exception handler is
+executed, i.e., whether one can resume execution from the point at which
+it left off, or whether the program should fail.
+
+=back
+
+Most early programming languages do not provide specific features for
+exception handling, but rather use the normal constructs to implement
+it. [...]  Obviously this and other ad hoc methods do not satisfy the
+requirements listed above.
+
+=back
+
+To this end, new keywords have been deliberately chosen to represent the
+new mechanism, in order to make it clear to the developer when the code
+is expecting to deal with unwind semantics (rather than with local flow
+control).
+
+In addition, the exception handling mechanism propagates exceptions that
+are not cleanly caught, which minimizes the chances for the developer to
+forget to re-raise uncaught exceptions.  How many of us check for IO
+failures after C<print>s?  And if you're writing a simple program you
+wouldn't want to have to, but you would want the program to shut down
+after a failure even if you don't check.
+
+Remembering to always check all subroutine and functions for failure
+return codes can be difficult, since nothing about the form of the call,
+in the source code, indicates whether or not a failure return code
+should be expected.  And, the exception handling technique not only
+works with subroutines and functions, it works with operators too
+(which, you will note, is why divide dies on zero denominator: it has
+no other way to return an error code).
+
+Although the following code using the new mechanism:
+
+	try { may_throw_1 }
+	catch may_throw_2 => { may_throw_3 }
+	finally { may_throw_4 }
+
+can be written in Perl 5 like this:
+
+	eval { may_throw_1 };
+	my $exception = $@;
+	if ($exception) {
+	    my $test = eval { may_throw_2 };
+	    $@ and $exception = $@;
+	    if ( ! $@ and $test ) {
+		eval { may_throw_3 };
+		$exception = $@;
+		}
+	    }
+	eval { may_throw_4 };
+	($exception ||= $@) and die $exception;
+
+the opportunity for flow-control errors increases.
+
+Without the functionality provided by the mechanisms described in
+this RFC, instead of having a way to be able to write
+
+    throw Error_DB "ABC.1234: Can't write to table $table.";
+
+a developer would be I<required> to write something like
+
+    throw Exception::Error::App::DB tag => "ABC.1234",
+	message => "Can't write to table $table.";
+
+The latter has a much lower signal to noise ratio than the former, which
+is of I<significant> importance to regular users of exception handling
+mechanisms.
+
+=head1 CONVERSION
+
+Although the technique of using exception handing for error handling
+often seems foreign at first to developers who are not used to it, many
+find that it becomes quite natural when four concepts are kept in mind.
+
+=over 4
+
+=item 1
+
+Wherever you previously would have S<C<return undef>> or some other
+special return code (or a pass-by-reference value), to indicate the
+failure of a subroutine or function, instead use S<C<throw Exception>>
+(or some fancier form thereof).
+
+Z<>
+
+=item 2
+
+Wherever you previously would have written
+
+	$x = foo();  defined $x or return undef;
+
+to propagate an error from a callee back to your caller, you can just
+write S<C<$x = foo();>> because unhandled exceptions automatically
+propagate.
+
+Z<>
+
+=item 3
+
+Wherever you previously would have written the equivalent of the
+following to do something about an error, and then ignore it:
+
+	$x = foo();
+	unless (defined $x) {
+	    # do something about error here
+	    }
+
+you can now write
+
+	try { $x = foo(); }
+	catch {
+	    # do something about error here
+	    }
+
+Z<>
+
+=item 4
+
+Wherever you previously would have ignored an error in order to allow
+you to restore invariants or enforce postconditions, and then used
+S<C<return undef>> to propagate the error, like this:
+
+	open F, ...;
+	$x = foo();
+	close F;
+	defined $x or return undef;
+
+you can now write
+
+	open F, ...;
+	try     { $x = foo(); }
+	finally { close F;    }
+
+because unhandled exceptions automatically propagate.
+
+=back
+
+And, of course, if you don't want to use exception objects just
+don't use C<throw>, instead just keep on using S<C<die "string";>>
+as in Perl 5 (because C<$@> stringifies reasonably).
+
+=head1 ISSUES
+
+B<Perl should be Perl>
+
+=over 4
+
+=item Z<>
+
+Given that the functionality described in this RFC can be provided
+by a Perl 5 module, as implemented in [TRY-2000], the author would
+prefer that these capabilities not be made impossible in Perl 6.
+
+=back
+
+B<Core Functionality>
+
+=over 4
+
+=item Z<>
+
+If the guts of Perl 6 are to use exceptions for errors, some
+of the stuff in this RFC has to go into the guts of Perl 6 (but
+see "Use C<%@> for errors from builtins", below, for a minimalist
+way to do so).
+
+The authors are of the opinion that the public interface to to the
+core Perl API should support but not require the use of exceptions
+for errors that would set C<$!>, under the control of a
+S<C<use fatal;>> or S<C<use strict 'fatal';>> pragma.
+
+=back
+
+B<New Keywords>
+
+=over 4
+
+=item Z<>
+
+RFC 88 only introduces the C<try>, C<throw>, C<catch>, C<finally>,
+and C<exception> "keywords", which are all traditionally related to
+exception handling.  And they don't even need to all actually be
+keywords, some can be functions (depending on the Perl 6 parser).
+
+New keywords were chosen so that this can be written:
+
+    try {
+	try {
+	    try     { ... }
+	    finally { ... }
+	    }
+	catch Exception1 => { ... }
+	catch Exception2 => { ... }
+	}
+    catch { print $@, "\n"; }
+
+instead of cognitively overloading existing keywords and concepts in a
+manner like this:
+
+    eval {
+	eval {
+	    eval     { ... }
+	    continue { ... }
+	    }
+	else {
+	    switch ($@) {
+		case /Exception1/ { ... }
+		case /Exception2/ { ... }
+		else { die $@; }
+		}
+	    }
+	}
+    else { print $@, "\n"; }
+
+because the authors are of the opinion that overloading C<else> and
+C<continue> with unwind semantics not traditionally associated with
+C<else> and C<continue> can be confusing, especially when intermixed
+with local flow-control forms of C<else> and C<continue> (which may
+be present in any S<C<{ ... }>> block), or when an S<C<else die $@>>
+is forgotten on a C<switch> that needs to re-throw.
+
+Some perl6-language-error discussions have suggested leaving out
+the try altogether, as in simply writing C<{ } else { }> to indicate
+non-local flow-control at work. Yikes!
+
+The C<try> is not for Perl's sake.  It's for the developer's sake.
+It says, watch out, some sort of non-local flow control is going on
+here.  It signals intent to deal with action at a distance
+(unwinding semantics).  It satisfies the first requirement listed
+under L<MOTIVATION>.
+
+The C<throw> verb was chosen for raising an exception, because
+of its neutral connotation (unlike C<fail> for example), because
+exceptions do not necessarily encapsulate a negative.  Similarly,
+C<catch> is neutral, unlike S<C<try { ... } error { ... }>>.
+
+=back
+
+B<Keyword Names>
+
+=over 4
+
+=item Z<>
+
+Much discussion was generated on the perl6-language lists about
+the selection of keywords for this mechanism.  The minimalist
+approach of cognitively overloading existing keywords such as
+C<eval>, C<else>, and C<continue> has been discussed above.
+
+The C<try> / C<throw> / C<catch> / C<finally> combination works
+well in consideration of the other requirements discussed herein.
+
+For the record, here are some of other words that have either
+been used by other programming languages, or suggested on the
+mailing lists: raise, always, onException, when, signal, fail,
+handle, otherwise, unwind, trap, quit, trip, deal, freak, panic,
+cope, punt, ascend, cough, sustain, overrule, and (of course)
+C<longjmp>.
+
+=back
+
+B<Syntax>
+
+=over 4
+
+=item Z<>
+
+The comma or C<=E<gt>> in a conditional catch clause is required so
+the expression can be parsed from the block, in the fashion of Perl
+5's parsing of: S<C<map E<lt>expressionE<gt> , E<lt>listE<gt>>>;
+Without the comma, the form S<C<catch $foo { ... }>> could be
+a test for C<$foo> or a test for C<$foo{...}> (the hash element).
+
+=back
+
+B<Object Model>
+
+=over 4
+
+=item Z<>
+
+This RFC is written using the basic Perl 5 concept of an object
+as a reference to a blessed hash containing instance variable
+name-value pairs.  It may need to be modified to account for
+any new basic Perl 6 object model.  On the other hand, it makes
+minimal demands of any object model.
+
+=back
+
+B<Exception Base Class>
+
+=over 4
+
+=item Z<>
+
+If C<Exception> objects are not to be used for signaling assertion
+failures by the guts of Perl 6, this RFC stands alone.  Otherwise,
+this RFC delegates the details of the Exception class to RFC 80,
+modulo the required functionality described herein (more or less,
+that internal exception objects are instances of classes that
+inherit from the built-in Exception class).
+
+Either way, the following questions about Exception should be
+addressed.
+
+Z<>
+
+=over 4
+
+=item *
+
+How can we subclass Exception and control the class namespace?  For
+example, if the core can use any C<Exception::Foo>, where does one
+connect non-core Exceptions into the taxonomy?  Possibly the core
+exceptions can derive from C<Exception::CORE>, and everyone else can
+use the C<Exception::MyPackage> convention.
+
+Z<>
+
+=item *
+
+How can we add new instance variables and methods to classes
+derived from Exception and control those namespaces?  Perhaps
+this will be covered by some new Perl 6 object technology.
+Otherwise, we will need yet another naming scheme convention.
+
+Z<>
+
+=item *
+
+What should the default values be for Exception object instance
+variables not specified to the constructor?  For example, C<tag>
+could default to file + line number.
+
+Z<>
+
+=item *
+
+What assertions should be placed on the instance variables, if any?
+
+Z<>
+
+=item *
+
+What should stringification return?
+
+=back
+
+=back
+
+B<Lexical Scope>
+
+=over 4
+
+=item Z<>
+
+The authors would prefer that C<try>, C<catch>, and C<finally> blocks
+share the same lexical scope.
+
+If it is not possible to have try, catch, and finally blocks share
+lexical scope (due, perhaps, to the vagaries of stack unwinding), this
+feature can simply be deleted, and the outer scope can be shared.
+
+One possible shared-scope problem is illustrated by this case:
+
+    try { fragile(); }
+    catch { my $caught = 1; }
+    finally { $caught and ... }
+
+If C<fragile()> doesn't raise an exception then C<finally> is going
+to test C<$caught> even though the C<my> statement was never executed.
+Will C<$caught> already be allocated and C<undef>?
+
+These matters will have to be referred to the internals experts.
+
+=back
+
+B<Mixed Flow Control>
+
+=over 4
+
+=item Z<>
+
+Some of the reference texts, when discussing exception handling, refer
+to the matter that it may be difficult to implement a C<go to> across
+an unwinding semantics block, as in:
+
+	try { open F, $f } catch { next; }
+
+This matter will have to be referred to the internals experts.  It's ok
+if this functionality is not possible, it can always be simulated with
+lexical state variables instead.
+
+However, the authors would very much prefer that C<goto>s across
+unwinding boundries would DWIM.  If that is not possible, hopefully
+some sort of compile-time warning could be produced.
+
+=back
+
+B<Use C<%@> for Errors from Builtins>
+
+=over 4
+
+=item Z<>
+
+RFC 151 proposes a mechanism for consolidating the information provided
+by of C<$@>, C<$!>, C<$?>, and C<$^E>.  In the opinion of the author of
+RFC 88, merging C<$@> and C<$!> should not be undertaken, because C<$@>
+should I<only> be set if an exception is raised.
+
+B<C<%@>> should be used to hold this fault-hash, based on the following
+arguments for symmetry.
+
+        $@    current exception
+        @@    current exception stack
+        %@    current core fault information
+
+        $@[0]        same as $@
+
+        $@{type}     "IO::File::NotFound"
+        $@{message}  "can't find file"
+        $@{param}    "/foo/bar/baz.dat"
+        $@{child}    $?
+        $@{errno}    $!
+        $@{os_err}   $^E
+        $@{chunk}    That chunk thingy in some msgs.
+        $@{file}     Source file name of caller.
+        $@{line}     Source line number of caller.
+
+C<%@> should not contain a severity or fatality classification.
+
+I<Every> call to a core API function should clear C<%@> if it returns
+successfully.
+
+Internally, Perl can use a simple structured data type to hold the
+whole canonical C<%@>.  The code that handles reading from C<%@> will
+construct it out of the internal data on the fly.
+
+If C<use fatal;> is in scope, then just before returning, each core
+API function should do something like: S<C<%@ and internal_die %@;>>
+
+The C<internal_die> becomes the one place where a canonical C<Exception>
+can be generated to encapsulate C<%@> just before raising an exception,
+whether or not the use of such canonical Exceptions is controlled by a
+pragma such as S<C<use exceptions;>>.
+
+=back
+
+B<retry / resume>
+
+=over 4
+
+=item Z<>
+
+There has been some discussion on perl6-language-error about the
+concept of re-entering C<try> blocks on C<catch> (including the
+possibility of using such a mechanism to replace C<AUTOLOAD>).
+
+The author is of the opinion that in order to do this sort of thing
+properly one should use continuations, which are being discussed
+elsewhere to this RFC.
+
+The intent of this RFC is to provide a simple yet robust exception
+handling mechanism that is suitable for error handling, not for
+replacing C<AUTOLOAD> or continuations in general.
+
+=back
+
+B<always>
+
+=over 4
+
+=item Z<>
+
+RFC 119 describes a concept that would allow code like this:
+
+    {
+    ...
+    <statement> always <block>;
+    ...
+    }
+
+With the semantics that the <block> would be invoked when the
+lexical scope in which <statement> occurs is exited.  The author
+of this RFC thinks that's a fine idea, but that it is orthogonal
+to structured exception handling.  The behaviour of C<always> would
+be useful whether or not the lexical scope is defined by a simple
+local-flow-control block or by a set of try/catch/finally clauses.
+
+=back
+
+B<eval>
+
+=over 4
+
+=item Z<>
+
+The semantics of C<eval> are, "clear C<$@> and don't unwind unless
+the user re-dies after the C<eval>".  The semantics of C<try> are
+"unwind after C<try>, unless any raised exception was cleanly and
+completely handled, in which case clear C<$@>".
+
+In the author's opinion, both C<eval> and C<try> should exist in
+Perl 6.  This would also mean that the legacy of examples of how to
+use C<eval> in Perl will still work.
+
+And, of course, we still need S<C<eval $string>>.
+
+Discussions on perl6-language-errors have shown that some would
+prefer the S<C<eval { ... }>> form to be removed from Perl 6,
+because having two exception handling methods in Perl could be
+confusing to developers.  This would in fact be possible, since
+the same effect can be achieved with:
+
+	try { } catch { } # Clears $@.
+
+	my $e;
+
+	try { ... } catch { $e = $@; }
+
+	# now process $e instead of $@
+
+On the other hand, C<eval> is a convenient synonym for all that,
+given that it already works that way.
+
+=back
+
+B<C<catch v/s else + switch>>
+
+=over 4
+
+=item Z<>
+
+Some participants in discussions on perl6-language-errors have
+expressed the opinion that not only should C<eval> be used instead
+of C<try>, but C<else> should be used instead of multiple C<catch>
+blocks.  They are of the opinion that an S<C<else { switch ... }>>
+should be used to handle multiple catch clauses, as in:
+
+	eval { ... }
+	else {
+	    switch ($@) {
+		case $@->isa("Exception::IO") { ... }
+		case $@->my_method { ... }
+		}
+	    }
+
+This problem with S<C<else { switch ... }>> is: how should the code
+implicitly rethrow uncaught exceptions?  Many proponents of this
+model think that uncaught exceptions should not be implicitly
+rethrown; one suggests that the programmer should C<undef $@> at the
+end of I<every> successful <case> block, so that Perl re-raises any
+C<$@> still extant at the end of the C<else>.
+
+This RFC allows a C<switch> to be used in a S<C<catch { ... }>>
+clause, for cases where that approach would minimize redundant code
+in S<C<catch <expr> { ... }>> clauses, but with the mechanism
+proposed in this RFC, the switch functionality shown above can be
+written like this, while still maintaining the automatic exception
+propagation when no cases match:
+
+	try { ... }
+	catch Exception::IO => { ... }
+	catch $@->my_method => { ... }
+
+=back
+
+B<Fatal Exceptions>
+
+=over 4
+
+=item Z<>
+
+Discussions on perl6-language-errors have indicated a desire by some
+to be able to easily separate "fatal" exceptions (like divide by zero)
+from "non-fatal" exceptions (such as can't open file) if Perl 6 uses
+exceptions for error signalling.
+
+The authors are of the opinion that this mechanism and Perl core
+exceptions (if any) should not define any sort of C<severity> instance
+variable or C<is_fatal> method for the C<Exception> base class, because
+no a priori classification of fatality can in general be provided
+by the thrower of an exception--that's for the catcher to determine.
+
+Derived Exception class hierarchies can, on the other hand, add
+instance data and methods that support a severity concept in their
+domain, at which point catching can be made conditional on such a
+concept.
+
+=back
+
+B<on_raise & on_catch>
+
+=over 4
+
+=item Z<>
+
+Some participants in discussions on perl6-language-errors currently
+prefer that the functionality represented by the C<on_raise> method of
+the Exception class not be include at all.  Should that be deemed to be
+the case, the C<on_raise> method of the C<Exception> class can be left
+out.
+
+It has also been mentioned that we should consider making overriding
+of C<throw> impossible, so that C<throw> must C<die>.
+
+The author is of the opinion that these constraints should not be
+enforced, because (1) they may provide useful functionality for some
+applications, (2) you have to override a method, which is fairly hard to
+do by accident, and (3) if this functionality is not built in, there is
+no way to simulate it.
+
+Independent of the matter of C<throw> and the hook methods, the
+authors agree that there should be I<no way> to disable the raising
+of exceptions on some sort of "global" level.  They get through
+unless they, or their handling, explicitly say otherwise.
+
+=back
+
+B<Stack Snapshot Object>
+
+=over 4
+
+=item Z<>
+
+This RFC mentions that an exception's C<trace> instance variable could
+point to a "stack snapshot" object, rather than to a data structure.  A
+mechanism like this is available in the Perl 5 C<Devel> bundle.  If an
+RFC for such a snapshot class is added to Perl 6, this RFC should be
+reconciled with it.
+
+=back
+
+B<Mechanism Hooks>
+
+=over 4
+
+=item Z<>
+
+In the name of extensibility and debugging, there should be hooks for
+callbacks to be invoked when a C<try>, C<catch>, or C<finally> block is
+entered or exited, and when a conditional C<catch> is evaluated.  The
+callbacks would be passed information about what is happening in the
+context they are being called from.
+
+In order to scope the effect of the callbacks (rather than making them
+global), it is proposed that the callbacks be specified as options to
+the try statement, something like this:
+
+    try on_catch_enter => sub { ... },
+	on_catch_exit  => sub { ... },
+    {
+	...
+	}
+
+The (dynamic, not lexical) scope of these callbacks is from their try
+down through all trys nested under it (until overridden at a lower
+level).  Nested callbacks should have a way of chaining to callbacks
+that were in scope when they come into scope, perhaps by including a
+reference to the outer-scope callback as a parameter to the callback.
+Basically, they could be kept in "global" variables overridden with
+C<local>.
+
+Normally, this mechanism would only be used by an application's
+top-level C<try> statement, typically for the purpose of debugging
+non-local flow control, or extending the semantics of try.
+
+For example, to refuse to allow any code under the scope of a try
+to catch a given exception, one could just say:
+
+    on_catch_enter => sub { $@->isa("Alarm") and throw $@ }
+
+The author would find this functionality very useful in an application
+he works with that uses non-error exceptions to implement non-local
+success-based flow control in a model- view- controller architecture.
+
+In addition, a C<snapshots> option could be used by the C<Exception>
+class C<snapshot> method to control whether or not to take raise-time
+call-stack snapshots.
+
+=back
+
+B<Mixed-Mode Modules>
+
+=over 4
+
+=item Z<>
+
+Authors of modules who wish to provide a public API that respects the
+current state of S<C<use fatal;>> if such a mechanism is available, can
+do so as follows.
+
+Internal to their modules, authors can use lexically scoped
+S<C<use fatal;>> to explicitly control whether or not they want
+builtins to raise exceptions to signal errors.
+
+Then, if and only if they want to support the other style, and only
+for public API subroutines, they do something like one of these:
+
+Z<>
+
+=over 4
+
+=item *
+
+Use return internally, now add support for throw at API:
+
+ sub Foo
+ {
+    my $err_code = ... ; # real code goes here
+
+    # Replace the old return $err_code with this:
+
+    return $err_code unless $FATAL_MODE && $error_code != $ok;
+
+    throw Error::Code "Couldn't Foo.", code => $err_code;
+    }
+
+=item *
+
+Use throw internally, add support for return at API:
+
+ sub Foo
+ {
+    try {
+	# real code goes here, may execute:
+
+	throw Exception "Couldn't foo.", code => $err_code;
+	}
+    catch !$FATAL_MODE => { return $@->{code}; }
+
+    return $ok;
+    }
+
+=back
+
+=back
+
+B<$SIG{__DIE__}>
+
+=over 4
+
+=item Z<>
+
+The try, catch, and finally clauses localize and undef C<$SIG{__DIE__}>
+before entering their blocks.  This behaviour can be removed if
+C<$SIG{__DIE__}> is removed.
+
+If C<$SIG{__DIE__}> is not removed, it should be invoked as at the
+phrase "program shutdown is initiated" in Rule 1, not at the time an
+exception is raised by C<die>.
+
+If the old functionality is removed, do we want to introduce such
+functionality to Rule 1 anyway?
+
+=back
+
+=head1 IMPACT
+
+B<Legacy>
+
+=over 4
+
+=item Z<>
+
+The only changes in respect of Perl 5 behaviour implied by this RFC are
+that (1) C<$@> is now always an C<Exception> object (which stringifies
+reasonably), it is now read-only, and it can only be set via C<die>, and
+(2) the C<@@> array is now special, and it is now read-only too.
+
+=back
+
+B<RFC 63>: Exception handling syntax proposal.
+
+=over 4
+
+=item Z<>
+
+The author of RFC 63 (and co-author of RFC 88) has retired RFC 63.
+
+=back
+
+B<RFC 70>: Allow exception-based error-reporting.
+
+=over 4
+
+=item Z<>
+
+RFC 88 is proposed whether or not faults in the Perl 6 guts are signaled
+by exceptions, and whether or not such behaviour is under the control of
+a C<use fatal;>.
+
+=back
+
+B<RFC 80>: Exception objects and classes for built-ins.
+
+=over 4
+
+=item Z<>
+
+The author of RFC 80 is the co-author of RFC 88, and so is aware of the
+impact of RFC 88 on RFC 80.
+
+RFC 88 proposes that it's Exception and RFC 80's Exception be the same
+thing.  RFC 88 talks about the participation of an Exception in
+exception handling.  RFC 80 talks about how to use an Exception object
+to signal an exception in Perl's built-in functions and other guts.
+
+=back
+
+B<RFC 96>: A Base Class for Exception Objects
+
+=over 4
+
+=item Z<>
+
+The author of RFC 96 and RFC 88 has withdrawn RFC 96.
+
+=back
+
+B<RFC 119>: Object neutral error handling via exceptions.
+
+=over 4
+
+=item Z<>
+
+RFC 119 is a proposal for forms of functionality similar to those
+proposed in RFC 88.
+
+=back
+
+B<RFC 140>: One Should Not Get Away With Ignoring System Call Errors 
+
+=over 4
+
+=item Z<>
+
+The functionality in RFC 140 is envisioned for use in cases that don't
+want to be running S<C<use fatal;>>.  It is orthogonal to RFC 88 whether
+or not running S<C<use fatal;>>.
+
+=back
+
+B<RFC-151>: Merge C<$!>, C<$^E>, and C<$@>
+
+=over 4
+
+=item Z<>
+
+See L<IMPACT> + I<Use C<%@> for Errors from Builtins> for an alternative
+the proposal in RFC 151.
+
+=back
+
+=head1 ACKNOWLEDGEMENTS
+
+This RFC is based on invaluable support on a number of fronts.
+
+This RFC has been refined with the help of (via the perl6 mailing
+lists) contributions from Graham Barr, Chaim Frenkel, Jonathan Scott
+Duff, Glenn Lindermann, Dave Rolsky, and Corwin Brust.  It has also
+benefited from conversations with Jim Hoover.
+
+A slightly different version of the Perl 5 implementation of Try.pm
+[TRY-2000] has been used by the staff of Avra Software Lab Inc. for
+production code, it has been debated in presentations at the
+Software Engineering Research Lab at the University of Alberta, and
+it has been discussed on the perl-friends mailing list.  At one
+point Try.pm was refined based on the study of Graham Barr's
+Error.pm module [GBE-1999].
+
+=head1 AUTHORS
+
+Tony Olekshy <olekshy@avrasoft.com> is the principal author of this
+RFC, and is responsible for any errors contained herein.
+
+Peter Scott <peter@psdt.com> is co-author of this RFC, by virtue of
+the major contribution he has made hereto.
+
+Where this document refers to the singular author or author's, it
+refers to Tony.  Where it refers to co-author or co-author's, it
+refers to Peter.  Where it refers to the plural authors or authors',
+it refers to both authors.
+
+=head1 REFERENCES
+
+B<ESE-1994>: The Encyclopedia of Software Engineering, J.J. Marciniak
+             (editor), John Wiley & Sons Inc, 1994.  ISBN 0-471-54002-1
+
+B<GBE-1999>: Graham Barr's C<Error.pm> module.
+	     http://search.cpan.org/doc/GBARR/Error-0.13/Error.pm
+
+RFC 63: Exception handling syntax
+
+RFC 70: Allow exception-based error-reporting.
+
+RFC 80: Exception objects and classes for builtins
+
+RFC 96: A Base Class for Exception Objects
+
+RFC 119: Object neutral error handling via exceptions
+
+RFC 140: One Should Not Get Away With Ignoring System Call Errors
+
+RFC 151: Merge C<$!>, C<$^E>, C<$@> and C<$?>
+
+B<RYK-1989>: Computer Architecture, Hardware and Software, R.Y.Kain,
+	     volume 1, Prentice-Hall Inc., 1989.  ISBN 0-13-166752-1
+
+B<TRY-2000>: Try.pm, a Perl 5 reference implementation of the
+	     functionality described herein, is available at:
+	     http://www.avrasoft.com/perl6/try6-ref5.txt
+
+=head1 REVISIONS
+
+Version 1, 2000-08-08
+
+=over 4
+
+=item *
+
+Based on Avra Software Lab Inc's Try.pm, redaction 1.1.3.6.
+
+=back
+
+Version 2, 2000-08-23
+
+=over 4
+
+=item *
+
+The C<except> keyword is gone, C<catch> takes optional
+arguments instead.
+
+=item *
+
+Multiple conditional catch clauses now work like a switch,
+instead of like a bunch of sequential ifs.
+
+=item *
+
+A built-in Exception-based C<Error> class is no longer defined.
+
+=item *
+
+Other major restructuring and enhancements throughout.
+
+=back
+
+Version 3, 2000-09-30
+
+=over 4
+
+=item *
+
+You can now throw a string (as well as a class name), in which
+case the string is wrapped in an C<Exception> object.
+
+=item *
+
+Added to L<ISSUES>: I<%@>, I<always>, I<Mixed Mode Modules>, and
+I<Fatal Exceptions>.
+
+=item *
+
+References to [TRY-2000] have been adjusted to reflect the fact
+that it now contains the new Perl 5 Reference Implementation of
+RFC 88 (rather than the old Avra version of Try.pm).
+
+=item *
+
+Production formatting has been completed.
+
+=item *
+
+RFC 88 Frozen.
+
+=back
+
+I<End of RFC 88>
+

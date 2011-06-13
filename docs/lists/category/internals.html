@@ -1,0 +1,34 @@
+[%
+    page.import({
+        title    => 'Perl Internals Mailing lists',
+        section  => 'internals',
+        description
+            => 'Perl Internals mailing lists',
+    });
+%]
+
+<h2>Perl internals mailing lists</h2>
+
+<table class="content_table">
+    <tr>
+        <td>
+        [% categories = [
+            'perl',
+            'developer-perl',
+            'developer-perl6',
+            ];
+        %]
+        [% PROCESS tpl/category_page.html categories => categories %]
+    </td>
+    <td>
+        [% categories = [
+            'documentation',
+            'perl-developer',
+            'perl-qa',
+            'perl6-perl',
+            ];
+        %]
+        [% PROCESS tpl/category_page.html categories => categories %]
+    </td>
+    </tr>
+</table>

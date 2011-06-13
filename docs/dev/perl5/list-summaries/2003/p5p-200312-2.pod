@@ -1,0 +1,119 @@
+=head1 This Week on perl5-porters (8-14 December 2003)
+
+In two words, this was a busy week. Various topics were discussed, from
+the low-level C portability stuff to the Perl language considerations.
+
+=head2 C<*DB*File::delete>
+
+Paul Marquess brings to the general attention that the implementation of
+C<delete()> in the DBM modules does not what the man page says what it
+should do. This implementation glitch was due to efficiency reasons. He
+wonders what's the right solution for this -- interface change or doc
+change.
+
+    http://groups.google.com/groups?threadm=AIEAJICLCBDNAAOLLOKLCEILPEAA.Paul.Marquess%40btinternet.com
+
+=head2 Concat slowdown
+
+Stas Bekman notices that some form of concatenation of strings was
+impressively slowed down after the release of perl 5.8.2. This change is
+due to the removal of an aggressive optimization that went wrong on some
+cases. No replacement for this optimization has been worked out yet.
+
+    http://groups.google.com/groups?threadm=3FD7BC46.8020600%40stason.org
+
+=head2 Benchmark and bigint
+
+Tels reports (bug #24622) that you can't use C<Benchmark> when you've
+loaded C<bigint>. Hugo van der Sanden remarks that C<bigint> interferes
+with C<Benchmark>'s use of floating point numbers. Tels then proposes
+a patch to C<Benchmark> to cope with this, but Hugo believes that a more
+correct solution would be to fix C<bigint> so its effect is lexical and no
+more global. (And we're back to this old TODO item : fix lexical pragmas.)
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-12/msg00351.html
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-12/msg00493.html
+
+=head2 Tieing stashes
+
+Tassilo von Parseval remarks that perl lets you tie stashes (symbol table
+hashes). However, once tied, they don't work quite as expected. So it's
+maybe a good idea to forbid tying stashes (unless we can make them work
+correctly, for some acceptable value of correctly.)
+
+On the other hand, one can mark stashes as read only, and this seems to
+behave.
+
+    http://groups.google.com/groups?threadm=rt-3.0.7_01-24652-68283.15.7477948573825%40perl.org
+
+=head2 A void context warning in boolean context
+
+Gisle Aas reports that the following code :
+
+    if ("") { do_something() }
+
+produces a warning, I<Useless use of a constant in void context>. Rafael
+comments and thinks that this one will be difficult to fix. (Bug #24646).
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-12/msg00510.html
+
+=head2 In Brief
+
+Scott Walters announces that he might have an occasion to add a Perl 5
+backend to parrot.
+
+    http://groups.google.com/groups?threadm=20031208082317.GA26642%40illogics.org
+
+Tels posted a abstract of the current state of C<Math::BigInt> and
+C<Math::BigFloat> (and pre-released C<Math::BigInt> 1.68).
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-12/msg00557.html
+
+Steve Hay proposed to add a function C<Win32::IsAdminUser()>. Michael
+Schwern proposes to put it in C<libwin32> instead. No Windows guru
+comments.
+
+    http://groups.google.com/groups?threadm=3FD5E3F8.6070900%40uk.radan.com
+
+Paul Marquess works on the DB_File and utf8 issue reported last week.
+
+Enache Adrian works on old and new memory leaks. (E.g. bug #24624 for a
+memory leak related to the new version object code.)
+
+Enache also fixed a bug related to mishandling of utf8 strings by
+substr().
+
+    http://groups.google.com/groups?threadm=20031210203439.GA581%40math.berkeley.edu
+
+Bug #24615 is, for once, about a case where perl's taint checks are too
+zealous.
+
+    http://groups.google.com/groups?threadm=rt-3.0.7_01-24651-68277.9.65202065328413%40perl.org
+
+Alan Burlison has problems building perl with a C99-compliant compiler.
+This has something to do with C<#include> guards and obscure predefined
+compiler symbols, that are in the source code of perl from ages. Some
+cleanup is in order.
+
+    http://groups.google.com/groups?threadm=3FDA4994.6050209%40sun.com
+
+Nicholas Clark, integrating changes to the perl 5.8 branch, remarks
+that the recent fixes made to the C<$0> variable break C<PAR>.
+
+    http://groups.google.com/groups?threadm=20031214210647.GF30930%40colon.colondot.net
+
+Nicholas also released a snapshot of perl 5.8.x at the very end of the
+week.
+
+=head2 Quote of the week
+
+I<This is the "camel grooming club" - we have to make the hair 
+as unhairy as possible while making things work>. -- Nick Ing-Simmons,
+speaking about P5P.
+
+=head2 About this summary
+
+This summary was compiled by Rafael Garcia-Suarez. Weekly summaries are
+published on F<http://use.perl.org/> and posted on a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. Corrections
+and comments are welcome. (Yes, mixed archives. Baroque style.)

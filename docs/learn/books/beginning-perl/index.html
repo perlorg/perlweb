@@ -1,0 +1,100 @@
+[% 
+    page.import({
+        title    = 'Beginning Perl (free)',
+        section  = 'books',
+        description 
+            = 'Perl.org free online Perl books: Beginning Perl',
+    });
+
+    ##################
+    # NOTE:
+    # This content is copied from: www/books/beginning_perl/index.html
+    # please make sure to update that file as well if needed
+    ##################
+
+%]
+[% base = "http://blob.perl.org/books/beginning-perl/" %]
+
+[% MACRO chapter(pdf,title) BLOCK %]
+<p><a href="[% UNLESS nogviewer %]http://docs.google.com/viewer?url=[% base _ pdf | uri %][% ELSE %][% base %][% pdf %][% END %]">[% title %]</a>&nbsp;<a href="[% base %][% pdf %]"><b>&#8681;</b></a></p>
+[% END %]
+
+<h2>
+    by Simon Cozens
+</h2>
+
+<div class="feature_list">
+  <!-- <A HREF="[% base %]3145_Prelims.pdf">Prelims</A><br /> -->  
+  <!-- <A HREF="[% base %]3145_SOC.pdf">SOC</A><br />
+       <A HREF="[% base %]3145_TOC.pdf">Table of Contents</A><br />
+       --> 
+  [% chapter("3145_Intro.pdf","Introduction") %]
+  [% chapter("3145_Chap01.pdf","Chapter 1: First Steps In Perl") %]
+  [% chapter("3145_Chap02.pdf","Chapter 2: Working with Simple Values") %]
+  [% chapter("3145_Chap03.pdf","Chapter 3: Lists and Hashes") %]
+  [% chapter("3145_Chap04.pdf","Chapter 4: Loops and Decisions") %]
+  [% chapter("3145_Chap05.pdf","Chapter 5: Regular Expressions") %]
+  [% chapter("3145_Chap06.pdf","Chapter 6: Files and Data") %]
+  [% chapter("3145_Chap07.pdf","Chapter 7: References") %]
+  [% chapter("3145_Chap08.pdf","Chapter 8: Subroutines") %]
+  [% chapter("3145_Chap09.pdf","Chapter 9: Running and Debugging Perl") %]
+  [% chapter("3145_Chap10.pdf","Chapter 10: Modules") %]
+  [% chapter("3145_Chap11.pdf","Chapter 11: Object-Oriented Perl") %]
+  [% chapter("3145_Chap12.pdf","Chapter 12: Introduction to CGI") %]
+  [% chapter("3145_Chap13.pdf","Chapter 13: Perl and Databases") %]
+  [% chapter("3145_Chap14.pdf","Chapter 14: The World of Perl") %]
+  [% chapter("3145_AppA.pdf","Appendix A: Regular Expressions") %]
+  [% chapter("3145_AppB.pdf","Appendix B: Special Variables") %]
+  [% chapter("3145_AppC.pdf","Appendix C: Function Reference") %]
+  [% chapter("3145_AppD.pdf","Appendix D: The Perl Standard Modules") %]
+  [% chapter("3145_AppE.pdf","Appendix E: Command Line Reference") %]
+  [% chapter("3145_AppF.pdf","Appendix F: The ASCII Character Set") %]
+  [% chapter("3145_AppG.pdf","Appendix G: Licenses") %]
+  [% chapter("3145_AppH.pdf","Appendix H: Solutions to Exercises") %]
+  [% chapter("3145_AppJ.pdf","Appendix J: Support, Errata and P2P.Wrox.Com") %]
+  [% chapter("3145_Index.pdf","Index") %]
+  [% chapter("3145.zip","Code Examples (Zip Format)",nogviewer=1) %]
+  [% chapter("3145.tar.gz","Code Examples (tar.gz Format)",nogviewer=1) %]
+  <br />
+
+  <p>
+      Buy This Book: [% INCLUDE "tpl/bookstore-links" isbn="1861003145" style="text"%]
+  </p>
+
+</div>
+
+<p>
+    <b>What does this book cover?</b>
+</p>
+<ul>
+    <li>Installing Perl on Windows and UNIX
+    </li>
+    <li>Making use of online Perl resources like CPAN
+    </li>
+    <li>First principles in programming and the Perl syntax
+    </li>
+    <li>Working with files and databases
+    </li>
+    <li>Writing web pages in Perl
+    </li>
+    <li>Using Perl as an object-oriented language
+    </li>
+</ul>
+
+
+<h4>
+    Book overview
+</h4>
+<p>
+    Perl is a well-established programming language that has been developed through the time and effort of countless free software programmers into an immensely powerful tool that can be used on pratically every operating system in the world. Perl started out as the "Swiss army knife" of computer languages and was used primarily by system administrators, but over time it's grown into an immensely robust language used by web-developers and programmers worldwide. It's also a great way to learn programming techniques and develop your own style of coding.
+</p>
+<p>
+    "There's more than one way to do it" is the motto of Perl, but this book aims to take you through them all. We'll take you from installation, through the core language elements - regular expressions, references, modules and the like - and onto basic applied techniques. You'll see how to access and work with databases in Perl, write CGI scripts to generate web pages and beyond. Examples are based on Perl 5.6, but are still relevant to current Perl versions and there's a handy reference section in the back.
+</p>
+<h4>
+    Who is this book for?
+</h4>
+<p>
+    This book is for those new to programming who want to learn with Perl. You will find it easier if you already have some basic programming experience, but the material covered can be mastered by anyone with just a text editor, some common sense and a computer. If you want to learn how to program with Perl and then find out how far you can go with it, this is the book for you. An excellent companion on any programming course.
+</p>
+

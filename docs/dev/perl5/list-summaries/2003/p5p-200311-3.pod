@@ -1,0 +1,95 @@
+=head1 This Week on perl5-porters (17-23 November 2003)
+
+Due to my laziness, or perhaps to the lack of traffic on perl5-porters
+this week, this summary will be rather short, but hopefully long enough
+to provide your weekly dose of perl core information. Read on.
+
+=head2 Hash revamp
+
+Nicholas Clark proposes to refactor the code that manipulates hashes in
+the code ; and he does so.
+
+Before :
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-11/msg00759.html
+
+After :
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-11/msg00966.html
+
+He also fixed a remaining bug in the copy-on-write internal implementation
+(not enabled in default builds).
+
+=head2 More hashes
+
+Alan Burlison's module Solaris::Kstat, which implements a tied hash
+entirely in XS code. This module tends to dump cores with perl 5.8.2 ;
+this is due to the fact that its implementation clashes with the new
+restricted (read-only) hashes.
+
+Digging further, he notices that in perl 5.8.2, locking an empty hash
+produces a core dump, and provides a fix.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-11/msg00694.html
+
+=head2 Non-hash stuff (or, In Brief, miscellaneous issues)
+
+Paul Szabo proposes a patch to solve some security issues in suidperl.
+Nobody comments.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-11/msg00814.html
+
+Damian Menscher reports that under some conditions, running the perl test
+suite can change the file permissions for C</dev/tty>. This unfortunate
+side-effect is filed under bug id #24521.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-11/msg00849.html
+
+Moeller Wolf-Dietrich reports (bug #24508) a case where the concatenation
+operator has side-effects and produces the wrong result. Rafael fixes it
+by disabling a buggy optimization.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-11/msg00799.html
+
+Salvador FandiE<ntilde>o posts a patch for MakeMaker, to add support for
+modules written in C++.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-11/msg00924.html
+
+Chris Nandor reports that C<$^E>, a system-specific equivalent for C<$!>,
+sometimes changes unexpectedly. Dan Sugalski comments that, as it reflects
+the C variable C<errno>, it can change at any times, whenever a system
+call or another library function (such as malloc()) sets it. However, in
+this case, C<errno> should be saved and restored when it's copied in the
+C<$^E> scalar (this happens correctly for C<$!>). Rafael fixes it.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-11/msg00881.html
+
+Daniel Berger can't build a 64-bit perl on Solaris with gcc. Andy Dougherty
+provides a fix. (bug #24439.)
+
+Nicholas Clark wonders about the nuances involved in various ways of
+creating mortal scalars in the perl core. The answers involve archeology.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-11/msg00831.html
+
+Leon Brocard is I<getting confused about versions and Perl>, and asks for
+a more or less reliable way to sort versions. John Peacock suggests
+C<version.pm>.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-11/msg00981.html
+
+Iain Truskett reorganizes a bit the documentation for PerlIO layers, which
+is shuffled between the F<perlrun> and F<PerlIO> man pages.
+
+Ton Hospel makes the regexp engine panic in 23 characters (bug #24524).
+
+Bug #24526 demonstrates that index() and rindex() still don't play nice
+with UTF-8 locales.
+
+=head2 About this summary
+
+This summary was brought to you by Rafael Garcia-Suarez. Weekly summaries
+are available on L<http://use.perl.org/> and via a mailing list, which
+subscription address is L<perl5-summary-subscribe@perl.org>. Feedback (and
+patches) welcome.

@@ -1,0 +1,47 @@
+=head1 TITLE
+
+length(@ary) deserves a warning
+
+=head1 VERSION
+
+  Maintainer: Nathan Torkington <gnat@frii.com>
+  Date: 15 Sep 2000
+  Mailing List: perl6-language-subs@perl.org
+  Number: 238
+  Version: 1
+  Status: Developing
+  Supercedes: RFC 212
+
+=head1 ABSTRACT
+
+Beginners often try C<length(@ary)> (which has bizarre consequences and 
+no real purpose).  Make it emit a warning.
+
+=head1 DESCRIPTION
+
+Beginners think of the size of an array as its length, so try to use 
+the length() function to find this information.  They should be told 
+by the compiler that this is not correct.
+
+The warning would be triggered when Perl finds an array in scalar 
+context as the argument to length().  The construct serves no useful 
+purpose otherwise, so backwards compatibility isn't a problem.
+
+While I originally suggested "just make it work", this would (1) steer 
+users away from the real understanding of context; (2) require changes 
+to the prototype system to permit length() to still be overridable.  
+While it is a good idea to do what users want, in this case I've been 
+convinced that the user would benefit from being told the correct way 
+to do it.
+
+=head1 IMPLEMENTATION
+
+When you check a length() function call, warn if its argument is a
+scalar-context array.
+
+=head1 REFERENCES
+
+RFC 212: (retired) Make length(@array) work
+
+perlfunc manpage for information on the length() function
+

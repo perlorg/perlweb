@@ -1,0 +1,184 @@
+=head1 TITLE
+
+Arrays: New operator ';' for creating array slices
+
+=head1 VERSION
+
+  Maintainer: Jeremy Howard <j@howard.fm>
+  Date: 8 Sep 2000
+  Last Modified: 24 Sep 2000
+  Mailing List: perl6-language-data@perl.org
+  Number: 205
+  Version: 3
+  Status: Frozen
+  Frozen since: v2
+
+=head1 DISCUSSION
+
+The semantics discussed here were accepted by all on the list. The use of
+C<;> outside of a list index did not reach consensus, due to concerns that
+its implementation may be too inefficient.
+
+RFC 231 is presented as an alternative to RFCs 204 and 205, but since it
+provides suggested implementation of a subset of interfaces proposed in
+RFCs 204 and 205, they need not be mutually exclusive. This is discussed
+further in the implementation section.
+
+=head1 CHANGES
+
+=head2 Since v1
+
+=over 4
+
+=item *
+
+Added discussion of efficiency and RFC 231 in implementation section
+
+=item *
+
+Added comparison to use of slices without C<;>
+
+=back
+
+=head1 ABSTRACT
+
+RFC 204 described and extension of standard list indexing which allows
+indexing directly into a multidimensional array by using a list of lists
+of coordinates. This RFC describes a new operator C<;> that can create
+lists of coordinates corresponding to slices and blocks of
+multidimensional arrays. The C<;> operator creates the cartesian product
+of its operands as a list of lists. It can only operate within a list
+constructor.
+
+=head1 DESCRIPTION
+
+It is proposed that a new operator C<;> be introduced that operates within
+a list constructor to create the cartesian product of its operands:
+
+  @lol = ( (1,2) ; (3,4) );   # ([1,3], [1,4], [2,3], [2,4])
+
+The order of the resultant list is to generate pairs by iterating through
+the right-hand operand for each element of the left-hand operand in turn,
+going from left to right.
+
+If an operand is a list of lists, the C<;> operator creates the cartesian
+product of the component lists:
+
+  @lol = ( ([1,3],[1,4]);(5,6) ) # ([1,3,5], [1,3,6], [1,4,5], [1,4,6])
+
+which is equivalent to:
+
+  @lol = ( (1 ; (3,4)); (5,6) ) # ([1,3,5], [1,3,6], [1,4,5], [1,4,6])
+  
+which, because C<;> is associative, is equivalent to:
+
+  @lol = ( 1 ; (3,4); (5,6) ) # ([1,3,5], [1,3,6], [1,4,5], [1,4,6])
+
+and, because C<;> evaluates its arguments in a list context, and has a
+lower precendence than C<,>, it equivalent to:
+
+  @lol = ( 1 ; 3,4 ; 5,6 ) # ([1,3,5], [1,3,6], [1,4,5], [1,4,6])
+
+C<;> is particularly useful for creating slices of multidimensional
+arrays:
+
+  my int @array = ([1,2,3],
+                   [4,5,6],
+                   [7,8,9]);
+  @col2 = @array[0..2; 1];   # @array[[0,1],[1,1],[2,1]] == (2,5,8)
+  
+Allowing C<;> in contexts other than just within a list index leads to
+both consistency and convenience with how list slicing is done in Perl 5:
+
+  # Perl 5 behaviour
+  @indices = (1,3);
+  @list = (3,4,5,6);
+  @list[@indices] = (1,2);   # (3,1,5,2)
+
+  # Multidim extension
+  @2d_indices = ([0,0],[1,1]);
+  @2d_arr = ([3,4,5],[6,7,8]);
+  @2d_arr[@2d_indices] = (1,2);   # ([1,4,5],[6,2,8])
+
+  # Slice syntax extension
+  @2d_slice = (0..1 ; 0..1);       # ([0,0],[0,1],[1,0],[1,1])
+  @2d_arr = ([3,4,5],[6,7,8]);
+  @2d_arr[@2d_slice] = ([0,1],[0,1]);   # ([0,1,5],[0,1,8])
+
+Large matrices can be flexibly manipulated using infinite lists (from RFC
+24) and list generation functions (from RFC 81):
+
+  my int @matrix = get_big_file();
+  my @first_5_odd_cols = ( 0.. ; 1..9:2 ); # ([0,1],[0,3],[0,5],...)
+  my @matrix_slice = @matrix[@first_5_odd_cols];
+
+Since RFC 24 as now been retracted, the second line of this would actually
+have to be:
+
+  my @first_5_odd_cols = ( 0..10000 ; 1..9:2 ); # ([0,1],[0,3],[0,5],...)
+
+@matrix_slice now contains the whole of columns 1,3,5,7,9 of @matrix.
+Furthermore, @first_5_odd_cols can be used to slice another matrix later,
+which may be of a different size.
+
+Because this whole-dimension slicing is so common, any argument to C<;>
+may be omitted. Omitted operands default to (0..):
+
+  ( ;1..9:2 ) == ( 0.. ; 1..9:2 );
+
+Because of the retraction of RFC 24, it is necessary to limit the use of
+whole-dimension slicing syntax to within a list index, since in that
+case a finite sized slice can be generated (since the bounds of the list
+are known).
+
+Furthermore, in order to create generic slices that return 'all the nth
+elements' regardless of the number of dimensions of the array, the
+left-most or right-most operand to C<;> may be '*', which expands to (0..)
+for every missing dimension of the sliced array:
+
+  my int @b :shape(2,2,2) = get_some_matrix();
+  my @first_elems = @b[0;*];   # @b[[0,0,0],[0,0,1],[0,1,0],[0,1,1]]
+
+The '*' operand may only be used in an array slicing context.
+
+=head1 IMPLEMENTATION
+
+A naive implementation of C<;> when used as a list index would be
+extremely inefficient. Although it should have the semantics proposed
+here, vital optimisations would mean that often no actual list would be
+created. These could include:
+
+=over 4
+
+=item *
+
+Create a lazily generated list, as outlined in the implementation section
+of L<RFC 81>
+
+=item *
+
+Create a compact array (see L<RFC 203>) rather than a standard list of
+lists
+
+=back
+
+The actual optimisations would depend on context. If the cartesian product
+is not being stored, but is only being used as an array index, generation
+of a simple stream of tokens may suffice, such as described in L<RFC 231>.
+This approach is discussed in the implementation section of L<RFC 81>. Use
+of these optimisations need in no way limit the use of C<;> where such
+optimisations can not be used.
+
+=head1 REFERENCES
+
+RFC 231: Data: Multi-dimensional arrays/hashes and slices
+
+RFC 202: Overview of multidimensional array RFCs
+
+RFC 81: Lazily evaluated list generation functions
+
+RFC 24: Semi-finite (lazy) lists
+
+=head1 ACKNOWLEDGEMENTS
+
+Buddha Buck: Original suggestion of C<;> for multidimensional array access

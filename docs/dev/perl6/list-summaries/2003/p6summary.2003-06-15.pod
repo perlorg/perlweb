@@ -1,0 +1,158 @@
+=head1 The Perl 6 Summary for the week ending 20030615
+
+Welcome to the last Perl 6 Summary of my first year of summarizing. If
+I were a better writer (or if I weren't listening with half an ear to
+Damian telling YAPC about Perl 6 in case anything's changed) then this
+summary might well be a summary of the last year in Perl 6. But I'm
+not, so it won't. Instead, I'm going to try and keep it short
+(summaries generally take me about 8 hours on an average day, and I
+really don't want to lose 8 hours of YAPC thank you very much). 
+
+It's getting predictable I know, but we'll start with the internals
+list again...
+
+=head2 Class instantiation and creation
+
+Dan continued slouching towards full OO and outlined the issues
+involved with setting up classes and asked for people's
+opinions. People offered them.
+
+L<http://groups.google.com/groups?threadm=a05210604bb0a8541a403%40%5B63.120.19.221%5D>
+
+=head2 Writing Language Debuggers
+
+Clinton Pierce wanted to know how to go about writing language level
+debuggers in Parrot. (This man is unstoppable I tell you.) He offered
+some example code to show what he was trying to do. Benjamin Goldberg
+had a style suggestion for the code, but nobody had much to say about
+Clint's particular issue.
+
+L<http://groups.google.com/groups?threadm=5.1.0.14.2.20030610122946.01ff3ca0%40mail.geeksalad.org>
+
+=head2 Converting Parrot to continuation passing style
+
+A lot of this week's effort was involved in getting support for the
+Continuation passing style function calling into Parrot. Jonathan
+Sillito posted a patch. This lead to a certain amount of confusion
+about what needs to be stashed in the continuation and a certain
+amount of bemusement about the implications of caller saves rather
+than callee saves (in a nutshell, a calling context only has to save
+those registers that I<it> cares about; it doesn't have to worry about
+saving any other registers, because its callers will already have
+saved them if they cared.) 
+
+Dan ended up rewriting the calling conventions PDD to take into
+account some of the confusion revealed.
+
+I think the upshot of this is that the Parrot core now has everything
+we need to support the documented continuation passing calling
+conventions. But I could be wrong.
+
+L<http://groups.google.com/groups?threadm=rt-22633-59206.4.7078149158456%40rt.perl.org>
+
+L<http://groups.google.com/groups?threadm=a05210600bb0ea82b9e33%40%5B63.120.19.221%5D>
+
+=head2 Segfaulting IMCC for fun and profit
+
+Clint Pierce's BASIC implementation efforts continue to be one of the
+most effective bug hunting (in code and/or docs) efforts the Parrot
+team has. This time, Clint managed to segfault IMCC by trying to
+declare nested C<.subs> using the wrong sorts of names. Leo
+TE<ouml>tsch explained how to fix the problem. It seems that fixing
+IMCC to stop it segfaulting on this issue is hard, since the segfault
+happens at runtime.
+
+L<http://groups.google.com/groups?threadm=rt-22645-59248.5.99474340192458%40rt.perl.org>
+
+=head2 Passing the time
+
+Clint's BASIC can now place chess! Not very well, but we're in 'dogs
+dancing' territory here. Bravo Clint! There was applause. 
+
+L<http://groups.google.com/groups?threadm=5.1.0.14.2.20030611232204.01e42fe8%40mail.geeksalad.org>
+
+=head1 Meanwhile in Damian's YAPC address...
+
+=item2 New DISPATCH method
+
+Last week Ziggy worried about multimethod dispatch not being good
+enough. This week at YAPC, Damian announced DISPATCH, a scary magic
+subroutine which allows you to define your own dispatch
+rules. Essentially it gets called before the built in dispatch rules,
+beyond that, I know nothing.
+
+Sorry, no link for this.
+
+=head1 Meanwhile in perl6-language
+
+=head2 Ziggy's obsoleted thread
+
+Last week I mentioned that Adam Turoff had worried a little about
+multimethod dispatch, and wanted to know if it would be possible to
+override the dispatch system in an easy way. This week, he outlines
+the sorts of things he might want to do.
+
+See above for the resolution. Details don't exist just yet, but we'll
+get there.
+
+L<http://groups.google.com/groups?threadm=20030609141349.GB22666%40panix.com>
+
+=head2 Type Conversion Matrix, Pragmas (Take 4)
+
+Michael Lazzaro posted the latest version of his Type Conversion
+Matrix and asked for comments and hopefully definitive answers. There
+was a small about of discussion...
+
+L<http://groups.google.com/groups?threadm=53890EF6-9B76-11D7-8800-000A277AA894%40cognitivity.com>
+
+=head2 Returning from a nested call
+
+Whilst idly 'longing for the cleansing joy [of] Perl', Dave Storrs
+wondered how/whether he could write a method that would return from
+its caller. Answer: Yes, use C<leave>.
+
+L<http://groups.google.com/groups?threadm=20030612150646.G31803%40megazone.bigpanda.com>
+
+=head2 printf like formatting in interpolated strings
+
+Edward Steiner wondered about having some way to to printf like
+formatting of numbers in interpolated strings. Luke Palmer (who just
+told me he's embarrassed about something I wrote about something he
+said last week, but I'd forgotten it) came up with a cool looking
+suggestion in response.
+
+L<http://groups.google.com/groups?threadm=m3he6rfx80.fsf%40linux.local>
+
+=head1 Acknowledgements, Announcements and Apologies
+
+Well, that wraps up my first year of summary writing. Thanks to
+everyone for reading, it's been fun.
+
+I have one announcement to make: As of next week, there will be no
+obligatory reference to Leon Brocard -- I'm getting bored of it, you
+all must have been bored with it for months...
+
+If you've appreciated this summary, please consider one or more of the
+following options:
+
+=over
+
+=item *
+
+Send money to the Perl Foundation at
+L<http://donate.perl-foundation.org/> and help support the ongoing
+development of Perl.
+
+=item *
+
+Get involved in the Perl 6 process. The mailing lists are open  to
+all. L<http://dev.perl.org/perl6/> and L<http://www.parrotcode.org/>
+are good starting points with links to the appropriate mailing lists.
+
+=item *
+
+Send feedback, flames, money, photographic and writing commissions, or
+a nice long US power cable to plug into my Mac power-brick to
+L<p6summarizer@bofh.org.uk>.
+
+=back

@@ -1,0 +1,115 @@
+=head1 This Week on perl5-porters (15-21 March 2004)
+
+This week saw the arrival of spring in the northern hemisphere, and
+coincidentally the release of a new development version of bleadperl,
+which you can peruse for testing the new features, the new fixes, the new
+optimisations, and of course the new bugs. But of couse 5.9.1 is already
+outdated for the perl 5 porters, who like to live at the edge of the
+bleadperl. Read on for the latest news.
+
+=head2 Perl 5.9.1
+
+The latest development version of perl, numbered 5.9.1, was released.
+The annoucement can be found at
+
+    http://groups.google.com/groups?selm=20040316221415.05eee295.rgarciasuarez%40free.fr
+
+and the perldelta document for this version can be found at
+
+    http://search.cpan.org/~rgarcia/perl-5.9.1/pod/perl591delta.pod
+
+=head2 can() is not defined()
+
+Nicholas Clark remarked that after undefining a subroutine Foo::foo(),
+the expression C<< Foo->can('foo') >> is still true. Rafael answered that
+Foo::foo() still exists(), even if it's not defined(). The rest of the
+thread gave lots of good reasons for this behaviour.
+
+Brent Dax proposed to add a C<delete &foo> syntax to completely delete
+subroutines, consistently with other uses of delete(). This sounds like a
+great idea.
+
+    http://groups.google.com/groups?selm=20040316222340.GY701%40plum.flirble.org
+
+=head2 Optimisations
+
+Elisabeth Mattijsen asked why the assignments to lexical variables in
+
+    my $x = undef;
+    my @x = ();
+    my %x = ();
+
+were not optimised away. As noone found a good reason, Rafael added the
+desired optimisation.
+
+    http://groups.google.com/groups?selm=p05111b08bc7b9fc3e325%40[192.168.10.114]
+
+=head2 B::Concise enhancements
+
+Jim Cromie proposed a patch to enhance the backend compiler module
+B::Concise, used to dump optrees. For example it can now produce output to
+any filehandle. Rafael suggests that this could be useful to test the
+non-regressions of some optree optimisations, like the one documented in
+the last paragraph.
+
+    http://groups.google.com/groups?selm=4058BF4B.1000004%40divsol.com
+
+=head2 New warnings
+
+Yitzchak Scott-Thoennes added a new warning against the correct but
+dubious syntax
+
+    $x !=~ /foo/;
+
+Dave Mitchell remarked that the bitwise complement C<~> doesn't produce
+any I<Use of uninitialized value> warning. He fixed it.
+
+=head2 UTF-8, the sequel
+
+Yitzchak Scott-Thoennes posted a summary of the things that should be done
+to address the current UTF-8 encoding issues without annoying too many
+people:
+
+=over
+
+=item *
+
+Fix the remaining in-place ugprades due to the proximity of UTF-8 data
+
+=item *
+
+Upgrades without locale should issue a warning (Autrijus Tang's
+C<encoding::warnings> module already does this for perl 5.8.x), which will
+probably be a core warning in perl 5.10
+
+=item *
+
+Provide an API for XS writers who want to copy and upgrade character data
+to UTF-8.
+
+=back
+
+    http://groups.google.com/groups?selm=20040317044500.GA3720%40efn.org
+
+Sadahiro Tomoyuki is working on this last point.
+
+    http://groups.google.com/groups?selm=20040316132246.2972.4%40llama.elixent.com
+
+=head2 In Brief
+
+Jan Dubois sent a patch to add the C<Win32> module from Gurusamy Sarathy's
+C<libwin32> to bleadperl.
+
+Sadahiro Tomoyuki identified several places where some perl built-ins
+don't cope with overloaded objects correctly regarding UTF-8 encoding.
+(bug #27658.)
+
+    http://groups.google.com/groups?selm=rt-3.0.8-27658-82032.6.02101148715519%40perl.org
+
+=head2 About this summary
+
+This summary was written by Rafael Garcia-Suarez, from Lyon, France, and
+it's likely to be the last one that I'll be writing in Lyon. Weekly
+summaries are published on F<http://use.perl.org/> and posted on a mailing
+list, which subscription address is F<perl5-summary-subscribe@perl.org>.
+Comments and corrections are welcome.

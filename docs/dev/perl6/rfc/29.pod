@@ -1,0 +1,65 @@
+=head1 TITLE
+
+unlink() should be left alone
+
+=head1 VERSION
+
+  Maintainer: Nathan Wiger <nate@wiger.org>
+  Date: 4 Aug 2000
+  Last Modified: 14 Aug 2000
+  Mailing List: perl6-language@perl.org
+  Number: 29
+  Version: 2
+  Status: Frozen
+
+=head1 STATUS
+
+This RFC was discussed on perl6-language-unlink with no
+objections. It has been frozen in its current format.
+
+=head1 ABSTRACT
+
+Some people have suggested that unlink() is too Unix
+centric, that that it should be renamed to something
+like delete() or remove().
+
+This should not happen. unlink() should remain unlink().
+
+=head1 DESCRIPTION
+
+While on the surface, renaming unlink() may seem like
+a not-too-bad-idea, in reality it has many bad parts:
+
+   1. It confuses experienced Perl, C, and Unix programmers
+
+   2. It makes link() and symlink() almost non-sensical
+
+   3. It's possible to have more than one link to a file
+      in Unix, meaning unlink() != delete().
+
+   4. It's a useless change. It's not broken.
+
+Renaming a function just for the sake of renaming a
+function, when in reality it works identically to the
+native C counterpart, does not add value to Perl 6.
+
+=head1 IMPLEMENTATION
+
+Nothing to be done!
+
+For those that are adamant about this, I suggest that
+they consider writing a module, say "Win32::Synonyms",
+that could be composed of typeglobs:
+
+   *delete = \&CORE::unlink;
+
+With better referencing in Perl 6 this should be easily
+possible. However, I think it's RABID (Really A Bad IDea)
+at best.
+
+=head1 REFERENCES
+
+RFC 28: Perl should stay Perl, by Simon Cozens
+
+Unix unlink(2) man page
+

@@ -1,0 +1,74 @@
+=head1 This Week on perl5-porters (9-15 February 2004)
+
+Another quiet week on perl5-porters; but big patches were proposed,
+demonstrating that the porters are not dead yet. Read about a revamp of
+the parser, an in-depth modification of the internals, and other bugs and
+associated fixes.
+
+=head2 Revamping the perl parser
+
+While fixing bug #25824, Dave Mitchell thought it would be a good idea to
+shave the yacc and to move the perl parser implementation from byacc to
+bison. And so did he. He noticed also that I<the new bison parser actually
+seems to be better at error recovery>. Byacc is still used for C<a2p>, though.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-02/msg00331.html
+
+While he was at it, Dave added a verbose flag to the C<-Dp> debugging
+command-line option to perl (C<-Dpv>), to display the top 8 elements of
+the LR parser stack at each reduce.
+
+=head2 Assigning globs to lvalues
+
+Tassilo von Parseval is trying to fix a long standing bug : you can't,
+currently, assign a glob to a lvalue (e.g. an element of a tied hash.) The
+primary cause of the bug is that you can't upgrade, technically speaking,
+a PVLV to hold a GV. He proposed a first patch with a rather hackish
+approach, but Dave Mitchell raised the opinion that I<the only sane
+solution is to expand the PVLV structure so that it can incorporate all
+the fields of a  PVGV.> Tassilo then proposed a second patch to implement
+this. This last patch modifies the order in which the different types of
+SV are upgraded in the core.
+
+    http://groups.google.com/groups?selm=20040214110256.GA14993%40ethan
+
+=head2 BigInt bugs and fixes
+
+Tels released Math::BigInt 1.70 and Math::BigRat 0.12. As of this writing,
+it's yet unclear whether it fully fixes bug #26559 (problems with big
+integers and the C<&> bitwise operator), bug #26522 (some weird
+overload-related problem, if I understand correctly), and bug #26508
+(problem with the power of a negative big integer.) Those bugs are
+described here :
+
+    http://groups.google.com/groups?selm=rt-3.0.8-26508-77180.15.818688458454%40perl.org
+    http://groups.google.com/groups?selm=rt-3.0.8-26522-77237.7.75701084030025%40perl.org
+    http://groups.google.com/groups?selm=rt-3.0.8-26522-77237.7.75701084030025%40perl.org
+
+=head2 Stacked filetest operators
+
+Rafael checked in bleadperl a patch (which he proposed a while ago) to
+implement a little bit of syntactic sugar for chains of filetest
+operators; it renders the combined expression C<-f -w -x $file> equivalent
+to C<-x $file && -w _ && -f _>.
+
+    http://groups.google.com/groups?selm=20040209231251.5988eb2c.rgarciasuarez%40free.fr
+
+=head2 In Brief
+
+Dominic Dunlop proposed to remove the support for the obsolescent MachTen
+operating system. Perl 5.8.x doesn't compile anymore on MachTen, anyway.
+
+Wolfgang Loch reported (bug #26587) that File::Find used to clobber $_.
+This was fixed recently, by adding a C<local($_)> at the appropriate
+place; but Mark-Jason Dominus points out that this is still a potential
+bug, and needs to be a C<local(*_)>.
+
+    http://groups.google.com/groups?selm=rt-3.0.8-26587-77915.4.38321984527676%40perl.org
+
+=head2 About this summary
+
+This summary was written by Rafael Garcia-Suarez.  Weekly summaries are
+published on F<http://use.perl.org/> and posted on a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>.  Corrections
+and comments are welcome.

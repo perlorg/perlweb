@@ -1,0 +1,630 @@
+[% SET cat_list = {
+          'advocacy' => {
+                          'lists' => [
+                                       'advocacy',
+                                       'perl-cert',
+                                       'perl-thanks',
+                                     ],
+                          'title' => 'Advocacy'
+                        },
+          'advocacy-yapc' => {
+                               'lists' => [
+                                            'foundation-newsletter',
+                                            'tpf-discuss',
+                                          ],
+                               'title' => 'Advocacy YAPC'
+                             },
+          'ai' => {
+                    'lists' => [
+                                 'perl-ai',
+                                 'infobot-dev',
+                               ],
+                    'title' => 'AI'
+                  },
+          'beginners' => {
+                           'lists' => [
+                                        'perl-beginner',
+                                        'beginners',
+#                                        'daily-tips'
+                                      ],
+                           'title' => 'Beginners'
+                         },
+          'beginners-www' => {
+                               'lists' => [
+                                            'beginners-cgi'
+                                          ],
+                               'title' => 'Beginners WWW'
+                             },
+          'bioperl' => {
+                         'lists' => [
+                                      'bioperl-l',
+                                      'bioperl-announce-l',
+                                    ],
+                         'title' => 'Bioperl'
+                       },
+          'conference' => {
+                            'lists' => [
+                                         'german-perl-wkshp',
+                                       ],
+                            'title' => 'Conference'
+                          },
+          'conference-misc-tools' => {
+                                       'lists' => [
+                                                    'txt2slides',
+                                                  ],
+                                       'title' => 'Conference Misc Tools'
+                                     },
+          'cpan' => {
+                      'lists' => [
+                                   'cpan-discuss',
+                                   'scripts',
+                                   'tucs',
+                                   'perl-qa',
+                                   'perl-sdk',
+                                   'modules',
+                                   'packrats',
+                                   'module-authors',
+                                   'daily-news',
+                                   'cpan-testers',
+                                   'cpan-workers',
+                                   'cpan-interface',
+                                   'cpan-metadata',
+                                   'cpan-update',
+                                 ],
+                      'title' => 'CPAN'
+                    },
+          'crypto' => {
+                        'lists' => [
+                                     'perl-crypto',
+                                     'pac'
+                                   ],
+                        'title' => 'Crypto'
+                      },
+          'database' => {
+                          'lists' => [
+                                       'msql-mysql-modules',
+                                       'dbi-users',
+                                       'dbi-dev',
+                                       'dbi-announce',
+                                       'sybperl',
+                                       'sybperl-announce',
+                                     ],
+                          'title' => 'Database'
+                        },
+          'database-module' => {
+                                 'lists' => [
+                                              'alzabo-general',
+                                              'oracle-oci',
+                                            ],
+                                 'title' => 'Database Module'
+                               },
+          'developer-advocacy' => {
+                                    'lists' => [
+                                                 'p5ee'
+                                               ],
+                                    'title' => 'Developer Advocacy'
+                                  },
+          'developer-perl' => {
+                                'lists' => [
+                                             'ponie-dev',
+                                             'perl5-changes',
+                                             'perl-dist',
+                                             'debugger'
+                                           ],
+                                'title' => 'Developer Perl'
+                              },
+          'developer-perl6' => {
+                                 'lists' => [
+                                              'cvs-parrot'
+                                            ],
+                                 'title' => 'Developer Perl6'
+                               },
+          'documentation' => {
+                               'lists' => [
+                                            'pod-people',
+                                            'perl-documentation',
+                                            'perlfaq-workers',
+                                            'spork',
+                                            'perlfaq-prime',
+                                            'perl-faq-daily'
+                                          ],
+                               'title' => 'Documentation'
+                             },
+          'games-misc' => {
+                            'lists' => [
+                                         'perl-qotw',
+                                         'perl-qotw-discuss',
+                                         'perl-chess'
+                                       ],
+                            'title' => 'Games Misc'
+                          },
+          'jobs' => {
+                      'lists' => [
+                                   'jobs',
+                                   'jobs-discuss'
+                                 ],
+                      'title' => 'Jobs'
+                    },
+          'lingua' => {
+                        'lists' => [
+                                     'linguana-project',
+                                     'linguana-lexicon'
+                                   ],
+                        'title' => 'Lingua'
+                      },
+          'lingua-interntl-unicode' => {
+                                         'lists' => [
+                                                      'perl-i18n'
+                                                    ],
+                                         'title' => 'Lingua Interntl Unicode'
+                                       },
+          'mac' => {
+                     'lists' => [
+                                  'bbedit-talk'
+                                ],
+                     'title' => 'Mac'
+                   },
+          'mac-ports' => {
+                           'lists' => [
+                                        'macperl-toolbox',
+                                        'macperl-webcgi',
+                                        'macperl-scribes',
+                                        'macperl-modules',
+                                        'macperl-porters',
+                                        'macperl-forum',
+                                        'macperl-anyperl',
+                                        'macperl-announce',
+                                        'macperl',
+                                        'macosx'
+                                      ],
+                           'title' => 'Mac Ports'
+                         },
+          'misc' => {
+                      'lists' => [
+                                   'perlanet',
+                                   'catalyst',
+                                   'test-more-users',
+                                   'Symbian OS',
+                                   'perlcertification',
+                                   'wxPerl-users',
+                                   'DBIx-Class mailing list.',
+                                   'ack-users',
+                                   'MySQL-Perl',
+                                   'cpanrpm',
+                                   'The Gui Loft',
+                                   'catalyst-de',
+                                   'maypole-users',
+                                   'maypole-devel',
+                                   'ack-announcements',
+                                   'padre-dev',
+                                   'libwww-perl',
+                                   'module-build',
+                                   'perl4lib',
+                                   'perl-agents',
+                                   'mjd-book',
+                                   'fun-with-perl',
+                                   'license-discuss',
+                                   'fsb',
+                                 ],
+                      'title' => 'Misc'
+                    },
+
+          'misc-non-english' => {
+                                  'lists' => [
+                                               'perl-fr'
+                                             ],
+                                  'title' => 'Misc Non-English'
+                                },
+          'misc-perl' => {
+                           'lists' => [
+                                        'perl-javascript',
+                                        'perl-trainers'
+                                      ],
+                           'title' => 'Misc Perl'
+                         },
+          'module' => {
+                        'lists' => [
+                                    'perl-ldap',
+                                    'perl-aspects',
+                                     'www-search',
+                                     'wordnet',
+                                     'w3mir-info',
+                                     'text-template',
+                                     'soap',
+                                     'catalog-devel',
+                                     'sendmail-milter-users',
+                                     'ptk',
+                                     'rdf-perllib',
+                                     'perl-rpm-list',
+                                     'Perl-GEDCOM',
+                                     'pdl-porters',
+                                     'pdl',
+                                     'mrtg',
+                                     'midi',
+                                     'mhonarc',
+                                     'memoize',
+                                     'makemaker',
+                                     'mason-users',
+                                     'magick-user',
+                                     'magick-announce',
+                                     'libwww',
+                                     'interpolation',
+                                     'gtk-perl-list',
+                                     'finance-quote-news',
+                                     'finance-quote-devel',
+                                     'fastcgi-developers',
+                                     'fastcgi-announce',
+                                     'ezmlm',
+                                     'ARSperl',
+                                     'algorithm-diff',
+                                     'SOAP-Lite',
+                                     'inline',
+                                     'template-toolkit',
+                                     'subapprox',
+                                     'dce-perl',
+                                     'tiefile-announce',
+                                     'mailbox',
+                                     'mail-audit'
+                                   ],
+                        'title' => 'Module'
+                      },
+          'module-cpan-developer' => {
+                                       'lists' => [
+                                                    'par',
+                                                    'module-build-general'
+                                                  ],
+                                       'title' => 'Module CPAN Developer'
+                                     },
+          'module-developer' => {
+                                  'lists' => [
+                                               'poe',
+                                               'vcs'
+                                             ],
+                                  'title' => 'Module Developer'
+                                },
+          'module-developer-documentation' => {
+                                                'lists' => [
+                                                             'recdescent'
+                                                           ],
+                                                'title' => 'Module Developer Documentation'
+                                              },
+          'module-graphics' => {
+                                 'lists' => [
+                                              'imager-devel'
+                                            ],
+                                 'title' => 'Module Graphics'
+                               },
+          'module-mod_perl' => {
+                                 'lists' => [
+                                              'embperl'
+                                            ],
+                                 'title' => 'Module mod_perl'
+                               },
+          'module-networking' => {
+                                   'lists' => [
+                                                'perl-libnet',
+                                                'net-snmp-users',
+                                                'net-snmp-announce',
+                                                'xwhois-devel',
+                                                'expectperl-announce',
+                                                'expectperl-discuss',
+                                                'cope',
+                                              ],
+                                   'title' => 'Module Networking'
+                                 },
+          'module-sysadmin' => {
+                                 'lists' => [
+                                              'mon'
+                                            ],
+                                 'title' => 'Module Sysadmin'
+                               },
+          'module-tools' => {
+                              'lists' => [
+                                           'perlpoint'
+                                         ],
+                              'title' => 'Module Tools'
+                            },
+          'module-www' => {
+                            'lists' => [
+                                         'axkit-devel',
+                                         'axkit-docs',
+                                         'CGI-Application',
+                                         'apache-asp',
+                                         'bricolage-devel',
+                                         'bricolage-general',
+                                         'bricolage-commits',
+                                         'bricolage-bugs',
+                                         'bricolage-announce'
+                                       ],
+                            'title' => 'Module WWW'
+                          },
+          'module-xml' => {
+                            'lists' => [
+                                         'xml_csv_excel'
+                                       ],
+                            'title' => 'Module XML'
+                          },
+          'mongers' => {
+                         'lists' => [
+                                      'cam.pm',
+                                      'sfpug',
+                                      'boston-pm',
+                                      'mpm',
+                                      'london-pm',
+                                      'phl-pm',
+                                      'london.pm-announce',
+                                      'frankfurt-pm',
+                                      'southflorida-pm'
+                                    ],
+                         'title' => 'Mongers'
+                       },
+          'mongers-non-english' => {
+                                     'lists' => [
+                                                  'hamburg.pm',
+                                                  'oslo-aktive',
+                                                  'oslo'
+                                                ],
+                                     'title' => 'Mongers Non-English'
+                                   },
+          'newsgroup' => {
+                           'lists' => [
+                                        'comp.lang.perl.moderated',
+                                        'clpm-policy'
+                                      ],
+                           'title' => 'Newsgroup'
+                         },
+          'non-english' => {
+                             'lists' => [
+                                          'perl-es',
+                                          'perl-org-il',
+                                          'perl-magyar',
+                                          'liquid-perl'
+                                        ],
+                             'title' => 'Non-English'
+                           },
+          'oop' => {
+                     'lists' => [
+                                  'poop-group',
+                                  'poop-scoop'
+                                ],
+                     'title' => 'OOP'
+                   },
+          'perl' => {
+                      'lists' => [
+                                   'perl5-porters',
+                                   'perl-xs',
+                                   'release-announce',
+                                   'perl-friends',
+                                   'perl-loop',
+                                   'p5p-digest',
+                                   'jpl',
+                                   'perl.NET',
+                                   'perl-anfaenger'
+                                 ],
+                      'title' => 'Perl'
+                    },
+          'perl-advocacy' => {
+                               'lists' => [
+                                            'tpf-newsletter'
+                                          ],
+                               'title' => 'Perl Advocacy'
+                             },
+          'perl-developer' => {
+                                'lists' => [
+                                             'perl5-summary'
+                                           ],
+                                'title' => 'Perl Developer'
+                              },
+          'perl-mac' => {
+                          'lists' => [
+                                       'perl5-changes-mac'
+                                     ],
+                          'title' => 'Perl Mac'
+                        },
+          'perl-qa' => {
+                         'lists' => [
+                                      'daily-build',
+                                      'perl-qa-metrics',
+                                      'daily-build-reports',
+                                      'perl-unicode',
+                                    ],
+                         'title' => 'Perl QA'
+                       },
+          'perl-win32' => {
+                            'lists' => [
+                                         'ithreads'
+                                       ],
+                            'title' => 'Perl Win32'
+                          },
+          'perl6-perl' => {
+                            'lists' => [
+                                         'perl6-internals',
+                                         'perl6-language',
+                                         'perl6-announce',
+                                         'perl6-all'
+                                       ],
+                            'title' => 'Perl6 Perl'
+                          },
+          'ports' => {
+                       'lists' => [
+                                    'vmsperl',
+                                    'perl-unix-users',
+                                    'perl-rtos',
+                                    'perl-hpux',
+                                    'perl-mvs',
+                                    'perl-64bit',
+                                    'debian-perl',
+                                    'riscos'
+                                  ],
+                       'title' => 'Ports'
+                     },
+          'sysadmin' => {
+                          'lists' => [
+                                       'webmin-l',
+                                       'webmin-devel',
+                                       'cons-discuss'
+                                     ],
+                          'title' => 'Sysadmin'
+                        },
+          'time-perl' => {
+                           'lists' => [
+                                        'CALNDR-L',
+                                        'datetime'
+                                      ],
+                           'title' => 'Time Perl'
+                         },
+          'tk-beginners' => {
+                              'lists' => [
+                                           'beginning_perl_tk'
+                                         ],
+                              'title' => 'Tk Beginners'
+                            },
+          'tk-tools' => {
+                          'lists' => [
+                                       'guido-dev'
+                                     ],
+                          'title' => 'Tk Tools'
+                        },
+          'tools' => {
+                       'lists' => [
+                                    'psh-dev',
+                                    'rt-users',
+                                    'psh-announce',
+                                    'perlmx',
+                                    'eureka-devel',
+                                    'ptkdb'
+                                  ],
+                       'title' => 'Tools'
+                     },
+          'tools-developer' => {
+                                 'lists' => [
+                                              'revml'
+                                            ],
+                                 'title' => 'Tools Developer'
+                               },
+          'tools-x10' => {
+                           'lists' => [
+                                        'misterhouse-users',
+                                        'misterhouse-announce'
+                                      ],
+                           'title' => 'Tools X10'
+                         },
+          'win32-ports' => {
+                             'lists' => [
+                                          'visualperl-discuss',
+                                          'visualperl-announce',
+                                          'perlex',
+                                          'perl-win32-web',
+                                          'perl-win32-users',
+                                          'perl-win32-porters',
+                                          'perl-win32-database',
+                                          'perl-win32-admin',
+                                          'perl-ntadmin',
+                                          'pdk',
+                                          'activeperl'
+                                        ],
+                             'title' => 'Win32 Ports'
+                           },
+          'www' => {
+                     'lists' => [
+                                  'slashcode',
+                                  'texi2html',
+                                  'reportmagic-help',
+                                  'reportmagic-announce',
+                                  'latex2html',
+                                  'cvs2html',
+                                  'htmltmpl',
+                                  'wraf'
+                                ],
+                     'title' => 'WWW'
+                   },
+          'www-beginners' => {
+                               'lists' => [
+                                            'nms-cgi-devel',
+                                            'nms-cgi-support'
+                                          ],
+                               'title' => 'WWW Beginners'
+                             },
+          'www-mod_perl' => {
+                              'lists' => [
+                                           'modperl-user',
+                                           'modperl-announce'
+                                         ],
+                              'title' => 'WWW mod_perl'
+                            },
+          'www-mod_perl-advocacy' => {
+                                       'lists' => [
+                                                    'modperl-advocacy'
+                                                  ],
+                                       'title' => 'WWW mod_perl Advocacy'
+                                     },
+          'www-mod_perl-developer' => {
+                                        'lists' => [
+                                                     'modperl-cvs',
+                                                     'modperl-dev',
+                                                     'modperl-test-dev',
+                                                     'modperl-test-cvs'
+                                                   ],
+                                        'title' => 'WWW mod_perl Developer'
+                                      },
+          'www-mod_perl-documentation' => {
+                                            'lists' => [
+                                                         'modperl-docs',
+                                                         'modperl-docs-cvs'
+                                                       ],
+                                            'title' => 'WWW mod_perl Documentation'
+                                          },
+          'www-module' => {
+                            'lists' => [
+                                         'mason-checkins',
+                                         'mason-devel',
+                                         'PerlDAV',
+                                         'perl-css-devel',
+                                         'formbuilder'
+                                       ],
+                            'title' => 'WWW Module'
+                          },
+          'www-tools-sysadmin-networking' => {
+                                               'lists' => [
+                                                            'orca-announce',
+                                                            'orca-users'
+                                                          ],
+                                               'title' => 'WWW Tools Sysadmin Networking'
+                                             },
+          'xml' => {
+                     'lists' => [
+                                  'perl-xml',
+                                  'AxKit',
+                                  'perl-xml-index',
+                                  'xml-dbms',
+                                  'xmlxslt-discuss'
+                                ],
+                     'title' => 'XML'
+                   },
+          'xp' => {
+                    'lists' => [
+                                 'extremeperl'
+                               ],
+                    'title' => 'XP'
+                  },
+          'yapc' => {
+                      'lists' => [
+                                   'yas-talk',
+                                   'nordic-workshop'
+                                 ],
+                      'title' => 'YAPC'
+                    },
+          'yapc-conference' => {
+                                 'lists' => [
+                                              'yapc-europe'
+                                            ],
+                                 'title' => 'YAPC Conference'
+                               },
+          'zope' => {
+                      'lists' => [
+                                   'perl-zope'
+                                 ],
+                      'title' => 'Zope'
+                    }
+        };
+%]

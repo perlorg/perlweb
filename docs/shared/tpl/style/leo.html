@@ -1,0 +1,113 @@
+[%- TRY -%]
+[%- PROCESS "tpl/sections/${page.section}_config.html" -%]
+[%- CATCH %]
+[%- do_something_so_no_return_character = 1 -%]
+[%- END -%]
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>[% page.title %] - [% site.name %]</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+	<link type="text/css" rel="stylesheet" href="/css/leostyle.css" />
+	<link type="text/css" rel="stylesheet" href="/css/site.css" />
+
+    [% IF page.description %]<meta name="description" content="[% page.description %]" />[% END %]
+    [% IF page.keywords %]<meta name="keywords" content="[% page.keywords %]" />[% END %]
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/js/jquery.corner.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/js/leo.js" type="text/javascript" charset="utf-8"></script>
+</head>
+<body[% ' class="section_' _ page.section _ '"' IF page.section %]>
+
+<div id="header_holder">
+    <div class="sub_holder">
+        <div id="page_image"></div>
+        <h1>
+            [% page.title %]
+        </h1>
+        <div id="logo_holder">
+           
+            [% IF site.brand != 'com' %]
+
+            <a href="/"><img src="[% site.logo || '/i/camel_head.png' %]" id="logo" alt="[% site.tag_line || 'Perl programming' %]" height="65" align="right" /></a>
+            [% END %]
+
+			 <span>[% site.name %]</span>
+
+        </div>
+    </div>
+</div>
+
+<div id="nav">
+    <div class="sub_holder">
+        [% INCLUDE nav_tabs %]
+    </div>
+</div>
+
+<div id="crum_holder">
+    <div id="crum" class="sub_holder">
+        &nbsp;
+    </div>
+</div>
+
+<div id="content_holder">
+    <div id="content" class="sub_holder">
+        <div id="main">
+            [% content %]
+        </div>
+        <div id="short_lists" class="short_lists">
+            [% INCLUDE quick_links_1 %]
+            [% INCLUDE quick_links_2 %]
+            [% INCLUDE quick_links_3 %]
+            [% IF page.include_sponsor %]
+                [% INCLUDE sponsor %]
+            [% ELSE %]
+                [% INCLUDE tip %]
+            [% END %]
+            
+
+            <div id="spacer_for_google"></div>
+            
+        </div>
+    </div>
+</div>
+<div style="clear:both"></div>
+
+<div id="footer">
+    <div class="sub_holder">
+        
+[% IF site.brand == 'com' %]
+<p class="copyright">
+    <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/us/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/us/80x15.png"></a> © 2002-[% USE date; date.format(date.now, '%Y') %] Perl.com | <a href="/siteinfo.html">Site Info</a>
+</p>
+[% ELSE %]
+        <p class="sites">
+            &nbsp;When you need <em>Perl</em> think <strong>Perl.org</strong>: <a href="http://www.perl.org/">www</a> | <a href="http://blogs.perl.org/">blogs</a> | <a href="http://jobs.perl.org/">jobs</a> | <a href="http://learn.perl.org/">learn</a> <!-- | <a href="http://lists.perl.org/">lists</a> --> | <a href="http://dev.perl.org/">dev</a>   
+        </p>
+        <p class="copyright">
+            <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/us/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/us/80x15.png"></a> © 2002-[% USE date; date.format(date.now, '%Y') %] Perl.org | <a href="/siteinfo.html">Site Info</a>
+        </p>
+[% END %]
+
+
+
+        <div style="clear:both"></div>
+        <div id="google_translate_element"></div><script type="text/javascript">
+function googleTranslateElementInit() {
+          new google.translate.TranslateElement({
+            pageLanguage: 'en',
+            autoDisplay: false
+          }, 'google_translate_element');
+        }
+        </script><script src="http://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" type="text/javascript">
+</script>
+    </div>
+</div>
+
+
+[% PROCESS "tpl/ie6nomore.html" -%]
+
+[%- PROCESS "tpl/googleanalytics.html" -%]
+</body>
+</html>

@@ -1,0 +1,119 @@
+=head1 This Week on perl5-porters (8-14 September 2003)
+
+Any busy week for the porters, ends with a busy week-end for the
+summarizer (old saying). Your traditional weekly summary is out,
+and many subjects of interest are featured inside.
+
+=head2 About hash randomization
+
+Elizabeth Mattijsen asks for a way to know whether hash seed randomization
+is in effect or not in perl 5.8.1 or above.
+
+A first hint is to look at the Config variable C<$Config{ccflags}> to see
+whether C<-DNO_HASH_SEED> has been specified or not, indicating whether
+perl's support for random hash seeding is turned on. But there's also a
+runtime setting involved, the C<PERL_HASH_SEED> environment variable ; and
+Config is not intended to store settings that vary at runtime. Finally,
+Jarkko Hietaniemi added a function hash_seed() to the core module
+Hash::Util, that returns the seed, (and consequently 0 when no seed is
+used.)
+
+The discussion then digresses about ways to make Config.pm or charnames.pm
+lighter.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-09/msg00414.html
+
+=head2 Reducing memory footprint
+
+Talking about making modules lighter, Elizabeth submitted several patches
+to reduce the memory usage of some heavy modules, (C<Config> and
+C<warnings>), when used in a multithreaded perl application. She achieved
+this by replacing some carefully chosen lexical variables by global
+variables declared with the C<:unique> attribute, so they're shared
+between threads.
+
+But Liz' patch to C<warnings> uncovered a bug, by an amusing side-effect
+(it triggerred a failure in the regression test for C<O.pm>) : in a perl
+interpreter configured without threads, declaring a variable with the
+C<:unique> attribute loads the C<attributes> module, which shouldn't be
+necessary for built-in attributes. This was fixed by Rafael, just in time
+for the 5.8.1 code freeze.
+
+=head2 Testing the debugger
+
+The regression tests that Andreas Koenig wrote for the debugger last week
+were proven to be rather unportable, as multiple test failures showing up
+in the smoke matrices demonstrated. Jarkko retracted them, waiting for the
+debugger to be made more testable (e.g. by making it able to read commands
+from a file, and write output to another file.) And he added, half
+jokingly : I<if someone desperately needs a hobby, for 5.10 I would
+suggest a mad^Wambitious project of rewriting the debugger from scratch>.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-09/msg00515.html
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-09/msg00524.html
+
+=head2 The hard job of porting
+
+Some of the smoke tests on Cygwin were showing alarming failures lately.
+They're difficult to trace, because, as Jarkko says, I<the configurations
+people have vary a lot, and what works over here won't work over there,
+and vice versa...> Radu Greab finally found that the blame was to be put
+on a bug in getpwuid_r() in the latest Cygwin (1.5.3-1). Jarkko then
+checked in gratefully Radu's patch, labelling it as I<Radu Greab is my
+hero.>
+
+=head2 The word on order of evaluation
+
+Smylers usefully pointed at a statement by Larry that clarifies the
+position of Perl 5 and Perl 6 about the definedness of evalution order of
+complex expressions, that was discussed lask week :
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-09/msg00512.html
+
+=head2 is_deeply()
+
+There was some discussion about the proper semantics of
+Test::More::is_deeply() between Fergal Daly and Tony Bowden, that spawned
+several mailing lists (p5p, code-review-ladder and perl-qa so far.) Should
+it ignore the packages the references might have been blessed into ?
+Should it do it even when those packages overload operators that may have
+influenced the comparison routines ? What is the final and definitive
+answer ?
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-09/msg00571.html
+
+=head2 In Brief
+
+Peter Prymmer is working on the portability of perl on VMS. Notably he was
+sorting out with Ken Williams what should be the policy of File::Spec
+regarding operating systems where filesystems use volume names. Ken
+released new alpha versions of File::Spec. See for example :
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-09/msg00740.html
+
+Jeff 'japhy' Pinyan discusses about possible optimizations on regular
+expressions that begin with a atom that potentially matches the null
+string, such as C</\s*,\s*/>.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-09/msg00477.html
+
+Jos Boumans remarks that C<perl> accepts to run a directory, sort of.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-09/msg00804.html
+
+Abigail reports bug #23790, about foreach() being unable to iterate
+correctly over a list returned by a lvalue subroutine.
+
+Redvers Davies is interested in updating the minimal files that are
+absolutely needed to get a core perl compiled and running. He needs this
+information to release packages for the Zaurus. (The list can be found at
+the end of the INSTALL document.)
+
+John Peacock released version.pm version 0.32.
+
+=head2 About this summary
+
+This week's summary was crafted by Rafael Garcia-Suarez. Summaries are
+published weekly on F<http://use.perl.org/> and on a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. Corrections
+and comments are welcome.

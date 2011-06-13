@@ -1,0 +1,695 @@
+=head1 TITLE
+
+Thread Programming Model
+
+=head1 VERSION
+
+  Maintainer: Steven McDougall <swmcd@world.std.com>
+  Date: 31 Aug 2000
+  Last Modified: 28 Sep 2000
+  Version: 4
+  Mailing List: perl6-language-flow@perl.org
+  Number: 185
+  Status: Developing
+  Frozen since: v3
+  Unfrozen since: v4
+
+=head1 ABSTRACT
+
+This RFC describes the programming interface to Perl6 threads. 
+It documents the function calls, operators, classes, methods, or
+whatever else the language provides for programming with threads.
+
+=head1 CHANGES
+
+=head2 v4
+
+=over 4
+
+=item *
+
+Unfrozen
+
+=item *
+
+Traded in C<try> for C<lock> in boolean context
+
+=item *
+
+Traded in C<Event> for condition variables
+
+=item * 
+
+Reworked the timer functions
+
+=item *
+
+Dropped the I/O section
+
+=item *
+
+Dropped C<wait_any> and C<wait_all>
+
+=item *
+
+Dropped C<Semaphore> and C<Queue>
+
+=back
+
+=head2 v3
+
+Frozen
+
+=head2 v2
+
+=over 4
+
+=item * 
+
+Added SYNOPSIS, and wrote a proper ABSTRACT
+
+=item *
+
+Detailed C<async> 
+
+=item *
+
+Detailed sharing of lexicals between threads
+
+=item *
+
+Traded Mutexes back for C<lock>, C<try>, and C<unlock>
+
+=item *
+
+Pushed C<Semaphore>, C<Event>, and C<Timer> down into C<Thread::>
+
+=item *
+
+Specified readable, writable and failure to return Events
+
+=item *
+
+Reworked the wait functions
+
+=item *
+
+Added C<Queue>
+
+=back
+
+
+=head1 SYNOPSIS
+
+  use Thread;
+  
+  $sub = sub { ... };  
+  
+  $thread  = new Thread \&func       , @args;
+  $thread  = new Thread  $sub        , @args;
+  $thread  = new Thread   sub { ... }, @args;
+  	                async { ... };
+  $result  = join $thread;
+       
+  $thread  = this Thread;
+  @threads = all  Thread;
+  
+  $thread1 == $thread2 and ...
+  Thread::yield();
+    
+  critical { ... };   # one thread at a time in this block
+
+  # blocking  
+  lock $scalar;
+  lock @array
+  lock %hash;
+  lock &sub;
+
+  # non-blocking
+  $ok = lock $scalar;
+  $ok = lock @array
+  $ok = lock %hash;
+  $ok = lock &sub;
+  
+  unlock $scalar;
+  unlock @array
+  unlock %hash;
+  unlock &sub;
+
+  cond_wait      $mutex;
+  cond_signal    $mutex;
+  cond_broadcast $mutex;
+  
+  Thread::delay($seconds);
+  Thread::alarm($time);
+  
+
+=head1 DESCRIPTION
+
+=head2 Thread
+
+=over 4
+
+=item I<$thread> = C<new> C<Thread> \&I<func>, I<@args>
+
+Executes I<func>(I<@args>) in a separate thread. The return value is
+a reference to the C<Thread> object that manages the thread.
+
+The subroutine executes in its enclosing lexical context. This means
+that lexical variables declared in that context may be shared between
+threads. See RFC 178 for examples.
+
+
+=item I<$thread> = C<new> C<Thread> I<$sub>, I<@args>
+
+=item I<$thread> = C<new> C<Thread> C<sub> { ... }, I<@args>
+
+Executes an anonymous subroutine in a separate thread, passing it
+I<@args>. The return value is a reference to the C<Thread> object that
+manages the thread.
+
+The subroutine is a closure. References to variables in its lexical
+context are bound when the C<sub> operator executes. See RFC 178 for
+examples.
+
+
+=item C<async> BLOCK
+
+Executes BLOCK in a separate thread. Syntactically, C<async> BLOCK
+works like C<do> BLOCK. C<async> creates a C<Thread> object to manage
+the thread, but it does not return a reference to it. If you want the
+C<Thread> object, use one of the C<new> C<Thread> forms shown above.
+
+The BLOCK executes in its enclosing lexical context. This means that
+lexical variables declared in that context may be shared between
+threads.
+
+
+=item I<$thread> = C<this> C<Thread>
+
+Returns a reference to the C<Thread> object that manages the current
+thread.
+
+
+=item I<@threads> = C<all> C<Thread>
+
+Returns a list of references to all existing C<Thread> objects in the
+program. This includes C<Thread> objects created for C<async> blocks.
+
+
+=item I<$result> = C<join> I<$thread>
+
+=item I<@result> = C<join> I<$thread>
+
+Blocks until I<$thread> terminates. May be called repeatedly,
+by any number of threads.
+
+Returns the last expression evaluated in I<$thread>. This expression
+is evaluated in list context inside the thread.
+
+If C<join> is called in list context, it returns the entire list; if
+C<join> is called in scalar context, it returns the first element of
+the list.
+
+
+=item I<$thread1> == I<$thread2>
+
+Evaluates to true iff I<$thread1> and I<$thread2> reference the same
+C<Thread> object.
+
+
+=item C<Thread::yield>()
+
+Gives the interpreter an opportunity to switch to another thread. The
+interpreter is not obligated to take this opportunity, and the calling
+thread may regain control after an arbitrarily short period of time.
+
+=back
+
+
+=head2 Critical section
+
+C<critical> is a new keyword. Syntactically, it works like C<do>. 
+
+  critical { ... }; 
+
+The interpreter guarantees that only one thread at a time can execute
+a C<critical> block.
+
+
+=head2 Lock
+
+C<lock> applies a lock to a variable.
+In void context, it blocks until it acquires the lock.
+In non-void context, it does not block, and returns C<true> or
+C<false> according as the thread does or does not acquire the lock. 
+
+=over 4
+
+=item C<lock> I<$scalar>
+
+=item C<lock> I<@array>
+
+=item C<lock> I<%hash>
+
+=item C<lock> I<&sub>
+
+Applies a lock to a variable.
+
+If there are no locks applied to the variable, applies a lock and
+returns immediately. 
+If there are locks applied by another thread, blocks until there are
+no locks applied.
+If there are locks applied by the calling thread, applies another lock
+and returns immediately. 
+
+The lock is automatically removed at the end of the lexical scope in
+which the C<lock> operator executes.
+
+
+=item I<$ok> = C<lock> I<$scalar>
+
+=item I<$ok> = C<lock> I<@array>
+
+=item I<$ok> = C<lock> I<%hash>
+
+=item I<$ok> = C<lock> I<&sub>
+
+Tries to apply a lock to a variable.
+
+If there are no locks applied to the variable, applies a lock and
+returns true. 
+If there are locks applied by another thread, returns false.
+If there are locks applied by the calling thread, applies another lock
+and returns true. 
+
+The lock is automatically removed at the end of the lexical scope in
+which the C<lock> operator executes.
+
+
+=item C<unlock> I<$scalar>
+
+=item C<unlock> I<@array>
+
+=item C<unlock> I<%hash>
+
+=item C<unlock> I<&sub>
+
+Removes a lock from a variable.
+
+If there are locks applied by the calling thread, removes one.
+If there are locks applied by another thread, does nothing.
+If there are no locks applied to the variable, does nothing.
+
+C<unlock> never blocks.
+
+=back
+
+A consequence of these rules is that only one thread at a time may have
+locks applied to a variable.
+
+
+=head2 Condition variables
+
+=over 4
+
+=item C<cond_wait> I<$mutex>
+
+I<$mutex> may be any variable.
+
+I<$mutex> must be C<lock>ed before calling C<cond_wait>. C<cond_wait>
+atomically unlocks I<$mutex> and blocks waiting for a signal from a
+C<cond_signal>(I<$mutex>) or C<cond_broadcast>(I<$mutex>) call.
+
+When a signal from a C<cond_signal>(I<$mutex>) or
+C<cond_broadcast>(I<$mutex>) call is received, C<cond_wait> atomically
+unblocks the calling thread and reacquires a lock on I<$mutex>.
+
+=item C<cond_signal> I<$mutex>
+
+Sends a signal to one (arbitrarily chosen) thread that is blocked in
+a C<wait_cond>(I<$mutex>) call.
+
+=item C<cond_broadcast> I<$mutex>
+
+Sends a signal to all threads that are blocked in
+C<wait_cond>(I<$mutex>) calls.
+
+=back
+
+This only documents the interface to the C<cond_>xxx calls. Using
+condition variables to synchronize threads requires additional code.
+See, for example,
+
+      http://uw7doc.sco.com/SDK_sysprog/_Condition_Variables.html
+
+
+=head2 Timers
+
+=over 4
+
+=item C<Thread::delay> I<$seconds>
+
+Blocks for I<$seconds> seconds. I<$seconds> may be a floating point
+number, so this interface supports whatever time resolution the
+platform provides.
+
+
+=item C<Thread::alarm> I<$time>
+
+Blocks until I<$time> seconds after the epoch. I<$time> may be a
+floating point number, so this interface supports whatever time
+resolution the platform provides.
+
+
+=back
+
+
+=head1 IMPLEMENTATION
+
+All of these features should be doable if threads are built into Perl.
+
+
+=head1 DISCUSSION
+
+This interface is an amalgam of
+
+=over 4
+
+=item *
+
+the C<Thread.pm> interface from Perl 5.6.0
+
+=item *
+
+the Win32 thread interface
+
+=item *
+
+my own wish list (you can't get it if you don't ask...)
+
+=back
+
+Here are some issues to consider
+
+=head2 Thread creation
+
+Threads are created by 
+
+  new Thread \&func
+  new Thread sub { ... }
+  async { ... }
+
+We arguably don't need three different ways to create threads.
+However, the different syntaxes fit into the language in slightly
+different ways, and I'm not sure which one I'd be willing to give up.
+The first is the most fundamental; losing it would be a serious
+inconvenience. Perl generally allows an anonymous subroutine where
+ever it allows a code ref, so the second also seems appropriate. And
+the third allows us to create threads with the kind of lightweight
+syntax that makes Perl such a lucid language.
+
+
+=head2 C<join>
+
+The calling context of C<join> can't be propagated into the thread,
+for several reasons.
+
+=over 4
+
+=item *
+
+The thread can compute only one return value, but C<join> can be
+called repeatedly in different contexts.
+
+=item *
+
+The thread might terminate before the first call to join. C<join> can
+return the last expression evaluated in the thread, but it can't
+retroactively affect the context in which that expression was evaluated.
+
+=back
+
+Not allowing multiple C<join>s on a thread might help with the first
+problem; I can't see any way around the second.
+
+
+=head2 Critical sections
+
+This interface provides the
+
+  critical { ... } 
+
+construct. In principle, we don't need this: you can do the same thing
+with scoped locks
+
+  sub foo
+  {
+      lock &foo;
+      ...
+  }
+
+  sub bar
+  {
+      {
+      lock $bar::a;
+      ...
+      }
+
+      {
+      lock $bar::b;
+      ...
+      }
+  }
+
+
+Nonetheless, critical sections have several attractive features.
+
+=over 4
+
+=item *
+
+They reduce clutter. No named variable to lock.
+
+=item *
+
+Along with less clutter comes fewer chances for bugs. There isn't a
+locked variable floating around to get locked by the wrong thread, or
+locked and never unlocked, or deadlocked, or...
+
+=item *
+
+The implementation can be highly optimized. Internally, a critical
+section is protected by some kind of mutex. However, this mutex isn't
+user visible: the interpreter has complete control over it. Therefore,
+it can be very lightweight.
+
+=back
+
+
+Efficiency matters, because critical sections are used to manage things that
+are...well...critical. Important, global, high-contention resources like
+memory managers and process schedulers. Granted, these are poor
+examples for Perl, but you get the idea.
+
+Whether to implement C<critical> depends partly on whether serializing
+execution of a block of code is common enough to merit its own keyword
+and syntax. Threads.pm in Perl 5.6.0 documents a C<:locked> attribute
+for subroutines; given a choice, I'd rather have C<critical> than
+C<:locked>.
+
+
+=head2 Locked variables
+
+Version 3 of this RFC proposed C<try> to acquire a lock without
+blocking. C<try> does not block, and returns C<true> or C<false>
+according as the thread does or does not acquire the lock.
+
+It was pointed out that the keyword C<try> will likely be taken for
+exception handling. There are several ways we could avoid conflict
+
+=over 4
+
+=item *
+
+Choose another name, like C<try_lock>.
+
+    try_lock $mutex and ...
+
+=item *
+
+Push C<try> down into the C<Thread::> package.
+
+    Thread::try $mutex and ...
+
+=item *
+
+Or (my favorite) overload C<lock> on its calling context. 
+
+=back
+
+This RFC currently documents the last alternative.
+
+
+=head2 Condition variables
+
+I found out how to use condition variables. See, for example, 
+
+    http://uw7doc.sco.com/SDK_sysprog/_Condition_Variables.html
+
+You can build events out of condition variables, and a lot of other
+things besides. I'm pretty sure you can build C<wait_any> with
+condition variables. It seems like you should be able to build
+C<wait_all>, but I haven't yet figured out how.
+
+In any case, I'd rather have condition variables than a menagerie of
+other synchronization primitives.
+
+
+=head2 I/O
+
+I dropped the I/O section, because you can use condition variables
+to block on I/O in a controlled fashion
+
+  async { connect($sock, $addr); $connected=1; cond_signal($sock); }
+  async { Thread::delay(10);     $timed_out=1; cond_signal($sock); }
+  async { <STDIN>;               $canceled =1; cond_signal($sock); }
+
+  lock $sock;
+  cond_wait($sock);
+  $connected and ...
+  $timed_out and ...
+  $canceled  and ...
+
+
+=head2 Event, Semaphore, and Queue
+
+You can build all these from mutexes and condition variables. 
+
+
+=head2 Wait functions
+
+I dropped the wait functions from this interface. You can build
+C<wait_any> from condition variables. I'm not sure whether or not you
+can build C<wait_all>. However, a built-in C<wait_all> function would
+be limited to waiting on existing synchronization primitives. This
+could make it somewhat rigid, and possibly of limited utility.
+
+
+=head2 C<die>
+
+I dropped the I<$thread>->C<eval> call from this interface, and didn't
+say what happens if a thread C<die>s. There are several possibilities
+
+=over 4
+
+=item *
+
+The exception is propagated to any thread that C<join>s it. This has a
+certain logic to it, but it suffers from the fact that a program
+needn't C<join> its threads, so it doesn't guarantee that exceptions
+will actually be handled.
+
+=item *
+
+The interpreter prints C<$@> on stderr and exits. This is what C++
+does. It ensures that exceptions won't just disappear into the void;
+however, it also causes a good deal of anxiety and paranoia, because
+I<any> thread can potentially blow your program out of the water. (I
+speak from experience here.)
+
+=item *
+
+The thread just quietly goes away. After working with threads in C++,
+I'm actually partial to this one. We still need some way to recover
+C<$@> when a thread C<die>s. Returning C<$@> to C<join> is probably
+the Wrong Thing.
+
+=back
+
+
+=head2 C<==>
+
+I dropped I<$thread>->C<equal> in favor of overloading C<==> to
+compare threads. This seems more natural, and should be easy to
+implement if threads are built into the language.
+
+
+=head2 Thread IDs
+
+I dropped thread IDs from the interface. You don't want thread IDs.
+Thread IDs are an implementation artifact. Carrying around explicit
+numerical indices isn't the Perl way. They were broken anyway (wrap at
+2^32, with no guarantee of uniqueness after that). 
+
+
+=head2 Detach
+
+I dropped C<detach> from the interface. Detach is an artifact of
+languages that require programmers to manage their own storage. It has
+rigorous semantics, there's no going back, and if you get it wrong,
+you either leak threads or you crash.
+
+In Perl, detachment is more a state of mind. We have threads, and we
+have C<Thread> objects to manage them. The thread holds a reference on
+its C<Thread> object until it terminates. The C<Thread> object holds a
+reference on its thread as long as the C<Thread> object exists.
+
+If there are no user-visible references to a C<Thread> object (i.e.
+the only reference on the C<Thread> object is the one held by the
+thread), then the thread is said to be detached. A call to
+C<Thread>->C<all> or C<Thread>->C<this> could recover a reference to
+the C<Thread> object of a detached thread; when this happens, the
+thread is no longer detached.
+
+In any case, you don't have to worry about it. Like so many others,
+C<detach> is a problem that Perl doesn't have.
+
+
+=head2 Import
+
+To minimize namespace pollution, we could @EXPORT_OK the functions
+that appear in this interface. 
+
+  use Threads qw(yield delay alarm)
+
+On the other hand, if they get moved into the core the issue may be
+moot.
+
+
+=head2 Timer
+
+There are two kinds of timers: relative and absolute. Obviously, you
+can always build one kind out of the other, but I wanted to
+distinguish them with different constructors. I named the constructors
+C<delay> and C<alarm>, respectively. These are short, and read fairly
+naturally.
+
+
+=head2 C<this Thread>
+
+C++ partisans will get brain freeze reading code like
+
+  my $thread = this Thread;
+
+but that's not why I traded in C<self> for C<this>. Really, it's not.
+I did it because it reads more naturally to me.
+
+
+=head1 REFERENCES
+
+RFC 1: Implementation of Threads in Perl
+
+RFC 27: Coroutines for Perl
+
+RFC 31: Subroutines: Co-routines
+
+RFC 47: Universal Asynchronous I/O
+
+RFC 178: Lightweight Threads
+
+Threads.pm
+
+PThreads info page
+
+http://uw7doc.sco.com/SDK_sysprog/_Condition_Variables.html

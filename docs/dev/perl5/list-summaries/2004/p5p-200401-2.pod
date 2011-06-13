@@ -1,0 +1,152 @@
+=head1 This Week on perl5-porters (5-11 January 2004)
+
+Besides the first release candidate of perl 5.8.3, lots of things happened
+on perl5-porters this week. Read about new features to be added to the
+language, lots of bugs and fixes, and other odds and ends.
+
+=head2 5.8.3 RC1
+
+Nicholas Clark released the first release candidate of perl 5.8.1 on
+Wednesday. See the announcement at:
+
+    http://groups.google.com/groups?selm=20040107181832.GG11136%40plum.flirble.org
+
+Various problems were then found (and mostly solved). Elizabeth Mattijsen
+reported problems with her module Thread::Bless. She also found that a
+thread test was hanging forever. Apparently this has something to do with
+the flavour of threads used by the Linux kernel.
+
+    http://groups.google.com/groups?selm=p05111b06bc239c68a6fa%40%5b192.168.56.3%5d
+
+5.8.3 is expected next week.
+
+=head2 C<my $_>
+
+Rafael Garcia-Suarez proposed an extension to the language : the ability
+to use the default scalar C<$_> as a lexical variable, by declaring it
+with C<my>. He outlined the problems solved by this new construction,
+proposed a preliminary patch and pointed out a few open questions, that
+were discussed. Feedback was mostly positive.
+
+    http://groups.google.com/groups?selm=20040108004315.104f51ff.rgarciasuarez%40free.fr
+
+=head2 Multiple perls in the same tree
+
+Elizabeth Mattijsen asks whether debug-enabled and standard versions of perl,
+and threaded / unthreaded versions, can coexist in the same installation
+tree (the binary executables having different names, of course). The
+answer is mostly yes, as the relevant perl modules are installed into
+architecture-specific directories ; but there is no specific archname for
+debug-enabled perls.
+
+    http://groups.google.com/groups?selm=p05111b01bc237533767b%40%5b192.168.56.3%5d
+
+=head2 Nesting C<__WARN__> handlers
+
+Ed Avis suggests (as bug id #24806) that a localized C<$SIG{__WARN__}>
+handler could call the outer handler if it happens to call warn() again;
+or, that some other mechanism could be modified to make this happen.
+Rafael points out that this is already possible with perl, by using a
+closure to capture the outer handler. Yitzchak Scott-Thoennes says
+that a new lexical pragma
+
+    use warnings::handler sub { ... };
+
+would be a good idea.
+
+    http://groups.google.com/groups?selm=rt-3.0.8-24806-69433.12.789974826153%40perl.org
+
+=head2 Parsing edge cases
+
+Tassilo von Parseval noted (bug #24807) that
+
+    use if; print if->VERSION;
+
+is a syntax error, because C<if> is not only a standard package, it's also
+a keyword. The C<open> and C<sort> pragmas share this interesting
+property.
+
+However, there are several ways to circumvent this :
+
+    print "if"->VERSION;
+    print if::->VERSION;
+
+    http://groups.google.com/groups?selm=rt-3.0.8-24807-69451.9.61826812018678%40perl.org
+
+=head2 Various bugs, solved
+
+Dave Mitchell fixed bug #24674 : now, C<$^O> will not incorrectly get
+tainted when read, as this was the case; but assigning a tainted value to
+it will produce a fatal error.
+
+Tim Bunce reported a case of segfault with DBD::Oracle, which was traced
+down and fixed by Dave Mitchell. The bug happened when a closure was
+returned from a thread via join(). However his regression test hanged on
+Windows. Dave adds : I<I'm rather wondering whether we shouldn't just ban
+altogether threads returning CVs.>
+
+Ton Hospel reported bug #24813, the C<-0> command-line argument doesn't
+work anymore on the C<#!> line with perl 5.8.2. This was fixed by Rafael
+(who introduced this bug in the first place).
+
+Ton also reported bug #24815 : some syntax errors lead to unsuppressible
+warnings; for example, I<Number found where operator expected>. Rafael
+turned this message (and a similar one involving C<elseif>) into a
+mandatory warning (enabled by default, but that could be silenced.)
+
+But that's not over; Ton found (bug #24816) that some bitwise operators
+weren't dealing appropriately with magical variables (with the example of
+C<$?>) if they were used before the magical variable was accessed at all.
+Rafael committed a quick fix. However, as Yitzchak Scott-Thoennes finds
+out, this fix is not perfect because it unnecessarily invokes magic. He's
+working on this problem.
+
+    http://groups.google.com/groups?selm=rt-3.0.8-24816-69523.13.5221943075889%40perl.org
+
+Jesse Vincent reports (bug #28486) that join() has problems with UTF-8
+data. Slaven Rezic produced a small test case, and Sadahiro Tomoyuki
+provided a patch.
+
+    http://groups.google.com/groups?selm=rt-3.0.8-24846-69684.3.4343855767974%40perl.org
+
+=head2 Various bugs, not yet solved
+
+Stas Bekman reports that seek() and tell() don't work well with a dup'ed
+DATA filehandle. (Bug #24818)
+
+    http://groups.google.com/groups?selm=rt-3.0.8-24818-69544.7.1371603580959%40perl.org
+
+Steve Hay found a weird bug with C<UNIVERSAL::isa()> turning into an
+undefined subroutine. (Bug #24824)
+
+    http://groups.google.com/groups?selm=rt-3.0.8-24824-69588.13.1031404712176%40perl.org
+
+=head2 In Brief
+
+Petras Kudaras provided a Lithuanian translation of perl583delta.
+
+    http://groups.google.com/groups?selm=3FF9D0F8.3060109%40delfi.lt
+
+Tels released Math::BigRat 0.11. He also wondered about ways to improve
+the performance of his Math::* modules, and experimented with Devel::Size.
+(Eventually he wrote Devel::Size::Report, to be found on CPAN, to produce
+neater reports for all elements in a data structure.)
+
+    http://groups.google.com/groups?selm=200401092021.38384%40bloodgate.com
+
+Jim Cromie proposed an enhancement patch for B::Concise, which was
+discussed in detail. (Bug #24821).
+
+    http://groups.google.com/groups?selm=rt-3.0.8-24821-69561.5.46658207059089%40perl.org
+
+=head2 In Memoriam
+
+Iain 'Spoon' Truskett, Perl hacker, author of the perlreref manpage, died
+suddenly at the end of last year, at the age of 24. He will be missed.
+
+=head2 About...
+
+This summary was written by Rafael Garcia-Suarez.  Weekly summaries are
+published on F<http://use.perl.org/> and posted on a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>.  Corrections
+and comments are welcome.

@@ -1,0 +1,40 @@
+=head1 TITLE
+
+Ban Perl hooks into regexes
+
+=head1 VERSION
+
+  Maintainer: Simon Cozens <simon@brecon.co.uk>
+  Date: 25 Sep 2000 
+  Mailing List: perl6-language-regex@perl.org
+  Number: 308
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+Remove C<?{ code }>, C<??{ code }> and friends.
+
+=head1 DESCRIPTION
+
+The regular expression engine may well be rewritten from scratch or
+borrowed from somewhere else. One of the scarier things we've seen
+recently is that Perl's engine casts back its Krakken tentacles into Perl
+and executes Perl code. This is spooky, tangled, and incestuous.
+(Although admittedly fun.)
+
+It would be preferable to keep the regular expression engine as
+self-contained as possible, if nothing else to enable it to be used
+either outside Perl or inside standalone translated Perl programs
+without a Perl runtime.
+
+To do this, we'll have to remove the bits of the engine that call 
+Perl code. In short: C<?{ code }> and C<??{ code }> must die.
+
+=head1 IMPLEMENTATION
+
+It's more of an unimplementation really.
+
+=head1 REFERENCES
+
+None.

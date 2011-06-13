@@ -1,0 +1,84 @@
+=head1 This Week on perl5-porters (3-9 May 2004)
+
+On the menu of the P5P summary this week, you will find language
+constructions, segmentation faults, proposals for new tied methods,
+pronunciation issues, and (in fine) a few bugs.
+
+=head2 More on C<last>
+
+Continuing a thread from last week about the C<last> statement used to
+exit an eval() block: C<last> and C<next>, when used to exit from a
+subroutine, not only exit, but also branch to the specified loop/label of
+the caller. This is definitively a feature, since (as Tim Bunce remarked)
+Test::More::skip() uses this, and (as Hugo van der Sanden pointed out),
+Apocalypse 12 uses this to define method lookup strategies.
+
+    http://groups.google.com/groups?selm=200405051134.i45BYET26083%40zen.crypt.org
+
+=head2 C<open> pragma segfault
+
+Tomasz Pala reports (bug #29437) a case of recursion in perl's character
+encoding routines, which obviously (once diagnosed) leads to stack
+recursion and to segmentation fault. The sample code involves somehow the
+C<open> pragma.
+
+    http://groups.google.com/groups?selm=rt-3.0.9-29437-87042.12.9753390677264%40perl.org
+
+=head2 Truncation of tied filehandles
+
+Dan Boorstein proposed a patch against bleadperl to add a TRUNCATE method
+to tied filehandles. Tassilo von Parsval commented that this new method
+should probably be made optional, for simplicity and compatibility.
+
+    http://groups.google.com/groups?selm=20040508103121.519a8d9f.dan_boo%40bellsouth.net
+
+=head2 More pack() work
+
+Marcus Holland-Moritz, who implemented a couple of weeks ago new modifiers
+(C<< < >> and C<< > >>) for pack() templates, added a way to group these
+with parentheses.
+
+    http://groups.google.com/groups?selm=20040503201441.1b058e0d%40r2d2
+
+=head2 Weak references problems in 5.8.4
+
+Stas Bekman reported that Scalar::Util::weaken() (used to make weak
+references) has new problems in perl 5.8.4 (as it attempts to free
+unreferenced scalars, unveiling a deeper malfunction.) As those problems
+don't appear in bleadperl, Dave Mitchell does some investigation about the
+patches which caused it, and proposes a solution -- a patch from blead to
+integrate in maint.
+
+    http://groups.google.com/groups?selm=4097EF6F.8050401%40stason.org
+
+=head2 How do you say C<!~>?
+
+Yitzchak noticed that using C<!~> on an uninitialized value reports the
+warning as having occured in a C<not> operation, which is not exactly the
+case, and proposed to change the message; which raised the question, what
+is actually the name of the C<!~> operator?
+
+    http://groups.google.com/groups?selm=20040509075919.GA3752%40efn.org
+
+=head2 In Brief
+
+Dan Dascalescu reported (bug #29346) that passing an undefined argument to
+the int() or abs() built-ins produces the I<Use of uninitialized value>
+twice. Another history of magic handled twice.
+
+H. Merijn Brand is back on Cygwin smokes. This time, there were some
+IPC::SysV failures; Yitzchak Scott-Thoennes pointed out that a service
+needs to be started on Cygwin to make them work.
+
+    http://groups.google.com/groups?selm=20040506142843.98DB.H.M.BRAND%40hccnet.nl
+
+David Muir Sharnoff reported that Scalar::Util::refaddr() (a function that
+returns the memory address of the reference it gets passed) doesn't work
+when magic is somehow involved (bug #29395). Marcus fixed this.
+
+=head2 About this summary
+
+This summary was written by Rafael Garcia-Suarez. Weekly summaries are
+published on F<http://use.perl.org/> and posted on a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. Comments and
+corrections welcome.

@@ -1,0 +1,71 @@
+=head1 TITLE
+
+Emit warnings and errors based on unoptimized code
+
+=head1 VERSION
+
+  Maintainer: Nathan Torkington <gnat@frii.com>
+  Date: 12 Sep 2000
+  Last Modified: 15 Sep 2000
+  Mailing List: perl6-internals@perl.org
+  Number: 214
+  Version: 2
+  Status: Developing
+
+=head1 ABSTRACT
+
+When code triggers warnings or errors, those warnings
+or errors should report the code that caused them.
+If the code has been rewritten or altered by the optimizer,
+the unoptimized code should be be what's cited in the
+text of the warning or error message.
+
+=head1 CHANGES
+
+ * Added "except where it's impossible" clause
+
+=head1 DESCRIPTION
+
+In perl5 it's easy to get warnings about code you
+didn't write (this is from perl5.6.0, but similar problems
+with "use" turning into a "BEGIN" block have been present
+in Perl for a long time):
+
+  print "what's that, $perl?";
+
+  Use of uninitialized value in concatenation (.) at -e line 1.
+
+Perl has rewritten the double-quoted string as
+
+  "what's that, " . $perl . "?"
+
+and when the uninitialized value warning is generated,
+Perl reports it as coming from the concatenation operation.
+
+This is misleading and confuses users.  When Perl needs to report
+errors or warnings, it should describe the code the programmer wrote,
+regardless of how that's been translated within Perl.
+
+The only exception to this is when an optimization results in the
+irrecoverable loss of this information.  Such optimizations should
+be weighed on their individual merits, taking into account the
+potential confusion they could cause.  Where possible, warnings and
+errors should report useful location information to the user.
+
+=head1 IMPLEMENTATION
+
+Each op could keep track of the name of the construct that it came
+from.  Instead of reporting errors in terms of ops, report errors in
+terms of source-level constructs.
+
+This may bloat the op tree/bytecode.  There could be an option to
+strip these debugging symbols from the bytecode, much as strip(1)
+works on Unix, if this overhead is not welcome.
+
+perl526 will not be able to successfully translate any code that
+relies on parsing warnings or error messages.
+
+=head1 REFERENCES
+
+perldiag manpage for Perl's error messages and warnings
+

@@ -1,0 +1,83 @@
+=head1 TITLE
+
+BiDirectional Support in PERL
+
+
+=head1 VERSION
+
+  Maintainer: Roman M. Parparov <romm@empire.tau.ac.il>
+  Date: 6 Aug 2000
+  Mailing List: perl6-language@perl.org
+  Number: 50
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+This paper proposes an RFC regarding the B<BiDirectional> input and
+output support which would allow easier correct treatment for the
+languages with RTL (Right-To-Left) writing direction, such as
+Hebrew, Arabic and others. Such a support would mean a breakthrough
+in preparing all kinds of applications of users that need
+bidirectional text.
+
+
+=head1 DESCRIPTION
+
+=head2 Concepts of Bidirectional Support
+
+The aspects of RTL support in general were outlined in the
+I<BDL ECMA document>[1]. Since the bidirectional input issue is much
+more complicated than output and requires deep support of other
+applications than PERL, this document will only deal with the
+string output and string processing, just like the ECMA do.
+We will assume that the BDL data is always being read just as it is
+being read from the regular input buffer. 
+
+=head2 Output of BDL strings in Perl6:
+
+Based on the above, PERL 6 should implement an output routine like this:
+
+   rtlprint FILEHANDLE,LIST,REPRESENTATION,DIRECTION
+   rtlprint FILEHANDLE,LIST,REPRESENTATION
+
+FILEHANDLE is the FILEHANDLE of print. LIST is the LIST of 'print'.
+REPRESENTATION should be a value represented by a scalar - either
+'v' for VISUAL, or 'l' for LOGICAL. LIST is a LIST of
+'print'. DIRECTION is either 'rtl' or 'ltr' and is optional, 'rtl'
+being the default value. 
+
+OR enhance the existing print operator to
+
+   print FILEHANDLE, LIST, REPRESENTATION,DIRECTION
+
+In this case the default value of REPRESENTATION is LOGICAL.
+
+The output formats, if left, should be supported by RTL output.
+
+Other outputting statements like "die", do not have to support
+RTL output.
+
+=head2 Data processing of BDL strings in Perl6:
+
+B<Regexp processing> for the RTL strings is required. The
+'r' char after the last slash would mean an RTL string.
+   
+Routine B<substr> should be able to return subroutines cut from the
+right side from the RTL strings, including mixed texts.
+
+
+=head1 IMPLEMENTATION
+
+The implementation of that function should be a thorough coding of
+the BiDirectional Languages ECMA spec mentioned above. A mixed
+combination of RTL and LTR languages is allowed in a text, and the
+rules of punctuation are not often obeyed, but we should just stick
+to the ECMA standard.
+
+
+=head1 REFERENCES
+
+[1] Handling of the Bi-Directional Texts - ECMA TR/53 -
+    F<ftp://ftp.ecma.ch/ecma-tr/tr-053.pdf>
+    F<ftp://ftp.ecma.ch/ecma-tr/tr-053.psc>

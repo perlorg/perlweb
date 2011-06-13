@@ -1,0 +1,98 @@
+=head1 This Week on perl5-porters (11-17 August 2003)
+
+The next maintenance release of Perl approaches, but the porters want to
+take the time to do it right. Meanwhile, discussions and bug reports
+continue to occur, as usual. Read about new and old documentation,
+valgrind, backwards [in]compatibility, and other stuff.
+
+=head2 Manpages
+
+The F<perlreftut> manpage is currently distributed with Perl under a
+restrictive license that doesn't make it completely freely redistributable
+and that is apparently not compliant with the Debian Free Software
+Guidelines. Its copyright is currently owned by The Perl Journal, but
+Mark-Jason Dominus (author of this document) is trying to obtain it. If he
+succeeds he will rerelease it under a more standard license.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01100.html
+
+Meanwhile, a new manpage, F<perlcheat> (the perl cheat sheet), crafted by
+Juerd, was added to the perl core documentation.
+
+=head2 valgrinding
+
+Jarkko Hietaniemi added a C<test.valgrind> make target, to run the core
+test suite under valgrind, a memory access debugger for Linux/x86. This
+shakes out some errors, indicating potential or actual bugs.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01262.html
+    valgrind : http://developer.kde.org/~sewardj/
+
+=head2 Warnings
+
+Elizabeth Mattijsen is heavily testing the perl 5.8.1 release candidates
+with her thread (and non-thread) modules. She's able to produce error
+messages like I<Attempt to free unreferenced scalar> or I<Scalars leaked>
+-- notably with the C<Thread::Tie> and C<Thread::Pool> modules.
+
+She also notes that, now that warnings are automatically enabled when
+running tests (unless otherwise specified), test suites that used to seem
+perfectly working could be now proven flawed. (Not mentioning potential
+failures due to random hash key ordering.)
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01073.html
+
+=head2 PerlIO layers
+
+Stas Bekman, facing a problem with the handling of STDIN and STDOUT with
+mod_perl 2 when there are PerlIO layers pushed on those handles, asks for
+a way to replace the worker PerlIO layer. Nick Ing-Simmons explains some
+of the details about the PerlIO internals.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01045.html
+
+=head2 Scripts for porters
+
+Jarkko decided that it would be a good thing to bump up all version
+numbers of core modules that have changed since 5.8.0. Slaven Rezic
+provided a script to find in two Perl source trees modules that have
+changed but have the same version numbers. (Slaven also wrote another
+script to identify all modules with a dual life on CPAN, whose
+F<Makefile.PL>'s do not contain something like C<< INSTALLDIRS => perl >>.
+
+Jarkko also asked for a script to regenerate [parts of] all files that use
+a list of the standard documentation pod files (various makefiles, table
+of contents generator, etc.) Nicholas Clark studied the problem and posted
+the state of his unfinished work so far.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01084.html
+
+=head2 In Brief
+
+Rafael Garcia-Suarez asks for more regression tests, notably for some of
+the basic parts of the interpreter that might be undertested and/or
+undocumented (for example, numeric/string conversion). This would most
+probably be useful for Ponie.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01077.html
+
+Abigail finds that the snippet C<$x=~(0,0)> produces an obscure error
+message : I<Too many arguments for regexp internal reset>. (Bug #23328).
+But should it be a syntax error at all ?
+
+Alan Burlison, who set up an impressive smoke suite on several different
+Solaris boxes, gets random failures from them : some of them were
+apparently cured by using a non-parallel make for C<make _test>.
+
+Hugo explained why some long-deprecated features are not likely to be removed.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01212.html
+
+gcc 3.3.1 was released ; it doesn't seem to cause major problems.
+
+=head2 About this summary
+
+This week's summary was written by Rafael Garcia-Suarez. Summaries are
+published weekly on F<http://use.perl.org/> and on a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. Corrections
+and comments are welcome.

@@ -1,0 +1,233 @@
+=head1 The Perl 6 Summary for the week ending 20030831
+
+Welcome to this week's Perl 6 summary. This week, for one week only
+I'm going to break with a long established summary tradition. No,
+that doesn't mean I won't be mentioning Leon Brocard this week. Nope,
+this week we're going to start by discussing what's been said on the
+perl6-language list this week.
+
+Now that's out of the way, we'll continue with a summary of the
+internals list.
+
+=head2 Continuation Passing is becoming the One True Calling Style
+
+Jos Visser had some code that broke in an interesting fashion when
+C<find_lex> through an exception, so he asked the list about it. Leo
+TE<ouml>tsch explained that exceptions and old style subs don't play
+at all well together. It seems to me that the total and utter
+deprecation of subs using the old style calling conventions is not
+far distant.
+
+L<http://groups.google.com/groups?threadm=20030825090032.GG1125%40jadzia.ao.abnamro.nl>
+
+=head2 Embedding Parrot in Perl
+
+Luke Palmer has started to learn XS in the service of his project to
+embed Parrot in Perl. Unsurprisingly, he had a few questions. He got
+a few answers.
+
+L<http://groups.google.com/groups?threadm=20030825164459.GA14410%40babylonia.flatirons.org>
+
+=head2 Implementing ISA
+
+Leo TE<ouml>tsch has implemented C<isa>. The unfashionably lowercased
+chromatic argued that what Leo had implemented should actually be
+called C<does>. Chris Dutton thought C<does> should be an alias for
+C<has>. Piers Cawley thinks he might be missing something. 
+
+L<http://groups.google.com/groups?threadm=3F4A582C.9030200%40nextra.at>
+
+=head2 More on constant PMCs and classes
+
+Leo TE<ouml>tsch's RFC on constant PMCs and classes from last week
+continued to attract comments about possible interfaces and
+implementations. 
+
+L<http://groups.google.com/groups?threadm=3F4363FF.2010204%40nextra.at>
+
+=head2 A miscellany of newbie questions
+
+James Michael DuPont a bunch of questions and suggestions about
+bytecode emission, the JIT and about possibly extracting the Parrot
+object system into a separate library. Leo supplied answers.
+
+L<http://groups.google.com/groups?threadm=20030826142908.48488.qmail%40web41507.mail.yahoo.com>
+
+=head2 What the heck is active data?
+
+Dan clarified what he'd meant when he talked about Active Data. His
+one sentence definition being '"Active Data" is data that takes some
+active role in its use -- reading, writing, modifying, deleting or
+using in some activity'. The consequences of such data are far
+reaching; even if your code has no active data in it, Dan points out
+that you still have to take the possibility into account, or solve
+the halting problem. 
+
+Benjamin Goldberg seemed to think that you didn't need to solve the
+halting problem, you could just add scads of metadata to everything
+and do dataflow analysis at compile time. I look forward with interest
+to his implementation.
+
+Matt Fowles wondered why active data necessitated keyed variants of
+all the ops, asking instead why we couldn't have a C<prepkeyed> op to
+return an appropriate specialized PMC to use in the next op. Dan
+agreed that such an approach was possible, but not necessarily very
+efficient. Leo TE<ouml>tsch disagreed with him though.
+
+TOGoS wondered if this meant that we wouldn't know whether C<set Px,
+Py> did binding or morphing until runtime. (It doesn't. C<set> always
+simply copies a pointer). In an IRC conversation with Dan we realised
+that some of this confusion arises from the fact that C<set_string>
+and friends behave as if they were called C<assign_string>; to get
+the expected C<set_string> semantics you'd have to do:
+
+    new Px, .PerlUndef
+    set_string Px, "some string"
+
+Hopefully this is going to get fixed.
+
+L<http://groups.google.com/groups?threadm=a0521060ebb71b3c71432%40%5B63.120.19.221%5D>
+
+=head2 Mission haiku
+
+=begin html 
+
+<blockquote>Nicholas Clark<br/>
+To make some kind of mark<br/>
+Committed haiku.<br/>
+Don't you.</blockquote>
+
+=end html
+
+=begin text
+
+Nicholas Clark
+To make some kind of mark
+Committed haiku.
+Don't you.
+
+=end text
+
+Yes, I know that's not a haiku. It's a Clerihew. I suggest that
+anyone else who feels tempted to perpetrate verse on list restrict
+themselves to a sestina or a villanelle, or maybe a sonnet.
+
+I also note that POD is a lousy format for setting poetry in.
+
+L<http://groups.google.com/groups?threadm=20030828001111.O4286%40plum.flirble.org>
+
+=head2 JE<uuml>rgen gets De-Warnocked
+
+JE<uuml>rgen BE<ouml>mmels had been caught on the horns of Warnock's
+Dilemma over a patch he submitted a while back. It turns out that he'd
+been Warnocked in part because both Leo and Dan thought he already had
+commit rights. So that got fixed. Welcome to the ranks of Parrot
+committers JE<uuml>rgen, you've deserved it for a while.
+
+L<http://groups.google.com/groups?threadm=m2znhuksi3.fsf%40helium.physik.uni-kl.de>
+
+=head2 Parrot Z-machine
+
+New face Amir Karger wants to write the Parrot Z-machine
+implementation and had a few questions about stuff. So far he's been
+Warnocked. 
+
+L<http://groups.google.com/groups?threadm=20030828131707.8989.qmail%40web40705.mail.yahoo.com>
+
+=head2 Notifications
+
+Dan described how Parrot's notification system would work, and what
+that means for weak references. Michael Schwern thought the outlined
+notification system would also be awfully useful for debugger watch
+expressions. Tim Bunce worried about some edge cases.
+
+L<http://groups.google.com/groups?threadm=a05210614bb743d52fe3f%40%5B63.120.19.221%5D>
+
+=head2 MSVC++ complaints
+
+Vladimir Lipskiy (who's been doing some stellar work recently on
+various build issues amongst other things) found some problems trying
+to build Parrot with MSVC++ and asked for help in working out how to
+fix them. JE<uuml>rgen BE<ouml>mmels suggested a fix, which Vladimir
+liked in principle, but noted that there were still some issues it
+didn't quite fix.
+
+L<http://groups.google.com/groups?threadm=007301c36dd1%247b68e410%24589d943e%4087w5ovc8gmxcahy>
+
+=head2 C<< vtable->dump >>
+
+Leo TE<ouml>tsch thought that, if only for debugging, it would be
+really handy for PMCs to offer a C<dump> method which would return a
+string representation of the PMC. Dan thought that a better approach
+would be to get freeze/thaw working for PMCs and have the debugger
+know how to dump a frozen PMC. This seemed to open up a whole big can
+of worms as Leo, Dan and others discussed what was needed from the
+serialization toolset and what its interface should look
+like. 
+
+Nicholas Clark threw a googly down the pitch with his description of
+a possible attack on serialization schemes (possibly originating with
+Jonathan Stowe) that seems deeply tricky to work around.
+
+L<http://groups.google.com/groups?threadm=3F4F27B4.7070909%40nextra.at>
+
+L<http://groups.google.com/groups?threadm=20030830125952.S4286%40plum.flirble.org>
+
+=head2 C<exit> opcode
+
+Leo checked in a small change to Parrot, making C<exit> throw an
+exception rather than simply quitting the program. Of course, unless
+the exception is caught, parrot will exit anyway. He also proposed
+changing the startup parameters by moving the ARGV array from P0 to
+P5 for consistency with the Parrot Calling conventions. For some
+reason this sparked off an enormous thread discussing how to return
+from the main function. 
+
+Dan liked the the idea, so Leo checked a patch in and fixed up as
+many of the examples and languages as he could find, but he expects
+that he hasn't caught 'em all.
+
+L<http://groups.google.com/groups?threadm=3F4F390E.6080809%40nextra.at>
+
+=head1 Acknowledgements, Announcements, Apologies
+
+I'm really, really sorry about the Clerihew. But not sorry enough to
+remove it.
+
+Thanks to everyone involved in making sure I only got one and a
+half of last week's predictions right. (The half prediction was to do
+with my writing real Perl code, I didn't. But I I<did> release the
+Paris code, you can find it on CPAN at
+L<http://search.cpan.org/search?query=Heritable%3A%3ATypes&mode=dist>
+if you're interested.)
+
+Thanks to Gill for seven and 2 days (as I write this) of wedded
+bliss. 
+
+Check out L<http://www.bofh.org.uk/> for more of my
+writing (and thanks to those who have already popped by).
+
+As ever, if you've appreciated this summary, please consider one or
+more of the following options:
+
+=over 
+
+=item *
+
+Send money to the Perl Foundation at
+L<http://donate.perl-foundation.org/> and help support the ongoing
+development of Perl.
+
+=item *
+
+Get involved in the Perl 6 process. The mailing lists are open  to
+all. L<http://dev.perl.org/perl6/> and L<http://www.parrotcode.org/>
+are good starting points with links to the appropriate mailing lists.
+
+=item *
+
+Send feedback, flames, money, requests for consultancy, photographic
+and writing commissions, or the soul of your first born to
+L<p6summarizer@bofh.org.uk>
+
+=back

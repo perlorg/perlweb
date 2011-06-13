@@ -1,0 +1,20 @@
+[%
+    page.import({
+        title    => 'Beginners Perl Mailing lists',
+        section  => 'beginners',
+        description
+            => 'Perl mailing lists for beginners',
+    });
+%]
+
+<h2>Perl mailing lists for beginners</h2>
+
+[% categories = [
+    'beginners',
+    'beginners-www',
+    'tk-beginners',
+    'www-beginners',
+    ];
+%]
+
+[% PROCESS tpl/category_page.html categories => categories %]

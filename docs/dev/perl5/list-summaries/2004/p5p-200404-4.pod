@@ -1,0 +1,117 @@
+=head1 This Week on perl5-porters (26 April / 2 May 2004)
+
+This week, our p5p summary will describe a lot of little bugs, some of
+which were fixed, some of which weren't, in a lot of different areas of
+the perl interpreter.
+
+=head2 Unicode problems
+
+It took a few iterations to get Jeff Pinyan's rewritten Unicode tables
+support in bleadperl right. Notably, some files that were named similarly
+were causing problems on case-insensitive filesystems.
+
+    http://groups.google.com/groups?selm=20040427171217.GA701%40plum.flirble.org
+
+Jeff Pinyan and Sadahiro Tomoyuki also wondered about the technical
+difficulty of adding support for the POSIX character classes C<[=x=]> and
+C<[.xy.]> in perl's regular expressions.
+
+    http://groups.google.com/groups?selm=Pine.LNX.4.44.0404281455480.1083-100000%40perlmonk.org
+
+Meanwhile, Sadahiro and Nicholas Clark solved bug #29149, about substr()
+returning an erroneous return value on an UTF-8 string on which pos() was
+set; he trimmed it down to a UTF-8 cache bug.
+
+    http://groups.google.com/groups?selm=rt-3.0.8-29149-86072.19.7542334019983%40perl.org
+
+=head2 Backward-compatible warnings
+
+There was some discussion about the integration of the new enhanced
+warning I<Use of uninitialized value $foo> in the stable branch of perl.
+After all, it only affects warning messages emitted by perl, and not
+perl's behaviour.
+
+Meanwhile, this new warning caused some miscellaneous failures in the
+smoke tests, when running under some UTF-8 locales, and with input/output
+set to UTF-8 by default: this situation changed the way perl processed
+internal data, to which a defined variable name couldn't be attached
+anymore, and thus the warning message was modified (not reporting the
+variable name when it could not be figured out.)
+
+=head2 C<last> as an exit statement
+
+Yitzchak Scott-Thoennes filed bug #29238, where he explores the
+interaction between the I<Existing eval via last> warning and the I<Can't
+"last" outside a loop block> fatal error -- the eval() in the first one
+masks the second, and probably shouldn't.
+
+    http://groups.google.com/groups?selm=rt-3.0.9-29238-86409.15.0991756274632%40perl.org
+
+=head2 eof() and non-blocking reads
+
+David Muir Sharnoff reported as bug #29019 that a read() on a non-blocking
+socket at eof returns undef and sets $! to EAGAIN (resource temporarily
+unavailable). Nicholas Clark replied that, since read() is buffered I/O,
+it shouldn't be used on unbuffered inputs, such as non-blocking sockets. A
+bit later, Ton Hospel investigated what does eof() return in this
+situation (bug #29277): since the system call set errno to EAGAIN, perl's
+eof() shouldn't return C<true>.
+
+    http://groups.google.com/groups?selm=rt-3.0.9-29277-86530.16.998825074622%40perl.org
+
+=head2 Other bugs
+
+Gisle Aas found (bug #29102) that assigning to an open lexical filehandle
+was crashing perl.
+
+Ton Hospel found an amusing bug (#29127): the return value of delete()
+applied to an empty hash slice seems to pick up the last value on the
+stack.
+
+Dan Dascalescu found a six-character way to make perl segfault (bug #28986):
+
+    perl -e 'open m'
+
+Those three bugs (among others) were fixed by Dave Mitchell.
+
+Marcus Holland-Moritz unveiled a bug in OpenBSD's, via failures in perl's
+test suite. He also implemented a workaround.
+
+    http://groups.google.com/groups?selm=20040424180640.1976f877%40r2d2
+
+Thorvaldur Gunnlaugsson found (bug #28993) that using the function
+eval("") in a BEGIN block mysteriously resets the $[ variable to 0 (if it
+was previously set to a non-zero value.)
+
+Stas Bekman found a bug that appears when an embedded perl interpreter is
+cloned after having evaluated a string that declares a new subroutine:
+this leaks memory. This bug (#29018) can be observed via the <Perl>
+sections of an apache2/mod_perl configuration file.
+
+Chip Salzenberg found that the special DB::sub() subroutine (used to write
+debuggers) suffers from restrictions: roughly, it can't call XSUBs and it
+can't use regular expressions. Details are given:
+
+    http://groups.google.com/groups?selm=20040429201258.GQ16913%40perlsupport.com
+
+=head2 Other news
+
+Chia-liang Kao announced that svk, his source control software written in
+perl on top of Subversion, can now mirror Perforce repositories, and in
+particular the perl source repository (which access is restricted to a few
+authorized people.) John Peacock is testing it.
+
+    http://groups.google.com/groups?selm=20040425232102.GA10194%40portege.clkao.org
+
+After a discussion on the perl-xs mailing list, Steve Hay proposed to add
+a couple of new macros for XS coders, to push newly created mortal values
+on the stack.
+
+    http://groups.google.com/groups?selm=40921749.3050600%40uk.radan.com
+
+=head2 About this summary
+
+This summary was written by Rafael Garcia-Suarez. Weekly summaries are
+published on F<http://use.perl.org/> and posted on a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. Comments and
+corrections welcome.

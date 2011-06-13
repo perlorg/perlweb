@@ -1,0 +1,321 @@
+=head1  TITLE
+
+Enhanced Pack/Unpack
+
+=head1  VERSION
+
+  Maintainer: Edwin Wiles <ewiles@cox.rr.com>
+  Date: 22 Aug 2000
+  Last Modified: 30 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 142
+  Version: 2
+  Status: Frozen
+  Submitted by: Glenn Linderman <Glenn@Linderman.com>
+
+=head1  ABSTRACT
+
+Pack and Unpack are percieved as being difficult to use, and
+possibly missing desirable features.
+
+=head2  Notes on freeze
+
+Edwin on vacation, co-author deems appropriate to freeze
+without changes.  Most discussion happened with "draft" RFCs before
+the original submittal, anyway.
+
+=head1  DESCRIPTION
+
+The existing pack and unpack methods depend upon a simple
+grammar which leads to opaque format specifications, which are
+often difficult to get right, and which carry no information
+regarding variable names.
+
+A more descriptive grammar, which includes variable name
+associations, would make pack and unpack easier to use.
+
+=head1  IMPLEMENTATION
+
+Given the expressed desire to shrink the overall size of the
+perl executable, this should be implemented as a seperate
+module; included with the core distribution.
+
+=head2 Definition
+
+        $foo = new Structure(...definition...);
+
+Define a new structure type.  Can use previously defined
+user data types.  See the section on definitions.
+
+        Structure::define( $typename, \&from_sub, \&to_sub );
+
+Define a user data type.  The 'from_sub' extracts data
+from the packed form.  The 'to_sub' puts data back into
+the packed form.  See the section on user defined types.
+
+=head2 Input
+
+        $foo->read(<INPUT>);
+                        # sysread binary data from given IO reference.
+
+        $foo->set($var);
+                        # accept binary data from normal perl
+                        # variable.
+
+        $foo->append($var);
+                        # append binary data to the existing data in
+                        # the structure.
+
+=head2 Output
+
+        $foo->write(<OUTPUT>);
+                        # syswrite binary data to given IO reference.
+
+        $var = $foo->get();
+                        # output binary data to normal perl variable.
+
+=head2 Maniuplation
+
+        $foo->{'name'} = $val;  # set "name" to value
+        $val = $foo->{'name'};  # get value of "name"
+
+[Note: There is an alternative method, using the Class::Class
+method of exposing the variables via their names.  That is
+still a possibility, but this is deemed easier to implement at
+this time.]
+
+=head2  Data Definition
+
+        DEFINITION := '[' ELEMENTS ']'
+
+        ELEMENTS := ELEMENT [',' ELEMENTS]
+
+        ELEMENT := NAME '=>' TYPE
+
+        NAME := Text used to identify the variable for further use.
+                You may not use 'array', it is reserved.  You may not
+                embed whitespace.
+
+        TYPE := ''' BASETYPE [ '/' MODIFIERS ] '''
+             |  '[' ARRAYDEF ']'
+             |  USERDEFINED [ '/' UDEFARGS ]
+
+        BASETYPE := 'short'
+                 |  'long'
+                 |  'int'
+                 |  'double'
+                 |  'float'
+                 |  'char'
+                 |  'byte'
+
+                 In each of the above, unless otherwise modified, the
+                 type defaults to the signedness, endianness, and bit
+                 length that your system normally uses.  The one
+                 exception to this is 'char', which Unicode may cause
+                 to be larger than a single byte, even if your system
+                 normally considers a 'char' to be a single byte.
+
+                 |  'chars'     A null terminated string of characters.
+                                If unicode is used, this may be more
+                                than one byte per character.  For use
+                                with indefinite length strings, where
+                                a "count" is not provided.  If the
+                                array modifier is used, then you're
+                                expecting that many null terminated
+                                strings.
+
+                 |  'bytes'     A null terminated string of bytes.
+                                If the array modifier is used, then
+                                you're expecting that many null
+                                terminated strings of bytes.
+
+                 [Note: Other basetypes desired can certainly be
+                 added.  It were best if they were added at this
+                 phase.  Inform me of any additional base types
+                 desired, with justifications.]
+
+        UDEFARGS := UDEFARG [ ',' UDEFARGS ]
+
+        UDEFARG := User defined argument, meaning dependent upon user
+                   defined code.  Pretty much, any legal Perl
+                   constant.  At least, by the time it hits this
+                   module, it better be constant.
+
+        USERDEFINED := A user defined type name, see the section on
+                       user defined data types.
+
+        ARRAYDEF := 'array' ',' COUNT ',' ELEMENTS
+
+                 [Note: Since an 'arraydef' already begins with an
+                 otherwise special character (eg. foo => [ 'array',
+                 10, ...]), can we eliminate the apparently redundant
+                 'array' keyword giving us (foo => [ 10, ...])?]
+
+        COUNT := Either a constant number, or the name of an earlier
+                 element.
+
+        MODIFIERS := [ ARRAYMOD ][ SIGNEDNESS ][ ENDIANNESS ]
+                     [ LENGTH ][ OFFSETDEF ]
+
+        ARRAYMOD := '[' COUNT ']'
+
+                 This is an alternative method for declaring an array,
+                 used when the data in question is a basetype, and not
+                 an embedded repeating structure.
+
+        OFFSETDEF := '@' OFFSET '/' OFFSETSTART
+
+                  The variable that this is applied to, starts from
+                  the indicated offset.
+
+                  If no OFFSETDEF is  specified, the offset defaults to
+                  the end of the previous item containing no OFFSETDEF,
+                  or, if  no such previous item exists,  to offset zero
+                  from the beginning of the structure.
+
+        OFFSET := The name of a data element defined earlier, or a
+                  numeric literal which is the offset.
+
+        OFFSETSTART := 'begin' - From the beginning of the overall
+                                 structure.
+                    |  'end'   - From the end of the fixed portion of
+                                 the structure.
+                    |  'here'  - From the beginning of the offset
+                                 variable.
+
+                    [Note: There is a proposal to allow user defined
+                    offset start types, but the necessary arguments
+                    are not well understood.  Suggestions welcome.]
+
+        SIGNEDNESS := u - unsigned
+                   |  s - signed
+                   |  If omitted, defaults to system default.
+
+        ENDIANNESS := n - network - 4321
+                   |  b - big     - 4321
+                   |  l - little  - 1234
+                   |  p - PDP/Vax - 3412
+                   |  If omitted, defaults to system default.
+
+        LENGTH := An integer expressing the length of the base type
+                  in bits.  If omitted, it defaults to the normal
+                  length for your system.   Some types may only support
+                  a  few  fixed  lengths,  however, integer  types  are
+                  expected to  support any bitlength between  1 and 32,
+                  inclusive, or possibly more if big integer support is
+                  available.
+
+                  Nota Bene: "normal" length specifications for various
+                  sized types  (like short, int, long)  are useful when
+                  creating  structures defined in  those terms  for the
+                  local platform,  to be used as  storage structures or
+                  API parameters.  However, for cross platform work, it
+                  is  critical   that actual  sizes  be   able  to  be
+                  specified, so that data  structures can be stored and
+                  accessed in a consistent  manner that need not change
+                  when the script  runs on different platforms.  Hence,
+                  both notations,  "normal" length, and  actual length,
+                  are supported by this interface.  Where more than one
+                  "normal" length  type is the same  basic type (short,
+                  int, and long are all "integers"), any of them may be
+                  specified with  the same LENGTH  parameter to achieve
+                  the same results.
+
+=head3 User Defined Data Types
+
+[Note: For simplification, user defined datatypes are presumed
+to be fixed length.  To support variable length, either the
+programmer must ensure that there is sufficient data, or the
+methods for user defined data types must be redefined to allow
+for reading additional data.]
+
+       sub from_sub( $binaryvar, $bitoffset, $uservars, ... )
+       sub to_sub( $binaryvar, $bitoffset, $udvar, $uservars, ... )
+
+       $binaryvar - is the variable containing the binary data.
+       $bitoffset - is the current offset into the binary data.
+       $udvar     - user defined variable for repacking into binary.
+       $uservars  - how ever many user variables the user needs to
+                    define the type.
+
+=head3 Examples
+
+Given the following:
+
+        struct foo {
+               int bar;
+               int baz;
+               int count;
+               };
+
+Followed by 'count' copies of:
+
+        struct stroff {
+               int length;
+               int offset;
+               };
+
+Followed by 'count' variable length, not necessarily null
+terminated collections of bytes.  Possibly strings, possibly
+not, but we'll consider them strings for now.  The 'offset' is
+from the beginning of the overall structure.
+
+The corresponding definition would be:
+
+        ['bar'=>'int', 'baz'=>'int', 'count'=>'int',
+          'stroff'=>[ 'array', 'count',
+                      'length'=>'int', 'offset'=>'int',
+                      'str'=>'byte[length]@offset/begin' ]]
+
+Notice that this groups the trailing string with the
+corresponding 'stroff' structure.
+
+Here  is an  example of  using  each of  the various  modifiers
+individually, and then several together.
+
+        ['i1' => 'int/[14]'] # an array of 14 normal length int
+        ['i2' => 'int/s'] # a signed normal length int
+        ['i3' => 'int/l'] # a little endian normal length int
+        ['i4' => 'int/16'] # an 16-bit int
+        ['i5' => 'int/@0/begin']
+            # an int at offset 0 from begin of structure
+        ['i6' => 'int/[14]sl16@0/begin']
+            # an array of 14, signed, little endian, 16-bit, integers
+            # at offset 0 from begin of structure.
+        ['type' => 'int/8',
+           'i7' => 'int/32@0/begin',
+           'f1' => 'float/32@0/begin' ]
+            # i7 and f1 are two different interpretations of the same
+            # bitstream
+
+
+=head1  REFERENCES
+
+Class::Class useful for automatic creation of get/set methods
+for variables on the basis of their names.
+http://search.cpan.org/doc/BINKLEY/Class-Class-0.18/lib/Class/Class.pm
+http://search.cpan.org/search?dist=Class-Class
+
+File::Binary possibly useful for read/write of binary information.
+http://search.cpan.org/doc/SIMONW/File-Binary-0.3/blib/lib/File/Binary.pm
+
+http://search.cpan.org/search?dist=File-Binary
+
+PDL::IO::FlexRaw - is almost exactly what we're looking for.
+While it is described as being specifically for Fortran77
+binary files, we should be able to adapt it to anything.
+http://search.cpan.org/doc/KGB/PDL-2.005/IO/FlexRaw/FlexRaw.pm
+http://search.cpan.org/search?dist=PDL
+
+Combine this with Class::Class and an extended FlexRaw/pack
+data description format, and we've got a powerful tool for
+binary data manipulation.
+
+=head1 CREDITS
+
+The following individuals have contributed to this RFC.
+[If I've missed anyone, LET ME KNOW!]
+
+Glenn Linderman <Glenn@Linderman.com> (Co-Author)
+Dominic Dunlop <domo@computer.org>    (Contributor)
+

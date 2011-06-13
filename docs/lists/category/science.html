@@ -1,0 +1,18 @@
+[%
+    page.import({
+        title    => 'Perl Science Mailing lists',
+        section  => 'science',
+        description
+            => 'Perl science mailing lists',
+    });
+%]
+
+<h2>Perl science related mailing lists</h2>
+
+[% categories = [
+    'ai',
+    'bioperl',
+    ];
+%]
+
+[% PROCESS tpl/category_page.html categories => categories %]

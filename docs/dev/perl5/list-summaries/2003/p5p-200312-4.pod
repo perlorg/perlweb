@@ -1,0 +1,63 @@
+=head1 This Week on perl5-porters (22-28 December 2003)
+
+Due to holidays, this was a low-traffic week. That's one more reason to
+get it delivered in time.
+
+=head2 Math::BigInt
+
+Tels pre-released Math::BigInt 1.68, with new stuff, refactorization,
+memory savings, and new method aliases to make the interface more
+consistent. He also posted some benchmarks.
+
+    http://groups.google.com/groups?threadm=200312230106.27661%40bloodgate.com
+    http://www.bloodgate.com/perl/bigint/bench_timeline.html
+
+=head2 Optimizations
+
+Enache Adrian re-optimized the implementation of the string concatenation
+with lexical variables; the previous optimization has been disabled
+because it was buggy.
+
+=head2 Windows breakages
+
+According to bug report #24731, the implementation of fork() has problems
+under Windows 2003 64-Bit on Itanium 2. Unfortunately, we lack porters with
+access to this kind of machine.
+
+    http://groups.google.com/groups?threadm=rt-3.0.7_01-24731-68810.11.7760523742712%40perl.org
+
+Speaking about Windows, we seem to have lost threaded builds of perl 5.8.x
+on Windows, for an unknown reasons. Investigations to follow...
+(Obviously, perl 5.8.3 can't be shipped without this being fixed.)
+
+    http://groups.google.com/groups?threadm=20031227224542.GZ94211%40plum.flirble.org
+
+=head2 Other bugs
+
+Ton Hospel reports that C<undef> used with the range operator in list
+context is treated as numerical 0, even for a magical string range. Rafael
+fixed this.
+
+    http://groups.google.com/groups?threadm=rt-3.0.7_01-24735-68834.12.6928254949564%40perl.org
+
+Jarkko Hietaniemi reports that this small code snippet :
+
+    *foo{CODE} ? 1 : 0
+
+is a syntax error in perl. It shouldn't be. Rafael fixed this.
+
+    http://groups.google.com/groups?threadm=rt-3.0.7_01-24762-68931.15.246354815684%40perl.org
+
+Marcus Holland-Moritz thinks he hits a bug in a recent development
+snapshot of gcc 3.4, because a sprintf() test failing in perl's test
+suite. The bug in fact turns out to be an old bug in gcc's optimizer, and
+is trigerred with the C<-O3> level since gcc 3.4.
+
+    http://groups.google.com/groups?threadm=02b801c3ca9a$ff6661e0$5700a8c0%40R2D2
+
+=head2 About this summary
+
+This summary was written by Rafael Garcia-Suarez. Weekly summaries are
+published on F<http://use.perl.org/> and posted on a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. Corrections
+and comments are welcome.

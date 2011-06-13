@@ -1,0 +1,488 @@
+=head1 This Week on perl5-porters - 21-27 November 2005
+
+A quiet week with a bit of action at many corners of Perl development,
+including some shiny new ones like Lamp. Improvement to docs and
+threads on C<Switch>, C<Module::Build> modules are among
+the discussion themes.
+
+
+=head2 No Brute Force Anymore
+
+
+The last summary mentioned bug #37710 about a failed C<require>
+succeeding in a second time. Rafael Garcia-Suarez pointed this
+is fixed in bleadperl and
+Yitzchak Scott-Thoennes noticed the bug goes back
+to 5.6.1 through current maint. 
+Rick Delaney entered the discussion to say the fix never made into maint
+because of the introduction of the new semantic that
+an C<undef> value for an entry in C<%INC> means the module failed to compile.
+Rick mumbled on the unfortunate passing of the 
+corresponding change to C<LE<lt>perlfunc/requireE<gt>>
+which actually shows implementation details in blead but not in 5.8.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00548.html
+
+
+=head2 Save F<Safe.pm>
+
+
+Andreas Koenig opened RT ticket #37713 to warn about F<Safe.pm>,
+which fails miserably with modules like C<POSIX>, C<version>, and others.
+Even when no opcode restriction is made, examples like the one below
+fails with blead and even worse with 5.8.7.
+
+    perl -le '
+     use Safe;
+     use Opcode;
+     my $comp = Safe->new;
+     my $opset = Opcode::full_opset;
+     $comp->permit($opset);
+     $comp->reval("use version; \$VERSION = qv(q{1.0.3}); print \$VERSION");
+     print $@ if $@;
+     '
+    Undefined subroutine &version::qv called at (eval 2) line 1.
+
+Yves Orton remembered Tim Bunce declared C<Safe.pm> to be a failed experiment and
+wondered which is the current status of the module now that Raphael owns it.
+Rafael answered he continues to fix things, backport the changes to CPAN
+and thought this issue should be fixed.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00506.html
+
+=head2 Linked List of Arenas
+
+
+Jim Cromie came back this week to polish its previous RFC patch 
+based on Nicholas Clark's feedback. Jim concentrated on the
+idea of having arena-size per sv-type and included comments/docs
+for posterity, say, posterior maintenance. Later, Nicholas
+Clark pointed some confusion in the patch and kept waiting
+for Jim's answers.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00561.html
+
+=head2 C<Pod::Perldoc> and Localized Docs
+
+
+Enrico Sorcinelli, one of the authors of C<POD2::IT>, a project
+to translate Perl man pages into Italian, proposed again
+a patch against C<Pod::Perldoc> to support viewing translated pods.
+Rafael Garcia-Suarez applied to bleadperl the patch.
+Enrico noticed C<POD2::FR> just started, Portuguese fellows announced
+C<POD2::PT> shortly, and there is also a little C<POD2::LT> for Lithuanian.
+This may become a trend.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00524.html
+
+=head2 Documentation Conventions
+
+
+Sébastien Aperghis-Tramoni triggered a discussion asking about the convenience 
+of a patch to POD files setting up a consistent pattern in the formatting 
+of functions, modules, variables, and others. Andy Lester suggested
+Sébastien to have a go, see the reaction and go from there.
+Rafael Garcia-Suarez and others remembered it could be a good idea taking into 
+account the differences in rendering
+in POD formatters, since F<pod2text> (via F<perldoc>), F<pod2html> to 
+the custom formatters in sites like search.cpan.org and perldoc.perl.org.
+After a suggestion by David Landgren, Sébastien's patch
+which touched F<perlstyle.pod> adopted the use of C<FE<lt>E<gt>> for 
+files, C<CE<lt>E<gt>> for generally anything that can be considered part of 
+code and C<BE<lt>E<gt>> for command names. I think it basically 
+sums up to being simple as POD already is, which doesn't preclude
+POD formatters to be clever and improved.
+The patch was applied after a few minor fixes.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00530.html
+
+
+=head2 I<concat> Misbehavior with Magic
+
+
+Michele Dondi opened ticket #37722 to report how weird
+can be the interaction of concat and magic in C<tie()>d
+variables. Robin Houston summed it up to the bit of code
+
+      sub TIESCALAR { bless {} }
+      sub FETCH { shift()->{i} ++ }
+      tie $h, "main";
+      print $h.$h;
+
+which may output "00" rather than "01" and posted a patch. 
+Rafael Garcia-Suarez noticed the patch broke the warning test
+case
+
+    $ ./perl -we '$x.=$x'
+
+which should report a use of uninitialized value error.
+On the grounds of a comment by Dave Mitchell on Michele's 
+finding, Rafael conceded the behavior was not really a bug
+but the undefined result of execution order in expressions
+involving side-effects. Robin Houston insisted it could
+not be that difficult to fix, and tweaked the patch that
+now provides a left-to-right order on evaluation of
+subexpressions. The change has been applied as #26192.
+
+    Michele's finding
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00555.html
+    Robin's approach
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00558.html
+
+=head2 Perl on Lamp
+
+
+Joshua Juran started a thread by posting some test results
+from the starting Lamp port for perl 5.6.1. Nicholas Clark curiously
+asked what led Joshua to elect 5.6.1 as a departing point
+rather than 5.6.2 or even better 5.8.something. Joshua explained
+he started working from Chris Nandor's MacPerl codebase, 
+which is at 5.6.1 and promised to leave 5.6 behind as soon
+as he gets tests passing, approaching 5.8.x or blead.
+Rafael Garcia-Suarez suggested that, by starting at 5.6.2,
+Joshua's changes could be incorporated in this 
+or in MacPerl branch. Joshua pointed that Lamp, a project
+for a Mac-hosted unix-like environment is similar in
+spirit to Cygwin and will hopefully have more in common
+with standard Perl than with MacPerl.
+
+    Joshua's test results
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00587.html
+    The Lamp project URL
+    http://sourceforge.net/projects/lamp/
+
+=head2 Win32 Lean and Mean
+
+
+Jan Dubois appreciated the analysis by Thomas Kratz (in ticket #37708)
+about issues with socket-related declarations on Win32 whether 
+F<winsock2.h> or F<winsock.h> is included. The problem being that
+Perl compiles using C<winsock2.h> but F<perl.h> includes F<winsock.h>
+leading to wrong winsock 1.1 constants and errors due to
+redefined structs. Jan considered the best way to do it, avoiding
+the breakage of existing modules, which may not need to know about
+this and neither want it. H.Merijn Brand applied Jan's patch
+as change #26189.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00583.html
+
+=head2 C<Module::Build> Issues on Win32
+
+
+A long thread started with a RT report on problems building C<PathTools> 
+on Win2K 
+which was forwarded by Ken Williams to the list. Yves Orton spotted
+that it was a C<Module::Build> thing, related to the fact
+that you can't unlink a DLL that is loaded into the memory.
+C<ExtUtils::MakeMaker> works around the issue because 
+it does the install via make so it
+doesn't need to load anything that it might be installing over.
+Yves suggested C<Module::Build> on Win32 should produce a F<Build.bat>
+rather than a F<Build> perl script, which would allow a more
+Unixy behavior. Yves, Ken and Randy Sims discussed some
+issues involving what should force the user to rerun C<Build.PL>
+and, while on this, Randy produced a patch to C<ExtUtils::CBuilder>
+to fix an encountered issue. The original case was made to work
+and more permanent solutions to C<Module::Build> on Win32
+should be near (besides the recommendation to use another OS).
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00608.html
+
+=head2 Fast Unicode with C<SWASHGET> in XS
+
+
+This week, Sadahiro Tomoyuki thought it would be a good idea
+to speedup the retrieval of Unicode properties and transliterations
+mappings, which was done by the pure perl method SWASHGET.
+He rewrote SWASHGET in XS, which was welcome and commented by
+Dave Mitchell, Tels and Steve Peters. By the end of the week,
+an improved patch was already commited to blead.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00651.html
+
+=head2 Bad C<Switch> Boy
+
+
+Offer Kaye opened a can of worms when he did the simple question
+of whether the bug #5607 in C<Switch> had any chance to be fixed.
+Ronald J. Kimball explained how
+the issue of an unbalanced "/" causing a fatal error under
+C<use Switch> is due to the source filter nature of the module
+and the small probability of a fix due to technical constraints.
+David Landgren pointed Damian's module was always meant to
+be an experiment and not for production purposes. There ensued
+some discussion about the unpredictibility of source-filtered
+modules, the requirements for a module to enter the core
+and the possibilities of doing the opposite, removing a module from core.
+Ah, and there were some advertisement on the DOR operator.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00654.html
+
+=head2 Upgrade to C<PathTools> 3.14 in I<maint>
+
+
+Ken Williams reflected with Nicholas Clark about the
+alternatives to merge C<PathTools> 3.14 to maint,
+after the change that fixed C<absrel($x, $x)> to
+return C<curdir()> and which is backwards incompatible
+from the point of view of who risked to depend on
+this buggy behavior.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00696.html
+
+=head2 Pipes + Threads Broken in I<blead> on VMS
+
+
+Craig Berry wrote to say how the simplest command line piping in
+a threaded build of bleadperl on VMS now emits errors:
+
+    $ perl  -e "print 'ok';" | exit
+    panic: free from wrong pool.
+    panic: free from wrong pool during global destruction.
+    %C-F-EBADF, bad file number
+
+On VMS, command-line piping is implemented by Perl itself,
+and such pipe is opened before any thread context has
+been initialized.  The problem is a check to yelp when
+deallocating from a different thread than the one which
+did the allocation and the no context case actually
+falls into this trap. To Rafael Garcia-Suarez, it looks
+like this check should be bypassed, which can help also
+applications that embed a perl interpreter.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00710.html
+
+=head2 Switch in the Core
+
+
+Robin Houston started an effort to implement
+the C<switch> construct in core (in manner which is 
+as-compatible-as-possible with F<Switch.pm> by Damian Conway)
+and called for feedback on his initial proposal, with
+replies by Rafael Garcia-Suarez, Dave Mitchel, Nicholas
+Clark and Damian Conway.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00715.html
+
+
+=head2 Perl5 Bug Summary
+
+
+This week started with the count of 1517 open RT tickets.
+
+    Robert Spier and the Bug summary
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00560.html
+    Perl RT just now
+    http://rt.perl.org/rt3/NoAuth/perl5/Overview.html
+
+=head2 In Brief
+
+
+B<valgrind finding from blead>
+Following on Steve Peters trying to guess the source of
+the leak in a sympathetic bit of code Jarkko Hietaniemi
+posted, Jarkko delved into the gory combination that was
+causing the problem: His latest conclusions point to
+problems with the approach of determining whether C<$`>, C<$&>,
+C<$'> were found , the corresponding C<PL_sawampersand>
+and the eluding problem of how we can foresee what eval
+is going to do to us. With a bit more of investigation,
+Jarkko is yet not convinced he really found the guilty part.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00537.html
+
+
+B<Fighting Compilers Again>
+Steve Hay reported how change #26152 ("All that can be in the first switch 
+statement ofsv_upgrade is now") broke the windows build using VC++ 6.
+Steve and Nicholas Clark worked out a fixing change (concerning the use
+of unary minus to unsigned types), which, despite Nicholas' hopes, 
+produces no errors but a bunch of warnings in VC++ 6, 7 and Borland.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00546.html
+
+
+B<Thread Failures due to Interleaved Output>
+H.Merijn Brand got fixed a problem causing thread failures
+on AIX (and others) caused by interleaved output.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00551.html
+
+
+B< C<libnet> 1.19 on HP-UX on Perl 5.6.0 >
+Yves Orton reported how he has met with core dumps while building
+C<libnet> 1.19 on HP-UX on Perl 5.6.0 and asked for any
+recommendations. H.Merijn Brand brought some clues and
+made a lot of questions to help diagnosing the problem, which
+basically pointed to the non-root status of Yves, missing
+installed patches, and issues with trusted HP-UX systems, 
+the beginning of perl 5.6 and outdated software. 
+
+    Yves Orton's woes
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00554.html
+    Recent perl builds for HP-UX can be found here
+    http://mirrors.develooper.com/hpux/
+
+
+
+B< C<GDBM_file> realloc failures >
+On a threads-enabled perl, Rafael Garcia-Suarez noticed the tests 
+F<ext/GDBM_File/t/gdbm.t> and F<lib/Memoize/t/tie_gdbm.t> were
+failing with the message:
+
+    panic: realloc from wrong pool
+
+Rafael proposed a patch which reconciled the trouble 
+due to memory alloc'd by B<libgdbm> and realloc'd by perl.
+It was applied as change #26193 to bleadperl.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00563.html
+
+
+B< Where is C<Perl_do_open>? >
+Stas Bekman noticed blead @ 26185 broke mod_perl2 after a
+problem to find out C<Perl_do_open> function. Rafael Garcia-Suarez
+explained C<Perl_do_open> now lives in F<mathoms.c> and the
+C<do_open> macro in F<perl.h> is the way to go. Stas' issues
+revealed a bug in that C<Perl_do_open> should be visible anyway
+unless C<-DNO_MATHOMS> were used. Stas did it by dropping the
+C<Perl_> prefix on C<do_open>/C<do_close>.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00573.html
+
+
+
+B< Can't reset C<%ENV> on VMS >
+John Malmberg noticed F<t/op/array.t> and F<t/op/pat.t> failed
+on VMS because the test scripts call C<reset 'X'>, and 
+perl can not reset C<%ENV> hash values on VMS. 
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00576.html
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00577.html
+
+
+
+B< Trouble with C<for (reverse @array)> >
+Chris Duryee opened RT ticket #37725 to tell about
+a segfault on a script using a C<for (reverse @array)>
+construction. Dave Mitchell found the bug to be due to
+an optimization error to handle this very construction
+and fixed the problem. After this, the one-liner
+
+    perl -e '$a[3] = 1; $i = 3; for my $x (reverse @a) { $x = $i-- }; print "@a"'
+
+prints "0 1 2 3" instead of "1 0".
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00588.html
+
+
+B< Sort subs B<can> now be recursive >
+Robin Houston fixed F<perlfunc.pod> raising the limitation
+that sort subs may not be recursive, thanks to the
+sort/multicall patch worked out in the last weeks.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00596.html
+
+
+B< Version Check Failures due to C<locale> >
+In ticket #37714, "dakkar" showed how version checks can made
+to fail when a locale is in effect due to conversions of float
+to strings. John Peacock explained how it is happening in maint and
+blead and will do some research to make version comparisons
+independent of locales.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00516.html
+
+
+B< VMS Issues with C<__FILE__> assuming UNIX Pathnames >
+John E. Malmberg pointed F<ext/List/Util/t/p_tainted.t> assumes
+C<__FILE__> returns a Unix pathname, which called for a fix on VMS.
+On John's question about where C<__FILE__> is set, Rafael Garcia-Suarez
+disclosed the relevant points in code. There remained some uncertainty
+about the adequacy of John's fix, which should be hammered by
+the discussion among Rafael, John and Craig A. Berry.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00626.html
+
+
+B< C<Tk> Compatibility >
+Gisle Aas pointed how C<Tk> programs segfault when tried
+with blead and wondered when it happened. Gisle also reminded
+of changes needed to be applied for compiling and running
+C<Tk> in the perl-5.8.x branch.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00647.html
+
+
+B< perlce Touches >
+Vadim Konovalov keeps on with the work on the WinCE port of Perl.
+This time, his patch touches some compilation bits and
+update explanations, renaming F<./wince/README.perlce> to F<./README.ce>.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00666.html
+
+
+
+B< F<perlpod.pod> and C<=encoding> >
+Yves Orton noticed F<perlpod.pod> omits the new C<=encoding> 
+directive from its "currently supported directive list"
+and made it right.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00694.html
+
+
+B< Fast C<IS_UTF8_CHAR()> for EBCDIC >
+A couple of weeks ago, it was noticed EBCDIC platforms UTF8
+handling was broken, which Sadahiro Tomoyuki promptly fixed -
+the guilty part was found to be on a change to speedup C<IS_UTF8_CHAR>.
+This week, Jarkko Hietaniemi tried to redeem himself with 
+a patch to bring the C<IS_UTF8_CHAR()> speedup to (UTF-)EBCDIC
+platforms and called for feedback from people which have
+access to EBCDIC platforms.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00691.html
+
+
+B<char (un)signedness in Tru64>
+Jarkko Hietaniemi grew bored of the wrong guesses
+of F<Configure> in Tru64 about the stdio char signedness,
+showed how funky Tru64 can be and implemented a workaround.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00706.html
+
+
+B<Cygwin Wrong Pools>
+Yitzchak Scott-Thoennes found in F<cygwin/cygwin.c> 
+the bug which caused messages like the one below in Cygwin
+builds and fixed it.
+
+    panic: free from wrong pool at lib/lib_pm.PL line 6.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-11/msg00714.html
+
+=head2 About this summary
+
+Where's the summary?, you may have asked, or worse you didn't
+even missed it. "What happened to professionalism? What about
+deadlines? I've had a cold. The cats ate my homework." 
+And before you say I stole Piers Cawley's 
+line, I just borrowed him the cats. Anyway, here's another
+better-late-than-never summary brought to you by 
+Adriano Ferreira.
+
+Information concerning bugs referenced in this summary (as #nnnnn)
+may be viewed at http://rt.perl.org/rt3/Ticket/Display.html?id=nnnnn
+
+Information concerning patches to maint or blead referenced in
+this summary (as #nnnnn) may be viewed at
+http://public.activestate.com/cgi-bin/perlbrowse?patch=nnnnn
+
+Weekly summaries are published on F<http://use.perl.org/> and posted
+on a mailing list, (subscription: F<perl5-summary-subscribe@perl.org>).
+The archive is at F<http://dev.perl.org/perl5/list-summaries/>.
+Corrections and comments are welcome.
+
+If you found this summary useful or enjoyable, please consider
+contributing to the Perl Foundation to help support the development
+of Perl.
+

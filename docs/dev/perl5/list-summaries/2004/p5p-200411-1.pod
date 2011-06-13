@@ -1,0 +1,130 @@
+=head1 This Week on perl5-porters (Nov 01-09 2004)
+
+=head2 Tests failing when core extensions not built
+
+It's possible to configure perl without some built-in extensions,
+and this causes some tests to fail, so Nicholas was wondering
+about determining which extensions aren't enabled and skipping
+the corresponding tests.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00637.html
+
+=head2 Detecting strlcat() and strlcpy() in Configure
+
+H. Merijn Brand continued working on detecting these functions,
+which are safer versions of C<strncat> and C<strncpy>.
+Craig Berry made it work on VMS. Adding the detection to
+Configure makes it easier for module writers to know if
+the functions are available.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00613.html
+
+=head2 Cwd test failing
+
+Yitzchak Scott-Thoennes reported (bug #32272) this test failure, which
+was later found to be ignorable. Yitzchak also mentioned that
+C<Cwd> and C<File::Spec> have been repackaged as C<PathTools>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-11/msg00065.html
+
+=head2 getXXXent functions break after recursing to grow buffer
+
+Bug #32154, apparently caused by RedHat's patched glibc, as it didn't
+show up in other distributions.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00573.html
+
+Nicholas incidentally pointed out that source code is available directly
+
+  http://ftp.linux.activestate.com/pub/staff/gsar/APC/perl-5.8.x/
+  http://ftp.linux.activestate.com/pub/staff/gsar/APC/perl-current/
+
+and a repository browser is at
+
+  http://public.activestate.com/cgi-bin/perlbrowse
+
+=head2 Roadmap for 5.10
+
+Rafael listed points in the roadmap for 5.10. Michael Schwern added
+that C<Module::Build> and C<CPANPLUS> should be put into the core,
+and Randy Sims pointed out some work that needs done on C<M::B> first.
+Also mentioned was incorporating a minimal subset of C<Inline>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-11/msg00115.html
+
+=head2 Peephole optimization
+
+Tassilo von Parseval is working on optionalizing the peephole
+optimizer. Rafael pointed out that the intent of this is to make
+sure that the optree produced by the compiler is correct, and Hugo
+added that it could also be used for avoiding certain optimizations
+and allowing other aggressive optimizations.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-11/msg00150.html
+
+Tassilo investigated further which peephole optimizations are
+currently mandatory for tests to pass. Jim Cromie suggested that he
+mess with C<B::Generate> and C<optimizer>, which are in need of work.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-11/msg00185.html
+
+=head2 Undefining signals
+
+Ben Morrow submitted, among other proposals, that
+
+  $SIG{FOO} = undef;
+
+try to block the signal C<FOO>, then, failing that, C<IGNORE> it.
+Nick Ing-Simmons brought up the problem of unmentioned signals
+being C<undef>, and the badness of blocking them (in particular,
+C<$SIG{INT}>).
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-11/msg00234.html
+
+=head2 Sharing hash values
+
+Tels was dismayed by the inefficiency of the common "seen hash" idiom
+
+  $seen{foo} = 1;
+  if (exists $seen{foo}) { ... }
+
+Even using C<undef> doesn't save much, so he wondered how he could
+share the undef for all the hash values. It turns out Gisle Aas has
+already done this with C<Array::RefElem>. Randy Sims suggested that
+we really want a set instead, for which Tels found C<Set::Object>.
+
+If you're like I was before doing the summaries, scanning for neat
+ideas, this thread is one you don't want to miss.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-11/msg00288.html
+
+=head2 In brief
+
+Allen Smith successfully trolled with an "-ize" vs. "-ise" comment
+(actually I found the discussion interesting).
+
+Yitzchak Scott-Thoennes fixed C<do "c:/foo.pl"> on Cygwin.
+
+David Nicol discussed writing a distributed (network) lock manager.
+
+Gisle Aas fixed a stack corruption in C<Tk>, which fixing filled
+H.Merijn Brand with joy.
+
+Jim Cromie continued work on optree tests, a problem with
+interleaving stdout and stderr on VMS and Cygwin.
+
+Steve Peters resuscitated at least 16 old bugs on RT, only to crush
+most of them beneath his shoe.
+
+=head2 References
+
+The thread for bug number $BUGNUM can be found at
+http://rt.perl.org/rt3/Ticket/Display.html?id=$BUGNUM
+
+=head2 About this summary
+
+This summary was written by Scott Lanning. Summaries are published
+weekly at http://use.perl.org/ and posted to a mailing list whose
+subscription address is perl5-summary-subscribe@perl.org. The archive
+is at http://dev.perl.org/perl5/list-summaries/. Comments and
+corrections are welcome.

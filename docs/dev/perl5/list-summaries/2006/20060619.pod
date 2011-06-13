@@ -1,0 +1,400 @@
+=head1 This (unfinished) Week on perl5-porters - 19-25 June 2006
+
+I<"I estimate that it would take approximately 2000 CPU years to smoke all 
+of CPAN on a reasonable set of platforms."> -- Adam Kennedy, 2000 light
+years from home.
+
+=head1 Topics of Interest
+
+[summariser's note: the week was too busy for me to spend the
+required time to bring the summary to a close, so here's the
+best I could do. Regretfully, I am unable to summarise Nicholas
+Clark's excellent follow-ups to the Perl 5 advocacy thread that
+was kicked off the week before. Interested readers are invited
+to dive back into the thread to chase them down.]
+
+  Once upon a time
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00477.html
+
+=head2 Bringing C<Win32API::File> into the core
+
+This was in some ways fall-out from the advocacy thread last week.
+By bringing this module into core, it would ease installing CPAN
+modules on the new non-ActiveState Windows-based Perl distributions
+that are coming to light (that is, distributions that don't use
+ActiveState's C<ppm> installer but instead use source tarballs
+directly from CPAN).
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00710.html
+
+=head2 Expressions of interest in regular expressions
+
+Dave Mitchell reported that he reworked the C<TRIE> regop to
+work with the new state stack mechanism, thereby removing more
+recursion from the regular expression engine. Yves Orton was impressed
+that Dave taken Yves's code in his stride, and announced that he
+was planning to introduce another regop in the future for other
+kinds of tries.
+
+  Going cursive
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00903.html
+
+Yves Orton followed up on a question Tels asked last week, about
+benchmarking regular expression performance
+
+  A fair fight
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00664.html
+
+=head2 C<warn>ing at C<exit> if detached threads still running
+
+It used to be that if a thread was still running at C<exit> time, a
+warning was generated. So a patch was written to suppress it.
+Jerry D. Hedden questioned the rationale, pointing out that someone,
+somewhere, might find this useful sometime.
+
+He thought that a nicer way of dealing with this would be via C<no warnings 'threads'>,
+except that it doesn't work. Rafael Garcia-Suarez explained what hoops one
+would have to jump through in the C source to do so. Jerry noted that the
+different functions Rafael cite are not documented, and wanted to know what
+the differences were between them. Rafael explained the differences, and
+suggested looking through the source for a sample of uses.
+
+  A fair warning
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00658.html
+
+=head2 Thread hook not called on C<exit>
+
+In other threads news, Jerry also discovered how a small thread that does
+nothing but C<exit> will not call the C<PL_threadhook> handler and wondered
+what to do about it. Jan Dubois thought that the best thing to do would be
+to put the thread running code in a C<setjmp>/C<longjmp>-style wrapper.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00674.html
+
+=head2 Calling C<exit> from a thread
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00736.html
+
+=head2 Can't suppress 'treads still running' warning
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00766.html
+
+=head2 threads 1.33
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00769.html
+
+=head2 threads 1.33 (revised)
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00818.html
+
+=head2 What about CPAN smoke?
+
+Tom Horsley kicked off a thread about testing CPAN.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00800.html
+
+=head1 Patches of Interest
+
+=head2 IO::Compress::* 2.000_13
+
+First steps in implementing the zip64 algorithm in Perl. As there is no
+real reference implementation, and the specs are vague in places, Paul
+Marquess kicked this out the door to see whether it flies or smokes.
+
+  The 64 bit question
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00714.html
+
+=head2 Localizing temporary variables
+
+Andy Lester pulled some variables down into tighter scopes in F<regexec.c>,
+in an attempt to make it easier to read and follow.
+
+  Bedtime reading
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00631.html
+
+=head2 perlhack.pod
+
+A sensible improvement to F<perlhack.pod> from Dr. Ruud.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00826.html
+
+=head1 Watching the smoke signals
+
+A couple of smokes drew some comments.
+
+=head2 Smoke [5.9.4] 28402 FAIL(F) MSWin32 WinXP/.Net SP2 (x86/2 cpu)
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00725.html
+
+=head2 Smoke [5.9.4] 28410 FAIL(Fm) MSWin32 WinXP/.Net SP2 (x86/2 cpu)
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00783.html
+
+=head1 New and old bugs from RT
+
+=head2 Memory leak occurs when an C<eval> statement exits by a signal (#38854)
+
+Dominic Dunlop followed up on this April bug with some cogent
+analysis that pinned the blame on calling C<die()> within a signal
+handler, but lacked the time to dig more deeply into the problem.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00860.html
+
+=head2 Bug in F<toke.c> (C<s//#/e>) (#39365)
+
+Rafael applied bcarter's patch to fix this problem, and added a
+regression test to make sure it never comes back.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00699.html
+
+=head2 Problem on installing C<DBI> module (very Urgent) (#39527)
+
+Dominic and Yves went the extra mile to help solve this problem, even
+though it had nothing to do with p5p's charter.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00647.html
+
+=head2 C<*** glibc detected *** free(): invalid pointer> from C<Perl_mg_free> (#39528)
+
+Chris at financial was having a problem (like a segfault) with the
+C<CentOS> packages of C<apache>, C<mod_perl> and C<perl> and asked
+for help. Nicholas regretted to announce that he didn't have the
+faintest idea what was happening, and suggested either trying to
+reproduce the problem using only core modules, or asking C<CentOS>
+for support.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00648.html
+
+=head2 C<printf>: bad formatting of hexadecimal conversion of binary string using vector flag (#39530)
+
+Sadahiro Tomoyuki and Dominic Dunlop raced each other to see who could develop
+the best patch for this bug in the shortest possible time (some issue with
+formatting v-strings). In the process, it appears that Ravi S. Kadali from
+IBM is able to run smoke tests against C<blead> on the z/OS platform. This
+will do wonders for smoking out EBCDIC oddities.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00678.html
+
+=head2 Multiple threads + backticks + Win32 = intermittent hangs (#39531)
+
+Keith Doyle found that multiple threads that backtick or popen kids will
+hang at random, which is admittedly less than ideal. Unfortunately he
+received no feedback on the issue.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00676.html
+
+=head2 C<make test> fails with C<getppid> in a Solaris 10 zone (#39536)
+
+Jie Gao discovered a problem with F<op/getppid.t> on C<maint>. Dominic
+thought that the test from C<blead>, which has been rewritten, would
+possibly do the tricked and asked Jie Gao to take it for a spin, to see
+if it resolved the failure.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00689.html
+
+=head2 Bug in system calls when C<%ENV> is very large (#39547)
+
+Alex Keim had a problem on the Win32 platform with environments
+approaching or exceeding 32K in size. Steve Hay was able to
+reproduce the problem and found that it only manifested itself
+in threaded builds. Jan Dubois and Dr. Ruud suggested some other
+workarounds (basically, use a file, memory-mapped or otherwise,
+rather than the environment to pass large slabs of data to kids).
+
+Alex still found that an environment that gave C<cmd> (the Win32
+shell) no trouble caused Perl grief, pointing to a problem with
+perl's environment handling.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00794.html
+
+=head2 C<Text::Wrap>: "This shouldn't happen" happens (#39548)
+
+A "cannot happen" bug in C<Text::Wrap> surfaced with this bug
+report. Dominic chose to punt the issue for a while, to see
+what the current maintainer of the module had to say.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00777.html
+
+=head2 Updating to 5.8.8 (#39572)
+
+Laurent had a strange problem with a tarball for perl 5.8.8
+that seemed to be lacking a couple of example files, according
+to the manifest. Dominic offered what advice he could.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00832.html
+
+=head2 Pattern Match fails for specific length string (#39583)
+
+Erik R. Ogan discovered that 5.8.8 would fail to match a string
+that ought to have 32767 characters matched by C<(.*?)>.
+
+  Funny about that
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00871.html
+
+=head2 Problem with C<make test> in perl-5.8.8 (#39613)
+
+Ravi kumar Ravi had some problems with protocol name resolution
+causing a handful of tests to failed. No followups.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00901.html
+
+=head2 C<PerlProc_setjmp> undefined under C<WIN32> (#39614)
+
+Jerry D. Hedden's latest patch to the threads library makes use
+of a few functions (C<dJMPENV>, C<JMPENV_PUSH> and C<JMPENV_POP>)
+that are not available when compiling ActiveState Perl from
+source.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00885.html
+
+=head2 Perl5 Bug Summary
+
+  + 5 - 2 = 1493
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00642.html
+
+  The List
+  http://rt.perl.org/rt3/NoAuth/perl5/Overview.html
+
+=head1 New Core Modules
+
+=over 4
+
+=item *
+
+C<Sys-Syslog> version 0.16 uploaded by Sébastien Aperghis-Tramoni,
+and Rafael updated C<blead> with this version.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00775.html
+
+This in turn allowed Sébastien to close a couple of old bugs:
+
+  #20557
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00773.html
+
+  #35406
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00771.html
+
+=item *
+
+C<CPANPLUS> version 0.072 was uploaded to CPAN by Jos Boumans. No, it's
+not core, but may be one day. The fact that overall RAM usage has declined
+in this release (as per the release notes) is certainly a welcome step
+in this direction.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00889.html
+
+=item *
+
+A sleeker C<Devel::PPPort> version 3.08_06 was integrated into
+C<blead> by Marcus Holland-Moritz. He shrunk the size of the tarball
+significantly, by generating F<PPPort.pm> and F<PPPort.xs> on the
+fly during the build. On the other hand, this cause C<Configure>
+to come to grief, since as it didn't see a F<PPPort.xs> at the
+beginning, it went ahead and built the non-XS version.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00928.html
+
+=back
+
+=head1 In Brief
+
+Philippe M. Chiasson tracked down and reinstated the B<missing files
+from the APC archive>.
+
+  Full recovery
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00670.html
+
+Nicholas Clark thought of a way of sidestepping the bogosity
+introduced by the B<Intel C<icc> compiler pretending to be C<gcc>>.
+
+  Almost but not quite more than we deserve
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00936.html
+
+Tom Christiansen wrote about B<the legibility myth> and it sparked off
+an interesting discussion about typography and the written word.
+
+  ¡hola!
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00625.html
+
+Tom also continued with a discussion of B<parenthetical perils>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00633.html
+
+Dr Ruud cooked up a tiny patch for F<toke.c> to fix B<C<isALNUM(*s) && *s != '_'>>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00782.html
+
+Paul Marquess solved a B<problem in C<make test> with multiple F<Makefile.PL>s>.
+
+  Need to know
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00792.html
+
+Paul also wondered why C<-r> and C<-w> don't work as expected when applied
+to C<\*STDIN> and C<\*STDOUT> on Win32.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00799.html
+
+David Landgren ran a smoke at one point last week and reported B<a few failures
+in the maint snapshot>. Hmm, maybe after I get the summary out the door I'll
+go and see what's happening with it now.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00791.html
+
+John E. Malmberg wanted to know B<if the rsync server was stuck at
+C<blead@28402>>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00829.html
+
+=head1 Stuff I didn't have time to go through
+
+Feel free to follow the links if the subject grabs your attention.
+
+=head2 $^V ge "\5\x08\0" throws a warning
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00824.html
+
+=head2 [PATCH] IO::Compress::Base
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00835.html
+
+=head2 C<Configure -Aprepend>
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00848.html
+
+=head2 handling Unicode newlines
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00908.html
+
+=head2 C<Devel::PPPort> broken in latest blead on Win32
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00913.html
+
+=head2 C<MEM_WRAP_CHECK> has bogus logic on HP/UX
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00919.html
+
+=head2 Thread Tutorial lock() scope
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00925.html
+
+=head2 About this summary
+
+This summary was written by David Landgren. The paragraph reformatter
+C<fmt(1)> that comes with my OS is not 8-bit clean, and it ate the
+"é" in Sébastien Aperghis-Tramoni name in the previous summary. My
+apologies to Sébastien. I hear there's a text processing language
+that is good at doing this sort of stuff...
+
+If you want a bookmarklet approach to viewing bugs and change
+reports, there are a couple of bookmarklets that you might find
+useful on my page of Perl stuff:
+
+  http://www.landgren.net/perl/
+
+Weekly summaries are published on F<http://use.perl.org/> and posted
+on a mailing list, (subscription: F<perl5-summary-subscribe@perl.org>).
+The archive is at F<http://dev.perl.org/perl5/list-summaries/>.
+Corrections and comments are welcome.
+
+If you found this summary useful, please consider contributing to
+the Perl Foundation to help support the development of Perl.

@@ -1,0 +1,594 @@
+=head1 TITLE
+
+Transaction-enabled variables for Perl6
+
+=head1 VERSION
+
+  Maintainer: Szabó, Balázs <dlux@kapu.hu>
+  Date: 17 Aug 2000
+  Last Modified: 13 Sep 2000
+  Mailing List: perl6-internals@perl.org
+  Number: 130
+  Version: 6
+  Status: Developing
+
+=head1 ABSTRACT
+
+Transactions are quite important in a database-enabled application.
+Professional database systems have transaction-handling inside, but there are
+only a few laguage out there, what supports transactions in variable level.
+
+In perl6, we can support transaction-enabled variables (including objects and
+tied variables), and we can control transaction-enabled perl modules with that
+(this include modules that do external I/O also). We can use our perl program
+to tie several transaction-enabled data sources, and we can use perl to easily
+maintain the consistency between them. 
+
+In this RFC we will look at how these variables would look like in perl6.
+
+=head1 STATUS
+
+The idea and the implementation issuse is mainly clarified: We have now a tidy
+and simple design.
+
+Some questions are still open, these are the following:
+
+=over 4
+
+=item *
+
+Now we need to get a name for a new keyword name, which is more widely accepted
+than the current "trans".
+
+=item *
+
+We need to decide whether we want multi-version concurrency control or not in
+the core. If we doesn't implement it, all things are remains simple. If we
+implement this, we will get smaller chance to deadlock, but it makes the core
+complicated.
+
+=item *
+
+We need to think about what if 'trans' is used with a non-transaction-enabled
+tied array or hash. How we can make it effective withour sacrificing either
+simplicity, speed or memory-requirement.
+
+=back
+
+=head1 WHAT'S NEW IN VERSION 6
+
+=over4
+
+=item *
+
+Added STATUS section
+
+=item *
+
+Added some Implementation issues
+
+=item *
+
+Added some more explanation to the ABSTRACT section.
+
+=back
+
+=head1 DESCRIPTION
+
+In short, we have "local" keyword, which changes a value of a variable for only
+the runtime of the current scope. The transaction-enabled variables should
+start up like "local", but IF the currenct scope reaches at the end, it then
+copied into the global one.
+
+We need to get a keyword to mark a variable transaction-enabled. I chosed
+"trans" in this ducument, but other suggestions are welcome. Possible
+alternatives are:
+
+  transaction
+  transactional
+  acid
+  atomic
+  onsuccess
+  consistent
+
+The final decision  will be made by the porters, I use "trans" in this
+document.
+
+Preferred syntax:
+
+  sub trans_test { my ($self,@params)=@_;
+    trans $self->{value}=$new_value;
+  
+    # ...
+  
+    die "Error occured" if $some_error;
+  
+    function_call(...)
+  
+    # ...
+  
+  } ;
+
+Meaning (in semi perl5 syntax):
+
+  sub trans_test {
+    local $self->{value}=$new_value;
+  
+    # ...
+  
+    die "Error occured" if $ome_erre;
+  
+    function_call(...)
+  
+    # ...
+  
+    global $self->{value}=$self->{value};
+  };
+
+If we want to gain more control and want to maintain easy syntax, we can use
+another pragma, which sets up the attributes of the isolation of transaction
+data.  I think the "transaction" pragma could be a good name:
+
+  use transaction (mode => 'lock', timeout=>6000);
+
+Parameters for "use transaction":
+
+=over 4
+
+=item mode
+
+can be:
+
+=over 4
+
+=item simple
+
+No blocking, concurrency control (default).
+
+In a not-threaded environment this causes minimal overhead, and no locking
+overhead at all.
+
+=item lock
+
+Explicitly lock the accessed variables. (shared and exclusive locks used
+between threads).
+
+=item version
+
+This is simlar to the postgres' multi-version concurrency control. It requires
+more memory, but has a less chance to get into deadlock.
+
+=back 
+
+=item timeout
+
+Timeout in ms until we wait for the lock. 0 means nonblocking. If the timeout
+reached, the system throws an exception.
+
+=item isolation
+
+Transaction isolation level. This can be: 
+
+=over 4
+
+=item 0
+
+Read uncommitted
+
+=item 1
+
+Read committed (default)
+
+=item 2
+
+Repeatable read
+
+=item 3
+
+Serializable.
+
+=back
+
+PostgreSQL implements only 1 and 3 AFAIK, so I think we could implment only
+those levels. Then 0 and 2 will be equal to 1 and 3, but we could keep the
+place for a future implementation.
+
+See the postgreSQL documentation for the details.
+
+=back
+
+=head2 Two phase commit 
+
+Two phase commit is the common way to deal with distributed transactions. Perl
+need an interface to objects and tied variables to deal with these to become a
+reliable transaction-handler. You can choose to implement these features in
+your object and your tied variable. If you don't do that, perl will give you a
+rough default.
+
+At the end of the transaction, 2 different thing can happen: rollback or
+commit. When rollback occured, all the transaction variables must be rolled
+back. In commit, a two-phase commit procedure has been started.
+
+The first phase is preparing to the commit: check the resources, allocates
+resources to the commit, flushes caches, etc. After that it can decide wheter
+you can do a commit or not. If all participants send "yes", then the commit
+phase begins: the coordinator sends "commit" messages to the participants, and
+the transaction finishes. If any of the participants in the "prepare" phase
+sends a false value, then the whole transaction need to be rolled back.
+
+How it looks like in perl?
+
+You have objects. Objects can be transaction-enabled, and if you want that, you
+need to define the following functions as callbacks: COMMIT, ROLLBACK, PREPARE,
+BEGIN_TRANSACTION. If you have a tied variable, then you can define callbacks
+for this: TIE_COMMIT, TIE_ROLLBACK, TIE_PREPARE, TIE_BEGIN_TRANSACTION. These
+can be used to extend an object or a tied variable to transaction-safe. If you
+don't define PREPARE or TIE_PREPARE, then it will be only a one phase commit.
+If you don't define COMMIT (or TIE_COMMIT) and ROLLBACK (or TIE_ROLLBACK), then
+perl will do the simple "copy back the old value on rollback" mechanism, which
+works well in cases when no multithreading and no special handling is necessary
+for the data. If you don't define BEGIN_TRANSACTION or TIE_BEGIN_TRANSACTION,
+then no special initialization performed on "trans" call.
+
+=head2 Tie interface
+
+Adding transaction-enabled property of a tied variable is not straightforward.
+Imagine you have been tied a hash into a (not transaction-enabled) dbm file.
+When you fetch, you need to put a shared lock (or version-control) the dbm file
+or key, when you read, you need to put an exclusive lock, and when the
+transaction ends, you need to release the lock. For this reason, we can add two
+callback: TIE_COMMIT and TIE_ROLLBACK.
+
+If we don't want to use locking, or want to do an advanced
+transaction-management, we can provide a transaction-id to the callbacks. This
+can be done with a new package global variable (which is localized in every
+call), the name can be  $Package::TRANSACTION_ID. We could use a new parameter,
+but it is not is not so neat, because some of the callbacks (PUSH, POP,
+UNSHIFT, PRINT, PRINTF, etc) are expecting LISTs as an attribute, and this can
+cause unnecessary rewrite of the tie interface.
+
+Following is the description of the modifications of the tie interface:
+
+=over 4
+
+=item New package global
+
+$Package::TRANSACTION_ID will be a unique identifier of the current transaction
+(if any).
+
+=item New Callbacks
+
+Some new callbacks required:
+
+=over 4
+
+=item TIE_PREPARE $this
+
+This is the first part of the 2 way commit transaction. This must return true
+if the variable is prepared for the COMMIT, false otherwise. If this callback
+is not defined, then the variable lose the right to abort the transaction, and
+perl implicitly returns 1 in this cases.
+
+=item TIE_COMMIT $this
+
+If it is defined, then it is called after TIE_PREPARE returns 1 for all the
+transaction-enabled variables in the current scope. This must be used to commit
+the transaction.
+
+=item TIE_ROLLBACK $this
+
+If it is defined, then it is called at the end of a failed transaction. If NOT
+defined, then STORE will be called with the old value of the variable.
+
+=item TIE_BEGIN_TRANSACTION $this,$parent_transaction_id
+
+It is called by the system, if the program execution finds a "trans $this" in
+the program. This is intended to initialize the transaction.
+
+This callback is special, because if you use the "trans" or "local" keyword in
+this subroutine, this will not last only the end of the sub, but the end of the
+transaction! 
+
+$parent_transaction_id can be used to track the sub-transaction relations. This
+is the ID of the transaction which contains this transaction. undef if this is
+the master transaction (has no parent). If a subtransaction is terminated (and
+the exception is catched), then the proper rollback callbacks are called, but
+the parent transaction can be successful!
+
+=back
+
+=back
+
+If a package used in "tie" has one of the above callbacks, then perl _must_
+emulate the transaction in every call, so a simple FETCH in non-transaction
+enironment must be the sequence of TIE_BEGIN_TRANSACTION, FETCH, TIE_PREPARE ?
+TIE_COMMIT : TIE_ROLLBACK and a simple STORE must be: TIE_BEGIN_TRANSACTION,
+STORE, TIE_PREPARE ? TIE_COMMIT : TIE_ROLLBACK. 
+
+=head2 Object interface
+
+Object interface is similar to the tied interface: you will need callbacks:
+PREPARE, COMMIT, ROLLBACK and BEGIN_TRANSACTION. These will do the same as
+described in the Tie interface. The $Package::TRANSACTION_ID will be set in
+this case also.
+
+Note, if you declare an object as "trans", this means that this is localized
+for the runtime of the transaction and that PREPARE, COMMIT, ROLLBACK will be
+called at the end of the block of the declaration. It doesn't mean that all the
+data structure under that is transaction safe. It cannot be guaranteed, and you
+need to explicitly declare them as "trans" variables.
+
+=head1 TRANSACTION-ENABLED TIED VARIABLE EXAMPLE
+
+This is an example of a transaction-enabled tie interface.
+
+The following package can be tied to any variable, and can be used as a
+persistent, transaction-enabled data.
+
+Usage:
+
+  tie $scalar, "Transaction::ScalarFile", $filename;
+
+  sub my_transaction {
+    trans $scalar;
+    $scalar="Perl" x 1024;
+
+    ...
+
+  };
+
+The data in the file referred by $filename can be accessed, modified as
+$scalar. $scalar can be used in a transaction, supports subtransactions, and
+supports two-phase commits and locks the accessed file with flock(), so it can
+be used in multithreaded and multiprocess environment.
+
+Here is the code:
+
+  package Transaction::ScalarFile;
+  use transaction (mode => 'lock', timeout => 30);
+  use strict;
+  use Fcntl qw( :flock );
+
+  # constant declaration
+  sub FILENAME        { 0; };
+  sub FILEHANDLE      { 1; };
+  sub VALUE           { 2; };
+  sub LOCKED          { 3; };
+  sub PARENT_TRANS    { 4; };
+  sub TEMP_FILENAME   { 5; };
+  sub TEMP_FILEHANDLE { 6; };
+
+  sub TIE_BEGIN_TRANSACTION { my ($s,$parent)=@_;
+    trans $s->[VALUE];  # The value is transaction-enabled
+    local $s->[PARENT_TRANS]=$parent;
+  };
+
+  sub TIESCALAR { my ($class,$filename)=@_;
+    my $s=[$filename];
+    bless $s,ref($class) || $class;
+    $s;
+  };
+
+  sub FETCH { my ($s)=@_;
+    return $s->[VALUE] if defined $s->[VALUE];
+    $s->open or return undef;
+    flock $s->[FILEHANDLE], LOCK_SH;
+    local $/=undef;
+    $s->[LOCKED]=1;
+    return $s->[VALUE]= < $s->[FILEHANDLE] >;
+  };
+
+  sub STORE { my ($s,$value)=@_;
+    if ($s->[LOCKED]<=1) {
+      $s->open or return undef;
+      flock $s->[FILEHANDLE], LOCK_EX;
+      $s->[LOCKED]=2;
+    };
+    $s->[VALUE]=$value;
+  };
+
+  sub TIE_PREPARE { my ($s)=@_;
+    # If it is a subtransaction: do nothing
+    return 1 if $s->[PARENT_TRANS]; 
+    # If the value is not modified: do nothing
+    return 1 if $s->[LOCKED]<2;     
+    # Transaction failed if I cannot make the temp file
+    $s->create_and_lock_temp_file or return 0;
+    $!=0; # reset ERRNO
+    # Writes the new value to the tempfile
+    print $s->[TEMP_FILEHANDLE], $s->[VALUE];
+    # Transaction failed if error occured
+    unlink($s->[TEMP_FILENAME]),return 0 if $!;
+    return 1;
+  };
+
+  sub TIE_COMMIT { my ($s)=@_;
+    return if $s->[PARENT_TRANS];
+    # This is the weakest point of the transaction, we cannot make those two
+    # operations atomic ...
+    rename $s->[FILENAME], $s->[FILENAME].".old.$$";
+    rename $s->[TEMP_FILENAME],$s->[FILENAME];
+    unlink $s->[FILENAME].".old.$$";
+    flock $s->[FILEHANDLE],LOCK_UN;
+    flock $s->[TEMP_FILEHANDLE],LOCK_UN;
+    $s->[LOCKED]=0;
+    $s->[TEMP_FILEHANDLE] = $s->[TEMP_FILENAME] = undef;
+  };
+
+  sub TIE_ROLLBACK { my ($s)=@_;
+    return if $s->[PARENT_TRANS]; # We don't care if it has parent trans.
+    flock $s->[TEMP_FIELHANDLE], LOCK_UN;
+    flock $s->[FILEHANDLE], LOCK_UN;
+    unlink $s->[TEMP_FILENAME];
+    $s->[TEMP_FILEHANDLE] = $s->[TEMP_FILENAME] = undef;
+  };
+
+  sub open { my ($s)=@_;
+    return $s->[FILEHANDLE]=new FileHandle("<".$s->[FILENAME]);
+  };
+
+  sub create_and_lock_temp_file { my ($s)=@_;
+    $s->[TEMP_FILENAME]=$s->[FILENAME].".trans.$$";
+    $s->[TEMP_FILEHANDLE]=new FileHandle(">".$s->[TEMP_FILENAME) or return 0;
+    flock $s->[TEMP_FILEHANDLE],LOCK_EX;
+  };
+
+=head1 IMPLEMENTATION
+
+=head2 Transaction handling methods
+
+=over 4
+
+=item simple
+
+This is the default method. This needs no magic, implementation is 
+straightforward:
+
+When you use "trans", then the transaction-enabled variable is duplicated
+automatically in the memory (with a copy-on-write method). IF the transaction
+succeeded, this will copied back to the original.
+
+=item lock
+
+We need to maintain locks (mutexes) on variables. We assume this will be used
+in threaded applications.
+
+When we use "trans", then perl will put a shared lock on the variable.
+
+When we read the variable, we also put a shared lock to that.
+
+When we write the variable, we check if it is already locked, and if we locked
+that already or no exclusive locks present, then write to the value, and lock
+that with LOCK_EX. If other exclusive lock present on the variable, then we
+need to wait for the releasing.
+
+When the "trans" content ends, we frees the shared (or exclusive lock).  If the
+content ends with a die then we puts the original value back if we have locked
+it with exclusive lock.
+
+=item version
+
+It is the mechanism of making multiple versioned copies of the variable every
+time somebody access this. This needs tiestamping, and postgreSQL-like
+concurrency control. I don't know more details.
+
+=back
+
+=head2 Use 'trans' for non-transaction-enabled tied vars and object
+
+If we use 'trans' keyword for a value which is a tied variable or an object,
+but which doesn't implement the transaction-interface, our transaction-safe
+environment is not guaranteed to be consistent anymore. We cannot make the
+system 100% transaction-safe anymore. All we can do is to emulate the
+transactional behaviour with our current tools.
+
+If we take a look at the TIE interface, then we can emulate the transaction
+behaviour only with STORE and FETCH. It is not a problem with a simple scalar,
+but it is a problem if we think about a tied array or a tied hash, or simply we
+throw a fatal exception if someone try this. We must think about it.
+
+One point is clear: the transaction is as weak as the weakest
+transaction-enabled variable in it no matter how we emulate the
+transaction-behaviour.
+
+=head1 CHANGES IN PREVIOUS VERSIONS
+
+=head2 Version 5
+
+=over 4
+
+=item *
+
+TRANSACTION-ENABLED TIED VARIABLE EXAMPLE added
+
+=item * 
+
+BEGIN_TRANSACTION and TIE_BEGIN_TRANSACTION added
+
+=item *
+
+TIE* renamed to TIE_*
+
+=item *
+
+CHANGES moved to the end of the RFC
+
+=item *
+
+Added alternatives to "trans"
+
+=back
+
+=head2 Version 4
+
+=over 4
+
+=item *
+
+TIE interface callbacks are renamed to TIE_COMMIT, TIE_ROLLBACK
+
+=item *
+
+2 phase commit described
+
+=item *
+
+PREPARE, TIE_PREPARE added to support two phase commits
+
+=item *
+
+Object interface described
+
+=item *
+
+"safe" renamed to "trans"
+
+=back
+
+=head2 Version 3
+
+=over 4
+
+=item * 
+
+Added a tie interface change request: COMMIT and ROLLBACK, and new global
+
+=item *
+
+Fixed some Formatting error of this pod.
+
+=item *
+
+'use varlock' renamed to 'use transaction'.
+
+=back
+
+=head2 Version 2
+
+=over 4
+
+=item *
+
+Detailed implementation description
+
+=item *
+
+Add a new pragma 'varlock' for controlling the concurrency control.
+
+=back
+
+=head1 REFERENCES
+
+PostgreSQL Multi-version concurrency control
+	http://www.postgresql.org/docs/postgres/mvcc.htm
+
+Two phase commit: (Google found that :-)
+	http://oradoc.photo.net/ora8doc/DOC/server803/A54653_01/ds_ch3.htm
+
+RFC 19: Rename the C<local> operator
+
+RFC 119: object neutral error handling via exceptions
+
+perldoc perlthread: the perl5 threading interface
+
+perldoc perltie: the perl5 tie interface

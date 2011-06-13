@@ -1,0 +1,309 @@
+=head1 TITLE
+
+Universal Asynchronous I/O
+
+=head1 VERSION
+
+  Maintainer: Uri Guttman <uri@sysarch.com>
+  Date: 5 Aug 2000
+  Mailing List: perl6-language-flow@perl.org
+  Number: 47
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+This RFC describes an OO API for Perl I/O handles that uses asynchronous
+callbacks (which are synchronized with the Perl op dispatch loop) and
+which works with event loops, threads, signals, and other code flow
+areas. It also shows how Perl can integrate all of the flow techniques
+and how they can work together in a single process.
+
+=head1 DESCRIPTION
+
+Perl5 has support for various ways to control its logic flow including
+threads, event loops (from modules) and signals. All of those have major
+flaws in both their language and implentation and especially with their
+interaction with each other. Perl 6 can be created with the language
+aspects of all of them fully integrated into the core and with simple ways
+to use and combine them safely.
+
+=head2 Threads
+
+There is a strong consensus that Perl needs high quality internal
+support for threads. 5.005+ tried out various thread experiments with no
+final success. Included here is a proposal for a thread model which
+works well with the other program flow areas.
+
+=head2 Safe Signals
+
+Perl5 suffers from its well know unsafe signal handling. It is due to
+the asynchronous way signals are triggered at the level of C
+code. A signal could be delivered in Perl while some critical operation
+(e.g. malloc) is happening and all hell breaks loose. Signals have to be
+delivered synchronously with respect Perl op code dispatching.
+
+=head2 Event Loop
+
+Every agrees there needs to be one event loop for all of Perl. I propose
+that it be in the Perl core as it needs to be able to interact tightly
+with the other control areas. I have a proposal for a simple Perl API
+which is compatible with I/O objects.
+
+=head2 Asynchronous I/O
+
+Many of us are familiar with multiplexing I/O from sockets, pipes and
+other stream based handles. This is usually done with the use of the
+select/poll kernel system calls. But asynchronous file I/O is not
+supported by those calls as files are always capable of being read and
+written. Your program may block doing file I/O and there is no simple
+way to control that. An easily used asynchronous I/O paradigm in the
+Perl core is needed.
+
+=head2 Timers
+
+Perl needs the ability to support multiple timers. These can be used for
+timing out I/O operations, socket connections or other events. Timers
+can be independent or associated with an events.
+
+=head2 Coroutines
+
+<FILL THIS IN>
+
+=head2 Continuations
+
+<FILL THIS IN>
+
+=head1 MOTIVATORS
+
+This list meant to be a catchall for all logic flow related
+issues. This is a major subset of all language issues and would focus
+energy on these topics. It would also lower the volume of the parent
+language list.
+
+Doing all of those things correctly and elegantly is not trivial. I see
+the need to solve them all together as we don't want multiple
+comflicting paradigms like Perl5 currently has. Threads have to be
+stable and easy to use, Event loops need a clean API in the core, and
+signals have to be safe and work with both events and threads. Async I/O
+also needs to interact cleanly with those items.
+
+=head1 IMPLEMENTATION
+
+The only language change I propose is that the new IO object has a set
+of builtin methods with callbacks. Think of what you would have if you
+merged IO::*.pm with Event.pm. Each IO handle (of any sort, file,
+socket, pipe, etc.) can initiate asynchronous I/O and socket requests
+and get a Perl level callback when that operation is complete. This
+single api can be used for all common events like socket conecctions
+(client and server), terminal I/O, mouse events, socket I/O, timers and
+even file I/O.
+
+=head2 Callbacks
+
+A typical asynch I/O call might look like this:
+
+	$sock->read( buf => \$buffer, cb => $obj, timeout => 10 ) ;
+
+The cb argument is the callback and its value can be a code ref or an
+object. If it is a code ref that sub is called when the socket has data
+to be read.
+
+If cb is an object then the default 'readable' method on $obj is invoked
+when data could be read from the socket. You can select your own method
+with the 'method' argument. Similarly for the timeout, it calls the
+'read_timed_out' method by default if that is triggered before any data
+is readable. By using well chosen default method names which makes them
+easy to use, we make asynchronous I/O calls much simpler and
+consistant.
+
+=head2 Event Loop
+
+Event loops have two common API's which can coexist. The most common one
+is that you setup callbacks and then call a main_loop function. It does
+all the event management and dispatches callbacks. The main line of code
+is effectively blocked as only callbacks ever execute. There are some
+minor variants to this but that is how Event.pm and Perl/Tk both work.
+
+The other style is for for the main line code to explicitly request the
+next event and it does its own dispatching. Event.pm supports this by a
+call that gets the next pending event. This call can be made blocking or
+non-blocking giving the coder fine control.
+
+Setting up the callbacks is done with the async I/O interface discussed
+elsewhere. All the coder has to do to use the event loop is decide to
+use the built in amin loop or use his own. You can even use both of them
+at the same time. You might want to check for events in the middle of a
+very long event handler (which wa dispatched by the built in main loop).
+
+=head2 Threads
+
+I propose that Perl6 threads be in the core (not a compile time option)
+and with a proper design and implementation will be effective and
+efficient.
+
+I agree with the idea of RFC 27 that the best map of Perl and threads so
+far is one complete Perl interpreter per thread. It also has each
+interpreter/thread pair with its own complete global namespace with no
+implicitly shared Perl level data between threads. All sharing must be
+done explicitly (and that design is a whole other RFC). There has to be
+a Perlish way for threads to communicate with each other. A form of high
+level queues or working with the event loop are possibilities. Also
+asynchronous I/O and signals need to work with threads.
+
+One idea is to have a special signal mailbox (think semaphore/queue/pipe
+combo) on which any thread can test and block.  That mailbox is toggled
+when a signal occurs (e.g. asynch I/O under Unix usually notifies
+completion by a signal), and the thread can get the signal info from the
+queue. This synchoronizes signals with the op dispatch loop of the
+interpreter. The thread which gets the signal can then do work or
+communicate with other threads.
+
+=head2 Safe Signals
+
+There are multiple ways to support safe signals and they can all easily
+be supported.
+
+Event loops support safe signals by delivering them synchronously with
+the dispatch of other callbacks. Then the signal callback cannot collide
+with any others. This is currently being done in Event.pm (and i think
+Perl/Tk's event loop is similar here).
+
+Threads can work with signals in two ways. First, one or more threads can
+run event loops and the signal handlers are safe and can do work or
+communicate with other threads. Second, any thread can block on the
+special signal mailbox. When the signal is delivered, the blocked thread
+can continue safely and can then do the work for that signal.
+
+If you have only a single linear thread of code and want safe signals,
+you have to pay the penalty of checking for them in between Perl op
+codes. This can be done every N ops with N being some special global
+value. The code to do the test can be done inline in the main dispatch
+loop and be very fast. The actual C handlers will just be like the ones
+in the event loop and just bump counters and set flags.
+
+I propose a pragma which would make this more of a top level
+operation and remove the need for the %SIG hash. It would be somthing
+like this:
+
+use signal name => 'SIGHUP', cb => \&hup_handler, timeout => 1000 ;
+
+This pragma would use the same callback interface as all the new I/O
+object would. This consistancy of callback style in the language is a
+major win here. Again the default method names would be carefully chosen
+to be easy to remember and use, e.g. sighup_received and sighup_timeout
+would be the ones for the above example if the cb value was an object.
+
+The pragma would be stackable so you could override a handler inside a
+code block.
+
+=head2 Timers
+
+All callback methods in this RFC support timeouts.  A timer is created
+by using the timeout arguments to the async call.  Dispatching the main
+callback will reset the timer clock.  If the timer goes off it will
+dispatch its callback.
+
+You can also have freestanding timers assoicated with no I/O handle. I
+haven't worked out a syntax yet but it will have the same callback api
+as the other async calls.
+
+Note: even if we support finer grained timing than alarm's 1 second, we
+should not promote Perl timer support as being truly real time. Timer
+callbacks are delivered some time after the the actual timeout period
+elapsed. The is no guarantee of speedy delivery only synchronous
+delivery is supported. 
+
+=head2 Sockets
+
+The two blocking socket operations are connect and accept. They are
+supported by all event loops as the wizards of Berkeley had the wisdom
+to make those tests supported in select. If only they had also added
+async file I/O and signals! So in keeping in the vein of callbacks, the
+API is propose is the exact same but with the socket handle calling
+connect and accept methods
+
+	$err = IO::Connect( port => 80, cb => $sock_obj ) ;
+
+That has a default timeout builtin, localhost is assumed, the default
+callback names are used (connected, connect_timeout), etc.
+The callback looks like this:
+
+package Foo ;
+
+sub connected {
+	my( $self, $socket ) = @_ ;
+}
+
+Similarly for accept:
+
+	$err = IO::Accept( port => 80, cb => $sock_obj ) ;
+
+You now have a 1 line server. It will call the accepted method of
+$sock_obj whenever a connection rewuest is received.
+
+Note: I do not want to eliminate all the low level ways of doing
+sockets. But we could hide those names under a pragma? or just support
+them all in the I/O object way that perl 5 does. 
+
+Note: The proposed ideas regarding a net smart open() which can do
+http, ftp, etc. can be supported by this design. All that is needed is
+some sugar to overlay them.
+
+=head2 Asynchronous I/O
+
+Asynchronous file I/O is just done like any other I/O with a
+callback. If the underlying OS supports true asynch file I/O (Solaris,
+VMS and i think NT and W2K do) then Perl will use it. Otherwise it is
+faked just by using regular file I/O calls which will block.
+
+To use asynch I/O you have to be under an event loop or do the same test
+every Nth op code like with signals.
+
+If you are using threads, then you can just have a thread block on a
+regular file I/O call and manage multiple requests that way or just have
+a thread run an event loop. So there is need to do special support for
+async I/O under threads.
+
+
+=head2 IMPACT
+
+All of the areas brought up impact each other in complex ways in both
+the language and the internal areas. That is why this RFC proposes they
+get their own sub-group. The goal is to minimize their impact on each
+other which would happen if they were designed separately.
+
+The requirement that each thread have its own interpreter and global
+storage, means the perl interpreter has to be completely reentrant. 
+
+Some of this code could be included in a dynamic library (most of it has
+to be in C for speed and safety). Loading it could be done with pragmas.
+
+=head2 UNKNOWNS
+
+Designing the internals for this will be tricky. The best way to support
+all these needs is not clear.
+
+=head1 REFERENCES
+
+IO::*			- Perl 5 I/O modules
+
+perl-loop@perl.org	- Mailing list on Perl Event loops
+
+Event.pm		- XS based event loop module.
+
+Perl/Tk			- Tk based module with its own event loop
+
+POE			- Perl Object Enviroment, an event based system
+
+Stem			- A message passing system based on events.
+
+Thread.pm		- Perl 5 threads
+
+RFC #1			- Implementation of Threads in Perl
+
+RFC #27			- Coroutines
+
+aioread, aiowait	- Solaris asynchronous I/O
+
+aio_read, aio_wait	- POSIX asynchronous I/O

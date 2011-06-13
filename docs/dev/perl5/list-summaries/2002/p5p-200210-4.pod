@@ -1,0 +1,125 @@
+=head1 This Week on perl5-porters (21-27 October 2002)
+
+This week was moderately busy for the Perl 5 porters. The highlights
+feature various crashes and considerations about Unicode string handling;
+not forgetting, as usual, about newly fixed bugs, and bugs yet to be fixed.
+
+=head2 Crash perl by trashing symbol tables
+
+Tassilo v. Parseval reported a way to make Perl dump core (bug #18045):
+emptying the %main:: symbol table, and issuing a warning. This bug has
+been already corrected in bleadperl (it's due to the standard error file
+handle being freed when it's removed from %main::.) But Tassilo and
+Andreas J. Koenig came up with two other ways to issue a core dump: using
+require() after emptying %main::, and emptying %main:: in a BEGIN block.
+
+Rafael Garcia-Suarez explained that this kind of bugs have a common cause:
+I<emptying %:: removes the subroutine or the currently executing code,
+which then tries to walk on a vanishing floor, and crashes.> (However he
+didn't provide a patch, because he didn't found a way to protect perl
+efficiently against all those cases once and for all.)
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg88248.html
+
+=head2 Parser crash
+
+A bug reported last month (bug #17589) had been reduced to a small use
+case by Dave Mitchell : sometimes, when the incorrect construct C<sub;>
+(an empty forward declaration) is encountered, the Perl parser segfaults.
+This is due to the annoying fact that the parser constructs here an
+internal state that is never restored properly, and this leads to a core
+dump before it has a chance to report the syntax error. To fix this, one
+could prevent the parser to get the offending tokens by hard-coding the
+verification directly into the lexer. Apparently, Rafael Garcia-Suarez is
+working on a patch.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg87122.html
+
+=head2 Unicode questions
+
+That's been a long time since the last long Unicode thread. H.Merijn Brand
+began to ask what was the exact behavior of perl, when printing an Unicode
+character to STDOUT. Andreas Koenig pointed out that the output filter
+should be set to C<:utf8> (via binmode()), since Merijn is not using an
+UTF8 locale. Another way to achieve this result is to set the PERLIO
+environment variable to C<utf8>, or to use the C<open> pragma, but this
+sets an input and/or output filter on all handles, which is too strong in
+many cases.
+
+What Merijn is actually asking for, is a I<command line option to turn on
+C<:utf8> for C<STD(IN|OUT|ERR)>> (maybe a pragma? Hugo proposed something
+like C<-Mstdlayer=utf8>).
+
+The discussion also implied some consideration over charnames aliases. As
+Merijn says I<that charnames is an exception as such, and /could/
+warrant promotion of strings with \N{...} to utf8, since \N{...} /needs/
+charnames anyway.> Andreas disagreed.
+
+Later in the thread, Merijn wrote that he's I<not volunteering to take
+over the summaries>.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg88360.html
+
+=head2 Nested FETCHes
+
+Dave Mitchell reported that nested FETCHes on tied arrays and hashes don't
+work, because the fetched values are temporarily stored in global
+variables. After a little discussion with Hugo, Dave announced that he's
+going to see what he can do about it.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg88288.html
+
+=head2 In brief
+
+chromatic added a test for the (previously untested) IO module. However it
+doesn't test yet for the new deprecation warning on a parameterless
+C<use IO;>, introduced last week.
+
+Dan Kogai provided a patch, on the behalf of Inaba Hiroto, to make
+C<tr///> work with Unicode ranges, when the C<encoding> pragma is used.
+
+Dan Kogai was apparently the first to notice that one of the tests to the
+new Net::Ping 2.23 module fails on some platforms, due to portability
+problems. This test is now skipped for now in bleadperl.
+
+Barrie Slaymaker reported that read()ing on an unopened filehandle doesn't
+set $!. Slaven Rezic provided a patch, that corrects also a similar
+problem for binmode(), getc() and write(). (Bug #18048).
+
+Rafael provided a patch to ExtUtils::MakeMaker to make life easier for
+those of us who keep Perl modules (or bleadperl itself) in a Subversion
+repository. Not applied yet. (This Rafael guy also advertised his latest
+hack, C<perlpatch2svn>, a script that imports bleadperl patches into a
+Subversion repository.)
+
+David Kernen reported that the -I command-line option split paths on
+colons (on Unix), as if they were provided via the PERL5LIB environment
+variable (bug #18066). Slaven Rezic pointed a way to fix this (but,
+although being a prolific patcher, he didn't provide a patch.)
+
+H.Merijn Brand found that the installation of DBD-ODBC-0.45_18 reports an
+error C<DBI version 1.201 required--this is only version 1.30> with
+bleadperl. This is due to the recent changes in the version handling ;
+John Peacock commented that the DBI versioning scheme doesn't follow the
+current mainstream model (which implicitly splits floating-point versions
+at three decimal place intervals.)
+
+Matthew O. Persico pointed out that ExtUtils::Installed only looks for
+installed modules only in the standard archlib and sitearch directories,
+and suggested that it could optionally search other directories (e.g.
+those in @INC).
+
+Yves Orton began to test Perl on Windows 2000, compiled with MS Visual
+Studio 6. Apparently non-threaded builds don't feel well. Moreover, the
+threaded builds on Windows started to show errors on the usual portability
+suspects: forks and socketpairs.
+
+Dan Kogai released Encode 1.80. Paul Marquess released DB_File 1.806 (and
+also Compress::Zlib 1.17, but that's not a core module).
+
+=head2 About this summary
+
+This summary brought to you, schizoidly, by Rafael Garcia-Suarez. It's
+also available via a mailing list, which subscription address is
+F<perl5-summary-subscribe@perl.org>. Comments and corrections are, as
+always, welcome.

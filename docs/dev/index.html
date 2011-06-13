@@ -1,0 +1,60 @@
+[%- 
+    page.import({
+        title    => 'Perl Core Development',
+        section  => 'home',
+        description 
+            => 'Developing the Perl Core',
+    });
+%]
+<style type="text/css" media="screen">
+    #google_translate_element {
+        float: right;
+    }    
+</style>
+<div class="masthead">
+	<p class="headline">Perl Core Development</p>
+	
+	<p class="strap">Perl for the next [% perl_stats.perl_age %] years</p>
+
+</div>
+
+<table class="content_table">
+    <tr>
+        <td>
+            <h2>
+                Perl 5 - Production-ready, under active development
+            </h2>
+            <div class="box">
+                <h4>
+                    <a href="/perl5/">Perl 5</a>
+                </h4>
+                <p>
+                    Perl <a href="[% perl_stats.perl_version_link %]">[% perl_stats.perl_version %]</a> is the current stable version of Perl. Perl is <a href="https://www.ohloh.net/p/perl/commits">actively maintained</a> by a large group of <a href="https://www.ohloh.net/p/perl/contributors">dedicated volunteers</a>. Perl 5 will be developed and maintained for many years to come.
+                </p>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <h2>
+                Perl 6 - In development
+            </h2>
+            <div class="box">
+                <h4>
+                    <a href="/perl6/">Perl 6</a>
+                </h4>
+                <p>
+<a href="http://www.perl6.org/">Perl 6</a> is a new language in the
+Perl family, incorporating many ideas from Perl 5 and other scripting
+languages into a new coherent whole.  Although still in
+development, <a href="http://www.rakudo.org">Rakudo Perl 6</a> is an
+implementation of Perl 6 you can use today.
+                </p>
+            </div>
+        </td>
+    </tr>
+</table>
+
+[%# Not needed?
+  <td><font size="+2"><a href="http://www.pugscode.org/">Pugs</a></font></td>
+%]

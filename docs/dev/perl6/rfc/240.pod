@@ -1,0 +1,132 @@
+=head1 TITLE
+
+Form a documentation working group to edit, clean, and produce
+documentation
+
+=head1 VERSION
+
+  Maintainer: Daniel Chetlin <daniel@chetlin.com>
+  Date: 15 Sep 2000
+  Mailing List: perl6-meta@perl.org
+  Number: 240
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+The Perl documentation suite is one of the best things going for Perl.
+It is thorough, well-written, informative, and enjoyable.
+
+However, it was put together patchwork over a long period of time, and
+is extremely large and unwieldy. Some parts of the documentation have
+not been revised for years, even when they contain incorrect or outdated
+information.
+
+This RFC proposes a way to manage documentation for Perl6, as well as
+give the Perl5 docs a much needed spring cleaning.
+
+=head1 DESCRIPTION
+
+The RFC process has brought out a large number of people who want to
+discuss and debate aspects of Perl. It is the goal of this RFC to
+propose a method of harnessing this interest for the good not only of
+Perl6, but of Perl5 as well.
+
+This proposed method is simple: a mailing list will be set up with an
+express purpose of editing, correcting, re-ordering, re-organizing, and
+expanding existing documentation.
+
+This mailing list will not relate to proposals to change Perl; it will
+deal with Perl's current behavior only. When there is more information
+about the changes from Perl5 to Perl6, the documentation mailing list
+will begin incorporating those changes into the documentation. Until
+then, however, there is still plenty of work to be done, and no reason
+that this work cannot begin immediately.
+
+The mailing list will concentrate on one .pod file at a time, devoting
+its entire collective energy on editing the .pod in question. The
+preferable way of submitting edits is via patches, but the mailing list
+chair will be responsible for incorporating edits that are submitted in
+other ways. After a reasonable amount of time, during which not only
+edits to the initial file, but also edits to the edits, are accepted,
+the mailing list chair will collect all changes into a master patch, and
+submit it to the perl5-porters mailing list for inclusion into the core.
+At that point, a new file will be selected for editing.
+
+Here is a sketch of how a typical editing period might go:
+
+=over 4
+
+=item 1
+
+The mailing list chair selects a documentation file to be edited, and
+posts the most current version of this file to the list.
+
+=item 2
+
+At that point, anything in the file is up for change, and editors will
+begin submitting patches or changes to the file.
+
+=over 4
+
+=item *
+
+For extremely minor changes (typos, word choice, etc.) it is acceptable
+for an editor to post that change without a patch. For example:
+
+        On 15 September 2000, Daniel Chetlin wrote:
+        > Currently up for editing: perlguts.pod
+        [snip]
+        > These two functions check if a hash table
+        > entry exists, and deletes it.
+
+        s/deletes it/delete an entry, respectively/
+
+=item *
+
+For changes that alter a larger portion of the file without changing its
+general layout, a unified diff is best.
+
+=item *
+
+For massive changes, posting simply the entirety of the rewording can
+also be acceptable.
+
+=back
+
+=item 3
+
+The mailing list chair will be responsible for tracking all changes and
+recording them for the final product.
+
+=item 4
+
+After a reasonable period of time, the mailing list chair will post the
+final version of the document. There will be a brief sanity check period
+wherein editors will confirm that their changes have been added and no
+new mistakes have been made.
+
+=item 5
+
+Finally, the mailing list chair submits the modified file as a diff to
+the perl5-porters mailing list and begins the process anew with another
+file.
+
+=back
+
+While there is sure to be some discussion on this list (such as what
+files to work on and how to make certain changes), the main focus will
+be on B<doing>, not talking.
+
+=head1 IMPLEMENTATION
+
+Selection of a chair, creation of a list, and recruitment of interested
+parties is all that is required. The biggest win for this RFC is that it
+can be put into effect B<now> and do some good not only for future Perl,
+but for current Perl as well.
+
+=head1 REFERENCES
+
+The Perl documentation, as well as Tom Christiansen's excellent new
+perlman tools, which will be put through their paces by this proposal.
+

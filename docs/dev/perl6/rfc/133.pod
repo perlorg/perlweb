@@ -1,0 +1,67 @@
+=head1 TITLE
+
+Alternate Syntax for variable names
+
+=head1 VERSION
+
+  Maintainer: David Corbin <dcorbin@machturtle.com>
+  Date: 20 Aug 2000
+  Last Modified: 28 Aug 2000
+  Mailing List: perl6-language@perl.org
+  Number: 133
+  Version: 2
+  Status: Developing
+
+=head1 ABSTRACT
+
+Many new users are confused by the use of $@% to represent context,
+when it is also used to declare variables.  This is a syntactic change
+that introduces a bit more logic to the context/type confusion.  
+
+=head1 DESCRIPTION
+
+Context is an essential part of Perl.  When evaluating a symbolic
+expression, $, @ and % are used to indicate the context of the
+expression.  However, when variables are declared (using local, my, or
+simply implicitly as an lvalue) these same symbols are used.  C<my
+@array; my %hash; $var=1>  To many people, most notably programmers new
+to Perl, the $@% is mistakenly believed to be part of the variable
+name.  This leads to such erroneous attempts to use them as
+C<@array[0]>, and C<@%hash{key}>.
+
+Consider the following syntax:
+
+ my var; 	# declaring a scalar
+ my array[]; # declaring an array
+ my hash{};	# declaring a hash
+
+Then, when it is necessary to distinguish context explicitly (it often
+is not), you can use $@% as before.  Consider:
+
+ count = array;		 # scalar context because of assignment to scalar.
+ alt_array[] = array; # list context 
+
+ value = hash{key};   #
+
+ print $array," ",@array #Context must be clearly designated.
+
+
+I'm not the linguist that Mr. Wall is, but it strikes me that context
+should be derrived automatically as much as possible. 
+
+An slightly different alternative would be that arrays and hashes are
+always referred to with their trailing indicator ([] or {}). So, from
+the example above, you'd have
+
+ count=array[];
+ alt_array[] = array[];
+
+=head1 IMPLEMENTATION
+
+Unknown.
+
+=head1 REFERENCES
+
+RFC 9: Highlander Variable Types
+
+RFC 109: Less linenoise - let's get rid of @%

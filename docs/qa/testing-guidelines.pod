@@ -1,0 +1,190 @@
+=pod
+
+=head1 Test Writing Standards/Guidelines
+
+The following is a list of ways to improve existing tests as well as a
+guideline for creating new ones.
+
+=head3 Always specify a plan
+
+It is okay to use C<no_plan> during test development, but once you are
+done, or even when you are sending patches/commiting to repositories,
+specify your plan.
+
+=head3 Check your C<use> statements with C<use_ok()>.
+
+Wrap your C<use> statements in a C<use_ok()> inside a C<BEGIN> block.
+
+    BEGIN {
+        use_ok( "MARC::Batch" ) or die;
+    }
+
+The C<or die;> modifier is not required but it can help avoid comfusion if a
+module only partially compiles and some tests fail even though the code is
+correct.  Besides, if the module won't even compile, there's no point in
+testing it, right?
+
+=head3 All object creation is checked with C<isa_ok()>.
+
+If you instantiate an object, check it with C<isa_ok()>.
+
+    my $batch = MARC::Batch->new( 'USMARC', @files );
+    isa_ok( $batch, "MARC::Batch" );
+
+Constructors are the most obvious, but any function that returns an
+object should be checked that the object is of the expected type.
+
+    while ( my $marc = $batch->next ) {
+        isa_ok( $marc, "MARC::Record" );
+        # more tests...
+    }
+
+In this case, the C<next()> method should return a C<MARC::Record>
+every time.
+
+=head3 All temporary files are cleaned up.
+
+Check the return code from C<unlink()>, and then check that the file is
+actually gone.
+
+    is( unlink( $filename ), 1, "Remove $filename" );
+
+    ok( !-e $filename, "Actually gone" );
+
+(This idiom is to be used in ideal cases. On VMS you might need to
+C<unlink()> several times the same file until it's completely deleted;
+and the C<is()> test above will succeed only if C<$filename> was actually
+present, which might not be what you wanted to test.)
+
+=head3 All tests should have a label
+
+The last argument in all the Test::More functions is for the test's label,
+or description.  If you write a test you should know what it is doing,
+so label it.
+
+The only exception to this can be C<isa_ok> and C<can_ok> as they are
+pretty self explanatory and provide default messages for you.
+
+=head3 Object Equivalence testing
+
+All object equality tests are done with C<is>:
+
+    is( $object, $object2, '... our objects are equal' );
+
+Object inequality tests can then be done with C<isnt>:
+
+    isnt( $object, $object2, '... our objects are not equal' );
+
+The reasoning behind this is that we are really comparing the stringified
+instances, and C<is> and C<isnt> compare strings.  If the objects'
+stringifications don't provide enough information to meaningfully
+compare the objects, which might happen if overloading the equality or
+stringification operators (either directly or indirectly), find something
+that does (e.g. use the function C<overload::StrVal()>).
+
+=head3 Use the right function for the job
+
+We should pay attention to types with comparisons we are doing. For
+comparing strings, use C<is> and C<isnt> and use C<cmp_ok> for any numeric
+comparisons or more complex comparisons not for equality. It only makes
+sense to use the right operator in the right situation.
+
+This also means that tests that look like this:
+
+    ok( $cost == $expected_cost );
+
+should be rewritten as:
+
+    is( $cost, $expected_cost );
+
+or, even better, since these values are numeric:
+
+    cmp_ok( $cost, '==', $expected_cost, 'Cost calculated correctly.' );
+
+It makes the test much more explicit and takes advantage of C<is>,
+C<isnt> and C<cmp_ok>'s error messages.
+
+=head3 Use C<is_deeply> to test things other than scalars
+
+When it is possible, we should check the contents of a data structure
+explicity, rather than the implicit testing of just element/key counts
+or other such techniques.
+
+With C<is_deeply> you can do things like:
+
+    my @expected = qw( Larry Moe Curly );
+
+    my @stooges = get_stooges();
+
+    is_deeply( \@stooges, \@expected, "Got proper stooges" );
+
+and if they differ, you'll get a message saying where they differ.
+
+At times when C<is_deeply> is not appropriate, C<Test::More> also
+includes three utility functions C<eq_array>, C<eq_hash> and C<eq_set>
+which return a boolean when called. These can be utilized as such:
+
+    my @expected = qw( Larry Moe Curly );
+
+    my @stooges = get_stooges();
+
+    # use eq_set to test arrays regardless of their order
+
+    ok(eq_set( \@stooges, \@expected), "Got proper stooges" );
+
+C<is_deeply> is not suitable for comparing objects that overload
+dereferences to their implementation type.
+
+=head3 Test B<all> your assumptions.
+
+Assumptions that are tested after the fact, should also be tested
+before the fact. By this I mean that if you are assuming that after
+an operation completes a variable will be true, but prior to that it
+was false. Confirm the initial false-ness first, then run your code,
+and test the truth after. This may seem like overkill to some, but in
+fact the first test only serves to strengthen the second test.
+
+=head3 Test code is still code
+
+Avoid the (heavy) use of globals. You wouldn't do it in regular code,
+so why do it in tests?
+
+Along this same line, constructs like this should be avoided:
+
+    my $item = Object->new();
+    ... test $item here
+
+    $item = Object->new(@args);
+    ... different tests for $item here
+
+Re-use of variables like this should generally be avoided. It only serves
+to confuse the flow of the test. Ideally instances that are tested should
+be thought of as single assignment variables and never be re-used.
+
+So now the above becomes:
+
+    my $item = Object->new();
+    ... test $item here
+
+    my $item_w_args = Object->new(@args);
+    ... test $item_w_args here
+
+Or even better, if your instances don't interact with one another,
+put them in their own lexical scopes:
+
+    CONSTRUCTOR: {
+        my $obj = Object->new();
+        ...
+    }
+
+    CONSTRUCTOR_WITH_ARGS: {
+        my $obj = Object->new( foo => 'bar' );
+        ...
+    }
+
+=head1 AUTHORS
+
+Maintained by Andy Lester, with contributions from Stevan Little and
+Rafael Garcia-Suarez.
+
+=cut

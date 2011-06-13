@@ -1,0 +1,358 @@
+=head1 TITLE
+
+Function-call named parameters (with compiler optimizations)
+
+=head1 VERSION
+
+  Maintainer: Michael Maraist <maraist@udel.edu>
+  Date: 25 Aug 2000
+  Last Modified: 30 Sep 2000
+  Mailing List: perl6-language-subs@perl.org
+  Number: 160
+  Version: 3
+  Status: Frozen
+
+=head1 CHANGES
+
+Finialized various features by removing many of the options( grealy
+simplified the RFC).  Unified the goals with that of RFC 176 and RFC 273.
+
+=head1 ABSTRACT
+
+Function parameters and their positions can be ambiguous in
+function-oriented programming.  Hashes offer tremendous help in this
+realm, except that error checking can be very tedious. Also, hashes,
+in general, take a performance hit.
+
+The goal is to enhance functionality / convinience / performance where
+possible in regards to named-parameters, with a minimal of changes.
+And, at the same time, allow this to be a completely optional and
+virtually transparent process.  The following is an in-depth analysis
+of various ways of accomplishing these goals.
+
+=head1 DESCRIPTION
+
+The current method of parameter proto-types only fulfills a tiny
+niche, which is mainly to offer compile-type checking and to
+disambiguate context ( as in sub foo($) { }, or sub foo(&$) { } ).
+No support, however, is given to hashes, even though they are one of
+perl's greatest strengths.  We see them pop up in parameterized
+function calls all over the place (CGI, tk, SQL wrapper functions,
+etc).  As above, however, it is left to the coder to check the
+existance of required parameters, since in this realm, the current
+proto-types are of no help.  It should not be much additional work to
+provide an extension to prototypes that allow the definition of
+hashes.
+
+The following is a complex example of robust code:
+
+ #/usr/bin/perl -w
+ use strict
+
+ # IN: hash:
+ #         a => '...' # req
+ #         b => '...' # req, defined
+ #         c => '...' # req, 0 <= c <= MAX_C
+ #         d => '..'  # opt
+ #         e => '..'  # opt
+ #         f => '..'   # opt
+ # OUT: xxx
+ sub foo {
+  my $self = shift;
+  my %args = @_;
+
+  # Requires $a
+  my $a;
+  die "No a provided"
+     unless exists $args{a};
+  $a = $args{a};
+
+  # Requires non-null $b
+  my $b;
+  die "invalid b"
+     unless exists $args{b} && defined ($b = $args{b});
+
+  #  Requires non-null and bounded $c
+  my $c;
+  die "Invalid c"
+     unless exists $args{c} && defined ($b = $args{b}) && ($c >= 0 && $c <
+$MAX_C);
+
+  my ( $d, $e, $f ) = @args{ qw( d e f ) };
+  ...
+ } # end foo
+
+Becomes:
+
+ sub foo($%) : method required_fields(a b c) fields(d e f) doc(<<EOS) {
+ # IN: hash:
+ #         a => '...' # req;  Do some A
+ #         b => '...' # req, defined; Do some B
+ #         c => '...' # req, 0 <= c <= MAX_C; Do some C
+ #         d => '..'  # opt; Do some D
+ #         e => '..'  # opt; Do some E
+ #         f => '..'   # opt; Do some F
+ # OUT: xxx
+ EOS
+   my $self = shift;
+   my %args : fields(a b c d e f) = @_; # produce optimized hash
+    that is already pre-allocated at compile-time.
+
+   # Requires non-null $args{b}
+   die "invalid b"
+      unless defined $args{b};
+
+   # Requires non-null and bounded $args{c}
+   die "invalid c"
+      unless defined $args{c} && ($args{c} >= 0 && $args{c} < $MAX_C);
+
+   ...
+ } # end foo
+
+ $obj->foo( c => 3, b => 2, f=> 8, a => 1 );
+ # Note the out-of order, and the mixture of optional fields
+
+ foo( $obj, a => 1, b => 2, c => 3 ); # still totally legal
+ foo( a => 1, b => 2 ); # compiler-error (invalid num-args)
+ foo( 1,2,3,4,5,6,7); # compiler-error, missing args a, b and c
+ foo(a,1,b,2,c,3,$obj); # compiler-error, missing args a, b and c
+ # (since they're offset by one)
+ my @args = ( a => 1, b => 2, c => 3);
+ $obj->foo( @args ); # checking-deffered to run-time.  Will be ok.
+ my @bad_args = ( b => 8, e => 4 );
+ $obj->foo( @bad_args ); # checking-deffered to run-time.  Will fail.
+
+Essentially, perl's compiler can be put to use for hashed-function
+calls in much the same way as pseudo hashes work for structs/objects.
+Making this a compile-time check would drastically reduce run-time errors
+in code (that used hash-based parameters).  It would also make the code
+both more readible AND more efficient.
+
+For readibility, perl can be quiried for the list of allowable options as well
+as general documentation.  In the above, the listing of Input options would
+have been redundant, for both the code-reader, and the run-time query, but was
+provided for completeness.
+
+Note also that the above is compatible with the existing structure.  In fact,
+foo required the old-style prototype to distinguish the "self" variable from
+the general-hash arguments.  The use of the attribute "method" was optional,
+and could be used in the auto-generation of a $SELF variable.  At the very
+least, it allows a run-time description of what the first argument really-is.
+
+An important thing to note is that we're not changing the functionality of
+execution.  Perl sub's still look and feel like old-style subs to the user.
+They simply act as if additional run-time checking has occured.  The only
+physical difference is that, where possible, you will find compile-time errors.
+
+In the case that a static parameter list is provided (no dynamically expanded
+array's / hashes), and the strict-hash method is used (see RFC 273), then a
+compile-time reordering can occur, which has the effect of an array copy of
+values instead of the generation of a hash.  So long as the subroutine never
+makes use of dynamic field lookup, a hash is never used (except for a
+behind-the-schenes mapping of dynamic parameters).
+
+This helps large-scale functions, such as TK / CGI / etc, where there are
+dozens of optional parameters that should all be called explicitly in the code.
+
+Proposed attributes for subroutines are as follows:
+
+=over 4
+
+=item locked
+
+In multi threading, locks the function unless is also declared as a
+method, in which the object is instead locked.
+
+=item method
+
+Compatibility, used in conjunction with 'lock' to perform object locking in
+multi-threading.  Also allows enhanced documentation and description of the
+first argument.
+
+=item fields( keyA keyB keyC ... )
+
+Describes the pseudo-hash / strict-hash allowable parameters (in conjunction
+with other attributes).  Hash keys that do not match this list will generate
+errors (at compile time if function-calls are static lists, or at run-time, if
+expanded array's/ hashes are used).  The advantage of this approach over using
+qs-structures or through redefinition of proto-types (as in "sub foo($a, $b,
+$c) {") is that we maintain back-ward compatibility, by providing a logical
+SUPERSET of attribute information on subroutine.  This superset can
+additionally be extended (as in the use of required_fields).  It also allows
+the field list to be visible at the prototype.
+
+key-names may have an optional data-type prefix, such as $, %, %, &, * that
+enforce the data-type at compile/runtime.  They would not be part of the
+key-name.
+
+=item required_fields( keyA keyB keyC )
+
+Works in conjunction with fields to define the list of allowable set of hash
+keys.  This set defines required fields while the "fields" set defines optional
+ones.  To reduce confusion, and errors, these two sets may over-lap.  The total
+list of optional fields is the union of all field-defining attributes.
+
+key-names could have prefixes as in "fields" above.
+
+=back
+
+As above, The allowable fields is the union of fields(..) and
+required_fields(...).  The text representing "..." is treated just like qw(...)
+as would be use vars qw(...).  This method allows extensions that could more
+finely define data-types.  For example, it is possible (though not currently
+proposed) that these attribute lists could do the following:
+
+ sub foo : required_fields( $cnt @list %data ) {
+   my %args: fields(cnt list data) = @_;
+   print "Cnt = $args{cnt}\n";   # cnt garunteed to be a scalar
+   for my $item ( @{$args{list}} ) { ... } # list garunteed to be an array ref
+   while( my ( $key, $val ) = %{$args{data}} ) { ... }
+     # data garunteed to be a hash-ref
+ }
+
+ my %data = ( a => 1, b => 2 );
+ foo( cnt => 5, list => [ 1, 2, 3 ], data => \%data );
+
+The lack of any prefix would mean that any data-type would be allowable.
+
+=head1 IMPLEMENTATION
+
+The compilation and run-time code would have to be augmented to handle the
+restrictive field-attributes.
+
+=over 4
+
+=item Compile Time
+
+When a new sub statement is detected with fields or required_fields, a
+strict-hash structure will have to be internally defined for it (see RFC 273
+for details).  If perl is not in strict mode, then it's possible that lazy
+execution of functions may have been compiled prior to reading the proto-type.
+In the interests of efficiency, they will simply have to be deferred to
+run-time checking (through the setting of flags).
+
+For all subsequent invocations of the subroutine, traditional proto-type
+checking will be augmented with parameter-checking so long as no expansions of
+array's / hashes are detected.  This will involve checking the existence of
+key-names.
+
+If data-type checking is implemented (in perl), and the subroutine has elected
+to use it, then static values (of the parameter hash) will be checked for
+proper data-types.  Any use of variables as values (which is often the case)
+will defer additional checking to run-time.
+
+The subroutine-call will be flagged as having been compiler-checked for
+parameter presence, and optionally data-type correctness.  In order to
+alleviate complexity, if data-type correctness is required, and _any_
+parameters are dynamic, then the sub-call will be flagged for run-time
+data-type-correctness-checking.
+
+Optionally, the compilation stage may try and detect usage of a strict-hash for
+the hash-parameters.  As in:
+
+ sub foo($$$%) : required_fields(a b) {
+  my ( $a, $b, $c );
+  my %hash : fields(a b);
+  ( $a, $b, $c, %hash ) = @_;
+  ...
+ }
+
+In this case, it might be possible to optimize the last 4 array possitions of
+@_ in such a way that the hash assignment at the very least by-passes
+additional run-time checking of fields, and at the most, performs a direct
+array-copy of data as in:
+
+  my %hash : fields(a b);
+  if ( COMPILER_OPTIMIZED && NO_DYNAMIC_FIELDS ) {
+   @hash{qw(a b)} = $_[4, 5]; #which internally is @hash[0, 1] = $_[4, 5]
+  } else {
+   %hash = @_[ 3 .. $#_ ];
+  }
+
+This assumes that the sub-call was optimized by re-ordering the fields.
+Obviously this can only work on required_fields.  Additionally, reordering of
+fields would be expensive in a run-time environment.  Additionally, this adds
+complexity when dealing with shift's of @_, but this can all be determined at
+compile-time.  Again, this is an optimization and thus optional.
+
+=item Run Time
+
+Once a subroutine is called, it's arguments are expanded and placed on the call
+stack as has occured historically.  Part of those arguments is a hidden field
+that describes how much compile-time optimization has occured.  This may take
+the form of a different type of sub-call op-code (ideal case), or in the form
+of a hidden stack-parameter.  In either case, several things are checked for.
+
+If the call was optimized into an array, then no additional computation will
+occur, @_ will be passed as is.  One possible optimization at this point would
+be to assign the trailing hash-parameters to the strict-args-hash directly as
+above (since the strict hash is really an array with hash-like-access).  This
+is the ideal case.
+
+If dynamic values were used in the called hash, perl will have to internally
+check the data-types for validity if requested (this could be expensive, but if
+the user really needed it, they'd have to do it in even more expensive
+perl-code).  I suggest that we should not punish good programming practices by
+adding extra typing or massive performance penalties.
+
+If the key-names were dynamically expanded, then perl will internally check
+key-names for the set of required and allowable.  The above check for
+value-data-types is then optionally performed.
+
+=back
+
+=head1 SUMMARY
+
+In summary, in keeping with perl's spirit, we should definately not
+enforce a new function / method invocation process; not even for
+hash-based / named parameters.  Also, it makes little sence to produce
+an entirely new syntax for one or two special cases, which only obtain
+performance benifits under certain conditions.  This would needlessly
+produce legacy code which would be difficult to maintain in the
+future.
+
+This RFC suggests a compatible method of named-parameters through the use of an
+optional compiler-level hash.  Initial implementations could all be applied as
+a form of pre-processor.  Subsequent versions could internally optimize various
+special cases.  The use of attributes is a logical extension, since we first
+define the core of an entity, then extend the description for the purposes of
+optimization and narrowing of correctness of code.
+
+This RFC made heavy reference to the proposed built-in-pseudo-hash or
+strict-hash described in RFC 273, but the beauty is that that just about
+everything is independant and thus optional.  The following is the minimum
+defined by this RFC:
+
+ sub foo : fields( a b c) {
+  # uses @_ just as before
+ }
+
+ foo( @args ); # so long as args defines the hash ( a=> 1, b => 2, c => 3 )
+
+The following is the ideal case (allows all possible optimizations:
+
+ sub foo($%) : fields( $a %b @c ) required_fields( $a ) doc("useful stuff")
+{
+   # uses @_ just as before
+   my $scalar = shift;
+   my %args : fields ( a b c ) = @_;
+ }
+
+ foo( $scalar, a => 5, b => { .. }, c => [.. ] );
+
+
+=head1 REFERENCES
+
+Thread
+
+man perlref: pseudo-hashes
+
+RFC 273: Internal representation of Pseudo-hashes using attributes.
+
+RFC 176: subroutine / generic entity documentation
+
+RFC 57: Subroutine prototypes and parameters
+
+RFC 75: structures and interface definitions
+
+RFC 152: Replace invocant in @_ with self() builtin

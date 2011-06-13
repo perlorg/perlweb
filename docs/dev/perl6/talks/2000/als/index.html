@@ -1,0 +1,104 @@
+[% page.title = "Larry's Atlanta Linux Showcase Talk" %]
+<P>
+On October 14, Larry gave a keynote at the Atlanta Linux Showcase.
+The full text is available <A HREF="larry-als.txt">here</A>.  Below
+are the key points that are relevant to perl6. There are also <a
+href="#links">links to mp3's and more</a>.</P>
+
+<P>
+<B>These represent Larry's current thinking, not hard and fast
+design decisions</B></P>
+
+<UL>
+
+<LI>Larry is presently engaged in dividing Perl community's suggestions (the RFCs) into Good, Bad,
+    and Ugly.  He's ranking each according to the importance of the problem
+    being solved, and the quality of the solution.  Some RFCs have
+    identified important problems, but their proposed solutions will
+    need to be replaced with more Perlish forms.
+
+<LI>Perl's parser and lexer will be written in Perl, using Perl regular
+    expressions.  That's us eating our own dogfood, or whatever the
+    phrase is.
+
+<LI>The language will be dynamically extensible, using modules written
+    in Perl.  So you can program in a language that looks like Python,
+    Latin, or Java, if you want.  In this sense, the Perl compiler and
+    runtime system become a meta-language (extra-lingual?) system that
+    lets you code in your own favourite little (or large) language.
+    Perl would just be one of the languages you could implement.
+
+<LI>The flip-side of this is little languages: make it easy for folks
+    to have their own domain-specific "little" language.  Make Perl a
+    environment for building domain-specific languages.
+
+<LI>The Perl compiler and interpreter systems will be designed so that
+    they can emit C, Java, and C# code.  This doesn't mean that perl6
+    will ship with all three back-ends, but they will be easy to
+    implement.
+
+<LI>"Non-critical built-ins", for example sockets and operating system
+    calls, will no longer be operations in the core of Perl.  They'll
+    be in dynamically loaded, possibly automatically loaded, modules.
+
+<LI>Variables will be treatable as objects.  Under the hood we'll use
+    a vtable system, a little like that of C++ but dynamically
+    changable.
+
+<LI>Special global variables will be replaced with more appropriate
+    and lexically-scoped alternatives.  Some of them will be attached
+    to filehandle objects instead.
+
+<LI>Typeglobs will go away.
+
+<LI>XS, the system for extending Perl with C or C++, will be replaced
+    with something much easier to use.  This will give people very
+    convenient access to existing code libraries, and write C or C++
+    subroutines that can be called as Perl subroutines from Perl code
+    to take advantage of C's speed and memory flexibility.
+
+<LI>Perl will permit function and method signatures (prototypes) to
+    enable certain compile-time optimizations and checks.  These will
+    not be mandatory, but if someone wants compile-time type checking
+    then they can have it.
+
+<LI>Completely object-oriented exception handling, with a simple
+    string-like interface for those who do not want the power of the
+    full OO system.
+
+<LI>True and false in Perl are used to mean "interesting" and
+    "uninteresting".  Overloadable logic operators are a possibility,
+    to let you decide what is interesting and uninteresting in your
+    world.
+
+<LI>Perl will support many types of low-level programming, letting you
+    specify types for variables, homogeneous arrays, compact arrays,
+    and more.
+
+<LI>Perl will also support many types of high-level programming,
+    adding more support for functional programming (the reduce operator),
+    logic programming (???), and the little languages.
+
+<LI>There won't be default-loaded site configuration files.  Implicitly
+    loaded code is a recipe for un-portable un-debuggable confusion.
+
+<LI>Add the ability to declare lexically-scoped Unicode operators for
+    mathematicians.  If they want to apply the rho function to sigma,
+    then they can.  If they want to map the Arabic letter Farsi "yeh"
+    to the scalar Thai character "tho nangmontho" then they can do
+    that too.
+
+</UL>
+
+<blockquote>
+
+<a name=links>
+
+<a href="/!dl/http://www.technetcast.com/tnc_stream.html?stream_id=375">MP3</a> - 
+<a href="http://blob.perl.org/dev.perl.org/perl6/talks/2000/larry-als.mp3">(local copy)</a>.<br>
+<a href="larry-als.txt">Transcription</a> (by Nathan Torkinton; extra proofreading thanks to Jan-Pieter Cornet)<br> 
+<a href="talk.html">Slides (mirrored)</a> - <a href="http://www.wall.org/~larry/als/talk.html">(original)</a><br>
+
+
+</blockquote>
+

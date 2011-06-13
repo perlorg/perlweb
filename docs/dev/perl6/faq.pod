@@ -1,0 +1,173 @@
+=head1 NAME
+
+Perl 6 FAQ
+
+=head1 GENERAL QUESTIONS
+
+=head2  Will I be able to convert my Perl 5 programs to Perl 6?
+
+Yes. Larry Wall and others are already working on a Perl 5 to Perl 6
+translator, which will be able to translate (most) Perl 5 source code to
+the equivalent Perl 6 syntax.
+
+In addition, Perl 6 will provide a "Perl 5 compatibility mode", allowing
+the compiler to directly execute any code that it recognizes as being
+written in Perl 5.
+
+
+=head2  Is anyone going to bother to switch from Perl 5 to Perl 6?
+
+Yes. Unlike Perl 5, Perl 6 will provide:
+
+=over
+
+=item explicit strong typing
+
+=item proper parameter lists
+
+=item active metadata on values, variables, subroutines, and types
+
+=item declarative classes with strong encapsulation
+
+=item roles
+
+=item full OO exception handling
+
+=item support for the concurrent use of multiple versions of a module
+
+=item extensive introspection facilities (including of POD)
+
+=item LL and LR grammars (including a built-in grammar for Perl 6 itself)
+
+=item subroutine overloading
+
+=item multiple dispatch
+
+=item named arguments
+
+=item a built-in switch statement
+
+=item hierarchical construction and destruction
+
+=item distributive method dispatch
+
+=item method delegation
+
+=item named regexes
+
+=item overlapping and exhaustive regex matches within a string
+
+=item named captures
+
+=item parse-tree pruning
+
+=item incremental regex matching against input streams
+
+=item macros (that are implemented in Perl itself)
+
+=item user-definable operators (from the full Unicode set)
+
+=item chained comparisons
+
+=item a universally accessible aliasing mechanism
+
+=item lexical exporting (via a cleaner, declarative syntax)
+
+=item multimorphic equality tests
+
+=item state variables
+
+=item hypothetical variables
+
+=item hyperoperators (i.e. vector processing)
+
+=item function currying
+
+=item junctions (i.e. superpositional values, subroutines, and types)
+
+=item coroutines
+
+=item lazy lists
+
+=item strong module and language versioning
+
+=item concurrent object pipes
+
+=back
+
+Developers who want to take advantage of those new and/or improved features
+will switch to Perl 6.
+
+
+=head2  Perl 6 looks even more obfuscatory and line-noisy than Perl 5 is
+         -- does Perl 6 make it likely that programmers will write code that is
+         unreadable/unmaintainable by mere mortals?
+
+Many of the features mentioned in the previous answer are specifically aimed
+at making well-written Perl 6 code even more readable and maintainable than
+well-written Perl 5 code.
+
+As for line-noisy, Perl 6 will remove or mitigate many of the usual
+suspects. For example, the majority of the punctuation variables are
+gone, and the regex syntax has been considerably sanitized.
+However, much of what Perl's detractors refer to as "line-noise", we
+prefer to call "the actual syntax of the language". Complaining that
+Perl is "noisy" is like complaining that English is "wordy": all
+those confusing pronouns and gerunds and prepositions and conjunctive
+adverbs, etc. making it hard to read.
+
+Perl's fundamental philosophy in that area isn't going to change, so
+Perl 6 will still have a rich grammar in which distinct components are
+specified using distinctive syntactic forms.
+
+
+=head2  Will people be able to develop in Perl 6 and release stand-alone
+         executables, so as to protect their original code?
+
+Since Perl 6 is a language specification, the details will depend on the
+specific compilers.
+
+Rakudo, a Perl 6 compiler based on Parrot, allows compilation to bytecode, and
+a small wrapper exists that can pack up a bytecode file and parrot into a
+single executable.
+
+
+=head2 Is there a release date set for perl 6.0 ?
+
+In regards to Perl 6, the answer on release dates is really "when it's 
+ready".  There is no major commercial sponsor for the language 
+development so the majority of the work is driven by volunteers 
+and donations from the Perl Foundation (L<http://www.perlfoundation.org/>). 
+
+That said, there is a release date for Rakudo: In Q2 2010 Patrick Michaud will
+release a useful and usable (but not feature complete) Perl 6 compiler, see
+L<http://use.perl.org/~pmichaud/journal/39411>. Rakudo is mature enough that
+you can play with it today, and provide valuable feedback to both the
+implementers and the language designers.
+
+For more information on the latest re: perl 6, check out: 
+
+=over 4
+
+=item http://planetsix.perl.org/ 
+
+=item http://dev.perl.org/perl6/ 
+
+=item http://www.pugscode.org/
+
+=item http://www.parrot.org/
+
+=item http://rakudo.org/
+
+=back
+
+You may also wish to have a look at some of the C<Perl6::*> modules.
+which experiment with adding new language features to perl5. 
+See the current list on CPAN 
+(L<http://search.cpan.org/search?query=Perl6&mode=module>).
+
+If you really want to see Perl 6 done faster, the best answer is ...
+get involved!  Sign up for the mailing lists and consider contributing 
+some tests, documentation, or code to the Parrot or Pugs projects depending 
+on your level of experience (or even donate real dollars to the 
+Perl Foundation ;)

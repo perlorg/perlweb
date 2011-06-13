@@ -1,0 +1,153 @@
+=head1 TITLE
+
+Line Disciplines
+
+=head1 VERSION
+
+  Maintainer: Simon Cozens <simon@brecon.co.uk>
+  Date: 25 Sep 2000
+  Mailing List: perl6-language-io@perl.org
+  Number: 311
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+B<This> is what line disciplines are.
+
+=head1 DESCRIPTION
+
+Line disciplines have been a much vaunted feature of 5.6, despite the
+fact that nobody actually got around to implementing them. This time,
+for sure!
+
+First things first, what are they? Line disciplines are a way of
+specifying how data gets into Perl. They're based on the concept of
+streams, invented by Dennis Ritchie, and first appeared in Korn and Vo's
+sfio library. Stevens writes that
+
+    I/O streams are generalized to represent both files and regions of
+    memory, processing modules can be written and stacked on an I/O
+    stream to change the operation of a stream, and better exception
+    handling.
+
+How's this different from, for instance, generalizing source filters?
+Well, that's how I first tried to implement them in Perl, but line
+disciplines actually give you far, far more control over the file
+handling; your processing modules may dictate how line endings are
+parsed, whereas source filters have to go either before or after the
+data is split up into lines. Line discipline processing modules may
+alter the buffering behaviour of the stream, which you can't do in
+standard IO. (That's a hint that we're going to have to provide our own
+IO library to get these things working.)
+
+OK, back to Perl. We'll want it to be possible to add these processing
+modules onto filehandles from Perl, and (maybe) to create them in Perl.
+We started doing this with C<use open> and the extensions to the binmode
+syntax. Benjamin Stuhl has done lots of good work on this (and this RFC
+owes a huge amount to his suggestions) and he's come up with the
+following API. From C, a processing module is registered like this:
+
+    PerlIO_register_discipline(char * name, int level, VTABLE functable,
+    void * data);
+
+(We'll look at what C<level> means when we come to implementation)
+
+Once registered, a processing module can be attached to a file handle
+through C<binmode>
+
+    binmode($FH, ":+name"):
+
+(Note: BKS originally suggested C<+:name>, but I reversed this. Seemed a
+good idea at the time.)
+
+Here are a few examples:
+
+    open ($FH, "<", "japanese.euc.gz");
+    binmode($FH, ":+decompress");
+    binmode($FH, ":+euc_to_utf8");
+    $foo = <$FH>; # This now UTF8.
+
+Note that due to the concept of levels, this will still work:
+
+    open ($FH, "<", "japanese.euc.gz");
+    binmode($FH, ":+euc_to_utf8");
+    binmode($FH, ":+decompress");
+
+I also propose that user-definable "sets" of processing modules can be
+specified on the C<open> line:
+
+    use open 'decompress_euc' => [ '+decompress', '+euc_to_utf8' ];
+    open ($FH, "< :decompress_euc", "japanese.euc.gz");
+
+=head1 IMPLEMENTATION
+
+Benjamin has identified 5 different types of transformation. Imagine
+that the data goes through 5 "rooms" before it gets to Perl-space. Each
+room can, in theory, have any numbers of processing modules in them, but
+that's not actually workable at all in practise. Only levels 1 and 3 can
+have several modules in them, and these modules will be implemented as a
+stack.
+
+Perl also needs to provide a default module for each "room", and we'll
+explain that as we look into the rooms.
+
+(The example given is for input; simply walk through the rooms backwards
+for output.)
+
+=over 1
+
+=item Room 0: OS level 
+
+This level implements buffering; it's here that the difference between,
+say, C<sysread> and C<read> becomes important. Modules in this layer
+must be added on the C<open> statement, since it controls very precisely
+how Perl looks at the data even before we read anything from it.
+
+The default behaviour is to emulate STDIO; in fact, the entirety of
+STDIO apart from splitting the input into lines (C<gets> and friends)
+gets implemented here.
+
+=item Room 1: Byte Transformations
+
+This is where things like decompression happen; you're performing
+arbitrary transformations on the raw bytes. 
+
+Default behaviour is the operating system specific treament of carriage
+returns and new lines, unless C<:raw> is set by C<binmode>.
+
+=item Room 2: Conversion to UTF8
+
+What it says. Here the data has to be converted, if necessary, to UTF8.
+I believe that this is Not Our Problem, as one of my other RFCs says. If
+you want to convert from UTF8 to 
+
+The default behaviour is to convert the data from ISO8859-1 to UTF8 for
+input and vice versa for output, unless C<:utf8> is set to indicate that
+we're already there, in which case no action is taken. 
+
+=item Room 3: Transformations on the UTF8
+
+Whatever you want to do here. Default is no action.
+
+=item Room 4: Records
+
+It's at this point that the data gets split up into records or lines;
+the equivalent of C<$/> and C<$\>.
+
+The default behaviour is to split input on newlines and do nothing to
+output.  
+
+=back
+
+=head1 REFERENCES
+
+W. Richard Stevens: Advanced Programming in the Unix Environment.
+
+D. Ritchie: "A Stream Input-Output System", AT&T Bells Labs. Tech.
+Journal, vol. 63, no. 8, pp.1897-1910
+
+Korn and Vo: "SFIO: Safe / Fast String / File IO", Proceedings of the
+1991 Summer USENIX Conference, pp.235-255.
+
+The sfio library.

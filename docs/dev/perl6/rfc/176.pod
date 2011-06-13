@@ -1,0 +1,161 @@
+=head1 TITLE
+
+subroutine / generic entity documentation
+
+=head1 VERSION
+
+  Maintainer: Michael Maraist <maraist@udel.edu>
+  Date: 25 Aug 2000
+  Last Modified: 25 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 176
+  Version: 2
+  Status: Frozen
+
+=head1 CHANGES
+
+Resolved that attributes can already allow functional parameters, and thus
+removed it's discussion.
+
+=head1 ABSTRACT
+
+Extend perl's self documentation to allow dynamic documentation with at
+least as much power as "perldoc -f xxxx".  Ideally, documentation would be
+an attribute and therefore retrievable at run time.
+
+ #File: Foo.pm
+ sub foo : doc( <<EOS )
+   Function:  Foo
+   In:    scalar - int - foo identifier
+   Out:    array - decomposed foo
+   Effects: Queries Foo DB
+   Exceptions: DBI, "bad foo id"
+ EOS
+ {
+   # Do good foo
+   ...
+ } # end foo
+
+ #File: main.pl
+ use Foo;
+
+ print "Foo Info: ", attributes::doc::get( \&Foo::foo ), "\n";
+
+ # Command prompt
+ % perldoc -f Foo::foo
+
+
+=head1 DESCRIPTION
+
+=head2 Motivation
+
+Many interpreted languages allow run-time querying of information about a
+function.  Lisp, python, matlab, etc.  Recently, even byte-compiled
+languages, such as Java are even applying function-based documentation.
+Perl, in comparison, has a very functional POD format, but unfortunately, it
+is flat, static, and only useful at the level of a module.  The only real
+advantage that POD servers is in the keeping of documentation close to the
+code.  Though various tools exist to dynamically generate documentation on
+functions (I have written a few simple ones), perl code is not easily
+analyzable.
+
+Java, for example, has many attributes associated with a function: name,
+return type, parameter types, throwable exceptions, and class heirarchy.
+This allows javadoc to produce a comprehensive suite of documents even from
+compiled code, without a single explicit comment.  Document comments ( /**
+... **/ ) are also intelligently associated with the function to complete
+the process.
+
+Perl doesn't really stand a chance at this level of sophistication (being,
+for the most part, a type-less language with little or no useful function pr
+ototyping).
+
+At the other extreme are the interpreted languages.  Since you are at the
+prompt for much of the development process in these languages, it is
+obviously useful to have a "reflection", or the ability to query information
+about pre-defined components.  The first bare string after the function
+header is usually considered the function-comment.  Various languages, such
+as Python, have perl-like HERE-DOCUMENTS, so this works out nicely.
+
+Perl is somewhere in between.  It was designed to work more like a compiled
+language (so the reflection property isn't really necessary), but has a very
+powerful interpretive debugger in which many developers, like myself, keep
+open like a prompt.  This begs for an ability to perform quick-and-dirty
+queries about the nature of a given function.  It would be a very cool and
+perl-like enhancement.
+
+=head2 Requirements
+
+At a minimum, documentation should be able to be associated with a function.
+I propose some derivative of the 'attributes' pragma for storing this
+information.  As it stands, attributes is keyword presence based, so it
+probably would not be a good candidate for document storage out of the box.
+A sub-pragma ( read sub-module ) could take as it's only argument a scalar
+string as in:
+
+ sub foo {
+   use attributes::doc "This is my documentation";
+ } # end foo
+
+ sub foo {
+   use attributes::doc <<EOS;
+ Multi-line
+ Comment
+ EOS
+ } # end foo
+
+Or even possibly using newer style:
+
+ use attributes;
+
+ sub foo : doc( <<EOS )
+ Multi-line
+ Comment
+ EOS
+ {
+ ...
+ } # end foo
+
+ print attributes::getDoc( \&foo );
+
+Assuming the newer attributes style ( symbol: attribute-list ) is feasible ,
+then documentation could be applied to any perl-entity.  As in:
+
+ package Foo : doc( "Simple collection of Foo material" );
+
+ sub foo : doc( "analyzes a foo ID" ) {
+   my ( $x, $y, $z ) : doc( "temp variables to store mathematical
+calculations" );
+ } # end foo
+
+ our %cache : doc( "Store DB accesses to foo" );
+
+
+After association of text with a function, the next problem is in how to
+retrieve it.  There is already the attributes::get( {func-ref} ), so it
+should be trivial to apply attributes::doc::get( {func-ref} ).  I am not up
+to speed on how perldoc -f {func-name} works, but I don't see any major
+problem with extending it to perform the appropriate get and print
+statements.
+
+=head1 IMPLEMENTATION
+
+The simplest implementation would be to create the independant module
+attributes::doc, and perform a "use attributes::doc 'str'".  The import
+routine would get the calling function's name, and apply the documentation
+to a global hash.  The get function would simply query this hash.  The
+perldoc program would also have to add a search for this.
+
+The more desired approach is to make 'doc' a full fledged attribute, and
+provide
+the accessor function in the "attributes" module as for
+attributes::doc::get( {func-ref} ).
+
+=head1 REFERENCES
+
+perldoc attrs
+
+perldoc attributes
+
+RFC 160: Function-call named parameters (with compiler optimizations)
+

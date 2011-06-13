@@ -1,0 +1,96 @@
+=head1 TITLE
+
+Eliminate =~ operator.
+
+=head1 VERSION
+
+  Maintainer: Steve Fink <steve@fink.com>
+  Date: 21 Aug 2000
+  Last Modified: 8 Sep 2000
+  Mailing List: perl6-language-regex@perl.org
+  Number: 138
+  Version: 2
+  Status: Withdrawn
+
+=head1 ABSTRACT
+
+Replace EXPR =~ m/.../ with m/.../ EXPR, and similarly for s/// and
+tr///. Force an explicit dereference when using qr/.../. Disallow the
+implicit treatment of a string as a regular expression to match
+against.
+
+=head1 CHANGES
+
+Withdrawn on 8 Sep 2000. Seems like discussion is pretty much over,
+Larry's seen it and commented, and RFC164 mostly encompasses the idea,
+so I'm withdrawing this one just to clean things up. Besides, I don't
+want to maintain too many RFCs and I've got an idea for another one.
+:-)
+
+=head1 DESCRIPTION
+
+The EXPR =~ m/.../ syntax is ugly and unintuitive, something only its
+mother (awk? sed?) could love. It performs a function that is
+semantically no different from other forms of argument passing. This
+RFC proposes to eliminate the =~ binding operator and treat m,
+tr, and s almost like regular subroutine names but with slightly
+different syntax and semantics.
+
+To illustrate the proposal by example, the current
+
+ /pattern/;
+ m/pattern/;
+ $x =~ /pattern/;
+ ($a, $b, $c) = $x =~ /p(a)t(t)e(r)n/;
+ gsx =~ s/pattern/subst/gsx;
+ $r = qr/pattern/; $x =~ $r;
+ $r = "pattern"; $x =~ $r;
+
+would become
+
+ /pattern/;
+ m/pattern/;
+ /pattern/ $x; OR /pattern/ ($x);
+ ($a, $b, $c) = /p(a)t(t)e(r)n/ $x;
+ s/pattern/subst/gsx (gsx);
+ $r = qr/pattern/; $r->($x);
+ same as the previous, or $r = "pattern"; /$r/ ($x);
+
+Specifically, all patterns behave as if they are subroutines with a
+($) prototype, except they have the current syntax for their first
+argument, and $1 etc. interpolation remain unchanged.
+
+qr/.../ would produces a CODE ref that may be invoked with the pattern
+to match against. It would be a regular CODE ref rather than the
+current magical Regexp reference type.
+
+=head2 RELATED WACKY IDEA #1: Everything's a reference
+
+Alternatively, we could think of m/.../ as always returning a
+reference, so that the syntax is /pattern/->($x). This is much more
+visually distinctive, but runs afoul of Larry's "no implicit
+dereferencing" rule in order to make /pattern/ default to
+/pattern/->($_). On the other hand, $a =~ $b already breaks that rule
+by dereferencing qr// refs, so maybe it's not such a big deal.
+
+=head2 RELATED WACKY IDEA #2: Creating references to matching operations
+
+Now forget about the previous alternative and assume as in the main
+section that we have /pattern/ ($x) and qr/pattern/->($x). This
+naturally leads to \m/pattern/ or \&m/pattern/ as an equivalent for
+qr/pattern/, and also introduces \s/pattern/subst/ and
+\tr/pattern/subst/ as new reference types.
+
+=head1 IMPLEMENTATION
+
+Minor parser changes. Currently, the relevant rule in perly.y is
+B<C<term MATCHOP term>>. The terms would be reversed, and the first
+would
+need to be renamed to cover only s///, m//, and tr/// (and
+equivalents). So it would be something like B<C<matchterm term>>.
+
+=head1 REFERENCES
+
+=head2 Contributors
+
+  Dirk Meyers <demyers@pscnet.com> came up with this idea.

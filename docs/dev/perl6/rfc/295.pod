@@ -1,0 +1,88 @@
+=head1 TITLE
+
+Normalisation and C<unicode::exact>
+
+=head1 VERSION
+
+  Maintainer: Simon Cozens <simon@brecon.co.uk>
+  Date: 25 Sep 2000
+  Mailing List: perl6-internals@perl.org
+  Number: 295
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+Perl 6 should support Unicode normalisation; this is going to make
+comparing strings confusing.
+
+=head1 DESCRIPTION
+
+First, what's normalisation? Unicode gives the user a lot of flexibility
+over how data is represented. For instance, there are two ways of
+representing E<eacute>; (that's an e with an acute accent) first,
+there's C<U+00E9>, (Also handily named LATIN SMALL LETTER E WITH ACUTE)
+and there's secondly the two characters C<U+0065 U+0301>. (That's a
+an acute accent which combines with an ordinary latin letter 'e')
+
+Normalisation is the process of turning all data in the first type of
+representation to the second type. Well, strictly speaking, this is
+"decomposition", but the purpose of it is that we can now compare things
+for their meaning, and not solely for their representation, and doing it
+for that purpose is normalisation.
+
+Perl 6 should support normalisation. But this creates a problem. Should
+the C<eq> operator compare representations or meanings? After plying the
+perl5-porters with large quantities of alcohol at YAPC::Europe, the
+consensus was that it should compare meanings. Good. Perl's always been
+about handling text for meaning. But then how can we tell whether two
+strings are really equal in terms of their representation?
+
+=head1 IMPLEMENTATION
+
+The current C<use bytes> pragma (which is the subject of another of my
+Unicode RFCs) will allow comparison in terms of representation; there's
+also a problem of optimisation. 
+
+If we keep the original data, we need to perform decomposition every
+time we do any kind of string comparison, and I don't relish the
+prospect of C<cmp> becoming really slow. Of course, you could store a
+decomposed PV inside the SV as well, but that's big and heavy; the only
+sensible, non-destructive optimisation would be to have some kind of
+C<IsNormalised> flag in the SV which tells us not to bother decomposing
+this string, since it's already in a normalised representation.
+
+I propose that by default, Perl 6 is allowed to chew up your data and
+decompose it. If the exact representation is important to the user, the
+pragma C<unicode::exact> should be turned on; inside of the scope of
+C<unicode::exact>, no normalisation is performed, and C<cmp> and friends
+perform normalisation on a temporary copy of the string so as to be
+non-destructive to the original data. For instance:
+
+    $x = chr(0x00E9); # LATIN SMALL LETTER E WITH ACUTE
+    ... if ($x cmp $y);
+    # $x is *actually* chr(0x0065).chr(0x0301) now
+    
+    {
+        use unicode::exact;
+        $x = chr(0x00E9);
+        ... if ($x cmp $y);
+        # $x is compared as if it were chr(0x0065).chr(0x0301),
+        # but it retains its old value of chr(0x00E9)
+    }
+
+Outside of C<unicode::exact>, whether the normalisation is done lazily
+(necessitating an C<IsNormalised> flag) or when the data is stored is
+not specified by this RFC; it works fine both ways. I'd personally say
+it should be done on lazily.
+
+=head1 REFERENCES
+
+The Unicode FAQ; http://www.unicode.org/unicode/faq
+
+RFC 300: C<use unicode::representation>
+
+RFC 312: Unicode Combinatorix
+
+RFC ??:When UTF8 Leaks Out
+

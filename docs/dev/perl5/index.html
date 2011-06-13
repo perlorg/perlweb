@@ -1,0 +1,56 @@
+[% page.title = "Perl 5" %]
+
+
+<CENTER>
+<P>
+<big>The home of perl 5 development!</big>
+</P>
+<IMG SRC="/simages/sm_camel.gif" BORDER=0>
+
+<br>
+<br>
+
+<font size="+4">
+<b><a href="[% perl_stats.perl_version_link %]">Perl [% perl_stats.perl_version %] Released!</a></b>
+</font><br>
+
+(<a href="[% perl_stats.perl_download_link %]">Download</a>, <a href="http://www.nntp.perl.org/group/perl.perl5.porters/2011/05/msg172326.html">p5p announcement</a>)<br/>
+
+The previous major release was <a href="search.cpan.org/dist/perl-5.12.3/">Perl 5.12.3</a>.
+
+<br><br>
+
+[% words = ["diamond inheritance now works!",
+	    "root can use perldoc!",
+	    "code references now Storable!",
+	    "hashes-to-hashes dust-to-dust",
+	    "now supports local \${\$x}",
+	    "still not perl 6",
+	    "tastes great, less filling",
+	    "mo better perl mojo",
+	    "features added, some work!",
+	    "you will like it!",
+	    "new better random hashes",
+	    "too damn many features",
+	    "Doing the same but better",
+	    "slicker than ever before!",
+            "not enough new quotes",
+            "different random hashes",
+            "makes mod perl 2 happy",
+            "UTF8 works even better",
+            "reentrant C++ works again",
+            "Unicode 4.1.0",
+            "malloc wrapping",
+        "core module upgrades",
+        "faster reverse sort",
+        "suidperl less insecure",
+        "modules upgraded",                
+          ] %]
+[% pick = words.size().rand() %]
+<br><b><i>[% words.$pick %]</i></b><br>
+
+
+<br>
+<br>
+</CENTER>
+

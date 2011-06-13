@@ -1,0 +1,107 @@
+=head1 TITLE
+
+Data: Superpositions
+
+=head1 VERSION
+
+  Maintainer: Damian Conway <damian@conway.org>
+  Date: 14 Sep 2000
+  Last Modified: 18 Sep 2000
+  Mailing List: perl6-language-data@perl.org
+  Number: 225
+  Version: 2
+  Status: Frozen
+
+=head1 ABSTRACT
+
+This RFC (seriously) proposes Perl 6 provide C<any> and C<all> operators,
+and, thereby, conjunctive and disjunctive superpositional types.
+
+
+=head1 DESCRIPTION
+
+The advantages and possibilities of superpositional programming were 
+demonstrated in well-received presentations at both YAPC'19100 and TPC 4.0.
+
+It is proposed that the C<any>, C<all>, and C<eigenstates> operators
+proposed in those talks be added to Perl 6. Adding them to the core is
+suggested because the use of superpositions changes the nature of
+subroutine and operator invocations that have superpositions as
+arguments. This is currently impossible to reproduce in a module.
+Furthermore, the fundamental utility of being able to write:
+
+        if (any(@value) < 10) { ... }
+
+or:
+
+        die unless all(@tests)->($data);
+
+ought to be available to all Perl users.
+
+Inclusion in the core would also allow the current module-based pure Perl
+implementation to be greatly optimized (perhaps even parallelized on suitable
+SIMD or other multiprocessing platforms).
+
+A paper proposing the full semantics of superpositions (including their
+effect when used as subroutine arguments and operator operands) will soon
+be available from:
+
+        http://www.csse.monash.edu.au/~damian/papers/#Superpositions
+
+
+=head1 MIGRATION ISSUES
+
+The <any> and <all> functions may collide with existing user-defined
+or module-exported subroutine names.
+
+
+=head1 IMPLEMENTATION
+
+See the Quantum::Superpositions module.
+
+
+=head1 REFERENCES
+
+ [1] Bohr, N., On the Constitution of Atoms and Molecules, Philosophical
+     Magazine, s.6, v.24, pp.1-25, 1913.
+
+ [2] Einstein, A., †ber einen die Erzeugung und Verwandlung des Lichtes
+     betreffenden heuristischen Gesichtspunkt ("On a Heuristic Viewpoint
+     Concerning the Production and Transformation of Light"), Annalen
+     der Physik, v.17, p.132-148, 1905.
+
+ [3] Lewis, G.N., The Conservation of Photons, Nature, v.118(2),
+     pp.874-875, 1926.
+
+ [4] Monroe, C., Meekhof, D.M., King, B.E., Itano, W.M. & Wineland, D.J.
+     Demonstration of a Fundamental Quantum Logic Gate, Phys. Rev. Lett.
+     v.75, pp.4714-4717, 1995.
+
+ [7] Cirac, J.I. & Zoller P., Quantum Computations with Cold Trapped
+     Ions, Phys. Rev. Lett. v.74, pp.4091-4096, 1995.
+
+ [8] Gershenfeld, N. & Chuang, I. L. Bulk Spin-resonance Quantum
+     Computation, Science v.275, pp.350-356, 1997.
+
+ [9] Cory, D.G., Fahmy, A.F. & Havel, T.F., Ensemble Quantum
+     Computing by NMR Spectroscopy, Proc. Natl Acad. Sci. USA 94,
+     pp.1634-1639, 1997.
+
+[10] Deutsch, D. Quantum Theory, the Church-Turing Principle and the
+     Universal Quantum Computer, Proc. R. Soc. Lond., v.A400,
+     pp.97-117, 1985.
+
+[11] Deutsch, D. & Jozsa, R., Rapid Solution of Problems by Quantum
+     Computation, Proc. R. Soc. Lond., v.A439, pp. 553-558, 1992.
+
+[12] Shor, P. Algorithms for Quantum Computation: Discrete Logarithms
+     and Factoring, Proc. 35th Symp. on Found'ns of Computer Science,
+     pp. 124-134, 1994.
+
+[13] Grover, L.K., A Fast Quantum Mechanical Algorithm for Database
+     Search, Proc. 28'th ACM Symp. on the Theory of Computing, pp.
+     212-219, 1996.
+
+[14] Wallace, J., Quantum Computer Simulators - A Review, Technical
+     Report 387, School of Engineering and Computer Science, University
+     of Exeter, June 1999.

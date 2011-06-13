@@ -1,0 +1,125 @@
+=head1 TITLE
+
+Objects : Mandatory and enhanced second argument to C<bless>
+
+=head1 VERSION
+
+  Maintainer: Damian Conway <damian@conway.org>
+  Date: 1 Sep 2000
+  Last Modified: 18 Sep 2000
+  Mailing List: perl6-language-objects@perl.org
+  Number: 187
+  Version: 2
+  Status: Frozen
+
+=head1 ABSTRACT
+
+This RFC proposes that the second argument to C<bless> be made
+mandatory, and that its semantics be enhanced slightly to cover a
+common, ugly, and frequently buggy usage.
+
+=head1 DESCRIPTION
+
+=head2 Mandatory second argument
+
+When omitted, the second argument to C<bless> currently defaults to the
+name of the package from which the call to C<bless> is being made. This
+default behaviour leads to unexpected and undesirable behaviour whenever
+a constructor is inherited by a derived class:
+
+        package Base;
+        
+        sub new { bless {} }
+        
+        
+        package Derived;
+        use base 'Base';
+        
+        
+        package main;
+        
+        $obj = Derived->new();          # Creates an object blessed into Base!
+        
+
+To remove this nasty surprise is proposed that the second argument to
+C<bless> be made mandatory.
+
+Alternatively, if the second argument is to remain optional, the default
+value should be the invocant: normally $_[0], but possibly whatever
+access mechanism has been specified under C<use invocant>.
+
+
+=head2 Extended second argument semantics
+
+A common idiom in OO Perl is to allow constructors to be called
+as both class- and object- methods by writing:
+
+        sub new {
+                bless {}, ref($_[0]) || $_[0];
+        }
+        
+It is proposed that the above clutter be rendered unnecessary.
+Specifically, if the second argument to C<bless> is a reference,
+that it be stringified by calling C<ref>, rather than by the usual
+stringification process.
+
+This would allow the above example to be written as:
+
+        sub new {
+                bless {}, $_[0];
+        }
+        
+More importantly, it would allow calls to C<bless> which I<don't>
+use the C<ref($_[0])||$_[0]> idiom to Do The Right Thing,
+instead of the existing bizarre behaviour (i.e. blessing 
+into classes with names like C<'MyClass=HASH(0x5a7f590)'> [sic].
+
+
+=head2 Alternative (restricted) second argument semantics
+
+An alternative to extending the semantics of the second argument, would
+be to cause C<bless> to issue a warning or exception when called with a
+reference as its second argument. This would still require an explicit
+C<ref($_[0])||$_[0]> where such behaviour was desired, but would catch
+erroneous uses.
+
+And anyone truly desiring the bizarre existing behaviour could
+simply use:
+
+        sub new {
+                bless {}, "$_[0]";
+        }
+        
+
+
+
+=head1 MIGRATION ISSUES
+
+Minimal, since only the truly wicked ever invoke C<bless> with only
+one argument.
+
+Migration would consist of translating instances of:
+
+        bless REF;
+        
+to:
+        
+        bless REF, __PACKAGE__;         # Note: this may break inheritance!
+        
+        
+Changes to second argument semantics would have no impact except in
+pathological cases. In practice, the new semantics would silently fix a
+large number of lurking bugs in existing code.
+
+
+=head1 IMPLEMENTATION
+
+Trivial.
+
+=head1 REFERENCES
+
+I<perltoot>
+
+Conway, I<Object Oriented Perl>, p. 77 & 172
+
+Forthcoming RFC on C<use invocant>

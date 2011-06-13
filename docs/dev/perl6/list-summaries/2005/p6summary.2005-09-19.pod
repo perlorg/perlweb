@@ -1,0 +1,246 @@
+=head1 Perl 6 Summary for 2005-09-12 through 2005-09-19
+
+All~
+
+Welcome to another Perl 6 Summary, this time brought to you with a shorter pause (::grumble:: $WORK ::grumble::) and assisted by cookies.
+
+=head2 Perl 6 Compilers
+
+=head3 Circular Preludes for Fun and Confusion
+
+Yuval Kogman posted a really interesting idea of using a circular prelude to facilitate creation of a new run time.  If the prelude defines everything it can in terms of itself (even circularly if need be), then a new run time implementer can break the circle wherever is most convenient for the run time.  It looks really cool to me.
+
+L<http://groups.google.com/group/perl.perl6.compiler/browse_frm/thread/99829b80397ed149/a24a7f85ec34caf8#a24a7f85ec34caf8>
+
+
+
+=head3 PxPerl Site Change
+
+Grégoire Péan announced that he was having problems with his old domain and that PxPerl is now hosted at http://pxperl.com
+
+L<http://groups.google.com/group/perl.perl6.compiler/browse_frm/thread/fbdc7bfb5ff3d803/53e13b792df0cf73#53e13b792df0cf73>
+
+
+
+=head2 Parrot
+
+=head3 13! == BIG!
+
+James Ghofulpo noticed that the example factorial program included with Parrot gives incorrect results on 32 bit machines.  Will Coleda offered to clean the old PASM examples into shiny new PIR.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/965b026dbd247636/81ee4614a2bb70cd#81ee4614a2bb70cd>
+
+
+
+=head3 Properly Formatted POD
+
+Unlike these summaries, Parrot's docs should be in properly formatted POD.  Joshua Hoblitt provided patches to fix them up and test them.  Bernhard Schmalhofer applied the patches.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/104482996f08084f/2065b58ed4df81bd#2065b58ed4df81bd>
+
+
+
+=head3 Bad IMCC Error Message
+
+Joshua Hoblitt opened an RT ticket for the error message imcc outputs upon seeing a non-existent PMC.  No takers yet.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/2af3a4fe73c5d8c1/a68deadbb8a93dff#a68deadbb8a93dff>
+
+
+
+=head3 Globbing Like Tcl
+
+Amos Robinson opened am RT ticket requesting Tcl Syntax Globbing in PGE.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/7c55388a732a6acb/d4b3ea2dd8a119b0#d4b3ea2dd8a119b0>
+
+
+
+=head3 AMD64 Build Error
+
+Joshua Hoblitt posted a build error involving posix_memalign on AMD64.  Warnock applies.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/1ce347e419bf14d9/fe99694c781f10ec#fe99694c781f10ec>
+
+
+
+=head3 TODO: Call for B0rked
+
+chromatic the capless put out a call for specific TODO items that Parrot needed.  Many people provided suggestions.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/681fcb5f900ce703/069d2b0126dec790#069d2b0126dec790>
+
+
+
+=head3 Documentation Keyword Tagging
+
+Joshua Hoblitt opened a ticket requesting keyword tagging (via C< X<> >) .
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/3b5f8d735f6857f9/d0dc57b7e3960154#d0dc57b7e3960154>
+
+
+
+=head3 leo-ctx5 on Win32
+
+François Perrad solved a few link problems on Win32 for the leo-ctx5 branch.  Jonathan Worthington applied it.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/457ea4033a947b7c/5010ed51efa2504a#5010ed51efa2504a>
+
+
+
+=head3 Support Different Compilers
+
+Andy Dougherty provided a patch making it easier to compile parrot with a different options then Perl 5.  Bernhard Schmalhofer tentatively applied it, but despite his fears nobody hollered.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/d689014c1c24ab0b/e6186ccfeaaccc45#e6186ccfeaaccc45>
+
+
+
+=head3 Tcl Leo's Context
+
+My that sounds dirty....  Regardless Leo and Will Coleda, with much help from assorted others) managed to get all of the Tcl tests passing in the leo-ctx5 branch.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/4ffc308aa735c22a/7dd5b332730154cf#7dd5b332730154cf>
+
+
+
+=head3 4 Down 7204 to Go
+
+Andy Dougherty posted a patch which eliminates 4 of Parrot 7208 compiler warnings on SPARC.  Warnock applies.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/d2e018af79eb7dba/493978b84c84ddcc#493978b84c84ddcc>
+
+
+
+=head3 Circular Finalization Returns From the Dead
+
+Nicholas Clark wondered how Parrot would handle PMC loops with finalizers.  Leo and I provided some ideas.  Nothing is officially specced yet.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/d8225b7088da3454/f90781ca65317c42#f90781ca65317c42>
+
+
+
+=head3 C<make clean>er
+
+Joshua Hoblitt provided a patch which makes make clean cleaner.  Warnock applies.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/d9334af47224995e/c940387ed1f3b1ee#c940387ed1f3b1ee>
+
+
+
+=head3 Pack Packfiles, Fix Fixups
+
+Jonathan Worthington split the fixup and unpack functionality of Packfiles so that he could later create a pbc_merge.  Later he did that.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/b9e56d89530a4029/00c27be7ca986619#00c27be7ca986619> -- earlier
+
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/8b4e5b0f87adba1d/592f156d4a10382b#592f156d4a10382b> -- later
+
+
+
+=head3 Taking Exception to Leo's Tcl
+
+Some days my head is just in the gutter.  Will Coleda update Tcl to use exceptions for TCL_RETURN, which apparently simplifies things.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/b85178f10b8653bf/a4f59e5b97c802b1#a4f59e5b97c802b1>
+
+
+
+=head3 Tcl on Windows
+
+Jerry Gay noticed that Tcl was not building on Windows.  Will Coleda suspected that it got fixed; he was right.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/67e90f0017d37cef/59c6770da74ca7af#59c6770da74ca7af>
+
+
+
+=head3 Implementing Splice
+
+Nicholas Dronen decided to try and implement splice in *PMCArrays, after suggestions from Leo and Jonathan Worthington.  I have found these Arrays to be good starting points in the past.  Good luck, Nick.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/425514e2fddaf817/8f11d04b3f8cfb4d#8f11d04b3f8cfb4d>
+
+
+
+=head3 Optimize MinGW
+
+François Perrad provided a patch making C< Configure.pl --optimize > and C< Configure.pl --optimize=flags > work on MinGW.  Jonathan Worthington applied it.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/242df2e3cc8f7801/02da98b7768271d6#02da98b7768271d6>
+
+
+
+=head2 Perl 6 Language
+
+=head3 Object Model Pictures
+
+Stevan Little posted the latest pictures of his MetaModel. Nathan Gray thanked him and put out a quiet request for a diagram about roles.  
+
+L<http://groups.google.com/group/perl.perl6.language/browse_frm/thread/0f63ce9ada905a22/3579f05a8fc31368#3579f05a8fc31368>
+
+
+
+=head3 Coersive Context
+
+Juerd posted his thoughts about using types as context specifiers and coercers.  Reaction seemed interested but limited.
+
+L<http://groups.google.com/group/perl.perl6.language/browse_frm/thread/4f2141163e99872b/b7ea8c3b2f978693#b7ea8c3b2f978693>
+
+
+
+=head3 Perl 6 and Undefined Behavior
+
+Nicholas Clark asked if Perl 6 was going to have any undefined behavior or guarantee any sequence points.  Larry does not want to have any undefined behavior, but thinks that the reference implementations quirks might be the definer for certain things.  He did point out that junction evaluation order is defined to be undefined.
+
+L<http://groups.google.com/group/perl.perl6.language/browse_frm/thread/4d210f942e9a5a58/07c07c8c533e5ffa#07c07c8c533e5ffa>
+
+
+
+=head3 Junctions, Patterns, and Function Maps
+
+Luke Palmer posted another version of his fmap proposal which defines junctions and hypers in terms of funtor maps.
+
+L<http://groups.google.com/group/perl.perl6.language/browse_frm/thread/847ca0b5a1ffc15c/70cdb5528c116427#70cdb5528c116427>
+
+
+
+=head3 Lazy vs Eager vs Something in the Middle
+
+Yuval Kogman requested a nifty kind of asynchronous gather take which would handle the threading automagically.  I really like it.
+
+L<http://groups.google.com/group/perl.perl6.language/browse_frm/thread/81dde1c00715df07/cc91c1dab71d91cb#cc91c1dab71d91cb>
+
+
+
+=head3 C< \(...) >
+
+  Ingo Blechschmidt started a long thread on the exact semantics of C< \ > in the presence of arrays, commas, and parens.
+
+L<http://groups.google.com/group/perl.perl6.language/browse_frm/thread/d0d64f31a07718ca/2910c0c5726e7832#2910c0c5726e7832>
+
+
+
+=head2 The usual footer
+
+To post to any of these mailing lists please subscribe by sending email to <perl6-internals-subscribe@perl.org>, <perl6-language-subscribe@perl.org>,  or <perl6-compiler-subscribe@perl.org>.  If you find these summaries useful or enjoyable, please consider contributing to the Perl Foundation to help support the development of Perl. You might also like to send feedback to ubermatt@gmail.com
+
+L<http://donate.perl-foundation.org/> -- The Perl Foundation
+L<http://dev.perl.org/perl6/> -- Perl 6 Development site
+L<http://planet.parrotcode.org/> -- Parrot Blog aggregator
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

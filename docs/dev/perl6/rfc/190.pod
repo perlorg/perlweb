@@ -1,0 +1,163 @@
+=head1 TITLE
+
+Objects : NEXT pseudoclass for method redispatch
+
+=head1 VERSION
+
+  Maintainer: Damian Conway <damian@conway.org>
+  Date: 1 Sep 2000
+  Last Modified: 18 Sep 2000
+  Mailing List: perl6-language-objects@perl.org
+  Number: 190
+  Version: 2
+  Status: Frozen
+
+=head1 ABSTRACT
+
+This RFC proposes a new pseudoclass named C<NEXT>.
+This pseudoclass would provide a way of correctly redispatching a method
+or an autoloaded method.
+
+
+=head1 DESCRIPTION
+
+Perl 5 provides a pseudoclass named C<SUPER> that allows a method to
+redispatch a call to the next available method in one of its parent
+classes. This redispatch mechanism works by searching for an inherited
+method in any of the ancestors of the I<current> package (but not
+necessarily the invocant's package). This works well in many cases, but
+not when the next most appropriate method is actually in a sibling class
+of the current package, rather than in an ancestor.
+
+For example, consider invoking a debugging method named C<dump_info>
+on a derived class object:
+
+        $obj->dump_info();
+
+In order to ensure that all the object's ancestral information
+was also dumped, its C<dump_info> method might be structured like so:
+
+        package Derived;
+        use base qw(Base1 Base2);
+
+        sub dump_info {
+                my ($self) = @_;
+                $self->SUPER::dump_info();
+                print $self->{derived_info};
+        }
+
+The various ancestral classes would then be structured similarly:
+
+        package Base1;
+        use base qw(GrandBase1);
+
+        sub dump_info {
+                my ($self) = @_;
+                $self->SUPER::dump_info();
+                print $self->{base1_info};
+        }
+
+
+        package Base2;
+        use base qw(GrandBase2 GrandBase3);
+
+        sub dump_info {
+                my ($self) = @_;
+                $self->SUPER::dump_info();
+                print $self->{base2_info};
+        }
+
+        # etc.
+
+
+Unfortunately, this does not result in the derived object's complete
+information being dumped, since each call to C<SUPER::dump_info>
+will only call a single (left-most) ancestral C<dump_info>. Thus only the
+C<dump_info> methods in the left-most inheritance branch will ever
+be called.
+
+What is required here is a mechanism to resume the I<original> dispatch
+process, rather than initiate a new one from the current point.
+
+It is proposed that Perl 6 provide a new pseudoclass -- C<NEXT> -- 
+to facilitate exactly that.
+
+A method invocation in which the method name is explicitly qualified
+with C<NEXT::> (e.g. C<$self->NEXT::method(@args)>) would cause the
+original dispatch that invoked the current method to be restarted and
+the next suitable method called.
+
+Another way of thinking of the effect of such a redispatch would be that 
+it repeats the original dispatch of C<$self->method(@args)>, but ignores
+all dispatch candidates until it has reached (and by-passed) the current
+method. Of course, the mechanism wouldn't actually be implemented in
+this inefficient manner.
+
+Note that, after the redispatch, control returns to the original method.
+
+
+=head2 Redispatch of C<AUTOLOAD> methods
+
+The C<NEXT> pseudoclass also solves the problem of how to allow
+C<AUTOLOAD> methods to "decline" to handle particular invocations. 
+
+For example, with C<NEXT> it is possible to implement an C<AUTOLOAD>
+method that only handles method calls of the form C<get_...> and
+C<set_...> and is effectively invisible to any other method requests
+(which might then trigger other C<AUTOLOAD>s elsewhere in the
+object's inheritance tree).
+
+The implementation would look like this:
+
+        sub AUTOLOAD {
+                $AUTOLOAD =~ s/.*:://;
+                if ($AUTOLOAD =~ /^get_\w+$/) {
+                        # Handle getting...
+                }
+                elsif ($AUTOLOAD =~ /^set_\w+$/) {
+                        # Handle setting...
+                }
+                else {
+                        # Decline to handle,
+                        # passing the request on to someone else...
+                        shift->${\"NEXT::$AUTOLOAD"}(@_);
+                }
+        }
+
+Note that the same trick could be applied by any method, to selectively
+refuse certain invocations, handing them on to some other inherited
+method instead. For example:
+
+	package IO::URL;
+	use base 'IO::File';
+
+	sub open {
+		my ($self, $filename, @args) = @_;
+		if ($filename !~ /^(http|ftp):/) {
+			$self->NEXT::open($filename, @args);
+		}
+		else {
+			# Open URL...
+		}
+	}
+
+
+
+=head1 MIGRATION ISSUES
+
+None.
+
+=head1 IMPLEMENTATION
+
+Presumably it would be necessary to cache the dispatch stack until
+the dispatched method finishes executing.
+
+Alternatively, implementing the method dispatcher as a coroutine
+would make this very easy.
+
+
+=head1 REFERENCES
+
+Conway, I<Object Oriented Perl>, pp. 183-184.
+
+RFC 8: The AUTOLOAD subroutine should be able to decline a request

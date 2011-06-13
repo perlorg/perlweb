@@ -1,0 +1,19 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use CGI qw( :standard );
+
+my @files = sort <status/*.pod>;
+my @entries;
+
+for my $file ( @files ) {
+    my $html = $file;
+    $html =~ s[(status)/(.+)\.pod$][$1/$2.html] or die;
+    my $distro = $2;
+
+    my $entry = li( a( {href=>$html}, $distro ) );
+    push( @entries, $entry );
+}
+
+print ul( @entries );

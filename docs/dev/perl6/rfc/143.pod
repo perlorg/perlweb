@@ -1,0 +1,72 @@
+=head1 TITLE
+
+Case ignoring eq and cmp operators
+
+=head1 VERSION
+
+  Maintainer: Markus Peter <warp@spin.de>
+  Date: 24 Aug 2000
+  Last Modified: 25 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 143
+  Version: 2
+  Status: Retired
+
+=head1 ABSTRACT
+
+Perl currently only has C<eq> and C<cmp> operators which work case-sensitively.
+It would be a useful addition to add case-insensitive equivalents.
+
+=head1 DESCRIPTION
+
+=head2 Problems with current ways to do it
+
+Perl currently knows basically two methods for checking of equality of
+strings case-insensitively:
+
+ uc($a) eq uc($b)
+ $a =~ /^$b$/i
+
+and for comparing them one:
+
+ uc($a) cmp uc($b)
+
+The probably worst about these statements is that they look ugly. Also,
+they further complicate statements and they are counter-intuitive for
+beginners - why should I change the case of variables if I only want
+to compare them?
+
+The regexp mechanism has a case-insensitivity option (there's probably
+no proper way to simulate it there I admit). With this in mind most
+beginners will conclude the same is true for eq and cmp - after all
+Perl is strong in text processing so how could such a feature miss?
+Beginner code usually ends up using the case-insensitive regexps then
+instead of the easier to read uppercase/equals combination.
+
+=head2 Proposal
+
+We apply something similar to the regexp modifiers to C<eq> and C<cmp>
+as well, after a slash. The above examples would then be
+
+  $a eq/i $b
+  $a cmp/i $b
+
+This still leaves some room for future additions to eq and cmp if desired
+(stupid example: like ignoring all white space in the comparison or
+whatever comes up)
+
+=head1 IMPLEMENTATION
+
+Probably has to be added to perl internals...
+
+I wonder what will happen with overloads though - is eq/i a new operator
+to overload or is the case-insensitivity somehow magically done by the
+Perl interpreter even though eq was overloaded? This probably could lead
+to problems...
+
+=head1 REFERENCES
+
+perlop manpage for eq and cmp
+
+String.equalsIgnoreCase() method in Java
+

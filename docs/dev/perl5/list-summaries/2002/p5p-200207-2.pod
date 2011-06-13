@@ -1,0 +1,127 @@
+=head1 This Week on perl5-porters (8-14 July 2002)
+
+This week, the P5P report features the Great Module Renaming ; the Second
+Great Module Renaming ; a Couple Of Bugs, old and new ; and, finally, Perl
+5.8.0 RC 3 released to the world.
+
+=head2 More on PerlIO::Via
+
+On monday morning, the version of C<MIME::QuotedPrint> included with Perl
+still provided a few methods (namely PUSHED, FILL, WRITE and FLUSH) that
+added to it the ability to be used as a PerlIO layer. Elizabeth Mattijsen,
+hunting bloat, submitted a patch to remove these methods. Noticing that
+these were used in the test for C<PerlIO::Via>, and in some documentation as
+code examples, Jarkko decided to borgify Elizabeth CPAN's module,
+C<PerlIO::Via::QuotedPrint>, which is essentially the above PerlIO methods
+put in a separate namespace.
+
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg00199.html
+
+On the path of doing this namespace migration, a PerlIO bug reappeared :
+C<< open($fh, "<:Via(foo)", "file") >> not returning false on failure. It
+turned out that this was a bug in the C<:stdio> pseudo-layer. It was promptly
+corrected by Nick Ing-Simmons.
+
+=head2 Case issues in PerlIO::*
+
+Continuing on the C<PerlIO::Via> topic, Elizabeth Mattijsen asked why the
+second part of C<PerlIO::encoding> was lowercase, whereas C<PerlIO::Via> and
+C<PerlIO::Scalar> where uppercase.
+
+This was obviously a good question. A consensus was found quite rapidly :
+all core IO layers should have all-lowercase names. Thus, C<PerlIO::Via> (and
+its submodules C<PerlIO::Via::*>) moved to C<PerlIO::via> (note the lowercase
+'v'), and C<PerlIO::Scalar> to C<PerlIO::scalar>.
+
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg00201.html
+
+=head2 :pop pseudo-layer
+
+During the previous discussion, Nick Ing-Simmons noticed that is was
+impossible to pop an IO layer from within Perl. Thus he added a C<:pop>
+experimental pseudo-layer, that does just that.
+
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg00458.html
+
+=head2 Backporting Data::Dumper to CPAN
+
+Ilya Martynov tried to backport RC1's C<Data::Dumper> to perl 5.6.1. He
+found out that some tests were failing, because the internal hashing
+algorithm used by perl has changed, and thus hash keys were not returned
+in the same order. The trick should be to have version-specific tests, or
+to use some more clever way to verify the results. Anyway, Ilya is now
+with Gurusamy Sarathy co-maintainer of C<Data::Dumper>, and will be able
+to upload new versions to CPAN.
+
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg00317.html
+
+=head2 DESTROYing blessed code refs
+
+Simon Cozens found that the C<DESTROY> method was not called when blessed
+code references go out of scope. Nobody replied, and it's still not clear
+whether this is a bug.
+
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg00235.html
+
+=head2 C<defined $$foo>
+
+Elizabeth Mattijsen noticed that
+
+    use strict 'refs';
+    our $foo = 'bar';
+    if (defined $$foo) { ... }
+
+was valid perl code, and wondered whether this was an undocumented
+feature. After some discussion, it was decided that this was actually a
+bug, but the kind of bug that can wait until after 5.8.0 -- it's
+non-critical, and it's present in 5.6.x.
+
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg00359.html
+
+=head2 A couple of bugs
+
+Abigail reported a couple of bugs. The first was a complaint about
+C</(?{...})?/> not being allowed. This triggered a terse comment by Hugo
+about how he wants to enhance the regexp engine during the 5.9 development
+track.
+
+The second bug was about local()-izing an C<$#array> variable not working
+correctly (for some value of "correctly"). (I think that this bug was
+already reported in the past, but I didn't find it.) Anyway, if we want to
+make this work, the semantics of this construct should be precisely
+defined. This goes in the to-do list for 5.9.
+
+The first bug: http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg00482.html
+
+The second bug: http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg00484.html
+
+=head2 More module case issues : root namespace for thread utility modules
+
+Elizabeth Mattijsen was also busy on the ithreads front. She uploaded to
+CPAN a thread-pool module. The first version of it was called
+C<threads::farm> (now it's C<Thread::Pool>). Johan Vromans noted the
+all-lowercase name, quite inappropriate for a module. It's worth noting
+that this triggered the Second Great Renaming of the week : the thread
+utility modules now live in the C<Thread::> namespace. The thread
+pragmatic modules (C<threads> and C<threads::shared>) keep their lowercase
+name, in conformance with the general naming conventions; but
+C<threads::shared::queue> and C<threads::shared::semaphore> now become
+respectively C<Thread::Queue> and C<Thread::Semaphore>.
+
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg00570.html
+
+=head2 Finally, RC3
+
+Jarkko released RC3 to the world, but you already know that. He said also :
+
+I<The post-RC3-plan is no damn code patches (or additions), the possible
+exceptions being firefighting by me (Unicode), NI-S (perlio), Arthur
+(ithreads), or Hugo (regexen).>
+
+and :
+
+I<Timeframe for the 5.8.0 final: Thursday.>
+
+(this last word being of course subject to Murphy's law.) (It also means
+that you have to quickly download and test RC3 on your favorite platforms
+before it's too late...)

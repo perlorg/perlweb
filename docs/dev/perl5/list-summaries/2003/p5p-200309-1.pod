@@ -1,0 +1,138 @@
+=head1 This Week on perl5-porters (1-7 September 2003)
+
+September begins, holidays are over. Lots of little new things occured
+this week. Read about lexical pragmas, syntax warnings and good style,
+advancement of the maintainance branches, bugs, fixes, tests and upgrades.
+
+=head2 Extensible lexical pragmas
+
+Mark-Jason Dominus, in a sudden and impressive burst of creativity, posted
+a patch to implement extensible lexical pragmas in Perl 5. So what does
+this mean ? Basically he found a way to store, during the compilation of a
+Perl 5 program, variables related to lexical scopes, that can later be
+retrieved and used. Currently perl does this fully for some pragmas only
+(C<use strict 'refs'>, C<use integer>, etc.) and in a non-extensible way.
+Moreover Mark-Jason's implementation provides a C<pragma> module which
+goal is to help the future authors of lexical pragmas.
+
+However, this patch is not finished, and has to be carefully tested and
+improved. It's a very promising starting point, though.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-09/msg00112.html
+
+=head2 First snapshot of 5.6.2
+
+While the work on 5.8.1 testing and stabilization is continuing, Rafael
+released a first snapshot of what should become perl 5.6.2 in a not too
+long amount of time. This led to tests and fixes. Yves Orton provided a
+fix to MakeMaker on Windows. Rafael decided to copy the platform-specific
+configuration hint files from bleadperl to 5.6.2.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-09/msg00099.html
+
+=head2 print (...) interpreted as function
+
+Abigail finds the above warning unuseful and demands it to be removed, on
+the basis of three considerations : it's issued for sensible and valid code,
+such as
+
+    print (3);
+
+Moreover it's not issued for some buggy code, where it should be issued :
+
+    print  (1 + 2) * 3;    # note the two spaces after print here
+
+and finally the statement C<print(1+2)*3> already gives the warning
+I<Useless use of multiplication (*) in void context>. Also, sort() is
+subject to the same warning, but no other built-in.
+
+As expected, the porters quickly divide into two camps. Abigail provided
+a patch to suppress the warning, but no verdict was given.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-09/msg00036.html
+
+=head2 C<map> in void context
+
+This wasn't the only controversial discussion. Tassilo von Parseval,
+following a piece of opinion posted by Abigail on comp.lang.perl.misc,
+provided a patch to optimize away the result of C<map> when it's called in
+void context, making it almost as fast as a C<for> loop. A discussion on
+the stylistic use of C<map> in void context ensued, raising the question
+of whether it should trigger a warning or not.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-09/msg00260.html
+
+=head2 Order of evaluation
+
+Mark-Jason Dominus asks whether the order of evaluation of some binary
+operators is defined ; for example, whether the C<.> concatenation
+operator guarantees that its left-hand side will be evaluated before its
+right-hand side. The question is more about the future implementations of
+Perl (or Ponie) than about the past ones. The answer is undefined.
+
+    http://groups.google.com/groups?threadm=20030830171542.5579.qmail@plover.com
+
+=head2 C<Safe> holes
+
+Guy Albertelli demonstrated that within a string of perl code to be
+evaluated by Safe::reval(), some lexical variables from Safe were
+available. (Bug #23656.) This is related to the fact that eval'ed code
+sees its lexical context. As perl 5.8.1 contains fixes that allow nested
+evals to still see their full lexical scope, this bug is actually more
+serious in 5.8.1 than in previous versions. Hopefully, Dave Mitchell
+provided a fix.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-09/msg00063.html
+
+Moreover, Benjamin Goldberg found out that it's possible to exit from a
+block evaluated in a Safe compartment by using C<last LABEL> or another
+similar construct (provided that LABEL is a valid label in the program at
+the point where the Safe compartment is used.)
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-09/msg00061.html
+
+=head2 In Brief
+
+Abhijit Menon-Sen provided a patch to implement a new syntax,
+C<< <DIRHANDLE> >>, making the angle-bracket operator an equivalent of
+readdir() when operating over a directory handle. Mark-Jason Dominus
+provided a link to an old discussion in comp.lang.perl.moderated about
+the potential problems caused by this feature.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-09/msg00365.html
+
+Yitzchak Scott-Thoennes posted a patch to document that the C<import> and
+C<unimport> methods don't get autoloaded. But, at the same, he asks
+why they aren't autoloaded.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-09/msg00190.html
+
+Jarkko Hietaniemi asks the brave porters to fetch the patches to perl some
+OS vendors apply to their distributions, just to see if something
+interesting can be found.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-09/msg00221.html
+
+Andreas Koenig wrote a test framework for the perl debugger. (There are
+currently no regression tests for it.)
+
+Enache Adrian is continuing his work on the ByteLoader module, which
+apparently is taking a good shape. It was completely broken in 5.8.0.
+
+David Dyck reports (bug #23731) than on his Linux machine, the string
+returned by perl to represent the infinite IEEE floating point value has
+leading spaces. That would be a libc bug.
+
+Unicode::Collate version 0.27, then 0.28, were released, as well as
+Data::Dumper 2.121. This last one, backported to perl 5.6 by Ilya
+Martynov, was integrated into perl 5.6.2.
+
+The F<perlreftut> manpage is now distributed under the same terms as
+perl itself. That means that it can be reintegrated into Debian.
+
+=head2 About this summary
+
+This week's discussions were summarized by Rafael Garcia-Suarez. Summaries
+are published weekly on F<http://use.perl.org/> and on a mailing list,
+which subscription address is F<perl5-summary-subscribe@perl.org>.
+Corrections and comments are welcome.

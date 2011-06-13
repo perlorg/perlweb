@@ -1,0 +1,145 @@
+=head1 This Week on perl5-porters (5-11 August 2002)
+
+This week, the report comes a little bit earlier than expected,
+due to a short schedule. However it will not be shorter -- this week was
+rich in events and in discussions about the future of Perl 5.
+
+=head2 Experiments with the defined-or operator
+
+Hugo applied the patch by Brent Dax that introduces the C<//>, C<err> and
+C<//=> operators (defined-or, low-priority defined-or, and defined-or
+assignment). H.Merijn Brand seriously thinks I<about building 5.8.0 with
+it and put it production>. However this new syntax introduces minor
+incompatibilities, so Hugo wants to make it available in the future
+through a new pragma C<use perl6ish>.
+
+On this same topic, Chris Reinhardt noticed that C<shift // 0> is a syntax
+error. In fact, the parser, seeing the tokens C<shift //>, can't decide
+between C<shift(//)> (the regexp) and C<shift // ...> (the operator). I
+suggested that, although difficult to solve in the general case (e.g. with
+C<split>), this can be made to work for the C<shift> operator and most
+of others. (That's what we call DWIMmery.)
+
+This problem doesn't occur in Perl 6, where C<//> is not a valid pattern.
+
+    http://groups.google.com/groups?threadm=Pine.GSO.4.44.0208091457550.19151-100000%40quartz.bos.dyndns.org
+
+=head2 Improving $^H and %^H
+
+To implement new pragmas (such as C<perl6ish>) or to make the existing
+C<sort> pragma work with lexical scopes, it's necessary to have a
+mechanism to retrieve the existing set of pragmas in any scope during the
+compilation. This mechanism is currently provided by the C<$^H> and C<%^H>
+special variables. But C<%^H> has at least one problem : it's not
+propagated to C<eval ""> statements. This has to be fixed.
+
+It would also be handy to access, after the compilation phase, the set of
+pragmas a particular op has been compiled with. For example, this could be
+useful for the C<B::> modules, or for anything that manipulates the
+optree. For the moment, this works only with the C<integer>, C<strict
+'refs'>, C<locale> and C<bytes> pragmas (you can for example get them
+through the 9th value returned by caller(N)).
+
+    http://groups.google.com/groups?threadm=200208052352.g75NqGj05578%40crypt.compulink.co.uk
+
+    http://groups.google.com/groups?threadm=3D511373.8050706%40hexaflux.com
+
+=head2 v-strings bite again
+
+Abigail reported a (known) bug (#16010) : the fat comma doesn't quote
+v-strings. Hence
+
+    perl -we 'print v65 => "\n"'
+
+prints "A\n" (at least on ASCII platforms). John Peacock (who knows the
+v-strings inner odds and ends, for having worked on them) explained the
+root of the problem : the parser immediately converts C<v65> into a string
+C<"A"> and there is currently no way to distinguish them after
+compilation.
+
+John then supplied quickly a patch to add magic to v-string scalars, so a
+copy of the initial string representation is preserved. With this
+information in place, it will be probably possible to correct a large part
+of the annoyances caused by v-strings.
+
+    http://groups.google.com/groups?threadm=3D4FF061.7030802%40rowman.com
+
+    http://groups.google.com/groups?threadm=3D530D01.9010000%40rowman.com
+
+=head2 Plans for Perl 5.10
+
+Arthur Bergman posted a list of ideas for Perl 5.10. Shortly : replace
+magic by parrot-like PMCs, provide a strict typing pragma, decrease
+general memory overhead, improve threads, and improve the introspection
+mechanisms of Perl (e.g. the C<B::> modules). This triggerred quite a bit
+of comments -- especially about the proposed replacement of the magic
+system, used to implement all Perl magic variables, and other things too.
+
+Benjamin Goldberg then dropped some additionnal ideas of his own : for
+example, allow C<$/> to be a regexp. Nicholas Clark added that more tests
+can't hurt.
+
+    http://groups.google.com/groups?threadm=F4096C04-AAAE-11D6-AF7A-003065D64CBE%40contiller.se
+
+=head2 Pseudo-hashes
+
+Michael G Schwern submitted a complete patch to remove pseudo-hashes. With
+his patch, places that were using pseudo-hashes (as fields.pm) use the new
+(as of 5.8.0) restricted hashes. He added that some future improvements
+can be made on the top of his patch. He made also some benchmarking and
+noticed (quite surprisingly) no performance improvement ; some more
+digging is needed on this, as he previously estimated an average 15%
+speedup on hash operations.
+
+    http://groups.google.com/groups?threadm=20020806200510.GC31473%40ool-18b93024.dyn.optonline.net
+    http://groups.google.com/groups?threadm=20020806215439.GA26308%40ool-18b93024.dyn.optonline.net
+
+Johannes Plass, a pseudo-hash user, wondered if the compile-time checking
+features of the current pseudo-hashes will be preserved with the new
+implementation of fields.pm and base.pm.
+
+    http://groups.google.com/groups?threadm=3D558057.7010003%40web.de
+
+=head2 In brief
+
+Dave Mitchell added a new debugging option, C<-Dv>, aimed at making the
+other debugging options more verbose. He supplied also a verbose version
+of C<-Ds> (to trace stack contents).
+
+    http://groups.google.com/groups?threadm=20020805005533.B26111%40fdgroup.com
+
+Robin Berjon pointed the P5P readers at an entry in Leon Brocard's
+use.perl journal, about securing CPAN. Only Andreas Koenig replied, but I
+feel that this idea is finding its way in the porters' minds.
+
+    http://groups.google.com/groups?threadm=02080502111402.12618%40morgaine
+
+Tim Bunce suggested that porting XS core modules to C<Inline::C> might
+make them more easily portable to Perl 6. Brian Ingerson and Dan Sugalski
+disagreed, unless someone defines a compatibility API on top of XS and
+Parrot.
+
+The perl5-changes mailing list (where commits to the Perl 5 source
+repository are sent) seems to be allergic to Hugo.
+
+A couple of bug reports about gcc 3.1 not being able to build perl 5.6.1
+were sent. This is a known problem with gcc 3.1. H.Merijn Brand suggested
+to make a patch available on CPAN.
+
+John P. Linderman found that C</.{,3}/> is not the same pattern as
+C</.{0,3}/> : the lower bound is not optional. Mark-Jason Dominus says :
+I<It turns out it has been this way since Perl 1.>
+
+Vadim Konovalov found a bug in seek/tell when the C<:crlf> PerlIO layer
+is used, and found also the root cause of it (Bug #15986). This was fixed
+by Nick Ing-Simmons.
+
+Hugo released the first development snapshot. The smoke tests are up
+again.
+
+=head2 About this summary
+
+This summary brought to you by Rafael Garcia-Suarez, just before taking his
+annual vacation. Thanks to Elizabeth Mattijsen, who will take it over for
+the next two weeks. It's also available via a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>.

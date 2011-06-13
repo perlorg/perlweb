@@ -1,0 +1,423 @@
+=head1 TITLE
+
+Keyed arrays
+
+=head1 VERSION
+
+  Maintainer: Glenn Linderman <glenn@linderman.com>
+  Date: 20 Sep 2000
+  Last Modified: 28 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 268
+  Version: 3
+  Status: Withdrawn
+
+=head1 ABSTRACT
+
+The  idea here  is to  merge the  concepts of  array and  hash,  not to
+replace  either  one, but  to  provide  some  middle ground  with  data
+structures  having some  characteristics of  each.  The  resultant data
+structure is  based on array,  may be more  costly than hash,  for some
+operations, may be more efficient  than hashes for some operations, and
+may provide a more compatible  solution for some types of problems than
+other RFCs.
+
+=head1 Notes on withdrawal
+
+There are some  nice ideas in here, if only they  could work.  At least
+it provided  a bit  of inspiration for  RFC 273,  so it wasn't  a total
+waste of time.
+
+=head1 CHANGES
+
+In Version 2:
+
+Clarify wording  in various  places.  Prohibit use  of splice  on keyed
+arrays that  actually contain keys.   Change the default array  type to
+:nokey, since splice is prohibited on keyed arrays.
+
+
+=head1 DESCRIPTION
+
+These  are not  pseudo-hashes.   Michael Schwern,  author  of RFC  241:
+Pseudo-hashes must die! after some lengthy discussion, said: <quote> Ya
+know, I'm going to say that $aref->[string] might be made to work where
+pseudo-hashes failed. </quote>.  However,  that is not intended to mean
+that  Mr.   Schwern  endorses this  proposal,  but  I  did take  it  as
+encouragement to develop this RFC  to squeak in before the deadline and
+hope that it lends just a bit credence to the proposal.  That said...
+
+I think  that Mr.  Schwern's comment  does imply that  a proposal along
+these lines  might be  able to solve  problems that  pseudo-hashes were
+invented  to  solve,  in  ways  that might  be  less  problematical  to
+implement; this would  allow pseudo-hashes to not need  to coexist with
+keyed arrays,  so the proposal  doesn't discuss such  coexistance.  See
+also RFC 241.
+
+=head2 Definition syntax
+
+An array could have an optional namespace.  Probably best to call these
+keys, because  it really is the  same concept as hash  keys--we look up
+values  using  them.   Probably  there  could be  several  flavors,  as
+described below.  I'm not yet  certain if all these flavors are useful,
+or  if  all these  flavors,  even  if useful,  are  worth  the pain  of
+implementation, since  I don't know the cost  of implementation.  There
+may  be  flavors  I  haven't  thought  of  yet,  that  would  be  worth
+implementing.  All  but the first are generically  called keyed arrays.
+Here's my current concept list:
+
+    my/our @array :nokey;
+    my/our @array :key;
+    my/our @array :initialkey ( key0, key1, ... );
+    my/our @array :keyonly;
+    my/our @array :hashsyntax;
+
+With the :nokey attribute, we  would have a familiar perl<6 array.  Use
+numeric indexes, and [] indexing syntax.  This would be the default, if
+no attribute is specified, for compatibility.
+
+With the  :key attribute,  it would be  allowed, but not  required, for
+keys  to be  added  to  point to  particular  array elements.   Numeric
+indexing could still  be used for speed.  Not  all array elements would
+necessarily have keys.
+
+The :initialkey  variation would  specify in the  definition a  list of
+keys which  would correlate  to the  array indexes 0,  1, ...
+
+The :keyonly variation  would be less efficient, and  would require use
+of keys for lookup.  Of course, the compiler could translate fixed keys
+into numeric indexes under the covers for performance.
+
+The  :hashsyntax  variation is  identical  to  the :keyonly  variation,
+except for  the syntax,  which is like  hashes instead of  like arrays.
+This  variation  could  unify  the  concepts of  hash  and  array.  The
+definition  of a :hashsyntax  array should  probably reserve  a special
+pointer in the  symbol table so that the similarly  named hash would be
+automatically  defined for  access,  but would  actually  refer to  the
+:hashsyntax keyed array.  In other words, the definition of
+
+    my/our @array :hashsyntax;
+
+would hide the definition of %array in the same way that
+
+    my/our %array
+
+would  hide a  prior definition  of %array.   And references  to %array
+would thenceforth actually be references to the keyed array @array.
+
+
+=head2 Reference syntax
+
+The syntaxes
+
+    $foo['element']
+    $foo[element]
+
+or for :hashsyntax arrays, either the above or
+
+    $foo{'element'}
+    $foo{element}
+
+would be interpreted as a reference to @foo.  If the namespace for @foo
+contains 'element', that member of  @foo is the interpretation.  If the
+namespace for @foo does not  contain 'element', then 'element' is added
+to the namespace for @foo, the size  of @foo is increased by 1, and the
+member 'element' refers to the newly added item in @foo.
+
+So, starting with
+
+   my @foo:key; # empty array
+   $foo ['month'] = 10;  #  $#foo == 1, $foo[0] == 10
+   $foo ['day'] = 20;   # $#foo == 2, $foo [1] == 20
+   $foo ['year'] = 30;   # $#foo = 3, $foo [2] == 30
+
+We achieve an array with 3 elements.  There is a clear parallel between
+this and
+
+   my %foo;
+   $foo{'month'} = 10;
+   $foo{'day'} = 20;
+   $foo{'year'} = 30;
+
+However, the lookups for @foo are done at compile time, the lookups for
+%foo are done at runtime.
+
+For :key and :initialkey arrays, the syntax
+
+    $foo[$bar]
+
+would inspect $bar to determine if it is convertable to numeric.  If it
+is, the value is used as the numeric index of the array.  If it is not,
+it is treated as a key for the array, and is looked up in the namespace
+of the array.
+
+For :keyonly and  :hashsyntax arrays, all indexes are  considered to be
+string keys just  like hash keys, requiring lookup  in the namespace of
+the array.
+
+
+Perl uses some heuristic to decide  whether a bareword within the {} of
+a hash  key reference  is a  function or a  string, the  same heuristic
+should be applied within [] for keyed arrays.
+
+
+Push,  pop,  shift,  and  unshift   are  not  valid  for  :keyonly  and
+:hashsyntax  arrays,  because  they  access  data by  index,  which  is
+prohibited for  those types of  keyed arrays.  Splice is  prohibited on
+all keyed arrays, to allow compile time name lookup.
+
+
+The  operations keys,  values,  and  each would  make  sense for  keyed
+arrays.   Their syntax  should be  extended to  accept keyed  arrays as
+parameters, and the semantics should be similar to that for hashes.  It
+should be  noted that values is  not necessarily the same  order as the
+original keyed  array, since it would  iterate via the  keys.  For :key
+and :initialkey arrays,  it would not even necessarily  be the complete
+array, because not all array entries would necessarily have keys.
+
+
+=head2 Usages
+
+=head3 Garrulous builtins
+
+(I cloned this heading from RFC  259, thanks Damian) (I cloned the list
+of  functions  from  RFC 37,  thanks  Jarkko)  (I  cloned the  list  of
+standardized key names from RFC 259, thanks again, Damian)
+
+The idea here is that some functions return an array of values that are
+hard to keep  track of.  It would be nice  to retain compatibility, but
+also be  able to access the members  of the array by  name, rather than
+number.  Since these arrays are of fixed size, and known values, we can
+apply  the :initialkeys  variation to  these functions.   The functions
+remain  fully compatible with  current definitions  and usage  of their
+results, however, new code could  be written using the names instead of
+the numbers  to access the results.   One example, and  then the cloned
+lists of details.
+
+   my ( @stat_array ) = stat ( $filename );
+   print "File $filename has a size of $stat_array[size] bytes.\n";
+
+=head4 List of garrulous builtins
+
+        caller [1]
+        getgrent
+        getgrnam
+        getgrgid
+        gethostbyaddr
+        gethostbyname
+        gethostent
+        getnetbyaddr
+        getnetbyname
+        getnetent
+        getprotobyname
+        getprotobynumber
+        getprotoent
+        getpwent
+        getpwnam
+        getpwuid
+        getservbyname
+        getservbyport
+        getservent
+        gmtime
+        localtime
+        stat
+
+Some changes to this list may be necessitated by other changes to Perl6.
+
+=head4 Standardized keys
+
+The standardized keys for these functions would be:
+
+=over 4
+
+=item C<stat>/C<lstat>
+
+                'dev'           Device number of filesystem
+                'ino'           Inode number
+                'mode'          File mode  (type and permissions)
+                'nlink'         Number of (hard) links to the file
+                'uid'           Numeric user ID of file's owner
+                'gid'           Numeric group ID of file's owner
+                'rdev'          The device identifier (special files
+only)
+                'size'          Total size of file, in bytes
+                'atime'         Last access time in seconds since the
+epoch
+                'mtime'         Last modify time in seconds since the
+epoch
+                'ctime'         Inode change time in seconds since the
+epoch
+                'blksize'       Preferred block size for file system I/O
+
+                'blocks'        Actual number of blocks allocated
+
+
+=item C<localtime>/C<gmtime>
+
+                'sec'           Second
+                'min'           Minute
+                'hour'          Hour
+                'mon'           Month
+                'year'          Year
+                'mday'          Day of the month
+                'wday'          Day of the week
+                'yday'          Day of the year
+                'isdst'         Is daylight savings time in effect
+                                (localtime only)
+
+=item C<caller>
+
+                'package'       Name of the package from which sub was
+called
+                'file'          Name of the file from which sub was
+called
+                'line'          Line in the file from which sub was
+called
+                'sub'           Name by which sub was called
+                'args'          Was sub called with args?
+                'want'          Hash of values returned by want()
+                'eval'          Text of EXPR within eval EXPR
+                'req'           Was sub called from a C<require> (or
+C<use>)?
+                'hints'         Pragmatic hints with which sub was
+compiled
+                'bitmask'       Bitmask with which sub was compiled
+
+=item C<getpw*>
+
+                'name'          Username
+                'passwd'        Crypted password
+                'uid'           User ID
+                'gid'           Group ID
+                'quota'         Disk quota
+                'comment'       Administrative comments
+                'gcos'          User information
+                'dir'           Home directory
+                'shell'         Native shell
+                'expire'        Expiry date of account of password
+
+=item C<getgr*>
+
+                'name'          Group name
+                'passwd'        Group password
+                'gid'           Group id
+                'members'       Group members
+
+
+=item C<gethost*>
+
+                'name'          Official host name
+                'aliases'       Other host names
+                'addrtype'      Host address type
+                'length'        Length of address
+                'addrs'         Anonymous array of raw addresses in 'C4'
+format
+
+=item C<getnet*>
+
+                'name'          Official name of netwwork
+                'aliases'       Other names for network
+                'addrtype'      Type of network number
+                'net'           Network number
+
+
+=item C<getproto*>
+
+                'name'          Official name of protocol
+                'aliases'       Other names for protocol
+                'proto'         Protocol number
+
+
+=item C<getserv*>
+
+                'name'          Official name of service
+                'aliases'       Other names for service
+                'port'          Port at which service resides
+                'proto'         Protocol to be used
+
+
+=head3 Accessor functions
+
+The :keyonly and :hashsyntax variation would allow objects built out of
+keyed arrays to  use (multiple) inheritance, within the  set of objects
+built out of keyed arrays, of course.  It seems hard (to me) to inherit
+from an object that is a hash  for an object that is an array, and vice
+versa.   If the  unified  :hashsyntax variation  is implementable,  one
+could easily  convert (with  a pragma?) existing  objects to  use keyed
+arrays instead of hashes, and thus gain any benefits for accessor speed
+as noted next.
+
+For objects  built out of  them, and if  such objects implement  a fair
+number of accessor  function (see RFC 163) which  are effectively fixed
+value keyed  lookup and store operations, the  compiler could translate
+the fixed key  values in the accessor functions  to an index internally
+for speed.
+
+
+=head3 Pairs
+
+I'm not  yet sure  how this  RFC would interact  with RFC  84.  Clearly
+there would be some ramifications, however, should both be adopted.
+
+
+=head3 Sets
+
+I'm not  yet sure how  this RFC would  interact with RFC  179.  Clearly
+there could be some ramifications, however, should both be adopted.
+
+
+=head3 Private/public
+
+RFC 188 should  interact with this RFC, if both are  adopted.  I see no
+conflict to  extending RFC 188 to  use its keywords  with keyed arrays,
+with the same semantics on the names.
+
+
+=head1 IMPLEMENTATION
+
+One possible  implementation of a  keyed array would  be to add  to the
+usual array implementation a name table  via a hidden hash and a hidden
+numeric value, called the offset, which is initially zero.
+
+The purpose  of the name  table is to  provide the lookup from  name to
+number.   For   each  object,  the  name  table   would  contain  (key,
+index-base)  pairs  that would  provide  the  translation  from key  to
+index-base.  Index-base  is added to  offset to produce the  index into
+the array.
+
+The purpose  of the offset  is to be  added to the number  that results
+from a  key-to-index translation before you actually  lookup the value.
+This  allows operations  such as  shift and  unshift, which  affect the
+relationship of all  indexes and data values to  be implemented without
+updating each  entry in the name  table.  If a later  lookup returns an
+index less  than zero, an undef  is returned.  So  shift would decrease
+offset by  the shift  count, and unshift  would increase offset  by the
+shift count.  (The shift count is always 1 in perl<6, but see RFC 56.)
+
+With the above in mind, the  algorithm for inserting a new entry in the
+name table, would be to create  a pair consisting of (key, $# - offset)
+and insert it into the name table for the keyed array.
+
+
+=head1 REFERENCES
+
+RFC 21: Subroutines: Replace C<wantarray> with a generic C<want> function
+
+RFC 37: Positional Return Lists Considered Harmful
+
+RFC 56: Optional 2nd argument to C<pop()> and C<shift()>
+
+RFC 84: Replace => (stringifying comma) with => (pair constructor)
+
+RFC 127: Sane resolution to large function returns
+
+RFC 163: Objects: Autoaccessors for object data structures
+
+RFC 179: More functions from set theory to manipulate arrays
+
+RFC 188: Objects : Private keys and methods
+
+RFC 241: Pseudo-hashes must die!
+
+RFC 259: Builtins : Make use of hashref context for garrulous builtins
+

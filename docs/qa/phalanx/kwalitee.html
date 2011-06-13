@@ -1,0 +1,72 @@
+[% 
+    page.import({
+        title    => 'What is Kwalitee?',
+        description 
+            => 'The Perl Phalanx Project - What is Kwalitee?',
+    });
+    
+%]
+<h2>
+    What is kwalitee?
+</h2>
+<p>
+Measuring quality is hard, and so we coined the term Kwalitee which is 
+measurable (but inexact quality), so we can know it when we see it.
+</p>
+<h3>
+    What is a bug?
+</h3>
+<p>
+If there is any difference between the docs, the code and the tests, it is a
+bug. Period. The bug might be in the docs or the tests, and the code is fine,
+but it's still a bug.
+</p>
+<p>
+If there is ambiguity about how the code is supposed to work, it is a bug. The
+documentation must be clarified, and the code may be out of sync as well.
+</p>
+<p>
+If a hoplite discovers something behaving "incorrectly", according to the
+hoplite, it may or may not be a bug, according to the author's intent.
+</p>
+<h3>
+    What's a kwalitee module?
+</h3>
+<ul>
+    <li>All dependencies in Makefile.PL or the Module::Build equivalent
+    </li>
+    <li>Well-tested
+    </li>
+    <li>Well-documented
+    </li>
+    <li>Documents match code match tests
+    </li>
+    <li>Covered well
+    </li>
+    <li>Pod passes Test::Pod
+    </li>
+    <li>All hyperlinks work
+    </li>
+</ul>
+<h3>
+    What we're avoiding
+</h3>
+<ul>
+    <li>sprintf() breaking in PHP
+    </li>
+    <li>(-3)**3 == 27
+    </li>
+</ul>
+<h3>
+    Checklist
+</h3>
+<ul>
+    <li>All object creation is checked with isa_ok(). Constructors are the most obvious, but any function that returns an object should be checked that the object is of the expected type.
+    </li>
+    <li>All temporary files are cleaned up. Check the return code from unlink(), and then check that the file is actually gone.
+        <pre>
+is( unlink( $filename ), 1, "Remove $filename" );
+ok( !-e $filename, "Actually gone" );
+</pre>
+    </li>
+</ul>

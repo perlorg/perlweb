@@ -1,0 +1,90 @@
+=head1 TITLE
+
+A Natural Syntax Extension For Chained References
+(aka Multidimensional Arrays/Hashes)
+
+=head1 VERSION
+
+  Maintainer: Jarkko Hietaniemi <jhi@iki.fi>
+  Date: 29 Aug 2000
+  Mailing List: perl6-language@perl.org
+  Number: 177
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+In this RFC an extension to existing Perl syntax is proposed.  The
+syntax doesn't conflict with anything existing (in fact it corrects a
+bug of sorts), it is natural (naturalness being naturally in the eye
+of the proposer), and it gives concise way to express a complex data
+structure access.
+
+=head1 DESCRIPTION
+
+Snatch two syntax constructs away from the jaws of illegal syntax and
+an unfortunate syntax, and make them useful weapons of the Perl
+arsenal.  The constructs are:
+
+	$ref->[[LIST]]
+	$ref->{{LIST}}
+	
+The proposed respective meanings:
+
+	$ref->[$elem[0]]->[$elem[1]]->[...]->[$elem[-1]]
+	$ref->{$elem[0]}->{$elem[1]}->{...}->{$elem[-1]}
+	
+That is, the lists are being expanded as the indices for a chain of
+references, the arrays could be called index lists.  Having the
+indices in one place saves a lot of characters.  Compare
+
+	$r->{{qw(a b c d e f g h)}}
+
+versus
+
+	$r->{a}->{b}->{c}->{d}->{e}->{f}->{g}->{h}
+	
+An example using an array may be even more enticing
+
+	$r->[[@a]]
+	
+versus
+
+	$r->[$a[0]]->[$a[1]]->...
+	
+or even
+
+	$r->[$a]->[$b]->...
+	
+(assuming @a = ($a, $b, ...)) 
+
+As mentioned earlier, these syntaxes do not do anything useful at the moment.
+
+The first one, ->[[]], is an intermittent cause of segmentation
+violations, core dumps, and bug reports because it already does have a
+meaning but a rather twisted and faulty one: "access the array at the
+offset of stringifying this anonymous list".  This offset is usually a
+rather large one, resulting in unruly memory access attempts.  Reusing
+the syntax for something useful cannot be an evil thing.
+
+The second one, ->{{}}, is currently a syntax error, and cannot
+therefore broke existin code.
+
+The degenerate case of the list being empty can be defined to be
+equivalent to $ref.
+
+=head1 IMPLEMENTATION
+
+Since the exact meaning of the construct depends on the contents of
+the index list, the chasing the indices (autovivifying data structures
+as needed) cannot be determined in compile time and needs to be
+a run-time operation.
+
+=head1 REFERENCES
+
+perlref
+
+perldsc
+
+perllol
+ 

@@ -1,0 +1,185 @@
+=head1 Combust Installation
+
+=head3 Requirements
+
+You need Apache 1.3.x with mod_perl 1.2.x, Perl 5.8 and the CPAN
+modules from the following section.  Combust can be installed and run
+as any user. (As long as it doesn't bind to port 80.)  We recommend
+using a front-end Apache2 proxy on port 80.
+
+If the sites you work on use caching you will also need to run a
+MySQL server.
+
+The scripts are currently hardcoded to find the Apache with mod_perl
+statically linked in /home/perl/apache1/bin/httpd and perl in
+/home/perl/bin/perl.
+
+If you run a Linux installation not unlike RedHat 7.x you might be
+able to use our perl/apache/subversion installation from perl.org.
+Contact ask or robert @ perl.org for rsync instructions.
+
+=head3 Install modules from CPAN
+
+/home/perl/bin/perl -MCPAN -e shell
+
+	Apache::DBI
+	Apache::Reload
+	Apache::Request
+	Bundle::LWP
+	Config::Simple
+	DBD::mysql
+	DBI
+	Date::Parse
+	Exception::Class
+	Mail::Internet
+	Pod::Simple
+	Template
+	Text::Template
+	Time::HiRes
+	URI::Find
+        Template::Plugin::PodSimple
+
+Not all sites require all the above modules, but its easier for us to
+list the superset.
+
+You can also C<install Bundle::Combust> to get a bundle that contains
+all the necessary modules.
+
+=head3 Apache2 Proxy setup
+
+The most common mod_perl setup is to have a light proxy in front of
+the mod_perl setup.  Using Apache 2.x for the proxy is somewhat
+simpler than using 1.3 because 2.0 has the "ProxyPreserveHost"
+feature.  B<If for development you just want to run Combust on a high
+port and not have it available via port 80 you can skip the proxy
+setup.>
+
+Add something like the following to your Apache 2.0 httpd.conf file:
+
+  ProxyVia On
+  ProxyPreserveHost On
+
+  <VirtualHost *>
+    ServerName c.askask.com
+    ServerAlias *.c.askask.com
+    RewriteEngine on
+    RewriteRule (.*) http://localhost:8225$1 [P]
+  </VirtualHost>
+
+This example is what I use on my development server where all the
+sites are configured under the c.askask.com domain and the Combust
+server runs on port 8225 (configured in combust.conf).
+
+
+=head3 Create a user and get the goods
+
+  adduser combust
+  su - combust
+  rm .bashrc
+
+    svn co https://svn.develooper.com/combust/branches/stable .
+
+  __OR__
+
+    svn co https://svn.develooper.com/combust/trunk .
+
+  svn co https://svn.perl.org/perl.org/docs
+
+  # setup configuration from the sample conf
+  cp combust.conf.sample combust.conf
+  emacs combust.conf  
+
+  CBROOT=`pwd` ./bin/run_httpd
+
+The read-only username and password for the svn server are both
+"guest". [This is not true on svn.perl.org.]
+
+/combust/branches/stable is usually an older version of Combust in
+less flux.  The /combust/trunk version is the one currently in
+development, often with new features, support for more platforms and
+so on, but also with newer and more interesting bugs.
+
+You might want to put bin/cron_hourly into the combust users crontab.
+In any case then it should be executed at least once.
+
+You can test the validity of your combust.conf, httpd.tmpl, and site
+templates by running C<bin/make_configs>
+
+B<Note:> You don't have to run combust as a seperate user, but it
+helps keep things separate.  For development, you can stick it almost
+anywhere.. one install we know about lives in C<~/projects/newweb/>.
+
+=head3 Update Combust
+
+You should run "svn update" once in a while to update your copy of
+combust.  When you install you can install the latest development
+version instead of the latest stable version by using
+
+  svn co https://svn.develooper.com/combust/trunk .
+
+You can use "svn switch" to switch back and forth. For example to
+switch to the latest stable version you would use
+
+  svn switch https://svn.develooper.com/combust/branches/stable
+
+
+=head2 Use a different document root on the fly
+
+Adding "?root=user" to a url will make Combust use the
+~user/docs/path as the document root when loading templates.  For
+example then I'd use
+
+  http://site.c.askask.com/?root=ask
+
+to load templates from ~ask/docs/live on my development server. 
+
+Combust sets a cookie to keep using the new root until told otherwise
+(by for example setting root=/ to go back to the default).
+
+
+=head2 How to add another site
+
+=over 4
+
+=item Add to combust.conf
+
+Add a new section like the following to $CBROOT/combust.conf
+
+  sites = newsite, oldsite, othersite 
+
+  [newsite]
+  servername = newsite.example.com
+
+
+=item Add a section to httpd.tmpl
+
+See the existing configurations there for examples. You most likely
+want to set it up to use the Combust::Control::Basic controller.
+
+=item Add documents
+
+Add the directory docs/live/newsite/ and drop your documents in there.
+Setup a default page style etc in docs/live/newsite/tpl/defaults.  See
+some of the old site configurations for examples.
+
+=back
+
+=head1 Database Setup
+
+CREATE TABLE `combust_cache` ( 
+    `id` varchar(250) character set latin1 collate latin1_bin NOT NULL default '',
+    `type` varchar(128) character set latin1 collate latin1_bin NOT NULL default '',
+    `created` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP, 
+    `purge_key` varchar(64) character set latin1 collate latin1_bin default NULL,
+    `data` mediumblob NOT NULL,
+    `metadata` mediumblob,
+    `serialized` tinyint(1) NOT NULL default '0',
+    `expire` datetime NOT NULL default '0000-00-00 00:00:00',
+     PRIMARY KEY  (`id`,`type`),  KEY `expire_idx` (`expire`),  KEY `purge_idx` (`purge_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+=head2 Copyright
+
+Combust is copyright 2003-2004 Ask Bjørn Hansen and Develooper LLC.  See
+the LICENSE file in the main combust directory for the full details.
+

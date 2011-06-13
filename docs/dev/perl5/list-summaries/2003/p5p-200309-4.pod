@@ -1,0 +1,103 @@
+=head1 This Week on perl5-porters (22-28 September 2003)
+
+Perl 5.8.1 was released. 'Nuff said.
+
+=head2 The Release
+
+Jarkko Hietaniemi began the week by releasing the last candidate, perl
+5.8.1 RC 5, which was extensively tested on all available platforms and
+with lots of CPAN modules.
+
+Then, three days later, he finally uploaded the final tarball of 5.8.1 to
+the CPAN, leaving for a well-deserved vacation, applauded by the whole
+crew for his wonderful job.
+
+    The Official Announcement : http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-09/msg01558.html
+
+Jarkko retiring from pumpkineering (a word that ispell must be told
+about), Nicholas Clark is now the new 5.8.x maintenance pumpking.
+Public acclamations.
+
+    The Plan for 5.8.x : http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-09/msg01563.html
+
+=head2 Phalanx
+
+Andy Lester announced the Phalanx project, aimed at creating a solid
+testing base for Perl 5 and Ponie, through extensive tests of the most
+important CPAN modules.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-09/msg01549.html
+    http://qa.perl.org/phalanx/
+
+=head2 C<-i> and symbolic links
+
+Pekka Savola reports (bug #24000) that when perl is given the C<-i> switch
+(in place edition of input files), the symbolic links are replaced by
+modified plain files, but the file they point to is not modified. Although
+perl could be made to edit the linked files through @ARGV modification,
+it's not clear what kind of DWIMmery should be implemented here by
+default, the old one being at least backwards-compatible. Aaron Sherman
+points out that the behavioral change would be better done at the C level,
+and not via an error-prone perl module (due to symlink chains and other
+relative pathnames madness).
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-09/msg01359.html
+
+=head2 Overloading log()
+
+Tels reports that it's not possible to overload log() (via the C<overload>
+pragma) and make it accept more than one parameter. (Bug #24016). Rafael
+suggests to define an overriding log() subroutine instead. Mark-Jason
+Dominus gives further details.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-09/msg01384.html
+
+=head2 The C<:locked> attribute
+
+Elizabeth Mattijsen notices that the C<:locked> subroutine attribute,
+documented in the C<attributes> manpage, is relevant only to the old
+5005threads model. Then she makes a patch to turn it into a compile-time
+error if used with ithreads, intended to go in 5.8.x. But support for
+C<:locked> should be completely removed from the 5.9.x branch, as
+5005threads are no longer supported.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-09/msg01466.html
+
+=head2 Readonly local values
+
+The code snipped that was posted last week by Stas Bekman and that
+produced a I<Modification of a read-only value attempted> error in
+bleadperl is now permitted again. Rafael fixed it in a way that, when a
+magic variable is localized, the readonly flag is propagated I<only> if its
+kind of magic can handle value affectations. This should protect from
+bugs as well as minimizing the annoyance for the programmer.
+
+=head2 In Brief
+
+Rick Delaney proposed a patch to fix the behaviour of require() setting or
+not setting keys in %INC when it tries to load a module that has
+compilation errors. His patch arranges for failures to be cached in %INC
+as undefined values.
+
+Mark-Jason Dominus reports that overloaded operators don't seem to work
+with blessed functions (bug #24033). Yitzchak Scott-Thoennes explains
+that the issue is that the overload magic flag is on the reference, not
+on the referent.
+
+David Buckley reported a couple of segfault cases in Data::Dumper,
+involving threads and/or large recursive structures (bugs #23965 and
+#24013).
+
+Gabor Szabo looks for the P5P FAQ. The old FAQ Simon Cozens crafted is now
+outdated. Rafael promises to update it, and Robert Spier to upload it
+to F<http://dev.perl.org/>.
+
+Tels released Math::BigInt 1.66, just in time for 5.8.1.
+
+=head2 About this summary
+
+This week's summary was produced by Rafael Garcia-Suarez. Summaries are
+published weekly on F<http://use.perl.org/> and on a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. Corrections
+and comments are welcome. Next week, I'll take a break, and will be kindly
+replaced by Elizabeth Mattijsen.

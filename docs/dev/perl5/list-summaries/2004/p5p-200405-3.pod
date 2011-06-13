@@ -1,0 +1,107 @@
+=head1 This Week on perl5-porters (17-23 May 2004)
+
+This week, your P5P summary is featuring phases of the moon, and other
+funny things that always make the day of the average perl hacker.
+
+=head2 Shell.pm
+
+Bug #29585 describes how the C<Shell> module fails to handle filenames
+with spaces in them. Tassilo provided a patch, but Slaven Rezic pointed
+out that one could argue that C<rm("my file")> should remove two files,
+F<my> and F<file>: C<rm("*")> does globbing, after all. Moreover,
+C<Shell> escapes some characters and not some others. 
+
+Therefore Tassilo concluded that I<there are many possible ways of fixing
+Shell.pm, but each of them leaves quite a lot to be desired>, and Rafael
+commented that C<Shell> was mostly a toy module.
+
+    http://groups.google.com/groups?selm=rt-3.0.9-29585-87427.8.22064370668613%40perl.org
+
+=head2 Scoping bug
+
+Jason Rhinelander found a semantic oddity related to scoping of the C<<
+$<digit> >> variables (#29701): in the condition of an if() block, the
+C<$1> which is set by a regexp match is still seen after the following
+block; the C<$1> which is set by a match in the condition of a while()
+block isn't seen after the said block.
+
+Rafael comments that this may not be a bug, but doesn't remember why
+exactly. (Thinking about it, probably because if(), unlike while(), can be
+followed by B<two> blocks).
+
+    http://groups.google.com/groups?selm=rt-3.0.9-29701-87741.16.8398876872253%40perl.org
+
+=head2 File::Find and parameters
+
+Roger Yager proposed a patch to File::Find to allow to pass arguments to
+the callback subroutine. Gisle Aas mentioned the classical alternative
+solution, to use a closure as a callback; but, as Mark-Jason Dominus
+pointed out, this solution isn't always convenient. Thus, a documentation
+patch to C<File::Find> seems to be appropriate.
+
+    http://groups.google.com/groups?selm=auto-000000152005%40eyestreet.com
+
+=head2 Thread creation time and phases of the moon
+
+Jamie Lokier remarked submitted a detailed bug report (#29637) about the
+factors that might influence the creation time of a new thread. It appears
+that it's I<highly sensitive to conditions that shouldn't affect the
+time>: for example, changing the name of a subroutine, or even a space in
+a comment. This seems to be related to the number of mprotect(2) system
+calls issued during memory allocation. Those calls come from the malloc()
+implementation used on the system. Jamie provided enough clues to make
+Dave Mitchell find a solution: the bug was in the function used to clone
+pointer tables. Thread cloning time is now apparently faster by a 10%
+factor.
+
+    http://groups.google.com/groups?selm=rt-3.0.9-29637-87553.11.6565004757339%40perl.org
+
+=head2 Tainting and UTF-8
+
+Stas Bekman and Rob Mueller found a situation where turning taintedness on
+a scalar removes its UTF-8 flag. Sadahiro Tomoyuki proposed a patch, that
+makes the internal routine sv_utf8_upgrade_flags() understand a sufficient
+amount of magic to handle taintedness. As a side-effect, his patch makes
+utf8::upgrade() less tolerant to read-only arguments.
+
+    http://groups.google.com/groups?selm=40AC475F.4010208%40stason.org
+
+=head2 Autovivification of new lexicals
+
+Shinya Hayakawa proposed a patch to allow lexicals just declared via C<my>
+to be autovivified, as in :
+
+    (my $x)->{foo}		# creates a hash
+
+Rafael doesn't have a strong opinion about this language feature. Hugo
+isn't opposed to, but remarks that the patch lacks regression tests.
+
+    http://groups.google.com/groups?selm=200405211244.31291.tetryl%40tokyoprogrammer.com
+
+=head2 In brief
+
+Steve Hay found a way to make perl crash with two files, using the
+C<autouse> module. Nobody commented. (Bug #29708.)
+
+    http://groups.google.com/groups?selm=rt-3.0.9-29708-87779.17.2965328304932%40perl.org
+
+Chip Salzenberg found a bug in the C<@a = sort(@a)> in-place optimization,
+which was promptly fixed by Dave Mitchell.
+
+    http://groups.google.com/groups?selm=rt-3.0.9-29790-87979.16.2445637115601%40perl.org
+
+Rafiq Ismael found a regular expression and a string against which it
+should match, that makes a threaded perl segfault, but not a non-threaded
+perl. (Bug #29650.)
+
+    http://groups.google.com/groups?selm=rt-3.0.9-29650-87589.10.6574674663369%40perl.org
+
+Dave Mitchell fixed a parsing error in the C<Switch> module (bug #28966)
+by adding C<case> as a keyword in C<Text::Balanced>.
+
+=head2 About this summary
+
+This summary was written by Rafael Garcia-Suarez. Weekly summaries are
+published on F<http://use.perl.org/> and posted on a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. Comments and
+corrections welcome.

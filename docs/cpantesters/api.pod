@@ -1,0 +1,162 @@
+=head1 CPAN Testers HTTP API
+
+=head2 API keys
+
+For most operations an API key is required; you can get one at
+L<http://cpantesters.perl.org/>.
+
+The system uses the key to make sure your report is sent with valid
+contact information (for posting) and for the admins to have a contact
+address for excessive queries and that sort of thing (for queries).
+
+=head2 Submitting reports
+
+Reports are submitted via HTTP in JSON format.  Other submission methods or gateways may be added in the future.
+
+=head3 Example data
+
+In JSON:
+
+      [
+        {
+         "submit_id" : "37F91A16-BF10-11DC-B10D-AF04494483B4",
+         "human_comments" : null,
+         "comments" : "... test output ...",
+         "distribution" : {
+            "version" : "2.3.4",
+            "name" : "Acme-Foo"
+         },         
+         "interpreter" : {
+            "name" : "perl",
+            "version" : "5.8.8",
+            "config" : {
+                "longdblsize" : 16,
+                "ptrsize" : 4,
+                "archname" : "darwin-2level",
+                "cc" : "/usr/bin/gcc-4.0",
+                "byteorder" : 1234,
+                "longlongsize" : 8,
+                "lseeksize" : 8,
+                "libpth" : "/opt/local/lib /usr/lib",
+                "ccflags" : "-I/opt/local/include -fno-common ...",
+                "longsize" : 4,
+                "alignbytes" : 8,
+                "use64bitall" : null,
+                "ccversion" : "",
+                "d_dlsymun" : null,
+                "use5005threads" : null,
+                "perllibs" : "-ldl -lm -lc",
+                "nvsize" : 8,
+                "prefix" : "/opt/local"
+         }
+        },
+        { submit_id : "....", .... }
+     ]
+
+You can submit one or more reports in each submission.
+
+Use something like the following to convert a Perl datastructure to JSON:
+
+    use JSON::XS qw(encode_json);
+
+    my $json = encode_json($report);
+
+Other JSON converters will work too, but beware to use one that
+properly supports UTF-8.
+
+=head3 HTTP request and parameters
+
+=head4 API Key
+
+To submit test results a valid API key is required to be specified as a query parameter
+(C<api_key=....>).  The API Key can be obtained on the CPAN Testers API site.
+
+The api_key is used to set and record who submitted the test results.
+
+=head4 Secret and signature
+
+In addition to the api_key each user also has an C<api_secret>.  On the submissions two extra parameters are used: C<ts> and C<sig>.  The C<ts> is a timestamp and C<sig> is 
+
+   md5( request_string, secret, ts )
+
+C<request_string> is the JSON encoded request string.
+
+=head3 Fields
+
+=over 4
+
+All the following fields are required in each submission unless otherwise specified.
+
+=item submit_id
+
+The submit_id should be a GUID type identifier and will be returned back to the client as-is.  A given submit_id must not be reused in the future.
+
+=item grade
+
+Grade for the result of 'make test'. Must be "PASS", "FAIL", "NA" or "UNKNOWN". 'Pass' indicates
+that all tests passed. 'Fail' indicates one or more tests failed. 'Na' indicates that the
+distribution will not work on this platform. 'Unknown' indicates that the distribution did not
+include tests. Mandatory. If this method returns undef, it failed.
+
+=item comments
+
+This is auto-generated textual information; typically the output of "make && make test".
+
+=item human_comments
+
+These are additional comments entered by the user running the tests.  Highly encouraged, but optional.
+
+=item distribution
+
+Hash with "name" and "version", for example:
+
+   version: { name: "DBI", version: 2.52 }
+
+
+=item have_prerequisites
+
+=item interpreter
+
+=over 4
+
+=item name
+
+"perl", "raduko", "parrot", ...
+
+=item version
+
+The version number of the interpreter, C<5.10.1>, C<0.5> etc.
+
+=item config
+
+This is the configuration of the interpreter (typically "perl").  It's submitted as a hash with the configuration items ("cc", "archname", "prefix" etc) as the keys.
+
+=back
+
+=item submission_agent
+
+The name of the system used to submit the report (C<"CPAN::Reporter">, C<"CPAN::YACSmoke">).
+
+=back
+
+=head3 Errors
+
+...
+
+=head2 Querying
+
+=head3 Get all reports for a particular distribution
+
+=head3 Get full data for a set of reports
+
+=head3 Get new reports starting at report ID X
+
+
+=head2 Copyright
+
+Copyright (C) 2008 Ask Bjoern Hansen, Develooper LLC.  All rights reserved.
+
+=head2 License
+
+This document is free software; you may redistribute it and/or modify it under the same terms as
+Perl itself.

@@ -1,0 +1,273 @@
+Perl 5.8.0 발표 
+
+  Perl 5 개발진은 Perl 5.8.0을 자부심을 가지고 내놓습니다. 
+
+  Perl 5.8.0은 Perl 5 언어의 주요한 새 버전입니다. 5.8.0은  가장 최근의
+주요 버전이었던 5.6.0 발표 이후 더해진  새 기능 및 5.6.1에 들어간 유지/보수
+단계에서 바뀐 점을 모두 포함하고 있습니다.
+
+
+  Perl 5.8.0은 CPAN(Comprehensive Perl Archive Network)을 통해 구할 수
+있습니다. 아래에 미러 사이트 몇 곳을 보였으니, 가까운 미러
+사이트를 이용하시기 바랍니다.  미러 사이트의 전체 목록은
+<http://mirrors.cpan.org>에 있습니다.
+
+
+    한국
+
+       http://cpan.bora.net/src/perl-5.8.0.tar.gz             
+       ftp://ftp.bora.net/pub/CPAN/src/perl-5.8.0.tar.gz     
+       ftp://ftp.xgate.co.kr/pub/mirror/CPAN/src/perl-5.8.0.tar.gz
+       http://ftp.xgate.co.kr/cpan/src/perl-5.8.0.tar.gz       
+       ftp://mirror.Mazic.org/pub/CPAN/src/perl-5.8.0.tar.gz  
+
+    미국
+
+       ftp://ftp.cpan.org/pub/CPAN/src/perl-5.8.0.tar.gz        (CA)
+       http://www.cpan.org/src/perl-5.8.0.tar.gz                (CA)
+       http://mirrors.kernel.org/cpan/src/perl-5.8.0.tar.gz     (CA)
+       ftp://cpan.pair.com/pub/CPAN/src/perl-5.8.0.tar.gz       (PA)
+       ftp://cpan.teleglobe.net/pub/CPAN/src/perl-5.8.0.tar.gz  (NJ)
+
+    아시아 
+
+        ftp://mirrors.hknet.com/CPAN/src/perl-5.8.0.tar.gz (홍콩)
+        http://www2.linuxforum.net/mirror/CPAN/src/perl-5.8.0.tar.gz (중국)
+        ftp://ftp.ayamura.org/pub/CPAN/src/perl-5.8.0.tar.gz (일본)
+        ftp://ftp.nctu.edu.tw/UNIX/perl/CPAN/src/perl-5.8.0.tar.gz (대만)
+
+    유럽 
+
+        http://mirrors.sunsite.dk/cpan/src/perl-5.8.0.tar.gz (덴마크)
+        ftp://ftp.funet.fi/pub/CPAN/src/perl-5.8.0.tar.gz (핀란드)
+        ftp://cpan.mirrors.easynet.fr/pub/ftp.cpan.org/src/perl-5.8.0.tar.gz
+                                                                   (프랑스)
+        ftp://ftp.freenet.de/pub/CPAN/src/perl-5.8.0.tar.gz (독일)
+        http://cpan.cybercomm.nl/src/perl-5.8.0.tar.gz (네덜란드)
+        ftp://ftp.sunet.se/pub/lang/perl/CPAN/src/perl-5.8.0.tar.gz (스웨덴)
+        ftp://ftp.flirble.org/pub/languages/perl/CPAN/src/perl-5.8.0.tar.gz 
+                                                                    (영국)
+
+
+   지금까지처럼 Perl은  놀라우리만치 많은 운영 체계/플랫폼에서 쓸
+수 있습니다.  모든 Unix/Linux와  마이크로소프트 플랫폼은 물론이고,
+BeOS, Cygwin, Netware, MPE/iX, OS/2, QNX, VMS, VOS, z/OS 등 충분한 정도의 
+POSIX 표준을 지원하는 플랫폼에서 Perl을 쓸 수 있습니다.  Perl을 MacOS
+Classic에 이식하는 작업은 별도로 진행 중입니다.  이에 대해서는
+<http://dev.macperl.org>를 참고하십시오.  Perl이 지원하는 모든 플랫폼
+목록은 pod/perlport.pod 파일에서 보실 수 있습니다.
+
+  오늘 발표하는 것은 실행 가능한 이진 코드가 아니라 소스
+코드입니다.  소스 코드로부터 실행 파일을 얻기 위해서는 C 개발
+환경이 필요합니다.  특정  운영 체계/플랫폼에서 쓸 수 있는 실행
+가능한 버전은  해당 운영 체계/플랫폼  개발 업체에서 내놓을
+것입니다.
+
+   Perl 실행 파일을 만들어 설치하고 또  문제점을 보고하는 법에
+대해서 알고 싶으면 INSTALL 파일과 당신의 운영 체계/플랫폼에
+해당하는 README.platform 파일을 보십시오. 또, 한국어 사용자를 위한
+간략한 안내가  README.kr (EUC-KR 인코딩) 파일에 있습니다.
+
+   Perl 소스 코드로부터 실행 파일을 만드는데 걸리는 시간은 굉장히
+큰 편차가 있을 수 있습니다. 5.8.0은 5.6.1의 약 두 배 크기입니다.
+어떤 소스 코드 파일은 꽤 커서 당신이 쓰는 컴파일러는 어쩌면 이런
+큰 파일을 처리하는 것을  힘겨워 할 수도 있습니다. 대용량 메모리와
+(복수의) 빠른   중앙 처리 장치를 가진 현대적인 컴퓨터에서는 10분
+정도에 모든 컴파일 작업을 마칠 수 있습니다.  반면에 더 느리고,
+낡거나 다른 작업 때문에 매우 분주한 기계에서는 최고 8시간까지
+걸릴 수도 있습니다. 하지만, 오늘날 널리 쓰이는 대부분의 기계에서는
+30분에서 1시간 정도 걸리는 것이 보통입니다.
+
+  컴파일이 끝난 후에 시험  시간도 기계에 따라 큰 차이가 날 수 있습니다.
+Perl 5.8.0은 5.6.1보다 거의 6배나 많은 종류의 시험을 합니다. 15분에서
+30분 정도 걸리는 것은 정상입니다. 하지만, 느린 기계에서는 1시간
+이상이 걸릴 수 있습니다.
+
+   펄 라이선스에서 명시한 바와 같이 ('Artistic' 혹은  'Copying'
+파일을 보십시오.)  이 패키지는 결코 어떠한 보증도 없이
+제공됩니다. 
+
+   항상 그렇듯이 새 제품을 '현장'에 배치하기 전에는 그 '현장'이
+요구하는 적절한 수준의 시험을 실시하여야 합니다. 
+
+
+   Perl 5.6.0부터 쓰기 시작한 판(버전) 번호 매기는 규칙에 따라 Perl 5.8.0은
+이제 유지/보수 단계에 진입합니다. Hugo van der Sanden가 곧 시작할 새 
+개발 버전인 5.9의 개발 작업을 이끌어 나갈 것입니다. Perl 5.8의
+첫번째 유지/보수 버전은 5.8.1이 될 것입니다. 하지만, 5.9.0이
+아마 그보다 먼저 나올 듯 합니다.  5.8.0의 발표는  결코  Perl 5.6이
+더 이상 보수/유지되지 않을 것이라는 것을 의미하지는 않습니다.
+그렇지만, 이것을 5.6.2가 나올 것이라고 해석하지도 마십시오.
+이 모든 것은 5.8.0이 얼마나 안정적이냐에 달려 있습니다.
+
+
+   아래에 가장 중요한 바뀐 점과  알려진 문제점에 대한 대단히 간략한 요약을
+첨부합니다. 더 자세한 목록은 pod/perldelta.pod 파일에 나와 있습니다.
+지나치리만치 세세한 목록은 Changes 파일에서 찾을 수 있습니다.
+
+나누고  즐기십시오 ! (Share and Enjoy !) 
+
+-- Perl5 이식팀을 대표하여 Jarkko Hietaniemi
+
+*** 다음은 상세한 기술적 내용입니다. ***
+
+개요
+
+[5.8.0의 가장 중요한 새 특징]
+
+
+- 더 나아진  유니코드 지원 :
+
+  모든 수준에서 유니코드 지원은 5.6에 비해 개선되었습니다 :
+
+  - 유니코드 3.2.0 지원 (5.6.1은 3.0.1을 지원)
+  - Perl 언어와 그 내부의 거의 모든 곳에서 훨씬 견실한 유니코드 지원
+  - 정규식에서 유니코드 사용 가능 
+  - 유니코드 이전에 쓰이던 기존의 문자셋에 바탕을 둔
+    인코딩(예를 들어, 한중일의 여러 인코딩)을  Encode 모듈을 통해 지원
+
+- 새로운 쓰레드 구현:
+  'interpreter thread'(줄여서 'ithread')라고 불리우는 새로운
+   쓰레드 구현 사용 가능. '5.005 쓰레드' 대신 이 쓰레드를
+   쓰는 것을 강력하게 권장합니다. 중요한 차이는 'ithread'에서는
+   (쓰레드 사이의) 데이터 공유를 명시적으로 해야 한다는 점입니다.
+
+
+- 새 입출력(IO) 구현 
+
+  새 PerlIO는 (소스 코드 수준에서) 이식 가능한  stdio와 좀더 풍부한
+  입출력 양태(behavior)를 위한 새롭고 유연한 틀을 제공합니다.
+
+
+- 향상된 수치 정도 
+  종전의 Perl은 (해당 플랫폼/운영 체계) 개발 업체의 문자열과 수치
+  변환 루틴에 의존했습니다. 이 의존성은  Perl 코드의 이식성을
+  떨어뜨리고, 때로는 틀린 수치 결과를 낳았습니다. (5.8.0은 
+  더 이상 그런 문제가 없습니다.)
+
+
+- 64 비트 지원 :
+  64 비트 지원이 이제 안정적인 상태에 이르렀습니다. 사용하는 
+  운영 체계/플랫폼이 64 비트 정수와 주소 공간을 지원한다면 
+  Perl이 그 기능을 쓸 수 있도록 컴파일할 수 있습니다.
+  
+
+- 안전한 시그널:
+  이전 버전에서는 시그널이 Perl의 내부 상태를 망가뜨릴(corrupt) 수 있었습니다.
+
+- 새로 더해진 많은 모듈:
+  Digest::MD5, File::Temp, Filter::Simple, libnet, List::Util,
+  Memoize, MIME::Base64, Scalar::Util, Storable, Switch,
+  Test::More, Test::Simple, Text::Balanced, Tie::File, ...
+
+- 좀더 광범위한  (퇴행 방지를 위한) 시험 
+  Perl은 이제 Perl 5.6보다 거의 6배나 많은 시험을 거칩니다. 
+  또, 매일 대여섯 개의 다른 플랫폼에서 소스 코드를 시험 목적으로
+  컴파일합니다.
+
+[이전 버전과의 비호환성]
+
+- 이진 파일에서의 비호환성:
+  주로 PerlIO의 도입 때문에 Perl 5.8은 이전의 Perl과 이진 파일 
+  수준에서 호환성이 없습니다. XS 모듈은 꼭 다시 컴파일해야 합니다.
+  물론, 아래에서 언급할 경우를 제외하고는 Perl로 쓰인 스크립트는
+  변경 없이 계속 쓸 수 있습니다.
+
+- AIX Dynaloading:
+  Perl은 종전처럼  동적 적재를 emulate하는  대신에
+  AIX가 제공하는 dynaloading을 씁니다. 그 결과로 다른 AIX 응용 
+  프로그램과 좀더 좋은 호환성을 지닙니다.
+
+- 64 비트 플랫폼에서는 더 이상 Perl Malloc을 쓰지 않음:
+  Perl malloc은 64 비트 주소를 쓰는 플랫폼에서 여러  문제를
+  지닌 것으로 보입니다. 이런 경우 Perl은 기본적으로 운영 체계가
+  제공하는 malloc을 씁니다.  
+
+- 해슁 순서 변경:  
+  해쉬를 구현하는 함수가 좀더 나은 것으로 바뀌었습니다. 하지만,
+  특정한 키 배열 순서에 의존하거나 가정하지 않은 - 항상
+  그런 식으로 코드를 작성해야 합니다.-   않은 코드라면 아무런 영향을
+  받지 않습니다. 
+
+- 'my'의 속성을 실행 시 처리:
+  my()의 속성 처리를  컴파일할 때 하지 않고, 실행 시에 합니다.
+
+- SCALAR(...) 대신 REF(...) :
+  reference 변수에 대한 reference인 변수를 문자열로 해석한 결과는 이제 
+  "SCALAR(...)"가 아니라  "REF(...)"입니다. 이것은 
+  ref()/ref 함수/연산자를 reference 변수에 대한 reference 변수에  
+  적용한 결과가 SCALAR가 아니라 REF인 것과 일관성을 유지하기 위함입니다.
+  
+
+- 유니코드  모델 변경 ('use utf8'을 쓸 필요 대폭 감소)
+  Perl 5.6은  'use utf8'을 쓴 '블럭'(lexical scoping의 단위로서) 
+  안에서의 연산에 대해서만
+  Unicode 속성('Unicodeness')을 부여해 처리했습니다. Perl 5.8은 
+  Unicode 속성('Unicodeness')을  데이터에 직접 부여하므로,
+  'use utf8'을 쓸 필요가 크게 줄었습니다. 'use utf8'이 명시적으로
+  필요한 유일한 경우는 Perl 스크립트가 UTF-8 literal을 포함하고 있을
+  때입니다. (이 경우 'use utf8'이 없으면 이전 버전을 위해 쓰인
+  스크립트와의  호환성 유지를 위해 literal은 바이트로 간주합니다.)
+  
+
+- VMS: 동적 소켓 확장, Alpha에서 IEEE 부동 소수점 연산 기본 사용  ㅤ
+  - 소켓 확장이 정적이 아니라 동적입니다. 이것은 아주 오래된
+    VMS에서 문제를 일으킬 수 있습니다.
+  - IEEE 부동 소수점 연산을  Alpha에서 도는 OpenVMS에서 기본으로 씁니다.
+    README.vms에 그 이유와 좀더 자세한 내용이 있습니다.
+
+[용어 변경]
+
+- 'Camel III' 책에서 'IO discipline'이라고 불리던 것은 이제 'IO layer'라고
+   불리웁니다.
+
+
+[사용 중단이 바람직한 낡은 기능 (Deprecations)]
+
+- dump():
+  dump의 기능은 이제 낡은 것으로 간주됩니다. 
+
+- '5.005 thread'는 아직 지원하지만 언제 지원이 중단될지 모르므로
+   (deprecated) 사용하지 않는 것이 좋습니다. 대신, 
+   새로이 들어간 'interpreter threads'를 쓰십시오. 
+
+- 의사(疑似) 해쉬(Pseudohashes):
+
+  Perl 사용자에게 노출된 의사 해쉬 구현은 제거되고, 좀더 명료한
+  것으로 대체될 것입니다. (내부 구현은 해쉬 사용을 전체적으로 느리게
+  하는 것으로 밝혀졌으므로, 역시 제거할 예정입니다.)
+
+- exec LIST와 system LIST에서 '프로그램 외부에서 온'(tainted : 보안상
+  위험을 초래할 가능성이 있는) 데이터 사용은
+  현재는 경고만 내지만, 앞으로 나올 버전에서는  치명적인 오류를 초래할 
+  것입니다.
+
+- tr///C, tr///U:
+  이 인터페이스는 잘못 설계된 것이므로, 대신 pack("C0", ...)과 
+  pack("U0", ...)를 써야 합니다. 
+
+[알려진 문제점]
+
+- AmigaOS에서 Perl 5.8.0 소스  컴파일 불가
+
+- 컴파일러 모음: 바이트 컴파일과 컴파일 모두 아직 제대로 동작하지 않습니다.
+
+- Lvalue 서브루틴: 계속 시험 중 (안정적 사용 보장 못 함)
+
+- local()과 tie()의 상호 작용: 정확한 '의미'(semantics) 미확립
+
+- Tied(magical) 배열/해쉬의 원소는 (일반 배열/해쉬의 원소와 달리)
+  자동 생성되지 않습니다.
+
+- 배열과 해쉬를 스스로에게 tie하는 것은 이번 판에서 명시적으로 금지됩니다.
+
+--- 
+
+pod/perldelta.pod, INSTALL, README.platform 등을 읽으십시오. 이상입니다.
+
+
+
+<%flags>
+inherit => undef
+</%flags>
+%$r->content_type("text/plain; charset=euc-kr");

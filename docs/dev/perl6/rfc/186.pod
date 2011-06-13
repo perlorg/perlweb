@@ -1,0 +1,94 @@
+=head1 TITLE
+
+Standard support for opening i/o handles on scalars and arrays-of-scalars
+
+=head1 VERSION
+
+  Maintainer: Eryq (Erik Dorfman) <eryq@zeegee.com>
+  Date: 23 Aug 2000
+  Last Modified: 24 Sep 2000
+  Mailing List: perl6-language-io@perl.org
+  Number: 186
+  Version: 3
+  Status: Frozen
+
+=head1 ABSTRACT
+
+Support the ability to open an i/o handle on a scalar, and also on an
+array-of-scalars.  Implement this in C (for speed), and provide it
+in a "standard" extension module (for universal availability).
+
+
+=head1 DESCRIPTION
+
+It's extremely useful to be able to open an i/o handle on a
+common in-core data structure, such as a scalar or an array-of-lines.
+Such a capability breaks down the artificial boundary between core-based 
+and disk-based data processing, allowing a developer to...
+
+=over 4
+
+=item *
+
+Use memory to hold small "temporary files" (fast, secure, portable),
+
+=item *
+
+Reuse filehandle-centric code in non-file-based domains.
+
+=back
+
+The CPAN modules IO::Scalar, IO::ScalarArray, and IO::Lines 
+currently provide some of this functionality, but their pure-Perl 
+implementation (chosen for portability) is not as fast or
+memory-efficient 
+as a native implementation could be.  Additionally, since they are not
+part of the standard Perl distribution, many developers are either
+unaware of their existence or unwilling to obtain and install them.
+
+This RFC proposes that support for "in-core i/o" be folded 
+into the Perl distribution as a standard extension module, making
+use of native C code for speed.
+
+
+
+=head1 IMPLEMENTATION
+
+As described above.
+The following i/o handle classes are proposed as minimally necessary;
+they are taken from existing Perl5 CPAN modules with the same names:
+
+=over 4
+
+=item IO::Scalar
+
+An i/o handle which can be opened on a scalar (string) variable.  
+We simply treat the bytes of the scalar as a "virtual file".
+
+
+=item IO::ScalarArray
+
+An i/o handle which can be opened on an array of scalar (string)
+variables.  Here, the "virtual file" is defined as the concatenation
+of the scalars in the array.  One very common way to obtain such a
+data structure is to slurp a file into an array.
+
+=back
+
+If Perl6 follows Java's example of distinguishing "bytes" from
+"characters", then it should be understood that the proposed i/o handles
+manipulate I<bytes>, not characters.  That is, the Java equivalents
+are classes like C<java.io.ByteArrayInputStream>.
+
+Character-based i/o should be handled by some additional conversion
+mechanism which is wrapped around byte-based i/o; this mechanism
+should be applicable to I<any> i/o stream.  A look at the Java
+implementation of byte-oriented "input/output streams" versus
+character-oriented "readers and writers" is worthwhile for this.
+
+
+=head1 REFERENCES
+
+IO::Scalar (CPAN)
+
+IO::ScalarArray (CPAN)

@@ -1,0 +1,108 @@
+=head1 This Week on perl5-porters (24-30 March 2003)
+
+This week was a rather interesting week among the Perl 5 porters. Read
+about pattern matching extensions, CPAN distribution issues, and various
+bugs and problems.
+
+=head2 New regexp flag proposed
+
+Yitzchak Scott-Thoennes proposed a new flag, C</w>, to modify the return
+value of the pattern match operator in list context. Basically it prepends
+the value of $& to the list of returned values C<($1..$n)>.
+
+Rafael Garcia-Suarez and Merijn Brand asked about the implied constructs
+C<qr//w> and C</(?w)/> : these shouldn't be allowed since C</w> affects
+the return value of the match, not the pattern itself.
+
+Tim Conrow pointed out that C</w> conflicts with the Perl 6 switch of the
+same name. Jos Boumans proposed C</r> instead. A new version of the patch
+is in the works.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg93670.html
+
+=head2 A warnings.pm for old perls
+
+Nicholas Clark forwards to P5P an idea of Simon Wistow : to release a
+dummy C<warnings> module to CPAN, so that using lexical warnings in a
+module doesn't also mandate at least perl 5.6.0. Stas Bekman then proposes
+to create a Perl-Backport distribution, aimed at installing various
+back-compatibility stubs based on the current perl's version. As he says,
+I<CPAN module authors just need to include Perl::Backport in their
+PREREQ_PM and it'll do the rest of the job.>
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg93632.html
+
+=head2 A generic solution for dual-life CPAN packages
+
+Stas Bekman made a proposal to help the CPAN indexer to distinguish
+between the different distributions that provide a specific package, and
+to decide which one should be installed by CPAN.pm / CPANPLUS. His
+idea is to introduce a new variable, say $CPAN_MASTER_PACKAGE, to hold
+the name of the master distribution containing a module. An alternative
+option would be to include a file BUNDLED in the distribution, to list all
+packages that are to be ignored by the indexer.
+
+Andreas Koenig points out that the contents of the F<inc/> subdirectories
+of CPAN distributions are currently ignored by the indexer. For example,
+C<only-0.26> and C<PAR-0.66> come with Autrijus Tang's C<Module::Install>
+distributed under F<inc/>. Autrijus notes that the C<inc> name is not yet
+definitive and should not be relied upon. He also liked Stas' BUNDLED file
+idea and suggested that this file could use the MANIFEST.SKIP syntax (i.e.
+C<^inc/> to excludes files from F<inc/>).
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg93635.html
+
+=head2 In brief
+
+John L. Allen has problems compiling Perl 5.8.0 on AIX with long doubles
+with the latest version of IBM's compiler (vac). Apparently Configure
+isn't getting right the modfl support. He's working on this with Merijn.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg93682.html
+
+Doug Thayer reports a case of segfault, using GDBM in a threaded program
+(bug #21699). Arthur Bergman says that the fix is probably to make
+GDBM thread aware.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg93648.html
+
+Jean Forget reminds us that he put on CPAN an alpha version of an enhanced
+C<diagnostics> module, containing bug fixes and support for
+internationalization. Wolfgang Laun announces that he'll have a look at
+it.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg93652.html
+
+Michael G Schwern announced a new alpha release of MakeMaker (version
+6.06_03, then 6.06_04). Testers welcome.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg93812.html
+
+He also reported bug #21742 : encountering a C<require Foo::Bar> statement
+invoked in void context and from an C<eval(STRING)> statement, perl 5.8.0
+isn't able to compute correctly the module's return value, because it
+provides a wrong context for it. (The correct context to be provided would
+be scalar context, and perl actually provides void context in this case.)
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg93747.html
+
+Juerd reports bug #21744 about B::Deparse. A code snippet is worth a dozen
+words :
+
+    $ perl -MO=Deparse -e'print "${foo}::bar"'
+    print "$foo::bar";
+
+Enache Adrian (which I haven't already mentioned, although he posted a
+load of bug fixes this week, as usual) provides a fix.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg93766.html
+
+=head2 About this summary
+
+This summary was brought to you by Rafael Garcia-Suarez. Weekly summaries
+are available on F<http://use.perl.org/> and/or via a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. Comments,
+corrections, additions, and suggestions are welcome.
+
+Special thanks to the metamark.net folks for providing this short url
+service, and to Iain Truskett for WWW::Shorten.

@@ -1,0 +1,331 @@
+=head1 Perl 6 Summary for 2005-08-15 through 2005-08-22
+
+All~
+
+Welcome to another monday summary, which hopefully provides some evidence that mondays can get better.  It always feels like writing summaries is an uphill battle, perhaps I should switch to writing about Perl 6 Language first and Perl 6 Compilers last.  Then it will be downhill...  Maybe next time.
+
+=head2 Perl 6 Compilers
+
+=head3 More Random Pictures
+
+Autrijus posted links to two more images he had created.  This time the images were not about pugs, but were just kind of cute.  He also provided an explanation of one when prompted.
+
+L<http://groups-beta.google.com/group/perl.perl6.compiler/browse_frm/thread/5df6d5df1f7334c9/b37e4512b56d673a#b37e4512b56d673a>
+
+
+
+=head3 Methods as Functions
+
+Yiyi Hu noticed that a method of one argument could not be used as function.  Autrijus offered Yiyi a commit bit, but also kindly posted the resolution to Perl 6 Language.  Thanks Autrijus!
+
+L<http://groups-beta.google.com/group/perl.perl6.compiler/browse_frm/thread/991210418285b790/764485d7f50ba0d6#764485d7f50ba0d6>
+
+
+
+=head3 Methods on Code Blocks
+
+Yiyi Hu discovered that C< { a b c }.paris > would cause pugs to spin out of control.  Luke Palmer fixed it.  Hopefully one of the two of them added a test...
+
+L<http://groups-beta.google.com/group/perl.perl6.compiler/browse_frm/thread/27b84b1000158dea/c8c3fa783e9e12ff#c8c3fa783e9e12ff>
+
+
+
+=head3 Autrijus's Secret Sauce
+
+Kris Bosland asked a few question I have been wondering about Autrijus new graphics.  Autrijus kindly provided the answers.
+
+L<http://groups-beta.google.com/group/perl.perl6.compiler/browse_frm/thread/02299ab5870973c4/8e32342c5609a396#8e32342c5609a396>
+
+
+
+=head3 Documentation Attack
+
+Kevin Tew has decided the best way for him to delurk is to update documentation for Pugs.  chromatic and Dudley Flanders both provided support, information, and suggestions for him.
+
+L<http://groups-beta.google.com/group/perl.perl6.compiler/browse_frm/thread/8bd2f4f42b70f313/61b3de1e503a2079#61b3de1e503a2079>
+
+
+
+=head3 Neko VM
+
+Nicolas Cannasse announed his release of a high level multi language VM and wondered what others thought of creating a Perl 6 to to Neko compiler.  Autrijus and Leo provided a few corrections and comments.
+
+L<http://groups-beta.google.com/group/perl.perl6.compiler/browse_frm/thread/e2bdf956e1e221a1/72f5247ee7649c7f#72f5247ee7649c7f>
+
+
+
+=head2 Parrot
+
+=head3 The FAQ, She is GONE!
+
+Amias Channer noticed that the faq on parrotcode.org was gone.  While he was warnocked, the faq appears to be back.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/2cbcd0b56016f39e/f603de821bd82788#f603de821bd82788>
+
+
+
+
+=head3 Platform Specific C Files
+
+Stephen Hill wanted to know where to put a platform specific C file to provide missing functionality.  Leo provided a few friendly pointers.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/a1a2585585948a0e/1e57f5a3d76d39be#1e57f5a3d76d39be>
+
+
+
+=head3 TclArray.get
+
+Amos Robinson provided an implementation of "get" for TclArray.  Will greatfully applied the patch.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/ef0a4c8f958ef68a/1b62eeff558fafbf#1b62eeff558fafbf>
+
+
+
+=head3 ICU Being Passed Up
+
+Adrian Lambeck wondered if icu was being passed up by Configure.pl.  Warnock applied.  So Adrian took matter into his own hands by providing a possible solution.  Jerry Gay offered to take ownership of the problem if no ICU enabled soul picked it up.  No progress reports since then though...
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/d4d70231f322b5a7/09a158e118872b35#09a158e118872b35>
+
+
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/7bc8b8c6aef70812/c210aa89ce13cb84#c210aa89ce13cb84>
+
+
+
+=head3 Java on Parrot
+
+Tim Bunce asked some preliminary questions about Java on Parrot.  I provide preliminary answers, and Nattfodd and Autrijus posted links to related work.  The important question of what it should be called remained unraised.  I vote for "Jot".
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/fb87be7c89a064fd/695419f2c8dff8ff?utoken=6-o-ZDcAAADWXQ4sS--whFjzzhFxvEM0yxapKbptX7zZ7xn9_uPzOhCI8nEEOQevUhyvpyHCHJ_Rs3VGheUC2BMy_BEOeGIM>
+
+
+
+=head3 gdbmhash.t Failures
+
+Tim Bunce noticed that gdbmhash.t was failing with an unhelpful error message.  Andy Dougherty provided a patch that made the error message slightly more helpful.  Jerry Gay applied it.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/cfa8a4023a1c428b/04198072ba7640e3#04198072ba7640e3>
+
+
+
+=head3 BEGIN Blocks
+
+Leo posted some thoughts and information about BEGIN blocks in Perl 6 and the @IMMEDIATE pragma in PIR, it involved creating constant PMCs and freezing them into the bytecode.  Then he made it work.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/bca89d6f066ff4d5/ff59334843ed8a09#ff59334843ed8a09> -- thoughts
+
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/e368bdce610d3a36/6d17bfa68979833b#6d17bfa68979833b> -- actions
+
+
+
+=head3 Amber for Parrot
+
+Citing chatter overheard on its intelligence networks Parrot raised the terror alert to Amber, or maybe Roger Browne released version 0.2.3 of his "Eiffel-like" scripting language, Amber.  I can never keep track of these things.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/838867df299aa9d5/50d2592e48e9fca6#50d2592e48e9fca6>
+
+
+
+=head3 Tcl parray
+
+Amos Robinson offered to provide an implementation of Tcl's parray inluding tests.  Will wanted to apply it, but the attachment did not come through.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/50d7bf4bc9de1965/98355c62212be267#98355c62212be267>
+
+
+
+=head3 Parrot vs Neko
+
+Nicolas Cannasse wondered why Parrot performed so poorly on the fib benchmark.  Leo explained that this benchmark stressed a currently unoptimized portion of parrot (function calls).  He also provided a few pointers on which benchmarks parrot did well on.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/33b939f5da9cd02c/6c3a82da7890e791#6c3a82da7890e791>
+
+
+
+=head3 Using PMCs from C
+
+Klaas-Jan Stol's Lua compiler uses only PMCs.  Thus he wanted to know how to access these PMCs from NCI functions.  Leo provided an answer, but also suggest he looked at the new calling conventions which would do auto-conversion in both directions.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/e21e0822d799bc59/c6056fdb34ba43ee#c6056fdb34ba43ee>
+
+
+
+=head3 PMC for Reference Counting
+
+Nicholas Clark posted a relatively full analysis of how the DODs registration system could be generalized for further reuse.  He also asked for ideas about names.  I think the whole thing looks good and that AddrRegistry is a good name.  Perhaps that has too many vowels... AddrRgstry and sometimes AddrRgstr might work.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/7a27e6d3f08791e3/11797f657fac9f96#11797f657fac9f96>
+
+
+
+=head2 Perl 6 Language
+
+=head3 Type Inferencing in Perl 5
+
+Autrijus (while discussing type inference in Perl 6) recalled that there was a google summer of code project on Type Inferencing in Perl 5.  Gary Jackson, the summer coder, provide a more detailed description of his work.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/5ea04271d14d1735/c3fb0f3d9389ac94#c3fb0f3d9389ac94>
+
+
+
+=head3 C< +"hello" >
+
+Daniel Brockman wondered if C< +"hello" > still evalutated to a NaN.  Larry reasoned that it might and then went on to speculate about the what the extra exception information would do when a Num gets jammed into a num.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/89fc3e95a0ecb80d/9a8a8d8ae66896a5#9a8a8d8ae66896a5>
+
+
+
+=head3 Generic Classes
+
+Autrijus was confused by the frequent use of generic classes as he thought that only roles were type parameterizable.  Larry explained that roles could be promoted to classes pretty easily but that the distinction between them was still useful and meaningful.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/f5d1415442ec3a4c/b2923a4a9bc6a21f#b2923a4a9bc6a21f>
+
+
+
+=head3 GC API
+
+David Formosa posted a revised GC API after the previous discussion.  More discussion ensued.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/d6bc9237b9210a4b/002483f30c6191a0#002483f30c6191a0>
+
+
+
+=head3 Name Conflicts
+
+Yiyi Hu wondered what would happen if two lexicals were declared with different declarators.  Larry answered that it would be a compile time error.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/577cce02541d3c9d/e07672b3e69f9a23#e07672b3e69f9a23>
+
+
+
+=head3 Parsing Numbers
+
+Ingo Blechschmidt posted a list of different possible ways to write numbers, asking which were valid and which not.  Many weighed including Larry.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/61f4044520874f29/bce78cf3287e4b20#bce78cf3287e4b20>
+
+
+
+=head3 Bindings and Routine Signatures
+
+Luke Palmer noticed that if one implemented binding as anonymous subroutines, then binding existing variables created delimited continuations and binding globals full continuations.  While intersting, Warnock applies.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/53232788dc4c7341/ae4d28708146c1f7#ae4d28708146c1f7>
+
+
+
+=head3 visibilty of $?SELF and $?CLASS
+
+Stevan Little wondered what scopes would have $?SELF and $?CLASS available to them.  Larry provided answers.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/6dadcb39e23cc5a3/814d5f890cb8a43c#814d5f890cb8a43c>
+
+
+
+=head3 "Time to take her home her dizzy head is conscience laden"
+
+Amusingly enough the thread about time has a big gap between July 5 and August 15...  The thread also reminded me why I have an analog watch.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/c19bea30514933f4/a10c571d683f9567#a10c571d683f9567>
+
+
+
+=head3 Is Params::Validate Necessary?
+
+Dave Rolsky hoped that Params::Validate would no longer be necessary in Perl 6.  This led to much discussion of the parameter declaration syntax in Perl 6 and a few suggested changes.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/c1aa2d1bea721f06/f627657ac28724cb#f627657ac28724cb>
+
+
+
+=head3 Constants are Dead; Long Live Read-only!
+
+Apparently C< is constant > has been replaced by C< is readonly >.  The discussion contains mores than that, but that is my take away point.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/2e66199c576a8436/66d074fed528ff06#66d074fed528ff06>
+
+
+
+=head3 Multidimensional Hyper Ops
+
+Luke Palmer wondered how hyper ops would work on multi dimensional inputs.  The short answer is recurse then possible, apply when not.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/7233bd8e8a597da9/ca18a76f98fb7633#ca18a76f98fb7633>
+
+
+
+=head3 Serializing Code
+
+Yuval Kogman posted an analysis of a new HTML::Prototype module that hings on serializing code between the various layers of implementation.  Many folks thought this was cool and discussion ensued.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/9d416d7fa643e7b3/86deff4c1b749572#86deff4c1b749572>
+
+
+
+=head3 Slurpy Hash
+
+Luke Palmer wondered if one could bind a slurpy hash by name.  The answer is no.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/f6ed7b076781243d/67cb807fbf3e4432#67cb807fbf3e4432> -- question
+
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/01fd13b3fd403af1/b01cfbfae84f0990#b01cfbfae84f0990> -- answer
+
+
+
+=head3 Making Pairs Less Magical
+
+Luke Palmer wants pairs to be less magical, as their special treatment has caused much confusion of late.  Much discussion continues.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/14ab4e67088e4bf1/e9b1e791ac08d43b#e9b1e791ac08d43b>
+
+
+
+=head3 Lazy Scalars?
+
+Yiyi Hu wants scalars that are evaluated lazily.  Ingo Blechschmidt, Luke Palmer, and Larry all provided ways to achieve that ends.  The simplest solution is to create an anonymous closure it seems.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/8953c45b2d6e7d33/5675c9fddfb1612a#5675c9fddfb1612a>
+
+
+
+=head3 Using Foreign Languages
+
+Ingo Blechschmidt wondered how to use identifiers from other languages which do not have compatible identifiers.  Yuval reasoned that it would be dangerous to try and accomodate them to closely.  Perhaps something like the Sinhala "karenawa" which marks the preceding word as being foreign (english specifically).
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/3439e609dc66e2a4/8e313d44d1218bf5#8e313d44d1218bf5>
+
+
+
+=head3 Symbolic References
+
+Ingo Blechschmidt wondered how symbolic references of magic variables like $?SELF would be done.  Larry provided a few answers.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/665698a47599cf92/fa397dbfbefc62c2#fa397dbfbefc62c2>
+
+
+
+
+=head2 The usual footer
+
+To post to any of these mailing lists please subscribe by sending email to <perl6-internals-subscribe@perl.org>, <perl6-language-subscribe@perl.org>,  or <perl6-compiler-subscribe@perl.org>.  If you find these summaries useful or enjoyable, please consider contributing to the Perl Foundation to help support the development of Perl. You might also like to send feedback to ubermatt@gmail.com
+
+L<http://donate.perl-foundation.org/> -- The Perl Foundation
+L<http://dev.perl.org/perl6/> -- Perl 6 Development site
+L<http://planet.parrotcode.org/> -- Parrot Blog aggregator
+
+
+
+
+
+
+
+
+
+
+
+

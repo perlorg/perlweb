@@ -1,0 +1,121 @@
+=head1 TITLE
+
+Suggested isa() operator.
+
+=head1 VERSION
+
+  Maintainer: James Mastros <james@rtweb.net>
+  Date: 8 Aug 2000
+  Mailing List: perl6-language@perl.org
+  Number: 77
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+Currently, there is no way to determine if a scalar holds something that
+could validly form a number/Boolean/etc.  This RFC seeks to remedy that.
+
+=head1 DESCRIPTION
+
+The suggested semantics of the isa operator are as follows:
+
+=over 4
+
+=item $result = isa($obj, $type);
+
+ TRUE VALUES:
+  $result = "blessed" if $obj is blessed into the package $type.
+  $result = "inherits(n)" if $obj is blessed into a package that ISA $type in the Nth degree.
+  $result = "is a" if $obj currently has a $type value associated with it.
+  $result = "can be a" if $obj could be promoted to a $type value.
+  $result = "tied to a" if $obj is tied to (something which inherits from) $type.
+
+FALSE VALUES:
+  $result = 0 if $obj is not a $type, but $type is a known package or basic type.
+  $result = undef if $type is not a known package or basic type.
+
+ in all cases, if $type is a blessed ref, it should be taken as if ref($type)
+ had been specified.  An unholy ref is invalid for $type.
+
+=back
+
+This is incompatible with UNIVERSAL::isa() in one case: if $obj is a
+string containing the name of a package, the current C<UNIVERSAL::isa($obj,
+$type)> will do what the proposed C<isa(bless(\0, $obj), $type)> would do.
+
+This, fortunately, would not be automatically convertible.  Therefore, it
+might
+be better to have the existing semantics apply to C<isa($obj, $type)> when
+$obj holds the name of an existing package.  Unfortunately, this means that
+you cannot apply isa() to arbitrary strings in absolute safety.  FIXME.
+
+=over 4
+
+=item @result = isa($obj, $type);
+
+@result is the lineage of $obj that leads to $type.  More exactly, it
+is a list such that C<isa(bless(\0, $result[i]), $result[i-1]) =~
+s/^inherits/>.  (Hmm, perhaps things like that are a good argument for why
+isa should treat $obj=a package name specialy.)  Also, the list will always
+either be empty (if C<scalar(isa($obj, $type))> is false), or will end in
+(the cannonical form, if there is some noncannonical form of package names
+or basic types).
+
+=item $result = isa($obj);
+
+$result is the basic type of $obj -- "INTEGER", "NUMBER", "STRING", "REF",
+"FILEHANDLE", etc.  This is it's most specific IS_xOK() (or similar) type
+(INTEGER winning over NUMBER, which wins over STRING, FILEHANDLE winning
+over REF, if they end up being different basic types).  Note that this
+doesn't dereference $obj or give the type it is blessed into; ref() is for
+that.  (If you want to know the basic type of the object that it points to,
+even if it is blessed, see the next form.)
+
+=item @result = isa($obj);
+
+This will follow the chain of refs, giving a list of the packages, etc, of
+each, as well as going into lists and hashes.  For example:
+
+ my $foo = [14, "21"];
+ my $bar = bless (\$foo, "Example::Package1");
+ my $baz = bless (\$bar, "Example::Package2");
+
+ print Data::Dumper \(isa($baz));
+
+Will print (assuming I got the parentheses right on that last line):
+
+ ("Example::Package2", "Example::Pacakge1", "LIST", ["INTEGER", "STRING"])
+
+Note that the last element is a ref to the list that doing a list of
+scalar(isa($thingies)) on the thingy that has it's type mentioned in
+the -2th element. This has the possibility of producing very deep (even
+infinitely deep/self-referencing) lists, and should possibly be limited to
+the return of the scalar form, or omitted entirely.  However, completely
+eliminating it would mean that you couldn't find the types of a list of
+items by doing isa(\@list).  FIXME.
+
+Also, I'm not sure what to do about tied thingies, since things can be
+tied, blessed, and have subvalues all at the same time.  FIXME.
+
+This would have to stop somewhere with recursive and infinite (including
+non-terminating ties, infinite, and semi-finite lists/hashes) structures.
+FIXME.
+
+Note also that this has the list at the end returning the current basic type
+instead of the most specific possible basic type.  FIXME.
+
+=back
+
+=head1 IMPLEMENTATION
+
+Hmm, it's natively (and naïveté) recursive.
+
+=head1 UNRESOLVED ISSUES
+
+C<m/FIXME/>.
+
+=head1 REFERENCES
+
+L<UNIVERSAL> for UNIVERSAL::isa compatibility
+L<ref>

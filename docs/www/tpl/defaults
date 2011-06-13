@@ -1,0 +1,147 @@
+[%-  page = {
+	    title = template.title,
+        style = template.style or 'leo.html'
+    };
+
+    # don't include any whitespace from here...
+#   RETURN;
+-%]
+[%-
+    # Configuration for this site
+    SET site = {
+        name            => 'www.perl.org',
+        logo            => '/i/camel_head.png',
+        tag_line        => 'Perl, modern programming',
+        strap_line      => 'When you need <em>Perl</em> think <strong>perl.org</strong>',
+        crum            => '<a href="/">Home</a>',
+    };
+
+    # Perl.org always wants all stats
+    PROCESS tpl/stats.html;
+    PROCESS tpl/tips.html;
+-%]
+[%- BLOCK nav_tabs %]
+<ul>
+    <li[% ' class="selected"' IF page.section == 'home' %]>
+        <a href="/">Home</a>
+    </li>
+    <li[% ' class="selected"' IF page.section == 'learn' %]>
+        <a href="/learn.html">Learn</a>
+    </li>
+    <li[% ' class="selected"' IF page.section == 'docs' %]>
+        <a href="/docs.html">Documentation</a>
+    </li>
+    <li[% ' class="selected"' IF page.section == 'cpan' %]>
+        <a href="/cpan.html">CPAN</a>
+    </li>
+    <li[% ' class="selected"' IF page.section == 'community' 
+                                || page.section == 'events' %]>
+        <a href="/community.html">Community</a>
+    </li>
+    <li[% ' class="selected"' IF page.section == 'contribute' %]>
+        <a href="/contribute.html">Get Involved</a>
+    </li>
+    <li class="sub[% ' selected' IF page.section == 'about' %]">
+        <a href="/about.html">About Perl</a>
+    </li>
+    <li class="sub[% ' selected' IF page.section == 'download' %]">
+        <a href="/get.html">Download</a>
+    </li>
+</ul>
+[% END -%]
+[%- BLOCK quick_link_creator %]
+[%-
+    IF quick_link_list.size == 0;
+        RETURN;
+    END;
+-%]
+<div class="quick_links">
+        <h4 class="round">
+            [% quick_link_title %]
+        </h4>
+        <div class="list">
+        [% FOREACH p = quick_link_list %]
+        <p>[% p %]</p>        
+        [% END %]
+        </div>
+</div>
+[% END -%]
+[%- BLOCK tip %]
+<div class="quick_links">
+        <h4 class="round">
+            Tip
+        </h4>
+        <div class="list">
+        <p>
+            <strong>[% tip.title %]</strong>
+            [% tip.desc %]
+        </p>
+    </div>
+</div>
+[% END -%]
+
+[%- BLOCK quick_links_1;
+
+    SET source = {};
+
+    IF page.quick_links_1_title;
+        source = page;
+    ELSIF section_data && section_data.quick_links_1_title;
+        source = section_data;
+    END;
+
+    IF source.quick_links_1_title;
+        PROCESS quick_link_creator
+            quick_link_title => source.quick_links_1_title,
+            quick_link_list => source.quick_links_1_list; 
+    END;
+-%]
+[% END -%]
+[%- BLOCK quick_links_2;
+
+    SET source = {};
+
+    IF page.quick_links_2_title;
+        source = page;
+    ELSIF section_data && section_data.quick_links_2_title;
+        source = section_data;
+    END;
+
+    IF source.quick_links_2_title;
+        PROCESS quick_link_creator
+            quick_link_title => source.quick_links_2_title,
+            quick_link_list => source.quick_links_2_list; 
+    END;
+-%]
+[% END -%]
+[%- BLOCK quick_links_3;
+
+    SET source = {};
+
+    IF page.quick_links_3_title;
+        source = page;
+    ELSIF section_data && section_data.quick_links_3_title;
+        source = section_data;
+    END;
+
+    IF source.quick_links_3_title;
+        PROCESS quick_link_creator
+            quick_link_title => source.quick_links_3_title,
+            quick_link_list => source.quick_links_3_list; 
+    END;
+-%]
+[% END -%]
+[%- section_crum = {
+    'home' => '',
+    'about' => '<a href="/about.html">About Perl</a>',
+} -%]
+[%- BLOCK sponsor %]
+<div id="sponsor">
+        <h4>
+            <a href="siteinfo.html#sponsors">Sponsor</a>
+        </h4>
+        <p>
+    [% PROCESS "tpl/sponsor-rotato.html" rotato_image_base => 'http://st.pimg.net/www.perl.org' %]    
+        </p>
+</div>
+[% END -%]

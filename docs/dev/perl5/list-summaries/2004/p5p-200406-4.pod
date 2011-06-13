@@ -1,0 +1,63 @@
+=head1 This Week on perl5-porters (21-27 June 2004)
+
+Summer is here, and it's vacation time for the Perl 5 porters. Well,
+except for the valorous maint pumpking, who just released a snapshot of
+perl 5.8.5-to-be.
+
+=head2 cat, pipe, perl
+
+Nicholas Clark finds that doing a simple pipe :
+
+    cat | perl
+
+on his system produces the trange error message, I<cat: stdin: Resource
+temporarily unavailable>. After some investigation he decides it's
+probably a FreeBSD 5 threading bug.
+
+    http://groups.google.com/groups?selm=rt-3.0.9-30443-91308.18.7666584401696%40perl.org
+
+=head2 Regexp bug, fixed
+
+Jeff Pinyan found and fixed a regular expression bug: character ranges are
+not computed correctly with C<\p> and C<\P>.
+
+    http://groups.google.com/groups?selm=Pine.LNX.4.44.0406241636340.8774-200000%40perlmonk.org
+
+=head2 In Brief
+
+Edward Peschko remarks that tieing a hash which is already populated with
+some values erases those values. Nicholas Clark explains that tie() isn't
+actually destroying the values, but merely hiding them. Once the hash
+untied, the original data is still there.
+
+    http://groups.google.com/groups?selm=20040625022625.GA3087%40mdssdev05
+
+David R.Schulte experiments that sometimes, taint error messages are
+emitted for a whole conditional expression, even though only a unused part
+of the expression is actually tainted. (bug #30461.)
+
+    http://groups.google.com/groups?selm=rt-3.0.9-30461-91366.11.3892106357267%40perl.org
+
+Ken Williams released Cwd 2.18.
+
+=head2 Patch of the month
+
+Paul Fenwick proposed a patch to make sort() play nethack when it's called
+in scalar context.
+
+    http://groups.google.com/groups?selm=40DA505A.2050500%40perltraining.com.au
+    http://www.nethack.org/
+
+=head2 Last minute
+
+Nicholas released a snapshot of maintperl, just before the code freeze for
+perl 5.8.5. Testers most welcome.
+
+    http://groups.google.com/groups?selm=20040627220127.GC39967%40plum.flirble.org
+
+=head2 About this summary
+
+This summary was written by Rafael Garcia-Suarez. Weekly summaries are
+published on F<http://use.perl.org/> and posted on a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. Comments and
+corrections welcome.

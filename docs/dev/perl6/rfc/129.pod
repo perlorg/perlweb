@@ -1,0 +1,261 @@
+=head1 TITLE
+
+Replace default filehandle/select with $DEFOUT, $DEFERR, $DEFIN
+
+=head1 VERSION
+
+  Maintainer: Nathan Wiger <nate@wiger.org>
+  Date: 17 Aug 2000
+  Last Modified: 13 Sep 2000
+  Mailing List: perl6-language-io@perl.org
+  Number: 129
+  Version: 2
+  Status: Frozen
+
+=head1 ABSTRACT
+
+A basic Perl 5 implementation can be found as IO::Default at
+http://www.perl.com/CPAN/authors/id/N/NW/NWIGER/IO-Default-1.03.tar.gz
+
+The concept of a "default filehandle" is nebulous. Many users
+can't get their heads around it, and even if they can, it is
+still kind of mysterious.
+
+This proposes that the "default filehandle" and 1-arg select
+be dropped from Perl 6 and replaced with the variable C<$DEFOUT>,
+the Default Output handle. Whatever this variable contains will
+be what is printed to by default. This will make default output
+consistent with the C<fileobject> approach and also other Perl special
+variables.
+
+In addition, this RFC proposes the addition of two new variables,
+C<$DEFERR> and C<$DEFIN>, the Default Error and Default Input handles.
+These can be used to redirect default error output and default input,
+for added flexibility.
+
+=head1 NOTES ON FREEZE
+
+Some discussion, particularly by Jon Ericson, was recorded on this RFC.
+Most of it boiled down to clarifications of issues. Jon questioned the
+usefulness of C<$DEFERR>, but I think it serves a very useful purpose
+since it allows you to redirect warnings (which would be directed to
+C<$DEFERR>) without affecting statements that print to C<$STDERR>
+explicitly. There is also very nice symmetry between the C<DEF*> default
+handles and the C<STD*> standard handles.
+
+=head1 DESCRIPTION
+
+=head2 $DEFOUT
+
+Currently, the "default filehandle" ("DF" to save typing) is
+hidden. It can only be accessed or changed via the C<select>
+function. 
+
+With the advent of full-featured B<fileobjects>, having a
+special DF is unnecessary. Instead, we simply make a variable,
+called C<$DEFOUT>, which is where unspecified output is sent.
+Changing the DF is done through simple variable assignment.
+
+Below are some examples of Perl 5 versus Perl 6 syntax:
+
+   Perl 5                    Perl 6 
+   -----------------------   --------------------------
+   select FILE;              $DEFOUT = $FILE;
+   
+   $oldh = select;           $oldh = $DEFOUT;
+
+   $oldh = select FILE;      $oldh = $DEFOUT;
+                             $DEFOUT = $FILE;
+
+   $| = 1                    $DEFOUT->autoflush(1); # or:
+                             autoflush $DEFOUT;     # ?
+
+What advantages besides a new syntax are there? Several:
+
+   1. The rule is easier. No DF, just "everything goes
+      to $DEFOUT by default". Changing this is done by
+      simple assignment.
+
+   2. It's less hidden. Most everything else in Perl is
+      handled in variables such as @INC, %ENV, and so
+      forth. This makes filehandles that much easier.
+
+   3. Access to object methods is available directly on
+      the current filehandle object via $DEFOUT->method,
+      eliminating the need for $|, $/, $\, and so on.[1]
+
+   4. No more 1-arg select vs. 4-arg select confusion.
+
+Whatever object C<$DEFOUT> contains is what default output
+goes to and what the object methods work on. There is no
+mysterious hidden DF. C<$DEFOUT> works just like other 
+variables.
+
+=head2 $DEFERR
+
+The new C<$DEFERR> variable can be used to easily redirect
+error output as well, something you often want to do if
+you're not attached to a tty. However, having a script that
+runs easily in both environments is tricky in Perl 5:
+
+   if ( $have_a_tty ) {
+      print STDERR "Warning: Bad stuff\n";
+   } else {
+      print ERRORLOG "Warning: Bad stuff\n";
+   }
+
+You have to put checks similar to this for many functions
+and different situations. Plus, it doesn't catch C<carp> or
+C<die> calls embedded in modules, meaning that you will
+always lose some important error output.
+
+With C<$DEFERR>, all error functions are set to act on it
+instead of C<$STDERR> by default. So, the Perl 6 version
+of the above is replaced by a single simple line of code
+at the top of your main program:
+
+   $DEFERR = $ERRORLOG unless $have_a_tty;
+
+Presto, all error-related functions now redirect to your
+error log automatically. All through simple assignment.
+
+As Jon Ericson pointed out, this can be accomplished in a similar vein
+currently by reopening STDERR onto another file, or by using typeglob
+aliases to other open filehandles. However, it does not allow you to mix
+calls to files and STDERR like you can with files and STDOUT.
+
+Using $DEFERR allows you to do so if you have functions that you want to
+explicitly print to C<$STDERR>:
+
+   warn "Badness!";          # goes to $DEFERR
+   print $STDERR "Badness!"  # explicitly to $STDERR
+
+This is not easy to do in Perl 5.[2] This is quite useful if, for
+example, you want a cron job to log all error either to the screen or
+log files but always print out the same message at the end:
+
+   $DEFERR = $ERRORLOG unless $have_a_tty;
+   # ...
+   warn "Bad stuff: $!";     # to $DEFERR
+   # ...
+   carp "This too: $!";      # ditto
+   # ...
+   if ( $really_bad ) {
+       print $STDERR "Fatal error! Check the logfiles!\n";
+       exit 1;
+   }
+
+That way you'd get a cron-generated message (perhaps to your pager) that
+was brief, while the code could still send other errors to either the
+screen or logfile automatically.
+
+=head2 $DEFIN
+
+The new C<$DEFIN> accomplishes a similar thing, but with input.
+Currently, the special <> filehandle iterates through the command-line
+files stored in C<@ARGV>. You can also use it to open C<STDIN>, but only
+if C<@ARGV> is empty (it unshifts '-' onto C<@ARGV>). However, <> is
+potentially more useful as a default input filehandle, much like a
+simple "print" uses $_ for its default output:
+
+   @data = <>;       # read from $DEFIN
+
+The new C<$DEFIN> variable becomes what is read from when <> is used. It
+should point to C<$STDIN> by default. This allows greater flexibility,
+more consistency with operators like print, and doesn't require us to
+reopen filehandles to get to different input sources:
+
+   # Figure out our input source based on what's open
+   $DEFIN = $infile || $instream || $STDIN;
+   @data = <>;
+
+This allows valuable compartmentalization of code. The 
+simple <> construct is now a synonym for C<$DEFIN>. This
+means that you can place something like the C<@data = ><>
+line in a module, and allow the top-level code to change
+the data source based on a simple assignment. You no
+longer have to pass filehandles into functions or do
+complex C<tie> manuevers to gain this ability.
+
+Plus, with C<$DEFIN>, if you have a routine that must
+read from C<$STDIN>, you can still do so easily by 
+explicitly saying:
+
+   $yes_or_no = <$STDIN>;   # explicitly from $STDIN
+   @data = <>;              # read from $DEFIN
+
+To retain the special behavior currently with <>, it is recommended that
+Perl 6 require explicit use of C<$ARGV>:
+
+   while (<$ARGV>) { }      # iterate through @ARGV
+
+This has the benefit that it makes it more obvious that we're iterating
+through C<@ARGV>. It also means that you can use <> to grab C<STDIN>
+while retaining the values in <@ARGV>, which is not possible currently.
+
+=head2 Naming
+
+The naming of the variables was chosen to make them
+consistent with the Standard IO handles C<$STDIN>,
+C<$STDOUT>, and C<$STDERR>.
+
+=head1 IMPLEMENTATION
+
+Remove 1-arg C<select>. Make sure p52p6 translates C<select>
+to the new syntax.
+
+Create C<$DEFOUT> variable and reset output functions to act on
+C<$DEFOUT> instead of the default filehandle. C<$DEFOUT> should point to
+the system's stdout by default, just like the default filehandle does
+currently.
+
+Add C<$DEFERR> variable and reset error functions (such as warn and die)
+to print to C<$DEFERR> instead of C<STDERR>. C<$DEFERR> should point to
+the system's stderr by default, just like STDERR.
+
+Add C<$DEFIN> and change <> and other default input to work on
+C<$DEFIN>. C<$DEFIN> should point to the system's stdin by default.
+
+A basic Perl 5 implementation can be found as IO::Default at
+http://www.perl.com/CPAN/authors/id/N/NW/NWIGER/IO-Default-1.03.tar.gz
+
+=head1 MIGRATION
+
+The 1-arg C<select> syntax would have to be translated to something
+like:
+
+   $DEFOUT = $FILE;        # was select(FILE);
+
+Since the only other thing that would really change would be the meaning
+of <> in loops, p52p6 would have to translate while(<>) to:
+
+   while (<$ARGV>) {  }
+
+However, when used outside of a loop, like so:
+
+   @file = <>;
+
+No translation would have to take place since the usage would likely be
+a shortcut to C<STDIN> (which would be retained since <> == C<$DEFIN> ==
+C<$STDIN> by default).
+
+=head1 NOTES
+
+[1] This RFC does not take a firm stance on eliminating
+$|, $/, $\, and friends. However, this approach to handling
+default input and output does mean they are no longer needed.
+I do think they should go, but this RFC does not require it.
+
+[2] It is possible in a way, but you can't print to STDERR explicitly,
+and you have to use a series of open calls. Better to just send it to
+the default error handle, whatever that may contain.
+
+=head1 REFERENCES
+
+RFC 14: Modify open() to support FileObjects and Extensibility
+
+RFC 30: STDIN, STDOUT, and STDERR should be renamed
+
+http://www.mail-archive.com/perl6-language-io%40perl.org/msg00182.html
+
+http://www.mail-archive.com/perl6-language-io%40perl.org/msg00228.html

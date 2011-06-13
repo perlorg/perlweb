@@ -1,0 +1,98 @@
+=head1 This Week on perl5-porters (2-8 September 2002)
+
+As September begins, the perl5-porters, ignoring the changing weather,
+continue to work. This week, some small things, and a few bigger ones,
+are selected in the report. Read below.
+
+=head2 Precision on CLONEs
+
+Elizabeth Mattijsen found that, while executing a CLONE method (the hook
+to support cloning of data when new threads are created), C<< threads->tid >>
+returns the thread id of the original thread. This is because the cloning
+is actually performed (at the C level) in the parent thread.
+
+However, to execute some routine when a new thread starts, and from this
+new thread, a workaround is to hijack C<threads::new>. Nick Ing-Simmons
+also suggested to implement some sort of post-clone handler via another
+special subroutine (for example CLONED).
+
+=head2 A point on v-strings
+
+John Peacock, the man who courageously continues to struggle with
+v-strings, posted a I<restatement of current objections to version
+objects> -- version objects being what the v-strings should be compiled to
+internally by perl, in order to make them less unusable.
+
+The thread is worth a read if you are annoyed by v-strings and if you want
+to have some idea on how they're likely to change.
+
+    http://groups.google.com/groups?threadm=3D73752A.701%40rowman.com
+
+To quote Hugo, I<Larry continues to like them> [the v-strings] I<despite
+various attempts to convince him otherwise, so they are here to stay. I
+think they could become much less of a bugbear if John's sterling work
+culminates in a consistent and appropriately documented set of
+behaviours.> Waiting for the v-string objects Apocalypse...
+
+=head2 Pseudo-hashes should warn before they die
+
+Now that pseudo-hashes are removed from bleadperl, Gurusamy Sarathy
+noticed that using them doesn't trigger any deprecation warning in perl
+5.8.0. Jarkko is considering adding one in perl 5.8.1.
+
+Benjamin Goldberg also started a thread on the implementation-to-be
+of the C<fields> pragma in perl 5.10.
+
+    http://groups.google.com/groups?threadm=3D797B2F.2B9B6B10%40earthlink.net
+
+=head2 Jaguar and Camel
+
+Jarkko Hietaniemi found out that Perl 5.8.0 doesn't compile on Mac OS X
+10.2 with the August update of the Developers Tools, due to a small
+communication problem between the Configure script and Apple's modified
+gcc 3. He also provided a fix for that, which you can grab here if you
+need it :
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-09/msg00403.html
+
+I<Last minute update> : has Jarkko dreamed ? have the sunspots moved ?
+He's apparently no longer able to reproduce this bug.
+
+=head2 In brief
+
+Abe Timmerman is now the official maintainer of Test::Smoke.
+See F<http://qa.perl.org/> for more info about smoke testing.
+
+Steve Piner reported an (already known, IIRC) bug : C<my $x; our $x;>
+doesn't generate a warning, whereas C<our $x; my $x;> does. (Bug #16922.)
+
+H.Merijn Brand, doing some speed experiments, I<found that perlio has
+slowed down considerably compared to stdio from 17805 to 17821>. No
+confirmation or comment was issued.
+
+Allen Smith provided some patches to bleadperl and to perl 5.8.0 to
+improve IRIX support, namely on long doubles, and their handling by
+C<s?printf()>.
+
+The perl5-changes mailing list now carries the changes committed by Hugo,
+and all previously dropped changes have been sent back to it, for the
+purpose of archiving.
+
+Sadahiro Tomoyuki released a new version (0.23) of Unicode::Collate.
+
+Elizabeth Mattijsen, after having uploaded a first version of
+C<Thread::Exit> on CPAN, found that C<POSIX::_exit()> makes perl hang on
+Linux when called from within a thread (bug #17057). This problem is
+probably related to the Linux implementation of threads.
+
+Elizabeth emitted the idea to start a new FAQ section on threads.
+
+Hugo is leaving for Zurich (the Perl 6 mini-conference) and to Munich
+(YAPC::Europe).
+
+=head2 About this summary
+
+This summary brought to you by Rafael Garcia-Suarez. It's also available
+via a mailing list, which subscription address is
+F<perl5-summary-subscribe@perl.org>. As usual, comments, corrections and
+additions welcome.

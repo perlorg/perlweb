@@ -1,0 +1,71 @@
+[% # define rotation for beginner box %]
+[%- h.newtoperl.weight = 3;
+    h.newtoperl.data = BLOCK %]
+New to Perl?   &nbsp;<A href="http://learn.perl.org">See our Resources for Perl Beginners</a>
+[%- END %]
+[%- h.gotbooks.weight = 3;
+   h.gotbooks.data = BLOCK %]
+Got Books?  &nbsp;<A href="http://books.perl.org">Visit our books site</A>
+[% END %]
+[%- h.jobs.weight = 5;
+    h.jobs.data = BLOCK %]
+Need a Job?  &nbsp;<A href="http://jobs.perl.org/">jobs.perl.org has the job for you!</A>
+[%- END %]
+
+[%- h.suggest.weight = 2;
+    h.suggest.data = BLOCK %]
+Got Suggestions?  &nbsp; <A HREF="mailto:webmaster@perl.org">Email us ideas for the site!</A>
+[%- END %]
+[%- h.care.weight = 2;
+    h.care.data = BLOCK %]
+Perl -- For when you care enough<br /> to program the very best!
+[%- END %]
+
+[%- h.f1.weight = 2;
+    h.f1.data = BLOCK %]
+Perl -- When the best is good enough.
+[%- END %]
+
+[%- h.f2.weight = 2;
+    h.f2.data = BLOCK %]
+Perl -- It's like Java, only it lets you deliver<br />
+on time and under budget.
+[%- END %]
+
+[%- h.f3.weight = 2;
+    h.f3.data = BLOCK %]
+Perl -- Because life's too short to code without punctuation.
+[%- END %]
+
+[%- h.f4.weight = 2;
+    h.f4.data = BLOCK %]
+"Programmers Wanted"
+[%- END %]
+
+
+[%- h.f5.weight = 2;
+    h.f5.data = BLOCK %]
+"Program <I>Different</I>"
+[%- END %]
+
+[%- h.f6.weight = 2;
+    h.f6.data = BLOCK %]
+"Something special in the code"
+[%- END %]
+
+[%- h.f6.weight = 2;
+    h.f6.data = BLOCK %]
+"Where do you want to go tomorrow?"
+[%- END %]
+
+[%
+    h.tpc.weight = 0;
+    h.tpc.data = BLOCK %]
+<A href="http://conferences.oreilly.com/oscon"
+>O'Reilly Open Source Convention -- Portland, OR.  July 21-25</A>
+[%- END %]
+
+
+[% # end of rotation %]
+[%- USE Rotato(h) %]
+[%- Rotato.pick(h) %]

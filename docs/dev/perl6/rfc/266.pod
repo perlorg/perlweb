@@ -1,0 +1,131 @@
+=head1 TITLE
+
+Any scalar can be a hash key
+
+=head1 VERSION
+
+  Maintainer: Steve Fink <steve@fink.com>
+  Date: 20 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 266
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+References will be allowed as hash keys. Blessed references can
+additionally provide their own hash functions and equality tests.
+
+=head1 NOTE
+
+This RFC is probably premature. It needs a lot of firming up, and I
+wonder if it would be better targeted to the perl6-language-internals
+group. But I want to respect the new RFC freeze date (today). And it
+should still serve to focus discussion, IMO the main purpose of an RFC.
+
+Anyone else want to maintain it?
+
+=head1 DESCRIPTION
+
+For nonreferences, nothing will change. For non-blessed references,
+just one thing will change: the keys returned by C<keys> and C<each>
+will be full scalars instead of just strings. The lookup will behave
+as now: if you have two distinct anonymous hash references with
+identical contents, they will still be given distinct keys in the
+hashtable. However, C<$hash{$ref}> will no longer be equal to
+C<$hash{"$ref"}>.
+
+Blessed references (or whatever they become in Perl6) can define a
+HASH subroutine that returns an integer. Any two objects whose HASH
+functions return different values will never resolve to the same hash
+table entry.
+
+Identical HASH functions are not sufficient for resolving to the same
+entry. The equality operator C<==> will be used to find matching
+values in the table. Thus, in order for two distinct blessed
+references to be treated as identical hash keys, they must both define
+C<sub HASH> to return the same value and overload C<==> to return true
+when either is compared to the other.
+
+If the outcome of the equality test changes while an object is in a
+hash table, the results are undefined. (This can happen if the
+equality subroutine is redefined, or if internal state that it depends
+on changes in either the lookup object or the stored object.) Note
+that the equality operator defined by the stored key is irrelevant,
+because the probe key's equality test is used during lookup.
+
+The HASH value of a stored object is "frozen" at the moment it is
+stored in the hashtable. It may change, but it will be looked up in
+the hashtable using the HASH value computed for its insertion.
+
+The number of times the equality and HASH subroutines are called
+during any hash operation is undefined.
+
+=head2 WARNING
+
+Note that because C<==> is not constrained to be commutative, the hash
+keys no longer form a set of equivalence classes. In other words, it
+is possible to get this behavior:
+
+ print $A;            # "an A object"
+ print $B;            # "a B object"
+ $hash{$A} = $B;
+ print $hash{$A};     # "a B object"
+ print $hash{$B};     # "a B object"
+ $hash{$B} = $A;
+ print $hash{$A};     # "an A object"
+ print $hash{$B};     # "a B object"
+
+This is because $A==$B but $B!=$A (assuming the search key's equality
+operator is called rather than the hash key's). I'm sure some sick,
+twisted individual can come up with a practical use for this, but most
+of the time it'll be a subtle bug.
+
+=head2 ALTERNATIVES
+
+1. The HASH function could be allowed to return an arbitrary scalar
+value. This would slow down operations, because the entire scalar
+would need to be hashed once and then compared to every element in the
+hash bucket.
+
+2. The HASH value could be allowed to change after an object is
+inserted into the hashtable (and the lookup would reflect this new
+value.) This would probably be miserable for performance because in
+general, every key in the hashtable would need to be recomputed and
+compared against on every hashtable operation. This could be improved,
+but hardly seems worth it.
+
+3. The equality test could be skipped, and instead lookups would rely
+only on the HASH values being identical. This would work, but it seems
+difficult in general to boil an object's identity down to a number or
+even a string. Still, this seems like the leading contender: it's what
+we have now with overloaded stringification, except
+C<(keys %h)[0]->foo()> would work.
+
+=head1 IMPLEMENTATION
+
+Dunno. With my vague understanding of the existing code and hash
+tables in general:
+
+All hashtables will have a flag bit for each key indicating whether it
+is a reference. If not, the memory for the key strings can be shared
+(as they are now.) For a key which is a reference, the key will be a
+struct with two slots: the HASH value of the key (call it
+HASHENT.keyhash) and the actual scalar key (call it HASHENT.key). A
+lookup for a probe object will generate a hash of the lookup key and
+map it to a bucket in the hashtable. Each of the entries (call an
+entry HASHENT) in that bucket will be examined in turn. The lookup
+will succeed if HASHENT.keyhash is equal to H and the C<==> operator
+of the probe object returns true for HASHENT.key. The first one found
+will be returned.
+
+When inserting into a hash bucket, multiple entries with identical
+hash values will be left unmolested as long as the inserted key's
+equality operator returns false. If probe==HASHENT.key returns true
+for more than one HASHENT, at least one will be removed from the table
+and replaced with the new entry. (There will be only one unless the
+behavior of C<==> changes.)
+
+=head1 REFERENCES
+
+None.

@@ -1,0 +1,65 @@
+[%-
+
+    # safety check
+    RETURN UNLESS l;
+
+    list = lists.$l;
+
+    page.import({
+        title    => 'List: ' _ list.name,
+        section  => 'home',
+        description 
+            => list.summary || 'Perl mailing lists for ' _ list.name,
+    });
+-%]
+
+<h2>[% IF list.defunct %]DEFUNCT[% END %] List: [% list.name %]</h2>
+
+[% IF list.defunct %]<div class="defunct">No longer active</div>[% END %]
+
+<div id="[% list.name %]" class="mailinglist">
+    [% IF list.url %]
+    <p><a href="[% list.url %]">[% list.url %]</a></p>
+    [% END %]
+    [% IF list.date_last_confirmed_active %]
+    Last confirmed active: [% list.date_last_confirmed_active %]
+    [% END %]
+    [% '<p>' _ list.summary _ '</p>' IF list.summary %]
+    [% '<p>' _ list.comments _ '</p>' IF list.comments %]
+
+    [% IF list.tags %]
+    Tags:
+    [% FOREACH tag = list.tags %]
+      <a href="/tag/[% tag %].html">[% tag %]</a>
+    [% END %]
+    [% END %]
+    <h5>Subscribing and help</h5>
+    <dl>
+    [% FOREACH field = ['unsub','sub','help' ] %]
+    [% IF list.$field %]
+    <dt>[% field %]</dt>
+    <dd>[% list.$field | lower | trim %]</dd>
+    [% END %]
+    [% END %]
+    </dl>
+
+
+[% MACRO format_content(name,field) BLOCK %]
+    <dt>[% name %]</dt>
+    <dd>
+      <ul>
+      [% FOREACH url = list.$field.list %]
+      <li><a href="[% url | trim %]" >[% url %]</a></li>
+      [% END %]
+      </ul>
+    </dd>
+[% END %]
+
+    <h5>Feeds and archives</h5>
+    <dl>
+     [% format_content("Archives","archive") IF list.archive %]
+     [% format_content("Feeds","rssfeed") IF list.rssfeed %]
+     [% format_content("NNTP","nntp") IF list.rssfeed %]
+    </dl>
+
+</div>

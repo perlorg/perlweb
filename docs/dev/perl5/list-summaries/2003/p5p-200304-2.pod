@@ -1,0 +1,128 @@
+=head1 This Week on perl5-porters (7-13 April 2003)
+
+This week : MacOS X problems, big and small patch proposals,
+cross-compilation and unknown errors.
+
+=head2 use base and import
+
+Casey West proposed a patch to call the import() method of a module
+referenced through the C<use base> pragma. Graham Barr disagrees,
+saying that C<use base> should only be used to set up inheritance, and
+Michael Schwern threatens to call the backward compatibility police.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg94142.html
+
+=head2 Cross-compilation
+
+Redvers Davies complains that there's too little information about the
+cross-compilation of perl. Nevertheless, he successfully produced perl
+packages for the OpenZaurus OS (L<http://www.openzaurus.org/>), including
+dynamically loaded extensions, and the ability to cross-compile XS modules !
+(Perl 5.8.0 has the beginning of a minimal support for cross-compilation.
+Let's hope it can be improved by this impressive work.)
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg94160.html
+
+=head2 Unknown error
+
+Tels manages to have perl to emit an actual I<Unknown error>. This obscure
+message is actually produced by perl when it fails to load a module, and
+fails again to get an error message for this first failure.
+Enache Adrian provided a fix.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg94096.html
+    http://archive.develooper.com/perl5-porters@perl.org/msg94183.html
+
+=head2 OS X peculiarities
+
+Michael Schwern notices that C<nobody>, the traditional Unix
+low-privileged user, has user id -2 on MacOS X (according to
+F</etc/passwd>), but the C<uid_t> C type is actually an unsigned integer.
+Consequently, getpwnam() says that C<nobody>'s UID is 4294967294. Looks
+logical. We've seen weirder things.
+
+This doesn't seem to be related to the fact that you can't run perldoc as
+root on MacOS X. That's what Dan Kogai explains after a few tests of
+changing the UID and EUID on various BSD flavors.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg94194.html
+
+Michael also criticizes the choice of the default I<vendorlib> location on
+OS X. In fact, he doesn't think that I<vendorlib> should be set at all in
+a hints file. Wilfredo SE<aacute>nchez asks for more info, and is working
+on a patch, both for the Darwin and Rhapsody hints files. (By the way,
+Wilfredo doesn't have a Mac OS X server, so he'll patch blindly unless
+someone wants to test bleadperl and/or maintperl on Rhapsody.)
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg94104.html
+
+=head2 C<h2xs> and enums
+
+Tassilo von Parseval notices (bug #21887) that C<h2xs> doesn't generate
+constants from the enumerated types found in C header files. Nicholas
+Clark explains how to use ExtUtils::Constant to achieve the desired
+effect.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg94212.html
+
+=head2 Big Bug Fixes
+
+Pradeep Hodigere proposed a patch to speed up some of the perl built-ins
+when handling UTF8 data (and he provided also benchmark results).
+Basically his solution is to add a field C<sv_length> to the internal SV
+structure, to hold the length, in chars, of the scalar string value.
+Nobody commented yet.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg94230.html
+
+Dave Mitchell sent a patch to allow I<FETCH to access arrays and hashes
+which are themselves tied without fear of crashing> (a.k.a. nested
+FETCHes). I personally don't understand fully the solution. Nobody
+commented yet. No, wait, Arthur Bergman said it was nice ! and asked for
+benchmarks.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg94130.html
+
+=head2 Beware the precedence police
+
+Dan Kogai complains that this code :
+
+    print chr(0xE3).chr(0x81).chr(0x82) =~ /^\x{3042}$/ ? 'true' : 'false';
+
+prints I<true>. Then, he ceases to complain when he realizes that the
+precedence of C<.> is actually lower than the precedence of C<=~>. Tom
+Horsley comments that I<APL was the only language that ever got precedence
+and associativity correct.>
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg94127.html
+
+=head2 In brief
+
+Jarkko Hietaniemi reports that Devel::Coverage doesn't work with perl
+5.8.0, while it works with perl 5.6.1 (bug #21890). Randy J. Ray says
+he'll look at it. Stas Bekman suggests that the problem might be similar
+to one he found on Apache::DB.
+
+Long doubles are now correctly recognized by the Configure script on AIX,
+thanks to John Allen and Merijn Brand. They also improved the compiler
+detection mechanism, if I understood correctly.
+
+Pierre Denis reports a parsing bug (#21875) involving a hash key which is
+a bareword beginning by C<q>, and a pair of braces that can be seen as a
+block or as a literal hashref. Dave Mitchell sends a fix.
+
+Alberto SimE<otilde>es says that it'd be nice to have a function in
+Data::Dumper to dump the structures directly to a chosen filehandle.
+Patches welcome !
+
+Nathan Torkington asks a bunch of I/O layer questions, and gets some
+answers.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg94285.html
+
+=head2 About this summary
+
+This summary was brought to you by Rafael Garcia-Suarez. Weekly summaries
+are available on L<http://use.perl.org/> and/or via a mailing list, which
+subscription address is L<perl5-summary-subscribe@perl.org>. Comments,
+corrections, additions, and suggestions are welcome.

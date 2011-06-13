@@ -1,0 +1,137 @@
+=head1 This Week on perl5-porters (4-10 August 2003)
+
+The bulk of the discussion, this week, was about platform-specific
+adjustments for the upcoming 5.8.1, and other testing feedback.
+However, don't miss the other interesting topics : v-strings (again),
+autoboxing, and the usual load of features and bugfixes.
+
+=head2 v-strings
+
+In short : v-strings are back in 5.8.1.
+
+Long version : Jarkko Hietaniemi asked Larry for the ultimate advice. In
+the long term, the C<v1.2.3> form of v-strings will go away, as well as
+the confusing equality between C<1.2.3> and the C<"\1\2\3"> string. In
+Perl 6, C<1.2.3> is going (most probably) to be a full-fledged version
+object. Consequently, the C<1.2.3> notation should not be deprecated. A
+new notation, C<qv[5.6]>, might be introduced for version objects with
+only one decimal point.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg00437.html
+
+So Jarkko did put everything about v-strings like it was in perl 5.8.0
+(except the fix for barewords of the form C<v65>, autoquoted by C<< => >>,
+see previous weeks.) v-strings don't produce deprecation warnings anymore,
+because issuing them only at the right places would be too complicated.
+John Peacock is going to produce some design document in order to get
+version objects in Perl 5.10 as close as possible to the future Perl 6
+version objects.
+
+At some point, Michael G Schwern advocated faster release cycles, leading
+to faster deprecation cycles. Alan Burlison commented with insight.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg00320.html
+
+=head2 autobox
+
+chocolateboy proposed a patch to add a new lexically-scoped pragma,
+C<autobox> (the name of this feature comes from Java and C#). This patch,
+against perl 5.8.1 RC4, is also available from CPAN. Basically it allows
+methods to be invoked on unblessed references and on scalars. It provoked
+a wide range of different reactions.
+
+Chip Salzenberg hates the feature. Other disapprovals follow : Abigail,
+Graham Barr, Rafael Garcia-Suarez, mostly because they find the new
+syntax inconsistent with the rest of Perl 5, like pseudohashes were.
+Tassilo von Parseval, Michael Schwern and James Duncan like it. Alan
+Burlison wonders about performance impact. Claes Jacobsson wonders if the
+name C<autobox> is well chosen. Simon Cozens comments negatively on the
+implementation and posts the source of his C<Ruby.pm> module, that I've
+probably seen on the F<fwp> mailing list before.
+
+Hugo van der Sanden has the wise word : the core must be adjusted so that
+it's possible to write pragmas like C<autobox> without requiring a core
+patch.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg00314.html
+    http://search.cpan.org/author/CHOCOLATE/autobox-0.03/lib/autobox.pm
+
+=head2 Cygwin
+
+Gerrit P. Haase, Merijn Brand and Jarkko were busy solving problems with
+compiling perl on recent releases of Cygwin (1.3.22, 1.5), mainly due to
+evil typecasts between unsigned and signed integers. At some point this
+ended up in a patch to the F<stdint.h> header file that comes with cygwin
+1.5.
+
+Meanwhile, Jari Aalto found that Sys::Syslog doesn't log anything,
+apparently, under Cygwin (Cygwin does not use the F</var/log/syslog>
+logfile, but it should direct the calls to the Windows event log.)
+
+=head2 MakeMaker and PASTHRU
+
+Steve Hay reminds about a MakeMaker bug he found : it's not passing DEFINE
+and INC arguments to other F<Makefile.PL>'s in subdirectories, at least on
+Windows. After having tried a few tweaks, Michael Schwern reaches the
+conclusion that trying to solve such complex issues just before an
+imminent release is not a wise idea.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg00586.html
+
+=head2 perlreref
+
+Iain Truskett added a new manpage into the documentation : F<perlreref>,
+a handy regular expression quick reference. It will be available in perl
+5.8.1.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg00436.html
+
+=head2 In Brief
+
+Fergal Daly finds that passing a hash slice in the argument list of a
+function autovivifies non-existent keys. However hash slices alone don't
+make autovivification happen, nor does hash elements. This behaviour
+exists since at least 5.005_03, but looks like a bug nevertheless.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg00635.html
+
+Johan Vromans asked for a way to know what files ExtUtils::Makemaker is
+going to install (via C<make install>), without actually installing them.
+There's currently no easy way to have this information, but Michael
+Schwern is going to add a F<packlist> target to the Makefile that will be
+runnable separately from the complete install.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg00592.html
+
+Raphael Manfredi announced that he wants to revitalize the metaconfig
+project. The C<dist> distribution on CPAN hasn't been updated since 1997.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg00711.html
+
+Dave Mitchell fixed something hidden deeply inside the internals of the
+lexical scopes. As a result, C<SelfStubber> began to emit a new warning,
+I<Variable "$nested" is not available>, $nested being a lexical variable
+used in a recursive C<qr//> expression. This only confirms the general
+proverb : C<(??{})> assertions break lexicals.
+
+Michael G Schwern found that perl can't be compiled with C<-Dusemymalloc>
+on Mac OS X. At least, it can't be compiled without further investigation.
+
+Alain Barbet and his smoke armada found problems with semaphores and NetBSD
+on sparc : they leak. Jarkko disables them. (bug #23216)
+
+Nicholas Clark and Abhijit Menon-Sen fixed a bug involving an unfortunate
+interaction between C<Storable> and restricted hashes.
+
+Enache Adrian finds that using C<#line> directives nukes the GvFILE slots
+of globs. Don't worry, apparently this only affects B::Bytecode -- but
+this prevents it completely from producing any accurate result.
+
+Abe Timmerman released Test-Smoke 1.18.02.
+
+=head2 About this summary
+
+This week's yet another summary was written by Rafael Garcia-Suarez.
+Weekly summaries are published on F<http://use.perl.org/> and on a mailing
+list, which subscription address is F<perl5-summary-subscribe@perl.org>.
+Comments and corrections are welcome.

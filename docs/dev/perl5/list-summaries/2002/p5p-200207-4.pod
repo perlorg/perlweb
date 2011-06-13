@@ -1,0 +1,114 @@
+=head1 This week on perl5-porters (22-28 July 2002)
+
+Unsurprisingly, this was one of the quietest weeks since I subscribed to
+P5P. Perl 5.8.0 has just been released, and the Perl 5.9 development track
+has yet to begin. So the bulk of the discussion was about small bugs and
+adjustments. Here's my subjective and arbitrary selection.
+
+=head2 New regexp metacharacters
+
+Jeff "japhy" Pinyan proposed a new regex pseudo-anchor, C<\K> (which
+stands for I<Keep>) that I<basically fools the engine into thinking it
+just started matching.> In other words, C</pat1\Kpat2/> acts as a kind of
+look-behind assertion C</(?<=pat1)pat2/> (the only difference being when a
+C</g> modifier is used. Check the actual thread for the details.) Also,
+the pattern that precedes C<\K> doesn't need to be constant-width, unlike
+what is currently required for look-behind assertions.
+
+The way this pseudo-anchor is implemented makes it quite efficient.
+Japhy gives another example of its usefulness :
+
+    $str =~ s/(.*)\..*/$1/;
+
+can be written, using C<\K>, as :
+
+    $str =~ s/.*\K\..*//;
+
+Brent Dax (who submitted last week a patch to, hm, forward-port a Perl 6
+construct in Perl 5) remarked that Japhy should mention this idea to
+Larry. Obviously we don't want Perl 5 and Perl 6 to diverge.
+
+Japhy also provided the corresponding C<\F> pseudo-anchor that tells the
+regex engine it has stopped matching -- this one being equivalent to a
+look-ahead assertion. About this one, he says I<I'm not 100% sure we need
+\F>, and also I<I'm sure there's a need for \F, but I haven't quite
+figured it out yet.>
+
+The idea :
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg01324.html
+
+The patch :
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg01380.html
+
+=head2 A PerlIO / binmode() bug
+
+Elizabeth Mattijsen, who continues to experiment with C<PerlIO::via>,
+found that C<binmode()> passes incorrect mode and handle parameters to
+C<PerlIO::via::PUSHED()> when it's used to push a new PerlIO layer on an
+existing filehandle. Nick Ing-Simmons corrected this bug.
+
+Bug #15283 :
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg01294.html
+
+=head2 Trailing slash problem
+
+Abigail reported that some tests fail during perl's build when a Configure
+option of C<-Dprefix=/some/dir/> (with a trailing slash) was used. This is
+a known problem, but those who haven't dug through the INSTALL instructions
+may loose some time to find out the cause. H. Merijn Brand provided a
+patch to correct the problem.
+
+Bug #15326 :
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg01311.html
+
+=head2 Crypt::SSLeay build problems
+
+Randy J. Ray reported that he couldn't build the C<Crypt::SSLeay> module with
+perl 5.8.0. This problem does not appear with recent openssl libraries ;
+it can also be solved by forcing the C preprocessor symbol C<PERL5> to be
+defined in C<Crypt::SSLeay>'s Makefile.PL. However the precise cause of this
+problem is still not known.
+
+Randy also reported a problem on building Gtk-Perl, but nobody replied.
+
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg01346.html
+
+=head2 No non-perlio smoke tests anymore
+
+H. Merijn Brand, eminent smoke tester (on AIX, HP-UX and Cygwin
+platforms), decided to remove the non-perlio configurations from his
+tests.
+
+=head2 Memory benchmarks on threads
+
+Elizabeth Mattijsen decided to run some benchmarks on memory usage of
+threaded programs; in particular, the memory usage of C<our>, C<my> and
+global variables, without attributes or with C<:unique> or C<:shared>. I
+won't summarize her results here, please refer to the relevant threads for
+the details.
+
+Some threaded memory benchmarks :
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg01422.html
+
+More memory benchmarks
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg01438.html
+
+More memory/processing benchmarks
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg01467.html
+
+=head2 qq(\Q\E)
+
+Philip Hazel noticed that perl refuses to parse empty escape sequences in
+double-quoted strings, such as C<"\Q\E">, C<"\u\E">, C<"\L\E">, etc.
+Fixing this bug involves playing with some of the darkest magic you can
+find in the tokenizer. Nicholas Clark commented : I<it's far too scary to
+work out what to do right now.>
+
+Bug #15549 :
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-07/msg01502.html
+
+=head2 Finally
+
+This summary brought to you by Rafael Garcia-Suarez, enduring high summer
+temperatures. This report is also available via a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>.

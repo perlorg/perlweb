@@ -1,0 +1,486 @@
+=head1 TITLE
+
+Objects: Revamp tie to support extensibility (Massive tie changes)
+
+=head1 VERSION
+
+  Maintainer: Nathan Wiger <nate@wiger.org>
+  Date: 7 Sep 2000
+  Last Modified: 29 Sep 2000
+  Mailing List: perl6-language-objects@perl.org
+  Number: 200
+  Version: 3
+  Status: Frozen
+  Requires: RFC 159
+
+=head1 ABSTRACT
+
+C<tie> is really cool. Mostly. It has an amazing amount of power in
+concept, but suffers from several limitations which this RFC attempts to
+address.
+
+=head1 DESCRIPTION
+
+=head2 Overview
+
+Many people have expressed problems with tie, including Larry [1].
+C<tie> suffers from several limitations:
+
+   1. It is non-extensible; you are limited to using
+      functions that have been implemented with tie hooks
+      in them already.
+
+   2. Any additional functions require mixed calls to tied
+      and OO interfaces, defeating a chief goal: transparency.
+
+   3. It is slow. Very slow, in fact.
+
+   4. You can't easily integrate tie and operator overloading.
+
+   5. If defining tied and OO interfaces, you must define
+      duplicate functions or use typeglobs.
+
+   6. Some parts of the syntax are, well, kludgey
+
+This RFC attempts to address all of these points with some changes to
+syntax and implementation concepts. It interacts with the concept of
+B<polymorphic objects>, described in B<RFC 159>, to provide a simple and
+extensible framework.
+
+=head2 New Concepts
+
+This RFC proposes two key principles that will provide a more
+general-purpose C<tie> framework:
+
+   1. Operator, data, and syntax overloading will be
+      done via the ALLCAPS methods described in B<RFC 159>.
+
+   2. All functions can be overloaded via the C<use
+      tie> pragma.
+
+In addition, the declaration of a tie statement is suggested to be
+changed into a standard indirect object function:
+
+   $object = tie Tie::Class @array_to_tie;
+
+The default C<tie>ing would be performed by C<UNIVERSAL::tie>, which
+would be a new method that properly "blessed" the tied variable and then
+simply turned around and called the class's C<TIE*> method, similar to
+how the builtin C<tie> works currently.
+
+There are many changes, so let's go through them one at a time and then
+revisit how they will all tie (ha-ha) together at the end.
+
+=head2 Syntax Changes
+
+=head3 Drop C<tie> builtin and replace with C<UNIVERSAL::tie>
+
+As mentioned above, this allows us to call C<tie> in a simple indirect
+object form. This eliminates one more special-case function which
+currently requires that quotes be placed around the class name. This
+syntax should simply be modified to be called on the object it will be
+tied to, since C<tie> is after all an object constructor.
+
+=head3 Drop C<TIEHANDLE>
+
+Thanks to the below syntax, differentiating between filehandles and
+other scalars is no longer important. It would also be very difficult to
+make this distinction, since in Perl 6 filehandles are intended to be
+C<$scalars>.
+
+=head3 Continue to do data handling through ALLCAPS methods
+
+This will not change. C<STORE> and C<FETCH>, along with other functions
+described in B<RFC 159> and below, will continue to do data handling.
+In addition, these methods will be used for operator overloading as
+well, providing a unified C<tie> and C<use overload> environment.
+
+=head3 Pass the original variable tied as an argument
+
+Currently, C<TIE*> methods do not have access to the original variable
+being tied. This means that currently values are destroyed altogether
+when tied, basically.
+
+Perl 6 C<TIE*> should receive the value being tied as the first real
+argument:
+
+   sub ReadOnly::TIESCALAR {
+       my ($class, $original, @otherargs) = @_;
+       bless {
+           internals => \@otherargs,
+           value     => $original,
+       }, $class
+   }
+
+   sub ReadOnly::FETCH { return $_[0]->{value} }
+
+   # and later:
+
+   my $x = 10;
+   tie $x, 'ReadOnly';
+   print $x;       # still prints 10
+
+The above example is shamelessly stolen from an email by Damian. :-)
+
+However, I think it may be best to pass it by reference, since this
+would allow you to derive both the name and value of the original
+variable. But this RFC does not take a firm stand one way or the other
+on this detail.
+
+=head3 Add C<UNTIE> method called by C<untie>
+
+When called, C<untie> currently suffers the somewhat nasty problem of
+not being able to automatically destroy inner references. This means if
+you've mixed OO and C<tie>d calls, you may not be able to destroy your
+tied object as easily as you like. [2]
+
+An C<UNTIE> method should be added which is called when a tied variable
+is untied. This solves the problem of C<DESTROY> not being called when
+you think it's going to be.
+
+=head3 Ability to C<tie> arbitrary functions
+
+Currently, C<tie> suffers from being non-extensible:
+
+   push @tied_array, $value;
+   sort { $a <=> $b } @tied_array;
+
+The first one can be implemented as C<PUSH> by your tied array class,
+but there is no way that you can transparently offer a custom C<sort>
+routine. While Perl 5.6 finally has a fairly substantial collection of
+C<tie> methods, it is easy to imagine that future functions will arise
+which you want to C<tie>, but which support has not been added for yet.
+
+Plus, if you want to support extra methods of your own, you must mix
+object and tied calls:
+
+   # Perl 5
+   $obj = tie %trans, 'Transaction';
+   $trans{$var} = $value;
+   $obj->lock($var);
+
+Unfortunately, this defeats one of the key purposes of C<tie>, which is
+B<OO transparency>. And, creating a class that supports both OO and tied
+interfaces is difficult, requiring typeglobs or duplicate handler
+functions.
+
+Instead, this RFC proposes that C<tie>'s operation become much more
+fundamental and generalizable, through the introduction of a new
+C<use tie> pragma. This pragma can be used to overload arbitrary
+functions:
+
+   package MyData;
+
+   use tie sort => \&SORT,
+           push => \&MYPUSH,
+           lock => \&lock;
+
+   sub TIEARRAY { .. .}
+
+   # called on sort
+   sub SORT {  ... }
+
+   # called on push
+   sub MYPUSH { ... }
+
+   # called on lock
+   sub lock { ... }
+
+When a function is called with the given name from a program that uses
+the tied array, then that function is automatically overloaded. If a
+function does not exist in the package's namespace that is using C<tie>,
+then a function alias is automatically exported. So:
+
+   tie MyData @data;
+   push @data, $stuff;        # $obj->MYPUSH($stuff);
+   @s = sort { ... } @data;   # $obj->SORT({...});
+   lock @data;                # $obj->lock;
+
+In order for this to be realistic, the tied argument B<must> be the
+first data argument to the function. As such, these:
+
+   push @untied, @data;
+   lock $junk, @data;
+
+Would not cause C<@data>'s custom methods to be called. Also, a fully
+qualified function name:
+
+   CORE::push @data, $stuff;
+
+Would also cause C<@data>'s custom C<MYPUSH> method not to be called.
+
+These C<tied> methods can be called on individual elements as well as
+complete arrays. For example:
+
+   lock $data[0];             # $obj->lock(0);
+
+Note that here, the index is passed to the C<lock> function, just like
+how C<STORE> and C<FETCH> work for arrays. This allows your C<lock>
+function to handle locking both the whole array and also individual
+elements.
+
+Note that operator and data access is still done by ALLCAPS methods, in
+fact the same ones described in L<RFC 159>. The reason for this is
+symmetry: Like polymorphic objects, we can now warp our C<tie>d classes
+in whatever way we desire. In fact, one could imagine a simple matrix
+math class:
+
+   tie My::Matrix @a;
+   @a + @b;                   # $obj->ADD(@b);
+   $a[0] = 4;                 # $obj->STORE(0, 4);
+   @a * @b;                   # $obj->MUL(@b);
+
+We also no longer have to care about the differences between filehandles
+and other scalars:
+
+   tie My::Handle $FILE;
+   print $FILE @stuff;        # $obj->print(@stuff);
+   flush $FILE;               # $obj->flush;
+   close $FILE;               # $obj->close
+
+In each of these examples, function overriding is accomplished by the
+C<use tie> pragma.
+
+=head2 Function Summary
+
+This is a summary of all the functions that should be implemented in
+C<tie> in Perl 6. Any functions not mentioned here should be dropped
+from the C<tie> interface in Perl 6, instead replaced with the automatic
+indirect object calling form:
+
+   General Methods
+   -----------------------------------------------------
+   TIE            Constructor
+   DESTROY        Destructor
+   STORE          Data storage
+   FETCH          Data retrieval
+
+   Hash-Specific Methods
+   -----------------------------------------------------
+   FIRSTKEY       Get first key during keys/values/each
+   NEXTKEY        Iterate through keys/values/each
+   CLEAR          Clearing or resetting of hash
+
+   Array-Specific Methods
+   -----------------------------------------------------
+   FETCHSIZE      scalar @array (basically)
+   STORESIZE      Set $#array
+   EXTEND         Pre-extend array size
+   CLEAR          Clearing or resetting of array
+
+   Other Methods
+   -----------------------------------------------------
+   Include all other methods described in RFC 159
+
+That's it. Anything else that you want to override must be specified
+with the C<use tie> pragma.
+
+=head2 Example: Transaction
+
+Here is an example of how a tied class may be implemented under this
+RFC:
+
+   # A class to do some simple transactional locking
+   # A much more robust version could implement RFC 130
+   package Transaction;
+   use Carp;
+   use strict;
+
+   use tie lock => \&lock,
+           unlock => \&unlock,
+           unlock_all => \&unlock_all;
+
+   # Include tied interface
+   sub TIEHASH {
+       my $self = self;    # RFC 152 :-)
+       bless {@_}, $self;
+   }
+
+   # And also include OO interface per RFC 189
+   # Note: For both of these, simply allow UNIVERSAL::new and
+   # UNIVERSAL::tie to take care of the actual calls.
+   sub NEW {
+       my $self = self;
+       bless {@_}, $self;
+   }
+
+   sub RENEW {
+       croak "Fatal: Reblessing transactional hashes not allowed!";
+   }
+
+   # Include those functions we want to override
+   # Our internal data functions are in ALLCAPS and most come
+   # from RFC 159 (as well as previous tie implementations)
+   sub STORE {
+       my $self = self;
+       if ($self->{LOCKED}->{$_[0]}) {
+          croak "Fatal: Attempt to modify locked key $_[0]!";
+       }
+       $self->{DATA}->{$_[0]} = $_[1];
+   }
+
+   sub FETCH {
+       my $self = self;
+       return $self->{DATA}->{$_[0]};
+   }
+ 
+   # Hash-specific method
+   sub CLEAR { 
+       my $self = self;
+       # Check for any locked values still remaining
+       if (keys %{$self->{LOCKED}}) {
+          croak "Fatal: Attempt to clear hash with locked keys!";
+       }
+       undef $self->{DATA}; 
+   }
+
+   # Want to override what each() and keys() do
+   # Mostly stolen from Camel-3 p. 383
+   sub FIRSTKEY {
+       my $self = self;
+       my $temp = keys %{$self->{DATA}};
+       return scalar each %{$self->{DATA}};
+   }
+ 
+   sub NEXTKEY {
+       my $self = self;
+       return scalar each %{$self->{DATA}};
+   }
+
+   # Override addition just for demonstration purposes
+   sub ADD {
+       my $self = self;
+       $self->{DATA}->{$_[0]} += (rand * $_[1]);
+   }
+
+   # Now add any Perl or custom functions that we want these
+   # objects to be able to handle
+   sub lock {
+       my $self = self;
+       $self->{LOCKED}->{$_[0]} = 1;
+   }
+
+   sub unlock {
+       my $self = self;
+       carp "Warning: Key $_[0] already unlocked"
+          unless $self->{LOCKED}->{$_[0]};
+       delete $self->{LOCKED}->{$_[0]};
+   }
+
+   sub unlock_all {
+       my $self = self;
+       carp "Notice: All values unlocked" unless $self->{LOCKED};
+       undef $self->{LOCKED}; 
+   }
+
+   # Warn if we have locked values still
+   sub DESTROY {
+       my $self = self;
+       if (keys %{$self->{LOCKED}}) {
+          carp "Warning: Destroying transaction with locked keys!";
+       }
+       undef $self->{LOCKED};
+       undef $self->{DATA};
+   }
+
+
+   # Use our Transaction class
+   package main;
+
+   use CGI;
+   my $cgi = new CGI;
+
+   tie Transaction %trans; # Transaction->TIEHASH (thru UNIVERSAL::tie)
+
+   # Generate our session id
+   # Yes I know this is massively insecure ;-)
+   srand;
+   $trans{session} = rand;
+
+   # All of these call $obj->STORE($var)
+   $trans{name}  = $cgi->param('name');
+   $trans{email} = $cgi->param('email');
+   $trans{cc}    = $cgi->param('cc');
+   $trans{amount}= $cgi->param('amount');
+
+   # Lock our amount while we're charging the card...
+   lock $trans{cc};            # $obj->lock('cc');
+   lock $trans{amount};        # $obj->lock('amount');
+
+   for ($try = 0; $try < 3; $try++) {
+       # Attempt to charge them
+       next unless charge_card($trans{cc}, $trans{amount});
+       $trans{chargedate} = localtime;
+   }
+   unlock $trans{cc};          # $obj->unlock('cc');
+
+   # Check if we were successful
+   die "Could no charge card $trans{cc}" unless $trans{chargedate}
+   
+   # Increment our session id
+   # ++$trans{session} calls $obj->STORE($obj->ADD('session', 1))
+   $cgi->param('session') = ++$trans{session};
+
+   # Kill our transaction
+   unlock_all %trans;          # $obj->unlock_all;
+
+Note how we are easily able to add three new methods, C<lock>,
+C<unlock>, and C<unlock_all>, which are directly translated for us,
+meaning we don't have to mix OO and tied variable calls.  This provides
+true object transparence. Note also how our overloaded C<ADD> operator
+is used to increment our session number as well, all transparently to
+the user.
+
+=head1 IMPLEMENTATION
+
+Conceptually, implementation is straightforward, but quite different
+from tie's current form:
+
+   1. Drop C<tie> builtin and replace with C<UNIVERSAL::tie>.
+
+   2. Drop hardwired internal function translation and instead
+      add the C<use tie> pragma to overload arbitrary functions.
+ 
+   3. Add C<UNTIE> method called by C<untie>. Looking at
+      C<pp_sys.c> it appears this may be in 5.7 already.
+
+   4. Drop C<TIEHANDLE> method.
+
+I'm in the process of coming up with a "real" implementation section,
+but I'm so short on time I doubt this will happen by the time this RFC
+freezes.
+
+=head1 MIGRATION
+
+To keep complete backwards compatibility, the p52p6 translator could
+simply add a line like this:
+
+   use tie push => \&PUSH, pop => \&POP, shift => \&SHIFT ...
+
+which would include all of the Perl 5 methods for an array. Similar
+lines could be added for hashes. No translation would have to occur for
+scalars, since data methods remain automatically invoked still per C<RFC
+159>.
+
+Many of the changes in this RFC build on and add power to C<tie>, so do
+not require translation because they are new.
+
+=head1 NOTES
+
+[1] http://www.mail-archive.com/perl6-language@perl.org/msg02087.html
+
+[2] Camel-3 p. 395 has an excellent description of this problem. 
+
+=head1 REFERENCES
+
+RFC 159: True Polymorphic Objects
+
+RFC 152: Replace invocant in @_ with self() builtin
+
+RFC 189: Objects: Hierarchical calls to initializers and destructors
+
+RFC 130: Transaction-enabled variables for Perl6
+
+Camel-3 Chapter on C<tie>, p363-398
+
+Thanks to Nathan Torkington for his input and support

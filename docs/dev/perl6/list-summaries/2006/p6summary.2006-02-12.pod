@@ -1,0 +1,320 @@
+=head1 The Perl 6 summary for the week ending 2006-02-12
+
+=begin html
+
+<B>This week's summary was written in two parts: </B> 
+
+<A NAME="___top"></A>
+<UL>
+<LI><A HREF="#Part_1">Part One</A></LI>
+<LI><A HREF="#Part_2">Part Two</A></LI>
+</UL>
+
+=end html
+
+=head1 Part One
+
+Welcome to part one of this week's summary. Owning to chronic problems
+with deadlines I've only got time to summarize perl6-compiler and
+perl6-internals tonight; I'll do perl6-language when I get back from
+C<$paying_job> on Thursday night. 
+
+You shall just have to contain your excitement 'til then.
+
+=head1 This week in perl6-compiler
+
+=head2 Tokenizer hints, supporting delimited identifiers or symbols
+
+Darren Duncan said that he'd like for there to be a simple and terse
+way for Perl 6 identifiers or symbols to be able to composed of any
+characters whatsoever (even whitespace). After all, it's allowed in
+lots of other languages (including, although Darren didn't mention it,
+Perl 5 -- consider C<${"var with spaces"} = 'foo'> if you don't
+believe me. Lexical vars are a wee bit trickier). 
+
+I turns out that, as Larry said C<< $::<You can already do that!>; >>,
+which is nice. It turns out there's quite a few ways of doing it and
+Larry discussed them all.
+
+L<http://groups.google.com/groups?threadm=p06230900c00ec8298ea1@[192.168.1.100]>
+
+=head1 Meanwhile, in perl6-internals
+
+=head2 Parameter count checks
+
+One of the tricky things about having PIR level parameter count checks
+is coming up with a good syntax for it; in particular, Chip wanted an
+easy way of expressing common things like void calls. It turns out
+out that Common Lisp is one of the trickier languages to deal with
+here since it allows for multiple values returned from a function, but
+ignores every return apart from the first unless you specifically ask
+for them. Which can be nice, but is weird.
+
+I'm not sure we have a syntax for it yet, I'm sure one will be
+forthcoming eventually.
+
+L<http://groups.google.com/groups?threadm=1139225020.5671.5.camel@eiffel.demon.co.uk>
+
+=head2 Add methods in dynpmc
+
+François Perrad had some trouble adding methods to Lua PMCs and asked
+for help. Leo provided it and all was gorgeousness again.
+
+L<http://groups.google.com/groups?threadm=5.1.0.14.2.20060207083616.023da020@pop.besancon.parkeon.com>
+
+=head2 C<{null,parrot,installable}_config.o>
+
+Florian Ragwitz is the Debian maintainer of the pugs and parrot
+packages and he has problems getting the latest pugs to link with
+Parrot, mostly because of the way parrot stores information about
+where things are installed. He made a few suggestions for resolving
+the issue. I'm not sure Leo's answer was much use to him.
+
+L<http://groups.google.com/groups?threadm=20060206152914.GA31279@perldition.org>
+
+=head2 Heureka - from the -Ofun department
+
+Leo announced that Parrot is now running the Ackermann benchmark
+faster than C. It turns out that tail recursion elimination is a
+really good thing to have. It also turns out that we only get the
+really blistering speed on x86 and ppc architectures, because those
+are the architectures with a working JIT core. Things aren't quite so
+rosy on SPARC, for instance.
+
+Still. Wow!
+
+L<http://groups.google.com/groups?threadm=43E9ED26.1040004@toetsch.at>
+
+=head2 C<:non_volatile> is now C<:unique_reg>
+
+Jonathan Worthington checked his C<:non_volatile> patch back in, but
+with the new C<:unique_reg> name. Which is nice.
+
+L<http://groups.google.com/groups?threadm=22de01c62cc4$8dcb9760$6ff8e880@jwcsjw>
+
+=head2 Sub introspection: filename and line
+
+Jerry Gay had some questions to ask about walking the Parrot call
+chain and getting at file and line info. It turns out that the Sub PMC
+doesn't have the methods he needs. Johnathan Worthington corrected
+what he'd said on IRC about how to walk the call chain, pointing out
+that, instead of walking subs, you need to walk contexts, but that
+contexts aren't actually PMCs because we don't have weak references
+yet.
+
+Apparently, we will have weak references eventually, at which point
+we'll be able to have context PMCs, which can be used for
+introspecting on the call chain.
+
+Me? I don't quite understand what's the difference between these
+'contexts' of which Jonathan speaks and return continuations. But I'm
+odd like that.
+
+L<http://groups.google.com/groups?threadm=1d9a3f400602080929o7aeb37b1vf6c4cca4b50f57b6@mail.gmail.com>
+
+=head2 Q. Namespaces and classes
+
+Leo wasn't entirely sure of what semantics are needed by namespace
+PMCs. He talked around the issues and asked if he was going along sane
+lines. I can't tell if Jonathan thought Leo was sane or not, but Leo
+seemed to find the response useful.
+
+L<http://groups.google.com/groups?threadm=3787229ca0e6db48ccebba45e23aa6a3@toetsch.at>
+
+=head2 Quis custodiet ipsos custodes?
+
+Misspelling Juvenal slightly, Jerry Gay observed that there are no
+tests for Parrot::Test and made a plea for this to be remedied. You're
+on your own with the Latin.
+
+L<http://groups.google.com/groups?threadm=rt-3.0.11-38477-129855.7.42710812089449@perl.org>
+
+=head2 PIC/JIT update
+
+Leo announced that the PPC JIT core can now compile subs on the fly,
+just like the x86 core. But only for integer code apparently.
+
+L<http://groups.google.com/groups?threadm=16a3492cb9aba9eb031cf65728b5a662@toetsch.at>
+
+=head2 Integer divide overflow
+
+Leo observed an overflow issue with integer division and asked for
+comments. Jonathan Worthington suggested going to the pub. "It won't
+fix the problem, but we'll feel better about it." We definitely seem
+to be in "Don't do that then." territory.
+
+L<http://groups.google.com/groups?threadm=c97ed3c377ad3853e2c285397540bcf9@toetsch.at>
+
+=head2 Find a multi-method/multi-sub by name and signature
+
+Jonathan Worthington's work on a .NET translator 'ambles on'. He's
+working on mapping .NET's static method overloading on to Parrot's
+MMD and it's almost working. He outlined the issues and hoped that
+there might be some way of doing a C<find_global> or C<findmethod>
+that took the function's signature into account and pointed out that
+we'd need something like it for Perl 6 anyway. Leo pointed him at the
+'long names' of functions, which contain the information that Jonathan
+needs, but which aren't (yet) standardized. 
+
+Sounds like a case for standardization to me...
+
+L<http://groups.google.com/groups?threadm=086801c62f73$701cadb0$6ff8e880@jwcsjw>
+
+=head1 Acknowledgements, apologies and everything else
+
+Sorry the summary's been split this week, but it was either that or
+get Matt Fowles to do it again, which just wouldn't be fair. I hope
+you all enjoy the new serial format anyway.
+
+=head2 Help Chip
+
+L<http://geeksunite.org/> -- Chip still needs help.
+
+=head2 The usual coda
+
+If you find these summaries useful or enjoyable, please consider
+contributing to the Perl Foundation to help support the development of
+Perl. 
+
+L<http://donate.perlfoundation.org/> -- The Perl Foundation
+
+The Perl Foundation Blog is an excellent source of news about the Perl
+Foundation's activities.
+
+L<http://blog.perlfoundation.org/> 
+
+Planet Perl Six is a handy news aggregator of several Perl 6 related
+sources. 
+
+L<http://planet6.perl.org/>
+
+
+L<http://dev.perl.org/perl6/> -- Perl 6 Development site
+
+Check out my website, it's lovely.
+
+L<http://www.bofh.org.uk/>
+
+=head1 Part 2
+
+Did I say Thursday night? What was I thinking? Blame Nikon for finally
+delivering my D200; or just blame me for being a lazy git who spent
+Thursday night recovering from the drive home from Liverpool and
+Friday playing with a new toy and chatting to interesting people in the
+atrium at SageGateshead.
+
+So, here's part two of the summary, in which I summarize ancient
+history in perl6-language.
+
+=head1 This week in perl6-language
+
+=head2 Overloading the variable declaration process
+
+Darren Duncan asked that Perl 6 provide a way for a
+class/role/metaclass to declare that all variables declared to be of
+that type are automatically/implicitly set to a particular value at
+declaration time. Larry's response was fascinating as he talked about
+what I find myself thinking of a continuum of definedness, where,
+instead of worrying if a variable is defined, the
+language/programmer/whatever only cares whether it is defined
+enough. The syntax for asking such questions isn't really defined
+enough yet. 
+
+Then it all got slightly philosophical with talk of the ideal of a dog
+(when I think the questioner really wanted to talk about the ideal
+dog), Platonism and Aristotelianism. And the metamodel.
+
+And there was hypnotism.
+
+L<http://groups.google.com/groups?threadm=p06230901c00c69be6eae@[192.168.1.100]>
+
+=head2 Macros?
+
+Last week, Brad Bowman asked a bunch of questions about the workings
+of Perl 6 macros. This week, Larry offered answers.
+
+L<http://groups.google.com/groups?threadm=43E55598.8030502@bereft.net>
+
+=head2 A proposition for streamlining Perl 6 development
+
+Yuval Kogman had some ideas about how to make Perl 6 development go
+faster. "Igor! More tuits!"
+
+Some people disagreed with him. Some agreed. I am staying well out of
+this one (at least in the summaries; I have opinions and I don't trust
+them, or myself, enough to be able to write a properly impartial
+summary of the discussions).
+
+L<http://groups.google.com/groups?threadm=20060207212849.GR5777@woobling.org>
+
+=head2 Tokenizer hints, supporting delimited identifiers or symbols
+
+Darren Duncan had another wish for Perl 6: a simple and terse way for
+Perl 6 identifiers or symbols to be able to be composed of any
+characters whatsoever... whoa! Deja vu! 
+
+Ah yes, I already did this one in part one. Move right along the
+summary, nothing to see here.
+
+L<http://groups.google.com/groups?threadm=p06230900c00ec8298ea1@[192.168.1.100]>
+
+=head2 The definition of C<say>
+
+Simple question: how do you implement C<say>?
+
+The answer isn't quite as simple as you might think. Actually, that's
+not true, the answer is simple, but the question has hidden depths.
+
+Go read Robin Houston's question and its responses if you don't
+believe me.
+
+L<http://groups.google.com/groups?threadm=20060207183814.GB5325@rpc142.cs.man.ac.uk>
+
+=head2 Smart match table
+
+Robin Houston had some questions/observations about the smart match
+table in synopsis 4. This is the table that describes how the smart
+match (C<~~>) operator does its comparisons. It turns out that the
+table in the synopsis implies non-commutative behaviour, which came as
+something of a surprise. I'm surprised this thread petered out so
+quickly without any real resolution; it seems rather important to me.
+
+L<http://groups.google.com/groups?threadm=20060207184757.GC5325@rpc142.cs.man.ac.uk>
+
+
+=head1 Acknowledgements, apologies and everything else
+
+So, does the serial format work? Apart from the problem of not
+actually getting on with part two when I should have done, it works
+remarkably well for me. Writing the summary in one big chunk can be
+somewhat daunting, especially if my brain gets fried by the first two
+lists. Feedback is good.
+
+=head2 Help Chip
+
+L<http://geeksunite.org/> -- Chip still needs help.
+
+=head2 The usual coda
+
+If you find these summaries useful or enjoyable, please consider
+contributing to the Perl Foundation to help support the development of
+Perl. 
+
+L<http://donate.perlfoundation.org/> -- The Perl Foundation
+
+The Perl Foundation Blog is an excellent source of news about the Perl
+Foundation's activities.
+
+L<http://blog.perlfoundation.org/> 
+
+Planet Perl Six is a handy news aggregator of several Perl 6 related
+sources. 
+
+L<http://planet6.perl.org/>
+
+
+L<http://dev.perl.org/perl6/> -- Perl 6 Development site
+
+Check out my website, it's lovely.
+
+L<http://www.bofh.org.uk/>

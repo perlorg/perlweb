@@ -1,0 +1,94 @@
+=head1 This Week on perl5-porters (11-17 November 2002)
+
+I finally found time to produce a new instance of this weekly selection.
+Read about Unicode chars in POD, an incompatible change in a widely (and
+wisely) used module, a couple of new proposals, and a smaller than usual
+amount of bugs.
+
+=head2 Non-ASCII in POD
+
+A thread was spawned from the B::Lint patch proposed by Ian Phillipps last
+week. It's about non-ASCII chars in PODs (for example, E<iuml>).
+Apparently, some versions of nroff(1) are offended by characters with an
+ASCII code E<gt> 127, and C<pod2man> should generate portable manpages
+(although Russ Allbery said that he was considering a way to add an option
+to C<pod2man> to generate groff-specific manpages). Sean M. Burke
+suggested to use the Pod::Escapes module to get rid of escape sequences
+that can't be handled in the output format, and added some insight about
+what the POD specification says on Unicode input.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg88955.html
+
+=head2 Test::* modules change
+
+Michael G. Schwern released a new alpha version of
+Test::Simple/More/Builder. An important change is that C<threads.pm> is no
+longer automatically loaded on an ithread-enabled perl. Hence it will be
+necessary to C<use thread> I<before> loading Test::More or Test::Builder
+to run tests that use threads.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg88939.html
+
+=head2 Assertions in Perl
+
+Salvador Fandino send an impressive patch to add assertion support to
+Perl. Briefly, a new sub attribute C<assertion> is used to mark subs as
+assertions, and those assertions are enabled via a new command-line
+switch, C<-A>. Yitzchak Scott-Thoennes found that it's a great idea. The
+pumpking hasn't commented on this yet.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg88948.html
+
+=head2 CPAN::MakeMaker
+
+Brian Ingerson posted an announcement of his CPAN::MakeMaker module on P5P
+last month, and didn't receive any comments until this week, probably
+because the implications of this awesome hack are difficult to figure out
+at first sight.
+
+CPAN::MakeMaker is a replacement for ExtUtils::MakeMaker. It's also
+self-distributing : it's part of the MakeMaker-generated tarball, hence
+doesn't need to be installed on the users' systems -- in fact it gets
+never installed on the users' systems.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg88476.html
+    http://search.cpan.org/author/INGY/CPAN-MakeMaker/lib/CPAN/MakeMaker.pod
+
+=head2 Version bug
+
+Andreas Koenig apparently found a bug in C<version.pm>. Basically he
+states that
+
+    use version;
+    $v = version->new(5.00563);
+    print $v->numify;
+
+should print "5.00563", and not "5.005063", since it should be equivalent
+to 5.5.630, and not to 5.5.63. The correct interpretation of the relevant
+chapter and verse of perl56delta are required to define the proper
+behavior.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg89059.html
+
+=head2 In brief
+
+Sean M. Burke announced a shinier, I<refactored, and generally
+refunkified> version of the C<perldoc> utility, available from CPAN if you
+want to test it. It's of course aimed at replacing the current C<perldoc>.
+
+Bug #18306 shows that B::Xref sometimes reports random file names with a
+threaded perl. Apparently the problem comes from the perl core, not from
+B::Xref.
+
+Dave Mitchell sent a patch to add more information to the infamous error
+message C<Scalars leaked>, by printing the adresses of the leaked scalars.
+It's enabled by the new preprocessor symbol C<DEBUG_LEAKING_SCALARS>.
+
+H.Merijn Brand still chases Cygwin bugs through a deep smoke screen.
+
+=head2 About this summary
+
+This summary brought to you by Rafael Garcia-Suarez. If you prefer a
+text/plain interface, it's also available via a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. Comments and
+corrections are, as always, welcome.

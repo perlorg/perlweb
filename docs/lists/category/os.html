@@ -1,0 +1,45 @@
+[%
+    page.import({
+        title    => 'Perl Mailing lists, OS specific',
+        section  => 'os',
+        description
+            => 'Perl mailing lists for specific operating systems',
+    });
+%]
+
+<h2>Perl mailing lists for specific operating systems</h2>
+
+<table class="content_table">
+    <tr>
+        <td>
+            [% categories = [
+                'perl-win32',
+                'win32',
+                'win32-ports'
+                ];
+            %]
+            [% PROCESS tpl/category_page.html categories => categories %]
+        </td>
+        <td>
+            [% categories = [
+                'mac',
+                'mac-ports',
+                'perl-mac',
+                ];
+            %]
+            [% PROCESS tpl/category_page.html categories => categories %]
+        </td>
+    </tr>
+    <tr>
+        <td>
+            [% categories = [
+                'ports',
+                ];
+            %]
+            [% PROCESS tpl/category_page.html categories => categories %]
+
+        </td>
+        <td>
+        </td>
+    </tr>
+</table>

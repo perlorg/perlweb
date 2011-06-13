@@ -1,0 +1,17 @@
+
+<table class="log">
+[% FOR log = combust.user.recent_logs %]
+<tr>
+<td>[% log.created_on.strftime("%Y-%m-%d %H:%M:%S %Z") %]</td>
+<td>[% log.remote_ip %]</td>
+<td>[% log.message | html %]</td>
+</tr>
+[% END %]
+</table>
+
+<style>
+   table.log { border-width: 0 0 1px 1px; border-color: #aaa; border-style: solid; }
+   table.log tr td { font-size: small; padding-left: 10px;  }
+</style>
+
+

@@ -1,0 +1,393 @@
+=head1 The Perl 6 Summary from 2005-08-24 to 2005-09-11
+
+It's been a while hasn't it?
+
+We'll start as usual with perl6-compiler
+
+=head1 This week in perl6-compiler
+
+=head2 Changed C<??::> to C<??!!> in Pugs
+
+Following discussion of the ternary operator in perl6-language, Benjamin Smith
+altered pugs to use the new C<??!!> syntax.
+
+L<http://groups.google.com/groups?threadm=20050908181747.GE21605@vtrl.co.uk>
+
+=head1 Meanwhile in perl6-internals
+
+=head2 Which 'English'?
+
+Joshua Hoblitt posted a patch to F<intro.pod> fixing a few typos and wondered
+whether the docs should be in British or American English. Apparently the Perl
+5 style rule is that British authors shouldn't be required to write American
+English, and vice versa, but that a consistent style within a document is
+preferred. The consensus so far seems to be "Any documentation is good so write
+what's comfortable for you."
+
+L<http://groups.google.com/groups?threadm=rt-3.0.11-37067-120223.16.8502778537115@perl.org>
+
+=head2 Meanwhile, at the test
+
+Warne just got Trescothick out. 109 for 4
+
+=head2 Python PMCs
+
+Sam Ruby, Leo and Chip had a discussion of how to implement python semantics
+for parrot. I'm not sure I followed what was going on, but it looked like good
+'crunchy' stuff.
+
+L<http://groups.google.com/groups?threadm=430BAE1D.7090406@intertwingly.net>
+
+=head2 Zcode interpreter release
+
+Amir Karger announced that he'd adopted the Zcode interpreter that Leo posted
+in February (having, according to Amir, done the hard parts). Apparently
+there's 41 opcodes to do just to get version 3 of the Z-machine working, and
+then there's the problem of making Zops into loadable Parrot ops. He had a few
+problems with the test suite which got fixed in discussion. 
+
+L<http://groups.google.com/groups?threadm=d113603e0508231409574066c4@mail.gmail.com>
+
+=head2 Pirate refactoring report
+
+Michal Wallace posted an update on Pirate (the python to parrot compiler). He
+and Curtis Hall have been taking advantage of a Google Summer of Code grant to
+refactor the (Curse! Now Flintoff's out. Caught & bowled Warne for 8) current
+mess. Their first step was a generic transformation module which has
+apparently made life easier for the compiler module. 
+
+They've also produced a plan in code for how they hope they'll have things
+working once the refactoring's finished and asked for comments. So far comments
+have not been forthcoming.
+
+L<http://pirate.versionhost.com/viewcvs.cgi/pirate/toys/refactor.py?rev=HEAD&content-type=text/vnd.viewcvs-markup>
+
+L<http://groups.google.com/groups?threadm=Pine.LNX.4.62.0508242306300.2983@hydrogen.sabren.com>
+
+=head2 Tcl in the C<leo-ctx5> branch
+
+Will Coleda's been having a crack at getting ParTcl working with the leo-ctx5
+branch and had a few problems. It turns out that he'd tickled a bug that Leo
+described as 'a bit non-trivial'. It took him a while, but it got fixed
+eventually (Over 10 days, but he did have the excuse of being at YAPC::Europe
+for a chunk of that time). 
+
+L<http://groups.google.com/groups?threadm=2A682CE6-D1F0-486F-A1C5-1E6E3C08D73C@coleda.com>
+
+=head2 Meanwhile at the Oval
+
+They've gone in for lunch at 127 for 5. Hopefully I'll be able to get down to
+some summary writing without being on the edge of my seat for a while.
+
+=head2 Branch Review
+
+Chip posted a review of the C<leo-ctx5> branch prior, describing it as "A
+significant improvement." The body of the review covers user visible changes
+and a few niggles with the current state of the branch. Leo replied with a few
+questions and explanations.
+
+L<http://groups.google.com/groups?threadm=20050829202726.GX1432@tytlal.topaz.cx>
+
+=head2 GMC release
+
+Nattfodd announced the 'release' of GMC, the generation garbage collector he's
+been working on as part of Google's Summer of Code. It's not quite bug free
+yet, but the SoC deadline was the 1st of September, so that's when it got
+released. Discussion ensued, hopefully helping to triangulate bugs.
+
+L<http://groups.google.com/groups?threadm=4316374F.8070501@gmail.com>
+
+=head2 Call for B0rked
+
+Following a discussion with Chip and Leo, chromatic posted a call for entries
+in a 'very specific TODO list'. A list of things that should work, but
+don't. He contributed a couple himself. Various other suggestions were offered.
+
+L<http://groups.google.com/groups?threadm=1125529485.5131.332.camel@localhost>
+
+=head2 Optimizer Documentation
+
+Curtis Rawls spent part of his Summer of Code project wishing there was better
+documentation of the Parrot optimizer. So he wrote some. Brent Royal-Gordon
+converted it to POD format, and Leo asked for someone to add it to the
+repository. 
+
+L<http://groups.google.com/groups?threadm=45ec99fc0509011744383d3b51@mail.gmail.com>
+
+=head2 HLL Namespace Design
+
+Matt Diephouse posted a list of namespace features that he thinks are necessary
+to support all the target languages and asked for some comments. He got
+several, including one from Larry. 
+
+L<http://groups.google.com/groups?threadm=198c873805090510431ff7ff4@mail.gmail.com>
+
+=head2 Global Destruction
+
+Nicholas Clark had some questions about finalization and destruction in
+Parrot. In particular, he asked: "Does parrot make any guarantee that all
+objects will be rendered down to bare memory before program exit". Leo answered
+and the answer was good enough for Ponie. Huzzah.
+
+L<http://groups.google.com/groups?threadm=20050906160104.GB25110@plum.flirble.org>
+
+=head1 Meanwhile, at the Oval
+
+Ah... they're back on the pitch... I may be slowing down again...
+
+=head1 Meanwhile, in perl6-language
+
+=head2 Demagicalizing Pairs
+
+Discussion of Luke's proposal to demagicalize Pairs continued. It turns out
+that it's actually a discussion of how to do named argument calling... 
+
+L<http://groups.google.com/groups?threadm=7ca3f016050819033124215cc1@mail.gmail.com>
+
+=head2 C<~> and C<+> vs. generic C<eq>
+
+I don't know about you, but I'm starting to lose track of Perl 6's 'equality'
+tests. The latest discussion concerns the differences between C<~~> and
+C<eqv>. Damian pointed out that we currently stand at 6 different possible
+tests for 'equality' and wondered if that might not be slightly too many.  
+
+L<http://groups.google.com/groups?threadm=20050823233237.GA531@wall.org>
+
+=head2 Perl 6 code -- A possible compile, link, run cycle
+
+Yuval Kogman thought it was time to think about how a the Perl 6 on Parrot
+linker might eventually look. So he did some thinking aloud. Discussion ensued,
+mostly related to the workings of C<use> and other directives that can affect
+compilation semantics. 
+
+L<http://groups.google.com/groups?threadm=20050824131302.GN2318@woobling.org>
+
+=head2 Binding of array elements
+
+Ingo Blechschmidt had some questions about the workings of the binding
+operator. He outlined a list of possibilities along with his understanding of
+the semantics. Yuval Kogman and TSa had some ideas, but nothing from @Larry yet.
+
+L<http://groups.google.com/groups?threadm=deld7c$7o8$1@sea.gmane.org>
+
+=head2 Who is @Larry
+
+Speaking of @Larry, Matt Fowles asked who comprises @Larry. According to
+Autrijus, C<@Larry = ´Larry Damian Chip Leo chromatic Allison Hugo Luke Nathan
+Danª>, but I have the feeling Dan's retired.
+
+L<http://groups.google.com/groups?threadm=f2601a7f05082518256db27728@mail.gmail.com>
+
+=head2 Does list construction create new containers?
+
+Continuing his investigations of semantics, Ingo Blechschmidt had some
+questions about the semantics of list construction. Yuval and Juerd had some
+suggested answers.
+
+L<http://groups.google.com/groups?threadm=deq1di$ms1$1@sea.gmane.org>
+
+=head2 Using lists 'containing' arrays as lvalues
+
+More questions from Ingo, more suggestions from Yuval and Thomas Sandlaﬂ this
+time. There was even an answer from Larry.
+
+L<http://groups.google.com/groups?threadm=deq768$557$1@sea.gmane.org>
+
+=head2 How do you say C<another_sub(@_)> in perl 6?
+
+Yuval wondered how to pass arguments through from one sub to another in Perl
+6. My mailbox appears to be missing a few replies so I'm not entirely sure how
+the thread went. I don't think there was anything on the subject from @Larry
+though.
+
+L<http://groups.google.com/groups?threadm=20050828085734.GB18271@woobling.org>
+
+=head2 User defined autovivification
+
+Yuval Kogman thinks code like this is ugly:
+
+  ($index_by_x{$thing->x_value} ||= Set::Object->new)->insert($thing);
+
+Frankly, I agree with him (how could I not?)
+
+He suggested a couple of possible ways of avoiding such ugliness in Perl 6. My
+favourite was probably:
+
+  my %hash will autovivify { Set::Object.new };
+
+However, I'm not sure that this is something that needs to be in the language
+core; it seems to be the sort of thing that can be implemented reasonably
+simply in a CP6AN module.
+
+L<http://groups.google.com/groups?threadm=20050828091347.GA19815@woobling.org>
+
+=head2 Manuthreading
+
+Luke is trying to get the useful:dangerous balance inherent in Junctions sorted
+out. To that end, he proposed a new way to do autothreading that doesn't use
+junctions at all. Discussion ensued, mostly to do with where to fit the
+semantics in the syntax.
+
+L<http://groups.google.com/groups?threadm=7ca3f016050828024533982be6@mail.gmail.com>
+
+=head2 Operator sub names that are not special
+
+Luke tried to make people's heads hurt with this sample code:
+
+    sub foo(&infix:<+>) { 1 + 2 }
+    sub bar($a, $b) { say "$a, $b" }
+    foo(&bar);   # "1, 2"
+
+I think everyone but Yuval Kogman was too shocked to comment.
+
+L<http://groups.google.com/groups?threadm=7ca3f01605083103566d48e505@mail.gmail.com>
+
+=head2 C<@array = $scalar>
+
+Ingo continued his mission to understand assignment semantics by asking about
+assigning a scalar to an array. The thread drifted slightly, moving onto
+consideration of such hypothetical(?) operators as C<,=>, C<&=> and  C<|=>. One
+of those is probably more hypothetical than the others.
+
+L<http://groups.google.com/groups?threadm=loom.20050831T151914-777@post.gmane.org>
+
+=head2 C<no 6;>
+
+Rafael Garcia-Suarez thought it would be useful to be able to put C<no 6;> at
+the top of Perl 5 modules that it wouldn't make sense to port to Perl 6. In
+order for this to work effectively, he thought it would be best if Perl 6 would
+at least die correctly with a useful error message. He asked p6l for
+comments. Apart from asking if supporting C<no 5> would mean we'd have to
+support Perl 4, there weren't any.
+
+L<http://groups.google.com/groups?threadm=20050901182716.41f927a4@grubert.mandrakesoft.com>
+
+=head2 C<for $arrayref {...}>
+
+Another question from Ingo. Another answer from Juerd with commentary from Luke.
+
+L<http://groups.google.com/groups?threadm=df7h9r$edv$1@sea.gmane.org>
+
+=head2 WWW::Kontent 0.02 is released
+
+Another of our Summer of Code interns, Brent Royal-Gordon announced the 0.02
+release of WWW::Kontent, a content management system written in Perl 6 and
+executable in Pugs. As Brent says, it's not ready for production, but it seems
+to be ready for serious play. From the release notes:
+
+"Part of the purpose of this project was to test Perl 6, and I'm happy to
+report that it passed with flying colors. Perl 6 feels like a much-enhanced
+Perl 5, with all the wrinkles removed and very few new ones added. It seems to
+be a very solid design, and is a joy to program in."
+
+I've been saying that this would be the case for ages now. It's good to see
+that Brent's experience here bears that out.
+
+L<http://groups.google.com/groups?threadm=b8b9a51105090117383b80295@mail.gmail.com>
+
+=head2 C<&multisub.arity>
+
+And another question from Ingo. This time he wanted to know about the arity of
+multi subs. The discussion got rather complicated. 
+
+L<http://en.wikipedia.org/wiki/Arity> - The meaning of arity
+
+L<http://groups.google.com/groups?threadm=df9snn$jup$1@sea.gmane.org>
+
+=head2 Multi scoping
+
+Luke showed an example of a seemingly simple multi sub declaration that ended
+up creating an infinite loop. He asked for suggestions about fixing it. He and
+Yuval worked some stuff out.
+
+L<http://groups.google.com/groups?threadm=7ca3f0160509040055234b361f@mail.gmail.com>
+
+=head2 Lambda Calculus in Perl 6
+
+Dan Kogai noted that its way easier to do Lambda Calculus things in Perl 6 than
+it was in Perl 5. He even went so far as to claim it was even easier than doing
+the same thing in Scheme. 
+
+L<http://groups.google.com/groups?threadm=A77477E9-C139-48D2-86C2-CE60842FA659@dan.co.jp>
+
+=head2 Changing C<??::>
+
+Thomas Sandlass thought that making C<::> unambiguously be used as a symbolic
+sigil was worth changing the ternary operator to C<??//>. Almost everyone
+agreed that replacing C<::> wouldn't be a bad thing, but that C<//> wasn't the
+right replacement. We ended up with the ternary operator becoming C<??!!>. 
+
+L<http://groups.google.com/groups?threadm=8B2D97A317E8C9479E35FED99ADC3096CCC8C3@br2mex01.orthogon.com>
+
+=head2 C<\(...)> 
+
+Another of Ingo's questions, this time about the behaviour of C<\(...)> spun
+off into a rather complicated discussion that I'm afraid I'm not going to
+attempt to summarise in more detail than that.
+
+L<http://groups.google.com/groups?threadm=dfkkmh$q36$1@sea.gmane.org>
+
+=head2 Packages, Module and Classes
+
+Stevan Little is currently wrestling with the Pugs MetaModel and had some
+questions about the workings and interrelationships of Packages, Modules and
+Classes. He and Larry sorted things out.
+
+L<http://groups.google.com/groups?threadm=5da944e30b1b7bfb094210bf33a9b0f3@iinteractive.com>
+
+=head2 Parsing indent-sensitive languages
+
+Dave Whipp had some questions about parsing a Pythonesque language using Perl 6
+rules. Much discussion ensued with possible extensions to Perl 6 rules being
+suggested. Then Damian pointed out, with appropriate rules, that you don't need
+any extensions, you can parse such languages already. 
+
+L<http://groups.google.com/groups?threadm=20050908153724.21134.qmail@lists.develooper.com>
+
+=head2 Back at the Oval
+
+McGrath just bowled Kevin Pietersen for 158. It's looking awfully like we've
+won The Ashes.
+
+=head2 Item and slurpy
+
+Juerd wondered if 'item context' and 'slurpy context' were official terms
+now. Larry thought not, preferring item and list context. 
+
+L<http://groups.google.com/groups?threadm=20050909223626.GQ7858@c4.convolution.nl>
+
+=head2 Sequence points, undefined behaviour
+
+Nicholas Clark wondered if Perl 6 will have any documented notion of things
+like sequence points, undefined behaviour, etc. Will it fix the order in which
+function arguments are evaluated and all those other things it's useful to
+know. Warnock applies.
+
+L<http://groups.google.com/groups?threadm=20050910112229.GB25158@plum.flirble.org>
+
+=head1 Acknowledgements, apologies and everything else
+
+Ah... sorry for the lack of recent summaries. Sorry for being distracted by the
+cricket, but it's been a bit tense for most of the day.
+
+=head2 Help Chip
+
+L<http://geeksunite.org/> -- Chip still needs help.
+
+=head2 The usual coda
+
+If you find these summaries useful or enjoyable, please consider
+contributing to the Perl Foundation to help support the development of
+Perl. 
+
+L<http://donate.perl-foundation.org/> -- The Perl Foundation
+
+L<http://dev.perl.org/perl6/> -- Perl 6 Development site
+
+Check out my website, it's lovely.
+
+L<http://www.bofh.org.uk/>
+
+Vaguely pretty photos by me can be found at:
+
+L<http://www.flickr.com/photos/pdcawley>

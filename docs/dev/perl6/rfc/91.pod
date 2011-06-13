@@ -1,0 +1,186 @@
+=head1 TITLE
+
+Arrays: part and flatten
+
+=head1 VERSION
+
+  Maintainer: Jeremy Howard <j@howard.fm>
+  Date: 10 Aug 2000
+  Last Modified: 21 Sep 2000
+  Mailing List: perl6-language-data@perl.org
+  Number: 91
+  Version: 4
+  Status: Frozen
+
+=head1 DISCUSSION
+
+The discussion points for this RFC were the same as those for RFC 90.
+
+=head1 ABSTRACT
+
+It is proposed that two new functions, C<part> and C<flatten>, be added to
+Perl. C<part($part_size, @list, $skip)> would return @list broken into
+references to sub-lists, each one $list_size in size, offset from the end
+of the previous sub-list by $skip. C<flatten(@list_of_lists, $nest_level)>
+would take a list of lists and dereference the elements recursively, up to
+$nest_level levels deep. Both functions would return an alias into the
+original list, not a copy of the elements.
+
+=head1 CHANGES
+
+=head2 Since v2
+
+=over 4
+
+=item *
+
+Described aliasing behaviour of flatten and part
+
+=item *
+
+Added C<flatten> builtin
+
+=back
+
+=head2 Since v1
+
+=over 4
+
+=item *
+
+Moved list to perl6-language-data@perl.org
+
+=item *
+
+Changed name from C<partition>
+
+=item *
+
+Add optional third argument to allow skipping elements
+
+=item *
+
+Make difference between C<unmerge> and C<part> explicit
+
+=back
+
+=head1 DESCRIPTION
+
+In order to work with lists of arbitary size, it is often necessary to
+split a list into equal sized sub-lists. A C<part> function is proposed
+that achieves this:
+
+  @list = (1,2,3,4,5,6);
+  @parted_list = part(2, @list);   # ([1,2],[3,4],[5,6])
+
+This is useful to provide tuples to functions that can operate on lists of
+lists, for instance:
+
+  @sum_pairs = map {$_->[0] + $_->[1]} @parted_list;   # (3,7,11)
+
+The optional third argument can be used to skip over elements of the list:
+
+  @list = (1,2,3,4,5,6,7,8);
+  @parted_list = part(2, @list, 1);   # ([1,2],[4,5],[7,8])
+
+If the list to be parted is not an exact multiple of the part size, the
+final list reference is not padded. For example:
+
+  @list2 = (1..7);
+  @parted_list2 = part(3, @list2);   # ([1,2,3], [4,5,6], [7])
+
+A list that has been parted can be flattened again using the
+C<flatten> function:
+
+  @parted_list2 = ([1,2,3], [4,5,6], [7]);
+  @list2 = flatten(@parted_list2);   # (1,2,3,4,5,6,7)
+
+C<flatten> can work on arrays of greater than two dimensions:
+
+  my @some_LOL = ([[1,2], [3,4]],
+                  [[5,6], [7,8]]);
+  my @flat_LOL = flatten(@some_LOL);   # ([1,2,3,4], [5,6,7,8])
+
+The innermost list of lists is flattened first. To flatten more levels of
+nesting, use the optional second argument:
+
+  my @some_LOL = ([[1,2], [3,4]],
+                  [[5,6], [7,8]]);
+  my @flat_LOL = flatten(@some_LOL,2);   # (1,2,3,4,5,6,7,8)
+
+Both C<part> and <flatten> do not make a copy of the elements of their
+arguments; they simply create an alias to them:
+
+  @parted_list2 = ([1,2,3], [4,5,6], [7]);
+  @list2 = flatten(@parted_list2);   # (1,2,3,4,5,6,7)
+  $list2[1] = 0;
+  @parted_list2 == ([1,0,3], [4,5,6], [7]);   # True
+
+C<merge> (see RFC 90) and C<part> can work together to allow manipulation
+of arbitary sized lists. For instance, we can extend the $sum_xy function
+used as an example in the C<merge> RFC, which takes two lists and returns
+the sum of them multiplied together component-wise:
+
+  $sum_xy = sub {reduce ^last+^x*^y, merge($_[0], $_[1])};
+
+to a function $sum_mult that does the same with an arbitary number of
+lists:
+
+  # Multiply all the elements of a list together, returning the result
+  $apply_times = reduce (^total * ^element, @^multiplicands);
+  # Swap the rows and columns of a list of lists
+  $transpose = part(
+    # Find the size of each column
+    scalar @^list_of_lists,
+    # Interleave the rows
+    merge(@^lists_of_lists);
+  )
+
+  # Take a list of references to lists, multiply them component-wise,
+  #   and return their sum
+  $sum_mult = reduce (
+    ^total + $apply_times->( @^next_list ),
+    $transpose->(^list_of_lists),
+  );
+
+  # Example usage of $sum_mult
+  @a = (1,3,5);
+  @b = (2,4,6);
+  @c = (-1,1,-1);
+  $answer = $sum_mult->(\@a, \@b, \@c);   # 1*2*-1+3*4*1+5*6*-1 = -20
+
+A common usage of C<part> and C<unmerge> is to access the rows and columns
+of a matrix stored as a flat list:
+
+  @array = ( a1, a2, a3,
+             b1, b2, b3,
+             c1, c2, c3 );
+  @columns = unmerge(3,@array) # Return the columns
+  @rows = part(3,@array)       # Return the rows
+
+=head1 IMPLEMENTATION
+
+The C<part> functions should be evaluated lazily. Because it is used in
+common operations such as the transposition of a matrix, its efficiency is
+particularly important.
+
+C<part> and C<flatten> return an alias into the original list, not a copy
+of the elements.
+
+C<part> and C<flatten> are just special cases of C<reshape> (from RFC
+148).
+
+=head1 REFERENCES
+
+RFC 23: Higher order functions
+
+RFC 76: Builtin: reduce
+
+RFC 90: Builtins: merge() and unmerge()
+
+RFC 148: Add reshape() for multi-dimensional array reshaping
+
+=head1 ACKNOWLEDGEMENTS
+
+Damian Conway: Numerous comments on first draft
+

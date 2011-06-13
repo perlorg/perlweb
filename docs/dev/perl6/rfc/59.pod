@@ -1,0 +1,83 @@
+=head1 TITLE
+
+Proposal to utilize C<*> as the prefix to magic subroutines
+
+=head1 VERSION
+
+  Maintainer: Jonathan Scott Duff <duff@pobox.com>
+  Date: 7 Aug 2000
+  Last Modified: 1 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 59
+  Version: 2
+  Status: Developing
+
+=head1 ABSTRACT
+
+Perl has always claimed the ALL-CAPS names for itself, I propose we
+give them back to the programmer.
+
+=head1 DESCRIPTION
+
+Perl steals subroutine names from the programmer.  By prefixing the
+Perl-special subroutines with a character that is not a valid prefix
+for Perl programmers, we separate what belongs to Perl and what
+belongs to the user.
+
+With the proliferation of special subroutine names (BEGIN, END, INIT,
+CHECK, etc.) the all capital subroutine names available to the
+programmer has steadily shrunk.  Rather than stealing subroutines from
+the programmer, we should create a space just for Perl.  
+
+	sub *BEGIN {
+	    # do compile-time stuff
+	    # Perl-special 
+	}
+
+	sub BEGIN {
+	    # No relation to the former. Purely user space.
+	    # The user may have his/her own reasons for naming his
+	    # subroutines this way.  (e.g., it fits the conception model
+	    # that the software is build upon/around/through)
+	}
+
+The visual distinction lets the programmer know that something special
+is happening here and that this is not your average run-of-the-mill
+subroutine.  The added C<*> prefix also serves as a guide to the perl
+compiler that these subroutines may be treated specially.
+
+Another area where could be useful is in conjunction with Damian
+Conway's C<want()> proposal.  As his proposal currently stands, the
+programmer can not name a package LIST or SCALAR and use it with the
+proposed C<want()>.  Perl has always claimed all lowercase package
+names for itself, but never ALLCAPS package names.
+
+=head2 Examples
+
+	switch ([want]) {
+	    case '*LIST'	{ return @array; }
+	    case '*SCALAR'	{ return $foo; }
+	    case 'LIST'		{ return $MyListObj; }
+	}
+
+	sub *BEGIN	{ ... }
+	sub *END	{ ... }
+	sub *INIT	{ ... }
+	sub *AUTOLOAD	{ ... }
+	sub *TIESCALAR	{ ... }
+	sub *FETCH	{ ... }  
+
+=head2 Potential problems
+
+Makes Perl-special subroutines different from user subroutines.  This
+implies yet another special case.
+
+=head1 IMPLEMENTATION
+
+Um ... that's up to the internals people.
+
+=head1 REFERENCES
+
+Perl 5.6.0 documentation
+
+RFC 21 (v1): Replace C<wantarray> with a generic C<want> function 

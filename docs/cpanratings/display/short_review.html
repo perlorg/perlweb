@@ -1,0 +1,72 @@
+
+[% UNLESS page.added_helpful_js;
+    page.added_helpful_js = 1;
+    page.morehead = page.morehead _ ' 
+<script language="Javascript1.1" type="text/javascript" src="/js/helpful.js"></script>
+';
+  END;
+  UNLESS (page.added_cpanratings_css);
+    page.css_more.push('/css/cpanratings.css');
+    page.added_cpanratings_css = 1;
+  END;
+%]
+
+
+[% IF review.helpful_total %]
+<i>[% review.helpful_yes %] out of [% review.helpful_total %] found this review helpful:<br /></i>
+[% END %]
+
+<a name="[% review.id %]"></a>
+<h3 class="review_header">
+[% IF review.module AND review.module != review.distribution %]
+[% review.module | html %] / 
+[% END %]
+<a href="http://search.cpan.org/dist/[% review.distribution | uri %]/">[% review.distribution | html %]</a> 
+[% review.version_reviewed ? '(' _ review.version_reviewed _ ')' : '' %]
+
+[% IF review.rating_overall %]
+<img src="/images/stars-[% review.rating_overall %].0.png" alt="[% star = '*'; star.repeat(review.rating_overall) %]">
+[% END %]
+</h3>
+<p>
+
+[% IF review_has_detail_ratings %]
+<!-- should post the detailed ratings here... -->
+[% END %]
+
+<blockquote class="review">
+[% review.review_html %]
+</blockquote>
+</p>
+<p>
+
+
+<a href="/user/[% review.user.username | html %]">[% review.user_name %]</a> - [% review.updated %]
+[% IF review.user.id == combust.user_info.id %]
+  - <a href="/rate/?distribution=[% review.distribution | uri %][% 
+  module_param = review.module ? ";module=" _ review.module : ""; 
+  module_param | uri %]">edit</a>
+[% END %]
+
+<br /><span class="helpfulq">Was this review helpful to you?&nbsp;
+
+<!-- we should add non-js links to rate stuff helpful/not helpful too... -->
+
+<a class="js_link" onclick="CR.Helpful.Vote( [% review.id %], 'yes' ); return false;">Yes</a>
+<a class="js_link" onclick="CR.Helpful.Vote( [% review.id %], 'no' ); return false;">No</a>
+<span class="vote_thanks" id="thanks_[% review.id %]"></span>
+
+</span>
+
+</p>
+
+
+
+[% UNLESS no_more %]
+[% # this should be conditional on having more reviews %]
+<br />
+(<a href="/dist/[% review.distribution | uri %]">more reviews of [% review.distribution | html %]</a>)
+[% END %]
+
+
+</p>

@@ -1,0 +1,274 @@
+=head1 This Week on perl5-porters - 11-17 December 2006
+
+=head1 Topics of Interest
+
+=head2 Change 29504 breaks Win32 build
+
+Some changes to the parser code (in F<perly.y>) made by Dave Mitchell
+in an attempt to lock down C<BEGIN{ die }>-type leaks broke things
+in Windows land. Many platforms appeared to be affected. The problem
+turned out to be some debugging code left in by accident.
+
+Another oddity was that C<make distclean> left a few object files
+behind, which didn't make sense (and did not occur on all platforms).
+Apparently the issue was sorted out because nothing more was heard
+on the subject.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00248.html
+
+=head2 C<umask> handling in C<File::Temp>
+
+Peter Dintelmann noticed that C<_gettemp()> in the C<File::Temp>
+module can make needless C<umask> system calls under a number of
+circumstances, and came up with a patch to take this into account.
+
+Mike Guy commented that whether Peter's patch is applied or not,
+the code does not appear to be thread-safe. So Peter thought about
+it a bit more, and realised that C<umask> does not have to be called
+at all, although he was not sure whether VMS would still need to.
+
+And the problem of C<umask> thread safety for creating
+both temporary directories and the C<_force_writable> routine remains.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00287.html
+
+=head2 Should C<$thr-E<gt>join()> propagate exceptions to joiner?
+
+Jerry D. Hedden asked if there was interest in adding a method
+to the C<threads> module that would allow people to detect
+problems in the case of a thread dying unexpectedly. And the
+people who responded, agreed.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00288.html
+
+=head2 Named-capture regular expression syntax
+
+Aaron Crane pointed out an inconsistency with the new named captures
+syntax for regular expressions (that is C<(?E<lt>nameE<gt>target)>
+looks for 'target' and stores the result by name, rather than number
+(C<$1>, C<$2>...).
+
+And the inconsistency is that C<(?...)> had always meant that
+whatever happened in the "..." part would not result in a capture
+but now that's no longer the case. He proposed a change in syntax,
+in that named captures use C<+> following the parentheses, which
+has a mnemonic C<%+> ring to it, so the syntax would be
+C<(+E<lt>nameE<gt>target)>.
+
+Dominic Dunlop argued that Python and PCRE already use C<(?> to
+introduce named captures, which means that Perl should do the same.
+When Aaron pointed out that Python and PCRE use different syntaxes
+to perform named captures, Dominic returned with a patch to make
+Perl recognise those syntactic variants as well.
+
+In any event, while the reasoning that led Aaron to the above
+conclusion is valid, the syntax is not going to change.
+
+  not this week, at least
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00294.html
+U
+6-on-5 and read only aliasing
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00329.html
+
+Sockets leaking on rapid reconnect?
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00336.html
+
+strange warnings behavior
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00339.html
+
+op/fork.t fails on Win32 since #29543
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00342.html
+
+---Seeking PerlIO refcounting guidance
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00359.html
+
+=head1 Patches of Interest
+
+=head2 Move C<Win32::*> functions from F<win32/win32.c> to F<ext/Win32/Win32.xs>
+
+Michael G. Schwern wanted to know if he could use something simple
+to deal with Windows in C<ExtUtils::MakeMaker>. Jan Dubois explained
+why it wouldn't work, so Michael suggested using an AUTOLOAD technique
+instead, arguing that it would be less surprising for an unsuspecting
+user.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00256.html
+
+Having had his attention drawn to the code in question, Jan noticed
+that there was a flaw in the code, in that perl's internal stack
+could be relocated at some point, and made a fix to stop bad things
+taking place if it happened. He checked the rest of the codebase
+briefly, and thought that Storable might need similar treatment.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00233.html
+
+And finally, Jan tweaked F<ext/Win32/Win32.xs> to get it to
+compile out of the box on cygwin.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00271.html
+
+=head2 Text mode wrongly set on pipe file descriptors
+
+Ilya Zakharevich discovered an old patch he had lying around to sort
+out a PerlIO problem. Steve Peters applied it.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00305.html
+
+=head2 Fixes for the test suite on OS/2
+
+Ilya also determined that many of the failures he had observed on
+OS/2 were in fact false positives, and delivered a patch to clear
+up all bar two failures. Rafaël Garcia-Suarez applied all except
+the changes to F<getppid.t>, since that test file has changed too
+much in C<blead> over the intervening time. He made a note to see
+what could be salvaged and added to the current test file.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00333.html
+
+=head2 C<Errno> is not rebuilt when C<Config.pm> changes
+
+Yves Orton discovered that C<Errno> depends on certain C<Config>
+attributes, such as architecture. If these change, C<Errno> doesn't
+realise the fact, and things go downhill from there.
+
+So Yves tweaked the C<Makefile.PL> for C<Errno> to detect the
+changes and take the appropriate action.
+
+  If you build it so will they
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00364.html
+
+=head1 New and old bugs from RT
+
+=head2 C<IO::Poll::remove()> bug (#7899)
+
+Steve Peters explained that a variant of the proposed patch is now
+used in the module.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00393.html
+
+=head2 regular expression segfault (#8718)
+
+Steve also explained that, while there was no test data to exercise
+the posted bug, given all the work that has gone into the engine, and
+all the existing bugs that appear to be similar to this one are
+fixed, it's a safe bet to assume that this one is fixed too.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00394.html
+
+=head2 Configure: C</usr/bin/df> not found (#8777)
+
+On a roll, Steve checked the Solaris hints for C<Configure>, and
+noted that C<df> no longer has a hardwired path.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00395.html
+
+=head2 Regexp causing segmentation fault (#10001)
+
+A number of years ago, Hugo van der Sanden suggested a small fix
+to resolve this core-dumping bug, but he had doubts as to whether
+it would cause other problems. Be that as it may, Steve Peters
+observed that an identical change was in fact committed by Dave
+Mitchell back in May of this year, so the bug should be resolved.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00396.html
+
+=head2 Consult (#21472)
+
+Three years ago Silvio Alberto Ospina Salgado wanted to find out
+how to find Perl reference books. A documentation patch was written
+at the time by Yitzchak Scott-Thoennes but never applied, but
+regardless, the documentation was subsequently rewritten. So Steve
+closed the bug.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00398.html
+
+Strange interaction between while() and system() on Win32 (#27918)
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00390.html
+
+reading from DATA on win32 with perlio behaves oddly (#28106)
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00389.html
+
+make rebuilds perl every time (#41058)
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00295.html
+
+perl segfaults when map-arguments get freed (#41062)
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00232.html
+
+Out of memory!, while extending scalar with vec() (#41065)
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00230.html
+
+eval CODEREF should work (#41066)
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00236.html
+
+study provokes "should not happen" (#41067)
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00237.html
+
+require stringifies code references in tied @INC (#41071)
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00266.html
+
+infinite loop if strftime fails (#41083)
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00320.html
+
+xsubpp generates wrong line info for included files (#41091)
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00362.html
+
+=head2 Perl5 Bug Summary
+
+With 8 opened and only 3 closed this week, we'll have to wait until
+next week to see if we crack the 1500 barrier.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00257.html
+  http://rt.perl.org/rt3/NoAuth/perl5/Overview.html
+
+=head1 New Core Modules
+
+=over 4
+
+=item *
+
+Versions 1.54 and 1.55 of C<threads> made brief appearances this
+week, before being booted off the stage to make room for 1.56.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00371.html
+
+=back
+
+=head1 In Brief
+
+Shlomi Fish called everyone's attention to the fact that B<integer
+pragmas are not propagated to string C<eval>s in C<perl-5.8.x>>.
+
+  need a hint
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00265.html
+
+Jarkko Hietaniemi sent in some more suggestions for F<perlhack.pod>
+and also posted the latest cut-and-paste findings he had available.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00228.html
+
+He also tweaked an B<C<#ifdef> section in F<mg.c> to factor out>
+the invariant code on either side of the conditional.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00279.html
+
+Jerrad Pierce fixed B<a usability problem with C<Fatal>>, but didn't know
+what the best way was for dealing with core functions that have been
+overridden.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00231.html
+
+Anton Berezin made B<F<t/op/groups.t> play nicely> on modern FreeBSDs.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00302.html
+
+=head2 About this summary
+
+This summary was written by David Landgren.
+
+Weekly summaries are published on F<http://use.perl.org/> and posted
+on a mailing list, (subscription: F<perl5-summary-subscribe@perl.org>).
+The archive is at F<http://dev.perl.org/perl5/list-summaries/>.
+Corrections and comments are welcome.
+
+If you found this summary useful, please consider contributing to
+the Perl Foundation to help support the development of Perl.

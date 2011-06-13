@@ -1,0 +1,18 @@
+[%
+    page.import({
+        title    => 'Database Perl Mailing lists',
+        section  => 'db',
+        description
+            => 'Perl mailing lists about databases',
+    });
+%]
+
+<h2>Perl mailing lists about databases</h2>
+
+[% categories = [
+    'database',
+    'database-module'
+    ];
+%]
+
+[% PROCESS tpl/category_page.html categories => categories %]

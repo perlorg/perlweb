@@ -1,0 +1,81 @@
+=head1 TITLE
+
+Add memoize into the standard library
+
+=head1 VERSION
+
+  Maintainer: Adam Turoff <ziggy@panix.com>
+  Date: 14 Sep 2000
+  Last Modified: 18 Sep 2000
+  Mailing List: perl6-stdlib@perl.org
+  Number: 228
+  Version: 2
+  Status: Frozen
+
+=head1 ABSTRACT
+
+Caching through memoization is a very useful construct.  It should be a 
+standard module.
+
+=head1 DESCRIPTION
+
+Memoization is a very useful technique to transparently cache 
+function return values.  It can be used to quickly optimize 
+recursive functions, or functions that take a long time to
+execute (such as gethostbyname).  
+
+A version of Memoize.pm should be added into the Perl6 standard
+library, and it should be added as a pragmatic module (i.e. memoize.pm).
+
+Adding Memoize plugins (Memoize::Expire, etc.) into the standard library
+is a separate discussion.
+
+=head1 NOTES ON FREEZE
+
+There were no real objections to including memoize.pm in the Perl6 core.
+
+=head1 OUTSTANDING ISSUES
+
+A few people mentioned that using memoize() as a function has some 
+action-at-a-distance qualities, although it is useful for caching 
+builtin functions such as cos() and sin().
+
+Bart Lateur mentioned that using a sub attribute would be logical:
+
+	sub foo :memoize {
+	}
+
+While this does have merit, it does raise a few issues, such as being
+able to turn on various Memoize extensions (such as expiry, tied
+caches, etc.).  On the other hand, this syntax does have merit for
+using the default set of memoize options on a sub, without any
+action-at-a-distance after effects.
+
+These problems start to deal with language issues, such as being able
+to use parameterized sub attributes, and internals issues, such as
+being able to find sub attributes defined and implemented in an
+extension.  Neither of these are within the charter of perl6-stdlib
+to figure out.
+
+=head1 MIGRATION ISSUES
+
+None.
+
+=head1 IMPLEMENTATION
+
+Add memoize into the perl6 source tarball, as a pragmatic module.
+
+The Perl6 language may allow some workarounds to be avoided, such
+as using a string value to specify the function to be memoized.
+
+=head1 REFERENCES
+
+Memoize.pm  http://search.cpan.org/search?dist=Memoize
+
+MiniMemoize from TPJ: http://perl.plover.com/MiniMemoize/memoize.html
+
+Bart Lauter's commentary on a Perl6-ish way to memoize subs:
+http://www.mail-archive.com/perl6-stdlib%40perl.org/msg00073.html
+
+Leon Brocard's message on removing memoize's action-at-a-distance
+nature: http://www.mail-archive.com/perl6-stdlib%40perl.org/msg00075.html

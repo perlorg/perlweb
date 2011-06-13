@@ -1,0 +1,134 @@
+=head1 TITLE 
+
+Better constants and constant folding
+
+=head1 VERSION
+
+  Maintainer: John Siracusa <siracusa@mindspring.com>
+  Date: 15 Aug 2000
+  Last Modified: 16 Aug 2000
+  Mailing List: perl6-language@perl.org
+  Number: 113
+  Version: 2
+  Status: Retired
+
+=head1 STATUS
+
+This has been integrated with RFC 83.
+
+This RFC was retracted by the author on 16 Aug 2000.
+
+=head1 ABSTRACT
+
+There are many ways to use named "constants" in Perl, but they all have
+drawbacks: runtime initialization costs, the extra overhead of loading
+another module, the inability to use the constants in certain situations,
+and so on.
+
+Constants should be first-class citizens in Perl, and should be constant
+folded with a vengeance by a clever compiler.
+
+=head1 DESCRIPTION
+
+An ideal Perl constant can be used anywhere that a Perl variable of the
+same type can be used: a constant scalar can be used in place of any
+scalar, a constant array can be used in place of any array, and so on.
+These constants should not incur runtime inefficiencies or undue
+compile-time overhead.  Performance should be should be exactly as if the
+data was hard-coded in place.
+
+=head1 IMPLEMENTATION
+
+The simplest solution is something like:
+
+    constant $PI = 3.14159265;
+
+This looks shockingly similar to the current, much maligned (by me, anyway)
+constant module:
+
+    use constant PI => 3.14159265;
+
+but the former has many syntactic advantages.  First, there's no "use"
+directive to reveal the constant's second-class citizenship.  Second, it
+uses the assignment operator instead of the "fancy comma."  Third, context
+is determined by the left-hand-side of the assignment operator instead of
+always being forced into list context.
+
+Using these constants is simple.  They behave just like variables of the
+same type.
+
+    print "Would you like some apple $PI?"; # A constant string
+
+That whole string is converted to a single constant at compile time.
+Collections behave in a similar manner:
+
+    constant @FISH = (1, 2, 'red', 'blue');
+    
+    print @FISH;   # prints "12redblue"
+    print "@FISH"; # prints "1 2 red blue"
+
+    print "$FISH[2] head"; # prints "red head"
+
+Again, each argument to C<print> is converted to a constant string at
+compile time.
+
+Modification of a constant is a compile-time error:
+
+    $PI = 5;           # Bzzt!
+    $PI =~ s/\.\d+$//; # Sorry
+    $#FISH = 15;       # Nice try
+
+The C<constant> keyword should work when combined with C<my> and C<our>:
+
+    package Foo;
+    
+    our constant $GOO = 5;
+    
+    if(...)
+    {
+      my constant $GOO = 10;
+      
+      print $GOO; # Prints 10
+    }
+
+As an added implementation bonus, "constant methods" should be supported
+in the same way that "constant subroutines are now.
+
+    package MyConstants;
+    constant $PI = 3.14159265;
+
+    package MyClass;
+    ...
+    sub method { $MyConstants::PI }
+    
+    package MyLib;
+    ...
+    sub func { $MyConstants::PI } # Shouldn't have to be sub func() ...
+
+Both C<method()> and C<func()> should know that they return constants,
+and the compiler should optimize them away whenever possible, even without
+explicit hints like an empty "()" prototype after C<func>.  Yes, there
+are issues with turning a method call into a constant at compile time, but
+it's possible if Perl can determine with certainty that C<MyClass::method>
+is the actual code that will be executed by an object or class method call.
+Example:
+
+    my $obj = MyClass->new;
+    
+    print $obj->method();    # Converted to the constant 3.14159265
+    print MyClass->method(); # Ditto
+
+Again, this magic is accomplished by a clever compiler that does not need
+this type of help:
+
+    my MyClass $obj = MyClass->new; # Not necessary, ideally
+
+As should be clear by now, I'm not too familiar with the perl internals
+that are required to support this stuff.  It just "seems possible" to me.
+And hey, there are no "perl internals" to speak of yet in a "clean-sheet"
+implementation, right?
+
+=head1 REFERENCES
+
+Perl's C<constant> pragma documentation.
+

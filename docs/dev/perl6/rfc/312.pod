@@ -1,0 +1,76 @@
+=head1 TITLE
+
+Unicode Combinatorix
+
+=head1 VERSION
+
+  Maintainer: Simon Cozens <simon@brecon.co.uk>
+  Date: 25 Sep 2000
+  Mailing List: perl6-internals@perl.org
+  Number: 312
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+How and when Unicode is used in Perl 6. Its sister RFC "When UTF8 Leaks
+Out" deals with how output is processed with respect to Unicode; this
+RFC deals with input and processing.
+
+=head1 DESCRIPTION
+
+Here is an proposed overview of Perl 6's Unicode handling, except for 
+all aspects of output.
+
+Data comes into Perl in one of two methods: through a filehandle or
+socket, where line disciplines apply, or "any other method".
+
+Data which comes in through a line discipline B<must> be in UTF8, unless
+C<no unicode> is in force.
+
+Examples of data which enter Perl from "any other method" are
+environment variables, stuff coming out of backticks, and globs.
+It's assumed that these will come into Perl as ISO8859-1, and will be
+converted into UTF8 on entry. If the user wants to tell us that this
+data won't be ISO8859-1, then they may say C<use unicode::system 'discipline'>
+where C<'discipline'> is any level 2 processing module. The data will be
+filtered through that module, and we will have UTF8 data at the end of
+this.
+
+OK, at this stage, everything inside Perl is in Unicode. The next thing
+we need to do is to normalise it, and the RFC on normalisation covers
+that: basically, we either do this on demand or immediately. The setting
+of C<unicode::exact> comes into play here.
+
+Comparisons can be carried out in three ways: if
+C<unicode::representation> is in force, then the bytes must be exactly
+equal. If C<unicode::exact> is set, a normalised copy of the operands is
+made, and they are compared. Otherwise, the operands are normalised and
+compared. As the FAQ says, "Canonical equivalence matters".
+
+Collation should take place according to the Unicode collation tables;
+if C<use locale> is set, then the collation is localised as well. The
+Unicode locales RFC suggests other areas affected by locales, such as
+word and line breaking and Unicode character classes.
+
+C<no unicode> just throws everything. None of the above happens.
+
+=head1 IMPLEMENTATION
+
+Just leave that to me...
+
+=head1 REFERENCES
+
+"What Level of Support Should I Look For?", http://www.unicode.org/unicode/faq
+
+RFC 311: Line Disciplines
+
+RFC 295 Normalisation and C<unicode::exact>
+
+RFC 300 C<use unicode::representation> and C<no unicode>
+
+RFC ??: When UTF8 Leaks Out
+
+RFC ??: Abstract Internals String Interaction
+
+RFC ??: Unicode Locales

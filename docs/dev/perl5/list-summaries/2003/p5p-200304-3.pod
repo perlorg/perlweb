@@ -1,0 +1,94 @@
+=head1 This Week on perl5-porters (14-20 April 2003)
+
+Not a good week to stop smoking ! Test-wise, that is. In this week's
+summary, read about configuration changes, language proposals, and the
+usual amount of bug fixes.
+
+=head2 Binary error messages
+
+Marc Lehmann remarks that the current maintperl may produce error messages
+that contain a null character (bug #21962), with the one-liner :
+
+    ./perl -e '&{""}'
+
+Abhijit Menon-Sen finds out that perl, trying to access a symbol that has
+an empty name, sets explicitly the length of this name to 1, which seems
+obviously wrong, and thus fixes the bug by suppressing this behaviour.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg94390.html
+
+=head2 Long Doubles
+
+There was a long thread, mainly involving Jarkko and Merijn -- the
+Configure guys -- about Configure's support for long doubles. A patch for
+long double support on Solaris (by Alan Burlison) was integrated. An
+important question was raised, which was : if we ask Configure to enable
+long double support in perl, (or, similarly, 64 bit integers), and if
+Configure fails to detect support for it on the platform, should it abort
+? The answer, for now, is yes. As a consequence, some holes appear in the
+smoke matrices, corresponding to now-disallowed configs.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg94408.html
+
+=head2 Ties, Fetches and Storabilization
+
+The patch that Dave Mitchell sent last week, to allow nested C<FETCH>es, has
+been applied. The benchmarks give varying results, which apparently are
+due, as Dave says, to I<the usual cache noise effects>, which have been
+encountered before. So this patch probably doesn't change significantly
+the (already low) performance of ties.
+
+Speaking about ties, C<Storable> now handles self-tied objects (bug
+#17040, fixed), thanks to Abhijit. The question of serializing tied
+objects is raised again ; David Nicol proposes the convention to use
+SERIALIZE and DESERIALIZE special methods. Slaven Rezic points out that
+C<Storable> uses already the STORABLE_thaw and STORABLE_freeze methods, if
+they're available.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg94513.html
+
+=head2 More on cross-compilation
+
+Redvers Davies posted refactored patches to add support for
+cross-compilation to perl. Jarkko is considering merging them into perl
+5.8.1. Vadim Konovalov reminds us about the C<Cross.pm> module, created
+during the cross-compilation process for WinCE, which is basically a
+substitution for C<Config.pm> when cross-compiling (either perl itself, or
+perl modules).
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg94415.html
+
+=head2 More black smoke
+
+Nicholas Clark is struggling with strange smoke failures on BSD.
+Unreproducibly, for some reasons, Makefile.PL expansion is going wrong
+under crontab.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg94583.html
+
+=head2 In Brief
+
+Nathan Torkington notices that reading from a magic scalar with
+C<PerlIO::scalar> sometimes causes coredumps. This buglet is fixed by
+Enache Adrian.
+
+Jarkko Hietaniemi finished to add a new function C<PerlIO::get_layers()>,
+to retrieve the I/O layers for a given filehandle. Dan Kogai is excited
+about it.
+
+Bug #21979 demonstrates that, with an ithread-enabled perl, I<modifying an
+alias to a read-only item of an argument list of a subroutine works, while
+it's expected to fail.>
+
+Arthur Bergman and Dave Mitchell are struggling with pads, ithreads,
+cloning, and closures, and finally fix an obscure bug I don't understand.
+
+Shlomi Fish posted a proposal to add three new keywords, C<class>, C<up>
+and C<this>, to manipulate namespaces. He didn't get positive feedback.
+
+=head2 About this summary
+
+This summary was brought to you once again by Rafael Garcia-Suarez. Weekly
+summaries are available on L<http://use.perl.org/> and via a mailing list,
+which subscription address is L<perl5-summary-subscribe@perl.org>.
+Feedback welcome.

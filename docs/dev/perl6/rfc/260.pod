@@ -1,0 +1,128 @@
+=head1 TITLE
+
+More modules
+
+=head1 VERSION
+
+  Maintainer: Michael G Schwern <schwern@pobox.com>
+  Date: 19 Sep 2000
+  Mailing List: perl6-stdlib@perl.org
+  Number: 260
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+Perl should come distributed with more modules.
+
+=head1 DESCRIPTION
+
+Currently, in order to get a really useful Perl installation you have
+to immediately hit CPAN and download a battery of modules.  This is
+kind of silly.  Its a tedious step that can be eliminated if we expand
+what Perl comes with.
+
+When a "how do I do X" type question pops up and is answered "module Y
+does X", a typical response is "is module Y in the core?"  There is
+some trepidation about using CPAN modules because they must be
+downloaded and installed (often a difficult problem for programs which
+are to be distributed, especially to Windows and MacOS), and because
+of perceived instability.
+
+Core modules also establish a lowest common version.  If version 1.5
+of module Y is distributed with Perl, yet version 1.6 is on CPAN, a
+program author can code for 1.5's API and be fairly certain it will
+work on most installations.
+
+=head2 Core bloat?
+
+The most obvious objection is core bloat.  5.6.0 is already over 5
+megs and only going to get fatter.  Throwing lots of modules into the
+core will only make it even bigger, possibly getting up to 10 megs!
+There are a few solutions for this.
+
+The first is to provide several distributions of Perl.  A minimalistic
+distribution might provide just perl and a handful of modules.
+Another provides the docs.  Another a set of modules equivalent to the
+current set and yet another provides our extended set.
+CPAN/src/perl-X.X.X.tar.gz would be one big bundle encompassing all
+these sets.  Other combinations might be made available.
+
+Another is to provide several different install options.  "make
+install" installs everything, as usual.  "make small_install" installs
+just the current set of modules.  "make tiny_install" installs a bare
+minimum, not even docs.
+
+There's alot of crufy stuff in the source distribution that could be
+dumped.  Eliminating lib/*.pl (except perl5db.pl) and eg/ will free up
+over 200k which makes room for a couple more modules.
+
+Finally, we've got about 18 months before Perl 6 is expected to ship.
+In that time, DSL and cable modems will become more and more
+ubiquitous (my B<dad> has one!) and pulling down 10 megs will be less
+of an issue for Joe Average.  Users still on low bandwidth can get one
+of the slimmer distributions.
+
+=head2 Which modules?
+
+Some of the more obvious modules are:
+
+=over 4
+
+=item B<DBI>
+
+Perl talks to databases alot, and DBI is how you talk to databases
+with Perl.  Distributing it would push Perl even further as a powerful
+database access language.  DBD::CSV and DBD::RAM (along with their
+supporting modules) would also go along, so even without a database
+DBI is still useful for prototyping and provides a path for programs
+to migrate to a real database when one is needed.
+
+DBD::ODBC would also be nice, as most databases speak it.  The free
+ODBC drivers should also be distributed.  They are firming up now and
+by the time Perl 6 is out should be stable and well supported.
+
+=item B<LWP>
+
+Rumor has it Perl has been used for some web stuff.  LWP is the most
+obvious module for this sort of work.
+
+LWP is quite fat, perhaps the maintainers could be petitioned to split
+it up into a basic set and a set of extensions.  Perl would distribute
+the basic set.
+
+=item B<libnet>
+
+This Internet thing is getting pretty popular, and Perl should come
+ready for it.  libnet provides all the basic network clients.  FTP,
+NNTP, POP3, SMTP...
+
+=item B<Mail::Send>
+
+"How do I send mail?"  More often than not this question winds up with
+something like C<open MAIL "|/usr/lib/sendmail -o">.  This is not only
+non-portable, its also ripe for security holes.  Mail::Send, or
+similar module, makes sending mail easy, safe and portable.
+
+=back
+
+The exact set is not so important as a consensus that its a Good Idea
+to start distributing more modules.
+
+
+=head1 MIGRATION
+
+None.
+
+
+=head1 IMPLEMENTATION
+
+The integration and upkeep of existing CPAN modules is already a
+fairly well-understood procedure.  The only foreseeable problem is
+configuring and testing those modules requiring network access, as
+this is not always available.
+
+=head1 REFERENCES
+
+RFC 228 - Add memoize into the standard library
+

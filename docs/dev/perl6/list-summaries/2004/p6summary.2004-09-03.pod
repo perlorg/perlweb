@@ -1,0 +1,215 @@
+=head1 The Perl 6 Summary for the week ending 2004-09-03
+
+Another week, a free weekend, and still I haven't started writing the
+summary until Monday. Still, I don't actually start at college 'til
+next week, so that's all right then.
+
+We start with perl6-internals.
+
+=head2 Compile op with return values
+
+The discussion of how to return something from dynamically compiled
+code continued with Leo, Dan and Steve Fink all working to clarify and
+address the issues. 
+
+L<http://groups.google.com/groups?threadm=20040828065049.GC12318@kevin.fink.com>
+
+=head2 Library loading
+
+Dan started the process of nailing down Parrot's dynamic loading API so
+that it can be added to the embedding interface. Steve Fink and Aaron
+Sherman had suggestions. 
+
+L<http://groups.google.com/groups?threadm=a06110410bd568c66e647@[10.0.1.2]>
+
+=head2 Pathological register allocation scenarios
+
+Gregor N Purdy had asked Dan if his work compiler could be made to spit
+out structurally equivalent C code to the Parrot code that was breaking
+IMCC. His idea being that we could then see how C compilers dealt with
+such nastiness. Dan thought that, whilst this was a good idea, it would
+be too much work to implement. Gregor wasn't so sure.
+
+L<http://groups.google.com/groups?threadm=a0611041abd58ca5c3463@[10.0.1.2]>
+
+=head2 Dan and Leo demonstrate comic timing. Again.
+
+14:17:09 GMT Dan: PerlHash test 20 is failing? Anyone know what's up so we
+can fix it?
+
+15:30:41 GMT Leo: It stopped failing at 15:55 CEST (13:55 GMT)
+
+16:32:29 GMT Dan: D'oh!
+
+We love it when a patch comes together.
+
+L<http://groups.google.com/groups?threadm=a06110422bd58e6de10f8@[10.0.1.2]>
+
+=head2 PMC Instantiation
+
+Leo had raised issues with the current scheme for PMC
+instantiation. This week Dan came through with some design which got
+discussed and (I think) implemented. 
+
+L<http://groups.google.com/groups?threadm=a06110427bd590a576148@[10.0.1.2]>
+
+=head2 Last bits of the basic math semantics
+
+If you believe Barbie, "Math is hard". She's right, up to a point. The
+list's spent a couple of weeks now sorting out the design of Parrots
+underlying mathematical and numeric systems to make sure that maths
+works right (for sufficiently useful values of 'right'). This
+particular line of discussion covers rotations and stuff, where you're
+actually treating a number as a bit field. 
+
+L<http://groups.google.com/groups?threadm=200408310958.i7V9wN909589@thu8.leo.home>
+
+=head2 Cross-compiling parrot
+
+And you thought compiling Parrot on a Win32 box was hard. Robert
+Schwebel wants to cross compile Parrot and isn't having a good
+time. Dan wasn't surprised because the Parrot build process still gets
+most of its information from the local perl installation which will
+generally be wrong when you're cross compiling. 
+
+Dan noted that part of the problem is that we don't have people on the
+team with a need or the experience of doing cross compilation and added
+that he'd be thrilled if this were to change. Any patches to make
+things better for cross compilers will, of course, be gratefully
+received. 
+
+L<http://groups.google.com/groups?threadm=20040901173244.GE1369@pengutronix.de>
+
+=head2 Proposal for a new PMC layout and more
+
+Leo's concerned that the current PMC layout isn't the Right Thing, and
+laid out a proposal describing some changes he thinks would be
+worthwhile. In essence, he argues for removing the requirement for
+fixed sized PMC headers and separate variable sized buffers in favour
+of unifying buffers and PMCs so that PMCs become variable sized, thus
+eliminating some time consuming indirection, and space consuming
+overheads.
+
+Nicholas Clark thought the proposal was interesting, but said that,
+since the proposed changes would be invisible to the user, he'd be far
+happier with a functionally complete implementation of parrot with
+stable, useful APIs. 
+
+Dan rejected the proposal (both for technical reasons and because he
+agreed with Nicholas). I don't think Leo was convinced by the technical
+reasons, but the "Let's get the interfaces finished!" argument clinched it.
+
+L<http://groups.google.com/groups?threadm=4135E823.7070902@toetsch.at>
+
+L<http://groups.google.com/groups?threadm=a0611040bbd5bb29d2c15@[172.24.18.155]> -- Dan explains why not.
+
+=head2 Semantics for regexes
+
+Dan appears to have opened an entertaining can of worms when he
+outlined his view of the minimum string semantics required to support a
+regular expression engine and asked for comments. Boy did he get
+them. And boy did they run off in all sorts of strange
+directions. Interesting directions mind. Anyway, further down the
+thread, Dan, Chip Salzenburg and Patrick Michaud seemed to reach
+something approximating agreement about the low level semantics
+required. 
+
+L<http://groups.google.com/groups?threadm=a0611040ebd5bbe03d7e1@[172.24.18.155]>
+
+=head2 TODOs and calls for volunteers
+
+Leo came up with a list of things that need fixing/implementing and
+asked for volunteers. These include sorting out what happens with the
+experimental ops, implementing C<new_extended> for every PMC class and
+finishing up BigInt's MMD and vtable functions.
+
+He also had some proposals for how we should get the Integer classes
+properly implemented now we know what the semantics will be.
+
+L<http://groups.google.com/groups?threadm=4137507F.5010606@toetsch.at>
+
+L<http://groups.google.com/groups?threadm=41385717.90803@toetsch.at>
+
+L<http://groups.google.com/groups?threadm=41385937.7020708@toetsch.at>
+
+L<http://groups.google.com/groups?threadm=200409031221.i83CLUv13413@thu8.leo.home>
+
+=head1 Meanwhile, in perl6-language
+
+=head2 Roles trying to be nice
+
+Abhijit Mahabal had some questions about making roles work. Luke,
+Patrick & Jonathan Scott Duff set about answering them. I'm not entirely
+sure that any of the answers so far are enough for Abhijit, but then
+I'm not entirely sure that any answer could be enough. At some point
+you have to take things on trust and hope that nothing breaks at
+runtime.
+
+L<http://groups.google.com/groups?threadm=Pine.GSO.4.58.0408292126230.10203@prickly.cs.indiana.edu>
+
+=head2 Pipeline performance
+
+Rod Adams brought up some issues with the performance of 'pipelining'
+arrays in Perl 5 -- in general doing say C<grep {...} map {...} @ary>
+is rather slower than writing an explicit loop. He wondered if Perl 6
+would be faster. Larry's answer that all lists function lazily if they
+can in Perl 6 seems to imply that yes, Perl 6 will be faster.
+
+L<http://groups.google.com/groups?threadm=41338F4C.2090300@rodadams.net>
+
+=head2 Synopsis 9 draft 1
+
+"Synopsis 9?" I hear you ask "But we haven't seen Apocalypse 9
+yet!". Indeed we haven't, but that's not stopped Larry writing
+it. Synopsis 9 gives an overview of Perl 6's data structures (hopefully
+enough for anyone who happens to be starting work on a rough cut of a
+Perl 6 implementation) which will be covered in more detail when the
+Apocalypse itself comes out. 
+
+The usual storm of discussion and general proofreading goodness went on.
+
+L<http://groups.google.com/groups?threadm=20040902234740.GA29156@wall.org>
+
+=head2 The range operator
+
+Joe Gottman wondered if there would be sufficiently lazy way to
+generate ranges. In particular, he wanted to know if he'd be able to
+write C<reverse (1..5)> and have Perl handle that lazily, or if he
+could do C<5 .. 1 :by(-1)>. Larry thought that, if range objects were
+made sufficiently smart, there would be no reason why the C<reverse>
+approach couldn't be lazy.
+
+L<http://groups.google.com/groups?threadm=200409030034.i830YESH008947@ms-smtp-04-eri0.southeast.rr.com>
+
+=head2 Can PRE and POST be removed from program flow?
+
+John Siracusa wondered if it would be possible to turn off the PRE and
+POST Design By Contract hooks in production code to improve
+performance. (Leaving aside arguments about whether this is sensible;
+personally I reckon that a production environment is where you should
+be most worried about values that might fail the PRE/POST hooks). Larry
+reckoned it would be possible to simply clobber the global definitions
+of PRE and POST to make them no ops. This wasn't enough for John, who
+wanted to be able to get rid of them entirely so even the call to the
+no op didn't happen. So Damian showed him the obvious macros...
+
+L<http://groups.google.com/groups?threadm=BD5E4DEC.1CB3A%siracusa@mindspring.com>
+
+
+=head1 Announcements, Apologies, Acknowledgements
+
+It looks like the Google groups gateway is working again, so I'll keep
+with the Google style linking.
+
+If you find these summaries useful or enjoyable, please consider
+contributing to the Perl Foundation to help support the development of
+Perl. You might also like to send feedback or contributions to a
+'getting Piers to OSCON 2005' fund to L<mailto:pdcawley@bofh.org.uk>
+
+L<http://donate.perl-foundation.org/> -- The Perl Foundation
+
+L<http://dev.perl.org/perl6/> -- Perl 6 Development site
+
+Or, you can check out my website.
+
+L<http://www.bofh.org.uk/>

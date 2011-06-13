@@ -1,0 +1,41 @@
+<!-- start of redirect-bookstore -->
+[%# Call me as a component
+  # Args: isbn
+  #       style -> text/ul
+  #  
+ 
+  # TODO: "exclude" args to exclude certain bookstores
+
+  # TOOD: use Geo::IP to try and localize to pick the most likely bookstores
+-%]
+[%-
+  shops = { amazon => "Amazon.com",
+            amazonuk => "Amazon UK",
+            powells => "Powells",
+            # our b&n codes don't work anymore
+            # bn     => "Barnes &amp; Noble",
+            # bookpool is out of business
+            # bookpool => "Bookpool",
+          }
+-%]
+[% IF !style; style="text"; END -%]
+[% SWITCH style;
+  CASE "text" -%]
+[%- FOREACH shop IN shops.keys.sort -%]
+[%- IF !loop.first() -%]
+ -
+[%- END -%]
+ <a target="_blank" 
+   href="/redirect/?type=book&amp;shop=[% shop %]&amp;isbn=[% isbn %]"
+>[% shops.$shop %]</a>
+[%- END -%]
+[% CASE "ul" -%]
+<ul>
+[%- FOREACH shop IN shops.keys.sort -%]
+<li><a target="_blank" 
+   href="/redirect/?type=book&amp;shop=[% shop %]&amp;isbn=[% isbn %]"
+>[% shops.$shop %]</a></li>
+[%- END -%]
+</ul>
+[% END %]
+<!-- end of redirect-bookstore -->

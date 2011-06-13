@@ -1,0 +1,400 @@
+=head1 This Week on perl5-porters - 3-9 October 2005
+
+A quiet week on perl5-porters, in which we learn that if we diddle
+with the environment, we eventually pay for the consequences, and
+Schwern saves the day by preventing the module testing infrastructure
+from falling apart.
+
+=head2 Inline broken on blead
+
+David Dyck wrote in to say that Inline's C<make test> was failing
+in blead, due to a construct that applied the C<defined> operator
+to a hash. Rafael Garcia-Suarez summed up the problem succinctly:
+
+  $ perl5.8.7 -wle 'print defined %foo::'
+
+  $ bleadperl -wle 'print defined %foo::'
+  1
+
+and opined that the use of C<defined(%hash)> was discouraged anyway.
+Dave Mitchell pointed out that for lexicals, a compile-time warning
+is issued:
+
+  $ perl -wce 'my %foo; print defined %foo'
+  defined(%hash) is deprecated at -e line 1.
+  (Maybe you should just omit the defined()?)
+
+Rafael traced the change in behaviour to patch #24660, in which
+Nicholas Clark shaved four bytes of the size of an HV body on
+32 bit platforms. And the patch comment even stated that one
+side effect was to make C<defined %symbol_table::> always true.
+
+Alas, it may be that this breaks C<Tk> if the source code comments
+are to be believed. So far, it doesn't appear that anyone has
+investigated this possibliity.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00066.html
+
+=head2 Enhancing Data::Dumper
+
+Curtis "Ovid" Poe worked out how to make C<Data::Dumper> do something
+clever like:
+
+  print Dumper($foo, @bar);
+  # prints something like
+  $foo = 'stuff';
+  @bar = ( 3, 17 );
+
+(C<Data::Dumper::Simple> already does this, albeit with a source filter).
+This time, no source filter. The biggest problem is that this would
+require bringing C<PadWalker> into the core. And then...
+
+Steve Peters related his difficulty in getting C<PadWalker> to pass its
+tests on Linux, which made him wonder what things might be like on more
+exotic platforms. Robin Houston (the author of C<PadWalker>) mentioned that
+this has been fixed in version 0.13. Dave Mitchell noted how C<PadWalker>,
+relying as it does on undocumented perl internals, is very sensitive to
+breakages between perl versions, is not robust, and should not be
+included in core. 
+
+Rafael was more concerned about teaching C<Data::Dumper> new tricks, a
+justifiably ancient module which is probably better left alone.
+
+Robin answered that the Perl debugger will make use of C<PadWalker> if
+it find it, and was concerned by the porters' view of its apparent
+fragility. He admitted that this perception might be due to the fact
+that he let it slide from August 2003 to August 2005, but that he is
+now working hard to make it as robust and reliable as possible. He
+didn't see any fundamental reason as to why robustness could not be
+achieved.
+
+Dave said that he wasn't criticising C<PadWalker> I<per se>, but that
+the goal it is trying to achieve is fraught with peril -- source
+filters, undocumented internal interfaces, lexicals, closures and other
+subtleties -- such that even perl itself doesn't always get right.
+
+Robin countered again, with a new version that resolved nearly all of
+Dave's problems and then asked for a better name for the module,
+perhaps something in the C<Devel> or C<Lexical> namespaces.
+
+If you only have time to read one thread this week, this is a good 'un.
+
+  Ovid's journal entry discussing the Data::Dumper hack
+  http://use.perl.org/~Ovid/journal/26973
+
+  The thread on p5p
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00067.html
+
+=head2 Taint checks in the test suite
+
+There are lots of warnings issued when one runs
+
+  C<make test.taintwarn>
+
+(Gee, I didn't know that existed). Steven Schubiger noted that
+many of them come from using C<$^X> to determine the name of the perl
+executable. Steven wondered what the best way to fix that would be
+(such as a hardcoded F<../perl>) and also said, in fine understatement,
+that some of the code seems rather difficult to untaint.
+
+Steve Peters mentioned that searching for C<perl> will be difficult
+when your executable is named C<ponie>. Rafael thought that C<$^X> being
+tainted was a good thing, and that it was not sufficient to untaint
+it with a brute-force C</(.*)/>.
+
+After taking a second look at the problem, Rafael came back and said
+that he didn't really care about the warnings. The C<test.taintwarn>
+is there more to test the tainting mechanism itself, that is, tests
+totally unrelated to tainting that begin to fail when tainting is
+enabled. If it warns, but runs ok, that's enough.
+
+The thread then went on a couple of tangents, from bringing
+C<File::Which> into core, to better deal with tainting, to the fact
+that MacPerl was no longer supported.
+
+The latter remark stung Chris Nandor into stating that a platform
+is not declared unsupported until such time as those developers who
+care about supporting Perl on that platform decide to call it a day.
+He stated that he did intend to release another version of MacPerl
+at some point in the future. 5.8.x came very close at one time, but
+then Real Life intervened. Nevertheless, another release is still
+quite possible.
+
+John Malmberg, ever a glutton for punishment, said that he was
+trying to determine whether or not the taint code was being
+aggressive enough in tracking VMS-ish things susceptible to taintedness.
+Craig Berry said that a certain number of things were already
+being done, such as dropping image privileges (my VMS is too
+rusty to summarise what that means).
+
+  From a small patch, a mighty thread grows
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00074.html
+
+=head2 Localising %Config
+
+Benjamin Franz was trying to install C<Test::Plan>, and getting strange
+failures:
+
+  %Config::Config is read-only
+
+After looking at the code, he noticed simplified the problem down to
+the following, and posted it to the list:
+
+  use Config;
+  local *Config::STORE = sub { 1; };
+
+(C<%Config> is actually a tied hash). He went to the trouble of digging
+through RT (the bug tracking system) and unearthed #35865 and #35865.
+
+Michael Schwern replied that since C<Test::Plan> is digging around in
+C<Config>'s internals, this hardly constitutes a bug on the part of
+C<Config>, and invoked Tom Christiansen:
+
+  You are wicked and wrong to have broken inside and peeked at the
+  implementation and then relied upon it.
+    -- tchrist in <31832.969261130@chthon>
+
+... and then showed how he solved the problem in C<ExtUtils::MakeMaker>.
+(Basically, one takes a copy of C<%Config>). Benjamin forwarded the
+information to the author of C<Test::Plan>.
+
+  The lethal problem:
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00071.html
+
+  How EU:MM does it:
+  http://search.cpan.org/src/MSCHWERN/ExtUtils-MakeMaker-6.30/lib/ExtUtils/MakeMaker/Config.pm
+
+=head2 Wrapping up untested builtins
+
+Steve Hay reported back to say that the protocol files on NT4 Workstation,
+2000 Server, 2003 Server and XP Pro are all identical, save for copyright
+dates. So Steven Schubiger's test is in as change #25696. But then Rafael
+immediately had problems on Linux smokes and pulled it out. Steven went
+back to the drawing boards with a less ambitious test. Applied by Steve
+Peters.
+
+  It started in August
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-08/msg00191.html
+
+  And continued in September
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00665.html
+
+  Which was summarised here
+  http://dev.perl.org/perl5/list-summaries/2005/20050926.html
+
+  And then this week
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00114.html
+
+=head2 Return value for Perl_io_close
+
+Robin Barker noted that Perl_io_close is used twice in the perl source.
+In one location the return value is used, in the second, it is ignored.
+So he proposed fixing F<embed.fnc> to fix the warning when it is not
+used. Rafael noted that it was invoked during SV destruction, and thought
+it might be nice to do something if the C<close> fails, but what?
+
+Andy Lester though we should do something with the return value, otherwise
+it means that "a close will never fail". Dave Mitchell, ever the voice
+of reason, pointed out that when the file handle is a lexical, and is
+being closed because the lexical is going out of scope, as in
+
+ {
+   open my $fh, ....;
+ }
+ # implicit close here
+
+there is no possible way, short of dying, to tell the program that
+Something Bad happened.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00132.html
+
+=head2 Environmental damage on Solaris 10
+
+Alan Burlison was Warnocked over a question of how to get MakeMaker
+deal with the tricky symlinks necessary to build C<DBD::Oracle>,
+where the symlink hackery would let one build a perl that speaks
+to Oracle without a Oracle client install, thereby saving 400
+megabytes of disk space.
+
+He must have figured a way forward, because he later wrote back to
+say that his compile of C<DBD::Oracle> on Solaris 10 had uncovered
+horrors lurking in the dim, rarely visited corners of the perl
+source. It's basically a problem with C<%ENV>. C<Perl_my_setenv>
+can actually reach out and directly manipulate the memory pointed
+to by the environ pointer that the system passes to the perl
+executable.
+
+The new, improved method Solaris 10 employs for managing the
+environment breaks an assumption long held by the perl5 porters.
+And results in bizarre "Out of memory" errors during C<perl_destruct>.
+After having looked at the code that deals with C<getenv> and
+C<putenv>, and having considered it to be "pretty vile", Alan asked
+what it was all supposed to achieve.
+
+After discussing the issue a while with Steve Peters, Steve
+suddenly made the connection between what Alan was seeing and what
+happens on the Cygwin platform. In a nutshell, does C<delete $ENV{foo}>
+just delete the value, but leave C<foo=> in the environment
+table, or does it delete the key and value altogether?
+
+Andy Dougherty pointed out that much of the code dates back to when
+no standards existed for these matters. These days, however, it's
+probably safe to assume that the vendor's library is sane and should
+be used by default, and only invoke work-arounds when there is good
+reason to.
+
+All summed up in bugs #37376 and #37377.
+
+  Managing synlinks with MakeMaker
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00122.html
+
+  The stench begins
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00156.html
+
+  The link with Cygwin
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00167.html
+
+  The source code for Solaris's getenv
+  http://cvs.opensolaris.org/source/xref/usr/src/lib/libc/port/gen/getenv.c
+
+=head2 New Core Module Releases
+
+Michael Schwern released a new version of C<Test::Simple>. The thread
+on C<p5p> is rather succinct. To get the full picture, you had to be
+following C<perl-qa>. Over there, Adam Kennedy noticed that the
+September 23 release of C<Test::Simple/More> broke
+C<Test::Builder::Tester> (that scraped STDERR to pick up the failure
+messages). Which in turn is used by about 26 other testing modules.
+So Adam asked Michael to back out the changes until C<T::B::T>
+could be updated.
+
+Given the number of fixes that went into that release, Michael quite
+naturally refused to back the changes out. The main problem is that
+people had ample time to try out the betas to see if the
+changes would cause problems. Unfortunately, Mark Fowler, author of
+C<T::B::T> was holed up in bed, nursing a ferocious cold.
+
+So the new release of C<Test::Simple> embraces and extends C<T::B::T>
+and includes it as its own, with the amended screen scraping in place.
+
+I believe that in times like these, one is supposed to say:
+
+  You are wicked and wrong to have broken inside and peeked at the
+  implementation and then relied upon it.
+
+In the meantime, imminent meltdown of the global infrastructure
+for testing Perl modules was averted.
+
+I suppose the moral of the story is that if you write a module that
+has a another module as a prerequisite, you should make sure you are
+aware of all changes made to the prerequisite, whether it be by
+watching new beta uploads (or writing a program to do the watching
+for you), or subscribing to the right mailing list or something
+else. Doubly so if you're walking around with a shot-gun in the
+lounge, or whatever the saying is. Nothing is ever carved in stone.
+
+  The thread on perl-qa
+  http://www.mail-archive.com/perl-qa@perl.org/msg04740.html 
+
+  Test/Simple/More/Builder is released
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00179.html
+
+=head2 In brief
+
+The Perl5 bug summary has 1512 open items
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00057.html
+
+Sébastien Aperghis-Tramoni asked for an addition to C<Devel::PPPort>,
+to make life easier for C<Net::Pcap>, for much the same thing that Ken
+Williams is already doing in F<Cwd.xs>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00090.html
+
+Paul D. Lalli found that:
+
+  my $i;
+  my @a = (1..10);
+  my $last = $#{@a};
+
+produced the message "Bizarre copy of ARRAY in leave". Then again, if
+I'm not mistaken, I think that code wants:
+
+  my $last = $#a;
+
+  Bug #37350
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00097.html
+
+H.Merijn Brand added C<-C> as an allowed flag to the C<PERL5OPT> environment
+variable. (Which you can use to set command-line switches for all invocations
+of perl, so one would hope that C<-u> is not allowed).
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00093.html
+
+Andy Lester checked in with some more C<const> work, and cleaned up C<printf>.
+Applied by H.Merijn.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00094.html
+
+Rajarshi Das patched utf8.c on EBCDIC platforms. Sadahiro Tomoyuki asked for
+regression tests, and provided four, two that currently fail and two that
+pass. Rajarshi's fix should ensure that all four pass. Rajarshi ran the tests
+and all passed.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00105.html
+
+Mohammad Yaseen asked about F<ext/B/t/optree_specials.t> when running on
+z/OS (an EBCDIC platform), and was Warnocked.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00107.html
+
+"jafoc" said (in #37355) that bad things happen when you try to run
+
+  perl -c -e 'my $xyz; undef xyz'
+
+on perl 5.6.1. Yves "demerphq" Orton replied that it was fixed in 5.8.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00108.html
+
+Following on from Michael Schwern's announcement of C<EU::MM> 6.30_01,
+Peter Prymmer came up with some patches for VMS:
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00118.html
+
+Tassilo von Parseval reported in #36875 (August 2005) that for perls
+between 5.5.4 (did he not mean 5.8.4?) and 5.9.3 that
+
+  perl -we 'print lc(undef)'
+
+would not emit a warning about uninitialised values. Steve Peters confirmed
+the bug, and had a preliminary patch beginning to take shape.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00125.html
+
+In #37384, Dan Dascalescu reported that
+
+  C<perl -we '$a=qr//; $b=qr//x; 1 =~ ($a|$b)'>
+
+fails with a 'Sequence (?}...) not recognized in regex'. Dave Mitchell
+pointed out that bitwise-oring two string is liable to make for a pretty
+odd regular expression...
+
+=head2 About this summary
+
+This summary was written by David Landgren.
+
+Information concerning bugs referenced in this summary (as #nnnnn)
+may be viewed at http://rt.perl.org/rt3/Ticket/Display.html?id=nnnnn
+
+Information concerning patches to maint or blead referenced in
+this summary (as #nnnnn) may be viewed at
+http://public.activestate.com/cgi-bin/perlbrowse?patch=nnnnn
+
+Weekly summaries are published on F<http://use.perl.org/> and posted
+on a mailing list, (subscription: F<perl5-summary-subscribe@perl.org>).
+The archive is at F<http://dev.perl.org/perl5/list-summaries/>.
+Corrections and comments are welcome.
+
+If you found this summary useful or enjoyable, please consider
+contributing to the Perl Foundation to help support the development
+of Perl.

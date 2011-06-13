@@ -1,0 +1,318 @@
+=head1 This Week on perl5-porters - 4-10 December 2006
+
+"This comment in F<mg.c> scares me: C</* Not sure why the av can get
+freed ahead of its sv, but somehow it does */>" -- Marc Lehmann,
+uncovering ancient evil.
+
+=head1 Topics of Interest
+
+=head2 madly duplicated files
+
+Dave Mitchell performed some stellar file refactoring to bring
+Misc Attribute Decoration under control. As a result, the only
+extra file is a two-liner F<madly.c> file.
+
+  preprocessor does the rest
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00094.html
+
+=head2 How to create a new Config setting?
+
+Steve Hay wanted to add a new Config variable to indicate that
+perl was simply capable of emulating a C<fork>. This would eliminate
+the need for some exceptionally hairy boolean logic that no-one gets
+right, and thus is subject to error.
+
+He knew how to create new entries in the C<win32> config files, but
+wasn't sure how to move on from there. H.Merijn Brand explained that
+the process was semi-automated, although he had spent time improving
+it recently so that less manual work was required.
+
+Craig Berry noted that it would be nice to set this up for VMS as
+well, since that platform lacks Unix-style C<fork> semantics, but he
+was happy to punt with an C<undef> for the time being.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00107.html
+
+=head2 Undo VOS breakage caused by change #28892
+
+There is an array of data that the regular expression engine uses,
+but if debugging is enabled, the core needs to know about it as
+well. And since a debugging build is the exception, and we don't
+want to bloat the core for no reason, the array is hosted
+either the extension or the core, depending on whether C<-DDEBUGGING>
+is defined.
+
+Paul Green discovered that a recent patch from Yves Orton failed
+to build on Stratus VOS, because the linker ended up failing to
+link the array to anything in a debugging build. Yves explained it
+all very well, so hopefully Paul will be able to concoct something
+that satisfies the VOS linker.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00115.html
+
+=head2 Latest Perl in Cygwin is 5.8.7
+
+Adriano Ferreira wondered why the latest available Perl for Cygwin
+was not 5.8.8. (hint: the current maintainer stepped down and
+asked for volunteers to take over. Does this sound familiar?)
+
+Slaven Rezic said that he had succeeded in building some of the
+trickier modules such as C<Tk>, and so he and H.Merijn Brand
+swapped notes.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00172.html
+
+In other Cygwin news, Jan Dubois tweaked F<Makefile.PL> to get it
+to compile F<Win32.xs>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00164.html
+
+=head2 Do we care about old C<dmake>s for building perl on Win32?
+
+Following on from Steve Hay's desire to drop old C<make> support
+on Win32, David Landgren asked whether it would be possible for an
+explanatory error message to be issued if an old C<dmake> was pressed
+into service, to give the luckless programmer a pointer to the
+documentation that tells them what to do.
+
+Steve tweaked the C<Makefile> and therefore showed that it was
+possible, except that the message doesn't explain what to do
+to fix the problem.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00173.html
+
+=head2 C<fields> pragma in blead prohibits reblessing
+
+Andreas König noticed that one can no longer bless a C<fields>
+object into another package (noticed by the fact that a CPAN
+module, C<Danga::Socket>, now fails its test suite).
+
+Dan Kogai, the module in question's author offered a workaround
+to repair the breakage, but remained puzzled as to why the
+error (C<Modification of a read-only value>) was occurring.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00185.html
+
+=head2 Deadlock in F<ext/threads/shared/t/cond.t> on bleadperl
+
+Jan Dubois saw regular deadlocks in a C<threads> test on Win32,
+and wondered if it was related to the hangs that Steve Hay
+sees in his test smokes. Steve Hay in turn thought that this
+particular problem started showing up around the time threads
+1.53 was released.
+
+Jerry D. Hedden thought that the problem is probably quite deep and
+has only come to light now that multi-CPU boxes are more common,
+and thus are really testing the threads implementation instead of
+just pretending. If fact, he figured out how the test was failing,
+but didn't know how to track down the culprit that would explain
+why.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00209.html
+
+=head2 Regexp test coverage teaser
+
+Nicholas had a long conversation with himself after looking at
+Sébastien Aperghis-Tramoni's coverage reports and noticing that
+only the UTF-8 variant of a section of code in the regexp engine
+was visited by the test suite.
+
+He wanted to find a non-UTF-8 pattern to shed light on the other
+side of the path. He managed to find one, but felt that the fact
+that it used C<re 'eval'> was cheating a bit. He then thought of
+a better way, but tripped over a bug in a C<study>'ed variable.
+
+Yves Orton said he'd take a look at things when he had some time.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00225.html
+
+=head1 Patches of Interest
+
+=head2 User pragmas now accessible from C<B>
+
+Joshua ben Jore taught the C<B> modules how to deal with user
+pragmas. Steve Hay and Yves Orton taught the patch to play nicely on
+Windows, and Rafaël Garcia-Suarez fixed up the tests.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00132.html
+
+=head2 C<Deparse.pm> gets confused by slices
+
+Bo Lindbergh produced a patch to stop C<Deparse.pm> getting confused
+between package and lexical variables when slices are involved.
+Nicholas Clark chided him for copying code, so Bo came back with a
+fully-refactored improvement that Rafaël applied.
+
+  New! Improved!
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00135.html
+
+=head1 New and old bugs from RT
+
+=head2 Perl coredumps on nested C<s///e> (#40274)
+
+Appears fixed in blead, probably when the regular expression engine
+went re-entrant.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00072.html
+
+=head2 perlio forgets buffering settings on EAGAIN (#41043)
+
+Marc Lehmann tracked down a problem concerning buffering in PerlIO.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00077.html
+
+=head2 C<bignum> returns NaN when raising integer value to negative power (#41050)
+
+E. Culver noted that if C<bignum> is in force, 10 ** -1 returns Nan
+(instead of 0.1).
+
+  brand new mathematics
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00126.html
+
+=head2 perldoc: deal with 2nd etc. arguments (#41054)
+
+Sean M. Burke asked if anyone wanted to take over the maintenance
+of C<perldoc>, since he no longer had the time to devote the
+attention it requires. Which is in fact not a whole lot.
+
+  Apply within
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00193.html
+
+=head2 Nested closures drop outer lexical scope (#41057)
+
+Marcus Holland-Moritz noted that a bug, as reported by
+Aaron D.Ball, is FIB.
+
+  Fixed In Blead
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00200.html
+
+=head2 make rebuilds perl every time (#41058)
+
+Marc Lehmann noted that C<gcc 4.1.2 20061115 (prerelease) (Debian 4.1.1-20)>
+would rebuild perl every time C<make> was run. Neither Andy Dougherty
+nor Rafaël were able to reproduce the problem.
+
+  works for me, alas
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00215.html
+
+=head2 weak references cause corruption, crashes etc. (#41061)
+
+Marc also noted that any time he tried to use weak references in
+any non-trivial program, it would crash in any number of different
+and entertaining ways. Try as he might he was not able to produce
+a small test case, but offered some suggestions as to where to look.
+
+  sort of like Switch.pm
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00216.html
+
+=head2 perl segfaults when C<map> arguments get freed (#41062)
+
+Marc filed a third report concerning C<map> that I was happy
+to report as FIBbed.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00222.html
+
+=head2 Perl5 Bug Summary
+
+A stasis, of sorts. Still stuck at 1501 open tickets.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00087.html
+  http://rt.perl.org/rt3/NoAuth/perl5/Overview.html
+
+=head1 New Core Modules
+
+=over 4
+
+=item *
+
+C<Test::Simple/More/Builder/Builder::Tester> version 0.66 escaped
+from the Schwerniverse.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00070.html
+
+=back
+
+=head1 In Brief
+
+B<Time::HiRes is happy> again. One has to tread lightly on XS code
+that is still able to run on 5.004.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00100.html
+
+A truly satisfactory approach to B<install missing
+C<Compress/IO/{Base,Zlib}>> has not been found, but the current
+solution is good enough.
+
+  something special
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00091.html
+
+Robin Barker explained precisely why B<integer exponentiation may
+return a floating point result>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00192.html
+
+Adriano Ferreira had B<a problem with C<@{%hash}{@idx}>>, since C<%hash>
+is now evaluated in scalar context for a slice. The construct was always
+iffy at best, now it is an error.
+
+  less deviance
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00075.html
+
+Yitzchak Scott-Thoennes ensured that B<C<-DDEBUGGING=both> sets C<-g>>,
+because it would be a pity if it didn't.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00076.html
+
+Jim Cromie took a stab at B<refactoring F<dump.c> to remove some
+cut-and-paste code> and asked for some XS mavens to make sure he
+hadn't made any drastic mistakes.
+
+  Warnocked
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00166.html
+
+Yves supplied B<a few more tweaks> to make it easier to B<create
+regexp engine plug-ins>, which were applied, with a few tweaks.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00119.html
+
+Jerry D. Hedden realised that B<C<Perl_save_destructor> is not a mathom>,
+since it is required by C<Opcode>. Rafael unmathomised it.
+
+  Back from the cemetary
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00158.html
+
+Jan Dubois moved some files around between F<win32/ext/Win32> and
+F<ext/Win32>, which made sense, but had some surprising cascade
+effects.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00165.html
+
+Andy Lester forwarded a message containing information about
+B<the Klocwork analysis of Perl>, but Jonathan Rockway pointed out
+that a password is needed to pass the gate.
+
+  Let me in
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00204.html
+
+John E. Malmberg issued an extensive followup to Craig A. Berry's
+remakes on the patch to provide B<VMS xterm support for the debugger>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00206.html
+
+Ilya Zakharevich delivered the missing link for B<building perl on OS/2>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-12/msg00223.html
+
+=head2 About this summary
+
+This summary was written by David Landgren. Sorry about being later
+than usual. Too many end of year parties, and I'd sooner drink wine
+and scoff oysters than write summaries.
+
+Weekly summaries are published on F<http://use.perl.org/> and posted
+on a mailing list, (subscription: F<perl5-summary-subscribe@perl.org>).
+The archive is at F<http://dev.perl.org/perl5/list-summaries/>.
+Corrections and comments are welcome.
+
+If you found this summary useful, please consider contributing to
+the Perl Foundation to help support the development of Perl.

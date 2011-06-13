@@ -1,0 +1,89 @@
+=head1 This Week on perl5-porters (18-24 August 2003)
+
+The Perl 5 porters are rather focused on perl 5.8.1 tuning and
+adjustments. Smokes, valgrind checks, modules updates, and regression bug
+hunting were among the main events of the week.
+
+=head2 DESTROYing blessed code refs
+
+Last year, Simon Cozens found that blessed code references weren't
+DESTROYed properly (bug #10030).  Dave Mitchell looked at it, and
+diagnosed that it's caused by the fact that the blessed anonymous
+subroutine is not a closure (usually) -- and indeed, turning it into a
+closure fixes the behaviour of the destructor. Dave thinks that this bug
+would be inefficient to fix, and suggests to document it as a misfeature.
+
+Later in the thread, the proper meaning of the I<closure> word is discussed.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01300.html
+
+=head2 More valgrinding
+
+Last week, Jarkko Hietaniemi added to the test harness the possibility to
+run the test suite under valgrind. This week, helped by Marcus
+Holland-Moritz and other members of the crowd, he slightly tweaked
+valgrind's setup to produce more useful and accurate reports. Some
+interesting bugs are shaked out.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01455.html
+
+=head2 Localization of C<$|>
+
+Stas Bekman found a new bug in the localization of the C<$|> variable.
+This bug wasn't present in perl 5.8.0, and causes significant problems
+with mod_perl 2. Dave Mitchell identified himself as the guilty patcher,
+explained the problem, and provided a better version of his original
+patch.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01438.html
+
+=head2 In Brief
+
+Jari Aalto wishes that here-documents could be declared with the quote
+operators syntax, as in : C<< <<q(FOO) >>, C<< <<qq(BAR) >>, etc. (bug
+#23348). This doesn't seem to be unreasonable.
+
+Tassilo von Parseval added to Devel::PPPort, the backward compatibility
+wrapper for XS code, some adapters for the C<grok_*> functions, that
+convert strings to numbers. (See a recent F<perlapi> manpage for the
+description of those functions.)
+
+Enache Adrian fixed the handling of utf-8 strings in error messages.
+
+Richard Dawe provided a portability patch for perl 5.6.2 on DJGPP. Philip
+Newton is testing perl 5.8.1 on DJGPP as well.
+
+Michael G Schwern cleaned up a bit Pod::Html.
+
+=head2 Smoke news
+
+Alain (alian) Barbet was busy on the portability front. He found out that
+some pack() tests fails on NetBSD/sparc, compiled with gcc 2.x. This is
+apparently due (after investigating with Nicholas Clark) to a bug in
+C<**>. (bug #23463).
+
+Alain also released a new version of his Test-Smoke-Database distribution
+on CPAN, a software that presents and summarizes smoke results via a web
+interface.
+
+Abigail started to produce smoke results for perl 5.6.2. One of the tests
+for int() fails when perl 5.6.2 is compiled with 64 bit arithmetic, due to
+a transitional known bug in his version of glibc. (A workaround for
+this bug was put in perl 5.8.0.)
+
+=head2 Module news
+
+Dan Kogai released Encode 1.98. Michael Schwern released
+ExtUtils::MakeMaker 6.16. And I see on CPAN that CGI.pm 3.00 is out.
+
+Moreover, Ken Williams proposed to backport Cwd to CPAN, with the recent
+tainting fixes in it.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01422.html
+
+=head2 About this summary
+
+This week's summary was written by Rafael Garcia-Suarez. Summaries are
+published weekly on F<http://use.perl.org/> and on a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. Comments and
+corrections are welcome.

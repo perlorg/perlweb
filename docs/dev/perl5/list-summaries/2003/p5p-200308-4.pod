@@ -1,0 +1,112 @@
+=head1 This Week on perl5-porters (25-31 August 2003)
+
+  Perl gait and post rate,
+  The summarizer watches.
+  Read it all below.
+
+=head2 Cwd, XSLoader, CPAN
+
+Ken Williams, who is going to release the Cwd module on CPAN, wants to
+backport it to perl 5.005. However, this involves replacing XSLoader,
+that it uses, by the older DynaLoader -- or, to use a backward
+compatible boilerplate -- or, ultimately, to release on CPAN XSLoader
+itself, as Michael Schwern suggested.
+
+In fact, Michael even provided a small tarball of XSLoader, repackaged for
+CPAN. He also wrote tests for it and cleaned it up a bit.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01980.html
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01991.html
+
+=head2 base.pm
+
+While we're at it : Randal L. Schwartz reported that the version of the
+C<base> module on CPAN (in the Class-Fields distribution) was higher than
+the one currently included in perl 5.8.1.
+
+Michael Schwern says that a backport of C<base> and C<fields> must remain
+on CPAN. It's important to note that the CPAN and core versions of those
+modules are functionally equivalent, their only difference being purely
+internal. He added that Class::Field is a failure and should be left dying
+slowly. Nevertheless, he separated the CPAN version of C<base> and
+C<fields> from Class::Fields, which is going to CPAN as C<base-2.0>. He
+also mentions that he's bored with those modules and I<would welcome
+someone to take over the CPAN version>.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01816.html
+
+=head2 C<next $label>
+
+Mark-Jason Dominus wishes (bug #23614) that C<next> could support dynamic
+labels, specified via a variable. (C<goto> supports this.) Enache Adrian
+remarks that this isn't probably worth the performance penalty. Schwern
+quotes Larry.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01890.html
+
+=head2 Spambench
+
+Nicholas Clark posted the code of C<spambench>, a simple script aimed at
+benchmarking a perl interpreter against SpamAssassin and a known email
+corpus.
+
+His results so far : copy-on-write doesn't seem to make a difference in
+speed (perhaps in memory usage ? there aren't memory statistics), and a
+perl interpreter compiled with ithread support is slower by 4/5%.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01723.html
+
+=head2 Parsing pod fast
+
+Mark-Jason Dominus proposed a patch to improve the performance of
+Pod::Parser. However, Marek Rouchal (who maintains Pod::Parser) rejected
+it, for reasons pertaining to the correctness of the algorithm : he wants
+the parse tree to contain no empty nodes and no consecutive text nodes.
+Marek also says that Pod::Simple is nowadays considered a better
+alternative to write pod parsers backends.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01586.html
+
+=head2 tell() in append mode
+
+Martyn Pearce reports bug #23645 : tell() returns 0 after having opened a
+file in append mode with perl 5.8.x ; but perl 5.6.x returns the real file
+position. Andreas Koenig finds that the patch that changed the behaviour
+of tell() is a patch to the Linux compilation hints file, and indeed the
+bug disappears if perl is configured with C<-Dd_stdstdio=define>. Jarkko
+commited a fix, but labels it as I<probably wrong>.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01972.html
+
+=head2 In Brief
+
+Tim Jenness released File::Temp 0.14 (last week, in fact).
+
+Lukas Mai reported that the prototypes for shift() and pop() should be
+C<;\@> instead of C<\@>. Rafael fixed this, and added a regression test
+for the prototypes of built-ins. (bug #23572.)
+
+David Coppit reported (bug #23578) that the C<delete_package()> function
+provided by the Symbol module is sometimes so zealous that the deleted
+package can't be reloaded efficiently. Rafael explained this (and why it
+won't probably be fixed in a near future.)
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01787.html
+
+Nicholas Clark filed a couple of bugs that were uncovered by valgrind
+(#23753, #23576). One of them involves matching something against a
+regular expression, and then introducing C<$&> at run-time via an
+C<eval('')>.
+
+Tassilo von Parseval found a strange bug involving the scoping of @- and
+@+, used in a tied hash, accessed from the right-hand side of a
+substitution (bug #23624). But the workaround is even stranger.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01937.html
+
+=head2 About this summary
+
+This week's summary was written by Rafael Garcia-Suarez. Summaries are
+published weekly on F<http://use.perl.org/> and on a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. Comments and
+corrections are welcome. Yes I know, I'm not good at haikus.

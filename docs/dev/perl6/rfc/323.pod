@@ -1,0 +1,78 @@
+=head1 TITLE
+
+Perl's embedding API should be simple
+
+=head1 VERSION
+
+  Maintainer: Simon Cozens <simon@brecon.co.uk>
+  Date: 26 Sep 2000
+  Mailing List: perl6-internals@perl.org
+  Number: 323
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+Perl should be embeddable, and we should make it easy for people to
+embed it by making the API as simple as possible.
+
+=head1 DESCRIPTION
+
+Perl 5's embedding capabilities are neat, but a little unwieldy. We can
+make things easier by providing an embedding library which has the
+following functions: (A [probably very buggy] Perl 5 implementation is
+also shown)
+
+    PerlInterpreter Perl_init() {
+        PerlInterpreter my_perl;
+        char *embedding[] = { "", "-e", "0" };
+
+        if(!my_perl = perl_alloc())
+            return NULL;
+        
+        if (!perl_construct( my_perl ))
+            return NULL;
+
+        perl_parse(my_perl, NULL, 3, embedding, NULL);
+        perl_run(my_perl);
+        return my_perl;
+    }
+
+    void Perl_shutdown(PerlInterpreter my_perl) {
+        perl_destruct(my_perl);
+        perl_free(my_perl);
+    }
+                           
+    I32 Perl_eval(char* string) {
+        (void)eval_pv(string, 0);       
+        return (SvTRUE(ERRSV));
+    }
+
+    U8*  Perl_string_get(char* variable, STRLEN* len) {
+        return SvPV(get_sv(variable, FALSE, len);
+    }
+    void Perl_string_set(char* variable, U8* replacement, STRLEN len) {
+        Perl_sv_setpvn(get_sv(variable, TRUE), replacement, len);
+    }
+
+    I32  Perl_int_get(char* variable) {
+        return SvIV(get_sv(variable, FALSE)); 
+    }
+    void Perl_int_set(char* variable, I32 x) { 
+        sv_setiv(get_sv(variable,TRUE), x); 
+    }
+
+    /* Perl_float_get and _set are left to the imagination */
+
+    /* match(), substitute() and matches() from perlembed.pod */
+
+[ This RFC should probably be extended to stipulate XS callbacks, but we
+don't know what XS looks like right now ]
+    
+=head1 IMPLEMENTATION
+
+As above.
+
+=head1 REFERENCES
+
+perlembed.pod

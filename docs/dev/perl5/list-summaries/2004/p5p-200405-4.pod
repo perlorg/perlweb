@@ -1,0 +1,101 @@
+=head1 This Week on perl5-porters (24-30 May 2004)
+
+This week, you'll read in this summary more about the uninitialized
+warning plans for 5.8.($n+1), some XS tricks, intriguing bugs, and the
+different types of UIDs.
+
+=head2 Uninitialized warnings in maint
+
+Nicholas Clark thinks about a way to backport in maintperl the enhanced
+bleadperl warning, I<Use of uninitialized value $foo at...>. However,
+they're not 'stable' enough to be enable the extra information by default.
+He lists a couple of solutions (add a class of warnings, or a new pragma,
+or a global flag.) Rafael favors a global flag, for example a
+(version-specific) PERL_5_10_ISH environment variable, while Nicholas
+envisions some idiom C<use more 'future'>.
+
+    http://groups.google.com/groups?selm=20040524161941.GG1383%40plum.flirble.org
+
+=head2 Undefined scalars in XS code
+
+Stas Bekman asks about a wrong XS idiom, namely testing the definedness of
+an SV by comparing its address with C<&PL_sv_undef>; this works when the
+undef() literal value is passed to the XS code, but not when a random
+undefined scalar is used. Gisle Aas points out that SvOK() should be used
+instead; Stas produces a documentation patch.
+
+    http://groups.google.com/groups?selm=40B59C7E.6090902%40stason.org
+
+=head2 FileCache problems
+
+Alan Burlison finds that C<FileCache> (a little-known core module, meant
+to cache a large number of open filehandles) resets some signal handlers
+when reopening some files which have been closed in the mean time (to
+avoid exceeding the limit on the allowed amount of filehandles on the
+system.) Jerrad Pierce answers that this is by design, for the case the
+filehandle to be reopened is a pipe to a command. Alan disagrees with this
+approach (and finds that using C<FileCache> with a pipe is a weird idea
+anyway) and suggests to remove the %SIG assignments.
+
+    http://groups.google.com/groups?selm=40B1D409.9090109%40sun.com
+
+=head2 More UTF-8 vs taint
+
+Stas Bekman filed bug #29841, about utf8::decode() not working under
+C<-T>. Dave Mitchell diagnoses the symptoms, but doesn't know what is the
+right fix.
+
+    http://groups.google.com/groups?selm=rt-3.0.9-29841-88083.1.56655856690257%40perl.org
+
+=head2 UIDs and GIDs
+
+Paul Fenwick announces that he's working on a module (C<Proc::UID>) to
+manipulate Unix user ids: the famous real and effective UIDs, which have
+their own Perl variable counterparts, as well as the saved UID and the
+filesystem UID. But since perl caches the results of getuid()/getgid() in
+internal interpreter variables, the contents of the perl variables $<, $>,
+$( and $) cannot be always believed (they might have been set via an XS
+module). Thus Paul asks whether this cache is really a wise
+implementation.
+
+    http://groups.google.com/groups?selm=40B402C7.8060209%40perltraining.com.au
+
+Paul also wonders why saved UIDs aren't accessible natively from perl like
+real and effective UIDs. Rafael gives some ideas about adding an API for
+them.
+
+    http://groups.google.com/groups?selm=40B815C7.3050104%40perltraining.com.au
+
+=head2 In Brief
+
+Nicholas released a maintenance snapshot of perl 5.8.x, and adds: I<The
+plan is for 5.8.5 code freeze at midnight (GMT) on 30th June, with RC1
+soon after.>
+
+    http://groups.google.com/groups?selm=20040530225534.GN1147%40plum.flirble.org
+
+Sam Vilain finds a macro in the glibc (makedev()) that isn't correctly
+processed by h2xs (bug #29969). This was fixed by Wolfgang Laun.
+
+Lionel Cons finds an incompatibility between the innards of C<Carp> and
+the C<Safe> module (bug #29851). Rafael proposed a patch.
+
+Andy Lauder reported that in some cases, perl seems to perform a seek()
+before a close() (bug #29883). This is in fact a behaviour of Solaris that
+is reproducible with a C program, so perl isn't at fault; Alan Burlison
+gives a rule of thumb: I<you shouldn't use exit() in a child process that
+doesn't exec(), you should use _exit().>
+
+Using C<threads::shared> prevents the profiler C<Devel::DProf> from
+working (bug #29939).
+
+The C<autouse> bug (#29708) reported last week was fixed by Dave Mitchell.
+
+C<Encode> 2.01 was released.
+
+=head2 About this summary
+
+This summary was written by Rafael Garcia-Suarez. Weekly summaries are
+published on F<http://use.perl.org/> and posted on a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. Comments and
+corrections welcome.

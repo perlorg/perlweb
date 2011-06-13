@@ -1,0 +1,232 @@
+=head1 Perl 6 Summary for 2004-12-20 through 2005-01-03
+
+All~
+
+Welcome to a New Year of Perl 6 Summaries.  I have been doing bi-weekly summaries over the holiday season, but I plan on returning to weekly ones now.  Hopefully "World of Warcraft" won't prevent me, we shall see, but if anyone starts a perl guild drop me a line ;-)
+
+=head2 Perl 6 Language
+
+=head3 Perl IDE
+
+matisse wondered if an IDE for Perl would be possible given its dynamic nature.  The conses arrived at last time was that an IDE that worked for "nice" code would be possible, but a fully general one would be extremely difficult and quite possibly impossible.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/d31481c114e88a11/d0f04d9a743aa82f?_done=%2Fgroup%2Fperl.perl6.language%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#d0f04d9a743aa82f>
+
+
+
+=head3 Premature Optimization
+
+jona...  has a rant about low level data types and premature optimizations.  So google tells me, but I can't find it in my gmail account...  Perhaps he posted directly to google continuation enhanced arcs.  I wish people would not do that....
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/6b65058e24a8ade6/22c37bb71487eedd?_done=%2Fgroup%2Fperl.perl6.language%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#22c37bb71487eedd>
+
+
+
+=head3 strictness of fully qualified globals
+
+Alexey Trofimenko wanted to know if Perl 6 would have a way to catch mistakes like C< $OtherPackage::NmaeWithTypo > when using strict.  The thread seemed to wander off without answering his question...  Although it did note that perhaps C< OtherPackage::$NmaeWithTypo > would make more sense.
+
+L<http://groups-beta.google.com/group/perl.perl6.language/browse_frm/thread/412763eaeaf1bdc1/564a42de31ffddf5?_done=%2Fgroup%2Fperl.perl6.language%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#564a42de31ffddf5>
+
+
+
+=head2 Perl 6 Compiler
+
+=head3 using ASCII 0 as a terminating character
+
+Nicholas Clark pointed out that Perl 5 allows '\0' to be used as a quoting character for C< q{} >.  He felt that this was useful and should be kept in Perl 6.  Patrick agreed.
+
+L<http://groups-beta.google.com/group/perl.perl6.compiler/browse_frm/thread/14f0b29da5bceea4/28126089cb1f7921?_done=%2Fgroup%2Fperl.perl6.compiler%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#28126089cb1f7921>
+
+
+
+=head2 Parrot
+
+=head3 P5 was the new P2
+
+Last time, I reported that Sam and Leo wanted to pass P5 in  P2 as well.  Sam reported later that he was no longer confident in this idea.  I guess I should de-nudge Dan....
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/5221412d6ef39e17/e49a3e8b266c5ef1?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#e49a3e8b266c5ef1>
+
+
+
+=head3 warning in pybuiltin.pmc
+
+Simon Glover submitted a patch to fix it, but Warnock applies.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/f870d153b37e6a83/9465ae0f123bac1d?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#9465ae0f123bac1d>
+
+
+
+=head3 POD cleanup
+
+chromatic applied his previously threatened patch with a polite thanks to himself.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/34a7b8bc69c0da2f/9cb5da1f413fd9fb?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#9cb5da1f413fd9fb>
+
+
+
+=head3 reading past EOF in PIR
+
+Matt Diephouse noted that the error from reading past the EOF in PIR was not really informative.  Patches welcome.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/4c9d3f29c7ed75c8/2a53b621d39b1a7a?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#2a53b621d39b1a7a>
+
+
+
+=head3 Missing examples in PDD16
+
+Simon Glover noticed a section in PDD16 that just stops midsentence.  He suggested that it be either finished or the section removed.  No answer...
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/a65836fd753a6372/05cbfef6ae1bcae7?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#05cbfef6ae1bcae7>
+
+
+
+=head3 MMD and VTABLE_find
+
+Leo and Sam continued their discussion of how to implement MMD.  The conversations stopped, but I am not sure that it progressed.  Perhaps some guidance would be helpful...
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/e169f5cdf871ab52/1723230e7dcbc8ac?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#1723230e7dcbc8ac>
+
+
+
+=head3 PyCon discussions
+
+A.M. Kuchling noted that PyCon is scheduled for March 23-25 in DC.  Many folk will be there including the authors of IronPython and Jython.  The deadline for submissions was the Dec 31, but that does not mean that people cannot attend, learn a whole bunch, and take over the world.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/2f21470a1f18f0cd/1e13dd26f1ad84a4?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#1e13dd26f1ad84a4>
+
+
+
+=head3 Dynclasses Broken build
+
+Will noted that dynclasses/*py* broke the build.  Sam fixed it with alacrity.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/1a29cd019f796125/68a0c8fb839fc416?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#68a0c8fb839fc416>
+
+
+
+=head3 mod_parrot
+
+Adrian Lambeck provided a patch to get mod_parrot working with parrot-0.1.1.  Nicholas Clark applied it.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/dbfdc0ebdeb2d683/972440f555838890?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#972440f555838890>
+
+
+
+=head3 missing "make test" dependencies
+
+Will Coleda noted some problems with running "make test" with first running "make".  Sam fixed them, but could not close the RT tickets...
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/8e57b3fb36187350/bd3af4b7537bab01?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#bd3af4b7537bab01>
+
+
+
+=head3 split on RegExp
+
+Will Colleda gave Patrick a friend nudge about split.  Patrick noted the nudge.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/2d15db57f8250624/4cf8179d51c7f22d?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#4cf8179d51c7f22d>
+
+
+
+=head3 --no-lines and --help for ops2*.pl
+
+Bernhard Schmalhofer added support for the above mentioned flags to ops2c.pl and ops2pm.pl.  Leo applied it.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/0892791dd7fe1703/480d44f85bbf2eb5?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#480d44f85bbf2eb5>
+
+
+
+=head3 StringArray--
+
+Prompted by a question from Simon Glover, Leo deprecated StringArray.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/d9c0165575d13980/fca0540ca26ae9ad?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#fca0540ca26ae9ad>
+
+
+
+=head3 ponie on x86 solaris
+
+Andy Bach noticed some problems with ponie on x86 solaris.  Leo and Nicholas Clark helped him get the failing ponie slightly farther before failing.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/9500522899e1947b/e3713a57431f8542?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#e3713a57431f8542>
+
+
+
+=head3 Win32 dynclass issues
+
+Jonathan Worthington bravely set out to fix dynclass pains in Win32.  With the help of Leo and Nicholas Clark, he is making progress.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/f42230d3ef65a2cf/9bfed85b4ec08978?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#9bfed85b4ec08978>
+
+
+
+=head3 Undef != Undef
+
+Simon Glover noted that this oddity was causing unexpected results.  This led to some scrutiny of the Fixed vs Resizable arrays.  The conses is that the core PMCs need their exact semantics specified and then implemented.  As oposed to the current approach of letting the implementation be the specification...
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/be20bf0fff3e446a/a4dc50633121edc2?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#a4dc50633121edc2> -- Undef != Undef
+
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/8d8dec6957d1f4f2/fcbad0b940f992b3?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#fcbad0b940f992b3> -- Hash PMC needs it too
+
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/f7fa725341795347/95acf4665b1afa80?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#95acf4665b1afa80> -- more ResizablePMCArray problems.
+
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/94e5ff9b3da25c2e/5d30024e017a47a2?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#5d30024e017a47a2> -- garbage values in Fixed*Arrays
+
+
+
+=head3 deleting keys from an OrderedHash
+
+Simon Glover noticed that it hurt when he did this.  Leo told him not to do that.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/ff59aec4cc18951e/3e48bc396d77c207?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#3e48bc396d77c207>
+
+
+
+=head3 native structures for parrot
+
+Graciliano M. P. explained that he wanted native datatypes in Parrot so he could make optimizations where approriate.  Leo, Luke, and Bernhard all explained that it could be done.  Bernhard Schmalhofer even went on to ponder Piddles in Parrot.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/46014b8262325b39/670f83654a6ce35d?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#670f83654a6ce35d>
+
+
+L<http://pdl.perl.org/>
+
+=head3 Parrot bench's working directory
+
+Matt Diephouse wondered if he should make parrot bench be run from the root directory instead of its sub dir.  Joshua Gatcomb indicated that he should.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/f5588d05975d9776/d42aa307614903cc?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#d42aa307614903cc>
+
+
+
+=head3 VTABLE_call_method
+
+Sam Ruby solicited input on adding a new VTABLE_call_method slot.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/8aae892b30afa338/c3fff57978e5b337?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#c3fff57978e5b337>
+
+
+
+=head3 pop_pad
+
+Peter Christopher wondered why pop_pad had yet to be implemented.
+
+L<http://groups-beta.google.com/group/perl.perl6.internals/browse_frm/thread/98354eb8d0d4ad70/a3bc102e7f5d5d54?_done=%2Fgroup%2Fperl.perl6.internals%3F&_doneTitle=Back+to+topics&_doneTitle=Back&&d#a3bc102e7f5d5d54>
+
+
+
+
+=head2 The usual footer
+
+If you find these summaries useful or enjoyable, please consider
+contributing to the Perl Foundation to help support the development of
+Perl. You might also like to send feedback to ubermatt@gmail.com
+
+L<http://donate.perl-foundation.org/> -- The Perl Foundation
+L<http://dev.perl.org/perl6/> -- Perl 6 Development site
+L<http://planet.parrotcode.org/> -- Parrot Blog aggregator

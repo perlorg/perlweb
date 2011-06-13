@@ -1,0 +1,93 @@
+=head1 This Week on perl5-porters (24-30 November 2003)
+
+A quiet week for the Perl 5 porters, but some threads are worth noting.
+Notably, I have now a reason to mention Leon Brocard in the summary
+without appealing to any running joke.
+
+=head2 New Pumpking crowned
+
+Leon Brocard is now the pumpking for the 5.005xx maintainance branch of
+perl. The plan for 5.00504 is roughly the same than the plan for 5.6.2 :
+build fixes for new platforms.
+
+    http://groups.google.com/groups?threadm=20031126145110.GA28063%40perlsupport.com
+
+=head2 sprintf and long doubles
+
+Ilya Zakharevich's patch to speed up C<sprintf()> with floating point
+values and a fixed number of digits was found to cause a different
+result than perl's regular C<sprintf()> with a perl configured with long
+doubles. Rafael disabled part of the optimization in this case.
+
+    http://groups.google.com/groups?threadm=20031124070834.GA1658%40ratsnest.hole
+
+=head2 DynaLoader and PAR
+
+Edward S. Peschko proposed a patch to C<DynaLoader> to store the names of
+the shared object files loaded by perl. As he says, it's I<intended for
+use with PAR (for run time detection of shared objects rather than compile
+time analysis)>.
+
+Rafael points out a little problem -- the array storing file names should
+be C<:shared> among threads -- an another one, due to the fact that the
+shared object files loaded via C<XSLoader> aren't recorded here either.
+Nick Ing-Simmons gives an alternative way to get the file names from the
+module names given in C<@DynaLoader::dl_modules>.
+
+    http://groups.google.com/groups?threadm=20031125041718.GB15868%40mdssdev05.comp.pge.com
+
+=head2 Exporter::import
+
+A patch by Fergal Daly to implement
+
+    use Exporter ´import';
+
+was applied ; this allows a package to get Exporter's import() method
+without all the fuss of inheriting from Exporter.
+
+=head2 Clarifications about closures
+
+Glenn Linderman asked some questions about lexical variables, pragmas,
+eval() and closures. Dave Mitchell, while noting that the current
+documentation needs to be completed, provided some insight.
+
+    http://groups.google.com/groups?threadm=3FC3D338.606%40nevcal.com
+
+=head2 In Brief
+
+Mike Pomraning proposed a patch to add a new, optional second parameter to
+C<threads::shared::cond_wait()>, to be used as a separate lock variable.
+
+    http://groups.google.com/groups?threadm=Pine.LNX.4.58.0311232311320.5397%40localhost.localdomain
+
+Shlomi Fish finds that perl's core documentation is of poor quality,
+compared to the online documentation for other languages. He wants to
+start a project to improve them. This starts a long thread, probably due
+to the irritating manner he sometimes has to state things.
+
+    http://groups.google.com/groups?threadm=Pine.LNX.4.56.0311271106250.29160%40vipe.technion.ac.il
+
+Test::Harness 2.38 was integrated in bleadperl. It provides a new
+standalone C<prove> utility, to run tests against Test::Harness.
+
+    http://search.cpan.org/~petdance/Test-Harness-2.38/bin/prove
+
+Just in time for the summary, Nicholas Clark released a snapshot of
+maintperl, Sunday at 23:59 +0000.
+
+    http://groups.google.com/groups?threadm=20031130235945.GB23801%40plum.flirble.org
+
+POSIX::isalpha(undef) (and the other isXXX() functions) segfault, as of
+perl 5.8.2 (bug #24554). Sadahiro Tomoyuki provided a fix.
+
+=head2 Christmas in advance for the bug admins
+
+Thanks to Robert Spier, perlbug has been updated to the latest version of
+Request Tracker, RT 3.
+
+=head2 About this summary
+
+This summary was brought to you by Rafael Garcia-Suarez. Weekly summaries
+are available on L<http://use.perl.org/> and via a mailing list, which
+subscription address is L<perl5-summary-subscribe@perl.org>. Feedback (and
+patches) welcome.

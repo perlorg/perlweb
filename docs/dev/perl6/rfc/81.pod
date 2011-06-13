@@ -1,0 +1,383 @@
+=head1 TITLE
+
+Lazily evaluated list generation functions
+
+=head1 VERSION
+
+  Maintainer: Jeremy Howard <j@howard.fm>
+  Date: 10 Aug 2000
+  Last Modified: 22 Sep 2000
+  Mailing List: perl6-language-data@perl.org
+  Number: 81
+  Version: 4
+  Status: Frozen
+
+=head1 DISCUSSION
+
+Not surprisingly, the controversial point of discussion for this RFC
+was about viability and efficiency of implementation. These points were
+more about the use of lazy evaluation in general, rather than generated
+lists in particular. The viability of lazy evaluation has been proven
+in other languages (both functional and procedural). The efficiency of
+generated lists will obviously depend on the implementation, but this
+RFC suggests some obvious optimisations for frequently used constructs
+(e.g. stepped slices).
+
+The second major point of discussion was around syntax. Other languages
+that provide list comprehension do so with quite different syntax (for
+example, Haskell and Python v2). However, the syntax is these languages in
+not at all Perlish. The proposed syntax incorporates Perl 5 syntax and
+extends it using minimal additional notation.
+
+=head1 ABSTRACT
+
+This RFC proposes that the existing C<..> operator produce a lazily
+evaluated list. In addition, a new operation C<:> is proposed that allows
+for the generation of lazily evaluated lists based on any Perl expression.
+
+This proposal only discusses these operators in a list context. The
+current meaning of '..' in a scalar context is not affected.
+
+=head1 CHANGES
+
+=head2 Since v3
+
+=over 4
+
+Clarified how introspection of list generation parameters would work for
+anonymously concatenated lists, and other more complex structures
+
+=back
+
+=head2 Since v2
+
+=over 4
+
+=item *
+
+Clarified the order of arguments passed to the list generation function
+
+=item *
+
+Made ':' an alias for '..'
+
+=back
+
+=head2 Since v1
+
+=over 4
+
+=item *
+
+Changed notation to generate lists using previous element value from
+I<(@start:&gen:$num_steps)> to I<(@start..&gen:$num_steps)>
+
+=item *
+
+Made I<(@start:&gen:$num_steps)> create a list that does not require
+intermediate values to be calculated
+
+=back
+
+=head1 DESCRIPTION
+
+This RFC proposes that Perl incorporate a broader tool box of list
+generation techniques:
+
+=over 8
+
+=item *
+
+Lazy evaluation of generated lists
+
+=item *
+
+Generation of arbitrary lists from a function
+
+=back
+
+These techniques would allow programs written in Perl to follow a
+structure familiar to programmers used to numerical programming
+environments. It would provide a more compact notation for many common
+mathematical algorithms, and give Perl important information to make key
+optimisations.
+
+=head2 Lazy evaluation of generated lists
+
+The C<..> of previous Perls is a I<list generation operator>, which
+creates a list based on its parameters:
+
+  ($start..$stop); # ($start, $start+inc, $start+2*inc, ... $stop)
+
+where 'inc' is 1 if $start<$stop, or -1 otherwise. The list is generated
+as soon as it is declared. These makes some code rather inefficient:
+
+  @a = (1..1000000);   # One million element list generated here
+  print $a[999999];
+
+creates a one million element list despite only using one element of it.
+Under I<lazy evaluation>, elements of the list are only created when they
+are required, and saved for later use. In the previous example only
+$a[999999] would be calculated by interpolation (not sequentially) and
+stored when using lazy evaluation.
+
+Lists, whether generated lazily or not, are assumed to be I<stable>. That
+is, the value of $a[999999] will be the same everywhere in a program,
+unless @a itself is modified. This means that lazily evaluated lists
+provide a handy notation for memoization, as we will see later. It is
+proposed that once an element has been calculated in a list, that it is
+cached for use later rather than recalculated each time.
+
+Lazy list elements get calculated when they are output, or used in an
+expression that is output. If list elements are not output then they are
+never calculated.
+
+=head2 Introduction of C<:> to generate arbitrary lists
+
+It is proposed that a new operator be added to Perl's list generation
+arsenal, C<:>. The ':' character is chosen because it reflects standard
+notation for array slicing, which is an important use of this operator.
+
+C<:> is only meaningful when called in a list context, generating a lazily
+evaluated list in one of 3 ways.
+
+=over 4
+
+=item 1. I<($start..$end:$step)>
+
+Although earlier Perls could create ascending and descending lists
+incrementing by one, other increments required an unwieldy map:
+
+  @threes = map {3*$_} (1..5);   # (3,6,9,12,15)
+
+which was also less than intuitive to those used to the simple slicing
+notation of numerical programming languages such as Matlab and IDL.
+
+This proposed use of C<:> is identical to C<..> without C<:>, except that
+it increments by $step rather than 1. Specifically, returns a list
+($start, $start+$step, $start+2*$step, ... $end). If $step does not go
+into ($end-$start) exactly, the last element of the list is the largest
+number in the series less than or equal to $end.
+
+$step is any non-zero number (not necessarily an integer). $step is
+optional--if it's missing then $step is the same as if the C<:> wasn't
+there at all. For example:
+
+  (1..5:2);   # (1,3,5)
+  (1..5:);    # Same as (1..5)
+  (1..-5:-2);  # (1,-1,-3,-5)
+  (1..5:-2);  # () Empty list
+
+This slicing notation is particularly useful for dealing with arrays,
+matrices, and tensors:
+
+  @matrix = (1,3,4,
+             2,6,7);
+  @column1of3 = (1..10000:3);   # (1,4,7,...10000)
+  print sum(@matrix[@column1of3]);          # Prints 3
+  @matrix2 = readBig3ColumnMatrixFromSomewhere();
+  $column1Sum = sum(@matrix2[@column1of3]); # No need to redefine our slice!
+
+Note that more complex slicing, masking, and indirection across
+n-dimensional tensors would make the win of not having to respecify the
+indexes more substantial than in this simplified example.
+
+=item 2. I<($start:$end:$step)>
+
+An alias for ($start..$end:$step), to keep things familiar for folks
+moving over from over languages supporting similar notation.
+
+=item 3. I<(@start..&gen:$num_steps)>
+
+The most general form of this is to provide a syntax to create bounded or
+unbounded lists whose elements are generated by any arbitrary function:
+
+  ($start, &gen($start), &gen(&gen($start)), {$steps times}...);
+
+This is created using the notation:
+
+  ($start..&gen:$steps);
+
+As before, $start is required (but need not be an integer). The
+first argument to &gen is the index of the element being calculated.
+For example:
+
+  @first5PowersOf2 = (1..sub {$_[0]**2}:5);   # (1,2,4,8,16)
+
+The second argument to &gen is the value of the previous element:
+
+  @first5PowersOf2 = (1..sub {$_[1]*2}:5);   # (1,2,4,8,16)
+
+Because lists are memoized automatically, when we later say:
+
+  print $powersOf2[4];
+
+The value of $powersOf2[4] is pulled from the memoization cache rather
+than recalculated. What's more:
+
+  print $powersOf2[5];
+
+is calculated from $powersOf2[4], rather than having to recalculate all
+the in-betweens again, because of that caching.
+
+This form of list generation can not generate the Fibonnaci sequence,
+because it is not defined by a single $start, and it has more than
+one parameter in its generator function. This requires a more
+generalised form:
+
+  ((@start)..&gen:$num_steps)
+
+which allows us to say:
+
+  @fib = ((1,1).. ^2 + ^1: 5);   # (1,1,2,3,5)
+
+if we use the higher-order function notation proposed in RFC 23. As this
+example shows, the values of all previous elements are available to the
+list generation function as the second and later arguments to the
+function. As described earlier, the first argument is the index of the
+element being generated.
+
+=item 4. I<(@start:&gen:$num_steps)>
+
+The C<(@start..&gen:$num_steps)> notation makes it easy to generate lists
+that depend on the value of the previous element. For lists where the
+element is a direct function of the index, the arguments beyond the first
+can simply be ignored:
+
+  @even_numbers = (1.. ^0 * 2: 5);   # (2,4,6,8,10)
+
+However, because we want Perl to know how to generate one element of these
+lists without having to generate all previous elements, the following
+notation is proposed to achieve the same effect:
+
+  @even_numbers = (1: ^0 * 2: 5);   # (2,4,6,8,10)
+
+The values of previous elements are not passed to the list generation
+function with the ':' syntax. This means that Perl can calculate
+directly the value of any element without calculating the value of
+previous elements.
+
+This version of a lazily generated list is effectively a memoized function
+that restricts its domain to the natural numbers. However it can be used
+in some important additional roles--in particular, as a list index:
+
+  @sub_list = @a[@even_numbers];
+
+=back
+
+=head1 EXTENSIONS
+
+If infinite lists are available in Perl 6 (see RFC 24), the $num_steps and
+$end arguments to the list generation operators can be null. This
+indicates that there are infinite elements in the list:
+
+  @column1of3 = (1.. :3);   # (1,4,7,...)
+  @all_even_numbers = (1: ^0 * 2:);   # (2,4,6,8,...)
+
+=head1 JUSTIFICATION
+
+One particularly important use of generated lists is for slicing arrays.
+This is difficult in Perl 5, where it is tackled by Perl Data Language
+(PDL). Note that currently (perl5) we have to say
+
+  $n1 = $n-1;  # since we need to stringify
+  $y = $x->slice("0:$n1:4");
+
+This should be contrasted with the less cluttered syntax offered by
+numerical Python and commercial systems such as Matlab and IDL:
+
+  y = x[0:n-1:4];
+  
+The syntax in this RFC would provide notation that is familiar to users of
+standard numerical programming tools, but is also a natural (and
+compatible) step from the existing Perl C<..> operator.
+
+=head1 IMPLEMENTATION
+
+It will be common in numerical programming to see multiple layers of
+indirection:
+
+  @a = (1:5:100000);
+  @b = getBigImage();
+  @c = @a[@b];
+  print $c[5];
+
+In these cases Perl should consolidate as much as possible at compile time
+to avoid too much overhead.
+
+When a lazy list is passed to a function it is not evaluated. The function
+can then access only the elements it needs, which are calculated as
+required. Furthermore, the arguments that generated the list are available
+as attributes of the list, and can therefore be used directly without
+actually accessing the list:
+
+  @a = (1:100000:5);
+  ($gen_type) = attributes::get(@a);   # 'increment'
+  ($start_val, $end_val, $increment) = attributes::get(@a)[1..3];  # (1, 100000, 5)
+  
+  @first5PowersOf2 = (1..sub {$_[1]*2}:5);   # (1,2,4,8,16)
+  ($gen_type) = attributes::get(@a);   # 'recursive'
+  ($start_val, $gen_func, $num_steps) = attributes::get(@a)[1..3];
+  
+  @even_numbers = (1: ^0 * 2: 5);   # (2,4,6,8,10)
+  ($gen_type) = attributes::get(@a);   # 'function'
+  ($start_val, $gen_func, $num_steps) = attributes::get(@a)[1..3];  
+
+For lists that are a combination of these:
+
+  @b = (1:10:2 , 10:^0*3:30);
+
+there are two potential ways of allowing introspection of the arguments
+that generated the list:
+
+=over 4
+
+=item *
+
+Make the attributes a list of lists, where each sublist is the attributes
+of each concatenated list
+
+=item *
+
+Provide an attribute that returns the actual tokens of the list
+generation function. These tokens could follow an approach similar to
+that used in RFC 231.
+
+=back
+
+However, if lazy list elements are calculated efficiently on demand, the
+need for a programmer to access the list generation parameters at all
+should be limited. They are provided to make sure that 'hard things are
+possible'.
+
+=head1 REFERENCES
+
+RFC 23: Higher-order functions
+
+RFC 24: Semi-finite (lazy) lists
+
+RFC 82: Apply operators component-wise in a list context
+
+RFC 205: New operator ';' for creating array slices
+
+RFC 231: Data: Multi-dimensional arrays/hashes and slices
+
+Memoization in Perl: http://perl.plover.com/MiniMemoize/
+
+List comprehension in Haskell:
+http://www.numeric-quest.com/haskell/hcompanion/principles.html#List
+comprehension
+
+Fethi Rabhi and Guy Lapalme:
+    I<Algorithms: A functional programming approach>,
+    Addison-Wesley, 235 pages, paperback, 1999. ISBN 0-201-59604-0
+
+=head1 ACKNOWLEDGEMENTS
+
+Damian Conway: Reviewed first draft
+
+Karl Glazebrook: Suggested splitting from infinite lists proposal
+
+Christian Soeller: Original 'slice' RFC; suggested argument reordering
+
+Dan Sugalski: Implementation ideas

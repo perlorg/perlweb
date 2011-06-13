@@ -1,0 +1,125 @@
+=head1 This Week on perl5-porters (Oct 18-31 2004)
+
+Using newspeak to redefine a week.
+
+=head2 No DESTROY for the wicked coderefs (bug #32024)
+
+C<DESTROY> doesn't get called on non-closure anonymous subroutines
+because the C<CV> is shared, but this won't be fixed because of
+performance reasons.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00287.html
+
+This was discussed before:
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-08/msg01300.html
+
+=head2 err and backwards compatibility
+
+Michael Schwern and Robert Spier brought up how the new C<err> keyword
+in 5.10 hasn't been properly deprecated. Yitzchak Scott-Thoennes claimed
+C<err> is a second-class keyword, while Rafael Garcia-Suarez claimed it
+was not. Hm..
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00378.html
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00351.html
+
+=head2 is_tainted in 5.8
+
+Stas Bekman suggested an improvement of the C<is_tainted> subroutine
+offered in C<perldoc perlsec> for testing whether a variable contains
+tainted data. He found that for some reason it was necessary to
+
+  use warnings FATAL => 'all';
+
+to prevent compile-time errors from the C<eval>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00305.html
+
+=head2 Chained goto &sub drops data too early (bug #32039)
+
+Henrik Gulbrandsen spotted that patch 22373 in 5.8.4, which was put in
+place to fix the C<@_>s in recursive C<goto>s, now causes C<@_> to be
+dropped in chained C<goto>s. Dave Mitchell's new solution is to
+"transfer the reifiedness of the old @_ to the new @_ then ditch
+the old @_".
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00324.html
+
+=head2 Optimization idea
+
+David Nicol wondered if
+
+   my $name = 'david';
+   return "hello my name is $name";
+
+could be optimized with
+
+   return "hello my name is david";
+
+Elizabeth Mattijsen, for one, doubted this would be worth it because of
+the complexity of checking when the optimization could be done.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00376.html
+
+=head2 perldoc -f for ops (bug #27886)
+
+Dan Jacobson dreamed of a world where C<perldoc -f => returns documentation
+on the C<=> operator. I think everyone's thought of this at some point,
+though it might be better to "ask not what your perldoc can do for you,
+ask what you can do for your perldoc".
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00412.html
+
+=head2 Encode::utf8::decode_xs does not check partial chars
+
+Bjoern Hoehrmann convinced Dan Kogai that
+
+  my $x = "Bj\xF6rn"; # as well as "Bj\xF6r" and "Bj\xF6"
+  decode("utf-8", $x, Encode::FB_CROAK);
+
+should croak but wasn't. See
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00412.html
+
+and I think also bug #32080
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00375.html
+
+=head2 Perl doesn't support RAII
+
+Anders Johnson submitted four patches for RAII in Perl. Quoth he:
+"The central idea of the patches that I submitted is to block (defer)
+signal handlers inside the DESTROY call.  That way, you can arrange for
+signal handlers to die() without having to worry that the exception
+won't get propagated."
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00423.html
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00421.html
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00422.html
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00424.html
+
+Link from John Peacock on RAII (not to be confused with the RIAA):
+
+  http://www.hackcraft.net/raii/
+
+=head2 In brief
+
+Steve Peters, sedulous bee that he be, commented on at least a dozen
+ancient bugs, presumably with the intent of clearing them out.
+
+Nicolas Clark said in a couple threads that he doesn't intend to upgrade
+MakeMaker in maint because versions after 6.17 have bugs with core perl.
+
+=head2 References
+
+The thread for bug number $BUGNUM can be found at
+http://rt.perl.org/rt3/Ticket/Display.html?id=$BUGNUM
+
+=head2 About this summary
+
+This summary was written by Scott Lanning. Summaries are published
+weekly at http://use.perl.org/ and posted to a mailing list whose
+subscription address is perl5-summary-subscribe@perl.org. The archive
+is at http://dev.perl.org/perl5/list-summaries/. Comments and
+corrections welcome.

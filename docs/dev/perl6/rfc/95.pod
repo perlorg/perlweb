@@ -1,0 +1,761 @@
+=head1 TITLE
+
+Object Classes
+
+=head1 VERSION
+
+  Maintainer: Andy Wardley <abw@kfs.org>
+  Date: 11 Aug 2000
+  Last Modified: 17 Aug 2000
+  Mailing List: perl6-language-objects@perl.org
+  Number: 95
+  Version: 2
+  Status: Developing
+
+=head1 ABSTRACT
+
+This RFC proposes a syntax and semantics for defining object classes
+in Perl 6.  It introduces the C<class> keyword, which can be thought
+of as a special kind of C<package> which incorates the functionality
+of the Class::Struct module while giving the compile time typo
+checking and access optimisation of the C<use fields> pragma.  This
+object class is an extension of the C<package> mechanism, not a
+replacement for it.
+
+=head1 SYNOPSIS
+
+NOTE: these and other examples assume Highlander Variables (RFC 9)
+where '$mage', '@mage' and '%mage' all refer to different "views" of
+the same variable, rather than different variables as in Perl 5.
+Otherwise read '@mage' as '@$mage' and '%mage' as '%$mage'.
+
+    class Person;
+    our $debug = 0;		    # class variable
+    my ($name, $race, @aliases);    # object (instance) variables
+
+    sub name {			    # specific accessor method
+	if (@_) {
+	    $name = shift;
+	    print "changed name to $name\n"
+		if $debug;
+	}
+	return $name;
+    }
+
+    package main;
+    $Person->debug = 1;		    # activate debugging
+
+    # EITHER
+    my $mage = Person->new(  # use positional parameters
+	"Gandalf", 
+	"Istar", 
+	["Mithrandir", "Olorin", "Incanus"]
+    );
+    
+    # OR
+    my $mage = Person->new(  # use named parameters
+	name    => "Gandalf", 
+	race    => "Istar", 
+	aliases => ["Mithrandir", "Olorin", "Incanus"]
+    );
+
+    # access via named attributes
+    print "name: $mage->name\n";    # calls name() method
+    print "race: $mage->race\n";    # optimised to direct access
+    print " aka: @mage->aliases\n"; # ditto
+
+    # use it like a list
+    my ($name, $race, $aliases) = @mage;
+
+    # use it like a hash, with keys returned in correct order
+    my @keys = keys %mage;	    # 'name', 'race', 'aliases'
+
+=head1 OVERVIEW
+
+When it comes to creating objects, a hash is the most common choice of
+structure for blessing as it offers the most versatility.  However,
+you can get faster access and use less memory by using a list.  The
+downside is that you lose the ability to reference items by name.  
+A pseudo-hash provides the efficency of a list with the convenience of
+hash.
+
+    my $ph = [ { one => 1, two => 2 }, 'foo', 'bar' ];
+    print $ph->{one};		# 'foo'
+    print $ph->[2];		# 'bar'
+
+It works just like a hash but be warned that you can't treat it like a
+regular list without taking into account the an extra item, the hash
+array reference, at the start of the list.
+
+    @$ph = ('wiz', 'waz');	# wrong!
+
+The C<use fields> pragma relies on pseudo-hash magic to make it
+possible to access array elements by name.  Furthermore, the compiler
+is smart enough to optimise access to the fields into straight array
+accesses.  It also validates field names for typo safety.  These are
+both Good Things.  That's all it does, though.  You still have to
+build your own object constructor which calls the fields::new()
+method.
+
+    package Person;
+    use fields qw( name race aliases );
+
+    sub new     { 
+	my $type = shift;
+	my Person $self = fields::new(ref $type || $type);
+	...
+	return $self;
+    }
+
+    package main;
+    my $mage = Person->new();
+    $mage->{name} = "Gandalf";
+
+You can provide accessor methods as wrappers around the fields, but
+note that you then have to change your code to call the methods instead
+of accessing the hash fields directly.
+
+    package Person;
+    ...
+    sub name    { ... }
+    sub race    { ... }
+    sub aliases { ... }
+
+    package main;
+    my $mage = Person->new();
+    $mage->name("Gandalf");	    # changed from '$mage->{name}'
+
+The Class::Struct method goes one step better but also takes two steps
+back.  On the plus side, it automatically builds a default constructor
+method and accessor methods for your class.  On the negative side, you
+gain an extra level of indirection to each item, losing the compile
+time optimisation and typo checking.  Furthermore, you have to specify
+your class using an unusual syntax to keep the parser happy.
+
+    package Person;
+    use Class::Struct;
+    struct Person => {
+	name    => '$',		    # not as obvious as '$name'
+        race    => '$',		    # etc...
+	aliases => '@',
+    };
+
+One nice thing about the Class::Struct approach is that you can provide
+your own package subroutines which override the defaults.  Unfortunately
+you're also paying the price of method calls every time you access an
+attribute whether you've defined a custom accessor method or not.
+
+The C<class> keyword is proposed as a way to implement the 
+functionality of Class::Struct, with the compile time benefits
+of the C<use fields> pragma, using a natural and Perl-like syntax.
+The above examples would translate to:
+
+    class Person;
+    my ($name, $race, @aliases);
+
+A C<class> can be thought of as a special kind of C<package>, defining
+a namespace for objects of a particular type.  A default constructor
+method, new(), should be provided to create objects of a given class.
+Positional parameters are automatically assigned to the object variables
+in the order defined.
+
+    my $mage = Person->new("Gandalf", "Istar", 
+			  ["Mithrandir", "Olorin", "Incanus"]);
+
+Or named parameters can be used, looking more like a hash assignment.
+
+    my $mage = Person->new(name    => "Gandalf",
+			   race    => "Istar", 
+			   aliases => ["Mithrandir", "Olorin", "Incanus"]);
+
+In implementation terms the objects themselves behave much like
+pseudo-hashes.  An object of this class looks like a list containing
+three data items (two scalars and a list reference).  It also looks
+like a hash containing three keys, 'name', 'race' and 'aliases' which
+point to the data items.  It also looks like an object and has a
+constructor and accessor methods automatically provided which can be
+typo checked and optimised away into list offsets at compile time.
+
+    my $mage = Person->new();
+
+    # access object via named accessors, optimised to list offsets
+    $mage->name = "Gandalf";
+    $mage->race = "Istar";
+    $mage->aliases( ["Mithrandir", "Olorin", "Incanus"] );
+
+    # ...or just like a hash (but with the keys in the right order)
+    my @keys = keys %mage;	# 'name', 'race', 'aliases'
+    my ($name, $race) = @mage{ 'name', 'race' };
+
+    # ...or just like a list
+    my @data = @mage;		# 'Gandalf', 'Istar', [ 'Mithrandir', ... ]
+    my $name = $mage[0];
+
+This object should have the benefits of an array in allowing you to
+get your data in and out quickly.  It should have the benefits of a
+hash in allowing names to be given to fields, and with the added bonus
+that hash keys would be stored and returned in the order defined so
+that they align with the values in the list.  It should be magical in
+the same way as existing pseudo-hashes are, allowing named accesses to
+be typo checked and optimised away at compile time into list offsets.
+It should also have the capability of Class::Struct that allows
+accessor subroutines to be definined in the package which then override
+the default accessors.
+
+This mechanism should also allow class variables and methods to be
+defined.  It should support single inheritance as per the C<use base>
+pragma and additionally provide a 'mixin' facility to allow complex
+classes to be constructed from other component classes without the 
+implications of inheritance.
+
+=head1 DESCRIPTION
+
+=head2 Defining a class
+
+The new C<class> keyword is proposed for defining an object class.
+This can be thought of as a special kind of C<package>.  Lexical
+variables defined within the scope of a class declaration become
+attributes (or data members) of that class.  The existing C<my>
+keyword indicates per-instance variables while C<our> is used to
+create class variables which are shared across all instances of a
+given class
+
+    class Person;
+    our $home  = 'Middle Earth';    # class variable
+    my ($name, $race, @aliases);    # object (instance) variables
+
+The class definition would continue until the next C<class> or 
+C<package> declaration, or until the end of the current file.
+Class definitions can be re-opened and extended.
+
+    class Person;	# define 'Person' class
+    ...
+
+    class Wizard;	# define 'Wizard' class
+    ...
+
+    class Person;	# further definition of 'Person' class
+    ...
+
+    package main;	# no longer defining any class
+    ...
+
+Subroutines defined within the scope of a class declaration become
+methods of that object class.  Subroutines may be prefixed by C<my> to
+indicate object methods or by C<our> to indicate class methods.  The
+leading C<my> on subroutines should probably be optional.  All
+subroutines not explicitly prefixed C<our> would then be object
+methods by implication.
+
+    class Foo;
+
+    our sub foo {			# class method
+	...
+    }
+
+    my sub bar {			# object method (explicit)
+	...
+    }
+
+    sub baz {				# object method (implicit)
+        ...			
+    }
+
+=head2 Creating objects of a class
+
+A default class constructor method C<new()> is created automatically
+unless otherwise defined in the class.
+
+    my $mage = Person->new();
+
+The default behaviour for C<new()> is to assign the parameters passed
+to the object variables in the order defined within the class.
+
+    class Person;
+    my ($name, $race, @aliases);
+
+    package main;
+    my $mage = Person->new("Gandalf", "Istar", 
+			  ["Mithrandir", "Olorin", "Incanus"]);
+
+Named parameters can also be used, treating the object more like a hash
+array.
+
+    my $mage = Person->new(name    => "Gandalf",
+			   race    => "Istar", 
+			   aliases => ["Mithrandir", "Olorin", "Incanus"]);
+
+This would allow construction of sparse objects (i.e. in which only 
+some attributes are set) and hopefully make it easier to remember
+attributes by name rather than position.    
+
+RFC 57, "Subroutine prototypes and parameters", discusses named
+parameters further.  Also see RFC 84, "Replace => (stringifying comma)
+with => (pair constructor)" which proposes a solution as to how we
+might differentiate between positional and named parameters in an
+argument list.
+
+=head2 Accessing variables and methods
+
+Object variables are accessed using the familiar C<-E<gt>> operator.
+
+    print $mage->name, " has ", 
+	  scalar @mage->aliases, " aliases\n";
+
+When an accessor method is defined for a given name it will be called.
+Otherwise, the access is optimised away to a direct variable access.
+The attribute name is also typo checked, raising a compile time error
+if the variable or method isn't defined.
+
+    print $mage->mane;		# error: no such Person member 'mane'
+
+Class variables are accessed in a similar way, using the class name as
+the receiver.
+
+    class DBI;
+    our $debug;
+    ...
+
+    package main;
+    $DBI->debug = 1;
+
+Classes may define specific accessor methods or other general purpose
+class methods which are called in the same way as for objects.
+
+    class DBI;
+    our $debug;
+    ...
+
+    our sub debug : lvalue {	# wrapper around $debug class var
+	...
+    }
+
+    our sub connect {		# new class method
+	my $dbh = $class->new(...);
+	...
+    }
+
+    package main;
+    $DBI->debug = 1;
+    my $dbh = DBI->connect(...);
+
+
+=head2 Internal variables
+
+Within a class definition, all variables are lexically scoped.
+Within an object method, for example, the object variables are clearly
+visible unless masked by other lexical variables in a narrower scope.
+
+    class User;
+    my ($id, $name, $email);
+    our $domain = 'nowhere.com';
+
+    sub summary {
+	# new $email lexical masks object variable
+	my $email = $email || "$id@$domain";
+
+	# modify local copy
+	$email = "<a href=\"mailto:$email\">$email</a>";
+
+	return "Name: $name\nEmail: $email\n";
+    }
+
+The special read-only variable C<$me> (or C<$ME>, C<$self>, C<$this>,
+etc.) should be implicity defined in the outermost object scope.
+Object methods can explicitly reference their attributes (methods, or
+variables if undefined) through this reference.  It is automatically
+defined and does not need to be passed to methods as a parameter as in
+Perl 5.
+
+    class Foo;
+    my ($bar, $baz);
+
+    sub mumble {
+	my ($foo, $bar, $baz);      # mask object variables
+	...
+	$me->bar = 10;		    # sets object variable
+	$me->baz = 20;		    # calls object method
+    }
+
+    sub baz : lvalue {
+	...
+    }
+
+Object variables (C<my>) should be undefined or inaccessible to class
+methods, along with the C<$me> variable.  Class variables (C<our>)
+would be visible to all class and object methods.  The special
+read-only class variable C<$class> should also be defined and visible
+to class and object methods alike.  This should also be an externally
+accessible attribute allowing the type of any object to be easily
+determined.
+
+    my $u = User->new('foo', 'Mr Foo');
+    print $u->class;		    # prints "User"
+
+=head2 Private Variables and Methods
+
+Class or object members which are prefixed with '_' should be
+considered private and not accessible from outside the class
+definition.  This is as per the existing C<use fields> pragma.
+
+    class User;
+    our $_user_cache = { };	    # private class variable
+    my  $_password;		    # private object variable
+
+    my ($id, $name, $email);	    # public attributes
+
+    sub _encrypt {		    # private object method
+	...
+    }
+
+=head2 Inheritance
+
+As with the existing C<use base>/C<use fields> pragmata, Perl 6
+classes should support single, linear inheritance only.  Multiple
+inheritance is generally more trouble than it's worth.
+
+The C<isa> keyword is proposed as syntactic sugar for the existing 
+C<use base> pragma.
+
+    class Person;
+    my ($name, $sex, $dob);
+
+    class User isa Person;
+    my ($id, $email);
+
+    class Hacker isa User;
+    my @cool_hacks;
+
+Each subclass inherits the attributes of its parents in defined order 
+from most generic (super) to most specific (sub).  The Hacker class
+above then contains the attributes as if written:
+
+    class Hacker;
+    my ($name, $sex, $dob);	    # inherited from Person via User
+    my ($id, $email);		    # inherited from User
+    my @cool_hacks;
+
+Attributes in base classes can be redefined by derived classes.  The
+special read-only variable C<$super> should be implicitly defined
+within the object scope.  Through this, object methods can explicitly
+access attributes of the parent class or classes.
+
+    class User;
+
+    sub foo {
+	print "User foo\n";
+    }
+
+    class Hacker isa User;
+
+    sub foo {
+	print "Hacker foo\n";
+	$super->foo;
+    }
+
+    package main;
+
+    my $h = Hacker->new();
+    $h->foo();			    # prints: Hacker foo
+                                    #         User foo
+
+The C<super> attribute should be accessible as an external attribute
+returning the name of the immediate parent class (it may actually
+return a reference to the class object which then returns its name on
+stringification).
+
+    my $h = Hacker->new();
+    print $u->class;		    # prints "Hacker"
+    print $u->super;		    # prints "User"
+
+The C<isa> attribute should return a list of the self and parent
+classes in most-specific to most-general order when called without any
+arguments.  If a specific class name is specified then it should
+return a boolean result indicating if the object is a member of that
+class.
+
+    class Person;
+    class User isa Person;
+    class Hacker isa User;
+
+    my $h = Hacker->new();
+    print join(', ', @h->isa);	    # prints "Hacker, User, Person"
+    if ($h->isa('Person')) {	    # true
+	...
+    }
+
+Similarly, the C<can> method should return a list of attributes
+(variables or methods) that the object supports, or a boolean result
+for a specific test.  These should be returned in order defined.
+
+    class Foo;
+    my $foo;
+    sub foo { ... };                # wrapper method masks variable
+    sub bar { ... };
+
+    class Bar isa Foo;
+    my $baz;
+
+    package main;
+    my $b = Bar->new();
+    print join(', ', @b->can);	    # prints "foo, bar, baz"
+
+=head2 Delegation, Aliasing and Mixins
+
+It should be possible for objects to create internal "plumbing" to
+help with delegation and interaction with other objects.  One possible
+solution would be to allow variable attributes to contain references
+to other class or objects attributes that are then traversed
+automatically when the attribute is accessed.
+
+    class Foo;
+    our $foo;
+    my $bar;
+    sub baz { ... }
+
+    class Bar;
+    my $_foo = Foo->new(...);	    # private Foo object
+    my $wiz = \$_foo->bar;	    # alias $wiz to $_foo object var
+    my $waz = \$_foo->baz;	    # alias $waz to $_foo object method
+    my $foobar = \$Foo->foo;	    # alias $foobar to Foo class var $foo
+
+    package main;
+    my $bar = Bar->new();
+    $bar->foobar;		    # ==> $Foo.foo
+    $bar->wiz;			    # ==> $_foo->bar
+    $bar->waz;			    # ==> $_foo->baz()
+
+It may be desirable to allow all attributes of another class or object to 
+be imported into another object namespace.  For example:
+
+    class User;
+    my ($name);
+    sub welcome { return "Hello World\n" };
+
+    class Hacker;
+    mixin User;
+    my $cool_hacks = [];
+
+The 'Hacker' class is not derived from 'User' but contains a copy of the 
+declaration which is added to its own.  The User class is used as a 'Mixin',
+so named because the definition literally gets mixed in to the enclosing 
+class.  Hacker is thus defined as if written:
+
+    class Hacker;
+    my ($name);
+    sub welcome { return "Hello World\n" };
+    my $cool_hacks = [];
+
+It should also be possible to mixin the attributes of a particular object, 
+rather than a class.
+
+    class Helper;
+    my $msg;
+    sub help { return $msg };
+
+    class Hacker;
+    my $helper = Helper->new("Hello World\n");
+    mixin $helper;		    # equiv. to: my $msg  = \$helper->msg
+                                    #            my $help = \$helper->help
+    package main;
+    my $hacker = Hacker->new();
+    print $hacker->help;	    # ==> $hacker->helper->help, prints
+                                    #    "Hello World\n"
+
+=head2 Constructor Methods
+
+The default class constructor method, new(), should be available if
+otherwise undefined in the class.  It should instantiate an empty
+object (via C<class::new()>), assign any parameters to object
+variables and then call any per-object initialisation method, NEW()
+(or _new()?).  Base class NEW() constructors should be called in
+order.  Note that the C<$class> variable should be correctly defined
+in the base class (e.g. Person) to contain the name of the derived
+class (User).
+
+    class Person;
+    my ($name, $sex, $dob);
+
+    sub NEW {
+	die "$class name not specified" unless $name;
+	$sex ||= 'unknown';
+	$dob ||= 'unknown';
+	print "new Person  (name: $name)\n";
+    }
+
+    class User isa Person;
+    our $domain = 'perl.org';
+    my ($id, $email);
+
+    sub NEW {
+	die "$class id not specified" unless defined $id;
+	$email ||= "$id@domain";
+	print "new User  (name: $name  email: $email)\n";
+    }
+
+    package main;
+
+    # attributes are $name, $sex, $dob, $email;
+    my $u = User->new('Larry Wall', undef, undef, 'lwall');
+    print "Name: ", $u->name, "\n";
+    print "DOB: ", $u->dob, "\n";
+    print "Email: ", $u->email, "\n";
+
+Output:
+
+    new Person  (name: Larry Wall)
+    new User  (name: Larry Wall  email: lwall@perl.org)
+    Name: Larry Wall
+    DOB: unknown
+    Email: lwall@perl.org
+
+Note one severe limitation of this model.  We must provide constructor
+arguments in exactly the right order to satisfy base class (Person)
+attributes first, followed by the derived class (User) attributes.
+This makes our base classes exceptionally fragile to change.  If we 
+want to add an attribute to a class then we run the risk of breaking
+any classes that are derived from it.  For this reason, some form of 
+named parameterisation would be preferred (see RFC 57).  e.g.
+
+    my $u = User->new(id => 'lwall', name => 'Larry Wall');
+
+This allows the structure of classes to be changed at any time without
+affecting existing code.  Furthermore, we can specify only the attributes
+that we care to define and in any order.
+
+
+=head2 Other Magical Methods
+
+The OLD() method is proposed to compliment the NEW() method, being 
+called immediately before the object is destroyed.  Each destructor
+(we'll call them that for now) should be called in reverse order from 
+most specific (sub) class to most general (super).
+
+The DISPATCH() method is proposed to allow methods to intercept all
+accesses to attributes (i.e. variables or methods).
+
+    sub DISPATCH {
+	my $attr = shift; 
+	if ($attr eq 'open_doors') {
+	    die "I'm sorry Dave, I can't do that\n";
+	}
+	$me->$attr(@_);
+    }
+
+The AUTOLOAD() (or perhaps DEFAULT()?) method can be defined to
+intercept any accesses to undefined attributes.
+
+    sub AUTOLOAD {
+	my $attr = shift;	    # not via $AUTOLOAD as in Perl 5
+	...
+    }
+
+Note that DISPATCH() or AUTOLOAD() methods would require compile time
+access optimisations to be disabled.
+
+The INSPECT() method (or something similar) should be called whenever
+the object itself is evaluated rather than a specific attribute.  In
+conjunction with Damian Conway's RFC 21, "Replace C<wantarray> with a
+generic C<want> function", the proposed want() function could be used
+to return a view of the object in many different formats.  The default
+INSPECT() method might look notionally like this:
+
+    sub INSPECT {
+	# I know, I should be using switch and currying.... :-)
+	if (want('HASH')) {
+	    # return hash of current attributes and values 
+	    return map { ( $_ => $me->get($_) ) } @me->can;
+	}
+	elsif (want('ARRAY')) {
+	    # return list of values
+	    return map { $me->get($_) } @me->can;
+	}
+	elsif (want('SCALAR')) {
+	    # return self for copy by reference
+	    return $me;
+	}
+	elsif (want('STRING')) {
+	    return "$class: " .
+		    join(', ', map { "$_ => " . $me->get($_) } @me->can);
+	}
+	...etc...
+    }
+
+This would allow an object reference ($object in these example) to be
+used in many different contexts and return sensible value(s).  For
+example.
+
+    my %objhash = %object;	# copy attribs/values into hash
+    my @values  = @object;	# copy values into list
+    my $obj2 = $object;		# copy by reference
+    print "$object";		# stringification 
+
+=head2 Pragma: 'use class'
+
+In the above examples, we have assumed that the C<class> keyword and
+associated functionality are available by default.  We might prefer to
+have to enable it explicitly via the C<use class> pragma.
+
+    use class;
+    class Person;
+    ...
+
+Modules containing class definitions could be loaded as per usual.
+
+    use Person;
+
+However, we might want to apply a different search heuristic or
+loading behaviour for class modules than for regular modules.  We
+could use the C<use class> pragma to acheive this special-case:
+
+    use class qw( Person );	# load 'Person' class, by clever means
+    my $p = Person->new();
+
+=head1 IMPLEMENTATION
+
+An object can be represented as a list reference blessed into a
+particular class.  Each class would require a singleton class object
+(like a typeglob) which would contain a vtable mapping attribute names
+to list positions.  It would also maintain references to class
+variables and both class and object methods, all of which can be
+shared by the instances of the class.
+
+The compiler optimisation code would be very similar to what already 
+exists under the C<use fields> pragma.  It may be necessary to explicitly
+type class variable to allow the compiler to perform these optimisations
+efficiently (or at all?)
+
+    my Person $mage = Person->new(...);
+
+=head1 HISTORY
+
+=head2 Version 2
+
+Added SYNOPSIS, OVERVIEW and HISTORY sections.  
+
+Removed CAVEAT and ISSUES.  
+
+Greatly reduced the length and complexity of the main DESCRIPTION
+section, moving many tangential subjects out to separate RFCs or the
+bit bucket.
+
+Added section on C<use class> pragma.
+
+Removed all reference to the accursed dot operator, using the familiar
+C<-E<gt>> operator instead.
+
+=head1 REFERENCES
+
+RFC  9: Highlander variables
+
+RFC 21: Replace C<wantarray> with a generic C<want> function
+
+RFC 57: Subroutine prototypes and parameters
+
+RFC 84: Replace => (stringifying comma) with => (pair constructor)
+
+Programming Perl (3rd Edition), Larry Wall, Tom Christiansen & Jon
+Orwant.  O'Reilly and Associates.  ISBN 0-596-00027-8.  Chapter 12 :
+"Objects", pages 331 - 346.
+
+

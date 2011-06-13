@@ -1,0 +1,969 @@
+=head1 TITLE
+
+Object neutral error handling via exceptions
+
+=head1 VERSION
+
+  Maintainer: Glenn Linderman <glenn@linderman.com>
+  Date: 16 Aug 2000
+  Last Modified: 28 Sep 200
+  Mailing List: perl6-language-errors@perl.org
+  Number: 119
+  Version: 4
+  Status: Frozen
+
+=head1 ABSTRACT
+
+Revisit what  the goals  of error handling  and exceptions are  for, to
+determine the set of desirable  unit operations, rather than start with
+a bundle of stuff from another language, and try to make it Perlish.
+
+=head1 CHANGES
+
+=head2 notes on freeze
+
+Tony Olekshy  was going to suggest  a bunch of  improvements where this
+RFC misinterprets RFC  88 in the comparison, but in the  end I guess he
+was satisfied enough with it the way it is, after getting more familiar
+with this  one.  There's really a  lot of synergy between  the ideas in
+RFC 88 and RFC 119.  Mostly  RFC 88 is more rigid in suggested OO-ness,
+and RFC 119 doesn't prescribe  that.  Much of the implementation of the
+two could be done identically.   The other major difference between the
+RFCs is that  RFC 119 suggests a new  mechanism for exception handling,
+separate  from  the  current   eval/die  handling.   This  allows  100%
+compatibility (which cannot  be achieved with RFC 88),  and preserves a
+distinction between  "fatal" and "non-fatal" errors.  By  doing so, the
+"catch-all" clause is much more  useful in RFC 119, and the distinction
+between fatal and non-fatal errors (as perceived by the author of a sub
+or module) is an extremely  convenient way of simplifying code when the
+original author correctly classifies the errors.
+
+=head2 version 3 changes
+
+Addition  of p52p6 option  for converting  eval/die to  throw/catch (if
+practical; the interfaces are quite different).
+
+Added the "scope" and "hooks" sections to the RFC 88 comparison.
+
+Updated the section on conversion wrappers.
+
+Updated implementation section to talk about DESTROY.
+
+Added a status field in the VERSION section.
+
+=head2 version 2 changes
+
+Addition of "always" clause.
+
+Clarified the rules for catching to specify that catch statements prior
+to the  current point of execution  in a given scope  are not candidate
+targets for  throws, only catch  statements after the current  point of
+execution in a given scope.
+
+Clarified  that when  a catch  statement is  encountered in  the normal
+flow, that it is not executed.
+
+Added a  section discussing  the use of  this "always-on"  mechanism by
+people that prefer error returns.
+
+Added a few notes regarding implementation.
+
+Added a section regarding differences between RFC88v2d5 and RFC119
+
+
+=head1 DESCRIPTION
+
+There  are  numerous RFCs  regarding  a  complete  bundle of  exception
+handling  mechanisms.   Most  of  them  are modeled  after  some  other
+languages exception  handling mechanism, adapted somewhat  to Perl, and
+somewhat to the goals of the author.  While this is not all bad, as the
+problems being faced  were faced in the other languages  as well, it is
+not  necessarily all  good,  either.   This RFC  examines  some of  the
+incentives behind  C++ exceptions, both  the structure of the  code and
+the structure  of the exception object,  then examines the  goals of an
+exception mechanism,  then examines some techniques that  could be used
+to reach the goals.  The result can  be made to look a lot like the C++
+exception mechanism if desired, but  can be much more powerful when all
+its features are used.  So this leads to the following "head2"s:
+
+- C++ exceptions
+
+- Goals of exceptions
+
+- Techniques for exceptions
+
+- Results
+
+- C++-like Usage
+
+- Conversion wrappers
+
+
+I focus on  C++ rather than Java, because  Java (pardon me, Java-heads)
+is just an attempt to use the best parts of C++ without all the baggage
+of C, so while most of this could have been changed in Java, it wasn't.
+This made Java easy to learn for  C users who'd read about C++, and for
+C++ users.  This didn't make  Java a significantly better language than
+C++, although they  were able to remove some of  the worst C++ language
+traps.  To excel,  you need to not only remove some worst, but add some
+best.  I think that's a goal of Perl.
+
+While Graham's error.pm module is a valiant attempt to include C++-like
+exception handling  in Perl, it has various  deficiencies (discussed by
+others) that can  be attributed to be an add-on to  Perl, just like C++
+exception handling has various  deficiencies because of being an add-on
+to C.
+
+
+=head2 C++ exceptions
+
+Remember that C++ exceptions were  built first as a preprocessor for C.
+Therefore,  the mechanisms  used had  to exist  in C.   Stack unwinding
+could therefore only be done  by using the only non-local goto facility
+supported by C:  longjmp.  This forced a number  of decisions about the
+design of exceptions, not all of which are good.
+
+I note  in passing that  ANSI Forth defines  catch and throw  which use
+single cells  as parameters... so not  all usage of catch  and throw is
+related to object techniques.
+
+=head3 Keyword try
+
+First, longjmp doesn't work without a setjmp, and setjmp must be called
+prior to  longjmp.  This is the  basic justification for  try: it calls
+setjmp at a point within the  scope of the code for which the exception
+handling mechanism is to be activated.  Some attempts have been made to
+justify the use  of the try keyword as  aiding programmer comprehension
+of the  scope of the try block,  and perhaps it does  this in languages
+where  some  code  may  be  in  the scope  of  the  exception  handling
+mechanism, and other code may not be.
+
+It would  seem, however, that  the best implementation of  an exception
+handling mechanism would be that all  code is in scope of the exception
+handling mechanism,  so that exceptions  cannot be ignored,  other than
+explicitly.  Perl's die is of  that flavor: very hard to ignore, except
+explicitly.
+
+=head3 Scoping problems
+
+Let's  presume the  example often  cited, of  wishing to  close  a file
+handle during the unwind, here's some C++ for that:
+
+  FILE *handle;
+  try {
+     handle = fopen ( ... );
+     ...
+  }
+  catch ( ... ) {
+    fclose ( handle );
+    throw;
+  }
+
+Note that  "handle" has  to be  defined outside the  scope of  the try,
+because catch  cannot see the  scope defined by  the try block,  and is
+completely  unable to  recover from  problems that  are  not explicitly
+hoisted outside of the try block.
+
+=head3 Control flow problem #1
+
+Here's  some icky  C error  handling code:  3 errors  to handle  so the
+pattern  becomes obvious, but  I tried  to keep  them simple  (all open
+errors to build  on the case above)--they can get  much more complex in
+practice, when the code to deal with an error gets more complex.
+
+  int returned_error;
+  FILE *handle1, *handle2, *handle3;
+  if ( ! handle1 = fopen ( ... )) {
+    return errno;
+  }
+  if ( ! handle2 = fopen ( ... )) {
+    returned_error = errno;
+    close ( handle1 );
+    return returned_error;
+  }
+  if ( ! handle3 = fopen ( ... )) {
+    returned_error = errno;
+    close ( handle1 );
+    close ( handle2 );
+    return returned_error;
+  }
+  ...
+
+Here's an icky attempt to reduce the redundant error code:
+
+  int returned_error;
+  FILE *handle1, *handle2, *handle3;
+  if ( ! handle1 = fopen ( ... )) {
+    returned_error = errno;
+handle1_return:
+    return returned_error;
+  }
+  if ( ! handle2 = fopen ( ... )) {
+    returned_error = errno;
+handle2_return:
+    close ( handle1 );
+    goto handle1_return;
+  }
+  if ( ! handle3 = fopen ( ... )) {
+    returned_error = errno;
+handle3_return:
+    close ( handle2 );
+    goto handle2_return;
+  }
+  ...
+
+While this  solves the  redundancies of the  cleanup code,  the cleanup
+code for handle1  is by the code that attempts  to open handle2, rather
+than being bundled  with the code that opens  handle1.  C never claimed
+to be OO, but even without OO, this is icky.
+
+Translating to  C++ doesn't help much.  Assuming  (not accurately) that
+C++'s fopen  throws an  error if it  fails, to simulate  proposals that
+Perl's open should do exactly that:
+
+  FILE *handle1 = NULL, *handle2 = NULL, *handle3 = NULL;
+  try {
+    handle1 = fopen ( ... );
+    handle2 = fopen ( ... );
+    handle3 = fopen ( ... );
+    ...
+  }
+  catch ( ... ) {
+    if ( handle1 ) close ( handle1 );
+    if ( handle2 ) close ( handle2 );
+    if ( handle3 ) close ( handle3 );
+    throw;
+  }
+
+Some would  like this, because it  removes all the  error handling code
+from the control flow, but to support that, the handles must be outside
+the try block (as noted in the previous section) so they can be seen by
+the catch block, they must be initialized even if never used (not a bad
+programming practice,  but certainly not  needed in the C  examples) so
+that the catch block doesn't do stupid things, and the code to clean up
+a handle is far removed from the code that sets up the handle.
+
+Perl, fortunately,  initializes all its  variables to undef, so  we are
+saved from that aspect of C/C++.
+
+=head3 Control flow problem #2
+
+The  above examples  all dealt  with cases  where the  error  is simply
+rethrown, using the "catch ( ... )" as a "finally" block per RFC 88, or
+a  "continue" block  per RFC  63.  When  actually attempting  to handle
+errors,  we discover  that any  commonality between  handling different
+errors results in duplicate code (or additional subroutines or gotos):
+
+  FILE *handle1 = NULL, *handle2 = NULL, *handle3 = NULL;
+  try {
+    handle1 = fopen ( ... );
+    handle2 = fopen ( ... );
+    handle3 = fopen ( ... );
+    ...
+  }
+  catch ( error_type_1 ) {
+    if ( handle1 ) close ( handle1 );
+    if ( handle2 ) close ( handle2 );
+    if ( handle3 ) close ( handle3 );
+    // ... report error type 1, handle it
+  }
+  catch ( error_type_2 ) {
+    if ( handle1 ) close ( handle1 );
+    if ( handle2 ) close ( handle2 );
+    if ( handle3 ) close ( handle3 );
+    // ... report error type 2, handle it
+  }
+  catch ( ... ) {
+    if ( handle1 ) close ( handle1 );
+    if ( handle2 ) close ( handle2 );
+    if ( handle3 ) close ( handle3 );
+    throw;
+  }
+
+Or you could:
+
+  void help_clean ( FILE * handle1, FILE * handle2, FILE * handle3 ) {
+    if ( handle1 ) close ( handle1 );
+    if ( handle2 ) close ( handle2 );
+    if ( handle3 ) close ( handle3 );
+  }
+
+  FILE *handle1 = NULL, *handle2 = NULL, *handle3 = NULL;
+  try {
+    handle1 = fopen ( ... );
+    handle2 = fopen ( ... );
+    handle3 = fopen ( ... );
+    ...
+  }
+  catch ( error_type_1 ) {
+    help_clean ( handle1, handle2, handle3 );
+    // ... report error type 1, handle it
+  }
+  catch ( error_type_2 ) {
+    help_clean ( handle1, handle2, handle3 );
+    // ... report error type 2, handle it
+  }
+  catch ( ... ) {
+    help_clean ( handle1, handle2, handle3 );
+    throw;
+  }
+
+This removes the error handling  code even further from the setup code,
+still requires  redundancy among the catch phrases,  and introduces new
+functions dealing only with cleanup.  Assuming an RFC 88 finally clause
+added to C++ would help, if and only if and only if (if I understand it
+correctly)  the handles  can  be closed  _at  the end_  of the  cleanup
+process. That would produce:
+
+  FILE *handle1 = NULL, *handle2 = NULL, *handle3 = NULL;
+  try {
+    handle1 = fopen ( ... );
+    handle2 = fopen ( ... );
+    handle3 = fopen ( ... );
+    ...
+  }
+  catch ( error_type_1 ) {
+    // ... report error type 1, handle it
+  }
+  catch ( error_type_2 ) {
+    // ... report error type 2, handle it
+  }
+  catch ( ... ) {
+    throw;
+  }
+  finally {
+    if ( handle1 ) close ( handle1 );
+    if ( handle2 ) close ( handle2 );
+    if ( handle3 ) close ( handle3 );
+  }
+
+I'm not sure how the "catch  ( ... )"'s rethrow would interact with the
+finally clause,  that seems to be  an area of  discussion regarding the
+differences between RFC 63 and RFC 88.
+
+=head2 Goals of exceptions
+
+This is my list so far, feel free to suggest more.
+
+In the examples thus far, each "fopen" call could independently fail,
+but the overall program appears to  need to open all three, or none, in
+a somewhat atomic  manner.  While the code to deal  with a single fopen
+call  and  the  possibility  that  it  fails  is  straightforward,  the
+complexity of  the situation results  from the polynomial  explosion of
+code  and branches  resulting  from increasing  numbers of  operations.
+This is my justification for the first 6 items on the list.
+
+While I have nothing against  OO techniques (I've found C++ OO features
+useful for a compiled language), it is somewhat cumbersome to deal with
+OO for small projects.  Perhaps some of the "make everything an object"
+RFCs for Perl6 will sidestep  that cumbersomeness, and moot this point.
+However, until or unless that is  achieved, I'd rather not be forced to
+use objects  to achieve  exception handling.  On  the other  hand, when
+building  large system, having  an exception  object might  be helpful.
+This is my justification for item 7.
+
+1) Keep the cleanup code near the setup code, to keep it understandable
+
+2) Keep the cleanup code in the  same scope as the setup code, to avoid
+   hoisting variables into higher scopes.
+
+3) Avoid  redundancy and complex  control flow  in the  visible cleanup
+   code paths.
+
+4) Achieve  a  structured  form  of  non-local goto  to  allow  exiting
+   multiple levels  of subroutine calls  without coding tests  of error
+   conditions at every level within the stack.
+
+5) Achieve good default reporting of uncaught exceptions.
+
+6) Make exception  handling the default  (or only) method  of operation
+   for Perl code
+
+7) Permit use of exception objects, but don't require them.
+
+
+=head2 Techniques for exceptions
+
+=head3 Technique for goals 1-3
+
+Add new  except and  always clauses  that can modify  a statement  or a
+block:
+
+  statement1 except statement2 always statement3;
+
+Any of  statement1, statement2 or  statement3 can be made  into blocks,
+with the result  that scoping problems resurface, but  often times they
+wouldn't need to be blocks.
+
+If execution of the containing scope reaches statement1, it is executed
+as normal.  Because it contains  an always clause, statement3 is pushed
+on the stack  of cleanup code to be executed when  the scope exits, and
+because it  contains an except clause,  statement2 to be  pushed on the
+stack of cleanup code to be  executed if an exception occurs.  There is
+logically only one stack of cleanup  code, so the order of execution of
+the cleanup  statements is  always consistent, although  some of  it is
+conditional.   For  the statement  above,  statement2  would always  be
+executed  before  statement3 if  an  exception  occurs.  Statement2  is
+omitted if  no exception  occurs.  Statement 3  is omitted only  if the
+scope exits prior to statement1 being executed.
+
+For example (I'll use Perl language examples henceforth):
+
+  $handle1 = open ( "<file1" ) always close ( $handle1 );
+  throw "Error opening file1" if ! defined $handle1;
+  $handle2 = open ( "<file2" ) always close ( $handle2 );
+  throw "Error opening file2" if ! defined $handle2;
+  $handle3 = open ( "<file3" ) always close ( $handle3 );
+  throw "Error opening file3" if ! defined $handle3;
+
+If you assume that Perl6 open  gets enhanced to throw an exception when
+it fails, you can simplify this to:
+
+  $handle1 = open ( "<file1" ) always close ( $handle1 );
+  $handle2 = open ( "<file2" ) always close ( $handle2 );
+  $handle3 = open ( "<file3" ) always close ( $handle3 );
+
+
+=head3 Technique for goals 4, 5 & 7
+
+Add a  new throw  clause to achieve  a structured non-local  goto.  The
+throw statement takes a list as  a parameter, and can be qualified with
+the usual conditionals.   This comes in OO and  non-OO forms to address
+goal 7.
+
+So you can
+
+   throw "Error opening file1";
+
+or (printf-like throw)
+
+   throw "Error opening file %s", "file1";
+
+or (OO throw)
+
+   throw new Exception::Error ("Error opening file", "file1");
+   throw new Exception::Success ("The answer is", 17 );
+
+or (rethrow)
+
+   throw; # throws @_
+
+Definition:
+
+  OO throw: a throw that throws a single object reference parameter.
+
+Now a non-local goto  has to have a target, so that  is provided by the
+catch  statement, which  is  a  sub-like block.   There  are rules  for
+finding  the  appropriate  catch  statement,  listed  later.   A  catch
+statement gets  a new @_ which  is initialized to the  list supplied to
+the throw.  (N.B. if it is desired  to not mask the @_ in the enclosing
+sub from being seen by the catch block, a different array could be used
+for these special catch subs...  but all the examples assume @_.) These
+catch examples all use die to make  the errors fatal, but if die is not
+used, execution would continue  with the next non-catch statement after
+the executed catch statement.
+
+   catch { die join ( ", ", @_ ); }
+
+or (printf-like catch)
+
+   catch { my ( $msg, @parm ) = @_; die sprintf "$msg\n", @parm; }
+
+or (conditional catch)
+
+   catch ( $_[0] =~ /^Error/ ) { die join ( ", ", @_ ); }
+
+or (simple OO catch)
+
+   catch { die $_[0]->message; }
+
+or (complex OO catch)
+
+   catch Exception::Error { die $_[0]->message; }
+   catch Exception::Success ( print $_[0]->message; exit ( 0 ); }
+   catch Exception { die "unexpected:" . sprintf $_[0]->message; }
+
+When a  catch statement  is encountered in  the normal flow  of control
+(falling from one  statement to the next), it  is not executed.  Rather
+is is removed from the list of candidate catch statements that might be
+used as targets of a subsequent throw.
+
+What  about the  rules for  determining  which catch  statement is  the
+target of  a particular  throw?  A combination  of lexical  and dynamic
+scope rules, which aren't that different from those for C++.
+
+Definition:
+
+  appropriate catch statement
+
+  case 1: for  an OO throw, an appropriate catch  statement is one that
+  lists the class of the reference thrown.
+
+  case 2: for other throws,  an appropriate catch statement is one that
+  doesn't list  a class name, and  either has no expression,  or has an
+  expression which  is true  when evaluated (with  @_ referring  to the
+  parameters thrown).
+
+Catch selection rules:
+
+- If the scope containing the throw contains catch statements, they are
+  examined in  source code order  to determine if any  are appropriate.
+  The  first appropriate  catch statement  after the  current execution
+  point in the scope is used.
+
+- If rule1 doesn't yield an appropriate catch statement, all except and
+  always clauses  for that scope  are logically popped off  the cleanup
+  stack and  executed (in reverse order,  that's why it  is logically a
+  stack).
+
+- Each  lexically larger  scope  within  the sub  is  examined in  like
+  manner, using  the above two rules.   There is one  exception to this
+  rule: if  the throw  is within  the scope of  a catch  statement, the
+  scope  containing that  catch statement  is  not examined  to find  a
+  handler for  such embedded throws.  See example below.
+
+- If the sub  contains no appropriate catch statement,  the above three
+  rules are used for each sub found on the call stack.
+
+- There are  two implicit catch phrases  at the end of  the outer scope
+  which address goal 5:
+
+  catch UNIVERSAL { die "uncaught OO throw: $_[0]"; };
+  catch { die "uncaught throw: @_"; }
+
+
+Example for rule three's exception:
+
+  {
+    # some code, in which it, or something it calls, does a "throw 37"
+    catch ( $_[0] == 37 ) {
+      # the throw is caught here
+      { down inside some nested scope or call, someone does
+        throw 38;
+      }
+      # if there were a "catch ( $_[0] == 38 ) { ... }" here, it would
+      # be allowed to catch the throw 38.
+    }
+    catch ( $_[0] == 38 ) {
+      # this should not  catch throws from within catch  clauses at the
+      # same lexical scope, because a catch at this lexical level is
+      # already in progress.
+    }
+  }
+  catch ( $_[0] == 38 ) {
+    # but this one should catch it!
+  }
+
+The  whole point  being that  only  one catch  in a  scope should  ever
+execute until it is complete,  and that errors within a catch statement
+or block should be caught within  that statement or block, or be passed
+to  outer scopes  to be  caught there.
+
+=head2 Results
+
+New  statements  throw  &   catch,  with  semantics  similar  to  their
+counterparts in other languages.
+
+New clauses  except and  always which localize  cleanup code  near, and
+potentially in the same scope as, the corresponding setup code.
+
+Two new implicit catch phrases.
+
+Orthogonality with eval/die for compatibility.
+
+Support for both OO and structured programming.
+
+
+=head2 C++-like Usage
+
+When  putting  all the  above  features  together,  it is  possible  to
+construct syntax that looks very  similar to the equivalent C++ syntax.
+This  might seem  familiar to  some, as  a way  to ease  into  the more
+powerful Perlish syntax  proposed here.  An example along  the lines of
+the earlier examples would be:
+
+// repeat of earlier C++ example
+
+  try {
+    handle1 = fopen ( ... );
+    handle2 = fopen ( ... );
+    handle3 = fopen ( ... );
+    ...
+  }
+  catch ( error_type_1 ) {
+    // report error type 1, handle it
+    if ( handle1 ) close ( handle1 );
+    if ( handle2 ) close ( handle2 );
+    if ( handle3 ) close ( handle3 );
+  }
+  catch ( error_type_2 ) {
+    // report error type 2, handle it
+    if ( handle1 ) close ( handle1 );
+    if ( handle2 ) close ( handle2 );
+    if ( handle3 ) close ( handle3 );
+  }
+  catch ( ... ) {
+    if ( handle1 ) close ( handle1 );
+    if ( handle2 ) close ( handle2 );
+    if ( handle3 ) close ( handle3 );
+    throw;
+  }
+
+Corresponding Perl example using some of the features of this RFC:
+
+# Note, try keyword is not needed, because exception handling is always
+# available.  The "try" block is only needed to be C++-like in bundling
+# together  all   the  "except"   processing  (which  is   better  left
+# distributed IMHO).
+
+  my ( $handle1, $handle2, $handle3 );
+  {
+    $handle1 = open ( ... );
+    $handle2 = open ( ... );
+    $handle3 = open ( ... );
+    ...
+  }
+  always {
+    close ( $handle1 );
+    close ( $handle2 );
+    close ( $handle3 );
+  }
+  catch error_type_1 {
+    # report error type 1, handle it
+  }
+  catch error_type_2 {
+    # report error type 2, handle it
+  }
+  catch {
+    throw;
+  }
+
+
+It should  be noted that the  last catch phrase in  both examples above
+could  be omitted without  semantic change  in both  C++ and  using the
+facilities of  this RFC.  It is just  shown to indicate how  to write a
+phrase  which catches  everything else,  and  how to  code an  explicit
+rethrow of the same exception.
+
+This same  example could  be shortened as  follows, using  the complete
+power of the syntax in this RFC.
+
+  my $handle1 = open ( ... )  always close ( $handle1 );
+  my $handle2 = open ( ... )  always close ( $handle2 );
+  my $handle3 = open ( ... )  always close ( $handle3 );
+  ...
+  catch error_type_1 {
+    # report error type 1, handle it
+  }
+  catch error_type_2 {
+    # report error type 2, handle it
+  }
+
+
+=head2 Conversion wrappers
+
+Perl5 doesn't have exceptions, except that eval can be used as a way to
+catch "die" statements,  which were originally intended to  be used for
+fatal errors only.  Hence, most extant code uses some form of non-fatal
+error handling  based on returning the  success or failure  of a called
+subroutine via  parameters, return  values, or global  variables.  This
+doesn't get  broken by this RFC,  neither does it  get "fixed".  Extant
+code must be modified to  leverage the simpler interfaces, and powerful
+features of this RFC.  It  is not expected that such modification would
+be automatic.
+
+But because  die can be  caught via eval,  some code uses  the eval/die
+metaphor (intended  for fatal error  processing) to substitute  for the
+missing catch/throw  metaphor for non-fatal errors  and other exception
+conditions.  This RFC doesn't interfere with code that misuses eval/die
+in that  manner, but it  provides an alternative  that can be  used for
+non-fatal errors.
+
+Hence, with this RFC in  force, there would be three orthogonal methods
+of dealing with error conditions; let me name and define them:
+
+Return  method:  the use  of  returned  booleans,  or undef,  or  other
+distinguished values of  the return value of a function;  or the use of
+subroutine  parameters or  global  values to  indicate  the success  or
+failure of a function.  This  method is ad hoc--it varies from function
+to function--although there are a  large number of perl primitives that
+conform to the rule that a false return value implies failure.
+
+die  method: the  use  of die  to  indicate a  fatal error.   Sometimes
+misused by trapping  die to allow die to be  used to indicate non-fatal
+errors.
+
+throw method: the use of throw  to indicate a non-fatal error, or other
+exception condition.
+
+
+It is  possible to write wrapper  subs (and even  wrapper modules) that
+convert one type of interface to any of the others.  When converting to
+the  die or  throw  methods, the  prototype  and usage  of the  wrapper
+function can  be identical to  that of the underlying  function, except
+that the technique for checking for errors changes.  When converting to
+the return method,  it might be necessary to  make the prototype and/or
+usage  of  wrapper  function  different  than that  of  the  underlying
+function  to  make  room   for  a  failure  indicator,  and/or  failure
+description information.
+
+Clearly such  wrappers would have to  be customized to  the extent that
+they might be context  sensitive (hopefully RFC21, if implemented, gets
+extended to implement an appropriate way  to invoke a called sub in the
+same or  equivalent context as  the caller sub,  to ease the  burden of
+writing such wrapper subs), and  to the extent that errors are returned
+via techniques other than a scalar  return value.  But the point of the
+wrapAPIs  in the next  section is  to show  a technique  for converting
+exception based interfaces to and from non-exception based interfaces.
+
+
+=head2 Wrapping return method with die method
+
+Assuming a scalar false return  value implies error, and that the error
+text is found in $!, results in:
+
+sub wrapAPI {
+  my $ret = API;
+  throw $! unless $ret;
+  return $ret;
+}
+
+More  complex functions  may require  more complex  wrappers,  but this
+suffices  to illustrate the  point.  The  Fatal.pm module  can generate
+such wrappers dynamically for  many Perl builtin functions that conform
+to the "return false" convention.
+
+=head2 Wrapping return method with throw method
+
+Assuming a scalar false return  value implies error, and that the error
+text is found in $!, results in:
+
+sub wrapAPI {
+  my $ret = API;
+  throw $! unless $ret;
+  return $ret;
+}
+
+More  complex functions  may require  more complex  wrappers,  but this
+suffices to illustrate the point.  A module Throw_non_fatal.pm could be
+written after  the manner of Fatal.pm  to create such  wrappers for the
+same set of Perl builtin functions supported by Fatal.pm.
+
+=head2 Wrapping die method with the throw method
+
+sub wrapAPI {
+  my $ret = eval 'API';
+  throw $@ unless defined $ret;
+  return $ret;
+}
+
+=head2 Wrapping throw method with the die method
+
+sub wrapAPI {
+  my $ret = API;
+  catch { die @_; };
+  return $ret;
+}
+
+=head2 Wrapping the throw method with the return method
+
+Assuming a function that doesn't presently use false as a return value.
+
+   sub wrapAPI {
+     my $ret = API ( @_ );
+     catch { $! = join ( ', ', @_ ); return undef; };
+     return $ret;
+   }
+
+=head2 Wrapping the die method with the return method
+
+Assuming a function that doesn't presently use false as a return value.
+
+   sub wrapAPI {
+     my $ret = eval 'API';
+     if ( ! defined $ret ) {
+       $! = $@;
+       return undef;
+     }
+     return $ret;
+   }
+
+
+=head1 IMPLEMENTATION
+
+Not much clue.   Clearly this extends the amount of  code that might be
+executed  in  an order  other  than  the  default linear  order.   Some
+thoughts on things that might be useful.
+
+At the  beginning of  a new scope,  all the  catch blocks in  the scope
+could be unshifted  onto a list of candidate  catch blocks for possible
+throws.   Then as  each catch  block is  encountered during  the normal
+execution order,  it could be  shifted off, because  it is no  longer a
+candidate.   However, this  is probably  inefficient, because  unless a
+throw  occurs, it  is work  in vain.   A more  efficient implementation
+would probably search a per-scope  list of catch blocks for candidates,
+with  the  relative  position of  the  catch  block  being one  of  the
+parameters to the search algorithm.
+
+The  except and  always clauses  are described  as a  stack,  and could
+possibly  be implemented  that  way.  While  that  is a  simple way  to
+conceptualize  them, it  is probably  more efficient  to  regroup these
+clauses for each scope (causing the generated code to be in a different
+order than  the source code), and  place the clauses  in reverse order.
+Then execution of  those clauses could be almost  normal, but the point
+of entry  to those regrouped clauses  would vary based on  the point in
+the  code at  which  an exception  occurs,  or a  branch  or return  is
+encountered that  leaves the scope.   Another note of interest  here is
+that to support  object destruction at end of  scope, there are already
+hooks in  Perl5 to run code upon  scope exit, so the  except and always
+clauses could conceivably leverage those hooks.
+
+One  thing that  might be  helpful  is if  p52p6 could  convert, as  an
+option, eval/die  code, and  code derived from  eval/die (such  as that
+using  Try.pm  and Error.pm)  to  catch/throw  code.   This would  help
+alleviate the misuse  of fatal error handling as  an exception handling
+technique.
+
+
+=head1 Differences between RFC88v2d5 and RFC 119
+
+While this comparison  is to RFC88v2d5, references will  be made simply
+as RFC 88, for simplicity.
+
+=head2 Scope
+
+RFC 119 is orthogonal to  eval/die--it is a new mechanism for exception
+handling.   RFC 88  fancies  up eval/die  with  new syntax  to make  it
+pleasant to  use for exception handling,  but as a  result leaves fatal
+error  handling and  exception  handling as  a  single mechanism.   One
+unfortunate side effect  of that is that fatal  errors generally should
+be fatal, and using the  same mechanism for non-fatal errors means that
+the mechanism gets  turned on, and then sees any  fatal errors as well.
+This just about eliminates the  usefulness of RFC 88's catch-all clause
+(the one that can catch any exception, by not specifying a condition to
+the catch clause),  because all the fatal errors  would get captured by
+it.  Hence, each  catch clause would have to  select just exactly those
+types of parameters that it truly  knows how to handle, and anything it
+doesn't know about, that gets added later, wouldn't be handled.
+
+=head2 What gets thrown
+
+RFC 88 specifies that an exception object always exists, and that it is
+of  some particular  type.  Should  anything  else be  thrown, it  gets
+stringified and wrapped into an exception object.  RFC 119 doesn't make
+such  a  specification,  but  a  similar technique  could  be  used  to
+implement and extend RFC 119.  However, there are a couple gotchas:
+
+RFC 119  wants to make  available to the  catch block exactly  the same
+list of  parameters supplied to throw.   This is prevented  by RFC 88's
+stringification and concatenation of  parameters.  Were RFC 88 extended
+such  that its message  parameter could  be a  list reference,  then it
+could  store   the  actual  parameters   to  the  throw   clause.   The
+stringification  and concatenation  could  be deferred  until the  user
+requests  such a  stringification by  calling some  API to  obtain "the
+message".   This would  allow the  original parameters  to throw  to be
+available to the catch block.
+
+RFC 119  makes those  parameters available to  the catch block  via @_,
+whereas  RFC  88  doesn't  presently  make  the  parameters  available.
+Earlier versions of RFC 88 used  @_ for other purposes, but at least in
+draft 5 @_  is not used.  A  possible way to reconcile RFC  88 with RFC
+119 would be to extend RFC 88 to set @_ to the saved list of parameters
+from throw (presuming the extension in the prior paragraph as well).
+
+=head2 Control flow: except, finally, and always
+
+RFC 88 uses  the finally keyword as a subclause  introducer for the try
+statement.  RFC  119 uses the  except and always keywords  as subclause
+introducers for  any statement.  The  basic purpose of the  keywords is
+the same: to specify code that will get executed if the scope is exited
+due to an  exception.  However, there are some  differences, beyond the
+type of statement to which they can be attached.
+
+RFC 119's except clause is  executed only if an exception occurs, which
+exits the scope containing the statement in which it is defined.
+
+RFC 88's finally clause is executed  if an exception occurs, or if flow
+of control  falls out  of the bottom  of the  try statement. It  is not
+clear whether  the finally clause is  executed if the  try statement is
+exited via a goto or return, but  the statement is made that once a try
+statement  is entered,  it is  guaranteed  that the  finally clause  is
+entered,  but none  of  the  discussion mentions  exiting  via goto  or
+return.
+
+RFC 119's always clause is executed  if an exception occurs, or if flow
+of control exits the scope in any other manner.
+
+If RFC 88's finally clause is executed when the try statement is exited
+via goto or return, then RFC  119 would be happy to rename its "always"
+clause to "finally", and the techniques would be more uniformly named.
+
+RFC 88  permits multiple  finally clauses for  a single  try statement.
+The explanation  about why multiple  finally clauses are  needed points
+out the  benefit to specifying  such logic closer  to the point  of the
+setup code.
+
+RFC  88 has  nothing  that  directly corresponds  to  RFC 119's  except
+clause, although that logic could be  included at the end of each catch
+clause.
+
+It  is probably  possible to  code equivalent  exception  handling code
+using either the techniques in RFC  88 or the techniques in RFC 119.  I
+believe that  any needed exception  handling logic can be  expressed at
+least as  concisely and clearly using  RFC 119 than using  RFC 88.  For
+example,  in the  section "C++  like  example", the  2nd example  looks
+remarkably like RFC 88 syntax,  but the 3rd example demonstrates a more
+concise representation not available in RFC 88.
+
+=head2 Default error reporting
+
+RFC  88, together with  RFC 80,  define a  large collection  of default
+behaviors for the exception class  and objects.  While RFC 119 provides
+the "bare necessities"  to do exception handling (a  list of parameters
+is  passed  through), the  exception  class  does  define a  number  of
+implicit  features  that  would  be  extremely  useful  for  debugging,
+although  most  of  them  could  be  considered  "extra  baggage"  once
+debugging is complete.  [Is debugging ever complete? :)]
+
+If the  suggestions in the section  "What gets thrown"  were taken, all
+those implicit features could be merged into RFC 119.
+
+I'd like to see two modes of operation by the exception class: "normal"
+and  "debug",  where  normal  omitted  many of  the  implicit  features
+(preserving the call  stack, debug info, object info,  etc.), but could
+be turned  on easily  across all loaded  modules via some  command line
+switch.
+
+
+=head2 Hooks
+
+RFC 88 has a large number of hooks, including at least
+
+       on_catch
+       on_catch_enter
+       on_catch_exit
+       on_finally_enter
+       on_finally_exit
+       on_raise
+       on_throw_enter
+       on_throw_exit
+
+All of these hooks are scoped,  in that they only affect only the stuff
+called  at lower  levels.   However,  that means  that  at each  module
+boundary API, for each module that uses RFC 88 exception handling, that
+the outermost try block in  each interface function must explicitly set
+all the  hooks in the specific  manner that the  module requires.  This
+could  be cumbersome.   But  if it  is  not done,  upper modules  could
+adversely affect the proper functioning of modules they use.
+
+=head1 REFERENCES
+
+RFC 21: Subroutines: Replace C<wantarray> with a generic C<want> function
+
+RFC 63: Exception handling syntax
+
+RFC 80: Exception objects and classes for builtins
+
+RFC 88: Omnibus Structured Exception/Error Handling Mechanism
+
+CPAN error.pm

@@ -1,0 +1,104 @@
+=head1 This Week on perl5-porters (1-7 December 2003)
+
+I<I like tie> could be the summary of this week's summary. But it would be
+a bit terse, wouldn't it ? Read on for the details.
+
+=head2 Tied hashes and scalar context
+
+This was the highest volume topic this week. Rafael pointed out that tied
+hashes in scalar context always return 0 with perl <= 5.8.2, which is
+obviously not a good thing ; and with perl 5.9.0 using a hash in scalar
+context yields a fatal error, which has the benefit of not returning a
+wrong value, but which is not backwards-compatible and most inconvenient.
+So he called for action.
+
+    http://groups.google.com/groups?threadm=20031203022335.39c35723.rgarciasuarez%40free.fr
+
+Tassilo von Parseval proposed to add a SCALAR() method to tied hashes, to
+be called when a hash is used in scalar context. When the class the hash
+is tied to doesn't provide this method, perl could try to make some
+educated guesses. For example, if the hash is in the middle of an
+iteration, this means that it isn't empty. Thus perl could return a true
+value to indicate this. Moreover, if the hash is not iterating, perl could
+call FIRSTKEY() if it can't find SCALAR(). The base class Tie::StdHash
+could include a default implementation of SCALAR(). Tassilo provided a
+patch, which got applied.
+
+Yitzchak Scott-Thoennes spots a minor gotcha though : removing the last
+element from a hash will leave the iterator set. So, should C<scalar(%h)>
+reset C<%h>'s iterator ? or implement a smarter fall-back strategy ?
+Tassilo decided to document this fact for now.
+
+    http://groups.google.com/groups?threadm=20031207025958.GA2700%40efn.org
+
+=head2 Extending the tied scalar interface
+
+Tassilo also proposed to add a C<SUBSTR> method to tied scalars. Dave
+Mitchell remembered the old problem about new optional tie methods, that
+they don't play well with inheritance and backwards compatibility. Michael
+Schwern and Elizabeth Mattijsen suggest to wait for Ponie and its
+underlying Parrot vtables to clean up the mess.
+
+    http://groups.google.com/groups?threadm=20031204100156.GA15074%40ethan
+
+=head2 CLONEing
+
+Stas Bekman is working on a piece of documentation about the CLONE()
+method; more specifically, on a full-fledged example aimed at CLONE()
+method authors. While doing so, he remarked a problem with XS functions
+called from CLONE() methods, on perl 5.8.2 and later : they receive the
+arguments to C<< threads->new() >>. This problem is avoided if the XS
+module defines PERL_NO_GET_CONTEXT.
+
+    http://groups.google.com/groups?threadm=3FCDAC86.8070907%40stason.org
+
+=head2 In Brief
+
+Leon Brocard released the first snapshot of perl 5.005_04-to-be.
+
+    http://groups.google.com/groups?threadm=20031205170609.GA29131%40kanga.astray.com
+
+A remark of Nick-Ing Simmons about a compilation issue in Tk led to a
+discussion of advantages of C inline functions vs CPP macros.  Macros won.
+
+    http://groups.google.com/groups?threadm=20031201192441.17478.2%40llama.elixent.com
+
+Arjen Bax reports that localtime() doesn't seem to take into account the
+timezone under Cygwin with perl 5.8.2. (Bug #24582.)
+
+Matthias Ulrichs manages to produce a I<Bizarre ARRAY copy> error with a
+small program, running under perl 5.8.2 + threads. (Bug #24589.)
+
+Randal L. Schwartz reports a bug in CGI::Carp : it doesn't seem to ever
+output a header. Lincoln Stein says it's already fixed in his development
+copy.
+
+    http://groups.google.com/groups?threadm=86u14hzkwo.fsf%40blue.stonehenge.com
+
+Alberto Manuel Brandão Simões has problems with using DB_File and UTF-8
+keys from an UTF-8 source script. Roman Vasicek suggests to use a DBM
+filter.
+
+    http://groups.google.com/groups?threadm=1070484684.714.1.camel%40holst.di.uminho.pt
+
+Rafael Garcia-Suarez and Arthur Bergman provided some more comments about
+how and when C<CHECK> and C<INIT> blocks are run, discussing the
+possibility of adding a new kind of block, C<START>.
+
+    http://groups.google.com/groups?threadm=p05111b03bbf3754332ec%40[192.168.56.3]
+
+Tels pre-released Math::BigInt 1.67.
+
+    http://groups.google.com/groups?threadm=200312062016.50484%40bloodgate.com
+
+Thomas Klausner anounced the release of Module-CPANTS-Generator 0.010, I<a
+framework to test all distributions on CPAN for 'kwalitee'.>
+
+    http://groups.google.com/groups?threadm=20031205205548.GB1578%40zsi.at
+
+=head2 About this summary
+
+This summary was written by Rafael Garcia-Suarez. Weekly summaries are
+published on F<http://use.perl.org/> and posted on a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. Corrections
+and comments are welcome.

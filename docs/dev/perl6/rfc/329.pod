@@ -1,0 +1,52 @@
+=head1 TITLE
+
+C<use syntax>
+
+=head1 VERSION
+
+  Maintainer: Simon Cozens <simon@brecon.co.uk>
+  Date: 28 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 329
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+A pragma to modify the syntax of Perl 6 at run time. Oh yes.
+
+=head1 DESCRIPTION
+
+So, maybe the Perl 6 crack pipe finally got around to me, but it
+seems to me that if we've got a parser that we can modify and add hooks
+to in Perl space (see RFC 314) then we can alter Perl's syntax using
+pragmata.
+
+Combining this with source filters means that we can arrange for the
+line
+    
+    use syntax "perl5";
+
+to enable legacy Perl programs to run under Perl 6.
+
+I briefly considered
+
+    {
+        use syntax "python";
+    }
+
+and nearly lost my lunch.
+
+Seriously, though, I think if we have a flexible parser that we can
+modify in Perl space, interpreting legacy versions of Perl or inferior
+languages could quite definitely become possible.
+
+=head1 IMPLEMENTATION
+
+First, implement 314. Then construct grammars for what we want to parse,
+and ensure that the parser is flexible enough to allow them as alternate
+grammars.
+
+=head1 REFERENCES
+
+RFC 314

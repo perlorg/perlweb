@@ -1,0 +1,107 @@
+=head1 This Week on perl5-porters (16-22 September 2002)
+
+That's on a week like this that you realize that lots of porters are
+European (and managed to free themselves for YAPC::Europe.) Or were they,
+on the contrary, too busy in the big blue room ? On the other hand, the
+number of bug reports stayed at its habitual average level.
+
+=head2 Pedantic compilation
+
+Jarkko Hietaniemi provided a patch to add the -ansi -pedantic flags for
+gcc on core C files. This triggered a bit of discussion, as those B&D
+flags will be useful for the porters only, but may cause trouble to casual
+users who want to compile perl on less common platforms. Jarkko then
+reworked his patch so -ansi -pedantic get enabled only if
+C<-Dgccansipedantic> is passed to Configure.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2002-09/msg00720.html
+
+=head2 Default install location
+
+Jarkko also proposed that the Configure symbol C<installusrbinperl> should
+be turned off by default. Currently, unless C<-Uinstallusrbinperl> is
+passed to Configure, (or if you're building a development version), a copy
+of perl will be installed in C</usr/bin/perl>, overwriting any previous
+(and maybe vendor-supplied) version, and regardless the installation
+prefix you passed to Configure.
+
+Jarkko's idea was followed by a massive approval. He then offered a patch
+that I<defaults to not overwriting /usr/bin/perl if one exists, but it
+will still default to creating one if one does not exist.>
+
+    http://groups.google.com/groups?threadm=20020919035818.GE178196%40lyta.hut.fi
+
+=head2 Closures in BEGIN blocks don't feel OK
+
+Rafael Garcia-Suarez proposed to the audience a coredump case :
+
+    BEGIN { $f = sub { eval $_[0] } }   
+    $bar = "ok\n";
+    print $f->( '$bar' ) ;
+
+The cause of the coredump wasn't difficult to trace : the memory for the
+BEGIN block has been free'd, and the closure still refers to the
+non-existent lexical scope of the enclosing BEGIN block, where it looks
+for $bar -- provoking a core dump.
+
+The problem, still not solved, is to figure out what is the right thing
+perl has to do in this case (and in some other similar cases, e.g. when
+there's a lexical $bar in the BEGIN block.)
+
+    http://groups.google.com/groups?threadm=20020917232515.7c413109.rgarciasuarez%40free.fr
+
+=head2 perlopentut
+
+Andy Lester courageously began to work on the perlopentut manpage, that
+wasn't actually up-to-date with the last improvements that were made on
+the open() syntax. He produced three successive versions of a patch,
+introducing to perlopentut the 3-arg form of open() and the indirect
+(lexical) filehandles.
+
+    http://groups.google.com/groups?threadm=20020919154346.GA11114%40petdance.com
+    http://groups.google.com/groups?threadm=20020920035935.GA13547%40petdance.com
+    http://groups.google.com/groups?threadm=20020920172341.GA15672%40petdance.com
+
+=head2 Smoke effort
+
+Alain Barbet continued to produce huge smoke reports, adding new compilers
+to his list (now with Borland on Windows). He also suggested to build a
+web-accessible database of smoke builds. And not only suggested. He
+actually provided a draft application containing his results. Thanks Alain !
+
+    http://groups.google.com/groups?threadm=3D8DB756.3090104%40jupiter.alianet
+
+=head2 In brief
+
+H.Merijn Brand provided a patch to remove the support for C<-DLEAKTEST>,
+which was broken anyway (see previous week's summary).
+
+John Peacock told us that he was in the process of releasing a v-string
+module, C<version.pm>, to CPAN. As he says, I<the code is intended to be
+basically 100% equivalent to the code which will be included in 5.10>, but
+backported to perl 5.005_03 ! (or should it be v5.5.3 now ?)
+
+Abhijit Menon-Sen, who was rare on the list these few last months, rapidly
+fixed obscure bug #17375 (C<< $r .= <FH> >> not working properly when $r
+has been undefined.) 
+
+The person who reported bug #17422 -- the RT system didn't gave his name
+-- reported that the GLOB_NOCASE flag of File::Glob doesn't appear to have
+any effect when one wants to glob a wildcard pattern that doesn't contain a
+wildcard character. Rafael Garcia-Suarez suggested that this might be the
+desired behavior. No further comments were made.
+
+Another memory leak problem with shared arrays has been reported (bug
+#17460). In fact this problem is already known and will be hopefully fixed
+by an upcoming release of the threads::* modules on CPAN.
+
+H.Merijn Brand is now officially the Configure pumpking (and that's a
+scary task). The new mailing list F<perl5-build> (at the usual domain)
+will be dedicated to discussions about Configure and metaconfig (the tool
+used to generate the Configure script).
+
+=head2 About this summary
+
+This summary brought to you by Rafael Garcia-Suarez, from Lyon, France, a
+city that's not that close to Munich. It's also available via a mailing
+list, which subscription address is F<perl5-summary-subscribe@perl.org>.

@@ -1,0 +1,125 @@
+=head1 TITLE
+
+More direct syntax for hashes
+
+=head1 VERSION
+
+  Maintainer: Nathan Torkington <gnat@frii.com>
+  Date: 5 Sep 2000
+  Last Modified: 15 Sep 2000
+  Mailing List: perl6-language-data@perl.org
+  Number: 196
+  Version: 2
+  Status: Frozen
+
+=head1 ABSTRACT
+
+C<scalar(%hash)> should return what C<scalar(keys %hash)> currently
+returns.
+
+C<reset %hash> should reset the hash iterator, instead of calling
+C<keys> or C<values> as is currently the case.
+
+The parser should special-case the variations of C<sort %hash> so
+that it returns the keys and value, calling the comparison function
+for keys.
+
+=head1 CHANGES
+
+ * Clarified that new reset() syntax doesn't clash with existing
+ * Fixed braino in description of "sort %hash"
+
+=head1 DESCRIPTION
+
+While Perl has hashes as a built-in data type, the mechanism for
+working with hashes is often built on top of list primitives.  While
+this is acceptable, it's not as convenient as it could be.  I'm
+arguing for more direct support of hashes in the language.
+
+Proposal 1 is that a hash in scalar context evaluate to the number
+of keys in the hash.  You can find that out now, but only by using
+the C<keys()> function in scalar context.
+
+Currently C<%hash> in scalar context returns a false value if %hash
+is empty, or a string like "4/8" showing how full the hash data
+structure is.  This string is rarely useful to the programmer.
+Mostly it's just used for its true/false value:
+
+  if (%hash) { ... }
+
+Proposal 1 would retain that use, but also make:
+
+  $count = %hash;
+
+analogous to
+
+  $count = @array;
+
+
+Proposal 2 is that the iterator in a hash be reset through an explicit
+call to the C<reset()> function.  In perl5, one must call C<keys()>
+or C<values()> to reset the iterator, an odd overloading of these
+functions behaviour.  I propose that the C<keys()> and C<values()>
+functions no longer have this side-effect, but instead reset() be
+used:
+
+  keys %hash;	# reset the iterator in perl5
+  reset %hash;	# same but in in perl6
+
+This function more obviously describes what is happening.  reset()
+also has a meaning, but that functionality does not clash
+syntactically with this new meaning.  In any event, the move away
+from global symbol table actions will probably remove the current
+functionality of reset().
+
+
+Proposal 3 is to have the parser identify C<sort %hash> and its
+variations, and automatically rewrite it.
+I'd like to be able to say:
+
+  foreach ($k,$v) (sort %hash) { ... }
+
+This would be equivalent to:
+
+  foreach ($k,$v) (map { $_ => $hash{$_}
+		   sort
+		   keys %hash)
+  { ... }
+
+Similarly one should be able to use a sort comparison function with
+a hash.  I do not expect this hash knowledge to apply to function
+calls or anything else that might return key-value pairs.  This is
+purely when the data to be sorted is in a hash variable.
+
+This relies on RFC 173's foreach() extensions to be useful.
+
+=head1 IMPLEMENTATION
+
+Proposal 1 simply changes the scalar value of a hash.  The old
+functionality would have to be available from a module for the perl526
+program to be able to translate any program that relied on this
+knowledge of the data structure (there are a few, though not many,
+that do).
+
+
+Proposal 2 removes the side-effects from keys() and values(), and
+puts it into reset().  The reset() function is going to need a
+profound overhaul anyway (given how intensely symbol-table driven
+it is) and it is the obvious place for this functionality.
+
+
+Proposal 3 could be done in the parser as a rewrite of the source
+code.  However, I suspect it would run faster if a flag on the sort()
+op said "you're getting a hash structure" and sort() took care of
+it all internally.  That'd avoid multiple op dispatches.  This is
+an implementation decision for better performance, though.  At the
+bare minimum, source code rewriting would implement the function
+with acceptable performance.
+
+=head1 REFERENCES
+
+RFC 173: Allow multiple loop variables in foreach statements
+
+perlfunc manpage for keys(), values() and reset() documentation
+
+perlsyn manpage for foreach() documentation

@@ -1,0 +1,660 @@
+=head1 TITLE
+
+Scope of Polymorphic References and Objects
+
+=head1 VERSION
+
+  Maintainer: Syloke Soong <syloke.soong@nsc.com>
+  Date: 15 Aug 2000
+  Last Modified: 16 Aug 2000
+  Mailing List: perl6-language@perl.org
+  Number: 108
+  Version: 2
+  Status: Developing
+
+=head1 ABSTRACT
+
+Syntax for Polymorping and Scoping References
+
+=head1 DESCRIPTION
+
+This is a proposal to define the scoping and overloading of Perl
+references.  The polymorphic signature is proposed to comprise the arglist
+members, candidate operators and the return list members. In other words,
+rather than the tradition of using just the head (java) or head+operator
+(c++), the proposal is for head+tail or head+operator+tail polymorphic
+signatures .
+
+=head1 IMPLEMENTATION
+
+Reference to RFC89 is recommended to relate to fixating or constraining
+the data type of a variable.
+
+For comprehension of this proposal, the following terms are held within
+the bounds of this document. The concept stays, notwithstanding.
+
+  var $a;
+  our $b;
+  my $c;
+  $d = 0;
+
+$a is defined to be referentiable as public.
+$b is defined to be referenced within protected bounds of a package .
+$c is defined to be referentiable only privately within a function.
+$d is defined implicitly to be referentiable privately within a file.
+
+
+=head2 A new object module declaration method
+
+Allow function arg list but continue to use @_;
+The following would be equivalent forms in Perl5 and Perl6, respectively:
+
+  package Pine::Tree::State;
+  sub genesis
+  {
+   my ($pkg, $oak, $maple) = @_;
+   my $a = {};
+   bless $a, $pkg;
+   return $a;
+  }
+
+  package Pine::Tree::State;
+  var genesis:(\new);
+  function new ($oak :int, $maple: double)
+  {
+   bless $a:const={}, genesis;
+   our $world={};
+
+   return $a;
+  }
+  function aux ($spruce:int)
+  {
+   my $world = this->$world; # this is instance handle of self object
+
+  # my $world = our->$world; # how about using our?
+  # my $world = my->$world; # or what about my?
+  }
+
+
+=head2 Overloading of references
+
+A reference may be overloaded with a search list, thus acting as a container.
+
+  my $a1:(int) = 3;
+  my $a2 = 4;
+  my $a3:(int);
+  my $a:($a1, $a2, $a3, double);
+
+$a is constrained in the following precedence 
+- references $a1 if an integer evaluation is done 
+- references $a2 if a liberal evaluation is done
+- references double if a double evaluation is done
+- $a3 is unreachable because $a1 is precedent in the search list
+
+  $a = 11; #equivalent to $a1 = 11;
+  $b:(int) = $a ; #equivalent to int $b = $a1;
+  $a = 11.1; $c:(double) = $a ; #equivalent to double $c = 11.1;
+  $a = 11.1; $c:(varchar) = $a ; #equivalent to varchar $c = '11.1';
+  $a = 11.9; $d:(int) = $a ; #equivalent to int $c = 11;
+  $a = 11.9 + 0.5 ; $ceiling:(int) = $a ; #equivalent to int $ceiling = 12;
+
+=head2 Overloading of object containers
+
+  package Pine::Tree::State;
+
+  var genesis:(\new_a, \new_b, \new_c); 
+  var habakuk:(\new_b, \new_c);
+  var getab:(\new_a, \new_b);
+
+  function new_a ($oak int, $maple double)
+  {
+   return bless $a:const={}, genesis;
+  }
+
+  function new_b ($oak:(varchar,int), $maple)
+  {
+   bless $a={},genesis;
+   bless $b={},habakuk;
+   my $c={};
+   var $r:($a,$b,$c); 
+
+   return $r;
+  }
+
+  function new_c (varchar $oak, $maple, $pine)
+  {
+   bless $a:const={}, (genesis,habakuk); 
+   return $a
+  }
+
+  #!/usr/bin/perl
+  use Pine::Tree::State;
+
+  my $a:(varchar,int);
+  my habakuk $pineapple = genesis Pine::Tree::State($a, 'Banana');
+  my $melon = genesis Pine::Tree::State($a, 'Banana');
+
+Blessing genesis confers it a constructor container. genesis is overloaded with
+two function references stored in an array. Refer to RFC89 for fixating the
+data type of a variable. getab is an overloaded function container but not of
+constructors.  new_c acts as a constructor through genesis or habakuk but not
+through getab.
+
+Matching a call to a member of a container is by means of a signature due to
+the combination of the function argument list and return list. RFC89
+suitability and precendent rules apply to matching signatures. The order of the
+array dictates the search order to match a call to the members of an overloaded
+reference.
+
+habakuk is an alternate constructor within the package.
+
+new_b is an insteresting constructor/function. Can you theorise what happens
+when new_b is activated through constructor container genesis, or constructor
+container habakuk, or object container getab?
+
+Notice new_b has arglist member $oak:(varchar,int), while new_c has varchar
+$oak.  Effects of type casting and contraint are propagated into the function
+body.
+
+Signature of new_b is invoked by the genesis of Pine::Tree::State by
+$pineapple. $new_b->$r is an overloaded reference. Return of $r is a
+polymorphic return. $pineapple invokes new_b through genesis but has a casted
+reception for habakuk. So even though it is genesis'ed it becomes a habakuk
+object. Meanwhile $melon becomes a genesis object by having the value of
+new_b->$r:$c returned to it. The liberal new_b->$r:$c is presented when a
+programmer desires to have a default return signature match.
+
+Presence of an arglist does not preclude the referentiability of @_; @_ allows
+variable number of arguments into a function.
+
+=head2 A new object module component exportability
+
+  package Pine::Tree::State;
+
+  var $A;
+  our $B;
+  my $C;
+  $D = 0;
+  var getx = \get_x;
+  our gety = \get_y;
+  my getz = \get_z;
+
+  var new : (\new_a, \new_b);
+  our $a={};
+
+  function new_a ($oak:int)
+  {
+   bless $a, new;
+
+   return $a
+  }
+
+  function new_b ($oak:int, $maple: double)
+  {
+   bless $a, new; 
+   var getz1 = \get_z1;
+   our getz2 = \get_z2;
+   my getz3 = \get_z3;
+
+   function $get_a1 = {return 'a1'};
+   function $get_a2 = {return 'a2'};
+   function $get_b = {return 'b'};
+   function $get_c = {return 'c'};
+
+   var geta = ($get_a,$get_a2);
+   our getb = $get_b;
+   my getc = $get_c;
+
+   var $h;
+   our $i;
+   my $j;
+   $k = 0;
+
+   return $a;
+  }
+
+  function new_b ($oak :int)
+  {
+   bless $a={}, new;
+
+   return $a
+  }
+
+  function get_x{ my ($a,$b) = @_;}
+  function get_y{ my ($a,$b) = @_;}
+  function get_z{ my ($a,$b) = @_;}
+  function get_z1{ my ($a,$b) = @_;}
+  function get_z2{ my ($a,$b) = @_;}
+  function get_z3{ my ($a,$b) = @_;}
+
+All functions are not accessible outside the file except that, get_x,
+get_z1, $get_a1, $get_a2, $h, $A are implicitly exported and referentiable
+by as
+
+  use Pine::Tree::State;
+  getx($a1,$b1);
+  my $p1 = new Pine::Tree::State ($oakhurst, $maplest);
+  $p1->getz1($a1,$b1);
+  $p1->geta($a1,$b1);
+  $p1->i = 0;
+  $A = 1;
+
+
+get_y, get_z2, $get_b, $i, $B are implicitly protected to be used and
+referentiable only within the package as,
+
+  package Pine::Spruce::City;
+  use Pine::Tree::State;
+  function pining
+  {
+   gety($a1,$b1);
+   my $p2 = new Pine::Tree::State ($oakhurst, $maplest);
+   $p2->getz2($a1,$b1);
+   $p2->getb($a1,$b1);
+   $p2->j = 0;
+   $B = 1;
+  }
+
+get_z3, $get_c, $j are implicitly private and referentiable only within the
+function new_b as,
+
+  getz3($a1,$b1);
+  getc($a1,$b1);
+  $j = 0;
+
+$C, $D and all the following functions are protected to be used within the file
+as,
+
+  $C = 0;
+  $D = 1;
+  getz($a,$b);
+  get_x($a,$b);
+  get_y($a,$b);
+  get_z($a,$b);
+  get_z1($a,$b);
+  get_z2($a,$b);
+  get_z3($a,$b);
+
+Use and not using of "my" outside any function to declare a reference
+within a file is indistinguishable as in the case of $C and $D.
+
+All functions defined inside function new_b is accessible only within new_b
+using their original names.
+
+=head2 Head + Tail polymorphic signature
+
+An overloaded function list need not contain only references to functions but
+to variables and lists as well. Matching a call to a member of an overloaded container is
+by means of matching the signature comprising both the function argument list
+and return list.
+
+  function $a1($x: int) = {};
+  function $a2($x: int) = {my $k:double; return $k };
+  function $a3($x:int) = {my @k; return \@k };
+  my $b;
+  my @c;
+  my %d;
+  function $a4($x:int) = {my $e:(int,\@,\%); return $e};
+
+  var abcd:($a1, $b, \@c, \%d, $a2, $a3,$e);
+
+The calls to the overloaded container abcd
+abcd(my $i:int = 3); #matches $a1
+abcd(my $i:int = 3) double; #matches $a2
+abcd(my $i = 'a') ; #matches $b
+abcd(my $i = [] ) ; #matches \@c
+abcd(my $i = {} ) ; #matches \%d
+
+Traditional overload matching using arglist alone has been unsatisfactory
+especially in needing to dictate the match using the LHS:
+
+  my $j2 = abcd(my $i: int); #matches $a1
+  my $j2:double =  abcd(my $i: int); #matches $a2
+  my $j3:\@ = abcd(my $i :int); #matches $a3
+  my $j4:(int,\@,\%) = abcd(my $i: int); #matches $a4
+
+To avoid complexity, matching involving arrays and hashes should not descend
+beyond the first level.
+
+If an array is fixed as an array of ints or double:
+
+  function k{ my $k:(double) = []; return $k;}
+  my @k1:(int) = k(); #no match, returns undef
+  my @k2:(double) = k (); #matches function k
+
+However if an array is fixed as an array of array, the second array level
+is not investigated for matches. 
+
+  function m1{ my $k:(\@,double) = []; return $k;}
+  function m2
+  { my $n1 = [a:(int), b:(double)];
+    my $n:($n1,double) = [];
+    return $n;
+  }
+  my m:(\m1,\m2);
+
+  my $k1 = [a:(int), b:(double)];
+  my @k:($k1,double) = m ();
+  #matches function m1 because m1 is first in the list
+
+m2 will be unreachable through container m() because m1 and m2 have similar
+function signatures, despite the fact that $n1 and $k1 match would dictate that
+m2() should be the correct signature match. But a match due to $n1 and $k1
+would require descending the arrays referenced by $k1 and $k2. Descending
+arrays to match signatures would make it utterly impossible to avoid divergent
+complexities. Though it might be good for theoretical studies.
+
+
+=head2 Head:operator:tail polymorphic signature
+
+  package Pine::Tree::State;
+  var popeye:(\new_a, \new_b); #Polymorphic head constructor container
+  operator popeye:(\func_a1, \func_a2, \func_b, \func_c, \func_d);
+
+  function new_a ($oak :int, $maple: double)
+  { return bless $a:const={}, popeye}
+
+  function new_b ($oak :varchar, $maple)
+  { return bless $a:const={}, popeye}
+
+  #Polymorphic head for any operators
+  #Polymorphic signature is (int,double,const):liberal:liberal
+  function func_a1 ($a:int, $b:double, int $c:const)
+  {return my $abc} 
+
+  #Polymorphic head for any operators
+  #Polysig is (int,double,const):liberal:int
+  function func_a2 ($a:int, $b:double, int $c:const)
+  {return my $abc:int}
+
+  #Polymorphic head for +,- operators
+  #Polysig is (int,double,const):(+,-):(int,varchar)
+  function func_b ($a:int, $b:double, int $c:const):(+,-)
+  {
+   my $operators = @OPERATORS; # Const Array referencing const values of operators (_,-) 
+   my $operator_used = $OPERATOR; # Const value of operator invoked
+   if ($operator_used == '+')
+  	{ return my $abc:int}
+   else { return my $abc:varchar}
+  }
+
+  #Polymorphic head for *,- operators
+  #Polysig is (int,double,const):(*,/):double
+  function func_c ($a:int, $b:double, int $c:const):(*,/)
+  {return my $abc:double}
+
+  #Polymorphic head for =,>, \qwertyuiop operators
+  #Polysig is (int,double,const):(=,>,\qwertyuiop):double
+  function func_d ($a:int, $b:double, int $c:const):(=,\qwertyuiop)
+  {return my $abc:double}
+
+  use Pine::Tree::State;
+  #Normal equal operator in action during object construction:
+  my popeye $lemon = popeye ($o:int, $m: double);
+  my popeye $lime = popeye ($o:varchar, $m);
+
+  #Redefined equal and plus operator actions:
+  $lime = $lemon + 5;
+
+  #Programmer defined operator in action:
+  sub dofirst{} sub dosecond{}
+  $lemon qwertyuiop $lime ? dofirst(): dosecond();
+
+The problem with tail signature is when return returns a function which returns
+another function which returns another function ....  The return signature
+should be determined only by the return statements within the constructor,
+otherwise it's presumed liberal and inconsequential.
+
+=head2 Scope of return reference does not affect scope of returned object;
+
+  package Pine::Tree::State;
+  var genesis:(\new_a, \new_b, \new_c);
+
+  function new_a ($oak :int, $maple: double)
+  {
+   var $a={};
+   bless $a, genesis;
+   return $a;
+  }
+
+  function new_b ($oak varchar, $maple)
+  {
+   our $a={};
+   bless $a, (genesis,habakuk); 
+   return $a;
+  }
+
+  function new_c ($oak, $maple, $pine)
+  {
+   our $a;
+   bless $a, (genesis,habakuk); 
+   return $a
+  }
+
+  #!/usr/bin/perl
+  use Pine::Tree::State;
+  our $newb = \new_b();
+  bless getabc : (\new_a, $newb, \new_c);
+
+The use of var, our or my should be inconsequential to the accessibilities of
+new_a, new_b or new_c since the refences are returned anyway. However - var $a,
+our $a and my $a become globally, package and function accessible respectively
+and subjected to interference as bounded by their scopes. new_a has its own
+globally accessible $a, while package $a is shared between new_b and new_c.
+
+A call to getabc from anywhere except packages with root Pine will implicitly
+preclude new_b() from the search list due to: our $newb;
+
+
+=head2 Instance references and shared references
+
+  package Math::Complex;
+  var (re,im):(int,double); #globally accessible objects
+  var $gcounter; #globally shared reference
+  our $pcounter; #package shared reference
+
+  #globally accessible container complex singly loaded with a constructor 
+  var complex:(\comp);
+
+  #Polysig is (re,im):liberal:complex
+  function comp (my $re:re, my $im:im)
+  {
+  # our references declared inside constructor function is shared within package
+  # but only through the instance handle of the object
+   our ($rev,$imv):(\re,\im);
+   my $a={}; #instance hash
+   return bless $a, complex; #return instance handle
+  }
+
+  var plus:(\plus0,\0plus1,\plus2); #overloaded container with three candidate functions
+  var mult:(\mult0,\mult1,\mult2); #overloaded container with three candidate functions
+
+  #polysig complex:liberal:complex
+  function plus0 (my $u:complex)
+  {
+   my $re:re = this->plus($u); #looking for polysig complex:liberal:re
+   my $im:im = this->plus($u);#looking for polysig complex:liberal:im
+   my $ret:\complex = \this;
+   $ret->$rev = $re;
+   $ret->$imv = $im;
+   return $ret; 
+  }
+
+  #polysig complex:liberal:re
+  function plus1 (my $u:complex)
+  {
+   #add $ref of this instance with $ref of instance $u
+   return  my $re:re = this->$rev + $u->$rev;  # this is instance handle of self
+  }
+
+  #polysig complex:liberal:im
+  function plus2 (my $u:complex)
+  {
+   #similarly
+   return  my $im:im = this->$imv + $u->$imv;
+  }
+
+  #polysig complex:liberal:complex
+  function mult0 (my $u:complex)
+  {
+   my $re:re = this->mult($u); #looking for polysig complex:liberal:re
+   my $im:im = this->mult($u);#looking for polysig complex:liberal:im
+   my $ret:\complex = \this;
+   $ret->$rev = $re;
+   $ret->$imv = $im;
+   return $ret; 
+  }
+
+  #polysig complex:liberal:re
+  function mult1 (my $u:complex)
+  {
+   return my $re:re = this->$rev * $u->$rev - this->$imv * $u->$imv
+  }
+
+  #polysig complex:liberal:im
+  function mult1 (my $u:complex)
+  {
+   return my $im:im = this->$rev * $u->$imv + this->$imv * $u->$rev;
+  }
+
+
+=head2 Complex numbers using head+tail polysignature
+
+Using package Math::Complex defined previously,
+
+  #!/usr/bin/perl
+  use Math::Complex;
+  my $M = complex Math::Complex(3,5.5);
+  my $N = complex Math::Complex(7.5,2);
+  my $C2:complex =  $N->plus ($M) ;#looking for polysig complex:liberal:complex
+  my $C1:complex =  $M->mult ($N) ;#looking for polysig complex:liberal:complex
+
+
+=head2 Complex numbers using head:operator:tail polysignature
+
+  #overloaded operator container with four candidate functions
+  operator complex:(\replus,\implus,\remult,\immult);
+  or
+  #container hierarchically overloaded with four candidates
+  operator complex:(\plus,\mult) ;
+  var plus:(\replus,\implus); 
+  var mult:(\remult,\immult); 
+
+  #polysig complex:(+,-):complex
+  function plus (my $u:complex):(+,-)
+  {
+   my $re:re = this $OPERATOR $u; #looking for polysig complex:(+,-):re;
+   my $im:im = this $OPERATOR $u; #looking for polysig complex:(+,-):im;
+
+   my $ret:\complex = \this;
+   $ret->$rev = $re;
+   $ret->$imv = $im;
+   return $ret; 
+  }
+
+  #polysig complex:(+,-):re
+  function replus (my $u:complex):(+,-)
+  {
+   return  my $re:re
+    = $$OPERATOR=='+'
+    ? this->$rev + $u->$rev
+    : this->$rev - $u->$rev
+    ;
+  }
+
+  #polysig complex:(+,-):im
+  function implus (my $u:complex):(+,-)
+  {
+   return  my $im:im 
+    = $$OPERATOR=='+'
+    ? this->$imv + $u->$imv
+    : this->$imv - $u->$imv
+    ;
+  }
+
+  #polysig complex:(*,/):complex
+  function mult0 (my $u:complex)
+  {
+   my $re:re = this $OPERATOR $u; #matching polysig complex:(*,/):re
+   my $im:im = this $OPERATOR $u; #matching polysig complex:(*,/):im
+   my $ret:\complex = \this;
+   $ret->$rev = $re;
+   $ret->$imv = $im;
+   return $ret; 
+  }
+
+  #polysig complex:(*,/):re
+  function remult (my $u:complex)
+  {
+   return  my $re:re
+    = $$OPERATOR=='*'
+    ? this->$rev * $u->$rev
+    : this->$rev / $u->$rev
+    ;
+  }
+
+  #polysig complex:(*,/):im
+  function immult (my $u:complex)
+  {
+   return  my $im:im 
+    = $$OPERATOR=='*'
+    ? this->$imv * $u->$imv
+    : this->$imv / $u->$imv
+    ;
+  }
+
+
+  #!/usr/bin/perl
+  use package Math::Complex;
+  my $M = complex Math::Complex(3,5.5);
+  my $N = complex Math::Complex(7.5,2);
+  my $C2:complex =  $N+$M ;#matching polysig complex:(+,-):complex
+  my $C1:complex =  $M/$N ;#matching polysig complex:(*,/):complex
+
+
+=head2 Overloading to provide default null instance
+
+
+The feature of mixed overloading may be used to provide the default null reference.
+
+  var complex:(\comp, our $compnull:const=undef);
+
+  #Polysig is (re,im):liberal:complex
+  function comp (my $re:re, my $im:im)
+  {
+   our ($rev,$imv):(\re,\im);
+   my $a={}; #instance hash
+   return bless $a, complex; #return instance handle
+  }
+
+
+The above is similar to having, but without coding, the function compnul:
+
+  var complex:(\comp, our $compnull:const=\compnul);
+  #Polysig is liberal:liberal:liberal
+  function compnul
+  {return undef
+  }
+
+The polysig liberal:liberal:liberal can be used to match any case and therefore can be used as the final default case by placing it as the last member of the overloaded list.
+
+
+=head2 Finally
+
+There's no business like Perl business.
+
+Is your polysig republican:liberal:democrat or reform:liberal:green ?
+
+A pardon for the author should be in order for having wildly introduced
+keywords and phrases. Full and enthusiatic support will be given to alternative
+keywords, phrases and any rearrangements that promote symmetric and concentric
+Perl. Another pardon should also be for having authored this RFC first but
+published later than RFC95.
+
+=head1 REFERENCES
+
+RFC 28: Perl should stay Perl.
+
+RFC 89: Controllable Data Typing.
+
+

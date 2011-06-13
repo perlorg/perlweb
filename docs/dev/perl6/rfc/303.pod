@@ -1,0 +1,39 @@
+=head1 TITLE
+
+Keep C<use less>, but make it work.
+
+=head1 VERSION
+
+  Maintainer: Simon Cozens <simon@brecon.co.uk>
+  Date: 25 Sep 2000
+  Mailing List: perl6-internals@perl.org
+  Number: 303
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+C<use less> is the semi-humorous Perl 5 pragma which should give the
+interpreter hints as to how to make memory-speed tradeoffs. Make it
+actually B<do> something in Perl 6.
+
+=head1 DESCRIPTION
+
+None.
+
+=head1 IMPLEMENTATION
+
+C<use less> should be renamed to C<use optimize> for Perl 6, and
+memory-speed tradeoffs should be identified and the appropriate choice
+made; this is of especial merit when compiling to standalone executable.
+Of course, since we don't know what the memory-speed tradeoffs are going
+to be until we start coding, it's a bit hard to give a more detailed
+implementation suggestion. 
+
+C<optimize> was chosen because then more fine-grained optimisations may
+be specified: see "Unrolling loops and tail recursion" for some
+examples.
+
+=head1 REFERENCES
+
+RFC 302: Unrolling loops and tail recursion

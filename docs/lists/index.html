@@ -1,0 +1,62 @@
+[%
+    page.import({
+        title    => 'Perl Mailing Lists',
+        section  => 'home',
+        description
+            => 'Perl Mailing Lists',
+    });
+%]
+
+<div class="masthead">
+    <p class="headline">Perl Mailing Lists</p>
+    <p class="strap">Join a list to discuss these Perl related topics</p>
+</div>
+
+<h4>
+    Mailing Lists
+</h4>
+<p>
+    We have a database of over [% lists.size - (lists.size % 10) %]
+    <a href="all.html">Perl related mailing lists</a>, choose by
+    category above, or from the list below:
+</p>
+
+<script type="text/javascript" charset="utf-8">
+    function go_to_list() {
+        var list = $('#selectList').val();
+        document.location = '/list/' + list + '.html';
+    }
+</script>
+<form name="chooselist" action="">
+<select id="selectList" onchange="return go_to_list()">
+[% FOREACH list_name = lists.keys.sort %]
+[% IF lists.$list_name.defunct %][% NEXT %][% END %]
+<option name="[% list_name %]">[% list_name %]</option>
+[% END %]
+</select>
+</form>
+
+<p></p>
+<p>By tag...</p>
+[% tagcloud %]
+
+<p></p>
+<p>Or by first letter...</p>
+<p>
+[% FOR c = [ 'A' .. 'Z' ] %]
+<a href="all.html#[% c | lower %]">[% c %]</a>&nbsp;
+[% END %]
+</p>
+
+<br /><br /><br />
+<h4>
+    Help Needed!
+</h4>
+<p>
+  Welcome to the new <big><tt>lists.perl.org</tt></big>!
+</p>
+<p>
+  We know there are some rough edges in our data, and we hope you'll
+  help us clean up. If you find information that is wrong or
+  just outdated, <a href="data.html">please send us a patch</a>.
+</p>

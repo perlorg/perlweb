@@ -1,0 +1,121 @@
+
+=head1 TITLE
+
+Perl should not abort when a required file yields a false value
+
+=head1 VERSION
+
+  Maintainer: Dominus <mjd@plover.com>
+  Date: 21 Sep 2000
+  Last Modified: 23 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 269
+  Version: 2
+  Status: Withdrawn
+  See Also: RFC 55
+
+=head1 STATUS
+
+This proposal is withdrawn because it duplicates RFC 55, "Compilation:
+Remove requirement for final true value in require-d and do-ed files"
+
+=head1 ABSTRACT
+
+Modules should not have to end with C<1;>.  It is silly and confusing.
+
+=head1 DESCRIPTION
+
+Modules typically contain subroutine definitions.  A module may
+contain initialization code also.  If the initialization code fails,
+the module can return a false value to its caller, which aborts the
+compilation. 
+
+In Perl 5, a module that contains nothing but subroutine definitions
+will return false by default, necessitating a
+
+        1;
+
+at the bottom.  If the C<1;> is omitted, Perl emits the error
+
+        Foo.pm did not return a true value...
+        
+In spite of plenty of documentation, people Frequently Ask what this
+error means.  Some languages like to have the compiler emit annoying
+messages to announce you forgot to include some pointless code whose
+only purpose is to stop the compiler from emitting the annoying
+message.  Perl is mostly free of such nonfeatures.  
+
+I propose that this unfeature be dropped entirely.  No useful
+functionality is lost.  If a Perl 6 module wants to indicate an
+initialization failure by throwing a fatal exception, it can simply
+call C<die>.  If the calling module wants to abort when a C<require>d
+file returns a false value, it is free to do that.
+
+The 'module initialization' feature is little-used.  99 the of 102
+files in Perl 5.6 lib/*.{pl,pm} end with C<1;>.  AnyDBM_File invokes
+'die' explicitly.  The only real exceptions are diagnostics.pm and
+timelocal.pl.
+
+=head1 IMPLEMENTATION
+
+'require' should execute code in a file and return the result, as
+before, but it should not call Perl_die when the result is false.  
+
+However, see below.
+
+=head1 MIGRATION
+
+In 98% of cases, no translation is necessary.  The first version of
+the translator can ignore the issue entirely.  Strategies to cover the
+other 2% follow:
+
+Is general, direct source translation of this feature of Perl 5
+modules would probably be impossible.
+
+It's tempting to say that the translator should simply translate the
+last statement or block in the module from this:
+
+        STATEMENT
+
+to this:
+
+        unless (do {STATEMENT}) {
+          require Carp;
+          Carp::croak "... did not return a true value";
+        }
+
+However, I think that is impractical.  The module might contain code
+that looks like this:
+
+        if (something()) {
+          return $v1;
+        }
+
+        ...
+
+        $v2;
+
+In this case the 'return $v1' statement would I<also> have to be
+translated.  In general, there might be many, many statements that
+would need to be translated.  This would look awful.  
+
+I think that if complete coverage is desired, the best choice would be
+to introduce a new pragma, which would enable the old behavior.  A
+translated module would begin with
+
+        package Foo;
+        use perl5 'require/use semantics'; 
+
+        ...
+
+When this file was C<require>d, the pragma would set a flag.  The
+C<pp_require> opcode would check the flag after compiling the file,
+and would call C<Perl_die> as before if the file returned a false
+value and if the flag was set.  If Foo C<require>d any other modules,
+the flag would be cleared before loading them, and restored again
+afterwards.  (That is, the flag would have file scope.)
+
+=head1 REFERENCES
+
+Perl on-line manuals
+

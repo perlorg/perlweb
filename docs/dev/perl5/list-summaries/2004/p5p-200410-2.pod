@@ -1,0 +1,100 @@
+=head1 This Week on perl5-porters (Oct 04-10 2004)
+
+=head2 Crosscompiling perl
+
+Alexander Povolotsky, lacking a native compiler on Linux PPC,
+tried to crosscompile from Cygwin (Intel). Many people admonished
+that while crosscompiling perl is possible in principle, there's
+little support for it, so getting the native compiler in place would
+probably be easier.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00039.html
+
+=head2 Threading crash with closures
+
+John Gardiner Myers reported (bug #31851) a bug in C<threads> where
+$thread->join prematurely frees a closure because the CVs' op tree refcount
+isn't thread safe. [Please correct this explanation if necessary.]
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00065.html
+
+=head2 Smoke failing on FreeBSD
+
+Abe Timmerman's new smoke machine, a FreeBSD-running sparc64,
+failed with what might be an integer-size configuration problem.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00071.html
+
+=head2 Weird results from hash assignment with duplicate keys
+
+Boris Zentner, trying to remove duplicate hash values
+
+  %h = reverse (%x = reverse %h);
+
+discovered a fascinating bug (#31865) in assigning duplicate keys to
+a hash, pinpointed by Rick Delaney (and Devel::Peeked by Graham Barr):
+
+    $ perl5.8.3 -le 'print (%x = ("a",1,"b",2,"b",3));'
+    bb
+    $ perl5.6.1 -le 'print (%x = ("a",1,"b",2,"b",3));'
+    a1bb3
+
+(should be 'a1b3').
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00073.html
+
+=head2 Making regcomp a list op
+
+Dave Mitchell set the stage for fixing the behaviors of C<(?{...})> and
+regex objects, by making C<regcomp> receive the components of run-time
+regexes ($a, '-', $b in C</$a-$b/>) as a list rather than a concatenation
+of the components. Commentators oohed and aahed as the chessmaster advanced
+his pawn. [If you're an internals novice like me, try understanding Dave's
+before and after C<B::Concise> output, using C<B::Concise> (what do the
+flags mean?), C<perlguts> (the "Compiled code" section), and C<perlcall>
+(what's a C<PUSHMARK>?).]
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00132.html
+
+=head2 IO::Poll undef fd unchecked in mask method
+
+Peter Dintelmann found a problem (bug #31864) in C<IO::Poll>, where its
+C<mask> method incorrectly evaluated an C<undef> argument as 0 (STDIN).
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00072.html
+
+=head2 Dynaloader improvements and cleanup
+
+Vadim Konovalov continued his Dynaloader patching from the previous
+week, and while he was at it enabled statically linked extensions
+for Win32. More fixes to come.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00034.html
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00126.html
+
+=head2 Releases
+
+Encode 2.03 - Dan Kogai
+
+Module::Build 0.26 - Ken Williams
+
+=head2 Random quote
+
+From Dave Mitchell's sig:
+
+Any [programming] language that doesn't occasionally surprise the
+novice will pay for it by continually surprising the expert.
+   -- Larry Wall
+
+=head2 Reference
+
+The thread for bug number $BUGNUM can be found at
+http://rt.perl.org/rt3/Ticket/Display.html?id=$BUGNUM
+
+=head2 About this summary
+
+This summary was written by Scott Lanning. Summaries are published
+weekly at http://use.perl.org/ and posted to a mailing list whose
+subscription address is perl5-summary-subscribe@perl.org. The archive
+is at http://dev.perl.org/perl5/list-summaries/. Comments and
+corrections welcome.

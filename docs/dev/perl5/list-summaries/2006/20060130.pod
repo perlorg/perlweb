@@ -1,0 +1,362 @@
+=head1 This Week on perl5-porters - 30 January-5 February 2006
+
+Perl 5.8.8 was released this week.
+
+=head2 F<perlvar.pod>: C<$^X> isn't necessarily C<argv[0]>
+
+Yitzchak Scott-Thoennes patched F<perlvar.pod> to point out that
+C<$^X> could contain information from F</proc/self/exe>, on
+platforms that supported it. But even on platforms that do
+support it, such as Linux, you can still run into grief with
+C<chroot>ed environments. Nevertheless, Rafael Garcia-Suarez
+liked the patch enough to accept it. Nicholas Clark pointed out
+that the name is different on FreeBSD and Solaris.
+
+Alan Burlison showed how to find the name of executable on Solaris
+without having to rely on access to F</proc>, which interested
+Rafael. Gisle Aas was unable to compile Alan's snippet, and it
+turned out that the technique Alan was relying on was only fairly
+recently made available on Solaris. So he coded another approach.
+
+  An improvement to $^X
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-01/msg01062.html
+
+  An earlier, similar attempt
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2001-11/msg01559.html
+
+=head2 C<$^E> and Borland on Win32
+
+Steve Hay wondered about the differences between
+
+  # borland
+  perl -e "open F, 'nothere' or die $^E"
+  Died at -e line 1.
+
+  # MSVC
+  perl -e "open F, 'nothere' or die $^E"
+  The system cannot find the file specified at -e line 1.
+
+so he wrote some code to find out what was going on. And afterwards
+he still couldn't figure out where and when the Windows C<GetLastError>
+was being called. Jan Dubois clarified the issue concerning whether
+what C<GetLastError> returns is relevant or not. And I think the
+discussion stopped there.
+
+=head2 arenaroots patch
+
+Jim Cromie sent in a consolidated patch that implements putting
+all the arenas into a singly-linked list. He then sent in a patch
+to implement meta-arenas, which allow perl to separate the
+meta-information about the arena from the arena itself, which
+results in some small savings of memory.
+
+  Consolidation
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-01/msg01101.html
+
+  Separation of meta-data
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-01/msg01103.html
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-02/msg00018.html
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-02/msg00170.html
+
+=head2 Segmentation fault when matching regexps
+
+Lukasz Debowski filed bug #38379 that showed how to make perl dump
+core when trying to match a string against a particularly
+arduous regular expression. Yves Orton explained that the problem
+came from excessive back-tracking that the pattern forced the
+regexp engine to undertake, and offered a couple of ideas about
+how to rewrite the pattern in question to make it more efficient.
+
+Lukasz thought that it should be possible to get the regexp
+engine to bail out gracefully under such circumstances and provide
+a more informative error message about the problem.
+
+  Patches, as they say, are welcome.
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-01/msg01112.html
+
+=head2 Typo in perlfunc.pod
+
+Eagle-eyed "p.boven" spotted a documentation error in C<perlfunc.pod>,
+filed as bug #38380. Trying to find the error by reading the patch
+alone is just about impossible, fortunately a description of the
+problem was included in the report. Nicholas applied the patch.
+
+  Try and spot the difference by reading the patch
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-01/msg01117.html
+
+=head2 Exhausting memory when printing large, deep hashes
+
+Paul Boutros filed bug #38384, wherein traversing a large hash
+of hashes uses a phenomenal amount of memory. Gisle Aas realised
+that the problem was merely an issue of numbers being interpreted
+as strings, thus causing the hashes' C<SvIV> structures to be
+upgraded to the larger C<SvPV> structures.
+
+(The trick is to use C<0+$foo{bar}> to force numeric context).
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-01/msg01130.html
+
+=head2 5.8.8
+
+With the lyrics from Bein' Green, by Joe Raposo, Nicholas Clark
+released the long-awaited Perl version 5.8.8 to the world.
+
+  It's out there
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-02/msg00005.html
+
+  Alternate lyrics
+  http://members.tripod.com/Tiny_Dancer/green.html
+
+=head2 Camelpacks and Activestate
+
+There is an issue or two surrounding Camelpack, which is bundle of
+Activestate and MingW. One issue being that it might be violating
+Activestate's license terms, and/or the O'Reilly camel trademark, and
+even possibly R. J. Reynolds as well.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-02/msg00002.html
+
+=head2 XS::Connect, or making C/Perl thunk faster
+
+Chase Venters has problems with DateTime, in that it is too slow.
+He thought about recasting some of the code into C, but learnt
+that the authors had already tried that, and noticed an overall
+slowdown, because of the cost of thunking (crossing between
+Perl and C). And wondered whether there was a way of reducing the
+cost, and put forward a couple of ideas. Glenn Linderman came up
+with a pretty good refinement.
+
+Tony Cook mentioned something called C<Imager> that already lets
+one do something along those lines (or at least, the next
+release will).
+
+Nick Ing-Simmons suggested Chase take a look at both C<Tk> and
+and C<DBI>, which have been refining this concept for a decade.
+C<Tk>, in particular, uses Perl to generate (print) C code, which
+helps cut down on typos.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-02/msg00001.html
+
+=head2 C<autouse> noisy with 5.8.8
+
+Rafael noticed that C<autouse> may now produce warnings of the form
+
+  Prototype mismatch: sub main::bar: none vs ($) at
+  /usr/lib/perl5/5.8.8/autouse.pm line 57
+
+and fixed it with change #27034. Nicholas wondered whether Rafael's
+change was a fix, or just sweeping a problem under the carpet.
+Because autouse is pretty hairy anyway, Rafael figured that it
+was all right.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-02/msg00022.html
+
+=head2 C<$,> is undefined by default
+
+In bug #38398, Roderick Schertler raised the point that it would
+be nice if C<$,> (the separator when printing in list context), was
+an empty string rather than C<undef>, since that would allow
+
+  print join $,, @foo;
+
+rather than
+
+  print join defined $, ? $, : '', @foo;
+
+Abigail agreed, but thought that the proper way to fix the problem was
+with a pragma:
+
+  no warnings;
+  print join $,, @_;
+
+Jim Cromie suggested
+
+  local $, = '';
+
+... but that only works if C<$,> hasn't already been set. H.Merijn Brand
+(implicitly) suggested recompiling Perl with his C<dor> patch:
+
+  print join $,//'', @foo
+ 
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-02/msg00050.html
+
+=head2 No more C<Null(av|ch|cv|hv|sv)>
+
+Steven Schubiger grepped through the code base and pinpointed a number
+of places where C<Nullav>, C<Nullsv> and the like continue to lurk,
+and wondered whether they could be replaced by C<NULL>, and whether
+C<perlapi.pod> should note that they are deprecated.
+
+Andy Lester pointed out some even more dubious code constructed
+that need to be NULLified, and Nicholas admitted to being happy
+to see them all go.
+
+So Steven tackled C<Nullav> and C<Nullch> first, except that he
+also deleted the definitions themselves, which would destroy
+backwards compatibility, so he re-did the patch to keep them.
+
+And then followed up with C<Nullcv>, C<Nullsv> and the rest of the
+gang. There followed a discussion about the possibly apocryphal
+hardware whose null pointer bits are not all zero.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-02/msg00024.html
+
+=head2 Doing proper UTF-9 hash lookups
+
+Nicholas proposed a patch to make the tokeniser itself UTF-8 aware.
+This makes two TODO tests pass, but alas another test starts to
+fail. A code audit is needed to make sure UTF-8-flagged keys are
+dealt with correctly everywhere. And then the same thing needs to
+be done to the pad code (the code that deals with lexicals).
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-02/msg00035.html
+
+=head2 Unicode slowdown 5.8.6 C<< -> >> 5.8.7
+
+Nicholas also revisited the Unicode slowdown and proposed an API
+enhancement in order to minimise data copying. Sadahiro Tomoyuki
+(who is the expert in these matters) came up with a better
+solution.
+
+Nicholas implemented Tomoyuki's idea, and saw a fourfold improvement
+in speed. Phil Pennock took the code for a spin, and sadly noted
+that it shaved only two seconds off a forty-odd seconds run time.
+
+  Unicode melts my brain, again
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-02/msg00046.html
+
+=head2 Make parallel C<make test> work
+
+Nicholas Clark continued on a roll, trying to track down parallel
+testing failures, and isolated a race condition between C<List::Util>
+and C<Math::BigInt::Fastcalc>. It looks as if the F<Makefile.PL> for
+C<Math::BigInt::FastCalc> is being executed at precisely the same
+moment that C<List::Util> is being copied to C<.../lib>. Which is
+of course extremely difficult to reproduce.
+
+Steve Peters was able to identify that the real culprit was in
+fact C<overload.pm> and not C<Math::BigInt::FastCalc>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-02/msg00068.html
+
+Nicholas found another parallel build race failure, which prompted
+Alan Burlison to reminisce on problems he had encountered with parallel
+tests at Sun.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-02/msg00187.html
+
+=head2 Trouble ahead for C<nmake> on Vista?
+
+Adam Kennedy heard that C<nmake> (the aging version that can be
+legally distributed) no longer runs on Vista (or at least, a current
+beta), and wondered what the solution was. Apparently, there's a
+C<dmake> floating around that seems to have everyone's favour.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-02/msg00076.html
+
+=head2 Files in use in Windows and Cwd.pm
+
+There was a really long thread to do with Window, C<ExtUtils::MakeMaker>
+and C<Cwd.pm>, but it came across badly threaded on Xray and I had a
+hard time following it all. The pointers are:
+
+  Someone's MUA is playing silly buggers here
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-02/msg00013.html
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-02/msg00026.html
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-02/msg00077.html
+
+=head2 blead @ 27028 OpenVMS Alpha 8.2 - All tests pass
+
+John E. Malmberg reported a perfect compile on VMS -- yay!
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-02/msg00074.html
+
+=head2 5.8.8-RC1 on Cray
+
+H.Merijn Brand gave perl a smoke test on Cray hardware. Oddly enough,
+it appears to have about the same performance as a TRS-80. Just
+running C<Configure> alone took over 24 hours...
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-02/msg00088.html
+
+=head2 Label optimised away when it shouldn't
+
+Gisle noticed that
+
+  $ perl -le 'goto foo; if (0) { foo: print "hi" }'
+
+produces
+
+  Can't find label foo at -e line 1.
+
+Not that anyone should want to code like that, nor should it be fixed,
+but that maybe the behaviour be noted somewhere in case someone comes
+to grief over it. Paul Johnson pointed out the relevant part of
+C<perlfunc> that does in fact explain it.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-02/msg00149.html
+
+=head2 A good p5p mailing list archive
+
+Steve Hay was looking for a good archive of the p5p mailing list.
+It seems that xray had been down for a while, and so he looked at
+the alternatives.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-02/msg00131.html
+
+=head2 Enhancing C<PERL_TRACK_MEMPOOL>
+
+Nicholas took Jan Dubois's C<PERL_TRACK_MEMPOOL> code and added some
+functionality to it to improve the feedback when running under
+C<valgrind>, and also added a C<PERL_POISON> switch to improve
+the chances of dying a quick death when buggy code tries to
+access memory it no longer owns.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-02/msg00173.html
+
+=head2 Perl5 Bug Summary
+
+1543 open issues.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-02/msg00245.html
+
+=head2 New Core Modules
+
+=head2 CPAN-1.83_64
+
+Andreas Koenig uploaded CPAN-1.83_64, which, if nothing goes wrong,
+will become the 1.84 official release soonish.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-02/msg00089.html
+
+=head2 About this summary
+
+This summary was written by David Landgren. I wasn't able to start
+this until Thursday night, due to various constraints in Real
+Life (such as drinking beer with the local Perl mongers last night).
+As a result (of the late start, not the beer) the threshold for
+interesting-enough-to-summarise threads was higher than usual. Also, I
+didn't have the time for the witty URL titles. Sorry about that,
+but a brief summary is better than no summary at all.
+
+Information concerning bugs referenced in this summary (as #nnnnn)
+may be viewed at http://rt.perl.org/rt3/Ticket/Display.html?id=nnnnn
+
+Information concerning patches to maint or blead referenced in
+this summary (as #nnnnn) may be viewed at
+http://public.activestate.com/cgi-bin/perlbrowse?patch=nnnnn
+
+If you want a bookmarklet approach to viewing bugs and change reports,
+there are a couple of bookmarklets that you might find useful on
+my page of Perl stuff:
+
+  http://www.landgren.net/perl/
+
+Weekly summaries are published on F<http://use.perl.org/> and posted
+on a mailing list, (subscription: F<perl5-summary-subscribe@perl.org>).
+The archive is at F<http://dev.perl.org/perl5/list-summaries/>.
+Corrections and comments are welcome.
+
+If you found this summary useful or enjoyable, please consider
+contributing to the Perl Foundation to help support the development
+of Perl.

@@ -1,0 +1,87 @@
+=head1 This Week on perl5-porters (19-25 April 2004)
+
+The rhythm of maintenance releases is now well established, and this week
+saw the release of perl 5.8.4, as expected. Meanwhile, the usual stream
+of bugs and patches continued.
+
+=head2 5.8.4
+
+Perl 5.8.4 was released. The new F<setuidperl> executable which was
+present in RC2 was finally withdrawn; the new plan is to have F<suidperl>
+installed as a hard link to F<perl>, and F<sperl5.8.4> being the actual
+set-uid executable. (See the latest F<perldelta> for the details.)
+
+    http://groups.google.com/groups?selm=20040422155622.GN701%40plum.flirble.org
+    http://search.cpan.org/~nwclark/perl-5.8.4/pod/perl584delta.pod
+
+=head2 New compiler to port perl on
+
+Yves Orton tells the crowd about the newly released command-line compiler
+by Microsoft, available as a free download. Follows some remarks on how
+to build perl on Windows with it, and what are the odds and ends of the
+differents versions of Microsoft's compilers.
+
+    http://groups.google.com/groups?selm=71B318898201D311845C0008C75DAD1C0A44CD19%40defra1ex2
+
+=head2 Duplicated code
+
+Nicholas Clark ran a tool to find duplicated code on the perl source code;
+and it seems that there's some room for refactorization. As he writes,
+I<quite a bit is duplication between code in the win32, wince and netware
+subdirectories.>
+
+    http://groups.google.com/groups?selm=20040422162152.GO701%40plum.flirble.org
+
+=head2 Use of uninitialized $foo in...
+
+Dave Mitchell commited to bleadperl his patch to enhance the I<Use of
+uninitialized value> warning by adding the name of the variable or
+array/hash subscript, if any, which was uninitiliazed. Nicholas Clark
+wonders if it's applicable to the perl 5.8.x branch, but Dave points out
+that it's likely to cause spurious test failures in various CPAN modules.
+Notably, he had to patch several core tests corresponding to CPAN modules
+to make them cope with the new form of the warning.
+
+    http://groups.google.com/groups?selm=20040423212027.GA3051%40iabyn.com
+
+=head2 Patches
+
+Marcus Holland-Moritz committed a patch to add the support in pack()
+templates for the C<< < >> and C<< > >> modifiers which were discussed in
+a previous summary. He has some questions on some oddities of the
+implementation, but nobody commented. (Anybody has a Cray handy?)
+
+    http://groups.google.com/groups?selm=20040423063124.3c717a6b%40r2d2
+
+Jeff Pinyan proposed a patch to bleadperl to enhance perl's Unicode
+tables, notably for a better compliance.
+
+Stas Bekman supplied a patch to log the perl interpreter address in
+internal warnings emitted by a multithreaded perl.
+
+=head2 In brief
+
+Jay Hannah is surprised by the fact that sort() in scalar context doesn't
+return any useful value (more precisely when it's used as the last thing
+in a function that gets called in scalar context). Randal Schwartz points
+out that there is no such thing as a list value in scalar context, and
+gives a list of builtins commonly used in a list context, and what special
+value they return in a scalar context.
+
+    http://groups.google.com/groups?selm=003e01c42886$6605ee90$4722000a%40omarests2
+
+David Manura found a bug related to the pos() corresponding to a match
+done on a reference to a substr() lvalue. Probably some magic that is not
+cleaned as it should, according to Yitzchak Scott-Thoennes.
+
+    http://groups.google.com/groups?selm=4084A038.80304%40math2.org
+
+Mark Jason-Dominus reports that File::Find doesn't detect dangling
+symlinks when the option C<follow_fast> is used (bug #28929).
+
+=head2 About this summary
+
+This summary was written, in the hope you enjoy it, by Rafael
+Garcia-Suarez. Weekly summaries are published on F<http://use.perl.org/>
+and posted on a mailing list, which subscription address is
+F<perl5-summary-subscribe@perl.org>. Comments and corrections welcome.

@@ -1,0 +1,75 @@
+=head1 TITLE
+
+List context return from filesystem functions
+
+=head1 VERSION
+
+  Maintainer: Peter Scott <peter@psdt.com>
+  Date: 6 Aug 2000
+  Last Modified: 3 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 52
+  Version: 3
+  Status: Withdrawn
+
+=head1 ABSTRACT
+
+*** THIS RFC IS WITHDRAWN. ***
+
+Text of the last version is preserved below so that we have some memory of
+the bad ideas as well as the good ones, in case it helps.
+
+Reason for withdrawal: while the idea of keeping error codes for individual
+failures of filesystem calls affecting multiple files is good, the syntax
+isn't; it is just wrong to return a non-empty list in the case of even
+partial failure but an empty list in the case of complete success.  This
+little one's not worth the trouble.
+
+*** READ NO FURTHER EXCEPT FOR HISTORICAL CURIOSITY. ***
+
+C<chmod>, C<chown>, and C<unlink> return the I<number> of successfully
+affected files.  I suggest that in a list context, they return the I<names>
+of the I<unsuccessfully> affected files.  Add C<rmdir> to that list as
+well, since although it currently only takes one directory name as input,
+there is no reason it shouldn't take a list.
+
+=head1 DESCRIPTION
+
+In a scalar context, the result should remain the same as it is now.  It is
+very tempting to make the list context return be the I<successfully>
+altered files, which is far more intuitive given the scalar context
+behavior; but that is almost certainly not the list the user will be
+interested in and they'd just end up doing the C<grep> suggested in the
+docs (Camel III) anyway, which calls the filesystem function once for each
+file.
+
+=head2 Hash Context
+
+When the result is assigned to a hash, the list returned could be the names
+of the unsuccessfully modified files and their corresponding C<$!> errors.
+
+=head1 IMPLEMENTATION
+
+Examples of use:
+
+       # Current behavior: scalar context
+       chmod 755, grep -d, glob '*' or die "Couldn't chmod dirs"
+
+       # List context behavior
+       warn "Unable to modify $_" for chown $uid, $gid, @files;
+
+       # Hash context behavior
+       %error = rmdir grep -d, glob '*';
+       warn "Couldn't remove $_: $error{$_}" for keys %error;
+
+It would be nice to include C<mkdir> in this list as well, but there
+appears to be no way of doing that without radically changing its
+interface, or forcing the I<MASK> argument to be included, or interpreting
+an initial argument that looks like a I<MASK> to be one.  None of those appeal.
+
+=head1 REFERENCES
+
+L<perlfunc>
+
+Camel III function list (the entry for C<chmod> is different from the one
+in perl-current at the moment).

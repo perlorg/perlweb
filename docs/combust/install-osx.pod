@@ -1,0 +1,305 @@
+
+=head1 Combust Installation on OSX
+
+$Id$
+
+=head2 Overview
+
+One of the biggest complaints we get about Combust is that it is hard
+to install.  I've never believed this, and have decided to put this
+"myth" to bed for once and for all.
+
+To prove my point, I shall demonstrate how to install Combust in less
+than an hour, without a network connection.  (And on battery, but that
+really has nothing to do with anything else.)
+
+=head2 Preparation
+
+This installation was done on a PowerBook G4, running OSX 10.4.3.  The
+names have not been changed to protect the innocent.  Some file
+locations may be slightly different on Linux.
+
+Physically, the documented installation was performed in Terminal 7 of
+Los Angeles International airport, while waiting for a plane.  The
+documentation was written from seat 21F on the aforementioned plane,
+enroute to New York's John F. Kennedy airport.  (For reasons the
+author doesn't understand, we've taken a *very* southernly route --
+likely to avoid storms over the Rockies.)
+
+The Powerbook has had nothing special installed on it.  (It does have
+a barebones Fink, but nothing that should affect the installation.)
+No special perl modules have been installed.  The development kit _is_
+installed.
+
+Only one operation must be performed as root.  More on that later.
+(Of course, you _can_ do everything as root, but my personal taste is
+not to do this, especially on highly managed systems.)
+
+So, to recap, we are going to use:
+
+=over 4
+
+=item * The system perl (/usr/bin/perl)
+
+=item * The system apache (/usr/sbin/httpd)
+
+=item * The mod_perl that comes with the system apache
+
+=item * Perl modules installed in the user's local directory (~/Library/Perl)
+
+=back
+
+And the final preparation step is to make sure your system can access
+a CPAN mirror via the CPAN shell.  On this notebook, I've synced a
+copy of minicpan to ~/projects/MINICPAN, and configured CPAN.pm to use
+that as my source by executing the following in the CPAN shell:
+
+   o conf urllist set file:///Users/rspier/projects/MINICPAN/
+   o conf commit
+
+If you have a network connection and have already configured the CPAN
+shell to use a remote mirror, that's ok too.  (General configuration
+of the CPAN.pm module is outside the scope of this article -- but I
+generally just let it autoconfigure.)
+
+In order to install perl modules under your home directory, you need
+to make two configuration changes.  First, tell CPAN.pm by executing
+the following:
+
+  perl -MCPAN -eshell
+  o conf makepl_arg 'LIB=~/Library/Perl PREFIX=~'
+  o conf commit
+
+This will pass the specified arguments to Makefile.pl, which tells it
+to put module files under F<~/Library/Perl>, and everything else under
+the root directory.  This means you may end up with a F<man> and
+F<bin> directory under your home directory.  (Although at least one
+module I installed decided to create a F<usr/bin/> -- but this isn't
+important for Combust.  The arguments are documented in 
+L<ExtUtils::MakeMaker>.
+
+Now, modify your .bashrc file to include:
+
+   export PERL5LIB=$HOME/Library/Perl
+
+If you're not using bash as your shell, figure out the equivalent.
+The PERL5LIB environment variable is documented in L<perlvar>.
+
+(Also run it on the command line to get it put into your current
+environment.)  
+
+If you don't do the above steps, you'll need to execute the next
+section as root, because the module installation process will attempt
+to install into directories you don't own.
+
+=head2 Installing Dependent Modules
+
+Combust is dependent on lots of modules.  That's a fact.  Get over it.
+Many of them aren't needed by the base Combust installation, but by
+the perl.org site.  (And since that's likely what you're going to be
+running, you need those modules.)
+
+For your sanity, we've created a Bundle containing them all.  It makes
+it pretty darn easy to get them all installed.  In the CPAN shell 
+(C<perl -MCPAN -eshell>) run:
+
+   install Bundle::Combust
+
+And then wait.
+
+It may take a while to install all the modules and their dependent
+modules.  You may be prompted from time to time for permission to
+install dependencies (unless you set C<o conf prerequisites_policy
+follow>).  Some modules may also ask you questions.  You can
+generally say no to most of the questions.
+
+I had trouble with two modules: L<XML::Simple> and L<Yahoo::Search>.
+The tests on the former were unhappy.  I performed a manual force
+install.  The latter's tests are dependent on a network connection,
+which sadly I didn't have at the time.
+
+You can try and C<install Bundle::Combust> again to verify that all
+the pieces are in place.  If any module doesn't install, you can
+install it by hand.
+
+=head2 Checkout Combust
+
+Using subversion, checkout combust from:
+
+  https://svn.develooper.com/combust/trunk
+
+For test purposes I checked it out into ~/projects/combust
+
+=head2 Simple Tests
+
+Now, before we try a complicated site like perl.org, we're going to
+test with a very barebones site (also known as "Trivial Example One").
+This example is in the 'misc/examples/trivial' directory in your
+combust checkout.
+
+Set the following environment variables:
+
+  export CBROOT=~/projects/combust
+  export CBROOTLOCAL=~/projects/combust/misc/examples/trivial
+
+(Obviously, if your combust checkout is somewhere else, change the
+path.)
+
+Now, lets modify $CBROOTLOCAL/combust.conf to look something like this:
+
+  perl  = perl
+  httpd = /usr/sbin/httpd
+  apache_config = /etc/httpd
+  port = 8555
+  servername = combust.example.com
+
+  sites = one
+
+  [one]
+  servername = one.combust
+  siteadmin  = root@combust.example.com
+
+Then, teach your computer about one.combust by editing the
+F</etc/hosts> file.
+
+Modify the localhost line to look something like this:
+
+  127.0.0.1       localhost one.combust
+
+Now, we can start combust.
+
+  $ $CBROOT/bin/run_httpd
+
+The scripts will generate and check the appropriate configuration
+files and start apache.  Or, an error will appear.  Fix it.
+
+Use curl or your web browser to visit http://one.combust:8555
+
+You should see a message that says 'The time is now' followed by the
+current time.
+
+(Sidebar: The test site had a stupid typo causing a namespace issue,
+which took 20 minutes to debug.  It shouldn't have, but airports
+aren't always conducive to straightforward thinking.)
+
+=head2 The Perl.org sites
+
+Now that we have a test system that works, its time to get the full
+system working.
+
+Check out the perl.org doc tree from
+L<https://svn.perl.org/perl.org/docs/> (this requires an
+L<http://auth.perl.org/> identity and password) into a F<docs>
+subdirectory of your combust installation.  If you don't like nested
+checkouts, or are using a system such as svk that doesn't allow them,
+you can place it elsewhere and symlink $CBROOT/docs -> wherever you
+put it.  (Note: this is going to change in the future when the
+perl.org sites are "isolated" from the main combust tree.)
+
+Copy the F<combust.conf.sample> from the combust directory to
+F<combust.conf> and edit it to look something like this:
+ 
+  perl  = /usr/bin/perl
+  httpd = /usr/sbin/httpd
+  apache_config = /etc/httpd
+
+  servername = combust.combust
+  sites = www, qa
+  port = 8230
+
+  [www]
+  servername = www.combust
+
+  [qa]
+  servername = qa.combust
+
+=over 4
+
+=item * Unset $CBROOTLOCAL or set it to the same value as $CBROOT.
+
+=item * Add 'www.combust' and 'qa.combust' to the /etc/hosts file.
+
+=item * Now, run $CBROOT/run_httpd to start apache.
+
+=item * Visit http://www.combust:8230/ to see the fruits of our labors.
+
+=back
+
+All done!  (Almost.)
+
+=head2 Further studies
+
+Combust supports many configuration options, and you may want to use
+some of them.  Look at the provided combust.conf.sample to see them.
+Drop them in your own combust.conf and re-run C<$CBROOT/run_httpd> to
+see the effect.
+
+As of this writing, the perl.org docs directory contains the following sites:
+
+  combust dbi dev ldap noc perl4lib qa sdl www cpanratings debugger
+  foundation learn parrotcode ponie rre shared xml
+
+You can add another one to your installation by adding the appropriate
+[site] section for it, and adding it to the sites list.
+
+You may come upon pages that throw errors.  These are likely due to
+missing modules or missing data files.  (Some of those modules are in
+the Bundle::Combust::Extras bundle.)  The missing data files are often
+downloaded rss files that go in $CBROOT/var/rss and are generally
+downloaded by $CBROOT/bin/cron_hourly.  (Some of these blowups should
+be fixed by TRY/CATCH blocks.)  You will also want to check the logs
+under your ($CBROOT|$CBROOTLOCAL)/apache/logs directory.
+
+Use the source code, please!  It's pretty simple, and may have the
+answer to your problems.  Also, if you find a problem, we're very
+happy to accept patches.  And if you can't figure it out -- ask.  We
+have a combust-users (at) perl.org mailing list just for this purpose.
+
+=head2 Things Intentionally Left Out
+
+=over 4
+
+=item *
+
+XML::RSS is not part of Bundle::Combust (but it will be part of a
+future version of Bundle::Combust::Extras.  It is dependent on
+XML::Parser, which is dependent on expat, which requires extra hoops
+to jump through on OS X.
+
+   perl Makefile.PL LIB=~/Library/Perl PREFIX=~ \
+    EXPATLIBPATH=/usr/X11R6/lib EXPATINCPATH=/usr/X11R6/include
+
+RSS feeds (used to show lists of news items and such) won't work
+without this.
+
+=item *
+
+You can (of course) use a different perl or apache, if you want.  The
+apache must have mod_perl 1.x compiled in.  The apache and matching
+perl can be specified in your combust.conf.
+
+=item *
+
+You'll note this is running on a high port (not 80, which requires
+running as root.)  Currently redirects won't work.  If you put:
+
+  external_port=80
+
+in your combust.conf, this will fix redirects.
+
+We are considering changing the code to not default to port 80.
+
+=item *
+
+Why do redirects default to port 80?  Because we designed Combust to
+run behind a proxy (for performance reasons, among others).  But for
+development, that adds an unecessary layer.  I run Combust behind a
+proxy on my desktop (because I have many domains I want to answer on
+port 80, some Combustified, others not.  But on my laptop, it's
+unnecessary.
+
+=back
+
+=head1 AUTHOR
+
+Robert Spier

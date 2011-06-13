@@ -1,0 +1,32 @@
+<h2>Your account</h2>
+
+<p>
+Name: [% combust.user.name | html %]<br/>
+Email: [% combust.user.email | html %]<br/>
+Username: <b>[% combust.user.username | html %]</b><br/>
+<a href="[% combust.account_url %]">Change this</a>
+</p>
+
+[% IF reset_password_confirmation %]
+<p style="border: 1px solid red; padding: 5px;">
+Are you sure you want to reset your API key?
+</p>
+
+[% ELSE %]
+
+<p>Your CPAN Testers API key is <code style="font-size:120%; background:#ffffbf; padding:3px;">[% combust.user.api_key %]</code></p>
+
+[% END %]
+
+<form action="/account" method="post">
+<input type="hidden" name="auth_token" value="[% combust.auth_token %]" />
+[% IF reset_password_confirmation %]
+<input type="submit" name="btn" value="Yes, really give me a new API key" />
+<input type="hidden" name="reset_password" value="absolutely" />
+[% ELSE %]
+<input type="submit" name="btn" value="Reset my API key" />
+<input type="hidden" name="reset_password" value="yes" />
+[% END %]
+</form>
+
+<a href="/account/logout">Logout</a> | <a href="/">Front</a>

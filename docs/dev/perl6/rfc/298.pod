@@ -1,0 +1,54 @@
+=head1 TITLE
+
+Make subroutines' prototypes accessible from Perl
+
+=head1 VERSION
+
+  Maintainer: Simon Cozens <simon@brecon.co.uk>
+  Date: 25 Sep 2000
+  Mailing List: perl6-language-subs@perl.org
+  Number: 298
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+Allow sub prototypes to be got and set by Perl at compile time.
+
+=head1 DESCRIPTION
+
+The motivation behind this RFC is to allow subroutine attributes to
+define canned "prototype classes". As a very trivial example:
+
+    use attributes::prototype 'a_and_b' => "($a,$b)"
+
+    sub foo : a_and_b { 
+        # $a and $b are here set to what we knew as $_[0] and $_[1]
+    }
+
+Now, yes, I am suggesting that there be a C<attributes::prototype>
+pragma, but that's not the thrust of my RFC - the point is how you
+implement it, and you have to do this by making the prototype available.
+
+That's the motivation; the justification is slightly different, and it's
+to increase the flexibility and the possibilities for introspection that
+Perl 6's subroutines provide the user. More flexibility is always a good
+thing.
+
+=head1 IMPLEMENTATION
+
+There are a number of ways that this can be done; I'd originally thought
+that there should be Yet Another Special Variable, but it seems more
+Perlish to change C<prototype> to be a function which returns
+the prototype of a built-in (same as Perl 5) or, when passed a fully
+qualified sub name, an lvaluable subroutine to get or set the prototype
+of that sub. 
+
+So C<attributes::prototype> can then be implemented something vaguely
+like this: store "prototype class" declarations in a hash, say,
+C<%PROTOS>; register the new attributes; when the attribute is
+processed, set C<prototype($sub) = $PROTOS{$attr}>.
+
+=head1 REFERENCES
+
+RFC 57: Subroutine prototypes and parameters

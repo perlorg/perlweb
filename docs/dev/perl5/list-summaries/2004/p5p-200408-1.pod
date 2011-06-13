@@ -1,0 +1,72 @@
+=head1 This Week on perl5-porters (2-8 August 2004)
+
+Another week, another summary, while we're getting unnoticeably older.
+(Yes, I just remarked that I started those summaries two years ago.)
+
+=head2 File tests on AIX
+
+David Favor and Rafael investigated the implementation of filetests
+operators on AIX (bug #30885), notably regarding access control lists and
+how AIX system calls deal with them.
+
+    http://groups.google.com/groups?selm=rt-3.0.11-30885-92880.10.8131991882473%40perl.org
+
+=head2 Uninitialized versus undefined
+
+Ovid asked whether there was a way, internally, to tell the difference
+between a variable that holds the C<undef> value, and a variable that
+hasn't been initialized at all. Dave Mitchell says that the short answer
+is I<no>, but elaborates a bit.
+
+    http://groups.google.com/groups?selm=20040804222250.54875.qmail%40web60810.mail.yahoo.com
+
+=head2 Version objects
+
+John Peacock sent the Final Version Object Core Patch. (Minus a small leak
+found by Steve Hay.)
+
+Ken Williams initiated a debate on the meaning of the UNIVERSAL::VERSION()
+method, when the C<version> module has been loaded. It overloads
+UNIVERSAL::VERSION() to return a version object. This annoys
+Module::Build. John Peacock argues that $VERSION should not be compared as
+a string. Fergal Daly disagrees, saying that $VERSION should not be
+compared as a floating point number.
+
+    http://groups.google.com/groups?selm=3BA4E2DA-E680-11D8-A3F5-000A95BD9874%40mathforum.org
+
+=head2 Releases
+
+Marcus Holland-Moritz released two beta versions of Devel::PPPort 3.
+Incidentally, we learn that he has 87 perls installed on his laptop for
+his testing needs. However, more tests are welcome.
+
+    http://groups.google.com/groups?selm=20040808194504.3338d959%40r2d2
+
+Paul Marquess released DB_File 1.810, to solve Cygwin problems.
+
+=head2 In Brief
+
+Rafael removed the "Newline in left-justified string for sprintf" warning.
+
+Fergal Daly added to the C<diagnostics> module the ability to display
+stack traces on errors and warnings.
+
+    http://groups.google.com/groups?selm=20040803233309.GA239%40dyn.fergaldaly.com
+
+Fergal, actually, is apparently writing a stack trace module. While doing
+so, he found and reported a bug concerning what happens when you tie %SIG :
+it doesn't work until you insert a value in it. (Bug #30926.)
+
+    http://groups.google.com/groups?selm=rt-3.0.11-30926-93061.2.56136439978242%40perl.org
+
+Andy Lyttle reported that using array indices near C<2**32> wraps around
+and results in accesses to the first elements of the array. (Bug #30979.)
+As he says, I<that's the sort of weird behavior we expect from C, not from
+perl>.
+
+=head2 About this summary
+
+This summary was written by Rafael Garcia-Suarez. Weekly summaries are
+published on F<http://use.perl.org/> and posted on a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. Comments and
+corrections welcome.

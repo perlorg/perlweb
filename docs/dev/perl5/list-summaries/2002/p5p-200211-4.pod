@@ -1,0 +1,123 @@
+=head1 This Week on perl5-porters (25 November / 1st December 2002)
+
+This week, the bulk of the discussion comes from bug reports. Using my
+discriminative summarizer powers, I've selected some to be featured in
+this new instance of the P5P summary.
+
+=head2 Reference to an undefined value
+
+Nicholas Clark remarks that the C<strict 'refs'> pragma doesn't produce
+consistent errors when an undefined value is dereferenced (bug #18635).
+For example, C<push @$a, "foo";> is allowed when $a is undefined, while
+C<print @$a;> dies with an error (I<Can't use an undefined value as an
+ARRAY reference>). At first sight, the difference between the two
+constructs is that in the first form $a is modified (by autovivification),
+while it's only read in the second. However this doesn't actually explain,
+semantically that is, why C<print for @$a> or C<defined @$a> are still
+allowed under C<strict 'refs'>.
+
+As a conclusion to the thread, Rafael Garcia-Suarez suggests to build
+a matrix with all possible cases and work out what the proper behaviour
+must be.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg89322.html
+
+=head2 Fun with syntax
+
+Nicholas Clark (again) found an interesting way to confuse the tokenizer. The
+following snippet :
+
+    print "$a{'"
+    #'}";
+
+is understood by perl as C<print qq[$a{'#'}";\n];> (according to
+B::Deparse.) Apparently nobody understands what happens there.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg89374.html
+
+=head2 MakeMaker PREFIX regression
+
+Michael Schwern received bug reports for ExtUtils::MakeMaker, telling that
+the recent versions (such as the one distributed with perl 5.8.0) break
+the following installation prefix specification style :
+
+    perl Makefile.PL PREFIX=foo
+    make test
+    make install PREFIX=bar
+
+This is due to the massive refactoring Michael did on MakeMaker, where he
+didn't realized that this case was actually useful to some. He asked for
+advice on how to tweak the generated Makefile (portably) to include a
+default value for macros.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg89366.html
+
+=head2 Restricted hashes bug
+
+A strange bug (#18651) has been found, related to restricted hashes (and
+the Hash::Util module). When the hash has been made read-only with the
+lock_keys() function, and when the keys are deleted from the hash then
+reintroduced again, under some conditions a key may disappear from the
+return value of the built-in keys(). Apparently this bug depends also on
+the key names. Nicholas Clark provided a first draft patch. He also
+commented that he considers this bug serious enough to recommend not using
+restricted hashes with perl 5.8.0.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg89318.html
+
+=head2 In brief
+
+H.Merijn Brand reported that the test F<t/io/openpid.t> doesn't hang
+anymore on AIX 4.3.3, after a compiler upgrade (to vac 5.0.2.6). Smokes
+for this system are restarted.
+
+The DESTROY() methods, that used to be called in scalar context, are now
+called in void context. Let's see if this breaks something.
+
+Jarkko Hietaniemi asked that the bugs that have been fixed should be
+marked as such in the perlbug database, as it's not cleaned up at night by
+a magical army of little gnomes. Robert Spier also plans to send a weekly
+summary of new and open bugs.
+
+Eduardo Pérez Ureta provided a first patch to implement the improvement he
+suggested last week to the C<-i> command-line switch, but he got no
+feedback yet.
+
+Chip Turner (maintainer of Perl for RedHat) asked again about bug #18265
+(concerning nonblocking I/O), reported at the beggining of november.
+Brendan O'Dea (maintainer of Perl for Debian) adds that this problem (also
+reported on Debian) seems to be dependent on the build environment.
+
+Yves Orton stirred up the list about the assertion-in-perl patch,
+submitted two weeks ago by Salvador Fandiño. He likes this feature
+proposal and doesn't want it to be overlooked. Hugo commented that he's
+still on catch-up mode on the patches, but plans to look at it in detail.
+Salvador then proposed a new version of his patch.
+
+Jarkko tried to fix bug #16823 (multibyte characters can't be used as
+separators for the various quotelike operators), but it turned out that
+the bug is a lot more complicated than it appears in a preliminary
+inspection, due to the various possible encodings that may be used by the
+source file.
+
+Bug #18717 is about some regression tests failing ungracefully when the
+TERM environment variable contains a dot. In this case, the taint checks
+report the error message I<Insecure $ENV{TERM} while running with -T
+switch>. Slaven Rezic comments that he doesn't understand why TERM is
+considered dangerous when it contains metacharacters. A quick fix would be
+to set C<TERM=dumb> before running the failing tests.
+
+Marc Lehmann reported bug #18779, about a lexical variable being
+mysteriously reset when declared in the conditional of a C<while> loop
+that uses C<redo>.
+
+James Mastros remarks that the C<${^TAINT}> special variable is set to 1
+both under real taint mode (C<-T>) and under taint warnings mode (C<-t>).
+He asks for a way to distinguish between those modes.
+
+=head2 About this summary
+
+This summary brought to you by Rafael Garcia-Suarez, both on
+F<http://use.perl.org/> and via a mailing list, which subscription address
+is F<perl5-summary-subscribe@perl.org>. Comments and corrections are, as
+always, welcome.

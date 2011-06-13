@@ -1,0 +1,99 @@
+=head1 TITLE
+
+pack/unpack uncontrovercial enhancements
+
+=head1 VERSION
+
+  Maintainer: Ilya Zakharevich <ilya@math.ohio-state.edu>
+  Date: 16 September 2000
+  Mailing List: perl6-language-data@perl.org
+  Number: 246
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+This RFC proposes simple enhancements to templates of pack/unpack builtins.
+These enhancements do not change the spirit of how pack/unpack is used.
+The semantic is enhanced as much as possible under this constaint.
+
+Additional changes to pack/unpack are listed in other proposals.
+
+=head1 DESCRIPTION
+
+The following additional constructs are allowed in pack()/unpack() TEMPLATEs:
+
+=over 8
+
+=item C<,> and C<;>
+
+denotes the same as whitespace.
+
+=item C<[4]>
+
+denotes the same as C<4>, as in C<'i[4] S[4]'>.
+
+=item C<[TEMPLATE]>
+
+denotes the same as C<[$LEN]>; here $LEN is the length taken by the data
+described by the template:  C<$LEN = length pack TEMPLATE, @something>
+(as far as it does not depend on @something, so C<A*> is prohibited).
+This multiplier makes sense for byte-oriented types only.  For example,
+the middle part of C<'C[32] C[L8] C[64]'> will extract I<the substring> which
+consists of 8 packed longs.  Similarly, C<'C[32] x[L8] C[64]'> will skip
+this substring.
+
+=item C<x!LEN>
+
+skip to offset divisible by C<LEN>.  For example, C<'x![L]'> will align
+to a long-compatible boundary.
+
+=item C<W>
+
+a BER encoded double.
+
+=item C<w!>
+
+a BER encoded "length", in other words, an integer encoded as BER lengths are.
+
+=item C<(TEMPLATE)>
+
+a group.  May take a repeatition count either as C<(Ns)33> or as C<N/(Ns)>.
+
+=item C<TEMPLATE1//TEMLATE2>
+
+On unpack(): C<TEMPLATE1> extracts a number.  This number specifies the number
+of following bytes which the TEMPLATE2 should be applied to.  (The difference
+with C<TEMPLATE1/(TEMLATE2)> is that in the latter case the number extracted
+by C<TEMPLATE1> is not the number of bytes, but the repetition count.)
+During pack(), makes the opposite operation.
+
+For example,
+
+  pack 'n//(A[4] C*)', 'a', 9..14
+
+does the same as
+
+  pack 'n A[4] C*', 10, 'a', 9..14
+
+(this is especially useful with the grouping proposals introduced in a
+future RFC).
+
+=item quad-formats
+
+should work on 32-bit architectures too, using doubles instead (with a
+possible precision loss).
+
+=back
+
+=head1 MIGRATION ISSUES
+
+None.
+
+=head1 IMPLEMENTATION
+
+Straightforward.
+
+=head1 REFERENCES
+
+RFC142: Enhanced Pack/Unpack

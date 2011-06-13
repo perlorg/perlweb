@@ -1,0 +1,69 @@
+=head1 This Week on perl5-porters (12-18 January 2004)
+
+Besides the release of a new maintenance version of perl, this week
+passed and carried its usual heterogeneous load of bugs. Read below
+for all the details.
+
+=head2 5.8.3
+
+Perl 5.8.3 was released (as expected.) The announcement and its laudatory
+follow-ups can be seen at:
+
+    http://groups.google.com/groups?selm=20040114192716.GA13579%40Bagpuss.unfortu.net
+
+=head2 Formats improvements
+
+Wolfgang Laun proposed a huge patch implementing many fixes and
+improvements to formats. The details are to be found in his announcement:
+
+    http://groups.google.com/groups?selm=DF27CDCBD2581D4B88431901094E4B4D02B0C4D3%40attmsx1
+
+However one of the tests added by his patch fail on some architectures.
+(bug #24927.) This is to be investigated.
+
+=head2 In Brief
+
+Yitzchak Scott-Thoennes asked some questions about the next development
+release of Perl, to be numbered 5.9.1: what features are going to be in it?
+
+    http://groups.google.com/groups?selm=20040111213417.GD2348%40efn.org
+
+It was found that chop() and chomp() mangle UTF-8-encoded strings (bugs
+#24888 and #24926). Fixes were proposed.
+
+Abigail found out a complex regular expression that apparently corrupts
+memory somehow. (bug #24898). Wolfgang Laun proposed a patch.
+
+    http://groups.google.com/groups?selm=rt-3.0.8-24898-69991.2.12654944284594%40perl.org
+
+Thomas Bayen found a very strange bug, (#24905), that was quickly fixed by
+Dave Mitchell.
+
+    http://groups.google.com/groups?selm=rt-3.0.8-24905-70016.12.3769365894331%40perl.org
+
+Bug #24914 demonstrates a case of segmentation fault involving closures.
+Dave Mitchell proposed a fix, but it turned out to be unperfect, causing
+a regression test to hang under some conditions.
+
+    http://groups.google.com/groups?selm=rt-3.0.8-24914-70050.17.1879051837409%40perl.org
+
+Merijn Brand notices that the line
+
+    open my $fs, $path or return;
+
+produces a warning I<Parentheses missing around "my" list>. This warning
+is actually produced by the perl parser by using some rough heuristics,
+for which Sadahiro Tomoyuki proposed an improvement.
+
+Steve Grazzini reports that
+
+    sub f : unique {}
+
+is a quick and efficient way to make perl segfault. (bug #24940.)
+
+=head2 About this summary
+
+This summary was written by Rafael Garcia-Suarez.  Weekly summaries are
+published on F<http://use.perl.org/> and posted on a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>.  Corrections
+and comments are welcome.

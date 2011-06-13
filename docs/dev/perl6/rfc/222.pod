@@ -1,0 +1,215 @@
+=head1 TITLE
+
+Interpolation of object method calls
+
+=head1 VERSION
+
+  Maintainer: Michael G Schwern <schwern@pobox.com>
+  Date: 14 Sep 2000
+  Last Modified: 17 Sep 2000
+  Mailing List: perl6-language-objects@perl.org
+  Number: 222
+  Version: 2
+  Status: Developing
+
+=head1 CHANGES
+
+=head2 v2.  
+
+Mistakenly said that C<"$obj->meth("Foo")"> should interpolate.  It
+should, of course, be C<"$obj->meth(\"Foo\")">.
+
+Added a section about variable method calls C<"$obj->$meth()">.
+MIGRATION updated accordingly.
+
+Clarified the title, restricting this RFC to object methods only.
+Class methods will be delt with in a seperate RFC.
+
+The caveat about whitespace now has its own section.
+
+
+=head1 ABSTRACT
+
+Method calls should interpolate in double-quoted strings, and similar
+locations.
+
+    print "Today's weather will be $weather->temp degrees and sunny.";
+
+Would deparse to:
+
+    print 'Today\'s weather will be '.$weather->temp().' degrees and sunny.';
+
+
+=head1 DESCRIPTION
+
+=head2 The Current Problem With OO & Interpolation
+
+Object-oriented programming encourages data-hiding, and one of the most basic
+tool for this is the accessor method.  For reasons which should be obvious,
+C<$obj->foo()> is usually better than C<$obj->{foo}>.  However, there are
+several barriers to using an accessor method as simply as one does a hash
+lookup.  Other RFCs deal with most of the current issues, but a basic one
+still remains.
+
+    print "Today's weather will be $weather->temp degrees and sunny.";
+    
+This does not DWIM.  Instead of interpolating C<$weather->temp> as a method
+call, it comes out as C<$weather.'->temp'> and is usually followed immediately
+by the question "What does 'Weather=HASH(0x80d4174)->temp' mean??"  Most
+programmers learning OO Perl expect this to work and are surprised to find
+that it does not.
+
+Work arounds abound:
+
+    # If I wanted printf(), I'd have written it in C.
+    printf "Today's weather will be %d degrees and sunny.", $weather->temp;
+
+    my $temp = $weather->temp;
+    print "Today's weather will be $temp degrees and sunny.";
+    
+    print "Today's weather will be @{[$weather->temp]} degrees and sunny.";
+
+    print "Today's weather will be ".$weather->temp." degrees and sunny.";
+
+None are as simple and as obvious as:
+
+    print "Today's weather will be $weather->{temp} degrees and sunny.";
+
+and because of this users groan at having to use accessor methods and are
+often tempted to violate encapsulation for ease of use.
+
+=head2 Proposed Solution - Interpolate Methods
+
+Therefore, it is proposed that direct object method calls be interpolated
+inside double quoted strings and similar constructs.
+
+    print "Today's weather will be $weather->temp degrees and sunny.";
+
+should parse out as:
+
+    print 'Today\'s weather will be '.$weather->temp().' degrees and sunny.';
+
+thus returning DWIMness to methods and strings and removing one barrier to
+accessor method's acceptance over hash lookups for objects.
+
+Methods will be run in scalar context.  A method which returns a
+single scalar is treated normally.  If a list is returned, it should
+be treated same as array interpolation.  The list seperator will be
+applied.  In effect, the deparsing will really work out as follows:
+
+    print 'Today\'s weather will be '.join($", $weather->temp()).
+          ' degrees and sunny.';
+
+However if temp() calls wantarray(), the result will be FALSE (scalar).
+
+(For the remainder of the RFC, the join() will be assumed when discussing
+deparsing for brevity.)
+
+Should it be decided that a formal distinction be made between accessor
+methods and other types (RFC 95), method interpolation should interpolate
+B<any> method.
+
+
+=head2 Argument passing
+
+Interpolation should also handle passing arguments to methods in a string:
+
+    print "Today's weather will be $weather->temp(\"F\") degrees and sunny.";
+
+B<NOTE> escaping the quotes is analagous to how C<"$hash{\"foo\"}">
+currently interpolates.
+
+This should deparse to:
+
+    print 'Today\'s weather will be '.$weather->temp("F").
+          ' degrees and sunny.';
+
+The arguments to the method are considered as normal expressions, thus:
+
+    print "There is $obj->foo(this => $yar, that => 2 + 2) in my head.";
+
+deparses as:
+
+    print 'There is '.$obj->foo(this => $yar, that => 2 + 2). ' in my head.";
+
+
+=head2 Variable method calls
+
+The accessor method is not always known when the program is written,
+thus variable method calls should also be interpolated:
+
+    my $what = 'temperature';
+    print "The $what will be $weather->$what() with a 50% chance of kittens.";
+
+interpolates to
+
+    my $what = 'temperature';
+    print 'The '.$what.' will be '.$weather->$what().' with a 50% chance of kittens.';
+
+As with normal usage, the parenthesis are mandatory.  This:
+
+    my $what = 'color';
+    print "I like traffic lights, but only when they're $light->$what";
+
+interpolates to:
+
+    my $what = 'color';
+    print 'I like traffic lights, but only when they're '.$light.'->'.$what;
+
+
+=head2 Whitespace
+
+Normally, whitespace is allowed between tokens of a method call.
+
+    $obj -> bar ("this");
+    
+and
+
+    $obj->bar("this");
+
+are equivalent.  Whitespace between the object, '->', method name and opening
+paren should be disallowed when interpolated.  This will avoid many ambiguous
+cases.
+
+
+=head1 CAVEATS
+
+Indirect object syntax, being already ambiguous, cannot be easily be
+distinguished in a string from normal text and should not be interpolated. 
+This is ok, since accessors are rarely called with indirect object syntax.
+
+
+Are there any contexts besides double quotes ("", qq{}, <<"EOF") where this
+need be applied?  What about inside regexes?  And if so, left and/or right
+hand side?
+
+
+Should the method not exist, Perl will throw an exception/die as usual.
+
+
+C<"$var->{this}[2]{is}->{complex}->method"> should also be
+interpolated.  Also C<"$obj->method->{key}"> for the case where a
+method returns a reference and C<"$obj->method->another_method"> for
+the case where a method returns another object.
+
+=head1 MIGRATION
+
+Perl 5 to Perl 6 can simply change s/->(\$?\w)/\\->$1/g in double
+quoted strings to avoid the new interpolation.
+
+=head1 IMPLEMENTATION
+
+The behavor of the parser to check for embedded variables would have
+to be altered, namely the case where an embedded variable is being
+dereferenced.  A case would be added to allow method calls as well as
+hash and array index dereferences.  Otherwise, parsing should remain
+as normal.
+
+=head1 REFERENCES
+
+RFC 95  - Object Classes (proposes automatic accessor methods)
+
+RFC 163 - Automatic accessors for hash-based objects
+
+Upcoming RFC on interpolation of class methods
+

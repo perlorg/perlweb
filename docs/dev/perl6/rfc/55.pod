@@ -1,0 +1,110 @@
+=head1 TITLE
+
+Compilation: Remove requirement for final true value in require-d and do-ed files
+
+=head1 VERSION
+
+  Maintainer: Damian Conway <damian@conway.org>
+  Date: 7 Aug 2000
+  Last Modified: 25 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 55
+  Version: 3
+  Status: Frozen
+  Frozen since: v2
+
+=head1 ABSTRACT
+
+This RFC proposes that files compiled via a C<require> no longer
+be required to end in a true value.
+
+=head1 DESCRIPTION
+
+It is proposed that the final value in a file that is compiled using
+C<require> no longer be significant.
+
+Instead it is proposed that files that wish to fail during compilation
+should throw an exception. Furthermore, any valueless exception (i.e.
+thrown with a simple C<die;>) that propagates through a C<require>
+should automatically take the appropriate message string:
+
+        "require failed: file "%s" threw an exception"
+
+        "do failed: file "%s" threw an exception"
+
+Note that exceptions with a value would be passed through unchanged,
+allowing a compiled file to signal exactly why it failed.
+
+Note too that, if the calling module wants to abort when a C<require>'d
+file returns a false value, it is still free to do that.
+
+The 'module initialization' feature is little-used.  99 the of 102
+files in Perl 5.6 lib/*.{pl,pm} end with C<1;>.  AnyDBM_File invokes
+'die' explicitly.  The only real exceptions are diagnostics.pm and
+timelocal.pl.
+
+
+=head1 IMPLEMENTATION
+
+C<require> should execute code in a file and return the result, as
+before, but it should not call Perl_die when the result is false.
+
+However, see below.
+
+
+=head1 MIGRATION
+
+In 98% of cases, no translation is necessary.  The first version of
+the translator can ignore the issue entirely.  Strategies to cover the
+other 2% follow:
+
+Is general, direct source translation of this feature of Perl 5
+modules would probably be impossible.
+
+It's tempting to say that the translator should simply translate the
+last statement or block in the module from this:
+
+        STATEMENT
+
+to this:
+
+        unless (do {STATEMENT}) {
+          require Carp;
+          Carp::croak "... did not return a true value";
+        }
+
+However, I think that is impractical.  The module might contain code
+that looks like this:
+
+        if (something()) {
+          return $v1;
+        }
+
+        ...
+
+
+        $v2;
+
+In this case the 'return $v1' statement would I<also> have to be
+translated.  In general, there might be many, many statements that
+would need to be translated.  This would look awful.
+
+If complete coverage is desired, the best choice would probably be
+to introduce a new pragma, which would enable the old behavior.  A
+translated module would begin with
+
+        package Foo;
+        use perl5 'require';
+
+        ...
+
+When this file was C<require>d, the pragma would set a flag.  The
+C<pp_require> opcode would check the flag after compiling the file,
+and would call C<Perl_die> as before if the file returned a false
+value and if the flag was set.  If Foo C<require>d any other modules,
+the flag would be cleared before loading them, and restored again
+afterwards.  (That is, the flag would have file scope.)
+
+=head1 ACKNOWLEDGEMENTS
+
+Most of this proposal was written by Mark-Jason Dominus.

@@ -1,0 +1,98 @@
+=head1 TITLE 
+  
+Pseudo-hashes must die! 
+  
+=head1 VERSION
+
+  Maintainer: Michael Schwern <schwern@pobox.com> 
+  Date: 16 Sep 2000
+  Mailing List: perl6-language @perl.org
+  Number: 241
+  Version: 1
+  Status: Developing (Last Call)
+
+=head1 ABSTRACT
+
+Pseudo-hashes and the associated fields pragma shoule be removed from
+Perl 6.
+
+=head1 DESCRIPTION
+
+There are numerous insuperable problems with pseudo-hashes, as
+detailed in "Object Oriented Perl" and "Programming Perl, Ed. 3".
+They are a noble experiment that many feel has failed.  They should be
+removed.
+
+Pseudo-hashes have existed since at least May 28th, 1997 when they were
+added as patch #2 to what would eventually become 5.004_50.  Two
+years, three months and 20 days later they're still considered
+experimental, incomplete and loaded with caveats.
+
+        Doesn't play well with multiple inheritance
+        Muddles the behavior of typed variables
+        Requires significant extra documentation and complication of
+                hash operations.
+        Inconsistencies between typed and untyped access.
+        Pseudo-hashes, unless used very carefully, often turn out slower
+                than hashes.
+
+Pseudo-hashes were added to solve three problems: restrict keyspace,
+reduce memory usage and increase speed of hashes.  There are many RFCs
+which address these issues with less caveats.
+
+There has been some discussion on p5p regarding the removal of
+pseudo-hashes (and other experimental features) should their
+adolescence take too long.  Two major revisions of experimentation was
+given as a rough limit to declaring an experiment as a failure.
+
+The extensive development time, continued experimental nature, caveats
+and availability of better proposals lead to one conclusion:
+
+        B<PSEUDO-HASHES MUST DIE>
+
+=head1 MIGRATION
+
+Considerable.  Most would be solved by a clever rejigging of the
+fields pragma to revert to simple hashes or other Perl 6 features.  A
+100% perfect conversion will not be achieved without an inorderinate
+amount of work.  Since pseudohashes were an experimental feature, a
+less-than-perfect migration is acceptable.  You pays your money and
+you takes your chances.  (As a fairly extensive user of pseudohashes,
+I'm willing to take the hit.)
+
+=head1 IMPLEMENTATION
+
+Very simple, don't implement it. :) In Perl 5 terms, avhv functions
+removed from av.c, pseudo-hash code removed from pp.c, pp_hot.c,
+doop.c, mg.c, embed.pl etc.... and pseudo-hash documentation caveats
+removed from perlref and perlfunc.
+
+
+=head1 REFERENCES
+
+Discussion of experation of experimental features.
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2000-01/msg00017.html
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2000-01/msg00255.html
+
+RFCs which supplant pseudohash functionality.
+
+RFC 188 - Objects : Private keys and methods
+
+RFC 200 - Objects: Revamp tie to support extensibility (Massive tie changes)
+
+RFC 163 - Automatic accessors for hash-based objects
+
+RFC 124 - Sort order for any hash
+
+RFC 122 - types and structures
+
+etc...
+
+http://us.imdb.com/Title?0165929
+
+http://us.imdb.com/Title?0102691
+
+http://us.imdb.com/Title?0094077
+
+http://us.imdb.com/Title?0054474
+

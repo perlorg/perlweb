@@ -1,0 +1,219 @@
+=head1 This Week on perl5-porters - 17-23 October 2005
+
+Perl 5 was released this week, eleven years ago.
+
+=head2 Defining C<sub _ {...}> breaks C<File::Find>
+
+Jeff "japhy" Pinyan mentioned the Issue That Will Not Die, that if you
+define C<sub _ {...}>, then C<_> as a shorthand for I<the file most
+recently statted> stops working. The problem at hand for japhy being
+that C<File::Find> fails, and wondered what workarounds were possible.
+
+Mark Jason Dominus was against the idea of teaching C<File::Find> to
+work around such damage, because it would probably not be the only
+module that breaks under this scenario. The best fix would be to adjust
+the parser to prefer string context for C<_> where it makes sense (and
+thus not call C<sub _>).  And Rafael Garcia-Suarez did just that with
+a quick patch to put more DWIMery into the tokeniser in change #25799.
+
+It turns out that C<_> is the usual idiom in the C<gettext> world for
+dealing with internationalisation (i18n). Yitzchak Scott-Thoennes thought
+that a new warning should be generated for attempting to define C<sub _>.
+Abigail thought not. The thread then evolved into a discussion about how
+and when new warning can, or should, be added to the interpreter.
+
+  Earlier thread, summarised here
+  http://dev.perl.org/perl5/list-summaries/2005/20050909.html
+
+  This time around
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00565.html
+
+  Musing on warnings
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00683.html
+
+=head2 Loading multiple versions of modules
+
+Nicholas Clark wants to know how much tweaking to the internals would be
+required in order to let perl load different versions of the same module.
+Something as mundane as package Alpha using version 1.0 of module Charlie,
+and package Bravo using version 2.0 of module Charlie would come in quite
+handy. Without getting into the brain-melting complexity of an C<@array>
+containing heterogeneously versioned Charlie objects...
+
+The idea sounds quite exciting, sadly, after a few responses the thread
+flickered out.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00585.html
+
+=head2 Sub return values are inaccurately documented
+
+The monster thread of the week, with 44 replies. It starts with a sentence
+from C<perlsub>, noted by Xavier Noria: "The return value of a subroutine
+is the value of the last expression evaluated by that sub". Pop quiz: what
+does the following return?
+
+  C<sub f { 1 for 1 }>
+
+Answer: C<''>. Adriano Ferreira supplied a number of variations on the theme,
+with C<if> or C<while> in the place of C<for>, and Abigail pointed out that
+C<do {...}> has the same sorts of problems, so it's not only apparent in
+subroutines. The problem is that C<for> is a control structure. And the
+value of a control structure is unspecified. In fact, it doesn't have one.
+
+Yves Orton noticed that C<my @b=(0,1); print $b[0+do {1 for 1}]> dumps core.
+He also wanted to specify the last expression produced by a control structure.
+Xavier pointed out that control structure are not expressions. And Rafael
+concurred, saying that you can't say C<my $x = while (...) { ... }>. Yves
+countered with C<my $x = do {while (...) { ... }}>. Rafael put his foot down
+and said that loops are evaluated in void context. To change them now to
+be evaluated in scalar or list context (which is what Yves wanted) would
+break lots of code.
+
+But the core dump problem remained unresolved.
+
+  The beginning
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00615.html
+
+  Dave explains exactly what's going on
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00631.html
+
+  Rafael explains from the other end
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00678.html
+
+  Xavier summarises the current state of play
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00694.html
+
+=head2 C<do { EXPR for EXPR }>
+
+Robin Houston picked up the core dump noticed by Yves in the above thread
+and analysed it. And patched the source to fix it.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00689.html
+
+=head2 List slice subscripting
+
+Nicholas Clark said that he didn't want to see the new slicing syntax
+appearing in C<maint>, and related a horror story of battling with syntax
+variants in 5.004, when only 5.004_05 compiles easily on modern platforms
+due to compiler evolution (specifically, Configure-back-then gets confused
+by what compiler-right-here-right-now says in response to its probes).
+
+If you like this syntax, wait for 5.10. If you can't wait, try and help to
+make 5.10 get here faster.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00703.html
+
+  Initially summarised here
+  http://dev.perl.org/perl5/list-summaries/2005/20050915.html
+
+=head2 Recursive comparison routine can cause segfault in sort
+
+Robin Houston found that using a sort comparison routine that calls itself
+can cause perl to dump core. Dave Mitchell confirmed that the situation is
+deeply unsatisfactory. Even if the code base was patched to die gracefully
+when a recursive sort comparison was found, there are problems with threads
+that remain in any event. Hugo van der Sanden suggested an approach using
+attributes. Robin and Dave started to debate a way forward.
+
+  The bug report
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00717.html
+
+  The trouble with threads
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00724.html
+
+  Hugo's suggestion
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00725.html
+
+  Robin's way forward
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00734.html
+
+=head2 What John E. Malmberg did this week
+
+John E. Malmberg got C<open(FOO, "child.pl foo|")> working on VMS, applied by
+Craig Berry,
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00580.html
+
+and synced C<exit>'s behaviour with the documentation
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00637.html
+
+and posted his VMS TODO list
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00704.html
+
+There's a lot there. And it probably may not be complete.
+
+=head2 What Jarkko Hietaniemi did this week
+
+Jarkko Hietaniemi posted many patches to bring Perl on Symbian up to speed.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00536.html
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00557.html
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00563.html
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00597.html
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00658.html
+
+=head2 In brief
+
+I have the Perl5 bug summary in my spool, but for some reason I cannot find
+the message on C<xray>. There were 1507 open tickets as of 2005-10-17.
+
+Nicholas Clark thinks he shook out a reference counting bug with
+a ponie build:
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00533.html
+
+Ilya Zakharevich cc'ed p5p about a bug in C<if> and appended a patch.
+Some doubts were expressed about the error message (not everyone may
+catch the cultural context of "cryptocontext"). Others noted tangentially
+that testing for Windows platforms with C<if ( $^O =~ /Win/i )> will come
+to grief on C<cygwin> and C<Darwin>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00558.html
+
+Andy Lester, continuing on his quest to conts, hoisted some repeated code out in
+F<av.c> and thus shaved a few bytes of the resulting object code.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00569.html
+
+Following on from the discussion of manipulating the environment last week,
+H.Merijn Brand added a F<configure> probe for C<clearenv>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00574.html
+
+Sébastien Aperghis-Tramoni wrote patch #25802 for F<autodoc.pl> so that it
+generates the index entries for F<perlapi.pod> and F<perlintern.pod>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00584.html
+
+Gisle Aas fixed up C<pp_sselect>
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00650.html
+
+Nicholas upgraded C<ExtUtils::MakeMaker> to 6.30 in C<maint>. And wanted to
+know what (is)? broke(n)?.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00673.html
+
+=head2 About this summary
+
+This summary was written by David Landgren, for once without Immediate
+Realtime Corrections (IRC), so any typos or wordos are truly my own. I'm
+offline as of tomorrow morning for a week. Yay!
+
+Information concerning bugs referenced in this summary (as #nnnnn)
+may be viewed at http://rt.perl.org/rt3/Ticket/Display.html?id=nnnnn
+
+Information concerning patches to maint or blead referenced in
+this summary (as #nnnnn) may be viewed at
+http://public.activestate.com/cgi-bin/perlbrowse?patch=nnnnn
+
+Weekly summaries are published on F<http://use.perl.org/> and posted
+on a mailing list, (subscription: F<perl5-summary-subscribe@perl.org>).
+The archive is at F<http://dev.perl.org/perl5/list-summaries/>.
+Corrections and comments are welcome.
+
+If you found this summary useful or enjoyable, please consider
+contributing to the Perl Foundation to help support the development
+of Perl.

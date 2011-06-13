@@ -1,0 +1,195 @@
+=head1 TITLE
+
+Exception objects and classes for builtins
+
+=head1 VERSION
+
+  Maintainer: Peter Scott <peter@psdt.com>
+  Date: 9 Aug 2000
+  Last Modified: 3 Oct 2000
+  Mailing List: perl6-language-errors@perl.org
+  Number: 80
+  Version: 4
+  Status: Frozen
+
+=head1 ABSTRACT
+
+This RFC proposes that builtins that throw exceptions throw them as objects 
+belonging to a set of standard classes.  This would enable an exception 
+type to be easily recognized by user code.  The behavior if the exception 
+were not trapped should be identical to the current behavior (error message 
+with optional line number output to STDERR and exit with non-zero exit code).
+
+=head1 DESCRIPTION
+
+This RFC is tightly bound with RFC 88, which proposes an exception handling 
+mechanism based upon exceptions-as-objects, and in particular specifies 
+that fatal exceptions thrown by the core will be objects with certain 
+instance attributes.  We assume here that these aspects of RFC 88 are 
+implemented.
+
+Builtins experiencing fatal errors currently call C<die>, which is to say, 
+they throw an exception.  Builtins experiencing non-fatal errors return a 
+variety of error codes.  RFC 70 proposes that these be trappable exceptions 
+if C<use Fatal> is in effect.
+
+This RFC proposes that both exceptions be objects blessed into a standard 
+set of classes which can be checked for by the user.
+
+=head2 Object Attributes
+
+The exception object will have attributes filled in by perl.  The 
+applicable attributes from RFC 88 will be used, including:
+
+=over 4
+
+=item tag
+
+RFC 88 eschews numeric codes in favor of alphanumeric tags.  A system 
+exception should place the symbolic errno constant here, e.g., C<EINVAL>, 
+for system errors; something will have to be made up for errors that don't 
+have associated errnos.
+
+=item message
+
+The text of the exception, e.g., "Out of memory".
+
+=item severity
+
+Relative level of fatality.  Chosen from some TBD enumeration, e.g., 
+"Warning", "Fatal", "Information".
+
+=item sysmsg
+
+Additional information about the exception, the kind of thing currently put 
+in C<$^E>.
+
+=item files
+
+This and the next two attributes are used to track the program locations 
+the exception has passed through to this point since it was thrown.  This 
+attribute returns an array of filenames, starting with the one in which the 
+exception was thrown.  This is to preserve C<caller>-type information for 
+the catcher to be able to see.  RFC 88 proposes the method C<show> and 
+option C<trace> to retrieve filenames and line numbers.
+
+=item lines
+
+An array of line numbers of program locations the exception has passed 
+through between being thrown and being caught.
+
+=item subs
+
+An array of (package-qualified) subroutine names the exception has passed 
+through between being thrown and being caught.
+
+=back
+
+Stringifying the object itself will yield the C<message> attribute.  A
+C<facility> attribute was suggested to indicate what part of perl is
+throwing the exception: IMO that is part of the exception class.  In an 
+numeric context, the value will be the C<errno> if it corresponds to one, 
+otherwise up to the implementor.
+
+=head2 Classes
+
+This is a strawman exception class enumeration.  The merits of this RFC do
+not depend on this being a good list, only on it being possible to
+find a reasonable one.  A common prefix like C<Exception::> is elided for
+readability.
+
+Note: conceivably, the implementation could allow an exception to belong to 
+more than one class at a time through multiple inheritance (e.g., C<Regex> 
+and C<Recursion>).  I haven't explored the ramifications of that.
+
+These class names can be specified in calls to C<Fatal.pm> (and appropriate 
+language currently appears in RFC 70), qualified with a C<:> to distinguish 
+them from core function names.  This allows the user to change the fatality 
+or otherwise of whole classes of exceptions.  It would be possible (whether 
+it would also be I<desirable> is another matter) for a user to say, e.g., 
+C<no Fatal qw(:Reference)> and thereby excise the usual core exception upon 
+an incorrect dereference operation, as though they had wrapped it in an 
+C<eval>.  This makes the operation of C<Fatal.pm> consistent over the 
+broadest possible application.
+
+=over 4
+
+=item Arithmetic
+
+Divide by zero and friends.
+
+=item Memory
+
+C<malloc> failed, request too large, that sort of thing.
+
+=item Eval
+
+A compilation error occurred in C<eval>, C</e>, or C<(?{ ... })>.  Possible
+candidate for subdividing.
+
+=item Regex
+
+A syntax error occurred in a regex (built at run-time).  Possible candidate
+for subdivision.
+
+=item IO
+
+An I/O error occurred.  Almost certainly should be subdivided, perhaps
+parallel to the C<IO::> hierarchy.
+
+=item Format
+
+Error in format given to C<pack>, C<printf>, octal/hex/binary number
+etc.  Could use a better name.
+
+=item Thread
+
+Some goof in threading.
+
+=item Object
+
+Tried to call non-existent method, that kind of thing.
+
+=item System
+
+Attempt to interact with external program failed (maybe it ran out of
+process slots, that kind of thing).
+
+=item Taint
+
+Duh.
+
+=item Reference
+
+Attempt to dereference wrong kind of thing.
+
+=item Recursion
+
+Excessive subroutine recursion, maybe also infinite C<split> or C<s///>
+loops (although arguably they would throw a C<Regex> exception).
+
+=back
+
+There are bound to be other categories that should be covered.  This
+is just to put meat on the bones.  This is the province of librarians;
+the fact that it's possible to argue endlessly about the choices doesn't
+preclude coming up with good ones.
+
+=head1 IMPLEMENTATION
+
+This should not be construed as requiring that clearly fatal errors (e.g.
+pointer corrupted) should be trappable, or throw O-O exceptions.  Note that
+compilation errors don't have to be classified.
+
+
+=head1 REFERENCES
+
+RFC 70: Allow exception-based error-reporting.
+
+RFC 85: All perl generated errors should have a unique identifier
+
+RFC 88: Omnibus Structured Exception/Error Handling Mechanism
+
+Error.pm (C<http://search.cpan.org/doc/GBARR/Error-0.13/Error.pm>).
+
+L<perldiag>.

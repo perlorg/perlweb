@@ -1,0 +1,81 @@
+=head1  TITLE
+
+Allow multiple loop variables in foreach statements
+
+=head1  VERSION
+
+  Maintainer: Peter Scott <peter@psdt.com>
+  Date: 29 Aug 2000
+  Last Modified: 6 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 173
+  Version: 2
+  Status: Frozen
+
+=head1  ABSTRACT
+
+Allow for a list of loop variables in for(each) statements, i.e. & e.g.,
+
+      foreach my ($x, $y, $z) (@list) { ... }
+
+=head1  DESCRIPTION
+
+This has been raised by several people in the past, most recently on the
+perl6-* lists by Graham Barr, who does not have time to RFC it
+currently.  The semantics are (hopefully) obvious: where
+
+      foreach $var (@list)
+
+iterates through C<@list>, assigning C<$var> to each element in turn,
+
+      foreach ($var_1, ... $var_n) (@list)
+
+iterates through C<@list> n elements at a time, assigning C<$var_1> through
+C<$var_n> to them respectively.  If the number of elements in C<@list> is
+not evenly divisible by n, the remaining loop variables on the last
+iteration become C<undef>.
+
+The most obvious usefulness is traversing a hash which has been passed in
+an argument list:
+
+      sub foo {
+          foreach my($key, $value) (@_) { ... }
+      }
+      foo(%hash);
+
+instead of having to make a temporary copy:
+
+      sub foo {
+          my %h = @_;
+          while (my ($key, $value) = each %h) { ... }
+      }
+
+This extension does not apply to the C<foreach> statement I<modifier>,
+since that doesn't accept a loop variable anyway.
+
+=head2 Alternatives
+
+While C<splice> is frequently adduced as an alternative, this requires an
+array instead of just a list, and is destructive to boot.
+
+=head1  IMPLEMENTATION
+
+The potential parsing difficulty I came up with was how to tell that
+
+      foreach ($a,$b,$c) (@list) ...
+
+was not
+
+      foreach $_ ($a, $b, $c) (@list) ...
+
+Graham tells me that the required parentheses and block braces make it
+possible for the parser to be able to tell the difference.  John Porter
+suggests an alternative syntax
+
+     foreach [$a, $b, $c] (@list)
+
+which could be employed instead if there is a parsing problem.
+
+=head1  REFERENCES
+
+L<perlsyn/"Foreach Loops">

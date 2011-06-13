@@ -1,0 +1,73 @@
+=head1 TITLE
+
+C<use unicode::representation> and C<no unicode>
+
+=head1 VERSION
+
+  Maintainer: Simon Cozens <simon@brecon.co.uk>
+  Date: 25 Sep 2000
+  Mailing List: perl6-internals@perl.org
+  Number: 300
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+Perl 5.6's C<use bytes> is a useful pragma; this RFC stipulates its
+intended behaviour in Perl 6 B<right now>.
+
+=head1 DESCRIPTION
+
+When Perl 5.6 introduced Unicode support, there suddenly became two ways
+of handling data: you can handle it as a series of Unicode characters,
+or you can manipulate it byte-for-byte. The C<use bytes> pragma was used
+to force byte-for-byte manipulation.
+
+The problem with this was mainly of understanding; you had to know when
+Perl was handling your data as UTF8 before C<use bytes> made any sense,
+and then it looked like you were letting people fiddle with the internal
+representation of data, something that should be hidden from them.
+
+This was only B<really> a problem because some data was encoded and some
+wasn't. If we're using a consistent Unicode representation internally,
+and that's known and documented, the root of the problem goes away; 
+since everything's going to be converted to UTF8 when it enters Perl, it
+makes sense to want to get at that UTF8. It's considerably less messy
+now.
+
+But why? Why would someone want to get at the UTF8? One reason, which I
+believe to be sufficient enough to justify the pragma, noted in
+"Normalisation and C<unicode::exact>" was to compare representations
+without decomposition. C<unicode::exact> gives you non-destructive
+comparisons, but it doesn't give you byte-for-byte comparisons. 
+C<use bytes> would do this. Other uses which have been noted on p5p
+recently include XML and sending data over the network.
+
+However, I want to keep all the Unicode-related pragmata consistently
+named, so I suggest that C<use bytes> be renamed to 
+C<use unicode::representation>; C<use bytes> appeared to be a rather
+confusing name anyway.
+
+As part of the "What does use bytes mean?" discussion/debacle/holy war,
+Nick Ing-Simmons expressed the desire for a new pragma which turned off
+Unicode altogether. Let's put that in, and call it C<no unicode>. 
+
+=head1 IMPLEMENTATION
+
+The exact semantics of C<no unicode> will be trashed out in "Unicode
+Combinatorix"; C<use unicode::representation> can be implemented
+similarly to C<use bytes>.
+
+=head1 REFERENCES
+
+L<bytes>
+
+the as-yet-unsubmitted RFCs on 
+
+RFC 295: Normalisation and C<unicode::exact>
+
+RFC ??: When UTF8 Leaks Out
+
+RFC 312: Unicode Combinatorix
+
+RFC 311: Line Disciplines

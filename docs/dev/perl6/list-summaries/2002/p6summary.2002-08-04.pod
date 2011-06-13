@@ -1,0 +1,343 @@
+=head1 Perl6 Summary for the week ending 20020804
+
+Back on the regular schedule complete with new and improved article
+links via those lovely people at Google groups. Hopefully we'll be
+staying on this schedule for the foreseeable future.
+
+As usual, we'll kick off with perl6-internals, which was, once again,
+the busiest group this week.
+
+=head2 We need more ops
+
+This thread rumbled on (slowly) with a mixture of serious and
+humorous messages. Melvin Smith worried that parrot would turn into
+"a Linux kernel and forever accumulates custom ops, PMCs.". 
+
+The appropriately named Eric Kidder proposed ':-) the Positivity
+operator. Nobody threw peanuts.
+
+L<http://groups.google.com/groups?selm=OF2F640760.61E2BEAB-ON85256C06.00629F21%40boulder.ibm.com>
+
+L<http://groups.google.com/groups?selm=Pine.LNX.4.33.0207291440190.31214-100000%40persian.evilkitten.org>
+
+=head2 of Mops, JIT and perl6
+
+This thread kicked off the week before, but carried on into this
+week. Leopold Toetsch had got some MOPS numbers for various bits of
+parrot, including the perl6 mini language. Dan wondered if the perl6
+numbers included the time to generate the assembly and assemble it,
+because the assembler is 'rather slow'. Sean reckoned that, compared
+to the parser, the assembler was quick and that he suspects that even
+without that the perl6 numbers "would suck, since the compiler does
+some pretty heavy pessimization." Melvin Smith reckoned that imcc may
+have had something to do with the slowness as well, because it didn't
+do the right thing with loop invariants, but that "Things can only get
+better". 
+
+Leopold then told us that the numbers were pure runtime and that the
+compilation phase added 2.3 seconds to the whole
+process. Ick. However, following a bugfix to perlarray.pmc he posted
+new numbers that were "not that abysmal", and that we already have the
+same MOPS as perl5...
+
+L<http://groups.google.com/groups?selm=3D43AEF1.5070203%40toetsch.at>
+
+L<http://groups.google.com/groups?selm=Pine.GSO.4.33.0207291943160.11486-100000%40beowulf.ucsd.edu>
+
+L<http://groups.google.com/groups?selm=3D464CEA.3040407%40toetsch.at>
+
+=head2 Dan Sugalski is back
+
+And it's like he never went away. At the top of his list is catching
+up with his mail, sorting out keys, defining the extension mechanism,
+the exception infrastructure, ruthless efficiency and a fanatical
+devotion to the Pope.
+
+He also suggested that if someone were to implement the C<cmpi> and
+C<cmps> ops for integer and string comparison, then that would be a
+good thing. Sean O'Rourke asked a bunch of questions about that, and
+the semantics of C<< 2 < $i++ < 23 >> were discussed
+
+L<http://groups.google.com/groups?selm=a05111b0ab96b50e9cb64%40%5B192.168.0.190%5D> -- Start here.
+
+=head2 Regex speedup
+
+Angel Faus has been working on the regex engine and provided a patch
+for it, "designed with the single goal of seriously cheating for
+speed.". Dan applauded and claimed to be feeling "decidedly
+superfluous", but wondered if Angel could use the -u or -c switches to
+diff next time.
+
+Also on the regex front, Stephen Rawls offered some better
+documentation of the regex subsystem.
+
+L<http://rt.perl.org/rt2/Ticket/Display.html?id=15797>
+
+L<http://rt.perl.org/rt2/Ticket/Display.html?id=15876>
+
+=head2 ARM JIT v2
+
+Nicholas Clark released a "very minimal" ARM JIT framework. The
+initial version only JITed a small number of trivial ops, but it's
+the framework that was important. Daniel Grunblatt sent Nicholas a
+copy of the work he'd done in that area and we ended up with a new,
+unified patch that handled a whole lot more ops, and which wondered
+where the PPC JIT had got to. It turns out that Daniel is working on
+that too. Go Daniel.
+
+On the subject of JITs, Jarkko Hietaniemi, fresh from his trials as
+the perl 5.8 pumpking popped up with a survey of the state of the JIT
+art in parrot. Apparently we're still missing PPC and POWER, MIPS,
+HPPA and IA64. Jarkko intends to "do nothing on these except raise
+gui^H^H^Hawareness :-)". Which is nice of him.
+
+Nicholas also wondered if he was "allowed to write ancillary functions
+I want the JIT to call in assembler?" Dan reckoned that, in a JIT,
+"evil things for speed reasons are almost obligatory."
+
+L<http://groups.google.com/groups?selm=20020729220305.GC354%40Bagpuss.unfortu.net>
+
+L<http://groups.google.com/groups?selm=20020803214000.GD7878%40Bagpuss.unfortu.net>
+
+L<http://groups.google.com/groups?selm=20020730200100.M22826%40alpha.hut.fi>
+
+L<http://groups.google.com/groups?selm=20020801204207.GB378%40Bagpuss.unfortu.net>
+
+=head2 lexical scope ops, test and example
+
+Jonathan Sillito offered a patch which implements lexical pads and
+some ops to manipulate them. Stephen Rawls pointed out a bug in the
+implementation, and Dan agreed that it was a bug but that once that
+was fixed the patch should go in because "it gets a good chunk of the
+semantics we need." (Speaking as someone who keeps making noises about
+implementing Scheme in parrot, having parrot native lexicals will be
+a *huge* win.). So, Jonathan fixed it, and Melvin applied it.
+
+This led Jerome Vouillon to wonder if we actually needed explicit
+lexicals and scratchpads. The thread is rather tricky to summarise so
+I'll just point you at it. However Dan chimed in to say that, for now
+at least, he'd rather keep the separate interface to lexicals and
+globals because it would make changing the implementation possible
+without breaking existing bytecode.
+
+L<http://rt.perl.org/rt2/Ticket/Display.html?id=15800>
+
+L<http://rt.perl.org/rt2/Ticket/Display.html?id=15846>
+
+L<http://groups.google.com/groups?selm=20020731162554.GA6430%40strontium.pps.jussieu.fr>
+
+=head2 Unifying PMCs and Buffers for GC.
+
+Dan has accepted that we need to unify PMCs and strings/buffers for GC
+purposes, and asked for volunteers. Mike Lambert stepped forward (or
+maybe everyone else took one pace back). Again, this thread is hard to
+summarise because it's so information dense. If you're interested you
+should read the whole thread.
+
+L<http://groups.google.com/groups?selm=a05111b01b96dcf8d857a%40%5B63.120.19.221%5D>
+
+=head2 Negative indices in arrays.
+
+Stephen Rawls wondered about what happened when someone did C<@foo =
+(1,2); @foo[-3]>. This is an error in Perl5. As Dan put it, so
+elegantly, "Larry? Semantic call for you on the white telephone."
+Larry has, so far, not responded.
+
+L<http://groups.google.com/groups?selm=20020801134633.57340.qmail%40web14501.mail.yahoo.com>
+
+=head2 resize_array (PerlArray)
+
+Aldo Calpini discovered that the parrot equivalent of C< @foo = (1,2);
+print @foo[9999];> would magically extend C<@foo> to contain 10000
+elements. Which isn't exactly ideal. This span off into a discussion
+of autovivification, especially with nested arrays. Dan pointed out
+that Perl 5's current behaviour when you do, say, C<print
+$a[10000][0]> is an artifact of the way multi dimensional arrays work
+in Perl 5, and that most people would be happy if it went away in Perl
+6. (Personally, I'd be happy if it went away in perl 5.9, but that's
+another mailing list.)
+
+L<http://groups.google.com/groups?selm=180-1602283812.20020801172812%40alos.it>
+
+=head2 sub/continuation/dlsym/coroutine cleanup
+
+Sean O'Rourke offered a patch which "implements native extensions and
+continuations as PMCs. It also cleans up the existing Sub and
+Coroutine types", and removes a load of now obsolete ops that are now
+handled through C<invoke>. For some bizarre reason, SpamAssassin
+thought his message was infected with Klez. Which isn't good.
+
+The patch doesn't handle lexicals automatically yet. This may be good
+or bad, we haven't reached consensus yet, and Dan hasn't settled on a
+position either. Jerome Vouillon suggested a couple of changes, and
+Sean O'Rourke agreed. Nicholas Clark wondered if this meant that loop
+variables would only have to be allocated once; which looked nice.
+
+L<http://groups.google.com/groups?selm=Pine.GSO.4.33.0207302056330.12563-101000%40beowulf.ucsd.edu>
+
+=head2 Meanwhile, over in perl6-language
+
+Phew. I always like it when I get to switch lists. It generally means
+the finish line is in sight because perl6-language is usually a lot
+quieter than p6i. (My how times have changed; I'm I<really> glad I
+wasn't writing the summaries back in the RFC days...)
+
+=head2 "A light and refreshing summer fruit salad"
+
+That's how Miko O'Sullivan described his collection of ideas for the
+Perl6 language. At least one of his proposals is already implemented
+in perl5, but it still sparked a lively and generally interesting
+thread. Especially when Damian started doing tricks with operator
+definitions and grammar munging. Trey Harris proposed the rather
+wonderful C<no strict 'physics'>, which made I<me> smile. Damian also
+points out in this thread that the new, Perl6 word for `regex' will be
+`rule' because, well, they're no longer regular, and they'll often
+live in grammars.
+
+Damian also mentioned that there was some thought of making composite
+objects the topic within their subscript brackets, which would enable
+some powerful slicing operations: C<< @public = %hash{ /^(<-[_]+>.*)/
+}; >> anyone? There's some debate as to whether this would violate the
+principle of least surprise though.
+
+
+L<http://groups.google.com/groups?selm=001d01c239a7%2418517b30%24040a0a0a%40mosullivan>
+
+L<http://groups.google.com/groups?selm=3D4B05E4.4050909%40conway.org>
+
+L<http://groups.google.com/groups?selm=3D49E127.302%40conway.org>
+
+=head2 Use of regular expressions on non strings.
+
+David Whipp wondered about using regular expressions (that's `rules'
+now, of course...) on none strings, and wondered about using them to
+query databases. (It would appear to me that, if you tied a database
+to a hash, then Damian's proposed slicing syntax above would be a
+start down that road, implementation could be tricky though...)
+
+
+=head2 In Brief...
+
+Sean O'Rourke told us that the his perl6 parser/compiler/all round
+groovy thing, now works with perl 5.005_03 and with 5.6.1, but that it
+didn't play well with 5.6.0.
+
+Remember RECALL, and how it got renamed to AVOID? Well, actually, it
+didn't. It got renamed to AGAIN, but Tanton Gibbs had a brain fade
+when he typed the subject line of the submitted patch.
+
+L<http://rt.perl.org/rt2/Ticket/Display.html?id=15802> -- Stephen
+Rawls offers patches for C<genclass.pl> and introduces an
+C<addclass.pl> script, intended to make the business of setting up a
+new PMC type that much easier.
+
+L<http://groups.google.com/groups?selm=019501c23790%24cc614420%240600a8c0%40MLAMBERT>
+Michel Lambert offered a 'Getting Started' FAQ
+
+Simon Glover posted some code that makes GC segfault. Richard Cameron
+fixed it. Mike Lambert applied it.
+
+Angel Faus offered a patch to make imcc take into account the
+data-flow info it gathered. Melvin Smith applied it.
+
+Jarkko has been doing sterling work on getting parrot to compile on
+SGIs, and generally tidying up code. 
+
+Brian Ingerson patched C<assemble.pl> to allow it to accept code on
+STDIN. Applied.
+
+Jason Gloudon offered a patch which revised the JIT docs, and added
+some stuff to the SPARC JIT overview. He also changed the way the x86
+JIT invoked functions. Applied
+
+Josef HE<ouml>E<ouml>k offered a matrix implementation. Warnock's
+dilemma applies. You can find the patch at
+L<http://rt.perl.org/rt2/Ticket/Display.html?id=15923> if you're
+interested.
+
+Sean O'Rourke pointed to
+L<http://lambda.weblogs.com/discuss/msgReader$3850>. 
+
+Aldo Calpini offered docs for the parrot debugger. 
+L<http://groups.google.com/groups?selm=35-1525343312.20020802145032%40alos.it>
+
+"Mr. Nobody" has patched things to allow Configure to run on Windows
+9x. Applied.
+
+Nicholas Clark wondered what to do about right shifting signed
+integers. Nicholas reckoned that sign extending signed types when
+doing right shifts was the Right Thing.
+
+Daniel Grunblatt has committed a register allocator for the JIT. Not
+optimal yet, but it's a start. Nicholas Clark was impressed. So were
+the rest of us, probably.
+
+Simon Glover has added some more tests of the GC ops. Applied.
+
+Mark J. Reed gave the language crowd and update on Unicode, UTF-16 and
+Java. L<http://groups.google.com/groups?selm=20020731202640.GB25676%40charm.turner.com>
+
+Leon Brocard, who I thought I wasn't going to be able to mention this
+week, announced the publication of his targeting parrot slides to the
+list. But I told you about those last week, so maybe I shouldn't have
+mentioned Leon this week after all. Hmm...
+
+=head2 Who's who in Perl6
+
+=over 4
+
+=item Who are you?  
+
+Josef HE<ouml>E<ouml>k
+
+=item What do you do for/with Perl 6? 
+
+Working with matrix and multidimensional array implementation in
+parrot.
+
+=item Where are you coming from? 
+
+Sweden
+
+=item When do you think Perl 6 will be released? 
+
+1 year 
+
+=item Why are you doing this? 
+
+It's fun and i learn a lot.
+
+=item You have 5 words. Describe yourself.
+
+icant, that was only 2words
+
+=item Do you have anything to declare?
+
+nope
+
+=back
+
+=head1 Acknowledgements, threats and funding drives.
+
+This summary was once again prepared with the aid of GNER tea, and
+with the unwitting assistance of the fine folks at Google, who
+provided me with a way of generating links to articles that I<don't>
+require me to surf the fine web in order to work out what the URLs
+should be.
+
+Once again, if you didn't like this, don't read it. If you did,
+consider donating some of your hard earned money (or your employer's
+hard earned money) to the Perl Foundation at
+L<http://donate.perl-foundation.org/> and help support the ongoing
+development of Perl 6. If you're going to donate $100 or more in
+response to this summary, please let me know and I'll give you a
+mention in the acknowledgements. If you're going to donate $250 or
+more, again, let me know and you'll get a "This week's summary was
+sponsored by Joe Bloggs" (for appropriate values of "Joe Bloggs") at
+the top of the summary.
+
+Sadly, nobody has yet sent me a T?iBook, which is probably a good
+thing; I'd only want a pony next.
+
+Google is almost certainly a trademark. I should probably mention that
+shouldn't I?

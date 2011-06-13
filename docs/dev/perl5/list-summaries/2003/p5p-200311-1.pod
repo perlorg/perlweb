@@ -1,0 +1,121 @@
+=head1 This Week on perl5-porters (3-9 November 2003)
+
+This week was undoubtedly a maintenance-oriented week, as it has seen the
+release of perl 5.8.2, and of perl 5.6.2 RC1. But of course and as usual
+this wasn't the only topic on the always active p5p list. Read below for
+the full details.
+
+=head2 5.8.2
+
+After a final release candidate 2, Nicholas Clark uploaded the final
+perl 5.8.2 to CPAN. Nicholas plans to release maintenance tarballs
+regularly, the next one being scheduled for new years eve.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-11/msg00313.html
+
+Some build problems are reported, though : apparently perl 5.8.1 and 5.8.2
+have problems on HP-UX 11, on AIX 5 with gcc 3, and on Solaris 9 with gcc
+and 64 bit integers.
+
+=head2 5.6.2-RC1
+
+But the cycle of maintenance releases is not finished yet. Rafael
+released the RC1 of perl 5.6.2. See the announcement :
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-11/msg00444.html
+
+Some problems are still to be fixed, notably (it appears) on Mac OS X.
+
+=head2 More on UNIVERSAL
+
+Michael Jacob has some ideas about improvements that could be made to
+the UNIVERSAL class, root of all Perl classes. His proposals are that
+can() ceases (in some future release) to search methods in UNIVERSAL
+(except when UNIVERSAL is specifically mentioned in @ISA), and implement
+smart versions of AUTOLOAD(), DESTROY(), and import() in UNIVERSAL.
+
+Michael Schwern argues that this functionality should go in an
+UNIVERSAL::AUTOLOAD module on CPAN, but that it's too dangerous to be put
+straight into UNIVERSAL, even after a deprecation cycle.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-11/msg00180.html
+
+=head2 MakeMaker woes
+
+Michael Schwern released ExtUtils::MakeMaker 6.18, 6.19 and 6.20. (6.19
+fixed a test glitch, 6.20 contained mostly Windows and Cygwin fixes.) It
+was discovered by upgrading bleadperl to the latest MakeMakers that the
+core module SDBM_File was making too many assumptions about MakeMaker's
+internals. This was fixed, but the generated makefiles still don't work
+with non-GNU makes.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-11/msg00175.html
+
+(To be noted : 5.8.2 and 5.6.2-RC1 still ship with MakeMaker 6.17.)
+
+=head2 Relocatable tests and installation
+
+Ilya Zakharevich proposes a patch to make core tests relocatable, so that
+they can be run against an installed perl. His method is to add an
+environment variables that prevents those tests to adjust @INC to their
+needs.
+
+    http://www.google.com/groups?threadm=20031031094825.GA27776%40math.berkeley.edu
+
+Ilya also provided several patches to fix various flaws in the
+installation process of perl ; some of them are specific to OS/2. The last
+one proposes to add to C<make install> a C<PREFIX=/some/dir> argument.
+Some discussion follows, about how this PREFIX differs from the existing
+DESTDIR, and what are the actual usages for those flags.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-11/msg00260.html
+
+=head2 Blocking and non-blocking reads
+
+Stas Bekman asks about which read() APIs provided by perl are blocking,
+and which ones are not. Mark-Jason Dominus explains that I<'blocking' and
+'non-blocking' refer to the behavior of 'read' on certain file descriptors
+when there is *no* data available.> They're not a property of the system
+call, but of the file descriptor. Dan Sugalski and Tom Christiansen
+provide some more insight.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-11/msg00135.html
+
+=head2 In Brief
+
+Brian Ingerson wins the prize of the funniest mail of the week.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-11/msg00425.html
+
+Is the perltoc manpage useful ?
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-11/msg00099.html
+
+Stas Bekman asks also whether the hash rehashing scheme in perl 5.10 will
+be the 5.8.1 one or the 5.8.2 one.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-11/msg00139.html
+
+Stas also reports (bug #24404) that it's possible to write C<require
+"dir"> where F<dir> is a directory. require() should check that its
+argument isn't a directory.
+
+Alan Burlison asks for the plans on maintaining binary compatibility in
+perl 5.8.x where x > 2. Nicholas answers that he wants to keep future
+maintenance versions compatible.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-11/msg00119.html
+
+Ilya Zakharevich provided a patch to speed up sprintf().
+
+Scott Roy reports that calling exists() on a shared hash for a
+non-existent element may crash perl (bug #24407). Dave Mitchell provides a
+fix.
+
+=head2 About this summary
+
+This summary was once again written by your usual summarizer and 5.6.2
+pumpking,  Rafael Garcia-Suarez. Summaries appear weekly on
+F<http://use.perl.org/> and on a mailing list, which subscription address
+is F<perl5-summary-subscribe@perl.org>. Corrections and comments are
+welcome.

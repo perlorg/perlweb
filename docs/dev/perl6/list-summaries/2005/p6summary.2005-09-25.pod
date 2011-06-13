@@ -1,0 +1,289 @@
+=head1 The Perl 6 Summary for the week ending 2005-09-25
+
+Hello all. It's another Monday afternoon, which means I'm writing another
+summary. There's no cricket to distract me this week, so I'm letting iTunes
+Party Shuffle attempt to distract me instead.
+
+=head1 This week in perl6-compiler
+
+Nobody said anything on the list this week. I blame IRC.
+
+=head1 Meanwhile, in perl6-internals
+
+=head2 About multithreading
+
+Leo pointed everyone at an article about about 'A Fundamental Turn Toward
+Concurrency in Software'. Jonathan Worthington liked it.
+
+L<http://www.gotw.ca/publications/concurrency-ddj.htm>
+
+=head2 Bug Wrangling
+
+It's possibly a failing of mine as a summary writer, but I've not been following
+Parrot's RT traffic. Luckily, Joshua Hoblitt has volunteered as a Bug Wrangler
+and he's hoping to increase the signal/noise ratio. To that end, he'll be
+pinging people who reported bugs that are older than 3 or 4 months to find out
+if they're still current or can be closed. It sounds like a mammoth task in the
+short term, but it also sounds like a very useful project that'll get easier
+once the big house cleaning has been done.
+
+He hinted that this is the sort of project that I<really> benefits from having
+more than one volunteer doing the work.
+
+Later in the week, he posted a bunch of IMCC TODOs.
+
+L<http://groups.google.com/groups?threadm=20050920100259.GD19008@ifa.hawaii.edu>
+
+=head2 Tcl, exceptions in leo-ctx5
+
+Andy Dougherty posted some more details about a bug in ParTcl when running
+under Leo's branch. The bug seems to depend on whether there's a  slash in the
+script path passed to ParTcl. There was no response, but hopefully work
+continues on fixing it.
+
+L<http://groups.google.com/groups?threadm=Pine.SOC.4.62.0509201152220.13507@maxwell.phys.lafayette.edu>
+
+=head2 [RFC] Debug Segment, HLL Debug segment and Source Segment
+
+Jonathan Worthington posted a discussion of how debugging segments could work
+in Parrot in the future. He outlined a suggested unified debug segment format
+that should work for both PASM/PIR and high level language debugging
+requirements. 
+
+Roger Browne applauded Jonathan's efforts and made some further suggestions.
+
+And then the thread got Warnocked.
+
+L<http://groups.google.com/groups?threadm=00f301c5be36$00c30760$0300a8c0@SERVER>
+
+=head2 Magic is useless unless verifiable
+
+Jonathan Worthington posted a discussion about how Parrot bytecode files should
+handle their magic number. At present, apparently, Parrot checks the magic
+number only after it's tried to work out word size and bytecode. Which is
+somewhat bass ackward. After some discussion, Chip reckoned that the solution
+would be to have a magic string rather than a magic number.
+
+L<http://groups.google.com/groups?threadm=014b01c5be99$6c5c28e0$0d00000a@jwcsjw>
+
+=head2 C<loadlib> and libraries with '.' in the name
+
+Ross McFarland found a problem with C<loadlib>. Apparently it won't let you
+load a library that has a '.' in the name. It turns out that fixing things
+robustly isn't quite as straightforward as it at first appears. Discussion
+ensued. 
+
+Ross posted a patch to RT.
+
+L<http://groups.google.com/groups?threadm=324955B8-337B-497A-99D7-31D6DED544F2@neces.com>
+
+L<http://groups.google.com/groups?threadm=rt-3.0.11-37258-121354.8.58782975674799@perl.org>
+
+=head2 Find copied and pasted code
+
+That gentleman of great intelligence, sagacity, wit and annoying
+capitalization; the one and only chromatic wondered what running PMD's copy and
+paste detector plugin on Parrot's .c files would show. If anyone has run it
+yet, they haven't reported on its findings, but it surely won't be long now.
+
+L<http://pmd.sf.net/cpd.html>
+
+L<http://groups.google.com/groups?threadm=1127505124.11523.206.camel@localhost>
+
+=head2 Amber's Ashes Announced
+
+Roger Browne announced the release of Amber for Parrot version 0.2.3a
+(Ashes). According to the announcement, Amber's a Eiffel like scripting
+language for Parrot. Joe Bob says "Check it out!"
+
+L<http://xamber.org/index.html>
+
+L<http://groups.google.com/groups?threadm=1127596043.14556.13.camel@eiffel.demon.co.uk>
+
+=head1 Meanwhile, in perl6-language
+
+=head2 C<\(...)>
+
+Oh look, a thread in p6l that's still going more than a fortnight later. How
+unusual. This particular instance of the form is nominally about the behaviour
+of C<\($a, $b)> but various subthreads have drifted onto discussions of context
+in general and meaningful whitespace. So far there has been no discussion of
+the return value of C<< Pin.head.contents.grep -> Angel $a {$a.is_dancing} >>
+but I'm sure it's only a matter of time.
+
+L<http://groups.google.com/groups?threadm=20050907160543.GD10174@wall.org>
+
+=head2 Junctions, patterns and fmap again
+
+Luke continued to discuss Junctions and fmap with Stuart Cook.
+
+L<http://groups.google.com/groups?threadm=49b3510605091922004c98fa24@mail.gmail.com>
+
+=head2 Conditional wrapper blocks
+
+Yuval Kogman discussed the inelegance of code that reads like:
+
+  if $condition { pre }
+
+  unconditional midsection; 
+
+  if $condition { post }
+
+And proposed a possible syntax that could be implemented in a macro. I confess
+that I would be taking this thread more seriously if, when I was writing this
+summary I had been able to come up with a realistic example of code that had
+this problem. 
+
+Anyhoo, it sparked a good deal of discussion. 
+
+L<http://groups.google.com/groups?threadm=20050920173315.GE5797@woobling.org>
+
+=head2 Object Model Pictures
+
+Stevan Little's ongoing development of the Perl 6 MetaModel continues to yield
+pictures. This week he incorporated Roles into the bigger picture. 
+
+L<http://groups.google.com/groups?threadm=70195C89-65E4-4E1A-8E97-FF9007E42EA1@iinteractive.com>
+
+=head2 C<~> and C<+> vs. generic eq
+
+In another thread that spilled over from a fortnight ago, Thomas Sandlass and
+Yuval Kogman continued to discuss equality, equivalence and multiple
+dispatch. There are worse ways of spending the day.
+
+L<http://groups.google.com/groups?threadm=433149B0.3090705@orthogon.com>
+
+=head2 Sort of 'do it once' feature request...
+
+Michele Dondi asked for some way of stopping evaluating a conditional after it
+had evaluated to true once. None of the people who replied seemed to realise
+that C<..> and C<...> do exactly that (and a little bit more).
+
+L<http://groups.google.com/groups?threadm=Pine.LNX.4.62.0508031015360.11320@spock.pcteor1.mi.infn.it>
+
+=head2 Stringification, numification and booleanification
+
+The thread on 'Stringification, numification and booleanification' is this
+weeks "Thread most likely to still be going in a month's time" award winner.
+
+It started so simply, with Ingo Blechschmidt asking about the *-ification of
+Pairs. And then it exploded. Most recently it's been discussing the difference
+between C<~$thing> and C<"$thing">, but it's covered an awful lot of ground. My
+gut feeling is that default stringification should be in a form that's useful
+to a developer when debugging, but there's arguments to be had in all
+directions.
+
+L<http://groups.google.com/groups?threadm=loom.20050921T164009-963@post.gmane.org>
+
+=head2 Skippable arguments in for loops
+
+Carl Mäsak reported that hcchien on irc had asked about looping through an array
+n elements at a time, discarding some. He wondered if 
+
+  for @a -> undef, $x, $y {...}
+
+would do the trick.
+
+Luke Palmer thought that 
+
+  for @a -> _, $x, $y {...}
+
+Would be better because, in a multimethod, using C<undef> in the way suggested
+means "this value must be undef". This being p6l, there were opinions on both
+sides. However, C<$Luke ~~ @Larry> so I think his opinion carries the most
+weight.
+
+L<http://groups.google.com/groups?threadm=16d769b705092123436dc01c99@mail.gmail.com>
+
+=head2 pause/cont
+
+Juerd had a moment of clarity and unified a couple of earlier threads (on
+conditional wrappers and doing it once) by proposing a pair of keywords,
+C<pause> and C<cont>. The semantics are weird, but oh so powerful. And
+because I don't want to simply copy and paste his entire post, I suggest you
+simply go and read it.
+
+L<http://groups.google.com/groups?threadm=20050922115515.GW24163@c4.convolution.nl>
+
+=head2 C<.chars>, C<.bytes>, etc..
+
+Wolverian said that the current way of defining C<.chars>, C<.bytes> and
+C<.elems> didn't make any sense to him. In particular, he thought that, in a
+list context they might be better returning the list of things rather than a
+simple count of them. Juerd agreed.
+
+L<http://groups.google.com/groups?threadm=20050924104500.GA7880@sci.fi>
+
+=head2 C<k>, C<v>
+
+In a Huffman inspired moment, Juerd wondered if we shouldn't abbreviate C<keys>
+and C<key> to C<k> and C<values> and C<value> to C<v>. Uri Guttman thought that
+having single names for things like that wasn't a desperately good idea. Juerd
+was convinced. 
+
+Are you?
+
+L<http://groups.google.com/groups?threadm=20050924131116.GI24163@c4.convolution.nl>
+
+=head2 Exceptuations
+
+A resumable continuation by any other name would smell as sweet. Yuval Kogman
+coined a new word for them: 'Exceptuations', being a mashup of Exception and
+Continuation. He also outlined a how one would use them. I'm pretty sure we've
+discussed this stuff before, but there's always a chance that new light will
+fall on the subject.
+
+L<http://groups.google.com/groups?threadm=20050925142818.GT5797@woobling.org>
+
+=head2 Allomopherencing
+
+Not satisfied with inventing Exceptuations, Yuval invented Allomopherencing as
+well. Just don't ask me what it means because I don't know. I might as well
+have been reading Derrida in the original Klingon as Yuval's post an it's
+ensuing thread. Follow the link, if you understand it, could you write up a
+summary and send it to me? Thanks. You're a star.
+
+L<http://groups.google.com/groups?threadm=20050925172906.GA26154@woobling.org>
+
+=head1 Elsewhere
+
+=head2 C<@Larry> talks amongst itself
+
+Luke Palmer continues to post minutes from the weekly Perl 6 conference
+calls. I'm not going to summarize because it's already rather terse, and I'm
+not going to cut and paste either, because although it's terse, it's
+surprisingly long. Luke's promised to post these to his blog weekly. With any
+luck we'll remember to link to them here as well. 
+
+L<http://use.perl.org/~luqui/journal/26826>
+
+=head1 Acknowledgements, apologies and everything else
+
+So, I'm looking for work again. If you need a somewhat rusty perl programmer, a
+vaguely competent technical writer with a portfolio consisting pretty much
+solely of the back issues of this summary, a half-decent photographer or an
+inexperienced Ruby programmer, none of whom are prepared to travel too far from
+Gateshead, you know who to ask.
+
+=head2 Help Chip
+
+L<http://geeksunite.org/> -- Chip still needs help.
+
+=head2 The usual coda
+
+If you find these summaries useful or enjoyable, please consider
+contributing to the Perl Foundation to help support the development of
+Perl. 
+
+
+L<http://donate.perl-foundation.org/> -- The Perl Foundation
+
+L<http://dev.perl.org/perl6/> -- Perl 6 Development site
+
+Check out my website, it's lovely.
+
+L<http://www.bofh.org.uk/>
+
+Vaguely pretty photos by me can be found at:
+
+L<http://www.flickr.com/photos/pdcawley>

@@ -1,0 +1,279 @@
+=head1 TITLE
+
+Data: Multi-dimensional arrays/hashes and slices
+
+=head1 VERSION
+
+  Maintainer: Ilya Zakharevich <ilya@math.ohio-state.edu>
+  Date: 15 Sep 2000
+  Mailing List: perl6-language-data@perl.org
+  Number: 231
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+This RFC 
+
+=over
+
+=item *
+
+proposes a convenient syntax to access multi-dimensional arrays' elements;
+
+=item *
+
+proposes a convenient syntax to slice multi-dimensional arrays;
+
+=item *
+
+proposes a convenient syntax create subobjects which behave as slices;
+
+=item *
+
+does it with as little overhead as possible.
+
+=back
+
+=head1 DESCRIPTION
+
+Observation1: it is enough to define the interface which tie()d arrays
+can use.  Then *if judged useful*, this semantic can be optionally
+supported by the builtin arrays/hashes.
+
+Observation2: current supports for multi-dimensional objects and slicing
+clash between themselves (at least visually):
+
+   @slice = @hash{$ind1,$ind2};
+   @slice = @arry[$ind1,$ind2];
+   $elmnt = $hash{$ind1,$ind2};
+
+moreover, the analogue for arrays
+
+   $elmnt = $arry[$ind1,$ind2];
+
+is not supported (syntax error).
+
+Observation3: comma operator has 3 different meanings: one in list context,
+one in scalar context, one inside an index for a hash/array.
+
+The following proposals move the special meaning from C<,> to C<;>,
+introduce a new meaning for C<...> inside indices, 4 new tie()ed methods,
+and 4 new utility functions in a module C<tie::multi>.  An optional
+OO access to slices, an optional iterator, and an optional support
+for builtin arrays complement the proposal.
+
+=over
+
+=item 1.  Multi-dim hashes
+
+change multi-dimensional hash syntax to become
+
+   $elmnt = $hash{$ind1;$ind2};
+
+(so that C<;> is used as a separator instead of C<,>).  Note that this
+is more compatible with the name of $;.
+
+The difference with RFC 205 "New operator ';' for creating array slices"
+is that C<;> is special inside a hash/array index only.
+
+=item 2.  Tied multi-dim hashes
+
+Allow multi-dimensional support for tied objects, so that
+
+   $elmnt = $hash{$ind1;$ind2};
+   $elmnt = $arry[$ind1;$ind2];
+
+would call C<tied(%hash)->FETCH_MULTY($ind1,$ind2)> (same for @arry and
+STORE_MULTY) with a scalar context.  If no FETCH_MULTY is available, do
+as now: join() arguments using $;.
+
+=item 3.  Slices of tied array/hashes
+
+Allow slices for tied objects, so that
+
+   @slice = @hash{$ind1,$ind2};
+   @slice = @arry[$ind1,$ind2];
+
+would call C<tied(%hash)->FETCH_SLICE($ind1,$ind2)> (same for @arry and
+STORE_SLICE) with a list context.  If no FETCH_SLICE is available, do
+as now: get/set elements one-by-one using FETCH/STORE.
+
+STORE_SLICE should have a prototype
+
+    sub STORE_SLICE ($me, @keys, @values);
+
+to allow the proposals below, and to avoid the (giant) overhead of
+an anonymous array.
+
+=item 4.  Multidimensional slices
+
+Extend "3" to allow slices for multi-dimensional tied objects,
+so that
+
+   @slice = @hash{$ind11,$ind12,$ind13 ; $ind21,$ind22};
+   @slice = @arry[$ind11,$ind12,$ind13 ; $ind21,$ind22];
+
+would call
+
+   tied(%hash)->FETCH_SLICE( $ind11,$ind12,$ind13, tie::multi::separator(),
+                             $ind21,$ind22 )
+
+(same for @arry and STORE_SLICE) with a list context.  If no FETCH_SLICE
+is available, this is an error.
+
+A special token for a separator is used to avoid the (giant) overhead of
+creation of anonymous arrays, and allow the proposal which follows.
+
+=item 5. Ranges in slices
+
+Extend "3", "4" to allow ranges in slices:
+
+   @slice = @hash{$ind1, $ind2..$ind3, $ind4..$ind5, $ind6};
+   @slice = @arry[$ind1, $ind2..$ind3, $ind4..$ind5, $ind6];
+
+would call
+
+   tied(%hash)->FETCH_SLICE( $ind11,
+                             tie::multi::range(), $ind2, $ind3,
+                             tie::multi::range(), $ind4, $ind5,
+                             $ind6 )
+
+(same for @arry and STORE_SLICE) with a list context.  Similarly for
+combinations of C<..> and C<;> for multi-dimensional access.  If no
+FETCH_SLICE is available, this is an error in multi-dimensional case,
+in one-dimensional case C<..> are inlined (as now), and FETCH/STORE
+are called one-by-one.
+
+=item 6.  Bidirectional ranges
+
+Extend this to allow bidirectional ranges for arrays:
+
+   @slice = @arry[3, 4...-3, -6...7, 9];
+   @slice = @arry[3, 4.. 7,   4.. 7, 9];
+
+would behave the same if no FETCH_SLICE is defined (for C<@array==10>.
+If FETCH_SLICE is defined, the first slice will use tie::multi::bi_range()
+as the tokens preceeding (4,-3) and (-6,7).
+
+=item 7.  Convenience index parser
+
+Usage of tokens to separate arguments makes it possible to
+parse arguments in XSUBs with a very low overhead.  To facilitate an
+easier (but slower) parsing by Perl subroutines, provide a utility
+which would translate keys which may include separators and ranges:
+
+   @slice = @arry[3, 4...-3, 4..7 ; 4, 3...-5];
+   sub FETCH_SLICE ($me, @keys, @values) {
+       my $dimensions = [$me->dimensions];
+       @keys = tie::multi::inline($dimensions, @keys); ...
+ 
+would make @keys into
+
+     ( [3, 4..(10-3), 4..7], [4, 3..(20-5)] )
+
+if $dimensions is C<[10,20]>.  Optionally, a call to
+tie::multi::inline_ranges() would convert the above list to
+
+     ( [3, [4,(10-3)], [4,7]], [4, [3,(20-5)]] )
+
+=item 8. (Optional)  OO slicing
+
+Allow slicing of objects.  The FETCH_SLICE
+interfaces introduced above return lists.  Sometimes it is reasonable
+to make them return objects: suppose that $matrix is a C<7x8> matrix,
+which is a reference to a tie()d array (with appropriate overloading
+as well).  Then
+
+  @subvectors = @$matrix[2..5; 2..4]
+
+would most probably return a list of 4 3-dimensional vectors.  However,
+time to time it is desirable to be able to extract the C<4x3> submatrix
+with the indices specified above as I<one object>.  The proposal is to
+allow the leading C<$> (instead of C<@>) as the syntax fo such a request:
+
+  $submatrix  = $$matrix[2..5; 2..4];
+
+For example,
+
+  $matrix1->[2..5; 2..4] * $matrix2->[1,3,5; 11..64];
+
+would denote: create two new objects for the specified submatrices, apply
+(overloaded) multiplication to these objects.  Such a request is illegal
+for untie()d arrays; for tie()d arrays it is converted to a call to
+FETCH_SLICE in a I<scalar> context.  (Alternative: introduce two new
+tie()d methods: FETCH_SUBOBJECT, STORE_SUBOBJECT.)
+
+Such a call evaluates indices to the matrix in a I<list> contents.
+Disambiguation of extraction of a 1-dimensional vector and of an element:
+
+  $element  = $array[7];
+  $vector1d = $array[(7)];
+
+Similarly,
+
+  $element  = $array[func()];	# func() is a scalar context
+  $vector1d = $array[(func())];	# func() in a list context
+
+(These is the only ambiguity, since C<,> and C<;> were prohibited
+inside array index in a scalar access to array.)
+
+=item 9. (Optional) Multi-dimensional builtin arrays. 
+
+Translate
+
+  $arry[$a;$b;$c]        to     $arry[$a][$b][$c]
+  @arry[$a,$b...$c]      to     @arry[$a,$b..($c >=0 ? $c : @arry-$c)]
+                                # Same translation for $b, in fact
+  @arry[$a,$b;$c,$d,$e]  to     map [$arry[$_][$c,$d,$e]], $a, $b;
+  $arry[$a,$b;$c,$d,$e]  to     [map [$arry[$_][$c,$d,$e]], $a, $b];
+
+etc.
+
+=item 10: (Optional)  ==>
+
+Syntactic sugar C<<EXPR==>ACCESSOR>> for mapping:
+This operator evaluates the EXPR in list context, and does the same as
+C<<map $_->ACCESSOR, EXPR>>.  Same effects:
+
+  $arry[$a,$b]==>[$c,$d,$e];
+  map $arry[$_]->[$c,$d,$e], $a, $b;
+
+(flat list, while C<$arry[$a,$b;$c,$d,$e]> is multi-dimensional).
+
+=back
+
+=head1 MIGRATION ISSUES
+
+=over
+
+=item a)
+
+C<@arry[3...-5]> calls C<...> in a list context.  This operator was
+not defined, but some people could have used it nevertheless.  Translate
+to C<@arry[3..-5]>.  Probably a non-issue.
+
+=item b)
+
+C<$arry[3..5]> calls C<..> in a list context, while Perl5 called it
+in a scalar context.  Translate to C<$arry[scalar(3..5)]>.
+Probably a non-issue.
+
+=item c)
+
+C<$arry[(func())]> calls func() in a list context, while Perl5 called
+it in a scalar context.  Translate to C<$arry[func()]>.  Probably a non-issue.
+
+=back
+
+Without the optional proposal 8 only "a" stands.
+
+
+=head1 IMPLEMENTATION
+
+With the exception of Proposals 9 and 10 should be straightforward.
+9 and 10 require some dexterity with building optrees on the fly.
+
+=head1 REFERENCES
+
+RFC 205: New operator ';' for creating array slices.

@@ -1,0 +1,116 @@
+
+=head1 TITLE
+
+Numeric Value Ranges In Regular Expressions
+
+=head1 VERSION
+
+  Maintainer: David Nicol <perl6rfc@davidnicol.com>
+  Date: 5 Sep 2000
+  Last Modified: 22 Sep 2000
+  Mailing List: perl6-language-regex@perl.org
+  Number: 197
+  Version: 2
+  Status: Frozen
+
+=head1 CHANGES
+
+s/numberic/numeric in title (oops)
+
+expansion of implemention/optimization section
+
+=head1 ABSTRACT
+
+round and square bratches mated around two optional comma separated numbers
+match iff a gobbled number is within the described range.
+
+=head1 DESCRIPTION
+
+=head2 the syntax of the numeric range regex element
+
+Given a passage of regex text matching
+
+	($B1,$N1,$N2,$B2) = /(\[|\()(\-?\d*\.?\d*),(\-?\d*\.?\d*)(\]|\))/
+	and ($N1 <= $N2 or $N1 eq '' or $N2 eq '')
+
+we've got something we hereinafter call a "range."
+
+=head2 what the range matches
+
+A range matches, in the target string, a passage C<(\-?\d*\.?\d*)>
+also known as a
+"number" if and only if the number is within the range.  In the normal agebraic sense.
+
+=head2 "within the range"
+
+Square bracket means, that end of the range may include the range specifying
+ number, and round parenthesis means, that end of the range includes numbers ov value up to (or down to) the number but not equal to it.
+
+=head2 infinity
+
+in the event that one or the other of the range specifying numbers
+is the empty string, that end of the range is unbounded.  In the further event
+that we have defined infinity and negative infinity on our numbers, the
+square/round distinction will come into play.
+
+The range end indicators are literal numbers, although they may be optimized
+immensely.  No expression evaluation occurs w/in the range specifier, beyond
+the normal rules of double-quote interpolation.
+
+=head1 COMPATIBILITY
+
+To disambiguate ranges from character sets including
+digits, commas, and parentheses, either put a backslash on the right
+parentheses, or the comma, or
+arrange things so the left hand side of the comma is greater than the
+right hand side, that way this special case will not apply:
+
+	/(37.3,200)/;	# matches any number x, 37.3 < x < 200
+	/((37.3,200))/;	# matches any number x, 37.3 < x < 200 and saves it
+	/([37,))/;	# matches and saves any number >= 37.
+	/(37.3\,200)/;	# matches and saves the literal text '37.3,200'
+	/[-35,9)]/;	# matches any number x, -35 <= x < 9; followed by a ]
+	/[3-5,9)]/;	# matches a string containing any of 3,4,5,,,9 or )
+	/[$low,$high]/;	# matches a number $low <= $_ <= $high, provided
+			# low and high are both numerics.
+	/[$low,${\highf(@data)}/;	# complex interpolation tricks
+
+Tieing variables to be interpolated into range matches to types which
+always produce numbers is reccommended.
+
+
+=head1 IMPLEMENTATION
+
+Yet more special cases for interpretation of ([)] in regular expressions.
+
+We match regular expressions against
+
+	($B1,$N1,$N2,$B2) = /(\[|\()(\-?\d*\.?\d*),(\-?\d*\.?\d*)(\]|\))/
+	and ($N1 <= $N2 or $N1 eq '' or $N2 eq '')
+
+and mark matching passages as ranges.
+
+
+When applying regular expressions to numeric
+data, ranges may optimize away all of the digit lookahead we must currently
+indulge in to implement them in perl5. IOW, if we know a string literal containing
+interpolated numeric scalars is going
+to get matched by an expression containing ranges, we may be able to skip both the
+interpolation and the deinterpolation and go straight to multi-way numeric comparison.
+
+If we have infinity defined, we'll have to look for its string representation.
+
+
+And if a "simple, fast regex match mode" is defined, this pass could
+be switched in or out: maybe we want fast range matching.
+
+
+=head1 BUT WAIT THERE'S MORE
+
+It is possible that the syntax described
+in this document may help slice multidimensional
+containers. (RFC 191)
+
+=head1 REFERENCES
+
+None.

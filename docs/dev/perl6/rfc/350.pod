@@ -1,0 +1,170 @@
+=head1 TITLE
+
+Advanced I/O (AIO)
+
+=head1 VERSION
+
+  Maintainer: Uri Guttman <uri@sysarch.com>
+  Date: 29 Sept 2000
+  Mailing List: perl6-language-io@perl.org
+  Number: 350
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+This RFC describes a pragma and module which support an advanced I/O
+subsystem. It is meant to be a centralized subsystem that supports a
+wide range of I/O requirements, many of which are covered in other
+RFCs. It doesn't add any new syntax or break any existing code.
+
+=head1 DESCRIPTION
+
+There are many way that coders want to do I/O in Perl and many I/O
+sources as well. RFC 14 discusses ways to make open smarter and to have
+handlers for each flavor. The goal is good, but it requires new syntax
+and semantics for open. You have effectively multiple versions of open,
+each with their own argument order. It also doesn't address asynchronous
+I/O or events and callbacks. I don't see how to make a socket or http
+connect and not block on the request.
+
+This RFC addresses those issues in a Perl5 way by creating a new class
+with attribute based methods. This allows use to add new ways to do open
+and I/O and not have to learn specialized argument formats. The style is
+very similar to IO:: now but more generalized and tightly integrated in
+the core. This is why I choose to call it Advanced I/O (AIO).
+
+The main pragma will be 'use aio' and it will allow the coder to control
+and load various components. I won't have the time to specify all of
+them but think along the lines of RFC 14, LWP, libnet, IO::*,
+LWP::Parallel, etc. Supporting them all under this single pardigm is
+simple as you don't need to know more then the minimum attributes to get
+your job done. Also as I have coverd some in RFC 47, many of the
+attributes will have well chosen defaults which allow for shorter
+argument lists for common situations. For example, instead of
+
+	$sock = IO::Socket::INET->new(PeerAddr => 'www.perl.org',
+                                          PeerPort => 'http(80)',
+                                          Proto    => 'tcp');
+
+you would do:
+
+	$sock = AIO::Open( Host => 'www.perl.org',
+			   Port => 80 ) ;
+
+TCP would be the default protocol as it is much more common than UDP,
+and it would know it is a socket connection because of the Host/Port
+attributes.
+
+Similarly for LWP you would just do:
+
+	$sock = AIO::Open( Url => 'http://www.perl.org' ) ;
+
+If you refer to a special attribute, it can cause the appropriate
+module to be loaded at runtime. In the above case the AIO::LWP (or
+whatever it is called) would get loaded and then it would be passed the
+open call.
+
+One critical feature of AIO is direct support of asynchronous I/O
+(including connections, server accepts, and real asynchronous file
+I/O). There is no special interface required, you just specify a
+callback attribute. That makes the request automatically non-blocking
+and registers the event for you. You have to had previously specified an
+event dispatch method (with use event or use aio) or it is a runtime
+error.
+
+Assuming an object $foo in package Foo, the above calls can be done with
+asynchronous callbacks (see RFC 321 for more on callbacks) like this:
+
+
+	$event = AIO::Open( Host => 'www.perl.org',
+			    Port => 80
+			    Callback => $obj  ) ;
+
+
+	$event = AIO::Open( Url => 'http://www.perl.org/index.html',
+			    Callback => $obj  ) ;
+
+
+	Package Foo ;
+
+	sub Connected {
+
+		my( $self, $socket ) = @_ ;
+
+		print "i am connected to perl.org\n" ;
+	}
+
+	sub Url_gotten {
+
+		my( $self, $socket ) = @_ ;
+
+		print $socket->read( 8096 ) ;
+	}
+
+Here is an asynchronous file read :
+
+	$event = AIO::Read( Fd => $fh,
+			    Count => 1000,
+			    Callback => \&read_handler ) ;
+
+	sub read_handler {
+
+		my( $read_data ) = @_ ;
+
+		print "i read [$read_data]\n" ;
+	}
+
+The callback method names are the default ones (we can pick better ones
+but I am under deadline pressure!) or you can choose your own. Timeouts
+can also be set with their own method names or defualt ones:
+
+	$event = AIO::Open( Url		=> 'http://www.perl.org/index.html',
+			    Callback	=> $obj,
+			    Method	=> 'Url_Ready'
+			    Timeout	=> 10
+			    Timeout_Method => 'URL_timeout' ) ;
+
+So you see, the same simple syntax and a consistant API lets you do
+blocking and non-blocking connect, I/O and timers. No need to learn
+IO::, LWP and LWP::Parallel and IO::Select. All of them are covered in
+under this approach and adding new attributes is easy and won't conflict
+with other code written to this specification.
+
+There is much more than can be desribed and I hope to have a chance to
+flesh this out but I have no more time before the October 1 deadline. I
+trust you can extrapolate read/write calls and other related features
+from this and RFC's 47, 321 and 345. 
+
+=head1 IMPLEMENTATION
+
+Implementation should be very straightforward. Much of the work is in
+the event loop and I/O subsystems. Some work has to be done with
+managing which module supports which attributes. Event.pm does much of
+this now and its API was a major influence on this. 
+
+=head1 IMPACT
+
+None. No new syntax or semantics are added. The event loop and I/O
+subsystem do all the work under the hood. Translation from Perl5 will be
+very simple (or not even needed)
+
+=head1 UNKNOWNS
+
+None.
+
+=head1 REFERENCES
+
+Event.pm - XS based event loop module.
+
+RFC 14: Modify open() to support FileObjects and Extensibility
+
+RFC 47: Universal Asynchronous I/O
+
+RFC 60: Safe Signals
+
+RFC 174: Improved parsing and flexibility of indirect object syntax
+
+RFC 321: Common Callback API for all AIO calls.
+
+RFC 345: Putting an Event Loop in the Core

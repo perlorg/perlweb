@@ -1,0 +1,238 @@
+=head1 This Week on perl5-porters (5-11 September 2005)
+
+=head2 The Return of the perl5-porters Summaries
+
+Sébastien Aperghis-Tramoni, Adriano Ferreira and David Landgren have
+stepped up to the plate to bring you the weekly p5p summaries.  We
+make no promises as to how long we can keep this up, but we'll give
+it a go for as long as we can.
+
+There has been a lot of action happening in Perl 5 land, and we
+hope that these messages will help people keep abreast of the latest
+developments.
+
+Onto last week's traffic:
+
+=head2 sub _ { ... } and -X _
+
+Peter Dintelmann pondered over the meaning of C<-X _> when
+C<sub _ { ... }> defined, as it can lead to some surprising behaviour.
+Mark-Jason Dominus pointed to
+http://hop.perl.plover.com/errata/byid.cgi/131 and
+http://hop.perl.plover.com/~alias/list.cgi?2:mss:264 for more
+information on the matter.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00078.html
+
+=head2 VMS Issues
+
+John E. Malmberg asked for advice on how to deal with File::Copy
+on VMS.  The library test fails because the copied file ends up
+with a timestamp of 'now', which is consistent with the way things
+are done in the DCL command shell. Part of the problem was that the
+test suite failure message was misleading. John fixed things up as
+best he could.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00000.html
+
+He also landed a patch for ExtUtils::CBuilder. After a bit of work,
+he and Ken Williams got it working correctly.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00126.html
+
+In other VMS news, the current bleadperl is testing fairly well.
+The main show-stopper being  problems with Compress::Zlib.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00189.html
+
+=head2 Eliminating arenaroots
+
+Internally, perl uses arenas of memory to allocate fixed-length
+objects quickly and efficiently. The current plan is the shrink the
+number of roots down to one. Jim Cromie supplied a patch. The test
+smokes produced a number of odd results that had people scratching
+their heads, until it was realised that the problem was a single
+statement C<if> that lost its braces.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00102.html
+
+=head2 Dying in a grep
+
+Chris Heath noted the following:
+
+  $ perl -e 'for ("foo") { grep(die, "bar") }'
+  Died at -e line 1.
+  Attempt to free unreferenced scalar: SV 0x96c61dc, Perl interpreter: 0x96ae008.
+
+Normally, the third line shouldn't appear. And C<map> will do the
+same thing. Salvador Fandiño noted that this had already been recorded
+as bug #24254.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00109.html
+
+=head2 eg should be e.g. in the documentation
+
+David Landgren was peeved that I<exempli gratia> is often abbreviated
+to "eg" in the documentation, rather than "e.g.". Mark-Jason Dominus
+wondered why it was not abbreviated to "for example". Michael Schwern
+brought the discussion to a close by performing a simple cost/benefit
+analysis.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00115.html
+
+=head2 Math::Complex atan2 bug
+
+Steffen Müller observed the following
+
+  [...] in the complex plane, we get:
+  perl -MMath::Complex -e "print atan2(0,i)"
+  i/0: Division by zero.
+  Died at c:/perl/perl58/lib/Math/Complex.pm line 1284.
+
+  This is not correct.
+  Obviously, 0/i is the same as 0/1 which is 0.
+  Thus atan2(0,i) == atan2(0,1) == atan(0) == 0
+
+Jarkko Hietaniemi said that he'd cook up a patch, but that he had
+other outstanding things to do with Math::Complex and Math::Trig.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00157.html
+
+=head2 undefing *foo{CODE}
+
+Ben Tilly reported that undef'ing the CODE slot of a typeglob doesn't
+quite work well enough to be useful, and supplied a short snippet
+of code showing the problem.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00169.html
+
+Dave Mitchell shed some light on what was going on under the covers
+"the thing continues to exist, but has no useful 'value'", and
+Rafael Garcia-Suarez noted that
+
+   delete &mysub
+
+is on the TODO list, but getting it right in all cases is extremely
+tricky.
+
+=head2 tr// on EBCDIC platforms
+
+Sadahiro Tomoyuki found problems with transliterating Unicode
+characters. I can only offer my deepest sympathy.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00181.html
+
+=head2 New core module releases
+
+Graham Barr released IO version 1.22. There was concern about what
+the impact would be on the 5.6 series.
+
+  http://search.cpan.org/dist/IO/
+
+Dan Kogai released Encode 2.12...
+
+  http://search.cpan.org/dist/Encode/
+
+... and Ruslan U. Zakirov spotted a problem with an example in the
+documentation.
+
+=head2 The return value of SvUTF8()
+
+In December 2004, Ton Hospel raised bug #32884. The internal perl
+API defines SvUTF8() as taking a pointer to an SV, and returning
+a boolean value indicating whether the SV contains utf-8 encoded
+data. Compilers, casting between chars and ints, can arrive at
+the situation whereby...
+
+  if (SvUTF8(sv)) { ... }
+
+... and ...
+
+  bool utf8 = SvUTF8(sv);
+  if (utf8) { ... }
+
+... don't behave in the same way. Steve Peters revived interest in
+the bug, by asking whether returning a U32 value instead of a bool
+would fix matters. 
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00211.html
+
+=head2 In Brief
+
+Rajarshi Das found a problem with Encode on EBCDIC. Dan Kogai noted
+that the code is not well tested on EBCDIC. There was another thread
+on the matter:
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00142.html
+
+Robert Spier released the latest version of the Perl5 bug summary
+
+  http://rt.perl.org/rt3/NoAuth/perl5/Overview.html
+
+Summary of the summary: there are 1500 open tickets.
+
+"brucer" filed a bug report for C<my $var if 0>. Michael Schwern
+demonstrated that this now produces a warning in bleadperl.
+
+  $ bleadperl -wle 'my $v if 0;'
+  Deprecated use of my() in false conditional at -e line 1.
+
+Ikegami reported bug #37076, a snippet involving threads and 'require
+IO'. Using 'use IO' makes the bug go away. Nicholas Clark suggested
+that this is caused by threads scribbling over memory that doesn't
+belong to them.
+
+"sgromoll" reported #37133, a crash related to threads and lock().
+Nicholas thought this was could be a deadlock in the threads
+implementation.
+
+Michael Schwern noted that #7615 C<if (local $a = 1){ ... }> is
+still a problem:
+
+  $ bleadperl -wle '$a = 10;  if( local $a = 1 ) {}  print $a'
+  Found = in conditional, should be == at -e line 1.
+  1
+  $ bleadperl -wle '$a = 10;  if( my $a = 1 ) {}  print $a'
+  Found = in conditional, should be == at -e line 1.
+  10
+
+Michael Schwern also followed up on the test suite of PathTools 3.10, which
+was released some time ago.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00183.html
+
+In bug #36075, Nicholas Clark wants to get C<malloc_size> and
+C<malloc_good_size> into C<Configure>, because this would help perl
+on Darwin. Steve Peters and H.Merijn Brand discussed various schemes
+for doing this
+
+Garry reported a memory leak with threads in #37134. Dave Mitchell
+managed to come up with some remarkably concise code that demonstrates
+the bug:
+
+  use threads;
+  sub ThreadRoutine {}
+  while (1) {
+    $thread = threads->new(\&ThreadRoutine);
+    $thread->join;
+  }
+
+Brendan O'Dea supplied a few tweaks for C<a2p>, thereby closing a
+couple of Debian bugs, and wondered if anyone still uses it (C<a2p>,
+that is).
+
+=head2 About this summary
+
+This summary was written by David Landgren.
+
+Information concerning bugs referenced in this summary (as #nnnnn)
+may be viewed at http://rt.perl.org/rt3/Ticket/Display.html?id=nnnnn
+
+Weekly summaries are published on F<http://use.perl.org/> and posted
+on a mailing list, (subscription: F<perl5-summary-subscribe@perl.org>).
+The archive is at http://dev.perl.org/perl5/list-summaries/.
+Corrections and comments are welcome.
+
+If you found this summary useful or enjoyable, please consider
+contributing to the Perl Foundation to help support the development
+of Perl.

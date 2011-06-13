@@ -1,0 +1,254 @@
+=head1 TITLE
+
+All Perl core functions should return objects
+
+=head1 VERSION
+
+   Maintainer: Nathan Wiger <nate@wiger.org>
+   Date: 8 Aug 2000
+   Last-Modified: 15 Sep 2000
+   Mailing List: perl6-language-objects@perl.org
+   Number: 73
+   Version: 2
+   Status: Frozen
+   Requires: RFC 159
+
+=head1 ABSTRACT
+
+In the past, Perl has only provided two return options for its builtin
+functions: scalars or lists. In a scalar context, only one select value
+was returned, greatly impacting the functionality of the function
+(unless you like pulling apart long lists, or pain, or both).
+
+The reason this was done was to allow easy access to string/numeric
+data, and because polymorphic objects were not a reality. However,
+objects can use the mechanisms described in B<RFC 159: True Polymorphic
+Objects> to become strings, numbers, and other data types on-demand in
+Perl 6. As such, we should make all Perl functions return objects in a
+scalar context in Perl 6.
+
+=head1 NOTES ON FREEZE
+
+This is mainly a philosophical document designed to show how the methods
+described in B<RFC 159: True Polymorphic Objects> can be used to give us
+a greater amount of core power in Perl 6. One actual proposed
+implementation of these ideas can be found in B<RFC 48>, which suggests
+a new C<date> function which produces a polymorphic object in scalar
+context.
+
+The only fear was performance-related; however, as Dan Sugalski himself
+pointed out, the -internals group will probably wind up putting vtable
+stuff in core. In this case, performance should not be a concern because
+OO will be tightly integrated from ground up.
+
+=head1 DESCRIPTION
+
+When several of the mechanisms proposed in other RFC's combine,
+especially B<RFC 159>, we have the power in Perl 6 to pass many more
+things around as objects, converting them to strings/numbers/etc as
+they're needed. This gives us much power, since we present both objects
+and "true" scalars to beginners and advanced Perl users alike with one
+common set of functions. As such, objects are embedded in Perl from the
+ground up.
+
+Others have proposed typing objects, and extracting them that way:
+
+   my $uid   = getpwnam $user;    # "true" scalar uid
+   my pw $pw = getpwnam $user;    # object of type "pw"
+
+However, this has a couple problems:
+
+   1. You have to have the correct object class and, at
+      the very least, alter your script's syntax.
+
+   2. You can't make $pw look like $uid transparently.
+
+Instead, having objects that walk and talk like scalars on demand is a
+more powerful approach. Note that this RFC does not necessarily preclude
+being able to type objects and pull out specific classes. The two
+approaches could be combined, giving multi-class objects that can be
+transparently accessed as "true" scalars.
+
+We'll start out with complex examples, where it's obvious how this is a
+benefit, and go down to simpler functions, where it might be less
+obvious.
+
+=head2 Complex Functions
+
+Let's choose C<stat>, since it's an easy target. Currently, it only
+returns one of two things:
+
+   1. A massive 13-element list (LIST context)
+   2. A boolean success/failure (SCALAR context)
+
+Neither of these is particularly useful, unless you like pain. To get a
+decent interface, you have to use C<File::stat> or some other module.
+Instead, let's put an object-oriented interface in the core:
+
+   $stat = stat $file;        # returns an object
+   @stat = stat $file;        # legacy list (like current)
+   %stat = stat $file;        # hash (see RFC 21)
+
+   print "$stat";             # calls $stat->STRING, which 
+                              # could print the filename or
+                              # some other useful piece of info
+
+Note that our legacy calling methods are unaffected, but we now have an
+object too. The boolean truth value is simplistic to determine still,
+you simply have to say:
+
+   $stat = stat $file or die "Can't stat $file: $!";
+
+The object methods of the C<$stat> object are powerful enough that
+special cases like C<_> no longer have to exist. You can stat multiple
+files out of order and still get the benefits of cached C<stat> calls by
+using the object interface:
+
+   $f1 = stat $file1 or die;
+   $f2 = stat $file2 or die;
+   
+   if ( $f1->size > 0 and $f2->owner == 0 ) {
+      print "root-owned $file1 is mode ", $f1->mode & 07777;
+      if ( $f1->mtime > time ) {
+          # here, "$f1" is $f1->STRING == $f1->filename
+          warn "Warning: bad mojo, $f1 has an mtime in the future!\n";
+      }
+   }
+
+Now, we have a full object-oriented C<stat> implementation, wrapped in a
+tidy function that can work just like Perl 5's if you want it to.
+
+As a second example, let's examine C<getpwnam>, whose return options
+are:
+
+   1. A pretty dang big 9-element list
+   2. The numeric user id
+
+C<getpwnam> differs from C<stat> in that you have to actually use what
+you get in a C<SCALAR> context in many situations. However, this can be
+easily addressed thanks to B<RFC 159>:
+
+   $pw = getpwnam $username;         # get the object
+   die "Not root" unless ($pw == 0); # ->NUMBER, which produces the
+                                     # numeric uid, like currently
+
+Here, the current return value (numeric user id) is preserved. No need
+to redo any of the documentation - but advanced users can be told "By
+the way, $pw is actually an object..." and so on.
+
+=head2 Medium-Level Functions
+
+As a medium-level example, let's take C<fork>. At first, making what's
+returned from C<fork> into an object might not seem to have much use.
+However, consider how cool it would be if C<fork> maintained stuff like:
+
+    $fork = fork;    # create a new process
+
+    $fork->pid       # current pid
+    $fork->ppid      # parent's process id
+    $fork->errno     # EAGAIN, for example
+    $fork->is_parent # parent?
+    $fork->is_child  # child?
+
+Then, you could fork multiple times, without having to worry about
+maintaining info on which fork is which - it's all right there in the
+C<$fork> objects. Furthermore, the default function would be
+$fork->pid, yielding the ability to treat fork the same as it has
+always acted. Adapted from Camel-3 p. 715:
+
+   if ( $pid = fork ) {
+      # parent here
+      print "fork returned with errno ", $fork->errno;
+   }
+
+This example is fairly trite, true. However, I'm sure others who do a
+lot of forking can fill the object in with valuable data they wish they
+could preserve easily.
+
+As a second example, consider C<system>. Who cares, right? Return
+success or failure. But consider:
+
+   $sys = system "some command";   # object
+  
+   $sys->command     # for record-keeping 
+   $sys->errno       # system errno || 0
+   $sys->stdout      # standard output from command
+   $sys->stderr      # standard error from command
+  
+There's probably more stuff that could go in there too. Why do this? For
+example:
+
+   $sys = system "command";
+   if ( $sys->errno ) {
+      warn $sys->command, " failed with error ",
+           $sys->errno;
+      die "Error output: ", $sys->stderr;
+   }
+
+For one simple operation, this seems like overkill. And it is. However,
+remember that the success value is still in there as the creation of the
+object:
+
+   system("command") or die "command failed: $?\n";
+
+That certainly looks familiar. :-)
+
+Again, you get the entire power of objects hidden behind a clean,
+familiar looks-like-Perl-5 frontend.
+
+=head2 Simple Functions
+
+Okay, who cares about getting an object back from C<chomp>? Is that
+really necessary?
+
+>From a functional standpoint, most string-related functions would be
+overkill. For example, C<chomp>, C<grep>, etc. The main advantage is not
+with string manipulation functions, but rather with functions that do
+complicated stuff and return lots of values, like C<date>, C<stat>, etc.
+
+Just for kicks, though, consider C<chomp>:
+
+   $newstr = chomp $string;        # new syntax, RFC 58
+
+   print "new string is $newstr";  # calls $chomp->STRING
+   print $newstr->numchars, " were chomped\n";
+
+You get the idea. 
+
+=head1 MIGRATION
+
+If done right, none. We simply have to use the methods described in
+B<RFC 159> to properly overload the objects so they appear to work "just
+like the same old scalars" they've always been. Again, the key goal is
+hiding this stuff just under the hood, so all the power is there but it
+doesn't get in the way of one-liners.
+
+=head1 IMPLEMENTATION
+
+Assuming this RFC is accepted, we should take Dan Sugalski's suggestion
+and create a list of those functions that this would be a real win for,
+and start with these. The ones that pop out in my mind are functions
+like C<stat> that return huge lists of complex values. I think this
+would be a Big Win for these types of functions.
+
+I'll gladly write up this list if the RFC is adopted, but in the
+meantime in order to meat the deadline I must hurriedly update my other
+RFC's! :-}
+
+=head1 REFERENCES
+
+Many many discussions by lots of people about something like this.
+Most I've read are available on the perl5-porters archive at:
+http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/
+
+RFC 159: True Polymorphic Objects
+
+RFC 48: Replace localtime() and gmtime() with date() and utcdate()
+
+RFC 37: Positional Return Lists Considered Harmful
+
+RFC 21: Replace C<wantarray> with a generic C<want> function 
+
+RFC 58: C<chomp()> changes. 
+
+RFC 49: Objects should have builtin stringifying STRING method

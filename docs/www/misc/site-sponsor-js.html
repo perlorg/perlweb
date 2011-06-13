@@ -1,0 +1,17 @@
+[% page.style = "bare.html";
+   rotato_image_base = "http://st.pimg.net/www.perl.org";
+   content = BLOCK %]
+<DIV ID="site-sponsor-js"
+     STYLE="text-align: center; font-family: arial;sans-serif;
+            font-size: 80%; width: 180px;"
+>
+[% UNLESS r.param('notext') %]
+site hosting<BR />
+ provided by <A href="http://www.perl.org">perl.org</A><BR />
+ and <A href="http://www.perl.org/siteinfo.html#sponsors">supported</A> by:<BR />
+[% END %]
+[% INCLUDE "tpl/sponsor-rotato.html" %]
+</DIV>
+[% END %]
+[%# need to JS escape content %]
+document.write( '[% content.replace("\n","\\\n").replace("'","\\'") %]' );

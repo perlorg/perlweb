@@ -1,0 +1,88 @@
+[% page.title = 'About' %]
+
+<h3>News</h3>
+<p>
+
+[% MACRO quicknews(shortname,count) BLOCK %]
+[%- IF count < 1 %]
+  [%  count = 2 %]
+[% END %]
+[%- TRY %]
+   [%- USE news = XML.RSS("${root}/var/rss/${shortname}.rss") %]
+   [% FOREACH item = news.items %]
+       <LI> <a href="[% item.link | html %]">[% item.title %]</a>
+       [% count = count - 1 %]
+       [% LAST IF count == 0 %]
+    [% END %]
+[%- CATCH %]
+    [Error Processing Directive]
+  [%- FILTER stderr %][% error.info %][% END %]
+[%- END %]
+[%- END %]
+
+[% quicknews('cpanratings',5) %]
+
+
+<h3>Release Notes</h3>
+
+<ul>
+
+
+<li>November 4, 2006: Fixed a few RSS bugs, added "alternate" headers
+for the RSS.  A bunch of general code cleanup. Implemented a proper
+API for the helpful votes.</li>
+
+<li>September 12, 2005: Fixed problem with updating reviews. Thanks <a
+href="http://cpanratings.perl.org/user/aristotle">Aristotle</a>!</li>
+
+<li>August 25, 2005: Went through a bunch of the little TODO items.  Oh, and added a link to the until now well hidden <a href="/index.rss">index.rss feed</a>!
+<li>July 20, 2005: Changed to use <a href="http://www.bitcard.org/">Bitcard</a> for authentication.  Added "was this review helpful" votes.  Also changed the URLs to be a little nicer (we couldn't do that while using the old auth server (don't ask)).  You can now add a review without giving it any ratings.
+<li>September 28, 2004: Bugfix to the "show reviews" page by Ivan Tubert-Brohman.
+<li>August 13, 2003: RSS finished, validating distribution names now, lots of other tweaks.
+<li>August 11, 2003: Very much a beta.  Comments to <a href="mailto:ask@perl.org">ask@perl.org</a>.
+</ul>
+</p>
+
+<h3>todo</h3>
+<p>
+
+If you would like to help then run over to the <a
+href="http://combust.develooper.com/">combust</a> site and check out
+the <a href="http://combust.develooper.com/install.html">installation
+instructions</a>. (Be sure to use the "trunk" of the Combust tree).
+
+<ul>
+
+<li>Add "Preview" button to the submit review form
+
+<li><strike>make /d/CGI.pm work</strike> -- Thanks Ivan Tubert-Brohman!
+
+<li><strike>Parse Embperl-2.0b9 correctly</strike>
+
+<li>Delete this review
+
+<li><strike>Helpfulness ratings</strike> -- done!
+
+<li><strike>RSS feed of sitewide "recent reviews" </strike> -- done!
+
+<li><strike>Add review information to the search results</strike>
+
+<li>Include the other rating numbers on [some page]
+
+<li>Include average ratings on the distribution pages
+
+<li>Include rating numbers in the RSS feeds
+
+<li>Add more reviewer information on the reviewer pages.  Link to the users bitcard profile page? (when we have that...)
+
+<li>Top rated modules list
+
+<li>Reviews of modules by a certain author (for CPANID.rss feeds)
+
+<li>Subscribe to reviews of certain distributions (preferably by author)
+
+<li>Reviews in other languages (with filters etc)
+
+</ul>
+
+</p>

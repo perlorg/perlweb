@@ -1,0 +1,730 @@
+=head1 This Week on perl5-porters - 10-16 July 2006
+
+I<"Kindly avoid inflicting upon this one the same fate shared by
+so much other documentation produced by a patchwork of well-meaning
+but disparate contributors seeing more the trees than the forest
+as they continually apply peephole optimizations that inadvertently
+compromise the overall integrity of the work, where the presentation
+eventually more resembles an illegible patchwork quilt of no especial
+application or intended purpose than it does a dedicated garment of
+one cloth woven."> -- Tom Christiansen, at the height of his form.
+
+=head1 Topics of Interest
+
+=head2 Adding examples to the core documentation
+
+Gabor Szabo continued his quest to add examples to the core
+documentation, based on feedback he had received giving training
+lessons. First up, he wanted to rewrite C<perlfunc> to use the
+modern approach for opening files (using lexical file handles and
+the three argument form).
+
+While no-one could dispute that this was a good idea, Nicholas
+objected to the fact that it meant that new stuff was being added
+but no old stuff was being pruned away.
+
+Other changes that Gabor wished to make involved adding more
+examples to the documentation. Again, Nicholas wondered why people
+wouldn't have the reflex to toss off a few one-liners to see how
+things worked.
+
+H.Merijn Brand suggested creating an examples directory. Gabor
+liked the idea, but regretted that the usual installer tools
+(C<CPAN> and C<CPANPLUS>) do not install the C<eg/> directories,
+making them all but invisible to mere mortals.
+
+  Opening gambit
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00313.html
+
+Gabor then continued with examples for C<index>/C<rindex>. Given
+that the debate about C<open> was not resolved, this was not applied.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00317.html
+
+He then added a brief discussion of C<use strict> in C<perlintro>
+and replaced the use of C<$a> and C<$b> by some less-special
+variables. H.Merijn liked it enough to apply it.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00376.html
+
+C<perlintro> also received another two batches of changes, here:
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00377.html
+
+and here:
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00443.html
+
+Gabor was briefly confused as to whether he should be patching
+C<blead> or C<maint>. H.Merijn Brand and Yves Orton explained that
+he should patch C<blead>, and that the C<maint> pumpking (currently
+Nicholas Clark, but will be Dave Mitchell in the future) will backport
+patches to C<maint> as appropriate.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00399.html
+
+So Gabor patched C<perlhack> in order to point future porters to the
+right thing to hack.
+
+  X marks the spot
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00408.html
+
+Gabor then gave F<perlopentut.pod> a work-over to begin recommending
+the use of lexical file handles rather than typeglobs. H.Merijn
+Brand had a number of issues with the proposed changes, and the
+thread continued on for quite some time. People seemed to be in
+agreement that some sort of improvement was needed, but the hard
+question was what was truly essential for a tutorial, and in what
+order to present it.
+
+  Opening night
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00488.html
+
+After digesting the suggestions that everyone put forward, Gabor
+produced a second cut. After an initial false start, Tom Christiansen
+explained that from a tutorial perspective, omitting parentheses
+and preferring C<or> over C<||> is incorrect. Having taught thousands
+of people Perl, Tom has come to the conclusion that parens and
+low-precedence C<||> I<helps> people come to grips with the language.
+Omitting needless parentheses comes further up the curve of Perl
+mastery.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00499.html
+
+=head2 On the correct use of C<my_strlcpy>
+
+Steve Peters had tried to replace some uses of C<strcpy>, (which
+is deemed "unsafe" in that it can copy without limit), with the
+safer C<my_strlcpy>. Except that they don't return the same thing,
+which caused Steve Hay's smoke machine to have a fit. The first
+Steve was rather embarrassed and apologised.
+
+On the plus side, this revealed a place where more tests are needed.
+
+  Copy right
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00346.html
+
+=head2 C<Hash::Util::FieldHash> I<versus> global destruction
+
+Joshua ben Jore wanted to know whether C<Hash::Util::FieldHash>
+makes inside-out objects safe in the face of object that defines a
+C<DESTROY> method. Anno Siegel explained that everything should be
+fine during the normal course of events, but wasn't too sure whether
+global destruction (what happens when the interpreter is being taken
+down just before the perl process expires) changes the rules so
+much that this no longer holds true.
+
+Joshua spelt out some of the potential problem scenarios he envisaged,
+and how best to deal with them. Anno thought that the proposed
+work-arounds were all rather bletcherous, and promised to think
+about it to see whether he could come up with a good solution.
+
+The underlying problem is that inside-out objects reveal an aspect
+of global destruction that was never apparent before, and if you're
+really unlucky, it could bite your code.
+
+  Unintended consequences
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00365.html
+
+=head2 Confusing C<SvCUR> and C<SvLEN> documentation
+
+Yves Orton read the documentation concerning these two functions
+and had difficulty in reconciling it with what C<Devel::Peek> was
+telling him. Jan thought it made sense to him, and so he wondered
+what it was that Yves didn't understand. There ensued a long
+conversation between Jan and Yves that discussed the matter in
+more detail.
+
+Yves finally understood the issue, and suggested that Jan write
+up some documentation to clarify the matter. Jan hoped that
+someone else could summarise the issue instead (who, me?) and
+Yves said that he would take a stab at it, and allow Jan to make
+fun of it until it all made sense.
+
+  String theory
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00406.html
+
+=head2 CPAN contributor feedback
+
+Responding to the itchy thread from last week, David Muir Sharnoff
+explained that his number one gripe with the core was its less than
+complete support for tied arrays, magic on tied variables, and the
+lack of a C<GETREF> method for ties. All of which would no doubt
+make his life easier.
+
+  Not to mention closing a bug or two
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00426.html
+
+=head2 Code that is only executed once
+
+David Nicol proposed adding a 'once' statement modifier, that, after
+having been executed, would then delve into the optree and excise
+the statement out of the optree by rethreading the prior opcode to
+the next opcode.
+
+Rafael agreed that Perl 6 has a similar construct, but that there
+were no plans to add it to 5.10. He was happy that C<state> variables
+resolved the ugly C<my $x if 0> hack, and thought that C<UNITCHECK>,
+from the C<perltodo> list was more worthy of burning up some tuits.
+
+  COBOL has an ALTER verb, after all
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00471.html
+
+=head2 Removing the succeed path from the super-linear cache code
+
+This is an optimisation in the regular expression engine that, as
+far as Dave Mitchell can tell, is never exercised by the test suite,
+and, try as he might, was unable to concoct any example that could.
+So after talking things over with Hugo van der Sanden, he decided
+to fire up the chain-saw.
+
+So if your fancy patterns now starting taking longer than the
+scheduled moment of the heat death of the universe, you know who
+to blame. Hugo had hoped that some sort of instrumentation under a
+debugging build might be added to the engine to allow the measurements
+of different optimisation strategies. Dave wasn't planning to,
+although he figured it would probably be doable, even if he didn't
+know right now what shape or form it would take.
+
+  Look for a patch tomorrow morning
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00493.html
+
+=head2 Comments on recent API changes to C<threads>
+
+Artur Bergman, one of the original authors of the C<threads> module,
+discovered all the work that had been done recently, and objected
+to the change that allowed C<exit> to end a thread silently (and
+not the entire process), saying that it blurred the distinction
+between threads and processes.
+
+He also spotted a section in the code that dealt with passing signals
+to threads, noting that it was not thread-safe. Jerry wasn't sure
+whether this was a true, and asked for a patch to help him understand
+the situation.
+
+Jerry D. Hedden regretted that some of the design decisions that
+Artur mentioned, as a way of explaining why things were the way
+they were, were not mentioned in the documentation.
+
+Jan defended the design decision to allow a nested function to
+terminate the thread, and not have to percolate the desire back up
+the call stack to the main thread function.
+
+Liz Mattijsen voiced the opinion that it was important for a thread
+encountering some naughty library code, that contained evil C<exit>
+somewhere, to not be able to take out the whole application.
+
+Artur explained that a technique already existed for dealing with
+this situation.
+
+  Picking up the thread
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00496.html
+
+=head2 Threads signalling issue
+
+Jerry D. Hedden was sufficiently worried by Artur's claim that the
+signal dispatching code was not safe, that he broke the discussion
+out into a separate thread. He stated that as far as he could see,
+the code I<was> thread-safe. Jan Dubois confirmed that he was certain
+that it was fine, as well.
+
+Artur described the problem he envisaged in more detail, which
+allowed Jan to point out where the argument was flawed, since the
+code already took the situation Artur outlined into account.
+
+And so now Artur owes Jan a beer.
+
+Nicholas Clark pointed out that even though the above code is
+race-safe on a single-processor box, on an SMP machine it might be
+possible to have a race, and he showed where it could happen. The
+jury is still out on this matter.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00514.html
+
+=head2 C<Storable.pm> has poor version compatibility
+
+Kari Pahula was shuffling binary images between two computers using
+C<RPC::PlServer> and C<RPC::PlClient>, with C<Storable> acting as a
+serialising mechanism, and shipping the result over the wire.
+
+Things started to fall apart when the two computers in question
+were running different versions of C<Storable> (The 2.6 receiver
+I<versus> the 2.7 sender), which rendered the received data essentially
+worthless. Kari wished that C<Storable> had a mechanism to specify
+that version C<N> should produce a data stream compatible with
+version C<N-x>, for some small value of C<x>. That is, Kari would
+quite happy to go back to his 2.7 server, and explicitly add a
+C<make this 2.6 compatible> flag, except that this is currently
+not possible.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00533.html
+
+=head1 Patches of Interest
+
+=head2 Test scripts for C<I18N::Langinfo> and C<POSIX>
+
+Last week, Sébastien Aperghis-Tramoni wrote some tests to
+improve the coverage of these two modules. In doing so, he discovered
+a couple of bugs: fields documented as existing, in fact, don't.
+Steve Peters had problems with some of the test results, and
+applied a partial patch. Craig Berry looked at some of the
+skipped tests this week, and made a few more changes.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00174.html
+
+Here are the changes, concerning missing POSIX functionality, that
+Craig realised was being dealt with appropriately.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00275.html
+
+Sébastien came back later on with a way to improve
+C<POSIX::localeconv()>'s usefulness, by defining all keys in the
+underlying hash, and making the undefined ones point to an empty
+string. This would make the test suite easier to manage, and would
+lead to less make-work code being required in client code.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00432.html
+
+=head2 C<perlhack>: reflections on portability
+
+Jarkko Hietaniemi is undergoing therapy to recover from doing combat
+for far too long with C compilers that conspire to make the perl
+codebase such a fun place to hang out.
+
+  The tao of portability
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00304.html
+
+And another batch of things to watch out for.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00329.html
+
+=head2 Making sense of the z/OS patches
+
+Jarkko then started picking away at the z/OS patches that had
+recently been sent to the list from IBM, to see what he could
+salvage. First up was some low-hanging fruit in the shape of
+F<hints/os390.sh> and C<Makefile.SH>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00333.html
+
+And then a number of EBCDIC fixes in the test suite.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00370.html
+
+He carried on with some more library files and test. Stephen McCamant
+wondered whether there wasn't an elegant way to factorise the
+EBCDIC/ASCII differences so that less code wound up being duplicated.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00416.html
+
+And something to do with C<main> that H.Merijn was unable to apply,
+despite his best intentions.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00417.html
+
+Taking that, and Stephen's, remarks into account, Jarkko brewed a
+fresh patch.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00467.html
+
+At the end of the week, Jarkko was able to tease out a fix for
+C<MIME::Base64>'s C<quoted-print.t> test. He wasn't precisely sure
+how EBCDIC and C<quoted-printable> are supposed to work together
+at the best of times, but sent the patch on its way.
+
+  =E8=96=A4@=94=81=A8@=98=A4=96=A3=85@=94=85@=96=95@=A3=88=81=A3=
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00569.html
+
+=head2 Various additions to F<cflags.SH> and sundry files
+
+Jarkko discovered with delight that recent versions of C<gcc> have a
+C<-std> to specify to which C standard the source code should be held
+against. So he taught F<cflags.SH> to specify that C89 is the only
+game in town.
+
+  // is not a comment
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00532.html
+
+And in the interest of perfection, Jarkko also ensured that a number of
+recent additions to the code base were cited in F<cflags.SH>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00538.html
+
+In a grab-bag of assorted fixes, Jarkko patched F<dump.c>, F<pp_sys.c>,
+F<sv.c> and F<util.c> and snuck in a few more additions to C<perlhack>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00539.html
+
+In a last glorious attack on C<perlhack>, Jarkko wrote about the
+C<Configure -Dgccansipedantic> switch, that forces the C<gcc> compiler
+to become extremely fussy about what it considers acceptable
+practices in code.
+
+  Squeaky clean
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00574.html
+
+=head2 Updated escapes and debug output improvements
+
+Yves Orton landed a fairly hefty patch of tweakery, in part to
+improve the escaping code, making it Unicode aware. The second part
+was to clean up the way debugging output is displayed by the regexp
+engine. The latter work was not yet complete, but Yves felt it was
+time to commit.
+
+Dave Mitchell applied the changes, and noted a number of compiler
+warnings about C<char *>/C<U8> differences, and mentioned that the
+debug output is currently a bit of mess, and the direction in which
+he wished to push it.
+
+Yves explained what he was tinkering with at the moment, and asked
+for guidance on dealing with the variables used in the code. He
+thought that the de-recursion work that Dave had put into the engine
+offered a suitable place for squirrelling away new variables, and
+thought that the current way of dealing with variables was weird.
+
+Dave Mitchell explained that the current state of affairs can be
+traced back to the heritage of Henry Spencer's original regular
+expression library, twisted beyond belief to work in a multi-interpreter,
+multi-threaded environment.
+
+  *sounds of hammers, saws and arc-welders in the basement*
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00553.html
+
+Yves fixed up a number of warnings that the new code issued, in a
+subsequent patch.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00573.html
+
+=head1 Watching the smoke signals
+
+=head2 Smoke [5.9.4] 28549 FAIL(F) linux 2.6.12-9-powerpc [debian] (ppc/1 cpu)
+
+This failure, Rafael Garcia-Suarez believed, was due to the recent
+work performed on F<dump.c> whose aim was to improve the output by
+escaping "invisible" characters. Yves promised to take a look (which
+happened just above).
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00388.html
+
+=head1 New and old bugs from RT
+
+=head2 5.7.2 and C<perlPod::Text::Overstrike> (#7959)
+
+Whatever the problem was, at some point in the past four years,
+Steve Peters discovered that it had been fixed.
+
+  Counterstrike
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00368.html
+
+=head2 C<localtime(3)> calls C<tzset(3)>, but C<localtime_r(3)> may not. (#26136)
+
+Jason Vas Dias posted an patch to fix a bug for Perl on Fedora,
+following on from a revival of the patch by Benjamin Holzman.
+Benjamin followed up on Jason's work and tweaked the patch to make
+it suitable for both C<maint> and C<blead>.
+
+  It's about time
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00506.html
+
+=head2 C<defined>-ness of substrings disappear over repeated calls (#39247)
+
+A few words of wisdom from Yitzchak Scott-Thoennes on the matter
+of XS code dealing with magic.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00291.html
+
+=head2 Bug in system calls when C<%ENV> is very large (#39547)
+
+Steve Hay traced this problem down to the way perl gets compiled
+on the Win32 platform and thought that as things stand, the restriction
+appears to be an intrinsic limitation of the platform, and doubted
+it could be solved.
+
+Randy W. Sims forwarded the message to Microsoft, who confirmed
+that the environment block for a process is indeed limited to just
+shy of 32 kilobytes.
+
+  Their bug, not ours
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00312.html
+
+=head2 gcc 3.3 has problems with C<__attribute__((unused))> (#39634)
+
+Andy Dougherty tweaked the setting of the C<HAS_ATTRIBUTE> define in
+a way that he felt was the clearest to understand. Rafael applied it.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00326.html
+
+=head2 filetest problem with STDIN/OUT on Windows (#39637)
+
+Steve Hay wrote some more C code to analyse this problem and found
+that indeed, the C<-r> operator returns false for C<STDIN>. Trying
+it out with various C compilers led him to conclude that this is
+also some sort of Win32 limitation. Steve and Yves kicked around a
+few ideas, but at the end of the week it looks like it will wind up
+documented in C<perlport> as something that doesn't work.
+
+  The tailor's face and hands
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00358.html
+
+=head2 C<S_regmatch> produces a stack overflow (#39774)
+
+A pattern that results in a stack overflow was reported. Steve Peters
+explained that in C<blead>, the overflow no longer exists, although an
+error message described another sort of exhaustion is emitted instead.
+
+Yves Orton explained how the pattern was one of the sort that tend to
+give NFAs such as perl's regexp engine fits, as it forces backtracking
+information to be stashed away at every single point in the string. He
+went on to show how the pattern could be rewritten in a much more
+efficient manner.
+
+He then expressed hope that some day, the optimiser might be able to
+compose the transform all by itself, but reasoned that it might be
+difficult.
+
+  When he says it's not easy
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00281.html
+
+=head2 Cygwin Perl bug -- C<pod2usage(-verbose =E<gt> 0)> and C<pod2usage(-verbose =E<gt> 1)> (#39775)
+
+David Christensen wanted to know what the status was on a patch that fixes
+a problem with C<pod2usage>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00293.html
+
+=head2 C<Switch> module bug (#39789)
+
+Artyom Tseitlin, poor chap, was bitten by too-clever-by-half magic
+of C<Text::Balanced> (upon which C<Switch> relies). Adriano Ferreira
+posted a semi-evil hack that would allow Artyom to continue to use
+C<Switch>.
+
+  Divide and conquer
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00353.html
+
+=head2 Unable to build Perl under Irix with C<-Duseshrplib> (#39797)
+
+Philippe Schaffnit was going mad trying to discover what his mistake
+was in trying to build Perl on Irix. (no, I<using Irix> is not an
+acceptable answer). The problem sounded familiar to Andy Dougherty,
+who suggested an approach to narrow things down. At the end of the
+week we still had not heard back from Philippe.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00393.html
+
+=head2 Mortality of objects (I<e.g.> C<%$_>) passed as args (#39800)
+
+Vaclav Ovsik ran afoul of the absence of refcounting to C<@_> and the
+perl stack.
+
+  Don't do that then
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00394.html
+
+=head2 C<bleadperl -Dm -e1> segfaults on win32 (#39806)
+
+Rafael made an educated guess that a thread was trying
+to print something using a data structure that had already been freed...
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00419.html
+
+=head2 C<eval> and hash access in subroutine (#39816)
+
+Thomas Ziehmer composed a clever little ditty that shows how he was
+forced to make a bogus C<%hash = %hash> assignment to make things
+work correctly. I shall have commented on this next week, since
+nobody did this week.
+
+  Which was last week, anyway
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00464.html
+
+=head2 C<PERL5SHELL> is not checked for tainted data (#39832)
+
+Paul Fenwick showed how an evil hacker could make Perl inadvertently
+launch Notepad through a C<system> call, even in taint mode, since
+C<PERL5SHELL> is not subject to the usual tainting strictures.
+
+Rafael took a stab at closing the hole, and asked for someone with
+access to a Windows machine to validate the fix. Yves confirmed that
+the problem was indeed resolved. Dr. Ruud suggested applying
+similar checks upon C<$ENV{SystemRoot}> and C<$ENV{windir}>.
+
+Rafael wanted to know what purpose those two variables served.
+
+  Could have been worse
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00487.html
+
+=head2 Update F<perlipc.pod> TCP server example with respect to safe signals and C<accept()> (#39835)
+
+Andy Wardley discovered that the introduction of Safe Signals, from
+5.7.3 onwards had rendered the TCP server examples in C<perlipc>
+obsolete. So he updated the POD, in the hope that some kind soul
+would apply it to C<blead> (and even C<maint>) so that others may
+avoid running into the same problem.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00521.html
+
+=head2 Script with threads hang when there are nested subthreads (#39839)
+
+Erland Sommarskog discovered that nested threads don't.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00567.html
+
+Rafael Garcia-Suarez noticed that a B<C<Data::Bind> compilation failure>
+could be fixed by diddling with how C<Carp> was used, and therefore
+wondered if something hadn't been broken somewhere. The symptoms reminded
+David Landgren that he had encountered similar problems testing modules
+under C<blead>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00367.html
+
+=head2 Perl5 Bug Summary
+
+An internal server error prevented the bug summary from being posted this
+week, but I assume we are somewhere around 1500.
+
+  Check 'em out
+  http://rt.perl.org/rt3/NoAuth/perl5/Overview.html
+
+=head1 New Core Modules
+
+=over 4
+
+=item *
+
+C<Term::ANSIColor> version 1.11 released by Russ Allbery. Essentially a
+documentation and test suite enhancements release.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00482.html
+
+=item *
+
+C<Test::Builder/More/Simple> version 0.64 was rushed to the delivery
+room in an emergency by Michael Schwern. A change in 0.63 to
+C<test_fail()> broke C<Test::Exception> (and possibly many more
+modules as well).
+
+  Author and module are in good health
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00568.html
+
+=back
+
+=head1 In Brief
+
+Marcus Holland-Moritz commented on the B<C<state> variables progress>,
+saying that if the making iffy constructs results in a slowdown in the
+general case, then those constructs should simply be outlawed as errors.
+
+  But the slowdown is only wafer thin
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00369.html
+
+David Nicol suggested that C<INIT> blocks could be used to initialise
+C<state> variables, and proposed a suitable error message to be used
+when indicating that a state variable was not going to be initialised
+as expected.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00340.html
+
+Ron Savage followed up on the followup from Jan Dubois regarding
+Oracle on ActiveState, noting that he was B<able to install
+C<DBD::Oracle>>, but unable to do anything with it. Jan suggested
+a few things to try out, and outlined what ActiveState would have
+to do to get it to work in all cases.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00373.html
+
+Steve Hay noted that a recent version of B<C<ext/threads> doesn't
+build with Borland> on Win32, due to differences in header files.
+Jerry D. Hedden found an appropriate C<#define> upon which to hang
+the missing definitions.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00300.html
+
+And Jerry delivered the patch, applied by Rafael.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00310.html
+
+He then bumped up the version with a fix to stop B<signalling terminated threads
+from dumping core>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00335.html
+
+Dr. Ruud wondered whether it was worth chasing down B<C<0> and replacing
+it with C<NULL>>, in F<pp.c> to begin with.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00303.html
+
+B<statefulness is a property of the code, not the variable>, sayeth Dave
+Mitchell.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00420.html
+
+Steve Hay encountered a B<strange problem with F<perly.h> on Win32>, that he
+traced tentatively back to the switch-over from C<byacc> to C<bison>. A tweak
+to F<regen_perly.pl> fixed the problem. So Steve applied the fix, but regretted
+not being able to understand why the error was occurring.
+
+  Action and reaction
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00460.html
+
+Jarkko tweaked B<F<hv.c> and F<sv.c> for C<-DPERL_GLOBAL_STRUCT_PRIVATE>> and
+expressed disgust at the very existence of a global variable named
+C<done_sanity_check>. After having stepped back to look at his handiwork, he
+realised that recent work to bring F<DynaLoader.o> into C<libperl> has
+rendered the Symbian port of Perl unusable.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00483.html
+
+Steve Hay discovered that B<C<mod_perl> 1.x and C<apache> 1.x do not like
+C<blead>>, possibly due to the way constants have been rejigged.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00502.html
+
+Sadahiro Tomoyuki produced a patch to B<update comments in
+C<scan_const>>, since much of it remains as it did at change #780
+in the repository, which, if the records are correct, is roughly
+about the same time that the porters stopped using punched cards.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00541.html
+
+He also edited C<perlop> to clarify the B<parsing of quoted constructs>,
+so that people could apply some scientific method rather than just
+guessing to see how things behaved.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00570.html
+
+Yves Orton B<silenced a C<system> warning during tests>, although
+was only able to do so for Win32, although he thought that it
+should be possible to tweak it to work in a cross-platform manner.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00552.html
+
+=head2 About this summary
+
+This summary was written by David Landgren.
+
+Last week's summary, here:
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-07/msg00371.html
+
+elicited a response from H.Merijn who was concerned with some
+smoke tests throwing out black smoke that was not reproducible
+with a test run by hand.
+
+Yves Orton also mentioned that he had a documentation patch for the
+heredoc/escaping muddle that was in limbo, and was wondering whether
+it needed improvement or was just pushed down on the stack of things
+to apply.
+
+If you want a bookmarklet approach to viewing bugs and change
+reports, there are a couple of bookmarklets that you might find
+useful on my page of Perl stuff:
+
+  http://www.landgren.net/perl/
+
+Weekly summaries are published on F<http://use.perl.org/> and posted
+on a mailing list, (subscription: F<perl5-summary-subscribe@perl.org>).
+The archive is at F<http://dev.perl.org/perl5/list-summaries/>.
+Corrections and comments are welcome.
+
+If you found this summary useful, please consider contributing to
+the Perl Foundation to help support the development of Perl.

@@ -1,0 +1,127 @@
+=head1 TITLE
+
+STDIN, STDOUT, STDERR, ARGV, and DATA should become scalars
+
+=head1 VERSION
+
+  Maintainer: Nathan Wiger <nate@wiger.org>
+  Date: 4 Aug 2000
+  Last Modified: 14 Sep 2000
+  Mailing List: perl6-language-io@perl.org
+  Number: 30
+  Version: 4
+  Status: Frozen
+
+=head1 ABSTRACT
+
+Consensus has been reached that filehandles (currently
+barewords) will be revamped to become true $scalars, to
+make them consistent with other Perl variables.
+
+C<STDIN>, C<STDOUT>, C<STDERR>, and C<DATA> should follow suit and be
+renamed C<$STDIN>, C<$STDOUT>, C<$STDERR>, and C<$DATA>, becoming
+full-fledged scalar B<fileobjects>. In addition, C<ARGV> should become
+C<$ARGV> as well. The old function of C<$ARGV> (the currently open
+filename) will be available via polymorphism.
+
+=head1 NOTES ON FREEZE
+
+This was pretty much accepted by everyone, since it follows logically
+from filehandles becoming scalars. A few clarifications were added, but
+it otherwise remains the same from the previous version.
+
+=head1 DESCRIPTION
+
+=head2 $STDIN, $STDOUT, $STDERR
+
+Currently, filehandles are barewords, such as FILE and
+PIPE. However, for Perl 6 these are planned to be renamed
+to true "single-whatzitz" types (thanks Tom) and prefixed
+with a $. So, the current:
+
+   print FILE "$stuff\n";
+
+Will become something like:
+
+   print $FILE "$stuff\n";
+
+STDIN, STDOUT, and STDERR need to follow suit. We should
+change 
+
+   print STDERR "$stuff\n";
+
+to:
+
+   print $STDERR "$stuff\n";
+
+This makes them consistent with other Perl variables, such
+as @ARGV, %ENV, $VERSION, etc, all of which have the correct
+distiguishing prefix for their type.
+
+=head2 $DATA
+
+C<DATA> should follow suit, becoming C<$DATA>.
+
+=head2 $ARGV
+
+In addition, C<ARGV> should be renamed to C<$ARGV>. However, this
+overlaps with the already-existing C<$ARGV> (currently open filename),
+appearing to cause problems. But never fear! Polymorphic objects to the
+rescue:
+
+   while (<$ARGV>) {                 # used as fileobject
+       next if ($ARGV eq $lastfile)  # $ARGV->STRING, filename
+       print "Now reading $ARGV";    # $ARGV->STRING, filename
+       dostuff($_);
+       $lastfile = $ARGV;            # copies object, but that's ok
+                                     # because will have ->STRING too
+   }
+
+This means that $ARGV will be both the filehandle *and* the name of the
+file, but it will automatically morph to suit your needs depending on
+context.
+
+Additionally, C<ARGVOUT> should either follow suit, or be wrapped into
+C<$ARGV> ($ARGV->OUT?), whichever makes more sense.
+
+=head1 IMPLEMENTATION
+
+All references to these bareword filehandles will have to be changed.
+
+In addition, $STDIN, $STDOUT, and $STDERR should be standard, read-write
+variables. If a person wants to do this:
+
+   $STDOUT = $myfilehandle;
+   print "Watch out!";
+
+They should be able to. The same should (probably) go for C<$DATA> and
+C<$ARGV>.
+
+=head1 MIGRATION
+
+The p52p6 translator needs to be able to spot instances of barewords and
+globs and translate them to scalars:
+
+   print STDERR @foo;       ->   print $STDERR @foo;
+   dostuff(\*STDIN);        ->   dostuff($STDIN); 
+   print while(<ARGV>);     ->   print while(<$ARGV>);
+   select(STDERR);          ->   $DEFOUT = $STDERR;    # RFC 129
+   tie *STDOUT, 'Apache';   ->   tie Apache $STDOUT;   # RFC 200
+
+A similar process will have to be done with all other filehandle
+conversions as well, so this may well be handled implicitly by the more
+general conversion. We may be able to ignore globs since these should
+handle scalars implicitly as aliases.
+
+=head1 REFERENCES
+
+http://www.mail-archive.com/perl6-language@perl.org/msg03279.html
+
+RFC 14: Modify open() to support FileObjects and Extensibility
+
+RFC 159: True Polymorphic Objects
+
+RFC 129: Replace default filehandle/select with $DEFOUT, $DEFERR, $DEFIN 
+
+RFC 200: Objects: Revamp tie to support extensibility (Massive tie
+changes)

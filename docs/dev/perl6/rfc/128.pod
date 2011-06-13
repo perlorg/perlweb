@@ -1,0 +1,618 @@
+=head1 TITLE
+
+Subroutines: Extend subroutine contexts to include name parameters and lazy arguments
+
+=head1 VERSION
+
+  Maintainer: Damian Conway <damian@conway.org>
+  Date: 17 Aug 2000
+  Last Modified: 25 Sep 2000
+  Mailing List: perl6-language-subs@perl.org
+  Number: 128
+  Version: 4
+  Status: Frozen
+
+=head1 ABSTRACT
+
+This RFC proposes that subroutine argument context specifiers be
+extended in several ways, including allowing parameters to be typed and
+named, and that a syntax be provided for binding arguments to named
+parameters.
+
+=head1 CHANGES
+
+Added section describing named parameter interaction with named higher-order
+function placeholders.
+
+=head1 DESCRIPTION
+
+It is proposed that the existing subroutine "prototype" mechanism
+be replaced by optional formal parameter lists that allow parameters
+to be named and their contexts specified.
+
+The syntax for this would be:
+
+        sub subname ( type context(s) parameter_name : parameter_attributes ,
+                      type context(s) parameter_name : parameter_attributes ,
+                      type context(s) parameter_name : parameter_attributes ;
+                      # end of required parameters
+                      type context(s) parameter_name : parameter_attributes ,
+                      # etc.
+                    ) : subroutine_attributes
+        { body }
+
+Each of the four components of a parameter specification -- type,
+context, name, and attributes -- would be optional.
+
+=head2 Contexts
+
+The context specifiers would be:
+
+        $       parameter is scalar
+        @       parameter is array (eats remaining args)
+        %       parameter is hash (eats remaining args)
+        /       parameter is qr'd string
+        &       parameter is subroutine reference or block
+        *       parameter is typeglob (assuming they still exist)
+        ""      parameter is bareword or character string
+	()	parameter is an explicitly parenthesized list
+
+Note that any of these specifiers may appear in any position in a
+parameter list (especially C<&>, which would no longer be constrained to
+the first position).
+
+
+The following prefix context modifier would be available:
+
+        \             parameter must be a reference,
+                      argument is magically en-referenced if necessary
+
+
+The following context attributes would be available:
+
+        :lazy         argument is lazily evaluated
+
+        :uncurried    (& only) terminate curry propagation on argument
+
+        :noautoviv    that is a (possibly nested) hash element or array
+                      element is not autovivified.
+
+	:repeat{m,n}  argument is variadic within the specified range
+
+The following subsections describe each of these in detail.
+
+
+The following grouping operator would also be available:
+
+        (...)   specifies that the argument(s) are to be 
+                treated collectively (i.e. by modifiers and attributes)
+
+
+=head3 Automagically en-referenced arguments
+
+The C<\> modifier causes the modified parameter to automagically
+convert its corresponding argument to a reference without list flattening.
+The most common usage is in passing hashes and arrays as a single argument.
+
+Note that the semantics of C<\> attribute would be altered
+slightly from those of Perl 5, so that a reference is I<always> passed for
+that parameter. It would, of course, retain its magical
+en-referencing coercion:
+
+        \$         argument must be scalar ref or start with $
+                   scalar var magically en-referenced
+
+        \@         argument must be array ref or start with @,
+                   array var magically en-referenced
+
+        \%         argument must be hash ref of start with %,
+                   hash var magically en-referenced
+
+        \/         argument must be qr'd string or /.../ or m/.../
+                   /.../ or m/.../ magically qr'd to en-reference
+
+        \&         arg must be sub reference, curried function, or block
+                   block converted to anonymous sub ref
+
+        \*         argument must be typeglob ref of start with *,
+                   typeglob magically en-referenced
+
+        \""        argument must be a string reference or a bareword,
+                   bareword magically stringified and en-referenced
+
+        \()        argument must be a parenthesized list or an anonymous
+                   list constructor
+                   parenthesized list is magically en-referenced
+
+
+
+=head3 Lazy evaluation
+
+If the C<lazy> attribute is used for a particular parameter, that parameter
+is lazily evaluated. This means that it is only evaluated when the
+corresponding named parameter (see below) -- or the corresponding element
+of @_ -- is first accessed in some way, after which the evaluated value
+is stored in the element in the usual way. Passing the parameter to another
+subroutine or returning it as an lvalue does not count as an access.
+Evaluating it in an C<eval> block always counts.
+
+If the C<lazy> attribute is applied to a C<@> parameter (which eats the
+remaining arguments), those remaining arguments are not evaluated
+until the corresponding element of the array is accessed. Iteration
+through such an array (i.e. in a C<for> or C<foreach>) only evaluates
+one element per iteration.
+
+If the C<lazy> attribute is applied to a C<%> parameter (which eats the
+remaining arguments), the odd arguments (that are mapped to keys) are 
+immediately evaluated, but the even arguments (that map to values)
+are not evaluated until the corresponding entry of the hash is accessed.
+Iteration through such a hash (i.e. via C<each> or C<values>) only
+evaluates one element per iteration.
+
+For example:
+
+        sub firstdef(@:lazy) { defined($_) && return $_ for (@_); }
+
+        sub enervate($:lazy) { return $_[0] }
+
+        sub Klingon::OP_TERNARY ($,$:lazy,$:lazy) 
+        {
+                if ( $_[0]->debaseToTerran() ) { return eval{$_[1]} }
+                return eval{$_[2]};
+        }
+
+Note the use of explicit C<eval>'s in the last example, to force the
+lazy arguments to evaluate before being returned.
+
+
+=head3 Controlling curry propagation
+
+RFC 23 proposes the addition of higher order functions, via argument/operand
+placeholders. However, when a subroutine call includes a curried argument,
+there is an ambiguity as to how far "outwards" the currying should propagate.
+For example:
+
+        $num_nodes = traverse( $root, $sum += ^_ );
+
+might mean:
+
+        $num_nodes = sub{ traverse( $root, $sum += $_[0] ) };
+
+if currying continued to the outermost subroutine, or:
+
+        $num_nodes = traverse( $root, sub{$sum += $_[0]} );
+
+if it were restricted to the second argument.
+
+As the former interpretation is the proposed default behaviour, some
+syntactic means of requesting the latter interpretation is required.
+
+It is proposed that a parameter context attribute -- C<uncurried> -- be
+added to handle this. Any parameter with the C<uncurried> attribute would
+prevent curry propagation to the surrounding subroutine call.
+Thus, with the declaration:
+
+        sub traverse ($,$:uncurried);
+
+the call:
+
+        $num_nodes = traverse( $root, $sum += ^_ );
+
+would be equivalent to:
+
+        $num_nodes = traverse( $root, sub{$sum += $_[0]} );
+
+whereas the declaration:
+
+        sub traverse ($,$);
+
+would allow the curried argument to "infect" the entire surrounding call:
+
+        $num_nodes = sub{ traverse( $root, $sum += $_[0] ) };
+
+Note that the curry control only applies to the argument whose parameter
+has the C<uncurried> attribute. So:
+
+        sub traverse ($,$:uncurried);
+        $num_nodes = traverse( ^_ , $sum += ^_ );
+
+means:
+
+        $num_nodes = sub { traverse( $_[0], sub{$sum += $_[0]} ) };
+
+The currying of the second argument is restricted to its argument slot, whilst
+the currying of the first argument propagates outwards to encompass the entire
+call to C<traverse>.
+
+
+=head3 Variadic parameter lists
+
+It would be possible to specify parameter lists consisting of an
+arbitrary number of specified parameters, using the variadic attribute
+C<repeat{I<m>,I<n>}>.
+
+A parameter specification such as:
+
+	sub max($:repeat{2,20}) { ... }
+
+is equivalent to:
+
+	sub max($,$;$,$,$,$,$,$,$,$,$,$,$,$,$,$,$,$,$,$) { ... }
+
+That is, the C<:repeat> attribute specifies the range of arguments that
+the specified (scalar) parameter may represent.
+                
+If I<m> is omitted it is zero; if I<n> is omitted it is ~0 (maximum
+unsigned integer).
+
+For example, to specify a subroutine named C<most> that takes two or more
+magically enreferenced arrays and returns the one with the most elements:
+
+        sub most ( \@:ref repeat{2,} ) {
+                my $max = shift;
+                for (@_) {
+                        $max = $_ if @$max < @$_;
+                }
+                return @$max;
+        }
+
+        my @most = most @x, @y, @z;
+
+
+Or consider a subroutine that takes an alternating sequence of pairs of:
+
+=over 4
+
+=item *
+
+a lazily evaluated, non-curry-propagating scalar expressions, followed by
+
+=item * 
+
+a bareword
+
+=back
+
+which then returns the stringification of the first bareword following any
+expression that evaluates to true:
+
+        sub first ( ($:lazy uncurried, ""):repeat{,} ) {
+                while (my ($true, $str) = splice @_, 0, 2) {
+                        return $str if $true;
+                }
+        }
+
+        my $first = first
+                        $x < 10 => little,
+                        $x < 20 => middle,
+                        $x < 30 => large;
+
+Note the use of grouping parentheses to cause the alternating
+scalar/bareword sequence to be repeated.
+
+
+=head3 Preventing argument autovivification
+
+When entries of nested hashes are passed to a subroutine:
+
+	func( $hash{key}{subkey}{subsubkey} );
+
+the intermediate entries in the nested hash (i.e. C<$hash{key}> and
+C<$hash{key}{subkey}> in the above example) are atovivified, whether or
+not the argument value itself is every accessed within the subroutine.
+This is particularly galling if one or more of the nested hashes is
+undefined, since it means the higher-level entries will have keys
+created unnecessarily.
+
+Specifying the C<:noautoviv> attribute on a subroutine parameter
+would cause the corresponding argument to be evaluated in a special
+"non-autovivifying" context, unless it is used as an lvalue.
+
+In such a non-autovivifying context, the non-existence of any
+intermediate nested hash would cause the entire nested hash access to
+immediately evaluate to C<undef>, without any autovivification.
+
+For example:
+
+        sub func1 ( $:noautoviv ) { ... }
+        sub func2 ( $ )           { ... }
+
+        my %hash;
+        print keys %hash;                       # prints ""
+
+        func1( $hash{key}{subkey} );
+        print keys %hash;                       # prints ""
+
+        func2( $hash{key}{subkey} );
+        print keys %hash;                       # prints "key"
+
+
+If the parameter is used in an lvalue manner within the subroutine:
+then autovivification is still applied (at the point where the argument
+is used as an lvalue). For example:
+
+	sub func3 ( $:noautoviv ) {
+		if (rand > 0.5) { $_[0] = 0 }	# autovivifies argument
+		else		{ print $_[0] }	# does not autovivify argument
+	}
+
+
+	sub func4 ( \$:noautoviv ) {	# always autovivifies (compiler warning)
+		...
+	}
+
+
+Note that this implies that C<:noautoviv> parameters are automatically C<:lazy>.
+
+
+=head3 Block parameters and arguments
+
+As noted above, C<&> parameters could appear in any position in the parameter
+list, allowing raw blocks as arguments anywhere in the argument list.
+
+It is proposed that raw blocks that are subroutine arguments need not
+be separated by commas from adjacent arguments (on either side):
+
+        sub on ( "", & ) {
+                $handler{$_[0]} = $_[1];
+        }
+
+        # and later...
+
+        on Error::Numeric { die $@; };
+        on Error::Range   { $_[0]--; };
+        on Error          { ref($_[0])->handle(); };
+
+Furthermore, it is proposed that if a subroutine's parameter list ends
+in a C<&> and the subroutine is called in a void context, that the
+following semi-colon be optional:
+
+        on Error::Numeric {
+                die $@;
+        }
+
+        on Error::Range {
+                $_[0]--;
+        }
+
+        on Error {
+                ref($_[0])->handle();
+        }
+
+
+=head3 Context classes
+
+The revised syntax would also allow I<context classes> to be specified.
+A context class aggregates two or more alternative contexts, allowing
+any one of them to be the context for corresponding argument.
+
+For example:
+
+        sub mymap ([\/&$], @) {...}
+        
+Here, the first argument must be either a /.../ pattern (or qr), or a
+block (or sub ref), or a scalar. In parsing that argument, the various
+possible contexts are considered left-to-right and the first context
+that allows the argument to be parsed is used.
+
+Note that context classes may also have attributes:
+
+        sub mymap ([\/&$]:lazy uncurried}, @) {...}
+
+In this example, no matter what the first argument is, it is lazily evaluated
+and does not propagate currying.
+
+A context class may only contain context specifiers that yield scalar
+parameters. Hence, a context class may contain any of the following
+specifiers (any of which may also have C<lazy> or C<uncurried> attributes):
+
+        $       /       \$      \/
+        &       *       \&      \*      
+        ""              \""     \()
+                        \@      \%
+
+but not:
+
+        @       %       ()
+
+A context class always yields a scalar parameter.
+
+
+=head2 Parameter names
+
+Each parameter may optionally (and independently) be given a name.
+This name is specified after the parameter's context specifer.
+The declaration of a parameter name creates a lexical variable of the
+same name in the scope of the subroutine body. Named C<@> and C<%>
+parameters create a lexical array or hash respectively. All other
+named parameters create a lexical scalar.
+
+For example:
+
+        sub doublemap (&mapsub, @args) {        # creates my($mapsub,@args)
+                my @mapped;
+                push @mapped, $mapsub->(splice @args, 0, 2) while @args;
+                return @mapped;
+        }
+
+Note that the context specifier can still be any valid specifier:
+
+        sub lazymap ([&\/$]mapper : lazy uncurried, $max, @args:lazy) {
+                my @mapped;
+                switch (ref $mapper) {
+                        case 'CODE'  { push @mapped, $mapper->(shift)
+                                                while @args && $max--; }
+                        case 'REGEX' { push @mapped, shift() =~ m/$mapper/
+                                                while @args && $max--; }
+                        case ''      { push @mapped, $mapper
+                                                while @args && $max--; }
+                }
+                return @mapped;
+        }
+
+
+=head3 Named arguments
+
+It is further proposed that arguments may be passed by name, and that
+named arguments may be passed in any order.
+
+An argument would be associated with a named parameter by prefixing it
+with a standard Perl label (i.e. an identifier-colon sequence). For example:
+
+        @mapped = doublemap(args: @list, mapsub: ^a+^b);
+
+On encountering labelled arguments in a subroutine call, the interpreter
+would examine the named parameters to determine their contexts,
+evaluate ththe labelled arguments (in left-to-right sequence) in the
+context specified by the corresponding named parameters (or I<not>
+evaluate them for lazy contexts!). The resulting values would then be
+assigned to the corresponding named parameters.
+
+Any unlabelled arguments would then be evaluated and assigned (again in
+left-to-right sequence) to any remaining parameters. Those nameless
+evaluations would be carried out in the respective contexts specified by
+the remaining parameters.
+
+It would be an error to:
+
+        * Define two named parameters with the same name, unless they
+          can be distinguished by context. 
+
+        * Label two arguments with the same name, unless there are 
+          two context-distinguishable named parameters of that name.
+
+If a subroutine was called with a labelled argument for which there was
+no named parameter, the label would be ignored and the argument treated
+as unlabelled, unless the subroutine had been declared with a
+C<strict_args> attribute.
+
+
+=head3 Interaction with named placeholders
+
+It is further proposed that when named placeholders are used to curry a
+function, the resulting subroutine would have named parameters. If the
+curried function mixed named, ordinal, and anonymous placeholders, the
+resulting subroutine would have a mixture of named and unnamed parameters.
+
+For example:
+
+        my $selector = ^condition ? ^2 : ^_;
+
+would be equivalent to:
+
+        my $selector = sub ($condition,$,$) { $condition ? $_[2] : $_[1] };
+
+This would make currying out the condition clearer:
+
+        my $select_on_val = $selector->(condition: $val);
+
+
+=head2 Types
+
+It is proposed that parameters may be given types: either the name of
+a class, or the name of a builtin type (such as 'ARRAY', 'HASH',
+'CODE', etc.)
+
+If a parameter has a type (C<T>) then the following additional
+constraints are placed upon it and its value:
+
+=over 4
+
+=item 1.
+
+The parameter's specified (or implicit) context must yield a scalar value.
+
+=item 2.
+
+The scalar value of the bound argument (say, $val) must satisfy
+C<UNIVERSAL::isa($val,'T')>.
+
+=item 3.
+
+If the parameter is named, the corresponding lexical variable will be
+typed to class C<T>, unless C<T> is the name of a built-in type:
+'SCALAR', 'HASH', 'CODE', etc.  (and maybe even then, if typed lexicals
+were to be extended to built-in types)
+
+=item 4.
+
+If the subroutine has the attribute C<:multi>, then the typed parameter
+takes part in the multiple dispatching of the subroutine (see forthcoming
+RFC).
+
+=back
+
+For example:
+
+        sub traverse (Tree $root, $subref:uncurried) {...}
+
+This specifies that the first argument must be a Tree object, or an object of a
+class derived from Tree. The corresponding lexical variable would be equivalent
+to:
+
+        my Tree $root;
+
+
+=head3 Using builtin type names
+
+The ability to specify the names of builtin types as parameter types offers
+additional flexibility in controlling argument interpretation. For example,
+the specification:
+
+        sub demo(ARRAY $a, @b) {...}    # version 1
+
+constrains the argument to be an array reference, but does not invoke a 
+magical en-referencing context, the way this would:
+
+        sub demo(\@a, @b) {...}         # version 2
+
+Thus, a call like:
+
+        demo(@LOL);
+
+will succeed under version 1 (binding $LOL[0] to $a,
+and the rest of @LOL to @b), provided $LOL[0] is an array reference.
+
+Under version 2, the call to C<demo> would fail, since C<\@LOL> will be
+bound to $a and there will be nothing left to bind to @b.
+
+
+
+=head2 Banishment of the term "prototype"
+
+It is further proposed that parameter lists I<never> be referred to
+as "prototypes", and that use of the term be a flameworthy offence.
+The preferred nomenclature would be "parameter list", or perhaps 
+"signature".
+
+
+=head1 MIGRATION ISSUES
+
+This proposal has the potential to break a small number of cases
+where a backslashed context specifier would now match a reference
+argument that it previously complained about.
+
+Also, the suggested regularization of semantics for backslash means
+that a C<\$> argument is passed as a reference, not a value.
+
+
+=head1 IMPLEMENTATION
+
+Definitely S.E.P.
+
+
+=head1 REFERENCES
+
+RFC 21 (v1): Replace C<wantarray> with a generic C<want> function
+
+RFC 22 (v1): Builtin switch statement
+
+RFC 23 (v2): Higher order functions
+
+RFC 57 (v1): Subroutine prototypes and parameters
+
+RFC 84 (v1): Replace => (stringifying comma) with => (pair constructor)
+
+RFC 97 (v1): prototype-based method overloading
+
+[Numerous other RFC's make use of, or reference to, this mechanism]

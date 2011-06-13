@@ -1,0 +1,173 @@
+=head1 TITLE
+
+Add null() keyword and fundamental data type
+
+=head1 VERSION
+
+  Maintainer: Nathan Wiger <nate@wiger.org>
+  Date: 19 Sep 2000
+  Last Modified: 23 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 263
+  Version: 2
+  Status: Retracted
+  
+=head1 ABSTRACT
+
+Currently, Perl has the concept of C<undef>, which means that a value is
+not defined. One thing it lacks, however, is the concept of C<null>,
+which means that a value is known to be unknown or not applicable. These
+are two separate concepts.
+
+The absence of a C<null> concept and keyword in Perl makes it more
+difficult to interface with relational databases and other medium which
+utilize C<null>. Modules such as C<DBI> must map C<null> to C<undef>,
+which is an imperfect match.
+
+This RFC proposes a new C<null> keyword and fundamental value for Perl
+6. 
+
+=head1 NOTES ON RETRACTION
+
+This was basically universally acknowledged as the Wrong Way to
+implement the idea. For more details, see the mail thread starting here:
+
+http://www.mail-archive.com/perl6-language%40perl.org/msg04272.html
+
+The alternative approach of a C<use tristate> pragma was determined to
+be much more suitable and Perlish.
+
+=head1 DESCRIPTION
+
+=head2 What is NULL anyways?
+
+The concept of C<null> as opposed to C<undef> is sometimes difficult for
+people to understand. Here is Glenn Linderman's great explanation,
+directly from an email he posted to the list:
+
+<quote>
+There is a difference between "undefined" and "unknown".
+
+SQL NULL, and the resultant tristate operators used in SQL, specifically
+is based on NULL representing the "unknown" value.
+
+Perl undefined is a different concept--that of an uninitialized
+variable.  This is proven from its earliest versions where the value is
+coerced to 0 or '' (specific values) when used (without warnings on).
+
+Some Perl programs & modules (including DBI) attempt to correlate NULL
+and undefined, for lack of a better match of concepts (Perl is missing
+the concept of NULL, SQL is missing the concept of undefined, but that
+doesn't correctly imply that the concepts each language _does_ have are
+correlated, or should be).
+
+If you want NULL, RFC it is a new concept.  DBI could then be ported to
+Perl 6, and the power of using NULL in its operators (perhaps together
+with transactional variables) could make Perl an extremely powerful
+database manipulation language and would make the language,
+complementary to and augmenting SQL in ways no other language currently
+does.
+
+Any OO language with full operator overloading could write
+objects/operators that behave like SQL values, and implement tristate
+logic for those objects, just like SQL does.  Perhaps you should attempt
+that, and RFC the failures.  I would recommend, however, that you not
+attempt to use the concept of undefined to implement the concept of
+NULL, at least not visibly.
+</quote>
+
+=head2 Why the heck do we care?
+
+As mentioned above, C<null> and <undef> are two different things
+altogether. Consider the following two examples:
+
+   undef                     null
+   ------------------------  ------------------------
+   $a = undef;               $a = null;
+   $b = 1;                   $b = 1;
+   $c = $a + b;              $c = $a + $b;
+
+   $c is 1                   $c is null
+
+The keyword C<null> means that a value is B<known to be unknown>. This
+means a couple important things, with semantics far different from
+C<undef>:
+
+   1. Any math or string operation between a null and
+      non-null value results in null
+
+   2. No null value is equal to any other null, unlike
+      undef
+
+   3. A null value is neither defined nor undefined
+
+To recap: There is no 1:1 mapping between C<undef> and <null>. Any
+attempt to do so is inaccurate. For more details, please read the
+references.
+
+=head2 The new 'null' keyword
+
+The new C<null> keyword can be used anywhere that C<undef> can be:
+
+   my $name = null;
+   null @array;
+   @return = query($amount, $country, null, $time);
+   die "Fatal, \$name was unset!" if ( $name == null );
+
+With semantics to represent the RDBMS concept of C<null>. Note that the
+last one works because we are simply testing against C<null>. However,
+the following code:
+
+   $a = null;
+   $b = null;
+   print '$a eq $b!' if ($a eq $b);
+
+Would not print anything, since two C<null> values are not equivalent.
+
+=head2 The 'initialize' pragma
+
+The C<initialize> pragma is introduced to tell Perl what to default your
+unitialized values to. By default, it will remain C<undef>, same as
+currently. However, this code:
+
+   use initialize 'null';   # or "use initialize 'undef'"
+
+   my($a, $b);
+   print "Hello world!" if ($a == $b);
+
+Would no longer print out C<"Hello World!">, since the unitialized
+values $a and $b would now be set to C<null>, rather than C<undef>. This
+allows very easy porting of RDBMS-related work. The C<use initialize>
+pragma should obey blocks as well:
+
+   use initialize 'null';
+   my($a, $b);
+   print "Hello world!" if ($a == $b);
+   {
+       use initialize 'undef';
+       my($c, $d);
+       print "Hello universe!" if ($c == $d);
+
+   }
+
+The above example would print out "Hello universe!". By obeying blocks,
+you can easily embed true SQL queries in your code without disrupting
+the rest of the script.
+
+=head1 IMPLEMENTATION
+
+Add a C<null> keyword and fundamental value that have the proper
+semantics.
+
+Add an C<initialize> pragma that tells Perl what to initialize variables
+to by default.
+
+=head1 MIGRATION
+
+None. New functionality.
+
+=head1 REFERENCES
+
+http://www.sitelite.nl/mysql/manual_Problems.html#IDX666
+
+http://www.unb.ca/web/transpo/mynet/mtx19.htm#r2

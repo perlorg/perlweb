@@ -1,0 +1,85 @@
+=head1 TITLE
+
+Positional Return Lists Considered Harmful
+
+=head1 VERSION
+
+  Maintainer: Jarkko Hietaniemi <jhi@iki.fi>
+  Date: 5 Aug 2000
+  Mailing List: perl6-language@perl.org
+  Number: 37
+  Version: 2
+  Status: Developing
+
+=head1 ABSTRACT
+
+Perl has traditionally returned from various functions long (>2) lists
+of values.  Some traditions are simply bad.
+
+=head1 DESCRIPTION
+
+Functions like stat() and get*ent() return long lists of mysterious
+values.  The implementation is assumedly easy: just push some values
+out of C structs into the Perl return stack.
+
+Wrong.  And once more, wrong.
+
+Firstly, who can remember which one of the stat() return values was
+the atime or which is the 4th return value of localtime()?  The
+perlfunc gmtime/localtime documentation makes this difficulty painfully
+obvious by having to list the indices alongside the values.
+
+Secondly, the current solution is seriously non-extensible.  One
+cannot easily add new return values to the APIs because someone may be
+expecting an exact number of return values, or someone may be
+accessing the values by position from the end of the list Obsoleting
+values (or marking them as non-applicable to the current platform) has
+to be done by for examples returning undef.
+
+=head1 IMPLEMENTATION
+
+The solution is simple: return hashes instead of lists.  Yes, one
+still has to know how the fields are named, so the proposed solution
+is still not perfect.
+
+=head2 THE AFFECTED FUNCTIONS
+
+	caller [1]
+	getgrent
+	getgrnam
+	getgrgid
+	gethostbyaddr
+	gethostbyname
+	gethostent
+        getnetbyaddr
+	getnetbyname
+	getnetent
+	getprotobyname
+	getprotobynumber
+	getprotoent
+	getpwent
+	getpwnam
+	getpwuid
+	getservbyname
+	getservbyport
+	getservent
+	gmtime
+	localtime
+	stat
+	
+[1] I guess the whole semantics and functionality of caller() is
+severely up for grabs for Perl6.
+
+For the get*() mafia, it is also debatable whether aping the C
+interface is a good thing and worth preserving as such at all.  The
+preferred interface might be tied hashes.  This interface might also
+more naturally support non-POSIX operating systems with their own
+native semantics, or POSIX operating systems with extended semantics
+like higher security user databases.
+
+=head1 REFERENCES
+
+  perlfunc
+  File::stat
+  User::grent
+  User::pwent

@@ -1,0 +1,248 @@
+=head1 TITLE
+
+Interface polymorphism considered lovely
+
+=head1 VERSION
+
+  Maintainer: Piers Cawley <pdcawley@bofh.org.uk>
+  Date: 20 Sep 2000
+  Last Modified: 29 Sep 2000
+  Mailing List: perl6-language-objects@perl.org
+  Number: 265
+  Version: 3
+  Status: Frozen
+
+=head1 ABSTRACT
+
+Add a mechanism for declaring class interfaces with a further method
+for declaring that a class implements said interface. There should be
+(at least) runtime checking to ensure that a class actually *does*
+implement said interface, with an option to have compile time checks
+made.
+
+=head1 NOTES ON FREEZE
+
+Nothing has changed since version 2. There's still probably stuff that
+could use working on, but the deadline looms like a big loomy thing,
+so into the freezer it goes.
+
+=head1 CHANGES
+
+=over 4
+
+=item Notes
+
+I've tried to add [Note ...] lines in bits where I need some further
+input to try and nail the RFC down.
+
+=item More compile time errors
+
+It's now a compile time error if an interface file tries to do
+anything other than pre declare methods.
+
+=item Added a reference to RFC 193 C<use delegation>.
+
+=item Removed the 'too ugly to live' :must(Foo) suggestion.
+
+I didn't like it, Damian didn't like it, and it was Damian's idea. So
+it's gone.
+
+=back
+
+=head1 DISCUSSION
+
+=over 4
+
+=item *
+
+Damian points out that the distinction between C<use base> and C<use
+interface> don't need to be distinguished. I believe that, although
+it may be the case that there's no need to make the distinction in the
+internals of perl, the distinction is a useful mnemonic one for the
+programmer, and (I think) separating the different meanings into
+different pragmata potentially simplifies the implementation of both of
+'em.
+
+He also further points out that C<use deferred> isn't strictly
+necessary. I counter that it may not be necessary, but it'd be a
+simple pragma module to write and would again serve to help clarify
+the programmers intent.
+
+=back
+
+=head1 DESCRIPTION
+
+=head2 Rationale
+
+To (mis)quote Damian Conway "Inheritance polymorphism proliferates
+pretend classes".
+
+The idea is that C<my Dog $spot> will eventually give us some real
+performance gains, so more folks will want to use it. But this leads
+to a proliferation of 'ghost' base classes that are simply there to
+provide a handle for C<my Foo $bar> optimization.
+
+So, I propose that we move such classes sideways and make them into
+first class interfaces. By supporting interface polymorphism the way
+is opened for adding more stricture in projects that *need* it, as
+well as allowing for the possibility of compile time optimization for
+classes that use the interface structure.
+
+<This needs some more fleshing out>
+
+=head2 Syntax
+
+My current thought is that an interface file would look something
+like:
+
+  interface Fetcher;
+
+  sub fetch;
+
+Note the new keyword, interface, this works just like package but with
+the restriction that it can only contain subroutine declarations.
+
+A Class that implements the interface would then look like:
+
+  package TrainedCat;
+
+  use strict 'implementation';
+  use strict;
+
+  use base 'Cat';
+  use interface 'Fetcher';
+
+  sub fetch {
+     my TrainedCat $self = shift;
+     my $thing = shift;
+
+     return $self->can_lift($thing) ? $thing : undef;
+  }
+
+Note the C<use strict 'implementation'>, this declaration implies that
+interface conformance shall be checked at compile time. If the
+C<TrainedCat> class doesn't implement the C<Fetcher> interface in full
+then compilation shall fail. Without this stricture constraint the
+compiler shall throw a warning.
+
+If an interface file contains anything but forward subroutine
+declarations the compiler shall throw an error.
+
+[NOTE: What about interface inheritance hierarchies, thoughts please]
+
+Of course, Perl being Perl and all lovely and dynamic, there's a good
+chance that some of the methods that implement the interface aren't
+actually compiled up at the end of the compilation phase. Therefore we
+have:
+
+  package LazyDog;
+
+  use strict 'implementation';
+  use interface 'Fetcher';
+
+  use deferred qw/fetch/;
+
+  ...
+
+  sub AUTOLOAD {
+    ...
+    *fetch=sub {...}; goto &fetch;
+    ...
+  }
+
+C<use deferred> informs the compiler that the method will be available
+when it's needed, even if it isn't actually in the symbol table/class
+hierarchy just yet.
+
+In client code, lexicals that are typed into interfaces only require
+that the objects assigned to them satisfy the interface. ie. They
+don't care about an objects class, they just care what it can do. (If
+only life were like that...)
+
+  use strict 'interfaces';
+
+  my Fetcher $x;
+  my Dog $spot;
+  my NetSnarfer $z;
+  my $method = 'fetch';
+
+  # Compile time stuff
+  $x = $z;        # ok because $z can fetch
+  $x = $spot;     # ok because $spot can fetch
+  $x->fetch();    # ok because Fetcher->can('fetch');
+  $x->bark();     # not ok because ! Fetcher->can('bark');
+  # Runtime stuff
+  $x->$method();  # ok because Fetcher->can('fetch');
+  $method='bark';
+  $x->$method();  # runtime error because ! Fetcher->can('bark')
+
+Without the C<my strict 'interfaces'> declaration, these errors get
+demoted to compile time warnings. Of course, without the stricture any
+compiler optimizations become somewhat tricky.
+
+=head2 Another possible syntax
+
+Nathan Torkington suggested another syntax:
+
+  package Cat implements Pet;
+  package Dog implements Pet;
+
+Which is kind of neat. 
+
+=head2 Implications?
+
+Because the compiler will know about available methods for typed
+variables it may become possible to have Damian's named argument magic
+for method calls, though this is a tad scary to me...
+
+=head1 IMPLEMENTATION
+
+I have some ideas about this, and I believe it may be possible to do a
+good chunk of the runtime/compile time behaviour in pure perl, but if
+we are to gain performance gains for more than just the programmer
+(though it's my contention that the potential time savings available to
+the programmer who's bug hunting are reason enough for this change)
+this stuff should be usable in core. And I know little of the core.
+
+I've thought about this some more, using an interface should imply a
+check block along the lines of:
+
+  package Dog;
+
+  CHECK {
+      foreach my $interface (@IMPLEMENTS) {
+          foreach my $method (keys %{$::{$interface}}) {
+              die "Method $method not implemented" unless
+                  implements::can_somehow('Dog', $method);
+          }
+      }
+  }
+
+where C<implements::can_somehow> is similar to UNIVERSAL::can but it
+walks the inheritance tree.
+
+=head1 MIGRATION
+
+I'm not sure that there are any migration issues, what with this being
+a new bunch of syntax and all...
+
+=head1 REFERENCES
+
+RFC 218: C<my Dog $spot> is just an assertion
+
+Some of the subsequent discussion of this RFC contains some discussion
+of adding interface polymorphism to perl.
+
+RFC 193: Objects : Core support for method delegation
+
+If a package delegates a bunch of its methods, the compile time checks
+should notice this and (possibly) count them as contributing to the
+implementation of the interface.
+
+Java.
+
+Java is one language that springs to mind that uses interface
+polymorphism. Don't let this put you off -- if we must steal something
+from Java let's steal something good.
+
+

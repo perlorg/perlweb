@@ -1,0 +1,326 @@
+=head1 The Perl 6 Summary for the week ending 2005-04-12
+
+Whoa! Deja vu! Where'd Matt go?
+
+Don't worry, Matt's still writing summaries. As you may have noticed, Matt's
+been writing summaries every two weeks. And now so am I. Because we love you,
+we've decided to arrange things so I write summaries in the weeks when Matt
+doesn't. We could do it the other way, but that could be seen by some as
+self-defeating. Heck, when I say 'some' I probably mean 'all'.
+
+So, bear with me while I remember how to type all those accented characters and
+get back into the swing of writing these things (and of reading everything in
+the mailing lists once more -- someone should write a summary for us
+summarizers...) 
+
+I'll be sticking to my old 'lists in alphabetical order' scheme of writing
+summaries. So, let's get going
+
+
+
+=head1 This week in perl6-compiler
+
+=head2 Array of arrays, hash of hashes, elems, last
+
+Lev Selector asked for confirmation that Pugs didn't support compound data
+structures, C<@ar.elems> or C<@ar.last>. Autrijus and others confirmed that
+they didn't then, but they do now.
+
+L<http://groups.google.com/groups?threadm=6.2.0.14.2.20050405083226.02fbc8a8@pop.pipeline.com>
+
+=head2 MakeMaker6 stalls on takeoff
+
+Darren Duncan pointed out that, whilst last week's summary had claimed he was
+working on implementing MakeMaker in Perl 6 which is, sadly not the case. He
+reckoned he'd possibly look into it again when he had tuits and Pugs was more
+complete (supporting objects, for instance).
+
+L<http://groups.google.com/groups?threadm=p06210202be7926b05de8@[192.168.1.102]>
+
+=head2 Declaration oddness
+
+Roie Marianer pointed out what looks like some weirdness in Pugs' parsing of
+lexically scoped subroutines. Warnock applies.
+
+L<http://groups.google.com/groups?threadm=200504072344.18631.roiem@actcom.co.il>
+
+=head2 Toronto pugs hackathon
+
+John Macdonald asked for people who wanted to come to the YAPC::NA pugs
+hackathon to get in touch with him beforehand as spaces there are limited. If
+you're interested, drop him a line.
+
+L<http://groups.google.com/groups?threadm=20050407174040.GA26479@lupus.perlwolf.com>
+
+=head2 Pugs slice oddities 
+
+Andrew Savige noticed some weirdness in pugs's slicing behaviour. He posted
+some example code showing the problem. Autrijus agreed that there was a problem
+and explained that he was in the process of rewriting all the variable types,
+symbol tables and casting rules to agree with the Perl 5 model as described in
+F<perltie.pod>. The rewrite is currently failing tests, so he posted a patch
+for people who want to play. On Sunday, he bit the bullet and committed the
+entire 2500 line patch which 'touches pretty much all evaluator code'. 
+
+L<http://autrijus.org/tmp/itype.patch> -- Autrijus's patch
+
+L<http://use.perl.org/~autrijus/journal> -- Autrijus on the patch
+
+L<http://groups.google.com/groups?threadm=20050409104859.63926.qmail@web50803.mail.yahoo.com>
+
+=head1 Meanwhile, in perl6-internals
+
+=head2 Tcl, Unicode
+
+William Coleda has been trying to add Unicode support to his TCL implementation
+and he fell across issues with missing methods in F<charset/unicode.h>. Leo
+waved a magic wand and checked in an implementation which he fenced about with
+disclaimers.
+
+L<http://groups.google.com/groups?threadm=42534227.7000005@coleda.com>
+
+=head2 The status of Ponie
+
+Nicholas Clark confessed that Ponie had been pretty much stalled for some time,
+but sweetened the pill by announcing that it's about to restart and that he
+would be able to allocate at least one day a week to the project. He pointed
+people at the Ponie roadmap which breaks down the required tasks between here
+and a first release, complete with time estimates. If you're interested in
+getting Ponie to a ridable state, this would be a good place to start. 
+
+People were pleased.
+
+L<http://opensource.fotango.com/software/ponie/plan> -- Ponie intro/roadmap
+
+L<http://groups.google.com/groups?threadm=cdcef3714478b9d9e45d6571b17ce460@fotango.com>
+
+=head2 Monthly release schedule
+
+Chip donned his "Fearless Leader" hat and announced that, effective, Parrot
+would be moving to a monthly release schedule (with an initial three week
+'month' to get things into sync). There was some debate about whether
+Solaris/SPARC should be one of the officially required monthly release
+platforms (darwin, linux-x86-gcc3.* and win32-ms-cl were Chip's initial blessed
+three). This morphed into a discussion of Tinderbox; apparently there are cool
+things happening behind the scenes. 
+
+L<http://groups.google.com/groups?threadm=20050406222449.GS12946@perlsupport.com>
+
+=head2 Calling convention abstraction
+
+What do you know? You go away for n months and when you come back people are
+I<still> talking about calling conventions.
+
+L<http://groups.google.com/groups?threadm=20050407082131.24711.qmail@lists.develooper.com>
+
+=head2 Dynamic Perl, Part 1
+
+William Coleda announced that he was starting work on removing the core's
+dependence on Perl* PMCs in favour of using language agnostic PMCs internally
+and loading the Perl ones dynamically as required. Everything but PerlArray was
+dealt with quickly and names and ways forward with that tricky case were
+discussed. It looks like we're going to have a 'ResizablePMCArray' added to the
+core once people have the tuits.
+
+L<http://groups.google.com/groups?threadm=4255FC12.7060907@coleda.com>
+
+=head2 Subversion
+
+Another discussion that wouldn't go away back when I was last writing summaries
+has come to a head. Parrot's finally migrating from CVS to Subversion. By the
+time you read this, Parrot's main repository should be at
+http://svn.perl.org/parrot. Hurrah!
+
+There were, of course, wrinkles to be ironed out.
+
+L<http://www.parrotcode.org/source.html> -- Getting started with subverted Parrot
+
+L<http://groups.google.com/groups?threadm=m3oecqrlm4.wl_rs@pobox.com>
+
+L<http://groups.google.com/groups?threadm=m34qeeqzzm.wl_rs@pobox.com>
+
+=head2 The imcc/ subdirectory
+
+Matt Diephouse wondered if, now that IMCC has been integrated with Parrot, we
+really needed the imcc/ subdirectory. He suggested that maybe its contents
+should be distributed about the rest of the parrot directory
+structure. MrJoltCola (Melvin Smith?) thought it was best kept separate and
+thought of as a front end. Bernhard Schmalhofer pointed out PAST, another
+Parrot frontend and suggested that it may make sense to refactor imcc/main.c
+into (he suggests) src/main.c and imcc/frontend.c, which would make the
+distinction rather clearer and provide an opportunity to clean up the exported
+symbols. Leo pretty much agreed with Melvin (no comment on Bernhard's
+suggestions yet though).
+
+L<http://groups.google.com/groups?threadm=198c873805041115575359f54c@mail.gmail.com>
+
+=head2 Perl jobs for the willing
+
+Leo looked for volunteers to rejig t/src/manifest.t to use .svn/Entries instead
+of CVS/Entries when checking the MANIFEST. Michael Schwern (possibly
+accidentally) volunteered.
+
+L<http://groups.google.com/groups?threadm=425B900E.6050409@toetsch.at>
+
+=head1 Meanwhile, in perl6-language
+
+A quick note about notation. I've started borrowing notation from Ruby/Smalltalk
+to discuss methods. Where I write SomeClass#method, then I am referring to an
+instance method of SomeClass and where I write SomeClass.method I am referring
+to a class method.
+
+=head2 Identity tests and comparing two references
+
+By heck but I've not been keeping up. 
+
+I started understanding what was going on when people started talking about
+implicit dereferencing of long chains of references. Larry's saying that even
+if $foo is a reference to a reference to a reference to a... to "10" then $$foo
+will chase all the way along the reference chain and evaluate to "10". The
+general response seemed to be "Wah! How do I make it not do that?".
+
+L<http://groups.google.com/groups?threadm=20050406183035.GB20211@wall.org> -- how to help Larry
+
+L<http://groups.google.com/groups?threadm=42517043.1080204@orthogon.com>
+
+=head2 C<say> what?
+
+Ovid wondered if C<say> (and C<print> come to that) should default to printing
+the current topic. An initial hunt through the Perl 6 documents proved to be
+'like trying to sip through a firehose', so he asked the list. And dropped a
+heavy hint about indexing the docs.
+
+According to Luke, it should default to the current topic.
+
+L<http://groups.google.com/groups?threadm=20050408060706.8683.qmail@web60801.mail.yahoo.com>
+
+=head2 Blocks, continuations and eval()
+
+Wolverian's been looking at the Perl 5 debugger and wondered if it would be
+possible to add an eval method to objects that represent scopes. The idea being
+that 
+
+   $scope.eval 'say $foo'
+
+would evaluate C<say $foo> with all of C<$scope>'s bindings etc in place (I
+wonder what C<$scope.eval 'return'> would do...). At least, that's what I<I>
+think he meant. Others asked for clarification. Wolverian also wanted to know
+how to get hold of a scope's continuation (or at least the current
+continuation). Larry has in the past said that he wouldn't be exposing
+continuations in the core language. Others have noted that it wouldn't be
+beyond the bounds of possibility to write a Parrot level module which would
+expose them though.
+
+L<http://groups.google.com/groups?threadm=20050408140311.GD21475@sci.fi>
+
+=head2 Questions on C<$pair.kv>
+
+Stevan Little had some questions about the behaviour of Pair#kv
+method. Luke came through with the answer (when all else fails, consider the
+pair to be a one-element hash'. 
+
+L<http://groups.google.com/groups?threadm=f773baa01367af7f6305d2d9624ae684@iinteractive.com>
+
+=head2 Managing PLEAC
+
+Prompted by a suggestion from Tim Bunce, Ovid started porting the examples in
+the Perl Cookbook into idiomatic Perl 6. He asked for comments and suggestions
+on how to proceed. 
+
+Marcus Adair proposed, and Luke Palmer strongly seconded, moving the
+development of the code onto a mediawiki (wikipedia) style Wiki which has good
+support for 'offline' discussion of code as it's developed. Autrijus reckoned
+that his current practise of handing out SVN committer bits to anyone who
+expressed an interest and leaving discussion in the files themselves seems to
+be working pretty well so far. He pointed at pugs.kwiki.org though.
+
+L<http://svn.openfoundry.org/pugs/examples/cookbook/>
+
+L<http://groups.google.com/groups?threadm=20050410030004.16112.qmail@web60805.mail.yahoo.com>
+
+=head2 Collaborative Synopses
+
+Bryan Ingerson posted a preliminary cut of Synopsis 26 and asked for
+comments. Yuval Kogman pointed out that the docs subdirectory of the pugs
+distribution is filled with documentation that needed proofreading and
+nitpicking. Go to it people.
+
+L<http://svn.openfoundry.org/pugs/docs/> 
+
+L<http://groups.google.com/groups?threadm=20050410104626.GA11509@ttul.org>
+
+=head2 Aliasing swapped values
+
+Ovid wondered what 
+
+    ($x,$y) := ($y, $x)
+
+would do.
+
+Juerd reckoned the answer is straightforward, and I must say I agree with him.
+
+L<http://groups.google.com/groups?threadm=20050410174751.88219.qmail@web60805.mail.yahoo.com>
+
+=head2 String#chars in a list context 
+
+Marcus Adair argued that it seems natural that String#chars, when used in a
+list context, should return a list of the Unicode chars in the string. Opinion
+seemed to favour the idea, but there's been no ruling from Larry (or anyone
+else on the Design Team). 
+
+L<http://groups.google.com/groups?threadm=fb07797705041111035357ff89@mail.gmail.com>
+
+=head2 Whither C<use English>
+
+David Vergin wondered if Perl 6 would have an equivalent of C<use English>,
+which would give sensible names to the various magic globals (those that hadn't
+been otherwise eliminated at least). Answer: Yes and No. There will be no
+English.pm module, but the magic globals will all have English names by
+default. 
+
+L<http://groups.google.com/groups?threadm=200541194433.231936@GatewayM275>
+
+=head2 Heredocs and their workings
+
+Marcus Adair wondered about the use of Heredocs as positional parameters. Luke
+confirmed that they should work just like they do in Perl 5, modulo minor
+matters of spelling (they're now spelled C<qq::to/END/> etc...) and whitespace
+removal. 
+
+L<http://groups.google.com/groups?threadm=fb07797705041117364d084d8e@mail.gmail.com>
+
+=head2 Slicing conflict
+
+Luke pointed out that 
+
+    my @a = (1,2,3,4);
+    my @b = @a[1...];
+    say +@b;
+
+is potentially problematic (he argues it should print out '3', but Perl 5
+semantics imply that it should print 'Inf'). He proposed breaking with the Perl
+5 way. Autrijus agreed with him and has implemented his proposal in pugs. 
+
+L<http://groups.google.com/groups?threadm=20050412063042.GA29831@navi.cx>
+
+=head1 Coo... that was fun, I think I'll do it again some time.
+
+If you find these summaries useful or enjoyable, please consider
+contributing to the Perl Foundation to help support the development of
+Perl. 
+
+L<http://donate.perl-foundation.org/> -- The Perl Foundation
+
+L<http://dev.perl.org/perl6/> -- Perl 6 Development site
+
+Or, you can check out my website. Maybe now I'm back writing stuff I'll start
+updating it.
+
+L<http://www.bofh.org.uk/>
+
+Vaguely pretty photos by me can be found at:
+
+L<http://www.flickr.com/photos/pdcawley>
+
+And that's quite enough shameless self-promotion. See you in two weeks.
+

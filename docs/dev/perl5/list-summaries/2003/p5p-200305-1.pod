@@ -1,0 +1,117 @@
+=head1 This Week on perl5-porters (28 April / 4 May 2003)
+
+This week summary doesn't feature very exceptional bug fixes, or utterly
+important information, or pearls of the most pleasant sense of humor of
+the perl5-porters. Does this mean that it's completely non-interesting ?
+Read it and judge by yourself : shortcuts, ACLs, meta-information, and a
+couple of cows.
+
+=head2 Windows shortcuts
+
+Last week, Edward Peschko started a discussion about adding support for
+Windows shortcuts (F<.lnk> files) in the perl core. He asked whether the
+C<lib> pragma could be modified to support the syntax
+
+    use lib "shortcut.lnk";
+
+Several approaches were suggested : modifying readlink() on Windows, to
+handle shortcuts, or have a Windows-specific module that redefines
+CORE::readlink(). Several people noted that a shortcut is not the same
+thing at all than a symlink, and thus that perl should not cheat about
+readlink() and paths involving symlinks.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg94878.html
+
+=head2 ACL support, and the filetest pragma
+
+Stas Bekman remarks that some OSes use ACL (Access Control List) -based
+file access controls. He asks whether perl could use internally the
+equivalent of
+
+    POSIX::access($file, &POSIX::X_OK)
+
+instead of C<-x $file>, where access(2) is supported.
+
+Mark Mielke points out that the filetest operators are not (in the general
+case) equivalent to the access(2) mechanism, due to a possible difference
+between the effective user id and the real user id. And backward
+compatibility should be preserved. Jarkko Hietaniemi recalls that the
+C<filetest> pragma should be used modify to the semantics of filetests.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg94966.html
+
+Later, Slaven Rezic asks whether C<filetest> works at all. This pragma is
+supposed to be lexically-scoped, like C<strict>. It is not, because it
+tests the compiler hints at run-time, but they are only relevant at
+compile time. This was fixed by Jarkko and Slaven.
+
+=head2 Cows
+
+Aaron Sherman asked about copy-on-write : how it's supported, and whether
+it's going to become the default. (Reminder : perl can be compiled with
+the C<-DPERL_COPY_ON_WRITE> cc flag, which enables copying string values only
+when they're changed.) He's looking for ways to improve the performance of
+SpamAssassin, a tool that processes lots of strings if any, and apparently
+tries to implement a module to provide COW-enabled magic scalars. Nicholas
+Clark summarized the state of the copy-on-write feature : I<the good news:
+I can't measure any slowdown. The bad news: I can't measure any speedup.>
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg96172.html
+
+=head2 Meta-information in CPAN packages
+
+Autrijus Tang posted a detailed proposal about the inclusion of a standard
+F<META.yml> file in CPAN distributions, and the inclusion therein of some
+meta-information that could be used by the CPAN indexer, to prevent some
+files or directories from being indexed. Ken Williams noted that
+Module::Build was already able to generate a F<META.yml> file. Autrijus'
+proposal was extensively discussed in a long thread :
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg95986.html
+
+=head2 C<$VERSION>
+
+John Peacock is apparently about to post a patch that makes the $VERSION
+variable magical, so that it automagically turns version-like scalars
+assigned to it into version objects.
+
+Matthew O. Persico asks about the possibility to backport John's changes
+via a CPAN module.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg96211.html
+
+=head2 In brief
+
+Casey West continued to send doc patches and to close doc bugs. And
+indeed, due to general effort, a lot of bugs were closed. By the way,
+Robert Spier is organizing the PerlBugAthon, aimed at closing as many
+perlbugs as possible, during OSCON 2003's Hackathon.
+
+    http://www.perl.org/oscon/2003/perlbugathon/
+
+Gurusamy Sarathy warns that there are probably cases of non-thread-safety
+in perl 5.8.0, because some global variables have gone into F<perlvars.h>,
+instead of being put into F<intrpvars.h>. Sorting them out is needed.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg95215.html
+
+Rafael Garcia-Suarez provided a patch to get bleadperl working on SCO
+OpenUNIX 8.
+
+Tye McQueen proposed a simple patch to fix a bug in hash bucket assignment
+(the number of buckets not growing in some pathological cases).
+
+Richard Clamp posted a quick-fix patch to get perl 5.005_03 to compile on
+newer Linux distributions.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg95227.html (long)
+
+Brent Dax asked why regex-heredocs aren't allowed (something like C<<
+$string =~ <</FOO/ >>). Perhaps because they're not really needed.
+
+=head2 About this summary
+
+This summary was brought to you by Rafael Garcia-Suarez. Weekly summaries
+are available on L<http://use.perl.org/> and via a mailing list, which
+subscription address is L<perl5-summary-subscribe@perl.org>. Feedback (and
+patches) welcome.

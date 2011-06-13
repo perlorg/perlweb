@@ -1,0 +1,159 @@
+=head1 The Perl 6 Summary for the week ending 2004-07-10
+
+Another week down, another summer summary. On a Monday no less. Last
+week I even managed to get the summary to the mailing lists before the
+Perl 5 Porters summary. I may have been even more surprised that Rafael
+by that. Let's see if I can do it again.
+
+We'll kick off with perl6-internals as usual (though it was actually
+the quieter list this week). 
+
+=head2 The Pie-thon charge
+
+A good deal of this week's work was Pie-thon related, what with the
+looming deadline and all. The effort hasn't been exactly helped by
+Dan's problems with unreliable laptops. However, it's apparent that the
+effort is helping to flush all sorts of issues out.
+
+L<http://groups.google.com/groups?selm=a06110400bd0f8334ae87@[10.0.1.3]> -- Dan thinks about generic new PMCs
+
+L<http://groups.google.com/groups?selm=a06110402bd0fa201e6d9@[10.0.1.3]> -- Dan on parrot/python opcodes
+
+L<http://groups.google.com/groups?selm=40EDA2CD.10105@toetsch.at> -- Getting Python::Bytecode to work
+
+L<http://groups.google.com/groups?selm=40EF0449.3090708@toetsch.at> -- Leo's summary of Pie-thon activities
+
+L<http://groups.google.com/groups?selm=Pine.LNX.4.58.0407111618380.28558@sprite.sidhe.org> -- a new
+Python::Bytecode
+
+=head2 Changing the Perl 6 Guard
+
+The Perl Foundation is looking for a good person to take on the
+responsibility of getting the Perl 6 compiler working. Parrot's reached
+the point where it can probably support all of Perl 6 (or can be made
+to support it), and the Perl 6 design is (while not complete) good
+enough to start implementing. The catch is Dan's not got the time to
+work on Parrot and implementing Perl 6 as well. So, we need a
+volunteer. 
+
+Read Dan's job spec and if you think you've got the skills (especially
+the people skills) then Allison Randal and the rest of the Perl 6 Cabal
+will be very happy to hear from you. Austin Hastings attempted to
+volunteer Luke Palmer, but Luke's keeping schtum. Personally I think
+he'd be a cracking candidate for the post, but he's the only person who
+can decide to volunteer.
+
+L<http://groups.google.com/groups?selm=a06110405bd10535b9d0e@[10.0.1.3]> -- The job ad
+
+=head2 Parrot m4
+
+Bernhard Schmalhofer posted a patch to get the parrot implementation of
+m4 working again. 
+
+L<http://groups.google.com/groups?selm=rt-3.0.11-30613-91966.11.3421530711931@perl.org>
+
+=head2 native_pbc fixes
+
+Jarkko Hietaniemi posted a bunch of changes to get the native_pbc tests
+working on 64 bit platforms. Thanks Jarkko, it's good to see another
+Perl 5 Porter working on Parrot.
+
+L<http://groups.google.com/groups?selm=40F06E5C.5020100@iki.fi>
+
+=head1 Meanwhile, in perl6-language
+
+=head2 Just like the old days
+
+Matija Papec wondered if it would be possible to continue to use simple
+unquoted hash keys (a la C<$hash{MYKEY}>) instead of the new
+C<%hash«MYKEY»> syntax. "Of course!" replied Luke Palmer, posting a
+macro to fix things up. The thread moved on to discussing the sorts of
+macros/operators that it'd be possible to implement. It got scary when
+Luke and Larry talked about writing a macro to declare new grammatical
+categories that could be used to declare subsequent macros/operators. 
+
+L<http://groups.google.com/groups?selm=20040706185704.46606.qmail@onion.perl.org>
+
+=head2 Predeclaration of subs
+
+Noting that it was now possible to write 
+
+    $obj.meth "foo" 
+
+where, in Perl 5, one would have to write C<< $obj->meth("foo") >>,
+Luke Palmer wondered whether there would still be a requirement to
+predeclare C<foo> in order to be able to say 
+
+    foo "bar", "baz";
+
+He went on to wonder how the new rules affected 
+
+    method evil($x is rw)
+
+Larry gave one of his thinking aloud answers. Essentially, there's
+context trickiness to be worked out, but he thinks that requiring method
+calls to evaluate their arguments in a list context and requiring
+predeclaration of functions that force scalar contexts on their
+arguments should be good enough to avoid ambiguity.
+
+L<http://groups.google.com/groups?selm=20040707014122.GA5452@babylonia.flatirons.org>
+
+=head2 Graphemes and codepoints and bytes, oh my!
+
+The discussion of Perl 6's Unicode handling continued for another week. 
+
+L<http://groups.google.com/groups?selm=20040708030951.GB16305@wall.org>
+
+=head2 Scalar subscripting
+
+Guatam Gopalakrishnan wondered about the meaning of C<$a[0]> now that
+array subscripting was done using C<@a[0]>. He proposed that it could
+be used for 'peeking into scalars', particularly strings. 
+
+Luke Palmer pointed out that C<$a[0]> actually expands to C<$a.[0]>
+which, when C<$a> is an array, is an array subscript as per usual. He
+pointed out that this had also come up in the ongoing "Graphemes and
+codepoints and bytes" thread, where such things as C<$str.bytes[0]> had
+been discussed. 
+
+L<http://groups.google.com/groups?selm=a3ada2d104070804124184a442@mail.gmail.com>
+
+=head2 C style commas
+
+Michele Dondi is another person who doesn't like the thought of losing
+the ability to say 
+
+   print, next if /stgh/;
+
+or something very like it, so he induced deja vu in your Summarizer by
+suggesting something involving C<then>. Larry pointed out that Perl 6's
+comma would still work perfectly well in this case. 
+
+The thread expanded into a discussion of various issues to do with
+statement modifiers, in particular C<do {...} while ...>, which
+continues to be illegal in core Perl 6.
+
+L<http://groups.google.com/groups?selm=Pine.LNX.4.58.0407091036010.4051@q.pcteor1.mi.infn.it>
+
+
+=head1 Announcements, Apologies, Acknowledgements
+
+Quote of the week comes from Larry Wall: "I'm also trying to learn perl6
+after using perl5 for some time." I think it probably applies to all of
+us. 
+
+If you find these summaries useful or enjoyable, please consider
+contributing to the Perl Foundation to help support the development of
+Perl. You might also like to send me feedback at
+L<mailto:pdcawley@bofh.org.uk>
+
+You could also wish me luck on Tuesday 12th of July when I'll be
+interviewing for a place to train as a maths teacher. (You only have to
+read these summaries to realise why I'm not after training as an
+English teacher).
+
+L<http://donate.perl-foundation.org/> -- The Perl Foundation
+
+L<http://dev.perl.org/perl6/> -- Perl 6 Development site
+
+

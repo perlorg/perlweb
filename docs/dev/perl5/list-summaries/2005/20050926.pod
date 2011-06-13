@@ -1,0 +1,847 @@
+=head1 This Week on perl5-porters - 26 September-2 October 2005
+
+That was another busy week. Steve Peters has been shaking
+the bag of (old and new) Perl RT tickets, raising
+a lot of activity and enticing answers for long
+forgotten issues. A lot of action in disparate 
+corners which Perl integrates: VMS, Win32, 
+EBCDIC platforms, Symbian, among others.
+
+=head2 Issues on Older Perls
+
+Do you think nobody cares anymore with
+ancient Perl 5 sources? You're plain wrong
+if you answered yes.
+
+B<If You Really Want perl5.004>
+Back in Sep 13, Shaun Daredia started a thread
+by asking for help to compile perl5.004_05,
+which was amended with some clues this week.
+Steven Schubiger mentioned there are some known
+issues compiling perl5.00x with gcc and upgrading
+would be the best to do. Andy Dougherty said
+it could be done by hand-editing F<makefile>
+and maybe F<x2p/makefile>. Marcus Holland-Moritz
+suggested using the F<buildperl.pl> script
+from C<Devel::PPPort>, which does the extraordinary
+work to (batch)
+build 5.003, 5.004_0[0-5], 5.005_0[0-4] and 5.x.x.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00763.html
+
+B< Fixes to perl5.00504 and C<DB_File> >
+In a followup to bug #27188, Steve Peters 
+pointed two issues in the ticket. First, the suggested patch 
+which should fix the problem (failing test due to F<DB_File.pm>)
+had not been applied to the 5.00504 branch. 
+Second, the perlbug mail addresses were just wrong,
+and Steve attached a patch to fix that.
+The patch expected to make F<lib/db-tree.t> work
+on all platforms where C<DB_File> isn't built
+attracted the attention of Paul Marquess who
+volunteered to apply the change to the CPAN
+and 5.9.3 version of C<DB_File>. Warnocked by now.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00577.html
+
+=head2 New Core Module Releases
+
+Only a new core module release this
+week, when Sébastien Aperghis-Tramoni announced 
+the upload of XSLoader 0.04 to CPAN and a patch for blead.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00662.html
+
+Michael Schwern and Yitzchak Scott-Thoennes had 
+some observations, which pressed for a new release.
+On Michael's suggestion, the test scripts
+were rewritten to use C<Test::More>, getting
+rid of a lot of clunky constructs. Michael also said
+that C<XSLoader> should prefer 
+C<DynaLoader>'s C<bootstrap_inherit()> should it exist
+and Sébastien agreed and implemented.
+
+As chromatic didn't understand why the idiom
+
+    ::ok( ref Cwd->can('fastcwd'),'CODE' )
+
+was used, Michael answered it addressed one of the
+pitfalls of C<Test.pm>'s swiss-army C<ok()> which
+executes code references. So you almost never
+want to pass it a code ref. Just another reason
+for C<Test::More>. (The things you learn in p5p!)
+
+To Yitzchak, C<use strict> did not seem a good idea for
+a module supposed to be light. Sébastien relieved 
+Yitzchak's concern saying
+C<XSLoader> is now strict-safe, but C<use strict> is not 
+actually used to avoid the cost of loading it. Yitzchak
+pointed a forgotten C<no strict 'refs'> that caused F<strict.pm>
+to be loaded.  
+
+After this, Sébastien announced the 0.05 version 
+of C<XSLoader> which was applied to blead.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00864.html
+
+=head2 Platform-Specific Issues
+
+B<No Symlinks to be Found on Win32>
+Steve Peters seemed to have concluded the investigation on broken C<File::Find::find>
+on Win32 with C<< follow => 1 >>. Not being able to tell exactly what change caused
+the problem, Steve Peters posted a patch which makes Win32 to never follow 
+symbolic links (which aren't available anyway). All tests pass, which Steve Peters 
+finds scary. Steve Hay applied the patch and thought it was weirder before when
+tests succeeded with a broken C<find()>.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00567.html
+
+B<Path Behavior on Win32>
+Back in Sep 17, Gisle Aas posted a patch to make 
+C<< File::Spec::Win32->path >>
+behave more like an internal utility often used. Steve Hay
+reported on a failure seen on F<lib/ExtUtils/t/MM_Win32.t>
+and proposed a patch to fix it. 
+Gisle, Michael Schwern and Jan Dubois engaged in
+a discussion where the main fact was that Win32
+always searches in the current directory first,
+before searching in the directories in the command path
+- an anomaly in Unix terms.
+That prompted for a fix to the test and the application
+of Gisle's original patch. Microsoft makes a point
+of honor
+to keep buggy third part running on new versions of
+Windows just like they were used to do and Perl on Win32
+has to live with that.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00660.html
+
+B<Compiling Perl on HP-UX>
+Steve Peters prods Rahul Sharma about the outcome of
+discussion of bug #37162 about a failure to compile Perl 5.8.6
+with F<cc> on HP-UX, with no answer so far. 
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00603.html
+
+B<Compiling Perl on AIX>
+Alan Olsen noticed none of the compile problems for AIX 5.3
+(discussed in previous week between him and Campo Weijerman)
+was entered to RT and asked if he should do it. H.Merijn
+Brand said he would prefer a patch to docs and
+a workaround in F<hints/aix.sh>. Campo Weijerman posted
+a partial summary of the current states of affairs, where 
+some unresolved issues remain. Alan and H.Merijn in a long
+sequence of messages exchanged hints and findings
+while doing experiments with different versions of AIX
+and different versions of gcc and vac compilers.
+That included recommendations to build one's own
+gcc, use IBM's ld and whether C<-bbigtoc> is needed or
+not (whatever it is). Maybe in the next week, we see
+the outcome of all this.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00620.html
+
+B<Symbian Update>
+Jarkko Hietaniemi posted a tiny patch tweaking symbols
+and an C<#include> for Symbian, which was applied after
+a minor fix Jarkko himself found necessary.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00652.html
+
+=head2 Perl5 Bug Summary
+
+Robert Spier brought the Perl5 Bug Summary with the count of 1516
+open tickets against 1513 in the last week. Nicholas Clark still kept
+the lead. Robert remembered Queen Mary I, More's Utopia and 
+Reinheitsgebot (which is about beer).
+
+    RT in Sep 26 13:00
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00614.html
+    Perl RT just now
+    http://rt.perl.org/rt3/NoAuth/perl5/Overview.html
+
+=head2 Perl on VMS
+
+John E. Malmberg continued to champion an effort towards 
+adding support
+to the ODS-5 file system for Perl on VMS. To make it work
+right, he engaged in discussions with other Perl 5 porters
+about VMS specific modules
+and extensions to general core modules.
+
+B<VMS Modules>
+Peter Prymmer made a few points about adding new modules
+like C<VMS::Config> or C<VMS::FeatureSet> to the VMS
+Perl distribution and how it could help John Malmberg's
+desire to alter perl's tests. With respect to changes
+to C<vmsish>, Peter noticed that scripts with
+
+    use vmsish;
+
+may run on Unix as well, what fosters cross platform
+perl scripting. Either this would change or John
+would take the burden of making a perl extension
+which runs everywhere.
+John E. Malmberg proceeded to explain how he thought
+the proposed VMS changes could enter C<VMS::Filespec>
+and a newly created C<VMS::Config>. Peter told
+about a number of issues that may weight the decisions
+about the actual API, including how interpretation
+of some parameters is arbitrary and at the whim of
+OS vendors.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00618.html
+
+B< Adding Methods to F<Filespec.pm> >
+When trying to add some methods in F<Filespec.pm>,
+John E. Malmberg realized it was not as simple as he thought.
+Michael Schwern explained F<Filespec.pm> uses C<AutoLoader>
+and asked if John remembered to whack out the C<Autoloader> bits.
+John went on to find out more about C<AutoLoader>.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00641.html
+
+B< C<VMS::Filespec> Update >
+John E. Malmberg posted a patch for C<VMS::Filespec> adding 
+the methods needed for other core modules to properly
+interpret VMS file specifications. 
+He showed a long list of modules that need to be changed
+to test for the existence of the new methods, and called
+for suggestions about the best way to make it work.
+
+Michael Schwern expressed concern about John's long list:
+too much platform-specific code for a rare case.
+John explained his rationale was to demand 
+less or no modification
+for CPAN modules and Perl scripts not yet ported to VMS,
+something made possible with the new Unix-related modes.
+He also posted a
+roadmap for continuing with changes in tests
+coherent with the new VMS functionality.
+
+Michael thought some of the mentioned problems were 
+basic cross-platform compat issues. He would
+prefer to see code that works everywhere or
+things like "if this system has feature X, do Y"
+but not platform-tied behavior. He suggested
+John to code the logic in a CPAN module and
+admitted he meant for long to write basic
+modules to allow easy answers for the sorts
+of questions John had.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00810.html
+
+B< Introducing C<File::System::Spec> >
+After Michael Schwern's suggestion, John E. Malmberg wrote 
+and showed up a C<File::System::Spec> module 
+to abstract getting filesystem information, working for Unix and VMS.
+Yuval Kogman said how important is being able to ask
+about a specific file system for OSes, like OSX and VMS, supporting many
+at the same time with different properties.
+Michael asks John for coordinating with the work
+already done in the subject, which can be seen in the link
+
+    http://svn.schwern.org/svn/CPAN/File-System-Spec/trunk/lib/File/System/Spec.pm
+
+John made a lot of observations and wondered what
+timeframe can be planned to release this improved
+functionality, as it is blocking the Perl on VMS
+support for current features of the ODS-5 file system.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00860.html
+
+=head2 A Warning, F<perldiag>, C<splain>
+
+Mark-Jason Dominus has opened bug #36950 in the last week
+to say about a bizarre warning emitted by the following 
+piece of code.
+
+    use Data::Dumper;
+    open my($O), ">", "/tmp/out";
+    print $O Data::Dumper->Dump([], []);
+
+    Bareword found where operator expected at /tmp/bug.pl line 3, near "$O Data::Dumper"
+            (Missing operator before Data::Dumper?)
+
+As Rafael could not reproduce it with maint or blead,
+Mark thought the warning didn't need to find its way to F<perldiag>.
+But Ronald J. Kimball pointed it is already there with
+a variable first word and Yitzchak Scott-Thoennes showed
+how to find the corresponding diagnostics with the C<splain>
+utility.  Abigail found that it probably has been fixed somewhere
+between 5.8.0 and 5.8.1.
+
+    Abigail's closing message
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00633.html
+
+=head2 C<exit()> Status Code Made Right
+
+Ken Hirsch pointed how the perl code assumes C<<< $?>>8 >>> as
+the status code from C<exit()>, which
+is true on most systems, but not all. This causes
+the build of 5.9.3 to fail in at least one platform.
+Ken asked if the macro C<WEXITSTATUS()> from POSIX
+module could be the way to go. Steve Hay pointed
+the existence of C<${^CHILD_ERROR_NATIVE}> in blead 
+which could be of some use. With Steve's hint,
+Ken Hirsch made it work for the MPE/iX system,
+but a couple of issues persisted. Gisle Aas
+explained the need to override the
+default behavior of the C<STATUS_UNIT_SET()> macro,
+something which can't be done portably with POSIX macros.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00646.html
+
+=head2 The Future of F<mv-if-diff>
+
+In a continuation to the previous week's discussion, Vadim 
+Konovalov sketched how the build problems could be worked
+out with helper file and script. The solution displeased
+Rafael Garcia-Suarez because of the extra complexity to maintenance.
+Vadim mentioned F<win32/sync_ext.pl> as a precedent
+to the proposed approach. 
+
+Andy Dougherty guessed the dependency tree evolution
+made the F<mv-if-diff> optimization no longer useful
+and voted for letting it go. Nicholas wondered ways
+to reconcile the script's role at the present, 
+but prefers a simple F<Makefile>. Alan Burlison is
+not sad to see it going as perl build on Solaris 
+doesn't use it anyway. 
+
+Mike Guy pointed the bug in build logic was that 
+making F<Config.pm> doesn't require that F<miniperl> is 
+up to date, just that it exists at all. Nicholas agreed,
+but has no clue how to specify a portable rule to
+do such thing. Mike Guy and Yitzchak Scott-Thoennes
+had things to say about the issue.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00565.html
+
+
+=head2 C<require> (takes 1 and 2)
+
+Michael Schwern reported C<CORE::GLOBAL::require>
+and C<require 5> being broken in blead and supplied a test patch. 
+Rafael Garcia-Suarez filled in the issue by patching
+the C<require> patch recently applied.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00630.html
+
+In bug #37274, Michael Schwern reported on how strange
+was the behavior of C<CORE::require> and C<CORE::GLOBAL::require>
+and how perl could be sent to deep recursion with his findings.
+Rafael noticed how overriding C<require()> is special 
+to guarantee 
+
+    require Foo::Bar;
+
+pass F<Foo/Bar.pm> as an argument and pointed that the problem
+was already fixed by patch 25599. He also added that
+sometimes contortions to the code, like a new token
+and a couple of new rules, can be added to avoid impacting
+performance with an added new flag and test for each
+time a new unary op is built. Schwern conceded
+and wondered about C<CORE::do> and C<CORE::glob> which, during
+his investigations, have been found to display
+potentially similar bugs. Rafael fixed C<do()> 
+single-handedly and stood staring at the big scary case
+of C<glob()>.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00573.html
+
+=head2 Reason #19389 to Use Explicit Returns
+
+Ron Savage, in bug #37289, reported on a script which
+made Perl erratic on returning hash refs.
+Yitzchak Scott-Thoennes called for more details, guessing
+it could be due to perl choosing
+to interpret the ambiguous C<{ }> as a block or as an anonymous
+hash constructor. And that's exactly what's happening, said 
+Michael Schwern, which called it Reason #19389 to use explicit return
+statements. Ron tried with C<+>
+and C<return> to disambiguate the syntactic constructions and everything
+worked. He asked if it would be possible to output a warning in such cases.
+Steven Schubiger replied by telling such warnings
+would be superfluous and undesirable against
+programmers' habits and the body of code out there.
+Maybe the functionality could be added in a 
+pragma similar to C<use strict 'return'>,
+but disabled by default.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00669.html
+
+=head2 Untested Builtins
+
+Continuing on a discussion on writing tests for builtins
+(dated back to Aug 8), Steven Schubiger wondered how
+tests for C<getprotoent()> could be written and expected
+to be consistent on all systems. Then he announced to have
+started to work out basic tests of C<getprotobynumber()>.
+He called for ideas and critiques, warning that the tests
+should throw plenty of errors on non-native Unix systems.
+Steve Hay confirmed Steven's suspicions with the
+output of a Windows XP box and protocols file of this system.
+Steven adjusted the tests, hoping to see it tested
+on other platforms.
+Steve Hay said the last patch worked on XP, but he's
+not sure about other Windows flavors. He was going to
+give a try with NT4, 2000 and a ferret.
+Steven Schubiger propose that F<getprotobynumber.t>
+gets integrated
+to bleadperl so that subsequent smokes will reveal which
+further adjustments are in order. 
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00665.html
+
+=head2 C<Compress::Zlib> and C<vsnprintf>
+
+During his work to port 5.9.3 to MPE/iX (HP3000) operating system,
+Ken Hirsch found out that some zlib defines caused 
+trouble when building the perl source
+automatically and called for help. 
+H.Merijn Brand pointed hint files could be used and
+were the right thing to do.
+Some modules have their own hints folder and one could be
+created for C<Compress::Zlib>. 
+As the problem was related to C<vsnprintf> availability,
+Nicholas Clark thought it could be handy to add a probe
+for C<vsnprintf> on the top level perl Configure, which 
+in turn could drive that choice. 
+
+Paul Marquess (C<Compress::Zlib> author) has agreed 
+on the two solutions and said it would be prepared
+to make it work. He adds that
+C<Compress::Zlib> only uses a subset of the zlib sources
+and the beta of version 2 on CPAN uses even less.
+The most significant difference is that building F<gzio.c>
+is unnecessary, and that's where lives all of zlib file IO
+(including the uses of C<vsnprintf>).
+Ken Hirsch posted a hint file that worked for him.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00644.html
+
+
+=head2 The Big Thread C<"use Foo 1">
+
+This was the winner thread of this week,
+counting 61 messages or so.
+In bug #37292, Yves Orton disliked the discrepancy on how a module 
+which uses C<Exporter> and one that does not react to
+module version checks. In the command line
+
+    perl -MTestVersion=100 -e1
+
+does version checking (and probably throws an
+error) for Exporter-based modules while 
+this doesn't happen with non-Exporter-based
+modules. Rafael answered this issue is
+documented in C<perlrun> and
+
+    perl -MTestVersion\ 100 -e1
+
+is more like what Yves wanted. Yves' one-liner 
+compiles to C<use TestVersion split(/,/,'100',0)>.
+And that calls attention for the subtle
+distinction of the statements below.
+
+    use Foo 1;   # does version checking
+    use Foo "1"; # calls import("1")
+
+If the later inherits from C<Exporter>,
+version checking is done in C<Exporter::import()>,
+which accounts for the difference of behavior
+that triggered the discussion. Many others
+entered the discussion, including Graham Barr 
+teaching us a bit of Perl history.
+The version checking capability (added by him)
+was meant to remedy the fact
+that modules that did not inherit from Exporter 
+could not be checked. "I am not saying this 
+is the right way, but this is how it came about."
+In short, the documentation in C<perldoc -f use>
+has the final saying and this won't change
+without causing incompatibility issues.
+
+A lot of lateral discussions spawned from
+the thread. For example, I have been taught
+about perl on Windows by Ivan Tubert-Brohman,
+Rafael (and C<perlrun>), Abigail and Yves Orton.
+The summary is
+
+    perl "-MFoo 1"  -e 1     (ok, Ivan) 
+    perl "-MFoo\ 1" -e 1     (doh, I tried this as if Windows knew about escapes)
+    perl -M"Foo 1"  -e 1     (ok, Rafael and adapted perlrun)
+    perl -M'Foo 1'  -e 1     (nope, it doesn't like single quotes)
+
+Another subthread grew from Graham Barr
+mentioning C<perl -MFoo\ 100> used
+for perl saying which version of a module you have installed.
+E.Merijn Brand thought the unpublished Abe's C<V>
+module did a better job. Randy W. Sims voted for
+C<Module::Info> for the task. Yitzchak and
+John Peacock argued about the pros and cons
+of
+
+  perl -MModule -le 'print Module::->VERSION'`
+  perl -MModule -le 'print $Module::VERSION'`
+
+    Yves triggers the thread
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00685.html
+
+=head2 Perl on EBCDIC Platforms
+
+B<tr// and Character Ranges>
+Sastry and Sadahiro Tomoyuki kept alive the thread 
+on issues with C<tr//> on EBCDIC platforms,
+by exchanging and analyzing test outputs.
+To let go the failures, Sadahiro advises
+skipping the failing tests could be the "best"
+fix if one remembers F<perlod.pod> clearly
+mentions that character ranges are unportable
+except for a few special cases.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00757.html
+
+B<Fixing Unicode in EBCDIC>
+Sadahiro Tomoyuki detected some problems
+in F<utf.c> with handling Unicode on
+EBCDIC platforms and posted patches
+to fix it. Jarkko Hietaniemi thanked
+Sadahiro for the excellent work and 
+prompted him for preparing a final set of
+patches to enter 5.9.x and then 5.8.x.
+Sadahiro provided some answers and soon
+we hope to have Perl Unicode working
+just fine on EBCDIC.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00002.html
+
+=head2 Shifting Bitvecs
+
+A long time ago, in bug #969, Steve Peters wondered why
+
+    vec($b, 2, 8) >>= 2
+
+would not work as expected for bit vectors. Jarkko Hietaniemi 
+joined in to say it's a murky corner of Perl semantics, 
+having to do
+with the all-things-scalar (string | number | bitvec | etc.) semantics.
+The shift operator treats scalars as numbers,
+and that's the default way of doing these things.
+Steve Peters returned this week to figure out
+what should results look like if shifting bitvecs
+worked allright. Jarkko replied and glanced
+at a hypothetical new pragma C<bitvec> under
+which bitvec operations just work as they should. 
+Yitzchak Scott-Thoennes
+elaborated further with a bunch of generalizations
+and extensions.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00739.html
+
+=head2 Meanwhile in I<maint>
+
+There is much happening with I<maint>, which is
+being prepared for the 5.8.8 release candidate in this October.
+Nicholas Clark, the pumpkin, declared open
+the season on warning fixing patches. But do not
+mess with F<embed.fnc>, as he advised:
+"Don't change the prototype of any non-static function 
+in [there]."
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00769.html
+
+The two following threads directly concern I<maint>.
+
+B< C<NN/NULLOK> in F<embed.fnc> >
+Andy Lester proclaimed to send the last of his patches 
+to F<embed.fnc>. Now every pointer argument must be
+specified either as C<NN> if it can't be null or C<NULLOK>.
+Newer GCCs will catch it. Answering Nicholas Clark about
+his next moves, Andy said he will have much to do
+now he's in charge of PR for the Perl Foundation
+and there is also MANY warnings on core macros he wants
+to look at.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00786.html
+
+B<Where Devel Goes>
+Last week, Yitzchak Scott-Thoennes was bitten by 
+installing a snapshot release of maint over a 5.8.7
+installation, which triggered a discussion on when/how
+to make the version bump to prevent such things.
+
+Nicholas Clark wondered if a different solution
+could work out: to change where the libraries are installed/loaded
+from. His first proposal was to install 5.8.7+maint to
+5.8.8, to prevent something to be overwritten.
+The solution made Andrew Dougherty uneasy with the possibility 
+of a forgotten broken 5.8.7 snapshot lurking around as 5.8.8. 
+Andrew suggested something like 5.8.7-MAINT23456, which
+was immediately followed by Stas Bekman which hinted
+it could be called 5.8.8-dev just like it is done with Apache.
+Yitzchak said it could be done by just setting the
+version variable to this, with the possibility to override
+the behavior via F<Configure -Dversion=>. Stas said it
+was ok too and this is waiting for some decision.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00770.html
+
+=head2 EuroOSCON
+
+Nathan Torkington wrote to say he had some passes for EuroOSCON
+and was determined to hand them to whoever people on list decide.
+EuroOSCON is the first European O'Reilly conference with no
+p5p party planned, but with a promising Maker Faire (open to all).
+Some people nominated his favourites. Some favourites 
+declined for the most various reasons. I bet Nathan thought 
+it would be easier.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00727.html
+
+=head2 Can't locate when too many open files
+
+Steve Peters proposed a real fix, instead of a workaround,
+to the problem of perl 
+reporting C<"Can't locate ... in @INC"> when the maximum
+number of open filehandles is reached. He asked
+for feedback on the patch and Nicholas Clark came
+to say it would better to produce a message like
+
+   Can't locate Carp.pm - Too many open files.
+
+After a few days, Steve committed to blead a patch
+to do just this.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00738.html
+
+
+=head2 Wrong Line Numbers in Warnings
+
+In bug #37302, "ludeman" reopened the can of worms related
+to warnings reporting the wrong line number.
+Yitzchak and Paul Johnson explained how it has to
+do with the compiled form of the code, that
+does not store this information, using the nearest one
+which does. Rafael Garcia-Suarez reported it can't
+be done without adding such data to C<OP_SCOPE> and
+making the core deal with it everywhere, which
+is likely to cause performance decreases.
+Steven Schubiger and David Landgren wondered how the warning
+message could be improved, but Dave Mitchell
+said that, without some special-case code, the best
+that can be done is to report a description of the
+operator currently being executed.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00815.html
+
+=head2 Case-Folding on Turkish Characters
+
+Someone (via RT's guest account)
+asked about updates on the issue of ticket #36953: 
+a problem on converting between lower
+and uppercase on Turkish characters. Dominic Dunlop
+pointed how the desired conversion was problematic and mentioned
+some references. The behavior is probably due to Perl relying
+on the locale of the system which does not do the full case-folding
+as the ticket requestor wants to. Some ways to remedy this:
+(1) Find a locale which does what you want, (2)
+Let Perl do full case folding and fix up special cases 
+with regex substitutions.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00872.html
+
+=head2 Deprecated C<my $v if 0>
+
+Oh my! Dean Herington opens yet another RT ticket, #37315, on
+C<my $v if 0>. Charles E. DeRykus pointed that the use
+of this idiom had been deprecated and posted the link
+to the thread of two weeks before. Steven Schubiger 
+pointed to a five-years-old summary 
+of the "feature" by Mark-Jason Dominus and the corresponding
+thread on p5p. 
+
+    Two weeks ago
+    http://groups.google.com/group/perl.perl5.porters/browse_frm/thread/e665bd4eefa7771c/7f2a47223bb7cecf?lnk=st&q=%22if+0%22+group:*perl*&rnum=1&hl=en#7f2a47223bb7cecf
+    MJD's summary
+    http://www.perl.com/pub/a/2000/05/p5pdigest/THISWEEK-20000521.html#my_x_if_0%3B_Trick
+    The according thread on p5p
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2000-05/msg00621.html
+
+=head2 Parrot 0.3.0 "Alex" Released!
+
+By the end of the week,
+Leopold Toetsch, the Parrot pumpkin, announced the release
+of Parrot 0.3.0 with lots of changes and news.
+Parrot is a virtual machine aimed at running Perl6 and other dynamic
+languages, but you already knew that.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00005.html
+
+=head2 In Brief
+
+B< C<cmp_ok> Changes Made Visible >
+Michael Schwern has welcome some "uninitialized value" warnings
+imputable to the new C<Test::More> behavior
+of C<cmp_ok()> to not supress warnings. This was
+a Good Thing helping out to spot problems, like these for
+which Michael provided a patch.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00629.html
+
+B< C<Cwd::abs_path> Still Fails >
+RT ticket #32406 tells about
+a failure on C<Cwd::abs_path> when F<"."> is unreadable 
+for Cwd 3.01. Steve replicated it with Cwd 3.11.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00579.html
+
+B<Issues with rt.perl.org>
+Philip M. Golluci reported 
+not being able to file new tickets on C<rt.perl.org>. But Steve Peters and Robert 
+Spier explained new tickets can't be open via the web interface.
+They should be created via the perlbug tool or sending an email
+detailing the bug to perlbug@perl.org.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00575.html
+
+B< Revert Consting for Tk's Sake >
+Jan Dubois argues that the consting of C<mark> in C<dAXMARK>
+macro (at F<XSUB.h>) should be reverted
+to prevent breaking Tk, at least for the maint-5.8 branch . 
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00643.html
+
+B<PerlIO Patches>
+PerlIO got two new test files in a patch by Ilya
+Zakharevich. Ilya warned it is very precary
+due to the absolute lack of documenting in PerlIO.
+Vadim Konovalov also contributed a tiny patch.
+
+    Ilya's patch
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00675.html
+
+
+B< C<no warnings "bareword"> >
+Rick Delaney pings about a patch to bug #3269 to
+prevent C<no warnings "bareword"> to turn off too many warnings.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00681.html
+
+B< C<printf "%d"> Doesn't Play Nice >
+Steve Peters hit the odd behavior of C<printf "%d">
+while investigating RT ticket #2580.
+Yitzchak Scott-Thoennes explained that
+C<printf> doesn't interface well with perl's
+way of using whatever kind of storage fits best.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00741.html
+
+B< Setting up Nightly Builds >
+Kean Johnston was interested in setting up
+a nightly build of Perl and several CPAN modules.
+He asked how it could be done using the non-installed
+perl installation rather than the one used in the
+build system.
+
+That angry sympathetic man, Michael Schwern,
+gave some instructions on how he could do it.
+In short, read teh MakeMaker docs. After a while,
+Kean came back after not groking what MakeMaker docs says
+and disatisfied about a bad warning of the build process.
+Yitzchak Scott-Thoennes suggested the use of the C<-Dversiononly>
+configure flag. Michael taught to just
+set C<PERL_SRC> to the location of the Perl source directory and
+let MakeMaker take care of the rest.
+
+    perl Makefile.PL PERL_SRC=/path/to/your/perl/src
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00844.html
+
+B< Magic Open of C<ARGV> >
+Bug #2783 started with the report that the magic 
+in opening C<ARGV> could be dangerous. File names like
+F<"| rm -rf *;"> could do evil things. Steve Peters
+revived the ticket with the hope that the flaw
+had been fixed, while Ton Hospel, one of the requestors,
+said it was not the case. Adriano Ferreira
+believed the documentation in C<perldoc -f open>
+and C<perldoc perlopentut> was quite sufficient. 
+C<ARGV> should be
+preprocessed if one doesn't trust his users
+and Ronald Kimball remembers safety with C<-e> options 
+could be enforced by using C<--> before user arguments.
+The ticket and discussion remains open.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00742.html
+
+B<Yitzchak's Notes>
+Yitzchak Scott-Thoennes called for two additions to the last summaries.
+With respect to the thread on list slice subscripting,
+his intention was to say that people writing non-backwards-compatible
+code was no reason at all to keep the feature out of blead.
+To be true, he did not think it was not good enough 
+to keep it out of maint and asks Nicholas Clark
+"Can this go in?"
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00850.html
+
+When Yitzchak pinged the list about a patch to silence
+some warnings in blead, it was less to apply it and more
+to get some response from anybody. This time,
+Dave Mitchell answered that it seemed correct
+to him, with a minor glitch he patched.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00851.html
+
+B< C<chop> and C<chomp> Prototypes? >
+In bug #37276, Michael Schwern asked where had C<chop> and C<chomp>
+prototype gone?
+
+  $ perl -wle 'print prototype "CORE::chop"'
+  Use of uninitialized value in print at -e line 1.
+
+Easy answer by Rafael Garcia-Suarez: in F<perl58delta> we read
+event though C<chomp()> and C<chop()> are overridable, their 
+prototype however are undefined.
+"Not a fixable bug, unless we change the way chop() is parsed, which
+would lead to backward compatibility nightmares."
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00598.html
+
+B< F<perl -u> is for Dumping >
+David Boyce reports on bug #37300 that "perl -Vue1" dumps core.
+Steve Peters says it really does because C<-u> is an obsolete 
+switch to, well, dump core after compiling.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00817.html
+
+B< C<-DT -e 'use warnings;'> Crashes >
+Dave Mitchell came back after studying changes he made
+which caused C<-DT -e 'use warnings;'> to go bang.
+He actually solved the issue improving the debugging
+output. Hurray for Dave!
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-10/msg00009.html
+
+
+=head2 About this summary
+
+This summary was written by Adriano Ferreira.
+
+Information concerning bugs referenced in this summary (as #nnnnn)
+may be viewed at http://rt.perl.org/rt3/Ticket/Display.html?id=nnnnn
+
+Information concerning patches to maint or blead referenced in
+this summary (as #nnnnn) may be viewed at
+http://public.activestate.com/cgi-bin/perlbrowse?patch=nnnnn
+
+Weekly summaries are published on F<http://use.perl.org/> and posted
+on a mailing list, (subscription: F<perl5-summary-subscribe@perl.org>).
+The archive is at F<http://dev.perl.org/perl5/list-summaries/>.
+Corrections and comments are welcome.
+
+If you found this summary useful or enjoyable, please consider
+contributing to the Perl Foundation to help support the development
+of Perl.

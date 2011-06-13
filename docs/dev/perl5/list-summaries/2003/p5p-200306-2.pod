@@ -1,0 +1,75 @@
+=head1 This Week on perl5-porters (9-15 June 2003)
+
+This was a quiet week -- summer approaches -- but a few interesting points
+were raised. New warnings, portability points, and miscellaneous bugs are
+covered in this summary.
+
+=head2 A new printf warning
+
+Following-up to bug report #22599, Robin Barker added a new warning, in
+the I<printf> category : I<Newline in left-justified string for printf>.
+It's issued if a string to be left-justified by printf() or sprintf() (via
+the C<%-ns> format) contains a newline.
+
+=head2 C<$\> in a foreach() loop
+
+Ton Hospel reports (bug #22613) that if the loop variable used in a for()
+loop is C<$\> (the output record separator), then this new value doesn't
+in fact affect the behavior of print(). It should.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-06/msg00215.html
+
+=head2 C<make> oddities
+
+Andy Dougherty reports some test failures for ExtUtils with maintperl on
+Solaris 8. They're caused by a difference between GNU make and Sun make,
+in handling commands split over several lines.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-06/msg00254.html
+
+=head2 fork() portability on BSD
+
+Alan Ferrency investigated bug #18849 : on some recent versions of FreeBSD
+(or other *BSD, including Mac OS X), if the SIGCHLD handler is set to
+'IGNORE' and a child process is forked, then all subsequent system() calls
+made in the parent process will hang until the previously forked child has
+exited. The confusion comes from the SA_NOCLDWAIT flag, how it's defined,
+implemented and supported by different UNIX vendors. See the thread for
+the portability round-up (Tru64, Solaris, Linux, AIX, IRIX). This ended in
+a patch (#19765) specific to BSDish OSes.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-06/msg00364.html
+
+=head2 untie() partially working
+
+Aaron J Mackey finds that an untie() from within a FETCH or STORE is
+broken with perl 5.8.0. It worked in previous perls. He proposed a patch
+that reverts to the internals of untie() as they were in 5.6.x, but the
+root of the problem is not clear.
+
+    Bug:   http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-06/msg00365.html
+    Patch: http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-06/msg00422.html
+
+=head2 In brief
+
+Rafael removed the C<$*> special variable. See last week's summary for
+why. Using it still triggers a warning, though.
+
+Anthony Heading manages to get a panic error out of the regular expression
+compiler. The offending regexp is C</(?:()?)?/>.
+
+Steve Grazzini found out that a recent change in the formatting of the
+filetest entries in perlfunc broke perldoc.
+
+Dan Kogai tested perl on FreeBSD 5.1. He suggested to use perl's malloc()
+instead of the system's one, which is too slow in perl's context.
+
+Ilya Zakharevich proposed a lot of little OS/2 patches. This notably
+includes a test fix for MakeMaker. He also worked on perl's malloc().
+
+=head2 About this summary
+
+This week's discussions were summarized by Rafael Garcia-Suarez. Weekly
+summaries are published on F<http://use.perl.org/> and/or via a mailing
+list, which subscription address is L<perl5-summary-subscribe@perl.org>.
+Comments, corrections, additions, and suggestions are welcome.

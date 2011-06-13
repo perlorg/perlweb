@@ -1,0 +1,405 @@
+=head1 TITLE
+
+Higher order functions
+
+=head1 VERSION
+
+  Maintainer: Damian Conway <damian@conway.org>
+  Date: 4 Aug 2000
+  Last Modified: 25 Sep 2000
+  Number: 23
+  Version: 6
+  Mailing List: perl6-language-subs@perl.org
+  Status: Frozen
+  Frozen since: v5
+
+=head1 ABSTRACT
+
+This RFC proposes some syntactic sugar to simplify the creation of
+higher-order functions (a.k.a. "currying").
+
+=head1 DESCRIPTION
+
+One situation in which the proposed Perl C<switch> statement does not
+provide a good substitute for a cascaded C<if>, is where a switch value
+needs to be tested against a series of conditions. For example:
+
+        sub beverage {
+                switch (shift) {
+                        case sub{ $_[0] < 10 }  { return 'milk' }
+                        case sub{ $_[0] < 20 }  { return 'coke' }
+                        case sub{ $_[0] < 30 }  { return 'beer' }
+                        case sub{ $_[0] < 40 }  { return 'wine' }
+                        case sub{ $_[0] < 50 }  { return 'malt' }
+                        case sub{ $_[0] < 60 }  { return 'Moet' }
+                        else                    { return 'milk' }
+                }
+        }
+
+The need to specify each condition as an anonymous subroutine is tiresome.
+Each of these small subroutines is really a "higher order" function, which
+exists merely to bind the second operand of the
+C<E<lt>> operator.
+
+=head2 The anonymous placeholder
+
+It is proposed that Perl reserve the bareword C<^_> (caret-underscore) as
+a "placeholder" for generating higher order functions more cleanly.
+
+That is, any expression containing C<^_> anywhere that a value might
+appear, will be converted to "deferred expression": a reference to a
+subroutine in which the placeholders are replaced by the appropriate
+number and sequence of scalar arguments.
+
+That is, the expression:
+
+        $check = ^_ == ^_**2 *^_ or die ^_;
+
+is equivalent to:
+
+        $check = sub (;$$$$) {
+            $_[0] == $_[1]**2 *$_[2] or die $_[3]
+        };
+
+This could then be invoked:
+
+        $check->(@args);
+        
+It would also be possible to interpolate an argument list into a static
+expression like so:
+
+        (^_ == ^_**2 *^_ or die ^_)->(@args);
+
+
+=head2 Named placeholders
+
+Those not currently studying or using geometry might not be too sure what
+they're dealing with when they see:
+
+        $check = ^_ == ^_**2 *^_ or die ^_;
+
+in a program. However, the following is self-documenting:
+
+        $check = ^cylinder_vol == ^radius**2 * ^height
+          or die ^last_words;
+
+This uses the I<named placeholder> notation. If two placeholders use the
+same identifier, they refer to the same argument. Therefore, the following
+is equivalent to the previous line:
+
+        $check = ^cylinder_vol == ^radius*^radius * ^height
+          or die ^last_words;
+
+=head2 Positional placeholders
+
+The order in which the arguments appear in a function may not be
+convenient:
+
+        # getMeasurements returns ($height, $radius)
+        @measurements = getMeasurementsFromSomeplace();
+        $check->($volume, reverse(@measurements), 'Invalid measurements');
+
+A convenient way around this is using I<positional placeholders>:
+
+        $check = ^2 == ^0**2 * ^1 or die ^3;
+        @measurements = getMeasurementsFromSomeplace();
+        $check->(@measurements, $volume, 'Invalid measurements');
+
+The numbers after the C<^> prefix correspond directly to the indices
+of the correpsonding elements of @_.
+
+Positional placeholders can be used to re-order named placeholders too:
+        
+        $check = ^cylinder_vol == ^radius**2 * ^height
+          or die ^last_words;
+        $check2 = $check->(^2, ^0, ^1, ^3);
+
+=head2 Choice of notation
+
+The placeholder notation has been chosen to be consistent with the 
+existing Perl scalar access notation (but using a ^ prefix rather than a $).
+In particular, the "numeric" placeholders: ^0, ^1, ^2, etc. represent
+$_[0], $_[1], $_[2], etc.
+
+There is a minority that believes that these numerical placeholders
+should start at ^1 (representing $_[0]). They feel that the analogy to
+$1, $2, $3 is stronger than the logical association of $_[0], $_[1],
+$_[2]. The author (along with many others) is I<vehemently> opposed to
+this suggestion, but includes it for completeness.
+
+
+=head2 Combining placeholder types
+
+Although not necessarily a good idea, these can be mixed in a single
+higher-order function:
+
+        $icky_func = ^test ? ^1 * ^_ : ^2 * ^_;
+
+First the positional placeholders are filled in (a higher numbered
+positional placeholder than the number of parameters results in a
+compile-time error). The anonymous and named placeholders fill in the
+missing places in the order in which they appear, from left to right.
+
+However, for the good of international mental health, users should be
+encouraged to consider using a consistent approach within a single
+higher-order function definition.
+
+=head2 Examples:
+
+With C<^_>, the previous ugly case statements can be rewritten:
+
+        sub beverage {
+                switch (shift) {
+                        case  ^_ < 10  { return 'milk' }
+                        case  ^_ < 20  { return 'coke' }
+                        case  ^_ < 30  { return 'beer' }
+                        case  ^_ < 40  { return 'wine' }
+                        case  ^_ < 50  { return 'malt' }
+                        case  ^_ < 60  { return 'Moet' }
+                        else           { return 'milk' }
+                }
+        }
+
+
+Likewise a Tree class might provide a traversal callback like so:
+
+        $root = Tree->new(load_from => "datafile")
+
+        my $sum = 0;
+        $root->traverse( $sum += ^_ );
+
+
+Higher order functions would also be very useful with the proposed
+C<reduce> function:
+
+        $sum  = reduce ^_+^_ (0,@vals);
+        $prod = reduce ^_*^_ (1,@vals);
+
+and with the new (5.6) semantics of C<sort>:
+
+        @sorted = sort(^_ <=> ^_, @list);
+
+Better yet, since the generated subroutine has named arguments whenever named
+placeholders are used, the following also works as expected:
+
+        @reverse_sorted = sort(^b <=> ^a, @list);
+
+(It is proposed that C,sort> should name arguments passed to its comparator
+subroutine C<a:> and <b:>, in that order to make this possible).
+
+
+=head2 Re-currying deferred expressions
+
+The subroutines generated by a placeholder are not exactly like the
+equivalent subroutines shown above. If they are called with fewer than the
+required number of arguments, they return another higher order function,
+which now has the specified arguments bound as well.
+
+Thus:
+
+        $check_or_die = $check->(@args[0..2]);
+
+produces another deferred expression, one that requires only a
+single argument:
+
+        $check_or_die->("Error message");
+
+Arguments can also be bound by the explicit use of placeholders. This
+allows arguments other than the last to be bound as well:
+
+        $check_n = $check->(^_, @args[1..3]);
+
+        # and later...
+
+        $check_n->($n);
+
+
+Thus the expression:
+
+        $check = ^_ == ^_**2 *^_ or die ^_;
+
+is actually equivalent to:
+
+        $check = sub (;$$$$) {
+                  @_==0 ?  ^_ == ^_**2 *^_ or die ^_
+                : @_==1 ?  $_[0] == ^_**2 *^_ or die ^_
+                : @_==2 ?  $_[0] == $_[1]**2 *^_ or die ^_
+                : @_==3 ?  $_[0] == $_[1]**2 *$_[2] or die ^_
+                :          $_[0] == $_[1]**2 *$_[2] or die $_[3]
+                ;
+        };
+
+Note that the level of currying for a deferred expression can always be
+determined by looking at its prototype.
+
+=head2 Extent of curried expressions
+
+Suppose a tree class implements a traverse
+method that walks through the nodes in the tree.
+Then the desired behaviour of:
+
+        $root = Tree->new();
+
+        # and later...
+
+        $root->traverse( $sum += ^_ );
+
+is clearly:
+
+        $root->traverse( sub { $sum += $_[0] } );
+
+and not:
+
+        sub { $root->traverse( $sum += $_[0] ); }
+
+Since either is a plausible interpretation, some rules are required to
+ensure that Perl always DWIMs with higher-order functions.
+There is one general principle and six 'halting rules' for currying.
+
+When Perl sees an expression containing a placeholder, it creates a
+curried expression around this placeholder that is as large as possible,
+stopping when it reaches a halting rule. In an expression containing
+multiple placeholders, the placeholders are only combined into a single
+curried expression where there is no halting rule between them.
+
+The following rules are proposed:
+
+=over 8
+
+=item Pure assignment
+
+Currying halts at a pure assignment (i.e. '='), but not at any
+other assignment variant (e.g. +=, ||=). Otherwise:
+
+        $check = ^_ == ^_**2 *^_ or die ^_;
+
+would be interpreted as:
+
+        sub {$check = $_[0] == $_[1]**2 *$_[2] or die $_[3]};
+
+which is not WIM.
+
+=item Sub called in void context
+
+Currying halts in the argument list of a subroutine (or method) that is
+called in a void context. The tree traversal example given above shows a
+method in a void context (any return value from $root->traverse is being
+ignored). Therefore just its argument is curried, rather than the whole 
+call expression.
+
+=item Control expression
+
+Within a flow control statement (e.g. switch) currying halts within the
+control expression. For instance:
+      
+        switch ($val) {
+                case ^_<9 {print "That's a little number"};
+        }
+
+expands to:
+
+        switch ($val) {
+                case sub{$_[0]<9} {print "That's a little number"};
+        }
+
+because ^_<9 appears in the control expression of the switch statement.
+
+
+=item Explicit curry nonpropagation context
+
+A prototype modifier C<^> is proposed. It would allow functions to indicate
+that one or more of their arguments should I<not> propogate currying. This
+would allow functions to return a value and still Do The Right Thing with
+placeholders. Hence:
+
+        sub traverse ($^) { ...  }
+
+        $num_nodes = traverse( $root, $sum += ^_ );
+
+means:
+
+        $num_nodes = traverse( $root, sub{$sum += $_[0]} );
+
+not:
+
+        $num_nodes = sub{ traverse( $root, $sum += $_[0] ) };
+
+Whereas:
+
+        $num_nodes = traverse( ^_ , $sum += ^_ );
+
+means:
+
+        $num_nodes = sub { traverse( $_[0], sub{$sum += $_[0]} ) };
+
+Note that in this last example, the first argument curried the entire
+call to traverse, whilst the ^ prototype on the second argument caused
+its curry to be handled separately.
+
+=item Implicit curry nonpropagation context
+
+Subroutine arguments prototyped as C<&> would not propagate the currying
+of their arguments. For example:
+        
+        sub mymap (&@) { ... }
+
+        @mapped = mymap ^_+1, @unmapped;
+
+would be equivalent to:
+
+        @mapped = mymap sub{$_[0]+1}, @unmapped;
+
+not:
+
+        @mapped = sub { mymap {$_[0]+1}, @unmapped; }
+
+Note that this rule also covers the following built-in functions:
+C<map>, C<grep>, C<sort>, C<reduce>, C<zip>.
+
+=back
+
+=head2 Resolving ambiguity
+
+The following is ambiguous:
+
+        $check_start = $somestring =~ /^_foobar/; 
+
+
+This should be interpreted as an immediate pattern match for '_foobar' at
+the start of a string. To cause this to be interpreted as a higher order
+function, the ambiguity must be resolved through using braces:
+
+        $check_start = $somestring =~ /^{_}foobar/;
+
+which creates a higher order function testing for its argument, followed
+by 'foobar', anywhere in $somestring. That is:
+
+        $check_start = sub { $somestring =~ /$_[0]foobar/ };
+
+=head1 IMPLEMENTATION
+
+Probably a pragma:
+
+        use higher;
+
+Implementation of the 'higher' pragma is left as an exercise to the
+reader ;-)
+
+=head1 SEE ALSO
+
+RFC 22: Builtin switch statement
+
+RFC 76: Builtin: reduce
+
+RFC 128: Subroutines: Extend subroutine contexts to include named parameters and lazy arguments
+
+=head1 REFERENCES
+
+=head2 Higher-order functions and currying
+
+A quick introduction:
+http://www.tunes.org/~iepos/introduction-to-logic/chap00/sect00.html
+
+Definition of currying: http://www.cs.nott.ac.uk/~gmh//faq.html#currying
+
+Implementation in Haskell: http://www.haskell.org/tutorial/functions.html

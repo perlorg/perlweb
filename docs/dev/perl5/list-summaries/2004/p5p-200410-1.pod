@@ -1,0 +1,99 @@
+=head1 This Week on perl5-porters (Sep 25 - Oct 03 2004)
+
+=head2 IO::File reads garbage from directory filehandles
+
+Andy Lester reported (bug #31730) that $fh->getline on a directory
+sometimes returns garbage and other times undef. Steve Peters pointed
+out that it depends on which OS you're on, which H. Merijn Brand
+demonstrated on several systems. People blahed at the idea of an
+argument to IO::File->new to specify the behavior of reading from
+a directory, though a note in the docs might be okay.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-09/msg00384.html
+
+=head2 eval {} in XS
+
+Ton Hospel needed an equivalent of eval {} for XS code but didn't find
+any such thing in the API doc or perl source code, so he made his own.
+Nick Ing-Simmons explained how in Tk he does eval { &foo } by making a CV
+for the contents of {} then calling call_sv(cv, G_EVAL). (Note: examine
+btkGlue.c -- Lang_catch, Tcl_GetRegExpFromObj, and do_comp in the Tk source).
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-09/msg00381.html
+
+=head2 Why do coderefs in @INC clear IoIFP?
+
+Nobody knows apparently. Steve Hay tried not clearing C<IoIFP>,
+but it caused a test to break.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-09/msg00426.html
+
+=head2 require Carp; vs use Carp; in warnings.pm
+
+Tels was doing a C<require Carp> instead of C<use Carp> in order to load
+it on demand, but then found that C<use vars> does C<use warnings> which
+in turn does C<use Carp>! So he submitted a patch for C<warnings>. Then
+Vadim Konovalov noted how he always optimizes C<Dynaloader> locally,
+so he also submitted a patch.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-09/msg00373.html
+
+=head2 Cannot build bleadperl on OpenVMS
+
+Abe Timmerman, with Craig Berry's help, tried building bleadperl
+(and porting Test::Smoke) on OpenVMS -- on a VAX. It seems there are
+problems with 8-level directory names like
+
+  DISK$USER_2:[TIMMERMAN.KLAD.PERL-CURRENT.LIB.AUTO.FILTER.UTIL.CALL]
+
+If that didn't trigger your VMS allergies, you might try the rest
+of the thread:
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00020.html
+
+=head2 Bug fixes
+
+Chris Kelly was vivified enough to report (bug #31767) that
+
+  open $1, $file or die;
+
+doesn't die. Dave Mitchell fixed it by making open croak if the first
+argument is read-only.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-09/msg00429.html
+
+perl@pythontech.co.uk found (bug #31767) that printing from an undef
+variable prints out junk instead of nothing in perl 5.8.3:
+
+  $data = "13 characters";  $data = undef;
+  open(MEM, '<', \$data) or die "Fail: $!\n";
+  while (<MEM>) { print }
+
+Rafael Garcia-Suarez fixed this in the development branch.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-09/msg00345.html
+
+Zefram (bug #31793) found that C<use overload> wouldn't work when setting
+the C<$Data::Dumper::Useqq> variable. Rick Delaney provided a patch to fix
+C<overload.pm> (with Tels independently arriving at the same conclusion,
+apparently).
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00008.html
+
+Craig Berry made at least two VMS test fixes:
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00015.html
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2004-10/msg00014.html
+
+=head2 Reference
+
+The thread for bug number $BUGNUM can be found at
+http://rt.perl.org/rt3/Ticket/Display.html?id=$BUGNUM
+
+=head2 About this summary
+
+This summary was written by Scott Lanning. Summaries are published
+weekly at http://use.perl.org/ and posted to a mailing list whose
+subscription address is perl5-summary-subscribe@perl.org. The archive
+is at http://dev.perl.org/perl5/list-summaries/. Comments and
+corrections welcome.

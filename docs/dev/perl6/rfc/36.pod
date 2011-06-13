@@ -1,0 +1,55 @@
+=head1 TITLE
+
+Structured Internal Representation of Filenames
+
+=head1 VERSION
+
+  Maintainer: Jarkko Hietaniemi <jhi@iki.fi>
+  Date: 4 Aug 2000
+  Mailing List: perl6-internals@perl.org
+  Number: 36
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+Wherever Perl internally uses filenames (in a very inclusive sense:
+filenames, directory names, whatever) the components of the file name
+should be stored in a platform-neutral structured format.
+
+=head1 DESCRIPTION
+
+Perl is great at munging data and in general Perl scripts are very
+portable.  Howevere, before one gets to it one usually has to open
+some files and the results have to put somewhere.  The naming of files
+("files" here meant in the most inclusive possible sense, the Unix
+sense where everything has a name: naming of persistent storage
+objects, if you wll) is however one of the most unportable things
+there is.
+
+A filename may have directory part, filename part, suffixes, volume
+names, version numbers.  The component separators are different and
+there may be several even on a single platform.  There may be one or
+more root directories, the notation for parent directory varies, and
+so on.
+
+=head1 IMPLEMENTATION
+
+Perl core functions should pass filenames to and from each other as
+structures that contain the components of filenames in a structure.
+To be as future-proof as possible, the components could probably be in
+Unicode.  For native use (when actually accessing the filesystem
+layer) and for performance a ready-to-be-used concatenated
+representation can be created on demand.  Because the filename is
+already in parsed form, manipulation of the name is much easier and
+cleaner than currently.  Conversion between the file naming
+conventions of various operating systems would become almost trivial.
+
+A vague possibility: the proposed internal format could be designed to
+be flexible enough to present also URLs/URIs.
+
+=head1 REFERENCES
+
+  perlport manpage for discussion of filenames
+  File::Spec
+  File::Basename

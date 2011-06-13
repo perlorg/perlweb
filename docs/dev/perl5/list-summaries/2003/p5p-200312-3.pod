@@ -1,0 +1,97 @@
+=head1 This Week on perl5-porters (15-21 December 2003)
+
+A year ends in the little world of the Perl 5 porters, and perl itself
+turns older. Hopefully this doesn't mean that the development is stalled.
+Read below what happened this week among the porters.
+
+=head2 Happy Birthday, Perl
+
+Perl turned 16 years old, and for this occasion, Richard Clamp released
+perl 1.0_16.
+
+    http://groups.google.com/groups?threadm=20031218081226.C22E2F5CB0%40phoenix.squirrel.nl
+
+=head2 More MakeMaker issues
+
+Rafael Garcia-Suarez remarks that the core module SDBM_File can't be built
+on AIX with the xlC C compiler. Due to a post-5.8.2 change in MakeMaker,
+the Makefile.PL for SDBM_File was tweaked, and this caused this failure;
+but apparently that tweak is no longer necessary.
+
+    http://groups.google.com/groups?threadm=20031215181953.631460ab.rgarcia%40hexaflux.com
+
+Alan Burlison also requested that MakeMaker's version cross-checking could
+be disabled, in order to help his module Solaris-PerlGcc, which allows to
+compile XS perl modules on Solaris with gcc against the system's perl.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-12/msg00621.html
+
+Finally, Ilya Zakharevich proposed patches to improve a few things on
+MakeMaker.
+
+    http://groups.google.com/groups?threadm=20031218203848.GA7783%40math.berkeley.edu
+
+=head2 Clone fixes
+
+Stas Bekman filed a ticket for a bug he reported before, bug #24660 : weak
+references can't be properly cloned between interpreters. This makes them
+currently unuseful for solving thread programming problems. Elizabeth
+Mattijsen reports a similar problem (bug #24663) : assigning an object to
+a weakened copy after cloning produces a panic error message.
+
+Those bugs were fixed by Enache Adrian. There are still problems and
+Enache thinks that new ones are waiting to be discovered.
+
+    http://groups.google.com/groups?threadm=20031218203725.GA1181%40ratsnest.hole
+
+=head2 POSIX::setuid() not perlish enough
+
+Stas Bekman reported as bug #24641 that POSIX::setuid() doesn't update the
+C<< $< >> and C<< $> >> variables, while it affects correctly the program
+environment. The same problem exists with POSIX::setgid() as well.
+
+    http://groups.google.com/groups?threadm=rt-3.0.7_01-24641-68239.15.8235086069146%40perl.org
+
+=head2 Signal handlers in C<eval{}> blocks
+
+Bug #24699 demonstrates that signals handlers, once set C<local>ly in an
+C<eval{}> block, might be restored I<after> the block is exited. This
+causes problems if the eval was present to trap an exception thrown by a
+temporary signal handler. Rafael suggests a workaround.
+
+    http://groups.google.com/groups?threadm=rt-3.0.7_01-24699-68573.13.2276312695285%40perl.org
+
+=head2 Substitution Bug
+
+Ton Hospel found bug #24704, which demonstrates a case where a character
+mysteriously disappears in an innocent-looking substitution. Sadahiro
+Tomoyuki finds out that this is due to a problem with the offset to which
+the actual C<char*> is stored internally. Marty Pauley proposes a patch.
+
+    http://groups.google.com/groups?threadm=rt-3.0.7_01-24704-68587.10.0650134616711%40perl.org
+
+=head2 In Brief
+
+Continuing a thread from last week, Scott Walters has a clever use for
+tieable stashes : method overloading on method signature.
+
+Craig Berry ported perl to the recent OpenVMS 8.1 on Itanium I64.
+
+Enache Adrian continues to hunt down and fix memory leaks.
+
+Yitzchak Scott-Thoennes found a contrived case where the I<Too late to run
+CHECK block> warning is not produced (bug #24684) :
+
+    INIT { eval "CHECK {print qq:in check in init\n:}" }
+
+Tels proposed new method names for Math::BigInt, to make the interface
+more consistent :
+
+    http://groups.google.com/groups?threadm=200312191051.13468%40bloodgate.com
+
+=head2 About this summary
+
+This summary was written by Rafael Garcia-Suarez. Weekly summaries are
+published on F<http://use.perl.org/> and posted on a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. Corrections
+and comments are welcome.

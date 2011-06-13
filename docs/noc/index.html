@@ -1,0 +1,217 @@
+[% page.banner = BLOCK %]The Perl NOC[% END %]
+[% page.style = "perl-directory.html" %]
+[% page.site = "perl.org" %]
+[% page.title = "The Perl NOC" %]
+[% page.description = '' %]
+[% page.tagline = 'Suppliers of camel and parrot food' %]
+[% MACRO quicknews(shortname,count) BLOCK %]
+[%- IF count < 1 %]
+  [%  count = 2 %]
+[% END %]
+[%- TRY %]
+   [%- USE news = XML.RSS("${root}/var/rss/${shortname}.rss") %]
+   [% FOREACH item = news.items %]
+       <LI> <a href="[% item.link | html %]">[% item.title %]</a>
+       [% count = count - 1 %]
+       [% LAST IF count == 0 %]
+    [% END %]
+[%- CATCH %]
+    [Error Processing Directive]
+  [%- FILTER stderr %][% error.info %][% END %]
+[%- END %]
+[%- END %]
+[% page.sidebar = BLOCK %]
+
+[% ask = BLOCK %]
+ <div onMouseOver=' document.getElementById("_ask").style.display="block"; '
+      onMouseOut=' document.getElementById("_ask").style.display="none"; '>
+  <A HREF="http://www.askask.com"
+   ><IMG SRC="images/ask.gif" BORDER=0><BR>Ask<BR></A>
+  </div>
+  <div id="_ask" style="display: none">
+   "The Great Dane"
+  </div>
+
+[% END;
+   robert = BLOCK %]
+ <div onMouseOver=' document.getElementById("_robert").style.display="block"; '
+      onMouseOut=' document.getElementById("_robert").style.display="none"; '>
+  <A HREF="http://blog.rbrt.com"
+   ><IMG SRC="images/robert.gif" BORDER=0><BR>Robert<BR></A>
+  </div>
+  <div id="_robert" style="display: none">
+   "Vulcan"
+  </div>
+[% END %]
+
+<div style="padding: 4px;  border: 1px solid orange; margin-top: 10px;">
+ <div style="font-size: 120%; font-weight: 800; text-align: center;">
+  <i>the NOC Log</i><br>
+  <u>news and status</u><br>
+ </div>
+<UL>
+[% quicknews('noc',5) %]
+</UL>
+</div>
+<br>
+<br>
+
+ 
+<DIV ALIGN="center">
+
+Your volunteer sysadmins:<BR>
+
+[% x=10; 
+   IF x.rand >= 5;
+    ask; robert;
+   ELSE; 
+    robert; ask;
+   END %]
+
+[% END # sidebar %]
+
+<H1>The Perl NOC</H1>
+
+<p>
+The <tt>perl.org</tt> operations team maintains a slew of websites,
+services, and other neat things.  We fall under the <A
+HREF="http://www.perlfoundation.org/">The Perl Foundation</A> umbrella.
+</p>
+
+[% MACRO site(s) BLOCK -%]
+<A HREF="http://[% s %]">[% s %]</A>
+[%- END %]
+
+
+<table width="100%">
+<tr>
+<td width="50%">
+
+<p>We keep the infrastructure for the following domains and services
+running:</p>
+
+</td>
+<td width="50%">
+
+Some of the services we provide:
+</td>
+</tr>
+<tr>
+
+<td>
+
+<ul>
+  <li>[% site("www.perl.org") %] 
+  <li>[% site("www.perl.com") %] 
+  <li>[% site("dev.perl.org") %]
+  <li>[% site("jobs.perl.org") %]
+  <li>[% site("parrotcode.org") %]
+  <li>[% site("perl-foundation.org") %]
+  <li>[% site("news.perlfoundation.org") %]
+  <li>[% site("search.cpan.org") %]
+  <li>[% site("bitcard.org") %] perl.org authentication service
+  <li>[% site("books.perl.org") %]
+  <li>[% site("planet.perl.org") -%], 
+      [% site("planetsix.perlfoundation.org") -%], 
+      [% site("planet.parrotcode.org") %]
+  <li><A HREF="ftp://ftp.cpan.org/">ftp.cpan.org</A> multiplexer
+  <li>[% site("cpan.org") %] email
+  <li>[% site("pm.org") %]
+  <li><A HREF="sites.html">and more</A>...
+</ul>
+
+</td>
+<td>
+<ul>
+ <li>mailing lists
+ <li>email forwarding
+ <li>websites
+ <li>DNS
+ <li><A HREF="http://svn.perl.org">Subversion</A>
+ <li>Jabber
+ <li>Mirroring
+ <li>Monitoring
+ <li>Request Tracker
+ <li>and more...
+</ul>
+
+</td>
+</tr>
+</table>
+
+<p>
+We wouldn't be able to do any of this without our <A
+HREF="http://www.perl.org/siteinfo.html#sponsors">sponsors and supporters</A>.  We
+encourage you to support them by buying their products, visiting their
+websites, and saying nice things about them.
+</p>
+
+<style type="text/css">
+.spons img { align: top; padding: 6px; }
+</style>
+
+<div class="spons" align="center">
+
+<A HREF="http://www.phyber.com/">
+<IMG BORDER=0 SRC="http://www.perl.org/images/friends/phyber.png" WIDTH="150" HEIGHT="54" ALT="Phyber"></A>
+
+<A HREF="http://www.redhat.com/">
+<IMG BORDER=0 SRC="http://www.perl.org/images/friends/rhn.png" WIDTH="139" HEIGHT="48" ALT="Powered By Red Hat"></A>
+
+<A HREF="http://www.yellowbot.com/">
+<IMG BORDER=0 SRC="http://www.perl.org/images/friends/yellowbot.gif" HEIGHT="40" WIDTH="150" ALT="YellowBot Yellow Pages"></A>
+
+<A HREF="http://www.ix2.net/">
+<IMG BORDER=0 SRC="http://www.perl.org/images/friends/ix2.png" HEIGHT="75" WIDTH="75" ALT="IX2"></A>
+
+<A HREF="http://develooper.com/">
+<IMG BORDER="0" SRC="http://www.perl.org/images/friends/develooperlogo-160t.png" HEIGHT="36" WIDTH="160" ALT="Develooper"></A>
+
+<A HREF="http://www.bestpractical.com/"> 
+<IMG BORDER=0 SRC="http://www.perl.org/images/friends/bestpractical.png" WIDTH="160" HEIGHT="34" ALT="Best Practical Solutions"></A>
+
+<A HREF="http://www.oreilly.com/">
+<IMG BORDER=0 SRC="http://www.perl.org/images/friends/oreilly-160.png" WIDTH="160" HEIGHT="48"  ALT="O'Reilly and Associates"></A>
+
+<BR>
+
+<A HREF="http://www.ticketmaster.com/">
+<IMG BORDER=0 SRC="http://www.perl.org/images/friends/ticketmaster.png" HEIGHT="27" WIDTH="145" ALT="Ticketmaster"></A>
+
+<A HREF="http://www.bizrate.com/">
+<IMG BORDER=0 SRC="http://www.perl.org/images/friends/bizrate_logo.png" WIDTH="160 HEIGHT="39" ALT="BizRate"></A>
+
+<A HREF="http://www.thalasar.com">
+<IMG BORDER=0 SRC="http://www.perl.org/images/friends/thalasar_logo.gif" WIDTH="83" HEIGHT="104" ALT="Thalasar"></A>
+
+<A HREF="http://www.cyclades.com/">
+<IMG BORDER=0 SRC="http://www.perl.org/images/friends/cyclades.png" WIDTH="85 HEIGHT="55" ALT="Cyclades"></A>
+
+<A HREF="http://www.valueclick.com/">
+<IMG BORDER=0 SRC="http://www.perl.org/images/friends/valueclick_logo.gif" WIDTH="128" HEIGHT="65"  ALT="ValueClick"></A>
+
+<A HREF="http://www.vmware.com/">
+<IMG BORDER="0" SRC="http://www.perl.org/images/friends/vmware.gif" HEIGHT="46" WIDTH="140" ALT="VMware"></A>
+
+<a href="http://www.nodeworks.com/partner.htm?partner_id=4D739BB9" target="_top">
+<img src="http://www.nodeworks.com/img/banners/88x31.gif" height="31" width="88" border="0" alt="NodeWorks Link Checker"></a>
+
+
+<!--
+<A HREF="http://www.coyotepoint.com/">
+<IMG BORDER="0" SRC="http://www.perl.org/images/friends/coyotepoint.png" HEIGHT="88" WIDTH="70" ALT="Coyote Point Systems"></A>
+-->
+
+<br><br>
+<br><br>
+
+<A HREF="http://www.perl.org/">
+<IMG BORDER=0 SRC="http://www.perl.org/images/buttons/perlpowered.png"  ALT="Powered By Perl"></A>
+<BR>
+<A HREF="http://combust.develooper.com/">
+<IMG BORDER=0 SRC="/simages/combust-powered.png" ALT="Powered by Combust"></A>
+<A HREF="http://www.template-toolkit.org">
+<IMG BORDER=0 SRC="http://www.perl.org/images/friends/template-toolkit.gif" ALT="[Template Toolkit Logo]"></A>
+
+</div>
+

@@ -1,0 +1,49 @@
+=head1 TITLE
+
+Remove long-deprecated $* (aka $MULTILINE_MATCHING)
+
+=head1 VERSION
+
+  Maintainer: Hugo van der Sanden <hv@crypt0.demon.co.uk>
+  Date: 29 Sep 2000
+  Last Modified: 30 Sep 2000
+  Mailing List: perl6-language-regex@perl.org
+  Number: 347
+  Version: 2
+  Status: Frozen
+
+=head1 ABSTRACT
+
+The magic $* variable (known in English as $MULTILINE_MATCHING)
+has been deprecated for years. It is time to kill it.
+
+=head1 DESCRIPTION
+
+In days of yore, you would set $* to 1 to achieve in all regexps
+the same as you can now achieve on a per-regexp basis with the
+/m flag. Nowadays, when most perl programmers have never heard
+of it, it is an accident waiting to happen and requires ugly
+additional cruft for the defensive programmer to avoid.
+
+The particular danger of $* is its 'action at a distance' effect:
+as a global variable, its effect reaches into and out of scopes
+that we normally expect to protect us.
+
+=head1 MIGRATION
+
+The long deprecation cycle helps here. p52p6 should complain and
+die if it sees any attempt to set $* or $MULTILINE_MATCHING to a
+non-zero value, or any attempt to alias it other than in English.
+It should silently (or maybe with a warning) ignore any attempt to
+set it to a zero value, and silently (or maybe with a warning)
+replace any attempt to read it with a constant undef.
+
+=head1 IMPLEMENTATION
+
+This only simplifies the regexp engine, and should help fix some
+longstanding bugs in the scope of /m. There is a bit of work to
+do to extricate it, but nothing seriously difficult.
+
+=head1 REFERENCES
+
+perlvar manpage for discussion of $*

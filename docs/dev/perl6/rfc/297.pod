@@ -1,0 +1,62 @@
+=head1 TITLE
+
+Attributes for compiler hints
+
+=head1 VERSION
+
+  Maintainer: Simon Cozens <simon@brecon.co.uk>
+  Date: 25 Sep 2000
+  Mailing List: perl6-internals@perl.org
+  Number: 297
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+Allow the user to provide type hinting to the Perl translator using
+variable and subroutine attributes.
+
+=head1 DESCRIPTION
+
+B<I AM NOT ADVOCATING STRONG TYPING>.
+
+When people talk about a Perl compiler, what they actually B<want> is a
+translator; they don't want the hassle of a Perl run time environment. A
+true Perl-to-C translator for Perl 5 may or may not be possible; for
+Perl 6, it should be possible. Even if it isn't totally possible,
+this RFC will still apply to whatever replaces C<B::C>.
+
+Even so, we'd need to lug around the new SVs for each Perl variable.
+This proposal allows the user to give hints to optimise the variables
+used by the translator, and narrow the gap between Perl and the target
+language.
+
+Note that this is for the translator and for the translator only; it has
+no effect on what happens when the user's program is interpreted using
+the normal F<perl> bytecode compiler and virtual machine. The hints are
+non-binding. You can quite easily say:
+
+    my $x : integer;
+    $x = 0.5;
+
+The Perl interpreter will ignore the hint at run time; or, at least,
+it'll try using an C<int> and find it needs to convert to a C<float> at
+best and an C<SV> at worst. The interpreter will Do The Right Thing,
+anyhow. 
+
+However, if you want to translate the thing to C or any other typed
+language, that's going to blow up. It might not compile, or it might
+compile and behave weirdly. Your fault. Lie to Perl, and it will get
+you.
+
+=head1 IMPLEMENTATION
+
+Have the translator or compiler recognise sub and variable attributes
+such as C<int>, C<string>, C<ref>, C<float> and so on. Attempt to use
+the appropriate type when translating Perl to a typed language. No
+effect on the Perl interpreter; ignore the attributes.
+
+=head1 REFERENCES
+
+RFC ??: "Kick out all ops - libprt".
+

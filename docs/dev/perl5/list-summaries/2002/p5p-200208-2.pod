@@ -1,0 +1,113 @@
+=head1 This week on perl5-porters (11-18 August 2002)
+
+>From sunny and hot and about to burst out in thunderstorms, downtown Echt, comes this weeks perl5-porters summary.
+
+The week was full of interesting stuff on p5p, although some of it (still) went way over my head when it got to PV, UiVP and ANDMORDOROROROROROR land.  I hope you will all bear with me and please correct me when I've summarized the more innardly Perl stuff incorrectly, so that I can correct them next week.
+
+Because Rafael had a short schedule to meet, I've decided to include last week's Sunday into this report as well.  Some interesting things started that day and I feel I wouldn't do justice there if they would fall between the cracks of the perl5-porters summary.
+
+=head2 The Math::BigInt::FastCalc Prophecies
+
+Tels posted an exposé on the future of large (if not huge) integers in Perl.  Not only did he predict the future, he started implementation of these new, much faster, routines in XS.  Wish I had the nerve to jump into participating in the development of Perl with XS the way he does.  See the start of the thread at:
+
+  http://groups.google.com/groups?selm=perl.perl5.porters-64872@nntp.perl.org
+
+
+=head2 Regular expressions for $/
+
+The thread that was spawned by Arthur Bergman's plans for 5.10 with regards to replacing $/ to be a file handle specific regexp, continued this week. One of the results was the idea that migration of $/ to a regular expression associated to a specific handle, rather than to all open handles (deprecating $/ for 5.10), would help in future migration to Perl 6.  The thread re-starts at:
+
+  http://groups.google.com/groups?selm=3D5D883D.E75E6963%40earthlink.net
+
+
+=head2 (De)Serializing CODE refs with Storable
+
+The patch that Slaven Rezic submitted to allow code references to be (de)serialized with Storable, spawned a number of discussions about the security of such a feature and the possibility of malicious code being executed without you realizing it.  General consensus was that if you are not able to trust the serialized data source, you are in trouble already without CODE references being allowed to be de-serialized.  Whereas being able to serialize and deserialize CODE references would indeed be a handy feature (as it would allow you to have a thread execute code from another thread, but that's just a personal observation while I write this down).  Finally, Hugo's suggestion for allowing a code reference in the $Eval hook in Storable (which determines what to do when code is found in a Storable file when it is being de-serialized) made sense: it would allow you to do whatever checks you find necessary on the code being de-serialized.
+
+  http://groups.google.com/groups?selm=200208091504.g79F4IAw014935%40vran.herceg.de
+
+
+=head2 Perl introspection: what is an object really?
+
+The CODE reference discussion spawned a thread about Perl's introspection capabilities.  This set off a thread after a patch from John Peacock, initially by having ref() return something different in list context.  This fueled some heavy discussion.  Graham Barr came with a patch to Scalar::Util, allowing you to get at the internal memory address of something, regardless of how it has been blessed or overloaded.  It all starts here:
+
+  http://groups.google.com/groups?selm=3D5A1952.70408%40rowman.com
+
+
+=head2 CPAN modules signatures
+
+Autrijus Tang got us a little closer to a more secure CPAN, and possibly NAPC, by submitting several patches and CPAN modules, e.g. to allow you to do a "make distsign" on your module distribution.
+
+  http://groups.google.com/groups?as_umsgid=20020812121953.GC30140@not.autrijus.org
+
+
+=head2 $0 not foo anymore in 5.8.0
+
+A bug report by J. Waalboer was confirmed.  Funnily enough, this bug report never made it to Google, so I can't give you a link to it.  Some further inspection shows that perl bug reports don't show up on nntp.perl.org either, which is probably the reason why they don't show up on Google.  I guess a bug report would be in order if this is not intentional.  Anyways, it was found that 5.8.0 for some reason makes internal copies of argv and argc, whereas previous versions did not.  So now you can't change the way the process appears in process lists anymore.  There is no final conclusion yet as to why this change was made.  Mark Jason Dominus basically starts the discussion here:
+
+  http://groups.google.com/groups?selm=20020814142953.13510.qmail%40plover.com
+
+
+=head2 Data::Dumper woes
+
+Piers Cawley found some problems in Data::Dumper and invites some thoughts about writing an overriding can() class method in XS.  Nobody volunteered any thoughts, at least not on the list.  Check out the following link if you're interested.
+
+  http://groups.google.com/groups?selm=84lm79ojfq.fsf%40despairon.bofh.org.uk
+
+
+=head2 Perl-5.8 signal semantics
+
+Michael Schroeder started a thread on the changed signal semantics in 5.8.0 already last week.  It finally came to a discussion this week but no final conclusions were reached.  At least, I don't think so  ;-)
+
+  http://groups.google.com/groups?selm=20020809192207.GA22727%40immd4.informatik.uni-erlangen.de
+
+
+=head2 sub IO::Handler::blocking
+
+Benjamin Goldberg found a problem (and a fix!) with the blocking method of IO::Handle.  This will probably at least partially be integrated into IO.xs.
+
+  http://groups.google.com/groups?selm=3D5DC728.DCCDB092%40earthlink.net
+
+
+=head2 Time::HiRes on cygwin
+
+A problem reported by H. Merijn Brand was fixed with a new version of Time::HiRes being uploaded to CPAN by Gerrit P. Haase, after having (maybe) been pointed in the right direction by Hugo.
+
+  http://groups.google.com/groups?selm=20020807110630.BBE2.H.M.BRAND%40hccnet.nl
+
+
+=head2 Copy On Write in Perl
+
+There is something interesting going on behind the scenes: copy on write values in Perl.  Only some of it has surfaced in p5p (at least that I have been able to find).  Nicholas Clark found that tr// is apparently copying a lot of stuff when it is not clear why it is doing that.  No answers as of yet. 
+
+  http://groups.google.com/groups?selm=20020817225635.GB275%40Bagpuss.unfortu.net
+
+Some further research shows that the copy on write stuff may actually be a cross-pollination from the perl6 internals (Parrot) development track.  Which all goes back to May of this year where Nicholas stated that it was too experimental to go into 5.8.0.  Well, Hugo committed it now!  I hope we will learn more about this exciting project.  I wonder whether this also handles cloning across threads?
+
+  http://groups.google.com/groups?selm=20020510154652.D59892%40plum.flirble.org
+
+
+=head2 Problems with sprintf() of floats in 5.8.0
+
+It seems that the changes made to Perl 5.8.0 to make handling floating points more consistent across different systems, introduced some real or just observed problems.  The problems, whether observed or real, seem to have been fixed by a patch.  Michael Minichino brought up this in:
+
+  http://groups.google.com/groups?selm=2D2B13BD2D3ED41195E1009027FCA06E01140875%40copexc51.parago.com
+
+
+=head2 A Patchy Documentation
+
+A lot of documentation was patched, many of them just tpyo's.  But they need to be fixed also, so if you find a documentation typo or more generic problem, please let us know with a perl bug report, or even better, include a patch with the bug report!  It's a good start to help contributing to the Perl development process.
+
+
+=head2 More, much more...
+
+Of course, a lot more happened on the list the past week: you can check them out yourself with the new web interface at:
+
+  http://www.nntp.perl.org/group/perl.perl5.porters .
+
+
+=head2 About this summary
+
+The summary is brought to you by Elizabeth Mattijsen, while Rafael Garcia-Suarez is enjoying a well deserved vacation (the lucky one!).  It's also available via mailing list, to which you may subscribe by sending an email to perl5-summary-subscribe@perl.org .
+
+Where is Echt you might ask?  Well, it is a little town in the south of the Netherlands.  The name means "Real".  No kidding.  It's where the Netherlands are at its narrowest: 6 clicks to the east we are in Germany, 5 clicks to the west and we're in Belgium.  This so you all have some idea about the mental (and physical) state I'm in.  Really.

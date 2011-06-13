@@ -1,0 +1,170 @@
+=pod
+
+=head1 Why Perl is a Valid Choice
+
+We often hear the comment, "No IT Manager ever got fired for picking Java." Why is this? Java is considered a safe choice because it can solve many problems and it has sufficient market penetration that it currently is not viewed as a risky choice.
+
+I compiled the following in an attempt to show that no IT Manager should ever get fired for chosing Perl either. I am not trying to write a justification for why Perl is the best choice for any given IT task. Rather, I believe the evidence listed below shows that it is a perfectly acceptable choice and should be considered on even ground with other possibilities.
+
+Given this information, a responsible IT Manager should proceed to select a language or programming platform based on things that actually matter like the task at hand, the budget, the current skills of the target coders, the current environment, etc.
+
+=head2 Aptitude for the task
+
+=over
+
+=item *
+
+Perl runs basic CGI and is the language that made CGI ubiquitous on the web.
+
+=item *
+
+mod_perl is an advanced implementation of Perl that runs in the Apache web server. It provides extremely fast performance and full access to Apache internals via Perl.
+
+=item *
+
+DB interaction: Perl provides an excellent interface to nearly all available databases, along with an abstraction layer that allows you to switch databases without re-writing all of our code.
+
+=item *
+
+re-usable code architecture (modules, OO, etc.): Perl is architected to allow and encourage re-use. The core block of re-use, the module, makes it very easy to leverage business logic across platforms in web applications, batch scripts, and all sorts of integration components.
+
+=item *
+
+CPAN, the Comprehensive Perl Archive Network, is one of the largest repositories of free code in the world. If you need a particular type of functionality, chances are there are several options on the CPAN, and there are no fees or ongoing costs for using it.
+
+=item *
+
+Multi-use: Perl can be used to develop Web apps, batch processing, data analysis and text manipulation, command-line utilities and apps, GUI apps.
+
+=item *
+
+Multi-language integration: can interact with C, C++, Java, etc. from within Perl code.
+
+=item *
+
+Multi-platform: Perl runs on Linux, MS Windows and all of the platforms listed here: L<http://www.cpan.org/ports/>
+
+=back
+
+=head2 Market penetration
+
+The main point of these stats is that Perl has a large and broad user community. With any technology you choose, you don't want to be the only one using it. These numbers show that Perl is still widely used for web development, among other things, and the user community is very active.
+
+=over
+
+=item *
+
+Some stats for module use in the Apache web server:
+
+L<http://www.securityspace.com/s_survey/data/man.200512/apachemods.html>
+
+Note that perl, mod_fastcgi, and Embperl are all Perl-related web technologies. (Note: mod_fastcgi is not exclusively a Perl technology.)
+
+L<http://perl.apache.org/outstanding/stats/netcraft.html>
+
+=item *
+
+Google queries: L<http://www.google.com/press/zeitgeist/zeitgeist-jun05.html>
+
+=item *
+
+Tiobe Software Index: L<http://www.tiobe.com/index.htm?tiobe_index>
+
+=item *
+
+Gartner research into Open Source:
+
+=over
+
+=item *
+
+Very difficult to get stats because Perl, Apache, etc. are not purchased, but they are trying to gather data.
+
+=item *
+
+All of their trend predictions are pointing toward Open Source technologies, including Perl, getting a larger share of the enterprise development pie, not smaller.
+
+=item *
+
+Gartner's list of main app development technologies is .Net, J2EE, and LAMP. LAMP is Linux (and OpenSolaris), Apache, MySQL (and PostGres), and Perl, PHP, Python.
+
+=back
+
+=back
+
+=head2 Notable Perl users
+
+Perl is used by Amazon, Google, Yahoo, and Ticketmaster.
+
+=head2 Cost
+
+Perl, Apache, and related technologies are open source and
+free. On-going overhead cost to vendors for code that continues to run is $0.
+
+=head2 Open Source
+
+=over
+
+=item *
+
+You can look in and modify perl modules.
+
+=item *
+
+You can look in and modify perl itself.
+
+=item *
+
+Perl has a very strong user community and this is the primary avenue for support.
+
+=item *
+
+You can purchase support or consulting from multiple sources because any qualified Perl coder can look in the code and investigate problems.
+
+=back
+
+=head2 Book sales
+
+Recent Bookscan stats show Perl at roughly three times the number of sales as Python, ten times as Ruby, and half as many as PHP.
+
+O'Reilly Media is very much driven by numbers and they felt the Perl book market was strong enough that they published 4 new Perl titles last summer alone. That is a large number of books for a relatively small tech publisher to devote to a single language.
+
+=head2 Job Openings
+
+There are many sites on the internet that post Perl jobs and they all more or less reflect the numbers listed at L<http://jobs.perl.org/about/stats>
+
+Some other jobs listings:
+
+=over
+
+=item *
+
+L<http://cwjobs.co.uk/JobSearch/Results.aspx?Keywords=perl>
+
+Basically, the number of companies listing Perl as a job pre-requisite is large relative to other technologies and has been consistent.
+
+=back
+
+=head2 Active development
+
+Perl continues to be actively developed. Many developers are working on Perl 6, the next major version of the language. At the same time, dedicated teams continue to fix and augment the Perl 5.6, Perl 5.8, and Perl 5.10 releases. Many companies would have de-supported these version rather than maintain them. The fact that you can safely continue to use a production release of an older Perl without being forced to upgrade is a strong feature.
+
+Release dates are available here: L<http://perldoc.perl.org/perlhist.html>
+
+Perl is also very mature and stable, and has been running on large production systems for years.
+
+=head2 Other sources for Perl information
+
+Another summary of Perl's apptitude: L<http://perltraining.com.au/whyperl.html>
+
+=head1 LICENSE
+
+This document is licensed under a Creative Commons Attribution 2.5 Licence (L<http://creativecommons.org/licenses/by/2.5/>) and is copyrighted E<copy> 2006 Jim Brandt.
+
+=begin html
+
+<img src="http://creativecommons.org/images/public/somerights20.png">
+
+=cut
+
+=cut

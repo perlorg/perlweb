@@ -1,0 +1,136 @@
+=head1 This Week on perl5-porters (20-26 October 2003)
+
+This week, several threads raised concerns with tainting. Plan C for
+randomized hashes was successful. The language issues with constant
+subroutines were discussed. Bugs were found, some of which were fixed ;
+some others were dismissed as I<features>. Quite an usual week for the
+Perl 5 porters.
+
+=head2 Taint propagation
+
+Nicholas Clark files bug #24248, about tainting not being propagated
+properly. This is a regression in perl 5.8.1, that wasn't spotted by
+the regression tests. He provides a code example where $1 ends up being
+tainted, but where a copy of $1 looses tainting. Rick Delaney follows up
+with some questions, regarding the precise interpretation of F<perlsec>,
+where it's asserted that I<the presence of tainted data anywhere within 
+an expression renders the entire expression tainted>.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg00972.html
+
+Besides this, Rafael added a F<test.taintwarn> target to perl's makefile,
+to run perl's test suite with taint warnings enabled. At a glance, lots of
+tests break, but that's due to the additional warnings being reported
+where they're not expected.
+
+=head2 Constant subroutines
+
+Bug #24250 started a long thread. It describes that a closure of the
+form :
+
+    sub () { $count; }
+
+where $count is a lexical variable, doesn't behave "properly", i.e. not as
+if the body of the closure included an explicit C<return> statement. Dave
+Mitchell explains that perl turned this closure in a constant
+subroutine (due to the empty prototype). This happens since perl
+5.8.0, and is considered as feature, although an undocumented and
+surprising one. It's actually used in the C<constant> module.
+
+At some point, Dave proposed to introduce a C<:constant> subroutine
+attribute, the current constant subroutine syntax feeling like a
+non-intuitive language hack, that should be deprecated.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg00902.html
+
+=head2 Threads and memory leakage
+
+Jack Steadman reported in perl 5.8.1 a case of memory leak related to
+threads (bug #24255), which was undiscovered until now. It was fixed by
+Dave Mitchell ; but Jack then posted another example causing another kind of
+leak.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg00975.html
+
+=head2 C<if>'s version
+
+The CPAN currently holds the version 0.01000001 of the C<if> pragma, while
+the core comes with version 0.03. Autrijus Tang asked Ilya Zakharevich to
+release an updated version, because the CPAN version has bugs : it cannot
+deal with the C<open> pragma for example. This led to a discussion about
+proper version numbering and backward compatibility for dual-lived perl
+modules.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg00967.html
+
+=head2 The C<:raw> layer
+
+Gisle Aas asks why the statement
+
+    open my $fh, "<:raw", \$scalar
+
+always fails. Rafael begins to explain that C<:raw> pops off other layers,
+but it turns out that a more subtle bug is occurring here.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg00962.html
+
+=head2 Removing magic from %ENV
+
+Ton Hospel reported (bug #24291) that aliasing the ENV glob makes %ENV
+lose magic : thus assigning to an %ENV key doesn't alter the program's
+environment.
+
+Rafael says that it's to be expected. (However, perl didn't handle this
+case gracefully, producing random coredumps. This was later fixed by
+Rafael.) But the potential security hole remains : taint checks are done
+against the contents of %ENV, not against the actual environment
+variables, which are different when %ENV is aliased to another variable.
+A solution is to forbid using an aliased %ENV when taint checks are
+enabled.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg01203.html
+
+=head2 In brief
+
+Perl 5.8.1's binary compatibility issue has been solved by Nicholas.
+(The fix is now part of Debian unstable.) Perl 5.8.2-to be now is able to
+switch internally hashing algorithms when a hash grows too large not
+uniformly.
+
+Jos Boumans posted a program that uses the CPANPLUS API to detect which
+core modules are outdated in respect to their CPAN versions.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg01201.html
+
+Steve Hay asks for a way to know, from a perl program, to know whether
+the used perl has been built with C<-DDEBUGGING>.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg01169.html
+
+Ton Hospel produces an I<Attempt to free unreferenced scalar> in 22
+characters. (Bug #24254.)
+
+Steve Grazzini reports that if you use C<@&> before C<$&> in a Perl
+program with perl 5.8, then C<$&> loses its magic. This used to work
+correctly, but the old behaviour was to set PL_sawampersand (and its
+performance penalties) unnecessarily. (Bug #24237.)
+
+Uri Guttman proposed to include File::Slurp (or a module with a similar
+functionality) into the core. Several people liked the idea, (some of
+which had concerns with the API or the module name), others felt that it
+was not meeting the criteria to become a core module (the core being
+already bloated enough.)
+
+Robert Spier introduces metabugs to the crew :
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-10/msg01097.html
+
+I<Last minute> : Hugo released perl 5.9.0, the first development version
+after 5.8.0.
+
+=head2 About this summary
+
+This week was summarized by Rafael Garcia-Suarez. Summaries are published
+weekly on F<http://use.perl.org/> and on a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. Corrections,
+comments, etc. are welcome.

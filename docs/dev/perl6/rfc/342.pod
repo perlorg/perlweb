@@ -1,0 +1,47 @@
+=head1 TITLE
+
+Pascal-like "with"
+
+=head1 VERSION
+
+  Maintainer: David Nicol <perl6rfc@davidnicol.com>
+  Date: 28 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 342
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+We adopt Pascal's very useful C<with> syntax
+
+=head1 DESCRIPTION
+
+        %record = loadrecord($studentID);
+        with %record {
+		open SPAM, $PreferredSpam;
+                print <<SPAM;
+        Dear $Name:
+                Your tuition is now due.  Please send in a payment
+        of at least $Minumum.           
+
+        SPAM
+	};
+
+All existing keys of C<%record> hide similarly named variables,
+if any, within the C<with> block.
+
+These things can nest.
+
+=head1 IMPLEMENTATION
+
+within a C<with> block, unqualified variable names
+must be checked against the C<with> name space before
+being instantiated.
+
+In concert with named packed structure types serious
+optimizations could be achieved.
+
+=head1 REFERENCES
+
+"Learning Pascal" textbook, CS101, 1985

@@ -1,0 +1,377 @@
+Return-Path: <pdcawley@bofh.org.uk>
+Delivered-To: rspier@newbabe.mengwong.com
+Received: from newbabe.mengwong.com [208.210.125.227]
+	by localhost with IMAP (fetchmail-6.2.0)
+	for rspier@localhost (single-drop); Tue, 14 Jan 2003 08:17:13 -0800 (PST)
+Received: from cali-2.pobox.com (cali-2.pobox.com [64.71.166.115])
+	by newbabe.mengwong.com (Postfix) with ESMTP id CDB7F1F68B
+	for <rspier@newbabe.mengwong.com>; Tue, 14 Jan 2003 11:13:50 -0500 (EST)
+Received: from cali-2.pobox.com (localhost.localdomain [127.0.0.1])
+	by cali-2.pobox.com (Postfix) with ESMTP
+	id 278923E84B; Tue, 14 Jan 2003 11:13:47 -0500 (EST)
+Delivered-To: rspier@pobox.com
+Received: from mail.hybyte.com (unknown [217.89.91.12])
+	by cali-2.pobox.com (Postfix) with SMTP id DB07B3E9E2
+	for <rspier@pobox.com>; Tue, 14 Jan 2003 11:10:16 -0500 (EST)
+Received: (qmail 6679 invoked from network); 14 Jan 2003 16:08:09 -0000
+Received: from pdcawley@bofh.org.uk by mail.hybyte.com by uid 504 with qmail-scanner-1.13 
+ (uvscan: v4.1.40/v4242.  Clear:. 
+ Processed in 0.351218 secs); 14 Jan 2003 16:08:09 -0000
+Received: from unknown (HELO localhost) (217.89.91.13)
+  by 0 with SMTP; 14 Jan 2003 16:08:09 -0000
+Received: from pdcawley by localhost with local (Exim 4.10)
+	id H8POX8-000BNQ-00; Tue, 14 Jan 2003 16:10:20 +0000
+To: Robert Spier <rspier@pobox.com>,
+	Simon Cozens <simon@simon-cozens.org>
+Subject: This week's summary
+From: Piers Cawley <pdcawley@bofh.org.uk>
+Date: Tue, 14 Jan 2003 16:10:20 +0000
+Message-ID: <m27kd790gj.fsf@TiBook.bofh.org.uk>
+User-Agent: Gnus/5.090011 (Oort Gnus v0.11) XEmacs/21.5 (burdock,
+ powerpc-apple-darwin6.3)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment; filename=p6summary.2003-01-12.pod
+Content-Description: summary for week ending 20030112
+X-Spam-Status: No, hits=-1.8 required=5.0
+	tests=AWL,SPAM_PHRASE_01_02,USER_AGENT,USER_AGENT_GNUS_UA
+	version=2.43
+X-Spam-Level: 
+
+=head1 The Perl 6 Summary for the week ending 20030112
+
+... and we're back. Yup, it's summary time again. We'll dive straight
+in with perl6-internals (as if you expected anything else).
+
+=head2 More thoughts on DOD
+
+Leopold TE<ouml>tsch posted a test program showing the effects of PMC
+size and timing of garbage collection and allocation and suggested
+ways of improving the GC system based on the conclusions he drew from
+its results. Leo, Dan and Mitchell N Charity discussed this further
+and tried a few different approaches to try and improve performance
+(though Mitchell did worry about premature optimization). Work in this
+area is ongoing.
+
+L<http://groups.google.com/groups?threadm=3E1976F7.1060106%40toetsch.at>
+
+=head2 The Perl 6 Parser
+
+Dan asked about the current state of the Perl 6 parser, wanting to
+know what was and wasn't implemented and wondered about adding the
+Perl 6 tests into the standard parrot test suite. Sean O'Rourke and
+Joseph F. Ryan both gave a summaries of where things stood. Joseph
+also suggested a few refactorings of the parser to deal with the
+fluidity of the current spec (almost all the operators have changed
+symbols since the parser was first written for instance). 
+
+L<http://groups.google.com/groups?threadm=a05200f15ba425a3d908d%40%5B192.168.2.1%5D>
+
+=head2 LXR - Source code indexing
+
+Last week I said that Robert Spier had 'started work on getting a
+browseable, cross referenced version of the Parrot source up on
+perl.org'. What actually happened was that Robert asked Zach Lipton to
+do the work. This week Zach delivered the goods which, I must say,
+look fabulous. 
+
+I'm sure that if someone were to extend LXR so it had a better
+understanding of .pasm, .pmc, .ops and other special Parrot source
+types then the community would be very grateful indeed. I know I would.
+
+L<http://groups.google.com/groups?threadm=BA41F83F.8F2D%25zach%40zachlipton.com> -- Announcement
+
+L<http://tinderbox.perl.org/lxr/parrot/source>
+
+=head2 Thoughts on infant mortality
+
+Piers Cawley offered what he thought might be a new approach to
+dealing with the infant mortality problem which got efficiently shot
+down by Leo TE<ouml>tsch. Which led to further discussion of possible
+answers, and it looks like Leo's proposed solution involving a small
+amount of code reordering and early anchoring will be the one that's
+tried next. All being well it won't require walking the C stack and
+hardware register set, which can only be a good thing.  
+
+Later on, Leo asked if it'd be okay to check in his work so far on
+redoing the GC because he was up to 15 affected files and was starting
+to worry about integration hell. Steve Fink wasn't sure about one of
+his changes, so Leo checked everything else in.
+
+L<http://groups.google.com/groups?threadm=m27kdere5g.fsf%40TiBook.bofh.org.uk>
+
+L<http://groups.google.com/groups?threadm=3E1D47B6.20301%40toetsch.at>
+
+=head2 Objects, finally (try 1)
+
+Last week I mentioned that Leon Brocard's wishlist for the next Parrot
+iteration included Objects. This week Dan posted his first draft of
+what Parrot Objects would and wouldn't be able to do. The eleventh
+entry on Dan's list (Objects are all orange) seemed to be custom made
+to please Leon. There was a fair amount of discussion (of course), but
+the consensus was positive. 
+
+L<http://groups.google.com/groups?threadm=a05200f06ba439cb1436b%40%5B192.168.2.1%5D>
+
+=head2 The benchmarking problem
+
+Nicholas Clark crossposted to p5p and perl6-internals to discuss the
+problems of benchmarking parrot against perl 5. One of parrot's aims
+is, of course, to go faster than perl 5. The problem is, how do you
+measure 'faster'? Nicholas has been working on making perl 5 go faster
+and was distressed to find out that using 'perlbench' a patch of his
+went 5% faster, 1% slower, 0% and 1% faster, depending on what
+machine/compiler combination he ran the benchmark on. Leo TE<ouml>tsch
+commented that he'd found performance varying by over 50% in a JIT
+test, depending on the position of a loop in memory. Andreas Koenig
+commented that he'd come to the conclusion that bugs in glibc meant
+that there was little point in benchmarking Perl at all if it was
+built with a glibc older than version 2.3 (apparently malloc/free
+proved to be gloriously erratic...) I'm afraid not much was actually
+resolved though.
+
+L<http://groups.google.com/groups?threadm=20030111190521.GK283%40Bagpuss.unfortu.net>
+
+=head1 Meanwhile, in perl6-language
+
+The discussion of Variable types vs Value types continued from the
+previous week. Dan opined that Arrays weren't necessarily objects,
+which brought forth squawks from Piers Cawley who pointed out that
+being able to do:
+
+   class PersistentList is Array { 
+       method FETCH ($index) { 
+           ...
+       }
+       ...
+   }
+
+would be much nicer than tying a value in the Perl 5ish fashion. Dan
+reckoned that delegation would probably be enough which, IMHO seemed
+to miss the point. Various other people chimed in to, essentially,
+tell Dan that he was wrong, but I'm  not sure Dan agreed with them.
+
+Meanwhile, in a subthread sprouting lower on the thread tree, Damian
+pointed out that there were two types associated with any Perl
+variable, the 'storage type' and the 'implementation type' (see his
+post for details, but essentially the storage type is the type
+associated with the contents of a variable and the implementation type
+is the type of the 'thing' that does the storing (usually one of
+SCALAR, HASH or ARRAY -- ie, related to the variable's sigil)
+specifying a different implementation type will probably be how Perl 6
+does tying.)
+
+L<http://groups.google.com/groups?threadm=a05200f07ba3e5ebbf80c%40%5B192.168.3.1%5D>
+
+L<http://groups.google.com/groups?threadm=3E1BF672.2020606%40conway.org>
+
+=head2 Array Questions
+
+In a thread that spilt over from the previous discussion about
+whether arrays were objects or not, Michael Lazzaro put up a list of
+example usages that seem to imply rather strongly that arrays are
+either objects or indistinguishable from them and there was general
+muttering that being able to overload tied Perl containers in this way
+was a neat way of implementing tie semantics. Mr Nobody attempted to
+restart the left to right versus right to left argument all over
+again. There was also some discussion of the sickness of C<< my Foo
+@foo is Foo >> (which, in Perl 5ish parlance creates a tied array
+(using Foo as the tying class) which can only contain objects in class
+Foo.) Damian agreed that this was definitely sick, and that he for one
+would be making use of it.
+
+L<http://groups.google.com/groups?threadm=6B9F6C55-226A-11D7-81AD-00050245244A%40cognitivity.com>
+
+=head2 L2R/R2L syntax
+
+Argh! No! It's back and this time it means business. The dreaded
+left->right versus right->left thing came back, and this time it was
+Damian applying the electrodes to the corpse. Of course, it being
+Damian he was instantly forgiven as he came up with the very cool,
+very low precedence C<< ~> >> and C<< <~ >> operators, allowing you to
+write 
+
+   @out = @a ~> grep {...} ~> map {...} ~> sort;
+
+Which is, to these eyes at least, lovely. See Damian's post for the
+full details. The general response to this was definitely on the
+'lovely' side of the balance, though one detractor did induce a sense
+of humour failure on Damian's part. There was also a certain amount of
+discussion about whether this was exactly the right syntax to go with
+the semantics, but where would perl6-language be without a great deal
+of syntactic quibbling? (A good deal easier to summarize). The most
+popular alternatives were C<< |> >> and C<< <| >>. There was also a
+certain amount of discussion of what I can only describe as 'evil'
+uses of the syntax, involving arrows going in different directions in
+one statement. Rafael Garcia-Suarez earned at least one giggle when he
+suggested that we just needed C<< v~ >> C<< ^~ >> and we had our own
+flavour of Befunge.
+
+There was a fair amount more discussion, mostly thrashing out details
+and edge cases.
+
+L<http://groups.google.com/groups?threadm=3E1BA592.6050902%40conway.org>
+
+=head2 "Disappearing" code
+
+John Siracusa wondered if there would be a perl6ish way of creating
+code that was 'the spiritual equivalent of #ifdef, only Perlish'. To
+which the answer is, of course, 'yes'. Damian showed off a neat trick
+(modulo a couple of pretty typos) with an immediate function that
+demonstrated using Perl 6 as its own macro language.
+
+L<http://groups.google.com/groups?threadm=BA438428.E548%25siracusa%40mindspring.com>
+
+L<http://groups.google.com/groups?threadm=BA447213.2B258%25siracusa%40mindspring.com> -- Damian's neat trick
+
+=head1 In Brief
+
+Jim Radford fixed some typos in the F<rx.ops> documentation.
+
+=head1 Who's Who in Perl 6
+
+=over
+
+=item Who are you?
+
+Steve Fink. Some guy who writes code.
+
+=item What do you do for/with Perl 6?
+
+The only thing I set out to do was implement a regular expression
+compiler. Along the way, I seem to have implemented hashtables,
+patched the configuration system, messed with memory management,
+implemented some stuff for IMCC, beefed up the PMC file parser, fixed
+some problems with the JIT, and a few other things. Then I got a job
+and ran out of time to work on parrot, so they made me pumpking. And I
+still haven't made it that far with the regex compiler.
+
+=item Where are you coming from?
+
+Computer games, originally. First language BASIC, second language 6502
+assembly. Then a failed attempt at C, then more successful encounters
+with Pascal and 68000 assembly, and then C++. Next, a few more
+assembly languages together with SML, NESL, Lisp, Scheme, COBOL, Tcl,
+Prolog, and a few others. And at last Perl4 and then Perl5. Oh, and
+Java, fairly recently. My day job is now in a combination of Perl5 and
+C++, as well as C when nobody's looking.
+
+=item When do you think Perl 6 will be released?
+
+Probably smoothing the path for other developers and keeping them
+motivated. My highest priority is applying (and testing) other
+people's patches, since the mostly likely reason for someone to lose
+interest is to not have their hard work make it into the distribution.
+I would also like to somehow make people's contributions more visible
+-- anyone who has contributed anything significant should at least be
+able to point to something and say "Look! I did that! See my name?!"
+
+=item I said, when do you think Perl 6 will be released?
+
+Obviously Leopold TE<ouml>tsch. Anyone paying an iota of attention
+would know that. Particularly someone who's been writing the
+summaries, unless you're stupid or something. Leo's amazing; I don't
+know how he finds the time. To accomplish that much, I'd need to be
+working full-time about 26 hours a day.
+
+=item No, really. When do you think Perl 6 will be released?
+
+No, not really. I was originally thinking of Perl6 when I got
+involved, but since then the Parrot VM itself has become more
+interesting to me. Although I still wish Perl6 development would pick up --
+there's a lot that can be done even with the limited amount of the
+language that's been defined. Sean O'Rourke did an excellent job in a
+short amount of time, but it looks like Real Life has drawn him back
+into its fold, and nobody seems to have picked up the slack.
+
+=item Why are you doing this?
+
+Heh. That is the question, isn't it? Making a release is probably the
+most concrete measure of how I'm doing as a pumpking, and by that
+standard I'm a dismal failure. As soon as we reclaim the tinderbox
+(and without dropping any machines off it in order to do so!)
+Everything else I wanted to get in is already there.
+
+=item You have five words. Describe yourself.
+
+No, I don't think so. Maybe I'm wrong, but I know that I personally
+had to put aside a lot of the actual coding I was working on in order
+to concentrate on making sure everyone else's changes were being given
+proper consideration. I'd much rather relieve him of that burden, and
+let him continue to exercise his demonstrated talent at churning out
+quality code.
+
+=item Do you have anything to declare?
+
+No. It kind of makes sense, but I remember how I first started by
+rewriting a bunch of Dan Sugalski's code, and then seeing most of my
+code get rewritten. I used to be disturbed by that, but now I think of
+it more as a badge of honor -- it proves that what I wrote was worth
+rewriting. Much more so in Dan's case, I suppose, since he stated
+up-front that he was merely doing a reference implementation of a
+design. Dan's done an amazing job of laying out a design that hasn't
+needed to change at its core, and so has been a very dependable guide
+to the implementation of the backbone. But even in my case, I can see
+a number of ideas that were carried through in the reimplementation,
+even if no actual code survived. (Interestingly, my tests did. Which
+kind of makes sense if you think about it.)
+
+=item Are you finished yet?
+
+Why yes, thank you.
+
+=back
+
+Ahem. Thanks Steve. Really.
+
+=head1 Acknowledgements
+
+Another Monday evening, another summary running over into Tuesday
+morning. Ah well. Distractions were provided by the usual suspects
+(Mike and Sully, our ginger kittens), supplemented this week by a
+horrible cold (the compulsion to find a tissue does tend to derail the
+train of thought).
+
+Proofreading was once more handled by Aspell and me. This week we even
+made sure that the Who's Who section contains the name of the person
+answering the questions rather than making you wait 'til the
+acknowledgements section.
+
+Speaking of which, many thanks to Steve Fink for his answers to the
+questionnaire (well, to the questions he wanted to answer anyway). The
+questionnaire queue is now quite empty so, unless a few more folks in
+the Perl 6 community send me some answers soon then the Who's Who
+section may be going on hiatus. Send your answers (or request the
+'correct' question list from) L<5Ws@bofh.org.uk>.
+
+If you didn't like this summary, how did you get this far? If you did
+like it, please consider one or more of the following options:
+
+=over
+
+=item *
+
+Send money to the Perl Foundation at
+L<http://donate.perl-foundation.org/> and help support the ongoing
+development of Perl 6.
+
+=item *
+
+Get involve in the Perl 6 process. The mailing lists are open to
+all. L<http://dev.perl.org/perl6/> and L<http://www.parrotcode.org/>
+are good starting points with links to the appropriate mailing lists. 
+
+=item *
+
+Send feedback, flames, money and or a couple of first class flights to
+from London to Portland for this year's OSCON to
+L<mailto:p6summarizer@bofh.org.uk> ("Aim high!" they told me.)
+
+=back
+
+The fee paid for the publication of these summarise on perl.com is
+paid directly to the Perl Foundation.
+
+The Perl 6 Summarizer disclaims any and all responsibility for the
+sanity of his readers; he's having enough trouble hanging onto his
+own.

@@ -1,0 +1,111 @@
+=head1 TITLE
+
+Arrays: Add reshape() for multi-dimensional array reshaping
+		
+=head1 VERSION
+
+  Maintainer: Jeremy Howard <j@howard.fm>
+  Date: 24 Aug 2000
+  Last Modified: 21 Sep 2000
+  Mailing List: perl6-language-data@perl.org
+  Number: 148
+  Version: 3
+  Status: Frozen
+
+=head1 CHANGES
+
+Changed semantics to match PDL, NumPy, and J. Changed maintainer from
+Nathan Wiger <nate@wiger.org>.
+
+=head1 ABSTRACT
+
+Currently, there is no easy way to reshape existing arrays into
+multiple arrays or matrices. This makes nifty array manipulation and
+complex math hard.
+
+A general-purpose tool that can do arbitrary multi-dimensional array
+reshaping, from which other array manipulation functions can be derived,
+makes data manipulation easier.
+
+=head1 DESCRIPTION
+
+Let's jump in. This RFC proposes a C<reshape> builtin that takes an array
+to reshape as the second parameter, and a list of dimensions to reshape
+the array to as the first parameter:
+
+  my int @a = ([1,2,3], [4,5,6]);
+  @b = reshape([2,3], @a);          # ([1,2],[3,4],[5,6])
+  @c = reshape([1,6], @a);          # ([1],[2],[3],[4],[5],[6])
+  @d = reshape([6,1], @a);          # (1,2,3,4,5,6)
+  @e = reshape([1,2,3], @a);        # ([[1],[2]],[[3],[4]],[[5],[6]])
+  
+The dimensions specified in the first argument are the same ones used by
+the C<:shape> array attribute described in L<RFC 203>. L<RFC 202> gives
+an overview of the proposed multidimensional arrays that C<reshape>
+works with.
+
+We only need one C<reshape> since it is a multipurpose tool that works in
+any direction, serving as its own inverse.
+
+The dimensions used are subject to the following properties:
+
+=over 4
+
+=item 1
+
+Less data than specified causes C<reshape> to repeat the data as many
+times as necessary to fill the new structure (like C<$> in the J language)
+
+=item 2
+
+More data than specified is silently discarded
+
+=back
+
+Any one (but no more than one) element of the list of dimensions can be
+'-1', which indicates that that dimension should be made as large as
+necessary to fill in the array:
+
+  my int @a = ([1,2,3], [4,5,6]);
+  @b = reshape([-1,3], @a);        # ([1,2],[3,4],[5,6])
+  @c = reshape([-1], @a);        # (1,2,3,4,5,6)
+
+The semantics of C<reshape> match those of PDL's reshape(), NumPy's
+reshape(), and J's verb C<$>. See the references.
+
+C<reshape> creates an alias to the original array, not a copy (this is
+like merge/demerge/part/flatten). See L<RFC 90> for discussion of aliasing
+behaviour that would apply to C<reshape>.
+
+=head1 IMPLEMENTATION
+
+For simple typed arrays (RFC 203) it is simply a case of changing the
+dimension attributes stored internally. For standard lists of lists, the
+actual references and arrays will have to be rejigged, with will be a slow
+operation. However, C<reshape> should rarely be used on arrays that are
+not stored compactly, since standard lists of lists are unlikely to be
+used for heavy data crunching.
+
+=head1 MIGRATION
+
+None. This introduces new functionality.
+
+=head1 REFERENCES
+
+RFC 81: Lazily evaluated list generation functions
+
+RFC 90: Arrays: Builtins: merge() and demerge()
+
+RFC 202: Arrays: Overview of multidimensional array RFCs (RFC 203
+through RFC 207)
+
+RFC 203: Arrays: Notation for declaring and creating arrays
+
+Thanks to Uri Guttman for suggesting the APL "reshape" name
+
+The '$' verb in J, described in The J Primer (provided as a help file with
+the J Language, available from http://www.jsoftware.com/)
+
+reshape() in NumPy: http://starship.python.net/~da/numtut/array.html#SEC3
+
+reshape() in PDL: http://pdl.sourceforge.net/PDLdocs/Core.html#reshape

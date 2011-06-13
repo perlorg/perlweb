@@ -1,0 +1,110 @@
+=head1 This Week on perl5-porters (30 June / 6 July 2003)
+
+As the next maintenance release of perl is getting closer, the porters are
+still fixing bugs. Among the subjects that have been investigated this
+week, we can remember some hash-ordering-dependent bugs, process name
+problems, and more syntactic issues.
+
+=head2 Hashes that bite
+
+The hash seed randomization patch that was introduced last week (see our
+previous summary) uncovered some nasty bugs in perl and in its test suite.
+
+Craig Berry discovered a bug in the order of destruction of weak
+references. This was fixed by Dave Mitchell.
+
+Enache Adrian noticed that rebuilds were made quite more often. This was
+caused by some shuffling of the keys in the generated Config.pm.
+
+There were some hash-order dependent tests as well, sometimes the cause
+being deeply hidden in the harness, or in the internals of Test::Builder.
+
+Paul Johnson says that he expects I<some very impressive fireworks when
+this gets out into the wild>. And in fact Slaven Rezic obtains random
+failures with HTML::Mason (that would be caused by Exception::Class)
+and SOAP::Lite.
+
+=head2 Setting C<$0>
+
+Andreas Koenig and Jarkko Hietaniemi were (once again) working on the
+problem of setting the C<$0> variable and having it change the name by
+which the operating system knows the perl process. The problem is, of
+course, how to cope with the ideas the various platforms have about it.
+
+=head2 perl581delta
+
+Jarkko began to work (with the help of the porters) on the next
+incarnation of the F<perldelta> manpage, to be bundled with the upcoming
+perl 5.8.1. And he released a large number of maintperl snapshots. Release
+candidates are obviously getting closer.
+
+=head2 More syntax weirdness with indirect objects
+
+Dave Mitchell gives a snippet of code :
+
+  sub f { f a; } f a;
+
+where the first C<f a> is an indirect method call, using the indirect
+object notation (it's equivalent to C<< a->f() >>), whereas the second
+C<f a> is equivalent to C<f(a)> (with C<a> being a bareword).
+
+I'd say this particular syntax oddity is sub-optimal, -- but the indirect
+object syntax is hairy.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg00066.html
+
+=head2 Harness speed
+
+Abigail complained that Test::Harness prints a counter at each test, thus
+augmenting the amount of time needed to run large number of tests. This
+ended up in a patch. As says Andy Lester, Test::Harness' maintainer,
+I<now, when you run a test harnessed, the numbers don't fly by one at a
+time, one update per second.> (In the same thread, Gurusamy Sarathy
+recalls the HARNESS_NOTTY environment variable, that suppresses progress
+messages.)
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg00212.html
+
+=head2 Briefly
+
+Jarkko, after a suggestion by Robin Barker, added a new utility
+in perl's source distribution, F<Porting/Modules>, to list the official
+maintainers of the modules (this is mostly useful for the modules that
+have a dual life on CPAN). Michael Schwern pointed out that he was
+reinventing the Module::CoreList wheel ; and Jarkko removed this
+F<Modules>.
+
+Dan Kogai explained that FreeBSD comes with an implementation of malloc()
+that is optimized for paged memory, and safe from duplicate free() calls.
+But the downside is that realloc() is very slow. That's usually not a big
+deal, because most programs don't use realloc() very often -- but perl
+does. (The default configuration of perl on FreeBSD is to use perl's
+internal malloc, that hasn't this realloc limitation.)
+
+James Jurach provided a patch to use 32 bit integers instead of 16 bit
+integers for line numbers. As it didn't seem to increase the size of cops
+on several platforms, it went in.
+
+Steve Grazzini produced a patch for the C<my SLICE> syntax we discussed
+last week. Its implementation was criticized ; and it wasn't applied.
+
+As Randal L. Schwartz reported, the initial value of C<@INC> (and
+directory installation scheme) of perl on MacOS X has to be cleaned up, as
+it causes problems with C<make install UNINST=1> (a sub-optimally
+documented MakeMaker feature, used to uninstall previous versions found in
+C<@INC>).
+
+Vadim Konovalov provided more WinCE portability patches, with threads and
+fork emulation.
+
+Tels pre-released Math::BigInt v1.65, Math::BigRat v0.10, and bignum v0.14.
+Michael Schwern released MakeMaker 6.10_07.
+
+Perl 5 turned 20000 patches old.
+
+=head2 About this summary
+
+This week's summary was written by Rafael Garcia-Suarez. Weekly summaries
+are published on F<http://use.perl.org/> and on a mailing list, which
+subscription address is L<perl5-summary-subscribe@perl.org>. Comments,
+corrections, additions, and suggestions are (as always) welcome.

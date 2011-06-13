@@ -1,0 +1,62 @@
+
+<h2>Your account</h2>
+
+<div style="border: solid 2px #aaa; padding-left: 1em;">
+<p>
+<b><u>User Details from Bitcard</u></b><br/>
+Name: [% combust.user.name | html %]<br/>
+Email: [% combust.user.email | html %]<br/>
+Username: <b>[% combust.user.username | html %]</b><br/>
+<small><a href="[% combust.account_url %]">Change bitcard settings</a></small>
+</p>
+</div>
+
+[% IF password %]
+<p>
+Password: <code>[% password | html %]</code>
+</p>
+[% END %]
+
+
+<center>
+
+[% IF reset_password_confirmation %]
+<p style="border: 1px solid red; padding: 5px;">
+Are you sure you want to reset your password?  This will invalidate
+the password stored in your SVN clients etc.  You cannot undo this.
+</p>
+
+[% ELSE %]
+
+<p>On this site you can reset your perl.org Subversion and
+groups.pm.org WebDav password.
+</p>
+
+[% END %]
+
+
+<form action="/account" method="post">
+<input type="hidden" name="auth_token" value="[% combust.auth_token %]" />
+[% IF reset_password_confirmation %]
+<input type="submit" name="btn" value="Yes, really give me a new password" />
+<input type="hidden" name="reset_password" value="absolutely" />
+</form>
+[% ELSE %]
+<input type="submit" name="btn" value="Generate new SVN/WebDAV password" />
+<input type="hidden" name="reset_password" value="yes" />
+</form>
+
+<form action="/account" method="post">
+<input type="hidden" name="auth_token" value="[% combust.auth_token %]" />
+<input type="submit" name="btn" value="See my password" />
+<input type="hidden" name="see_password" value="yes" />
+</form>
+</center>
+
+[% END %]
+
+<a href="/account/logout">Logout</a> | <a href="/">Front</a>
+
+<p>
+[% PROCESS tpl/account_log.html %]
+</p>

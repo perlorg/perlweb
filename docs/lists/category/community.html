@@ -1,0 +1,48 @@
+[%
+    page.import({
+        title    => 'Community Perl Mailing lists',
+        section  => 'community',
+        description
+            => 'Perl mailing lists for the Perl Community',
+    });
+%]
+
+<h2>Local events and community mailing lists, Perl advocacy
+    and core development</h2>
+
+<table class="content_table">
+    <tr>
+        <td>
+            [% categories = [
+                'conference',
+                'conference-misc-tools',
+                'advocacy-yapc',
+                'yapc',
+                'yapc-conference',
+            ]; %]
+            [% PROCESS tpl/category_page.html categories => categories %]
+        </td>
+        <td>
+            [% categories = [
+                'mongers',
+                'mongers-non-english',
+                'non-english',
+                ];
+            %]
+            [% PROCESS tpl/category_page.html categories => categories %]
+        </td>
+    </tr>
+    <tr>
+        <td>
+            [% categories = [
+            'advocacy',
+            'developer-advocacy',
+            'perl-advocacy',
+            'www-mod_perl-advocacy',
+            ]; %]
+            [% PROCESS tpl/category_page.html categories => categories %]
+        </td>
+        <td>
+        </td>
+</tr>
+</table>

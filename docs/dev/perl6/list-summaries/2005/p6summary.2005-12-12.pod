@@ -1,0 +1,349 @@
+=head1 Perl 6 Summary for 2005-12-05 through 2005-12-12
+
+All~
+
+Welcome to another Perl 6 summary.  This week, like last, Parrot has produced the highest volume of emails.  Fine by me, Parrot tends to be easiest to summarize.  This summary is brought to you by Snow (the latest soft toy in the house).  I would say you should get one, but apparently Borders stores everywhere are sold out of them.  He is quite soft and a little mischievous.  Maybe he belonged to a samurai once...
+
+=head2 Perl 6 Compiler
+
+=head3 Context Confusion
+
+Mike Li wondered how to make his sample code work in Perl 6.  Jonathan Scott Duff pointed out that the part he was curious about, was correct already.  Score one for Perl 6.
+
+L<http://groups.google.com/group/perl.perl6.compiler/browse_frm/thread/f2aeff93e8b65008/701c88448d3e0619#701c88448d3e0619>
+
+
+
+=head3 Unbracketed Text from Text::bracketed
+
+Allison Randal wanted to be able to access the text within PGE::Text::bracketed's match object.  Patrick made it work, and Allison happily used it.
+
+L<http://groups.google.com/group/perl.perl6.compiler/browse_frm/thread/b52eb566b1b74920/2ddc89650cba0213#2ddc89650cba0213>
+
+
+
+=head3 Security Model
+
+Bryan Burgers wondered how Parrot would support security.  Luke Palmer pointed him to the p6i list and explained that Dan did have a plan for this that he couldn't recall.  I recall something about VMS and having active and allowable capabilities.  It sounded really cool when I read it.
+
+L<http://groups.google.com/group/perl.perl6.compiler/browse_frm/thread/915ab29243296b6d/b1d2111587381192#b1d2111587381192>
+
+
+
+=head2 Parrot
+
+=head3 Build Failure
+
+David Dyck managed to make the build fail on his bizarre setup.  Leo fixed it.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/ea4bddf4f484b99e/ca867985648c6649#ca867985648c6649>
+
+
+
+=head3 C<src/revision.c> Dependencies
+
+Leo discovered that src/revision.c is missing some dependencies.  He would love it if someone fixed that.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/ede1170028d51291/f1601d9906d83ccc#f1601d9906d83ccc>
+
+
+
+=head3 Documenting C< .lex > Syntax
+
+Klaas-Jan Stol documented the new syntax for lexicals.  Jerry Gay applied the patch.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/323320bdd15dd3ec/44af2088a9038b01#44af2088a9038b01>
+
+
+
+=head3 Multidimensional Arrays
+
+Roger Browne found that he could not make multidimensional array access work with PMCs.  Leo said that should be filed as a TODO.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/4c909d028217668d/f893d00cb7963847#f893d00cb7963847>
+
+
+
+=head3 Directory Reorganization
+
+Jerry Gay has made good progress spearheading the directory reorganization of Parrot.  Rather than give you a bunch of links to emails that are essentially the same, I will skip them, but thank you Jerry.
+
+=head3 C< make test > Error on OS X Tiger
+
+Jason Gessner reported a test failure on OS X Tiger.  Warnock applies.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/9c77186313236db3/46f78b57ee2dda85#46f78b57ee2dda85>
+
+
+
+=head3 C3 MRO Test
+
+C3 MRO (C3 P0's younger brother) recently underwent his factory acceptance test and will be released into the world.  Like his older brother, he also speaks fluent Tibetan.  On an unrelated note, Stevan Little added some test for the C3 method resolution order used in Parrot.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/67f6ee697aee1227/6ab6531cd56d004f#6ab6531cd56d004f>
+
+
+
+=head3 Global Store Hash
+
+Klaas-Jan Stol wanted to access the global store hash directly.  Leo showed him how.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/3cf163422b9ac964/2c2eff348205c4de#2c2eff348205c4de>
+
+
+
+=head3 Release Goals
+
+Leo kicked off a brain storming session for what to focus on for the next release.  Brains promptly began storming.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/0d335b722d2b383c/1e7680ea0214861d#1e7680ea0214861d>
+
+
+
+=head3 Sun4 JIT Fix
+
+Andy Dougherty submitted a big fix to make Sun4's JIT link again.  Leo applied the patch.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/2db5724da187e75a/89c3ca829e14fce4#89c3ca829e14fce4>
+
+
+
+=head3 :flat and :slurpy issues
+
+Bob Rogers was having trouble making Parrot eat linguine because it would not mix :flat and :slurpy arguments.  He also found that the problem was do to premature optimization (actually a PREMATURE_OPTIMIZATION define) and submitted a fix and test.  Leo thanked him and applied them.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/b82229068aaa5da0/388895f10caf4730#388895f10caf4730>
+
+
+
+=head3 Parrot 0.4.0 Luthor
+
+Leo announced the latest release of Parrot 0.4.0 aka "Luthor".  There was much rejoicing, but I was left wondering where Leo comes up with these release names.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/7bf518d01c05a68e/68e0857c8780647a#68e0857c8780647a>
+
+
+
+=head3 C< loadlib > Cleanup
+
+Leo has been hunting some uninitialized memory bugs in Parrot's library loading code.  He has been having a difficult time finding the problem, and thus is looking into a general code clean up to make the problem easier to find (or possibly just fix it).  Jerry Gay said he would make it work on windows, but no one volunteered for the main portion of the work.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/b669af010f24183e/1ee9073230febf94#1ee9073230febf94>
+
+
+
+=head3 C<languages/regex/Makefile> is not Generated
+
+Jerry Gay noticed that languages/regex/Makefile really ought to be a generated file.  He opened a  TODO for it.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/8a8f95f74e599c0c/ac889de56fe5168c#ac889de56fe5168c>
+
+
+
+=head3 Fix Parrot IO Test 23
+
+chromatic the ever uncapitalized proferred a patch for a failing Parrot_IO test.  He seemed to feel that someone else ought to review it as he was not 100% on it.  Warnock applies.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/bef9cae7bd0d285c/124ac8b68c92829d#124ac8b68c92829d>
+
+
+
+=head3 C< load_bytecode > Fails Outside of Parrot
+
+Bob Rogers noticed that load bytecode didn't work when not in the Parrot directory.  Leo mistakenly fixed a different problem before he fixed this one.  Sounds like a win/win to me.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/fcc0dbdfecb71d39/aaaac4bbc173b556#aaaac4bbc173b556>
+
+
+
+=head3 Tcl Win32 Trouble
+
+Jerry Gay noticed a problem building Tcl on Win32.  François Perrad pointed out an old patch from Nick Glencross which apparently solves the problem.  Warnock applies.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/5896bd53058f508d/7220acc0ec1612fd#7220acc0ec1612fd>
+
+
+
+=head3 C< abs2rel > Issues
+
+Alberto Simões spotted a problem with abs2rel.  People seem to like the patch so it was applied.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/598d41a0905dc249/82e5874d4fa636c1#82e5874d4fa636c1>
+
+
+
+=head3 OS X Build Errors (Reprise)
+
+Brent Fulgham noticed some build errors on OS X using XCode 2.2.  Leo pointed out that he had a stale parrot installed and that the two were not co-installable.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/ccea1a3f8df3d019/7a81eb526a0f1965#7a81eb526a0f1965>
+
+
+
+=head3 Web Docs Broken
+
+Joshua Hoblitt supplied a patch fixing the docs after the recent tree reorganization.  Will Coleda applied it.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/8508aaabcd2e451d/f9d82fdd0f71861d#f9d82fdd0f71861d>
+
+
+
+=head3 Parrot's Test Pod
+
+Alberto Simoes provided a patch which fills out tests.pod a little more.  chromatic applied the patch.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/684325566fb20f36/0673f15e6ac280be#0673f15e6ac280be>
+
+
+
+=head3 C< make smoke > Progresses
+
+Alberto Simoes made C< make smoke > provide progress.  Will Coleda applied the patch.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/09a53d6e32d58e92/372bad7ef2f7e806#372bad7ef2f7e806>
+
+
+
+=head3 JIT on FreeBSD
+
+Joshua Isom reported a broken JIT on FreeBSD.  Leo promptly fixed it.
+
+L<http://groups.google.com/group/perl.perl6.internals?start=0>
+
+
+
+=head3 C< runtime/parrot/include/*.pasm > Ought to be Made
+
+Leo opened a ticket for C< runtime/parrot/include/*.pasm >.  Currently they are generated by Configure.pl.  They ought to be generated by make with the correct dependencies.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/2517202d98388ab1/4cfb56a53d3f3d44#4cfb56a53d3f3d44>
+
+
+
+=head3 c< make smoke > JIT Easier
+
+Alberto Simões posted a patch to make C< make smokej > run smoke testing with the JIT.  Warnock applies.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/87ae9a18260af803/c42ae458735e4394#c42ae458735e4394>
+
+
+
+=head3 MSVC Compiling
+
+Ron Blaschke posted some informative summaries of test results using Visual Studio 7.1 and 8.0.  People generally found it useful.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/af8b881c677c39f9/3c31a48390f588eb#3c31a48390f588eb>
+
+
+
+=head3 CREDITS
+
+Joshua Hoblitt suggested updating submission.pod to point out the CREDITS file.  Chip agreed that would be a good idea.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/c98c13461a4f525e/8c9aea59444cfe7f#8c9aea59444cfe7f>
+
+
+
+=head3 Library Loading Without Duplicates
+
+Leo provided rudimentary support for avoiding loading the same bytecode file twice.  Chip agreed that it was a good idea.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/7cc4e2b33933c2d9/38625781b0fc614e#38625781b0fc614e>
+
+
+
+=head3 BigInt Needs Your Tests
+
+Jerry Gay created a ticket at Leo's suggestion.  BigInt needs both tests and design.  You should add those tests.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/18b985b9d0a75617/556a15e5db0d4eaf#556a15e5db0d4eaf>
+
+
+
+=head3 Parrot Shootout
+
+Brent Fulgham announced that he had added Parrot to the great language shootout.  This led to an inevitable round of optimizations as well as a few more of the benchmarks being written.
+ http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/a4cff1f015b466a5/b9aa4bbfcb04cd46#b9aa4bbfcb04cd46
+
+=head3 PAST?
+
+Jerry Gay's directory reorganization veered off to talk of imcc's PAST.  Bernhard Schmalhofer noted that punie also has a different PAST.  Too many acronyms...
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/33df7fe590a3dabb/059381abe4d068a2#059381abe4d068a2>
+
+
+
+=head3 Solaris Threads
+
+Erik Paulson noticed that Parrot's threads on solaris won't actually cross CPUs.  Jack Woehr explained that it was an issue with how Solaris implements POSIX threading.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/8f4046a3683fadc0/628f0960341e12ed#628f0960341e12ed>
+
+
+
+=head3 Multiline Macro Bug
+
+Joshua Isom found a bizarre behavior that he felt was likely a bug involving multiline marcos and commas.  Consensus it that it should be clarified and documented at the very least.
+
+L<http://groups.google.com/group/perl.perl6.internals/browse_frm/thread/b6f976ef9a96fab7/e99715a66fc31b2f#e99715a66fc31b2f>
+
+
+
+=head2 Perl 6 Language
+
+=head3 C<Test::fail> Problems
+
+Gaal Yahas noted that C<Test::fail> needs re-examination as fail is a built-in in Perl 6.  Discussion ensued, although I don't think an answer was posed.
+
+L<http://groups.google.com/group/perl.perl6.language/browse_frm/thread/58bf5777665fded1/cc7c6f74c8d98248#cc7c6f74c8d98248>
+
+
+
+=head3 Perl5 to Perl6 Translator
+
+Peter Schwenn asked what progress was being made on a Perl5 to Perl6 Translator.  Larry provided an update of the one that he was working on.  Based on Larry's update, I can bet that the Perl6 to Perl7 translator will be FAR easier than the 5 to 6 one.
+
+L<http://groups.google.com/group/perl.perl6.language/browse_frm/thread/c79cd1ad5db8fc77/a46e96ac84c58020#a46e96ac84c58020>
+
+
+
+=head3 $!?
+
+Daren Duncan was having trouble working out exactly how to work with $!.  Larry and others provided some answers, but I don't think any were final.
+
+L<http://groups.google.com/group/perl.perl6.language/browse_frm/thread/e9a10a5b3d645a73/bd9b09e58c292872#bd9b09e58c292872>
+
+
+
+=head3 Module Versioning
+
+David Green wondered how different module versions and APIs would be handled in Perl 6.  Larry provided answers.
+
+L<http://groups.google.com/group/perl.perl6.language/browse_frm/thread/40ec1866f50908e4/f9e8308425a464d6#f9e8308425a464d6>
+
+
+
+=head3 Regex Captures into Locals
+
+Brad Bowman wondered if there was a good way to have regexes capture into newly created local variables.  Currently, no, you must predeclare them.
+
+L<http://groups.google.com/group/perl.perl6.language/browse_frm/thread/ef6638e1ea4501c0/aeff63cf1f6af03c#aeff63cf1f6af03c>
+
+
+
+=head3 Threading Thoughts Through the Ether
+
+Ron Blaschke posted a few of his thoughts and a few links on threading in languages.  Sam Vilain posted a pointer to the S17 draft that includes atomic blocks and co-routines.
+
+L<http://groups.google.com/group/perl.perl6.language/browse_frm/thread/e6b3ca5a600ebde7/017e56166e196ac1#017e56166e196ac1>
+
+
+
+
+=head2 The usual footer
+
+To post to any of these mailing lists please subscribe by sending email to <perl6-internals-subscribe@perl.org>, <perl6-language-subscribe@perl.org>,  or <perl6-compiler-subscribe@perl.org>.  If you find these summaries useful or enjoyable, please consider contributing to the Perl Foundation to help support the development of Perl. You might also like to send feedback to ubermatt@gmail.com
+
+L<http://donate.perl-foundation.org/> -- The Perl Foundation
+L<http://dev.perl.org/perl6/> -- Perl 6 Development site
+L<http://planet.parrotcode.org/> -- Parrot Blog aggregator

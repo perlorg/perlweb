@@ -1,0 +1,114 @@
+=head1 This Week on perl5-porters (23-29 February 2004)
+
+This week's summary, a bit late, will tell about the approaching
+development release, the new bugs discovered and fixed, and the
+side-effects of the new warnings.
+
+=head2 CPAN modules and bleadperl
+
+Hoping to release perl 5.9.1 soon, Rafael asked to test CPAN modules
+against it. Bugs were found (and fixed) in PAR and in XML::Twig; he
+detected as well some problems with XML::Parser::PerlSAX, a module which
+apparently is no longer actively maintained, but which is still widely
+used.
+
+Rafael noted also that the regression tests produce lots of warnings
+I<Deprecated use of my() in conditional>, referring to the dubious and
+now deprecated construct
+
+    my $foo = $bar if $quux;
+
+So the warning is maybe too noisy (although it indicates a bug waiting to
+happen.) Rafael and Dave Mitchell proposed some alternatives, but the
+current form of the warning is likely to go into 5.9.1, even if it's made
+lighter afterwards.
+
+    http://groups.google.com/groups?selm=20040226004123.245a15ad.rgarciasuarez%40free.fr
+
+Marcus Holland-Moritz also found that Convert::Binary::C was producing a
+most strange error with bleadperl, which was tracked down and fixed by
+Dave Mitchell, the cause being rooted in the internals of the new bison
+parser for perl.
+
+    http://groups.google.com/groups?selm=20040227201207.7584bf56.mhx-perl%40gmx.net
+
+=head2 C<Storable> and ithreads
+
+Beau E. Cox is courageously trying to get C<Storable> work thread-safely,
+including under older perls. The further discussion is about ways of using
+the C<PERL_NO_GET_CONTEXT> is XS code, and ways of advertising it in the
+F<perlxstut> manpage.
+
+    http://groups.google.com/groups?selm=200402232243.29069.beau%40beaucox.com
+
+=head2 Another proof that C<$[> is evil
+
+Ton Hospel reported that the one-liner
+
+    $[ = 1 while $x;
+
+makes perl segfault. (bug #27024). This is due to the pragmatic
+(compile-time) nature of assignments to C<$[>, and was fixed by Rafael.
+
+=head2 Bugs in multiline regexps
+
+Zefram reported that, I<contrary to the documentation, C</^/m> does not
+match after a newline that is at the end of the string> (bug #27053), but
+it's not clear which one, of the documentation or the code, should be
+modified.
+
+He also reported that C<qr/$/> misbehaves in C</.../m> regexps; Hugo van
+der Sanden explained that this was due to the global variable C<$*>
+interfering with the C</m> flag. C<$*> (which was deprecated) has been
+removed from bleadperl, but its internal counterpart should be suppressed
+as well. (Bug #27028.)
+
+    http://groups.google.com/groups?selm=rt-3.0.8-27028-79227.10.9485947752979%40perl.org
+
+=head2 Other Bugs
+
+John M. Dlugosz produces the error I<Attempt to free unreferenced scalar>
+with the C<charnames> module; Dave reduced it to a few lines in two files
+(bug #27040).
+
+    http://groups.google.com/groups?selm=rt-3.0.8-27040-79720.3.9168168233855%40perl.org
+
+Ton Hospel finds a new way to leak memory, combining C<redo> and
+C<continue> (bug #27206).
+
+    http://groups.google.com/groups?selm=rt-3.0.8-27206-80174.5.18731750813757%40perl.org
+
+Ton also found a bug regarding the interpolation of array subscripts
+involving C<$&> in the right-hand side of substitutions. Tricky. (bug
+#26986).
+
+    http://groups.google.com/groups?selm=rt-3.0.8-26986-79096.12.4352684111778%40perl.org
+
+=head2 In Brief
+
+Tassilo von Parseval provided a patch to optimise map() used in scalar
+context. (It was already optimised in void context.)
+
+Chia-liang Kao provided a patch to C<Benchmark> to make cmpthese() and
+timestr() use time statistics for children instead of parent when the
+selected benchmark style is 'nop'.
+
+Dave Mitchell fixed the recursive C<goto &f> leak noticed last week.
+
+Nicholas Clark released a snapshot of maintperl. He plans a code freeze
+for 5.8.4 at the end of March.
+
+=head2 And now for a bit of advertisement
+
+David Wheeler forwarded a message from the PostgreSQL community, saying that
+I<there's a fair bit of interest there in improving pl/Perl -- that is,
+the ability to write native database functions in Perl>. Help welcomed.
+
+    http://groups.google.com/groups?selm=757FBF18-6AF0-11D8-A088-000A95972D84%40wheeler.net
+
+=head2 About this summary
+
+This summary was written by Rafael Garcia-Suarez.  Weekly summaries are
+published on F<http://use.perl.org/> and posted on a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>.  Corrections
+and comments are welcome.

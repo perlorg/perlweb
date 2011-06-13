@@ -1,0 +1,76 @@
+=head1 This Week on perl5-porters (15-21 September 2003)
+
+Those weeks, the perl 5 porters are in maintenance mood. Or in
+maintenance mode, if you prefer. Read about the progress made in the
+5.8.x and 5.6.x branches.
+
+=head2 A strange error case in bleadperl
+
+Stas Bekman posted a code snippet that produces the fatal error
+I<Modification of a read-only value attempted> with bleadperl, but not with
+perl versions <= 5.8.1. (Filed as bug #23803.) It can be reduced to :
+
+    for("a") { for $x (1,2) { local $_="b"; s/(.*)/+$1/ } }
+
+This was the consequence of a previous bug fix. Rafael explained that in
+perl 5.9.0, any attempt at changing the value of a localized readonly
+magic scalar will fail with this error. Before, it used to silently do
+nothing, and the assignment C<$_="b"> was a no-op : this could lead to
+difficult and well-hidden bugs. In bleadperl, readonlyness of magical
+scalars is now preserved when localisation occurs.
+
+But, will you say, where is the magic in the above snippet ? In fact, it
+appears that the substitution C<s/(.*)/+$1/> adds some magic to the scalar
+stored in C<$_>. This kind of magic is used internally by the regular
+expression engine. Thus, one can say that the behaviour reported by Stas
+is an unfortunate side-effect of the implementation of regular
+expressions.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-09/msg00877.html
+
+=head2 Configure and gcc 3.4
+
+Enache Adrian, watchful on the portability front, forwards a mail from the
+gcc development mailing list. A change in gcc's behaviour in the 3.4
+development branch leads to breaking perl's F<Configure> script ; more
+precisely, it breaks the way F<Configure> tests for the existence of a
+function in the standard library.
+
+This was followed by a scary C wizardry thread. Enache provided a fix.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-09/msg01024.html
+
+=head2 In Brief
+
+Jarkko Hietaniemi released several snapshots of perl 5.8.1. The next
+release candidate approaches. Extensive tests have been done with mod_perl
+1 and 2, and this uncovered several problems, both in mod_perl and in
+perl.
+
+Speaking about snapshots, Rafael released one of perl 5.6.2. It's OK on a
+large number of platforms ; adjustments are needed on Mac OS X and Cygwin
+at least. Rafael incremented the version number, so it reports itself as
+being C<5.6.2>.
+
+The bulk of the discussion focused on portability on various platforms --
+mainly the non-Unix ones, VMS, OS/2, Windows and Cygwin. Peter Prymmer
+reported that perl now looks good on VMS 7.3-1, with no regression test
+failing.
+
+Ilya Zakharevich and Yves Orton reported a few bugs in Test::Harness.
+
+Stas Bekman noticed that with perl 5.8.1, if a socket gets closed by the
+server while printing to it, the client gets a SIGPIPE. It wasn't
+happening in perl 5.8.0 or earlier. (This is considered a feature, not a
+bug.)
+
+Michael Schwern released base.pm version 2.03, which fixes an obscure
+(and ancient) bug on attribute inheritance, when an intermediate class has
+no fields.
+
+=head2 About this summary
+
+This week's summary was produced by Rafael Garcia-Suarez. Summaries are
+published weekly on F<http://use.perl.org/> and on a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>. Corrections
+and comments are welcome.

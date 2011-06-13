@@ -1,0 +1,92 @@
+=head1 TITLE
+
+crypt() default salt
+
+=head1 VERSION
+
+  Maintainer: Mark Dominus <mjd@plover.com>
+  Date: 11 Sep 2000
+  Last Modified: 23 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 208
+  Version: 4
+  Status: Frozen
+
+=head1 ABSTRACT
+
+A frequently-asked question is how to generate an appropaite random
+salt for password encryption.  I propose that Perl generate the salt
+automatically if the salt argument is omitted in the call to crypt().
+
+=head1 DESCRIPTION
+
+At present, crypt() requires two arguments:
+
+         crypt PLAINTEXT,SALT
+
+It then passes these arguments directly to the C library crypt()
+function.
+
+When encrypting a new password, the programmer is required to generate
+a salt at random:
+
+        @letters = ('A' .. 'Z', 'a' .. 'z', '0' .. '9', '/', '.');
+        $salt = $letters[rand@letters] . $letters[rand@letters];
+        $passwd = crypt($passwd, $salt);
+
+This is inconvenient and nonportable.  It's also nonobvious: people
+frequently ask in the newsgroups how to do it.  I propose that if the
+SALT argument is omitted, Perl should generate an appropriate salt
+internally and use that.
+
+        $passwd = crypt($passwd);    # Same as above
+
+On systems where the password format is different, Perl can do the
+appropriate thing.
+
+=head1 IMPLEMENTATION
+
+For the standard DES-based crypt, the implementation is
+straightforward trivial. Perl already has many functions that take an
+optional argument, and the C internals of the random-salt generator
+are well-known.
+
+Details will vary for systems using alternative password hashing
+schemes.  On some systems, no salt need be generated.  These can be
+taken care of with a suitably ifdef'ed section of code if necessary.
+
+If the random number generator has not yet been seeded, Perl should
+seed it.  
+
+Michael Schwern has developed a partial demonstration implementation
+in pure Perl.  It is available from
+
+         http://www.pobox.com/~schwern/src/RFC-Prototype-0.01.tar.gz
+
+It has been suggested that C<crypt()> should have a private random
+number generator, to avoid interfering with the sequence of numbers
+produced by rand().  This would significantly complicate the
+implementation, and I believe it is probably unnecessary.  See the
+REFERENCES for details.
+
+=head1 MIGRATION
+
+C<crypt()> with only one argument is presently a compile-time error,
+so there are probably few translation issues.  The meaning of this
+program will change:
+
+        $" = ', ';
+        $code = "crypt(@ARGV)";
+        eval $code;
+        die $@ if $@;
+
+But I don't think this is anything to worry about---it should fall
+into the "other 5%" category.
+
+=head1 REFERENCES
+
+perlfunc manpage for discussion of crypt()
+
+crypt(3)
+
+http://dev.perl.org/archive?35:mss:4500:200009:lmemkmdbnocclmnnijmc

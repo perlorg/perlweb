@@ -1,0 +1,361 @@
+=head1 This Week on perl5-porters - 19-25 September 2005
+
+Another week of business as usual. The 5.8.8 progesses steadily,
+bugs are found in POD, people post ways of making perl do the
+wrong thing, and C<Test::More> is released.
+
+=head2 The continuing saga of blead on VMS
+
+John Malmberg continued his journey making bleadperl work on VMS.
+This time he noticed that C<ExtUtils::MM_Unix> can use the command
+'false' to indicate falsehood, but that there is no such beast in
+VMS.
+
+Michael Schwern suggested solving the problem by adding a layer of
+indirection, that is, a scalar that hold the command fragment to
+use, such as C<perl -e 'exit 1'>. Peter Prymmer suggested that
+C<exit 44> would be a superior choice. John then struck back with
+some killer DCL to teach us far more than we ever wanted to know
+about exit codes on VMS (and admitted that it is a bit ugly) and
+promised to look at C<perlport>, as he suspects that it is probably
+out of date.
+
+The main thing to remember is that VMS exit codes are like signals.
+They can propagate all the way back to top unless the shell script
+takes care in trapping them.
+
+It's quite an interesting thread, even if VMS is not your cup of
+tea.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00399.html
+
+John also noticed that the t/io/fs.t triply-linked file test does
+not do what the comments says it does. It's actually more about
+Unix's C<uname> behaviour. Which makes it a bit tricky to figure
+out what to do on VMS. One idea was to make the test test what it
+claimed to test.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00398.html
+
+He ended on a high note of proposed VMSish changes, which
+appeared to be well received by Craig Berry and Peter Prymmer.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00488.html
+
+=head2 Doing the version bump
+
+Yitzchak Scott-Thoennes pulled down a copy of 5.8.8 to be and ran
+the test suite on cygwin. Things went well, except for a failure
+in C<op/layers.t> which should be fixed as soon as patch 24767 is
+landed in maint.
+
+What went less well is Yitzchak installed it over 5.8.7 by mistake
+and expressed desire at seeing the version number being bumped soon
+to 5.8.8 to prevent this happening to someone else.
+
+Nicholas was reluctant to do so, until such time as the version
+numbering scheme makes it exceedingly clear what the official
+maintenance releases are, as opposed to a release in the buildup
+to a maintenance release. He pointed out that it is the first task
+on the TODO "that need a little C knowledge." John Peacock suggested
+a patch.
+
+  The discussion
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00413.html
+
+  The TODO as she stands
+  http://public.activestate.com/cgi-bin/perlbrowse?file=pod%2Fperltodo.pod&rev=
+
+=head2 An oddity in op.c
+
+The blead version of Perl supports the DOR (defined-or) operator
+C<//> (shamelessly pinched from Perl 6), implemented by Brent Dax.
+DOR being so nice to have, H.Merijn Brand backported this patch to
+maint, and offers a patch to every version of maint perl (5.8.x)
+to support it too. Andy Lester's ongoing consting of blead (and
+Nicholas's integration of those patches into maint for 5.8.8) has
+made H.Merijn's job more difficult than usual to keep his patch
+applying cleanly.
+
+As a result of this, H.Merijn spotted some smelly code in the
+C<S_new_logop> function, and discussed it with Nicholas Clark. It
+has been there since 5.8.0 so it must be working, but it seems
+wrong, especially when compared to the same code in blead. Jan
+Dubois thought the two fragments were semantically equivalent
+although the blead version was more robust.
+
+  The oddity
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00420.html
+
+  The Cygwin status
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00429.html
+
+  DOR patches for maint
+  http://search.cpan.org/CPAN/authors/id/H/HM/HMBRAND/
+
+  H.Merijn's perl for HP-UX and the DOR repository
+  http://mirrors.develooper.com/hpux/
+
+=head2 ExtUtils::MakeMaker in maint
+
+Michael Schwern wants the latest version of C<ExtUtils::MakeMaker>
+in maint. Or at least any version which is not two years old.
+(Michael has been dragging C<EU::MM> into the 21st century for some
+time now -- in another thread on C<perl-qa> he even mentioned that
+the latest alpha now emits proper license information into the
+META.yml file).
+
+John Malmberg gave it a clean bill of health on VMS. Nicholas Clark
+recalled some problems with distclean and SDBM_File
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00425.html
+
+=head2 License clarification for perlglossary.pod
+
+C<perlglossary.pod> is
+
+  Based on the Glossary of Programming Perl, Third Edition,
+  by Larry Wall, Tom Christiansen & Jon Orwant.
+  Copyright (c) 2000, 1996, 1991 O'Reilly Media, Inc.
+  Used with permission.
+
+Well, it used to be. Yitzchak Scott-Thoennes wrote to say that Tim
+O'Reilly said that the last sentence can be changed to
+
+  This document may be distributed under the same terms
+  as Perl itself.
+
+And there was much rejoicing.
+
+  The patch
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00451.html
+
+  The forwarded message from Allison
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00458.html
+
+=head2 Building perl on AIX
+
+Alan Olsen had problems building 64-bit Perl 5.8.7 on AIX 5.2.
+Campo Weijerman asked for some information, Alan replied and then
+nothing else was heard, so apparently he fixed it. Alan then sent
+another message saying that he was having more problems on 5.3 and
+again Campo Weijerman came to the rescue. Apparently AIX just won't
+let you build perl with C<-Duse64bitall> and C<-Duseithreads>. AIX
+is strange.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00461.html
+
+=head2 File::Find::find and {follow => 1} on Win32
+
+Steve Hay reported in bug #37223 that it doesn't work, and that
+C<follow> and C<follow_fast> should be no-ops on Win32, since the
+file system doesn't support symbolic links.
+
+Rafael Garcia-Suarez couldn't believe nobody had noticed it until
+now. Steve Peters guiltily raised his hand and pointed to patch
+#23510.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00481.html
+
+=head2 Fixing pod/pod2usage2.t
+
+Merijn sent in a patch for C<pod/pod2usage2.t> but the attachment
+was eaten by a grue. Nicholas pointed out that the C<perl.org> MTA
+eats anything that looks like C</\.t$/>. B<Newsflash>: apparently
+now fixed.
+
+Merijn resent the patch with a C<.txt> extension, but it still
+contains a Unixism (C<open(IN, "-|")> that doesn't work quite right
+on Win32. He remembered that C<t/op/write.t> has a workaround for
+this.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00491.html
+
+=head2 Regexp stack overflow in 5.8.7
+
+Brian Candler reported bug #37230 where C<^"(?:[^"\\]|\\.)*"\s+\d+\s+(\d+)>
+(used to munge Apache log files) bombed out with deep recursion,
+and he couldn't see why the engine would want to backtrack (notably,
+over the C<(?:[^"\\]|\\.)> bit - "anything except a double quote
+or backslash, or a backslash followed by anything.")
+
+Hugo van der Sanden explained that the engine lacks the capacity
+to analyse the alternations and see that they are mutually exclusive.
+
+Abigail suggested using C</"[^"\\]*(?:\\.[^"\\]*)*"/s> instead,
+since it removes all alternations. Brian reported that with a
+sufficiently long target string, this expression will still cause
+perl to dump core. Yitzchak suggested
+C<< /"[^"\\]*(?>\\.[^"\\]*)*"/s >> as an alternative (The rarely
+used, rarely understood C<< (?>...) >> assertion).
+
+Brian said that that one dumped core too. Abigail concluded that
+sometimes, core dumps happen.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00503.html
+
+=head2 Too late for INIT
+
+Hugo wondered why perl refuses to run INIT blocks, simply because a
+module has been loaded via C<require> rather than C<use>, and thought it
+an odd wart. Rafael suggested adding a C<UNITCHECK> code block, that
+would be run regardless of how the module was loaded.
+
+  The thread
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00529.html
+
+  Possible source of Hugo's question, from Perlmonks
+  http://www.perlmonks.org/index.pl?node_id=494439
+
+=head2 Another major bug in PerlIO
+
+Ilya Zakharevich wrote in to say that he thought it must be easier to
+rewrite the PerlIO layer from scratch rather than attempt to fix bugs in
+it.
+
+  unix2dos .tcshrc | \
+  perl -we 'binmode STDIN, ":crlf" or die;
+    print while read STDIN, $_, 32000'
+
+Looks simple, but it doesn't work. He truss'ed the program and observed
+two seeks and read for each converted line ending, which of course does
+wonders for performance. Nick Ing-Simmons replied, saying that what was
+needed is an efficient version of C<:crlf>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00562.html
+
+=head2 Kill mv-if-diff?
+
+Nicholas Clark raised the issue of C<mv-if-diff>, a little shell script
+hack used by C<make> to avoid damaging the timestamps on auto-generated
+files, if the contents haven't actually changed.
+
+He noted that on a clean rebuild, C<lib/unicore/mktables> is run 7 times
+(when only once would suffice). It gets much worse after editing a file
+and rebuilding. Cascading effects cause a merry-go-round of files being
+rebuilt.
+
+And parallel makes are also broken. (The summariser, having access to a
+six-CPU box, can confirm that a C<make -j 18> causes spectacular
+fireworks). Nicholas wonders if these two observations are related, and
+that things might be a whole lot better if C<mv-if-diff> was simply
+thrown away.
+
+Steve Peters thought it was a symptom of insufficient targets and
+dependencies to keep track of the build. Russ Allbery thought it was
+C<mv-if-diff> that was lacking in capability, because otherwise it would
+do The Right Thing. Vadim Konovalov suggested a heavy engineering
+approach with additional helper files.
+
+Joshua Juran identified the problem as being the issue of attempting to
+manage two pieces of information (the date a file was changed, and the
+date it was confirmed up-to-date) in the same slot. The Macintosh
+filesystem has a backup date field on files which could be pressed into
+service for this, but that is non-portable. His second suggestion was
+to throw away the broken optimisation that is C<mv-if-diff>.
+
+Yves Orton brought patches 24004, 24056 and 24320 back up on the radar,
+saying that all this business is probably the cause of those patches.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00546.html
+
+=head2 New modules
+
+Michael Schwern announced C<Test::Simple/More/Builder> version 0.61.
+Lots of new goodies and fixes.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00543.html
+
+=head2 Using Test::More to test Math::Complex
+
+Jarkko Hietaniemi wanted a pair of fresh eyes to take t/Complex.t
+from C<Math::Complex> and rewrite it using C<Test::More>. Michael
+Schwern sketched out briefly how it might be done. Since the data
+for the tests are stored in a C<__DATA__> section of the script,
+Jarkko wanted a test failure to display something like:
+
+  not ok 123
+  #   Failed test in Complex.t at line 56, <DATA> line 1234.
+  #          got: '1+2i'
+  #     expected: '1+i'
+
+Michael showed how this could be approximated to a first degree
+using C<diag()>, but that the real solution would be to override
+C<Test::Builder>'s diagnostics, but that it's not yet quite
+flexible enough to do that.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00559.html
+
+=head2 In brief
+
+Smylers filed bug #37199 relating to mangled POD in C<File::Basename>
+and Steve Hay replied that the problem had already been fixed in blead.
+
+Dan "Unstorable" Kogai noted that $Storable::drop_utf8 seems ineffective
+on Perl 5.8.x, and went on to say why, supported by code fragments in
+Perl and C. He wondered whether the code or documentation should be
+fixed. He was Warnocked.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00474.html
+
+Yitzchak sent in a patch to silence a couple of compiler warnings (three
+out of seven). Rafael fell asleep at the wheel and had to be pinged to
+apply it two days later.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00487.html
+
+Paul Marquess supplied a patch to sync C<Compress::Zlib> 1.40 with core.
+Patch applied with alacrity by Rafael.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00538.html
+
+Alex Davies reported a memory leak in #37231 when eval'ing syntactically
+incorrect code.
+ 
+  while (1) {
+    eval "sub { \$foo = "; # closing } missing 
+  }
+
+... the above will rapidly consume all available memory (don't try this at
+home). No takers yet; Dave Mitchell must be busy doing something else.
+
+"lace" reported in #37250 that C<pod2html> does not produce XHTML-conformant
+code.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00516.html
+
+Jan Hudec posted more ways of making perl panic, but cheated by using UTF-8
+in the PerlIO layer.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00533.html
+
+Taro Kawagishi found a problem with C<perlfaq3> "How do I find which
+modules are installed on my system?", and supplied code to deal with the
+case when a directory path listed in @INC is a symbolic link.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00561.html
+
+Steve Peters posted a patch (#25571) to get C<PERL_DEBUG_COW> (Copy On
+Write) working correctly on the smoke tests.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00535.html
+
+=head2 About this summary
+
+This summary was written by David Landgren.
+
+Information concerning bugs referenced in this summary (as #nnnnn)
+may be viewed at http://rt.perl.org/rt3/Ticket/Display.html?id=nnnnn
+
+Information concerning patches to maint or blead referenced in
+this summary (as #nnnnn) may be viewed at
+http://public.activestate.com/cgi-bin/perlbrowse?patch=nnnnn
+
+Weekly summaries are published on F<http://use.perl.org/> and posted
+on a mailing list, (subscription: F<perl5-summary-subscribe@perl.org>).
+The archive is at F<http://dev.perl.org/perl5/list-summaries/>.
+Corrections and comments are welcome.
+
+If you found this summary useful or enjoyable, please consider
+contributing to the Perl Foundation to help support the development
+of Perl.

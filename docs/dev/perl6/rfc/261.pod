@@ -1,0 +1,224 @@
+=head1 TITLE
+
+Pattern matching on perl values
+
+=head1 VERSION
+
+  Maintainer: Steve Fink <steve@fink.com>
+  Date: 19 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 261
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+A pattern matching primitive that operates on perl values would allow
+sophisticated data slicing and dicing to be specified concisely.
+
+=head1 DESCRIPTION
+
+=head2 EXAMPLES
+
+Best illustrated by examples:
+
+  # Nearly identical to current behavior
+  my ($a, $b, $c) = @_;
+
+  # Changes current behavior. $b is set only if ! defined $_[0]
+  my (undef, $b) = @_;
+
+  # Nearly equivalent to the present my (undef, $b) = @_
+  my (?, $b) = @_
+
+  # Equiv to my $name = $hashref->{name}; my @kids = @{$hashref->{children}}
+  my { 'name' => $name, children => [ @kids ] } = $hashref;
+
+  # Operationally equiv to my $b = $_[1]->{food};
+  # my ($a) = grep { $_[1]->{$_} eq 'fish' } keys %{$_[1]}
+  # even if $_[1]->{food} eq 'fish'
+  my (undef, { $a => 'fish', food => $b }) = @_;
+
+  # $a is an arbitrarily chosen key of %$h, and $b is its value.
+  # $c is a key whose value is a hash ref containing 'needle' as a key.
+  # In this and all other examples, if any pattern match fails,
+  # the whole match fails and does not assign any variables.
+  my { $a => $b, $c => { needle => ? } } = $h;
+
+  # If you are not declaring variables, 'match' performs the same operation
+  # for existing variables. This one sets $a to $foo[0] unless @foo==0.
+  match ($a) = @foo;
+
+  # Constants can be matched against too.
+  match { 'Joe' => ? } = $h or die "Hash does not contain Joe";
+
+  # Equiv to scalar(grep { $_ == 1 } @list)
+  match (..., 1, ...) = @list;
+
+  # Pretty close to ($idx) = grep { $_[$_] == 1 } @_; $b = $_[$idx+1];
+  match (..., 1, $b) = @_;
+
+  # It gets worse! This gives the value associated with a key matching the
+  # regular expression a*b:
+  match { /a*b/ => $value } = \%h;
+
+  # And if you want to know what the key was:
+  match { $key = /a*b/ => $value } = \%h;
+
+  # What if you want to grab out the index? This is like
+  # ($i) = grep { $list[$_] =~ /foo/ } 0..$#list
+  match ( $i => /foo/ ) = @list;
+
+  # If you don't want to require the trailing parts of the pattern to match:
+  match ($a, 1, $b, :optional $c, 2, $d) = @_;
+
+  # Equivalent to my Dog $puppy = $h->{puppy}, whatever my Dog $puppy
+  # is chosen to mean.
+  my { 'puppy' => Dog $puppy } = $h;
+
+  # Equiv to my Dog $temp = $h->{puppy}; $puppy = $temp;
+  # (Performs whatever assertion checking my Dog $var would normally do.)
+  match { 'puppy' => Dog $puppy } = $h;
+
+  # Depending on the final meaning of my Dog $puppy, this may search for
+  # something satisifying the my Dog $puppy assertions. So it would be
+  # similar to
+  #  while (($k,$v) = each %$h) {
+  #     ($slot,$puppy) = ($k,$v), last if UNIVERSAL::isa($v, 'Dog');
+  #  }
+  my { $slot => Dog $puppy } = $h;
+
+=head2 DETAILS
+
+The syntax is
+
+ MATCH-EXPR : (my|match) PATTERN = EXPR
+ PATTERN : '{' HASH-PATTERN-LIST '}'
+         | '(' LIST-PATTERN-LIST ')'
+         | '[' LIST-PATTERN-LIST ']'
+         | 'undef'
+         | '?'
+         | '...'
+         | VARIABLE
+         | CONSTANT
+         | REGEX
+         | VARIABLE '=' PATTERN
+ HASH-PATTERN : PATTERN '=>' PATTERN
+ HASH-PATTERN-LIST : /* empty */
+                   | HASH-PATTERN ',' HASH_PATTERN-LIST
+                   | ':optional' HASH-PATTERN ',' HASH_PATTERN-LIST
+ LIST-PATTERN-LIST : /* empty */
+              | LIST-PATTERN ',' LIST-PATTERN-LIST
+              | ':optional' LIST-PATTERN ',' LIST-PATTERN-LIST
+ LIST-PATTERN : PATTERN
+              | PATTERN => PATTERN
+
+Both C<my> and C<match> return the number of variables successfully
+matched. The behavior of
+
+ my $a = 1 if cond();
+
+is changed to mean
+
+ my $a;
+ $a = 1 if cond();
+
+So that you can easily test the success of pattern matching:
+
+ my { $a => 'Bob' } = \%h
+        or warn "Bob ain't here!"; 
+
+For the case of C<match (...)>, each PATTERN is matched against the
+corresponding element of the right hand side (rhs). If the rhs runs
+out of elements, the whole match fails and the return value is
+undefined. For example, C<match (@a, $b) = @_> will always leave both
+@a and $b unaffected because @a will have eaten all of @_.
+
+For the case of C<match {...}>, the rhs must be a reference to a hash.
+Conceptually, each (key,value) pair is matched against all of the
+HASH-PATTERN key and value pattern pairs in turn. If multiple
+(key,value) pairs match the same PATTERN=>PATTERN pair, which ones are
+matched to which is undefined (multiple patterns may be considered as
+matching the same (key,value) pair, and vice versa.)
+
+C<undef> now means that the matching value MUST be undefined, rather
+than serving as a "don't care" placeholder as it does now in some
+contexts. The placeholder function is taken over by C<?>. C<...> is a
+variable-length placeholder matching zero or more list elements.
+
+When using C<:optional> and no variables are matched, the special
+value "0 but true" is returned.
+
+=head2 DISCUSSION
+
+It might be preferable to just die() on a failed match, although that
+would make it harder to do some of the grep replacements.
+
+Forcing patterns to match unique list or hash elements would make this
+more powerful, but would make it harder to implement, slower, and
+possibly more confusing.
+
+It would be very useful to match against a hash (not just a hash
+reference). Suggestions for syntax? This would allow
+
+ sub new {
+    my ( __PACKAGE__ $self,
+         %{ PeerAddr => $addr, :optional LocalAddr => $localaddr }
+       ) = @_;
+
+It might be better to leave C<my> unchanged and either only provide
+C<match> or provide another keyword for both matching and creating the
+lexical variables. If that were done, then we might also consider using
+C<EXPR =~ PATTERN> rather than C<PATTERN = EXPR>.
+
+=head1 MIGRATION
+
+ my (undef, $a, undef) = @_;
+
+would be rewritten
+
+ my (:optional ?, $a, ?) = @_;
+
+In other words, all C<undef>'s in C<my()> lists would be changed to
+C<?>, and C<:optional> would be placed at the beginning of the list.
+
+This is still a buggy migration, because pattern matching returns the
+number of variables assigned, while perl5 returns the rhs list padded
+to the number of elements on the lhs, or something like that. Avoiding
+the use of C<my> for pattern matching would solve this, as would
+making a C<perl5_my> operator.
+
+=head1 IMPLEMENTATION
+
+Fairly straightforward. I long ago prototyped a simplified version of
+this in perl5, though it required you to quote the pattern and would
+only assign to global variables. In order to be useful, though, this
+needs to be implemented in C.
+
+=head1 REFERENCES
+
+RFC 22: Control flow: Builtin switch statement
+
+This feels similar to Damian Conway's C<switch> operator, and some
+unification might be useful. I doubt the fully generalized union would
+be as useful as two specialized primitives.
+
+RFC 156: Replace first match function (C<?...?>) with a flag to the
+match command
+
+This is necessary to avoid parsing ambiguity with the ? placeholder.
+
+RFC 164: Replace =~, !~, m//, s///, and tr// with match(), subst(),
+and trade()
+
+This also uses the C<match> keyword, though either RFC could easily
+switch to another.
+
+RFC 170: Generalize =~ to a special "apply-to" assignment operator
+
+This would provide the EXPR =~ match PATTERN syntax, similar to
+EXPR =~ PATTERN above.
+
+RFC 218: C<my Dog $spot> is just an assertion
+
+I've been assuming this or something similar in the semantics described.

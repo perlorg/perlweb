@@ -1,0 +1,456 @@
+=head1 This Week on perl5-porters - 20-26 March 2006
+
+Dave Mitchell converts the regular expression engine from
+recursive to iterative.
+
+=head1 Topics of Interest
+
+=head2 More on C<Module::Build> on VMS
+
+Ken Williams got back to Craig A. Berry's patch from last week for
+C<Module::Build> on VMS, and implemented a new approach to deal
+with backtick captures. John E. Malmberg and Craig batted it around
+for a while until it looked ready. John wrapped it up as a new version
+of C<ExtUtils::CBuilder>. John noted that there might be issues with
+older VMS versions that limit command lines to 255 characters, but
+decided to punt the issue for the time being.
+
+  Looking good
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00795.html
+
+=head2 Building a threads-friendly debugger.
+
+Dean Arnold wrote to say that he was in the process of hacking C<ptkdb>
+to make it easier to deal with debugging multi-threaded programs. He
+had reached the point where it seemed that the most promising way
+forward was to change the C<$DB::single> variable to be globally
+shared across all the threads.
+
+After the usual admonishments ("You're mad!", "No-one who has ventured
+there has ever come back alive!"), Dave Mitchell said that he thought
+that it couldn't do much harm, except that it was likely to bring about
+a significant loss in performance, as the threads fought amongst
+themselves to acquire a lock on C<$DB::single> to read it.
+
+Dean ran a couple of benchmarks and saw that Dave was right, the
+resulting performance curve was pretty atrocious (about two orders
+of magnitude).
+
+  Where hackers fear to tread
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00703.html
+
+=head2 Dynamic libraries on AIX 5.1
+
+Last time we heard from John L. Allen, he had been busy doing battle
+with 32/64 bit builds with Oracle on AIX. This week he was having
+trouble with C<Math::Pari>, and he and Ilya Zakharevich, C<Math::Pari>'s
+author, were stuck.
+
+The problem revolved around which libraries were being linked, which
+meant that the wrong version of the C language C<pow> function being
+used.  John wanted to understand what was happening and why. H.Merijn
+Brand guided him through the twisty mazes of AIX linker techniques.
+
+By the end of the thread John had managed to concoct a method for
+making it work, and H.Merijn made a plea for an AIX maven
+to step in and take over (and revise) the F<README.aix> file.
+
+  Fear and loathing
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00645.html
+
+=head2 New C<Time::Local> failure
+
+Rafael Garcia-Suarez attempted to upgrade C<blead> with C<Time::Local>
+version 1.12, and saw that the test suite failed. Steve Hay recalled
+that this was the result of a bug that he had encountered in LWP's test
+suite. Gisle Aas isolated the problem with C<Time::Local>, and Dave
+Mitchell came up with the patch.
+
+Steve wondered whether that patch should be applied only to the
+Win32 platform. Dave Rolsky, author of the module, responded saying
+that there were some problems with integer overflow that gets
+triggered only in certain time zones. He said that it was all a bit
+of a mess, but that he was going to get it sorted out and release
+1.13.
+
+  It's about time
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00734.html
+
+=head2 Revamped UTF-8 caching code
+
+Nicholas Clark checked in some code to rework how UTF-8 caching is
+performed.
+
+First, some background: finding the offset of an arbitrary character
+in a UTF-8 string can be a difficult proposition, depending on the
+number of wide characters encountered in the string. The brute force
+method consists of starting from the beginning, and then counting
+characters until the desired offset is reached. Depending on the
+length of the string, this can be very time-consuming.
+
+To lessen this cost, perl maintains a cache of where wide characters
+appear in a string, to minimise the amount of linear scanning
+required. A few weeks ago, a bug report revealed that there were
+some problems with the existing cache management code.
+
+So Nicholas reworked it a fair bit, adding a C<${^UTF8CACHE}>
+variable to allow the caching code to be enabled and disabled at
+will, as well as a C<PERL_UTF8_CACHE_ASSERT> build-time
+switch to force extra checking (verifying that the cached and
+uncached results agree). He also discovered that the code wasn't
+taking full benefit of the gathered information, and
+tweaked the code to minimise the amount of linear scanning
+required.
+
+  And accessible from the command-line too
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00745.html
+
+  see also
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-02/msg00864.html
+
+=head2 The regexp engine no longer uses recursion
+
+Dave Mitchell announced that he had reworked the regular expression
+engine to use an iterative technique rather than recursive. He
+achieved this feat by making C<S_regmatch()> save its match context
+on the heap and restart the main loop, rather than on the stack
+by calling itself.
+
+Dave measured that the heap allocation induced a 3% slowdown, but that
+this should be avoided by switching to an arena-based allocation scheme
+or similar, further down the track.
+
+Before you ask, yes, C</(??{$re}/)> still causes recursion. And Hugo
+van der Sanden thinks undoing I<that> would be hard.
+
+  No more nasty stack overflow bugs
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00793.html
+
+=head1 Patches of Interest
+
+=head2 Upgrading to C<threads> version 1.12
+
+Jerry Hedden had delivered a patch to sync C<blead> with C<CPAN>. Dave
+Mitchell declined the patch, saying that a patch must never mix functionality
+and whitespace formatting changes. If the whitespace is to be changed
+(and in general the rule is: never), then that should be delivered in
+a separate patch.
+
+Dave also thought that the approach was back to front. The changes
+should be applied to C<blead> first, and then after the changes have
+had time to settle, the C<blead> version can be released to C<CPAN>.
+
+Jan Dubois agreed that he too would prefer it this way around, since
+each change is tracked in Perforce, the C<perl5-changes> mailing list
+gets to hear about it, and e-mail C<Message-ID>s from the latter
+list make it easier to cross-reference the changes with traffic on
+C<perl5-porters>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00651.html
+
+Jerry also asked about the definition of C<THREAD_RET_TYPE>, in
+the process of coming to grips with the C<threads> code base but
+received no answers.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00749.html
+
+and finally got a patch accepted to sync C<blead> with CPAN.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00750.html
+
+=head2 Serialising closures via C<Storable>
+
+David Wheeler wanted to know whether C<Storable> could be used
+to dump out a closure, bring it back again, and have it work. For
+instance, to be able to say
+
+  my $var = 1;
+  my $code = sub { $var };
+  print $code->();
+  $code = thaw(freeze($code));
+  print $code->();
+
+And have it print out "1" twice, rather than once and a warning
+about uninitialised values in C<print>. Yuval Kogman explained how
+it was more or less possible, and the pitfalls one would encounter
+if one were brave enough to insist on the approach.
+
+Yves Orton, author of C<Data::Dump::Streamer>. showed how using that
+module could probably provide something closer to what David was
+after. Joshua realised that one only had to teach C<Storable>
+to use C<DDS> instead of C<B::Deparse> and it would Just Work.
+
+Rafael noted that Storable is in the core, but C<DDS> is not, although
+it should be possible to teach C<Storable> to use it if it were
+available locally.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00763.html
+
+=head1 Watching the smoke signals
+
+=head2 F<Compress/IO/Zlib/t/050interop-gzip.t> failure on OpenBSD
+
+Steve Peters tracked down the smoke failures occurring on OpenBSD. It
+turns out that OpenBSD's C<gzip> behaves differently when gzipping
+a zero-byte file:
+
+  # Cygwin, FreeBSD, Linux, NetBSD, Solaris, ...
+  touch /tmp/foo; gzip -c /tmp/foo > /tmp/foo.gz; echo $?
+  0
+  # OpenBSD
+  touch /tmp/foo; gzip -c /tmp/foo > /tmp/foo.gz; echo $?
+  1
+
+Paul took that into account, but wondered all the same why the
+smoke results mentioned "Inconsistent test results (between TEST and harness)",
+when one should expect that both TEST and harness should fail in exactly
+the same way.
+
+Steve had a hunch that the problem on OpenBSD arose when the file
+to be compressed is less than 10 bytes long. Which seems odd, to say
+the least. Joshua ben Jore mentioned that he had seen similar problems
+on a Ubuntu Linux but hadn't been paying close attention. He promised
+to go back and look more closely to see if it was the same error, or
+something else again.
+
+  One more reason...
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00636.html
+
+  And the patch to fix it
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00785.html
+ 
+
+=head2 Smoke [5.9.4] 27593 FAIL(F) MSWin32 WinXP/.Net SP2 (x86/2 cpu)
+
+Steve Hay had a Windows build fail due to a problem with
+C<ExtUtils::MakeMaker> (that Rafael had recently integrated), and
+asked Michael to integrate the patch he made into the C<EU::MM>
+repository.
+
+  Earth to Schwern, do you read me?
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00782.html
+
+=head1 New and old bugs from RT
+
+=head2 C<print (...) interpreted as function> occasionally (#4346)
+
+Many moons ago, Abigail reported that the message "print (...)
+interpreted as function" appears inconsistently, depending on
+a peculiar combination of closing braces, whitespace and/or
+semicolons. Steve Peters said that C<say> has picked up a
+similar habit.
+
+  The more things change...
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00663.html
+
+=head2 More on overloading and reblessing (#34925)
+
+The thread about overloading and reblessing objects continued this
+week. Nicholas Clark proposed a solution to scan all the references
+to an object and fix them up. Yitzchak Scott-Thoennes pointed out
+that such an approach would break the following code:
+
+  $a = $b = {};
+  bless $b, OverloadedClass;
+  # $a is not overloaded here
+
+Yitzchak admitted that such a construct would probably be quite
+rare, and wondered whether it wouldn't be better simply to document
+the fact that the initial example doesn't work, with suggested
+work-arounds. Nicholas implemented the scan approach in C<maint>
+as change #27512.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00830.html
+
+=head2 B::Lint chokes on simple script (#38771)
+
+Bart Lateur filed a bug report against C<B::Lint> (on perl 5.8.7). The
+interesting thing is that the program in question was
+
+  print for 1 .. 10
+
+Joshua ben Jore, who has recently put a fair amount of work into
+the C<B::> namespace observed that the problem has been fixed in
+C<blead>, but that it probably still exists in 5.8.8.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00654.html
+
+=head2 C<NaN>s on Win32 (#38779)
+
+Rob a.k.a Sisyphus posted a bug report concerning C<NaN>s (Not a Number)
+on Win32. It seems that there is a compiler issue, which is that code
+compiled with VC7 is correct, but VC6 is not.
+
+Dominic Dunlop noted sadly that the best way to fix this bug would be to
+add a note to the F<README.win32> documentation to say that perl should
+not be built with VC6. There's an article on the MSDN site that goes into
+more detail about floating point comparison issues.
+
+Yves Orton thought that that was hardly ideal, since VC6 has always been
+the standard compiler that ActiveState uses for their builds. Except that
+Dominic was talking about Microsoft's freely downloadable compiler, which,
+is apparently a slightly different beast.
+
+Jan Dubois came up with the best patch, one that works around
+compilers that have brain-damaged C<NaN> comparison routines. Looking
+more closely at the code, Jan realised that perl's handing C<NaN>
+handling is somewhat uneven. C<grok_number()> will set the
+C<IS_NUMBER_NAN> and C<IS_NUMBER_INFINITY> bits as appropriate, but
+C<sv_2nv()> doesn't bother to check them; it ducks the issue
+and lets C<atof()> deal with it. He also saw that the F<cmp.t> test
+that tests how C<< <=> >> deals with C<NaN>s is probably not doing
+anything meaningful.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00686.html
+
+In a thread-split elsewhere on the same topic, Jan provided keen
+insight into the subject of C run-time libraries on Windows.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00715.html
+
+=head2 Constants with C<undef> value deliver arbitrary value at first call (#38783)
+
+Markus Herber posted a bug report dealing with the XS code of C<IO-Tty>
+that creates constant subroutine with C<undef> as a value. Nicholas Clark
+understood what was going wrong and promptly supplied a patch which
+solved the problem. The patch is a bit of a stop-gap measure, but it
+will do for now.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00689.html
+
+=head2 Deep hash of hashes breaks garbage collector (#38786)
+
+Reto Stamm uncovered a lovely bug in the garbage collector. He posted
+a program (paraphrased for succinctness here):
+
+  my $root = {};
+  my $h = $root;
+  $h->{kid} = {} and $h = $h->{kid} for 1..250000
+
+This runs just fine, until the program exits, the garbage collector is
+run, the garbage collector exhausts the C stack due to recursion and
+the program goes belly up with a segmentation fault.
+
+chromatic thought that simply rewriting C<S_hfreeentries>, C<Perl_hv_undef>,
+C<Perl_sv_clear>, C<Perl_sv_free2>, and C<Perl_hv_free_ent> for good
+measure to use iteration instead of recursion would probably do the trick.
+
+  *crickets chirping*
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00716.html
+
+=head2 C<Fatal> doesn't like C<readdir()> (#38790)
+
+Tom Hukins filed a report that showed that C<readdir> breaks when
+C<Fatal> is used. (C<Fatal> upgrades warnings to to fatal errors).
+
+The trouble is that C<Fatal> gets mixed up between scalar and list
+context (doesn't everyone?) and throws all the results away. Rafael
+thought that a judiciously placed C<wantarray> would solve that,
+but that in turn would alter the behaviour of something as admittedly
+bizarre as
+
+  my @useless = open my $fh, 'does.not.exist';
+
+Yitzchak suggested hunting down the exceptions (C<select> also seemed
+to be a likely candidate) and document their limitations in conjunction
+with C<Fatal>. Joshua thought that this was less than ideal. If
+someone was going to go to the effort of hunting down all of weird
+special-context builtins to document them (and there aren't a whole
+lot), it would take about as much effort to code C<Fatal> to make
+it do The Right Thing all the time.
+
+Rafael agreed, and kept looking at his inbox for the patch. Joshua
+mumbled something about some patches to C<B::Lint> he was working
+on, and promised to do something about this first.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00735.html
+
+Joshua went looking at C<Fatal>, and stumbled across some C<AUTOLOAD>
+code, and wondered if and how it was used. Mark Jason Dominus suggested
+that its purpose was to allow the construct
+
+  use Fatal;
+  Fatal::open();
+
+to work in the same manner as
+
+  use Fatal 'open';
+  open();
+
+Which is either pretty slick, or pretty sick.
+
+  Nice to know
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00786.html
+
+=head2 Perl5 Bug Summary
+
+  1560 open tickets
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00673.html
+
+  Right here
+  http://rt.perl.org/rt3/NoAuth/perl5/Overview.html
+
+=head1 In Brief
+
+Dave Mitchell reminded us that B<C<our> variables and package variables>
+are compiled to the same code internally and as such B<have identical
+performance characteristics>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00643.html
+
+Philip M. Gollucci reported a bug that manifests itself using
+B<C<mod_perl> on FreeBSD>. Apparently another one of those "this
+is the second time it's broken" bugs. Robin Barker and Gisle
+Aas committed a couple of patches, including adding a check
+in the test suite, so hopefully we won't see the likes of it
+again.
+
+  Perl_croak and nullch
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00655.html
+
+Jim Cromie reported that C<bleadperl> was uncompilable, due to
+problems with C<Dynaloader> failing. Rafael traced it to the
+fact that he was integrating CPAN's C<ExtUtils::MakeMaker> 6.30_01
+into C<blead>, and its handling of C<MAN3PODS> was broken. So
+he fixed that, and C<bleadperl> started compiling again.
+
+  Safe to go back in the water
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00769.html
+
+Dan Kogai found an anomaly whilst B<playing with C<YAML::Syck>> and
+developed an detailed hypothesis as to what was going wrong. As
+of summary publishing time, no comments had been made.
+
+  How to mangle the SvTYPEs on arrays and hashes
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00773.html
+
+Someone asked how to use Perl to run Visual Basic code and
+was directed to Perlmonks.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-03/msg00792.html
+
+=head2 About this summary
+
+This summary was written by David Landgren.
+
+Information concerning bugs referenced in this summary (as #nnnnn)
+may be viewed at http://rt.perl.org/rt3/Ticket/Display.html?id=nnnnn
+
+Information concerning patches to C<maint> or C<blead> referenced in
+this summary (as #nnnnn) may be viewed at
+http://public.activestate.com/cgi-bin/perlbrowse?patch=nnnnn
+
+If you want a bookmarklet approach to viewing bugs and change reports,
+there are a couple of bookmarklets that you might find useful on
+my page of Perl stuff:
+
+  http://www.landgren.net/perl/
+
+Weekly summaries are published on F<http://use.perl.org/> and posted
+on a mailing list, (subscription: F<perl5-summary-subscribe@perl.org>).
+The archive is at F<http://dev.perl.org/perl5/list-summaries/>.
+Corrections and comments are welcome.
+
+If you found this summary useful or enjoyable, please consider
+contributing to the Perl Foundation to help support the development
+of Perl.

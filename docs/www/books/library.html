@@ -1,0 +1,201 @@
+[% 
+    page.import({
+        title    = 'The Perl.org Online Library',
+        section  = 'learn',
+        description 
+        = 'Perl.org free online Perl books',
+    });
+
+
+
+%]
+
+
+[% MACRO booklink(name,title) BLOCK %]
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#[% name %]">[% title %]</a>
+[%- END %]
+    
+
+<p>
+    <a href="#fulltext"><b><u>Full Text</u></b></a> 
+    [%
+       booklink("beginningperl","Beginning Perl"); 
+       booklink("modernperl","Modern Perl"); 
+       booklink("impatientperl","Impatient Perl"); 
+       booklink("masonbook","Embedding Perl in HTML with Mason"); 
+       booklink("pup","Picking Up Perl"); 
+       booklink("perl5int","Perl 5 Internals"); 
+       booklink("pmp","Practical Mod Perl"); 
+       booklink("perllwp","Perl &amp; LWP"); 
+    %]
+    <br />
+    <br />
+    <a href="#sampletext"><b><u>Sample Chapters</u></b></a>
+    [% 
+       booklink("wampc","Writing Apache Modules with Perl and C");
+       booklink("mpc","mod_perl Developer's Cookbook");
+       booklink("lwp","Perl &amp; LWP"); 
+    %]<a name="fulltext" id="fulltext"></a>
+</p>
+<h2>
+    Full Text
+</h2>
+
+[% BLOCK book_block %]
+<div class="book">
+    [% IF isbn %]
+        <iframe class="amazon" src="http://rcm.amazon.com/e/cm?lt1=_blank&amp;bc1=FFFFFF&amp;IS2=1&amp;bg1=FFFFFF&amp;fc1=000000&amp;lc1=0000FF&amp;t=develooper&amp;o=1&amp;p=8&amp;l=as1&amp;m=amazon&amp;f=ifr&amp;asins=[% isbn %]" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>[% END %]
+    <b><a name="[% name %]" class="title"[% IF link %] href="[% link %]"[% END %]>[% title %]</a></b> <br />
+    <span class="author">[% author %]</span><br />
+    <p class="description">
+        [% IF link %]<a [% IF link.match('http') %] [% END %] href="[% link %]"><strong>Read [% IF sample %]sample chapters[% ELSE %]the entire book free[% END %] online...</strong></a><br />[% END %]
+[% description %]
+        
+    </p>
+    [% IF isbn %]
+    <p class="buy">
+        Buy from: [% INCLUDE "tpl/bookstore-links" style="text" %]
+    </p>
+    [% END %]
+</div>
+[% END %]
+
+[% PROCESS book_block
+    name => 'beginningperl',
+    title => 'Beginning Perl',
+    isbn => '1861003145',
+    link => '/books/beginning-perl/',
+    author => 'by Simon Cozens, Peter Wainwright. 700 pages. Wrox Press Inc. (May 25, 2000).',
+    description => "
+    Beginning Perl is a different kind of Perl book. It's written particularly with the beginning programmer in mind, but it doesn't treat you like an idiot, and experienced programmers will not feel patronized. It covers a lot of ground, from the very basics of programming, right through to developing CGI applications for the web. More importantly, it emphasizes good Perl practice, and readable and maintainable code.
+    ",
+%]
+
+[% PROCESS book_block
+    name => 'modernperl',
+    title => 'Modern Perl',
+    isbn => '0977920151',
+    link => 'http://www.onyxneon.com/books/modern_perl/index.html',
+    author => 'by Chromatic (2010).',
+    description => "Modern Perl is one way to describe how experienced and effective Perl 5 programmers work. They use language idioms. They take advantage of the CPAN. They're recognizably Perlish, and they show good taste and craftsmanship and a full understanding of Perl. You can learn this too, whether you've dabbled with Perl for a decade or someone just handed you this book and said \"Fix this code by Friday\".
+    ",
+%]
+
+[% PROCESS book_block
+    name => 'impatientperl',
+    title => 'Impatient Perl',
+    isbn => '',
+    link => '/books/impatient-perl/',
+    author => 'by Greg London (Feb 7, 2004).',
+    description => "You write code for a living, and your inherit a legacy program written in Perl. You can program in your native language in your sleep. But you don't know Perl at all, or you've only dabbled with it. Your deadline doesn't give you enough time to rewrite the legacy program in your native language, but it needs new features. You need to learn Perl, and you need to learn it NOW. \"Impatient Perl\" was written for you.",
+%]
+
+
+[% PROCESS book_block
+    name => 'extremeperl',
+    title => 'Extreme Perl',
+    isbn => '',
+    link => 'http://www.extremeperl.org/',
+    author => 'by Robert Nagler',
+    description => "This book is about a marriage of two compatible yet unlikely partners. Extreme Programming (XP) is a software development methodology that enables users, business people, programmers, and computers to communicate effectively. Perl is a dynamic programming language that lets an XP team embrace the inevitable change caused by effective communication. Perl is the fixer and doer of the pair, and XP is the organizer and facilitator. Together they help you build robust software applications efficiently.",
+%]
+
+[% PROCESS book_block
+    name => 'masonbook',
+    title => 'Embedding Perl in HTML with Mason',
+    isbn => '0596002254',
+    link => 'http://www.masonbook.com/',
+    author => 'by Dave Rolsky, Ken Williams. 318 pages. O\'Reilly &amp; Associates. (October 2002).',
+    description => "This book shows you how to create large, complex, dynamically driven web sites that look good and are a snap to maintain. You'll learn how to visualize multiple Mason-based solutions to any given problem and select among them. The book covers the latest line of Mason development 1.1x, which has many new features, including line number reporting based on source files, sub-requests, and easier use as a CGI.",
+%]
+
+
+[% PROCESS book_block
+    name => 'pup',
+    title => 'Picking Up Perl',
+    isbn => '',
+    link => 'http://www.linuxtopia.org/online_books/perl/index.html',
+    author => 'by Bradley M. Kuhn and Neil Smyth. self published. second edition. (July 2005).',
+    description => "This book has been created for a number of reasons. The primary reason is to provide a freely re-distributable tutorial for the Perl language. In writing this freely re-distributable tutorial, it is our hope that the largest number of people can have access to it and share it.
+<br /><br />
+
+        In the Perl community, we have discovered ways to save time by writing Perl programs that make our jobs and lives easier. Surely, Perl is not a panacea, but it has certainly made our lives a little bit better. It is hoped that you can use Perl to make your jobs and lives easier, too.
+
+        <a href=\"http://www.ebb.org/PickingUpPerl\">First Edition (July 1999)</a>",
+%]
+
+
+[% PROCESS book_block
+    name => 'perl5int',
+    title => 'Perl 5 Internals',
+    isbn => '',
+    link => 'http://www.faqs.org/docs/perl5int/',
+    author => 'by Simon Cozens (2001)',
+    description => " A hands-on introduction to how the perl interpreter works internally, how to go about testing and fixing bugs in the interpreter, and what the internals are likely to look like in the future of Perl, Perl 6.",
+%]
+
+
+[% PROCESS book_block
+    name => 'pmp',
+    title => 'Practical mod_perl',
+    isbn => '0596002270',
+    link => 'http://www.modperlbook.org/',
+    author => "by Stas Bekman &amp; Eric Cholet. 924 pages. O'Reilly &amp; Associates. (May 27, 2003)",
+    description => "Mod_perl embeds the popular programming language Perl in the Apache web server, giving rise to a fast and powerful web programming environment. Written for Perl web developers and web administrators, Practical mod_perl is an extensive guide to the nuts and bolts of the powerful and popular combination of Apache and mod_perl. From writing and debugging scripts to keeping your server running without failures, the techniques in this book will help you squeeze every ounce of power out of your server. True to its title, this is <b>the</b> practical guide to mod_perl.",
+%]
+
+[% PROCESS book_block
+    name => 'perllwp',
+    title => 'Perl &amp; LWP',
+    isbn => '0596001789',
+    link => 'http://lwp.interglacial.com/',
+    author => 'by Sean M. Burke;
+    264 pages;
+     O\'Reilly Media; first edition (20 Jun 2002) with corrections (2007)',
+    description => "
+    <i>Perl &amp; LWP</i> explains how to write programs that browse the Web, 
+    using the excellent Library for the World Wide Web or LWP. It is aimed 
+    at developers who already know both Perl and HTML, although you 
+    don't need to be an expert in either.
+    ",
+%]
+
+<div class="book">
+<p>
+    <a name="sampletext" id="sampletext"></a>
+</p>
+<h2>
+    Sample Chapters Only:
+</h2>
+</div>
+
+[% PROCESS book_block
+    name => 'wampc',
+    sample => 1,
+    title => 'Writing Apache Modules with Perl and C: The Apache API and mod_perl',
+    isbn => '156592567X',
+    link => 'http://www.modperl.com/',
+    author => "by Lincoln Stein, Doug MacEachern, Linda Mui (Editor). 724 pages. O'Reilly &amp; Associates. (March 1999)",
+    description => "Writing Apache Modules with Perl and C will allow you to enhance your Apache HTTP server in just about any way you'd like. Overall, it is an excellent book, and it has a lot of good information and terrific examples on everything from "Content Handlers" to customizing the Apache server configuration process. <i>-- Doug Beaver</i>",
+%]
+
+[% PROCESS book_block
+    name => 'mpc',
+    sample => 1,
+    title => "mod_perl Developer's Cookbook",
+    isbn => '0672322404',
+    link => 'http://www.modperlcookbook.org/',
+    author => 'by Geoffrey Young, Paul Lindner, Randy Kobes. 650 pages. Sams Publishing. (January 2002)',
+    description => "A practical, hands-on guide that shows you how to exploit the power of mod_perl. The mod_perl Developer's Cookbook teaches programming with the mod_perl API by example. The book takes you from the basics of mod_perl to the development of advanced Web applications.  You'll learn tricks, solutions and mod_perl idioms gleaned from our experience as developers and expert users of mod_perl.",
+%]
+
+[% PROCESS book_block
+    name => "lwp",
+    sample => 1,
+    title => "Perl &amp; LWP",
+    isbn => "0596001789",
+    link => "http://oreilly.com/catalog/perllwp/chapter/",
+    author => "by Sean M. Burke. 264 pages. O'Reilly &amp; Associates. (June 2002)",
+    description => "The LWP (Library for WWW in Perl) suite of modules lets your programs download and extract information from the Web. Perl &amp; LWP shows how to make web requests, submit forms, and even provide authentication information, and it demonstrates using regular expressions, tokens, and trees to parse HTML. This book is a must have for Perl programmers who want to automate and mine the Web.",
+%]

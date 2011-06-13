@@ -1,0 +1,149 @@
+[%-  page = {
+            title = template.title,
+            style = template.style or 'leo.html',
+            site  = "lists.perl.org"
+    };
+
+    # don't include any whitespace from here...
+ #   RETURN;
+-%]
+[%-
+    # Configuration for this site
+    SET site = {
+        name            => 'lists.perl.org',
+        tag_line        => 'Perl, modern programming',
+    };
+
+   # we want to get the parsed datastructure cached in mod_perl, but
+   # if we don't have it there, generate it here
+   IF not lists;
+     USE JSON;
+     json_string = PROCESS "data/lists.json";
+     lists = JSON.json_decode(json_string);
+   END;
+-%]
+[%- BLOCK nav_tabs %]
+<ul>
+    <li[% ' class="selected"' IF page.section == 'home' %]>
+        <a href="/">Home</a>
+    </li>
+    <li[% ' class="selected"' IF page.section == 'beginners' %]>
+        <a href="/tag/beginners.html">Beginners</a>
+    </li>
+    <li[% ' class="selected"' IF page.section == 'os' %]>
+        <a href="/tag/os.html">OS</a>
+    </li>
+    <li[% ' class="selected"' IF page.section == 'db' %]>
+        <a href="/tag/db.html">DB</a>
+    </li>
+    <li[% ' class="selected"' IF page.section == 'modules' %]>
+        <a href="/tag/modules.html">Modules</a>
+    </li>
+    <li[% ' class="selected"' IF page.section == 'community' %]>
+        <a href="/tag/community.html">community</a>
+    </li>
+    <li[% ' class="selected"' IF page.section == 'web' %]>
+        <a href="/tag/web.html">Web</a>
+    </li>
+    <li[% ' class="selected"' IF page.section == 'science' %]>
+        <a href="/tag/science.html">Science</a>
+    </li>
+    <li[% ' class="selected"' IF page.section == 'internals' %]>
+        <a href="/tag/internals.html">Internals</a>
+    </li>
+    <li[% ' class="selected"' IF page.section == 'more' %]>
+        <a href="/all.html">More</a>
+    </li>
+
+</ul>
+[% END -%]
+
+[%- BLOCK quick_link_creator %]
+[%-
+    IF quick_link_list.size == 0;
+        RETURN;
+    END;
+-%]
+<div class="quick_links">
+        <h4 class="round">
+            [% quick_link_title %]
+        </h4>
+        <div class="list">
+        [% FOREACH p = quick_link_list %]
+        <p>[% p %]</p>
+        [% END %]
+        </div>
+</div>
+[% END -%]
+[%- BLOCK tip %][% UNLESS tip; RETURN; END; %]
+<div class="quick_links">
+        <h4 class="round">
+            Tip
+        </h4>
+        <div class="list">
+        <p>
+            <strong>[% tip.title %]</strong>
+            [% tip.desc %]
+        </p>
+    </div>
+</div>
+[% END -%]
+
+[%- BLOCK quick_links_1;
+
+   SET source = {};
+
+#    SET source = {
+#        quick_links_1_title => 'Related sites',
+#        quick_links_1_list => [
+#            '<a href="http://www.perl.org">Perl.org</a>',
+#        ],
+#    };
+
+    IF page.quick_links_1_title;
+        source = page;
+    ELSIF section_data && section_data.quick_links_1_title;
+        source = section_data;
+    END;
+
+    IF source.quick_links_1_title;
+        PROCESS quick_link_creator
+            quick_link_title => source.quick_links_1_title,
+            quick_link_list => source.quick_links_1_list; 
+    END;
+-%]
+[% END -%]
+[%- BLOCK quick_links_2;
+
+    SET source = {};
+
+    IF page.quick_links_2_title;
+        source = page;
+    ELSIF section_data && section_data.quick_links_2_title;
+        source = section_data;
+    END;
+
+    IF source.quick_links_2_title;
+        PROCESS quick_link_creator
+            quick_link_title => source.quick_links_2_title,
+            quick_link_list => source.quick_links_2_list; 
+    END;
+-%]
+[% END -%]
+[%- BLOCK quick_links_3;
+
+    SET source = {};
+
+    IF page.quick_links_3_title;
+        source = page;
+    ELSIF section_data && section_data.quick_links_3_title;
+        source = section_data;
+    END;
+
+    IF source.quick_links_3_title;
+        PROCESS quick_link_creator
+            quick_link_title => source.quick_links_3_title,
+            quick_link_list => source.quick_links_3_list; 
+    END;
+-%]
+[% END -%]

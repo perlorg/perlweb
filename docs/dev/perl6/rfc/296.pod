@@ -1,0 +1,51 @@
+=head1 TITLE
+
+Getting Data Into Unicode Is Not Our Problem
+
+=head1 VERSION
+
+  Maintainer: Simon Cozens <simon@brecon.co.uk>
+  Date: 25 Sep 2000
+  Mailing List: perl6-internals@perl.org
+  Number: 296
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+Forget C<iconv>, C<ICU>, C<Encode>, C<tcs> and all that. Rule them out
+of scope, and we don't have to worry about them.
+
+=head1 DESCRIPTION
+
+One thing we've been pushing ahead with for 5.7.0 is character encoding
+translation support. Now, there are a bunch of libraries out there which
+already do this, and I mentioned some of them in the abstract. Choosing
+one of them is going to be problematic, because there'll always be users
+that won't have it; writing our own is Not Fun.
+
+We can sidestep the whole issue by not even claiming to provide any
+character encoding support. Let's say that we're happy to convert
+ISO8859-1 into Unicode, since that's relatively trivial, but if the
+user's got anything more exotic, they have to provide us with Unicode
+themselves through the line discipline method.
+
+This means that they can grab, from CP6AN or elsewhere, modules which
+support the conversion libraries they have currently installed, or, if
+they don't have any, which perform the conversions that they want. (Such
+as the nascent C<Encode> module.)
+
+This is economical for us, since we don't have to worry about encoding
+support; it's economical for the end user, since they can choose the
+library which best fits their needs.
+
+=head1 IMPLEMENTATION
+
+See RFC 311: Line Disciplines.
+
+=head1 REFERENCES
+
+The C<Encode> module in bleadperl
+
+RFC 311: Line Disciplines
+

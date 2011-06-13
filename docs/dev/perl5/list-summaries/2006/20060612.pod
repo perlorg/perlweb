@@ -1,0 +1,450 @@
+=head1 This Week on perl5-porters - 12-18 June 2006
+
+"I'm still a big fan of partial solutions. But to get a good partial
+solution, you can't just rush into it without thinking about what
+the tradeoffs really are." -- Mark-Jason Dominus, on reversible
+debugging
+
+=head1 Topics of Interest
+
+=head2 Regular expressions: bugs, tests and benchmarks
+
+As the changes Yves Orton made to the regular expression engine get
+worked over by the smoke testers and other more adventurous souls,
+a couple of problems have come to light.
+
+Nicholas Clark found that the following snippet caused a segfault
+during global destruction.
+
+  $a = qr/(xx|yy)/;
+  sub a {'xx' =~ $a and print 'ok'};
+  threads->new(\&a)->join();
+
+Yves fixed that up with a one-line change (a reference counting
+adjustment).
+
+  Ha ha ha plonk
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00344.html
+
+Dave Mitchell caught another one, simply by running a build and
+watching C<ext/re/t/regop.pl> lose it, which Rafael Garcia-Suarez
+corrected with a guard to C<re_debug_flags>, but wondered why it
+was being set to C<NULL> in the first place. Answer: it happens
+during global destruction.
+
+  Changing of the guards
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00406.html
+
+Jarkko Hietaniemi found some other problems with the trie code on
+Tru64 in conjunction with C<-DDEBUGGING>. After a quick examination,
+Yves couldn't find a good explanation why, but suggested a couple
+of nice places for setting breakpoints.
+
+After running down a few dead ends, Jarkko finally narrowed the
+problem down to taking the address of something on the stack.
+Hoisting the declaration outwards fixed the problem.
+
+  A class of his own
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00557.html
+
+Yves made an appeal for more tests that exercise Unicode pattern
+matching. Not the funky, contrived examples that the porters
+come up with to exercise obscure parts of the code base, but
+real honest-to-goodness matches that happen in Real Life.
+
+  If you test it, they will come
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00607.html
+
+Tels came back with some late comments on the trie enhancements.
+Yves had an answer to all of the questions, going so far as to
+suggest that a nice optimisation would be to convert patterns
+consisting of a single C<EXACT> node to an C<index()> call, thereby
+avoiding C<regmatch()> altogether.
+
+  Avanti!
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00609.html
+
+Yves caught a bug before anyone could step on it.
+
+  The unguarded moment
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00375.html
+
+Dave Mitchell also did some more follow-up work on his efforts to
+remove recursion from the regular expression engine.
+
+  Switched on state
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00534.html
+
+=head2 Could Perl get Reversible Debugging?
+
+Adam Kennedy had recently encountered two discussions of reversible
+debugging, and wondered how plausible this could be for Perl.
+(Reversible debugging is the idea of being able to undo the previous
+"r"un or "n"ext statement, and recover the previous state. (History
+trivia: Roedy Green wrote a language called Abundance in the 70s
+that provided support for this mechanism. He called it jaunting)).
+
+Randy W. Sims thought that a system that merely recorded the current
+system state by snapshot would be good enough. You could not go
+back in time and change things, but you could at least look at them
+again.  Useful if you missed something.
+
+Some things cannot be reversed anyway: system calls, network writes,
+different paths might cause cleanup handlers to never be called.
+
+Jesse pointed to Leon Brocard's C<Devel::ebug>, which offers an
+C<undo> mechanism. Mark-Jason Dominus mapped out the different
+points on the continuum, showing what was easy, simple and fairly
+useless all the way to difficult, hard and very useful, but we
+should be able to get something good at a reasonable cost. His
+suggestion was to teach the debugger to record all the commands
+during a session, and then allow one to restart the session, replaying
+all the commands up to some point in the stream.
+
+Richard Foley explained that this latter trick was already available
+in the current debugger. It's called C<rerun>.
+
+David Nicol suggested forking a new copy of the program at each
+perl statement, and communicate between the prior state processes
+to determine the difference in state. This would of course entail
+immense resource costs. Alternately, a fork and dump on each statement
+would merely chew disk space, instead of RAM. But at the end of the
+thread, Adam came back and explained that he didn't really care to
+go back and re-execute the program from a given point. He just
+wanted to be able to go back and look at what had happened as a
+disinterested observer (a bit like TV).
+
+  We need a "come from" instruction
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00431.html
+
+=head2 New, improved C<perlbrowse>
+
+Dave Mitchell announced a new release of the C<perlbrowse> tool,
+that allows the porters to look at the source code from the point
+of view of the repository, and view the changes made to the code
+base over time.
+
+  Whiter than #ffffff
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00464.html
+
+=head2 Big Perl 5 advocacy thread
+
+One of the biggest threads to hit p5p in months, which goes to
+show that there's still interest in the beast.
+
+Yves Orton kicked off the thread, writing about the problem of
+Perl 5 and Perl 6 and it sounded like a replay of the Osborne
+Effect (Adam Osborne built a phenomenally successful portable
+computer in the 1980s, and preannounced the arrival of a new
+faster model. People stopped buying the current model, waiting
+for the new one to be released. The competition ate the company).
+
+Some of the main points:
+
+=over 4
+
+=item *
+
+We need to get 5.10 out the door.
+
+=item *
+
+A Seal of Approval for qualifying CPAN modules.
+
+=item *
+
+Send Andy Lester some papers that he can publish on C<perlfoundation.org>.
+
+=item *
+
+Perl is a write-only language. Parentheses, no parenthesis, C<or>
+I<versus> C<||>. (This subthread pushed Tom Christiansen into
+penning a couple of missives).
+
+=item *
+
+At least two technical book publishers consider that the Perl market is done.
+
+=item *
+
+Perl sucks as a desktop applications language (think: C<Tk>, C<perlWx>).
+C<Tk> looks ancient, C<perlWx> documentation sucks.
+
+=item *
+
+C<gettext> doesn't work very well if the initial language is not English
+and you want to add a English translation.
+
+=item *
+
+Installing Perl on Windows should be as easy as installing Firefox plug-ins.
+
+=item *
+
+Prerequisites specifications for CPAN modules sucks.
+
+=item *
+
+Perl releases are slowing down, as are new language enhancements.
+
+=item *
+
+Core support for Win32 sucks.
+
+=back
+
+  Yeah, but we knew all that
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00477.html
+
+=head1 Patches of Interest
+
+=head2 C<Hash::Util::FieldHash>
+
+Lots of internals talk here, and not enough time to summarise the
+ramifications.
+
+  It's that U magic
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00332.html
+
+=head2 Proper use of C<enum>s
+
+Thanks to Intel's optinagging compiler, Andy Lester straightened out
+the mess of C<enum>s being mixed with non-C<enum>s, especially in
+relation to C<svtype>s.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00338.html
+
+=head2 Static cleanup in F<pp_sort.c>
+
+Andy then tidied up C<S_qsortsvu()> and made C<embed.fnc> refer to it
+(for error checking) and used the macro'ed version where applicable.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00356.html
+
+=head2 F<universal.c> C<does> it
+
+Rafael added the C<DOES> method to C<UNIVERSAL> following on from 
+chromatic's desire several weeks ago to try and make C<UNIVERSAL>
+more useful, or rather, less abused. He then hinted that chromatic
+was probably in the best place to write the appropriate documentation.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00367.html
+
+Andy slotted it into the right place in F<embed.fnc>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00468.html
+
+And chromatic delivered the documentation goods.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00592.html
+
+=head1 Watching the smoke signals
+
+=head2 Smoke [5.9.4] 28397 FAIL(F) hp-ux 11.23/64 (ia64/2 cpu)
+
+Dave Mitchell observed that this failure "was caused by the interesting
+fact that a detached thread still counts towards the C<A thread
+exited while %d threads were running> warning, in violation of the
+docs". And so he fixed it.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00564.html
+
+=head1 New and old bugs from RT
+
+=head2 Wishlist about C<Sys::Syslog> (#35406)
+
+Keisuke Hirata filed a bug report about C<Sys::Syslog> and bundled
+the patch used to fix the problem. Sbastien Aperghis-Tramoni announced
+that it had been included in version 0.16, now available from your
+neighbourhood CPAN mirror.
+
+  A dream comes true
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00363.html
+
+=head2 Cygperl allows reading of write-only file descriptors (#39325)
+
+Both David Landgren and Dr. Ruud tried to make sense of this bug.
+Sébastien A-T thought that it may be a manifestation of another
+Cygwin-ism that had caused him grief in the past.
+
+  Too Unix to be Windows, too Windows to be Unix?
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00384.html
+
+=head2 C<Data::Dumper> fails to escape bless class name (#39420)
+
+Any users out there still using ' (apostrophe) in their class
+names? Well don't, because C<Data::Dumper> has forgotten about it.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00359.html
+
+=head2 C<Carp> can't find C<Carp::Heavy> (#39440)
+
+Funny how things come in waves. This was another manifestation
+of last week's bug about what happens to Carp when perl runs out
+of file handles.
+
+  FITNR
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00386.html
+
+=head2 file level B<my> variables are invisible inside anonymous subs (#39489)
+
+By another strange coincidence, this bug has also been fixed in the next
+release.
+
+  Waiting for 5.10
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00472.html
+
+=head2 Core dump on process exit with C<tie %SIG> (#39504)
+
+John Gardiner Myers discovered a way to make perl dump core, and
+suspected that the act of C<tie>ing C<%SIG> may have something
+to do with it.
+
+  Where porters fear to tread
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00523.html
+
+And another data point:
+
+  Curiouser and curiouser
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00539.html
+
+=head2 Perl5 Bug Summary
+
+  3 closed and 6 open: 1491 total
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00352.html
+
+  They're all here
+  http://rt.perl.org/rt3/NoAuth/perl5/Overview.html
+
+=head1 New Core Modules
+
+=over 4
+
+=item *
+
+C<Test-Harness> version 2.62 uploaded by Andy Lester.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00358.html
+
+=item *
+
+C<Sys-Syslog> version 0.15 uploaded by Sébastien Aperghis-Tramoni.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00353.html
+
+=back
+
+=head1 In Brief
+
+A B<new website, C<win32.perl.org>> opened its doors this week.
+
+  Contribute! Contribute!
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00335.html
+
+Ravi Sastry Kadali, from the B<IBM zOS USS Development team> reported
+having B<ported 5.8.7 onto IBM z/OS>. The team had to make some changes
+to the source, and wanted to contribute them back to the porters.
+
+Rafael explained that ideally, they should try and port C<blead>, and
+send the required changes back for integration. These changes can then
+be ported over to the maintenance branch if not compatibility problems
+are encountered.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00382.html
+
+Steve Stiert then sent in the patch anyway. Jarkko Hietaniemi had a
+look at it.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00593.html
+
+Daniel Frederick Crisman had yet another shot at reworking B<quote-like
+operators in C<perlop>>.
+
+  When in doubt, use brute force
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00404.html
+
+Yves sent in a patch to B<fix some segmentation faults during global
+destruction> (in relation to his regexp work) and also tweaked
+C<Benchmark> to stop it from hitting infinite loops.
+
+  Two for the price of one
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00424.html
+
+Tom Schindl was bitten by the B<C<map> in void context> memory wastage
+problem, that neither C<foreach>, nor more recent versions of Perl, for
+that matter.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00433.html
+
+Jarkko B<reworked the gcc warnings selection> mechanism, to allow the
+porters, and more specifically Andy Lester, to enable all sorts of
+wacky compiler switches to see what happens.
+
+  --warn-if-non-halting
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00448.html
+
+Philip M. Gollucci attempted to perform B<a speed comparison from
+5.6.2 to C<blead>>, but the results were flawed because he used perl
+binaries compiled with debugging. He promised to redo them again,
+without debugging.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00469.html
+
+Shlomi Fish wrote in to say that he had found a bug with B<C<perl -d>
+not printing the current code line>.
+
+  So perlbug it
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00575.html
+
+John E. Malberg found a show stopper in B<blead> concerning Unicode.
+Sadahiro Tomoyuki proposed a fix, and Craig A. Berry committed the
+change.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00383.html
+
+Yitzchak Scott-Thoennes recalled that B<in the core there are actual
+arrays of arrays> (and not arrays of references to arrays), but could
+not recall where.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00506.html
+
+Salvador Fandiño took another stab at B<adding macros to Perl5>.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00482.html
+
+Andreas J. Koenig discovered that the B<APC archive is missing files
+28373-28377>.
+
+  We have backups, right?
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00543.html
+
+=head2 About this summary
+
+This summary was written by David Landgren. Last week's summary...
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2006-06/msg00461.html
+
+... attracted a reply from Yves, who followed up on the issue
+of pluggable regexp engines for C<maint>. The problem is one of
+a bad design call, made in the distant past, for which Nicholas
+Clark is pondering a "deeply evil" workaround.
+
+Tels also replied, with a plug for his C<Math::String> module,
+that lets one perform automagical increments (and decrements)
+on just about anything that looks incrementable. And if it
+doesn't work with Unicode, file a bug report so that Tels can
+fix it.
+
+If you want a bookmarklet approach to viewing bugs and change
+reports, there are a couple of bookmarklets that you might find
+useful on my page of Perl stuff:
+
+  http://www.landgren.net/perl/
+
+Weekly summaries are published on F<http://use.perl.org/> and posted
+on a mailing list, (subscription: F<perl5-summary-subscribe@perl.org>).
+The archive is at F<http://dev.perl.org/perl5/list-summaries/>.
+Corrections and comments are welcome.
+
+If you found this summary useful, please consider contributing to
+the Perl Foundation to help support the development of Perl.

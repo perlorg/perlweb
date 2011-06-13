@@ -1,0 +1,119 @@
+=head1 This Week on perl5-porters (1-7 March 2004)
+
+This week was one of those weeks where the bug reports outnumbered the bug
+fixes. Hopefully in the future the perl 5 porters will be able to keep
+perl 5 on the right track, as they continue to do, week after week.
+
+=head2 5.005_04
+
+Leon Brocard released perl 5.005_04, the latest perl in the 5.005 series.
+The official announcement is at :
+
+    http://groups.google.com/groups?selm=20040301142712.GA24155%40kanga.astray.com
+
+=head2 Setting C<$!>
+
+Following a thread about an update to the perlxstut manpage that Marcus
+Holland-Moritz is writing, there was some interesting discussion about the
+proper way to set the C<$!> errno variable from user code, whether this is
+a good idea, and how the PerlIO system handles it. Nick Ing-Simmons points
+out that C<$!> is actually the C variable errno, and that perl stringifies
+it via strerror(3) when used in string context; and thus that it shouldn't
+be set to custom values and error messages.
+
+    http://groups.google.com/groups?selm=40453C56.1050501%40stason.org
+
+=head2 About the debugger
+
+Richard Foley added a couple of commands to the perl debugger: C<save>,
+to save the current history to a file, and C<i>, which prints the
+inheritance tree of its argument (if C<Class::ISA> is installed.)
+
+Chip Salzenberg finds out that the perldebugger sometimes hangs when it's
+back from a pager. Richard believes it's a known bug, but Chip is using
+the most recent 5.8.3 from Debian.
+
+    http://groups.google.com/groups?selm=20040303213506.GO10904%40perlsupport.com
+
+=head2 More on the famous lexical-in-conditional deprecation warning
+
+Finally, Rafael changed his mind and preferred that
+
+    my $x if $foo;
+
+doesn't warn anymore, and that only
+
+    my $x if 0;
+
+does (clearly an abuse of the current accidental feature). The new form of
+this warning, implemented by Dave Mitchell, is now I<Deprecated use of
+my() in false conditional>.
+
+=head2 Range operator edge cases
+
+Marcus Thiesen began to notice that C<undef .. undef> produces a segfault
+with perl 5.8.x. Marcus Holland-Moritz provided a patch, but later tried
+some combinations with C<undef> or an empty string at one or both ends of
+a C<..>, and posted his conclusions (along with other bugs found and
+fixed) with some questions (what should C<undef .. undef> and other
+strange combinations return?)
+
+    http://groups.google.com/groups?selm=20040307211120.10e46933%40r2d2
+
+=head2 readline() and PerlIO slurp mode
+
+Stas Bekman remarks that, in some cases, localising C<$/> isn't taken into
+account, because he observed that when doing
+
+    print <$fh>;
+
+print() is called as many times as there are lines in the file opened via
+C<$fh>. Contrary to the first thoughts, this is unrelated to scalar
+context versus list context, but to some internal flags in PerlIO. Stas
+then admits to be unable to reproduce the mysterious problem after a perl
+upgrade.
+
+    http://groups.google.com/groups?selm=4047E7B3.8040106%40stason.org
+
+=head2 Some Bugs
+
+Yves Orton produces an error I<Attempt to free unreferenced scalar>
+by blessing an anonymous glob (bug #27268), and by assigning the glob
+reference to the glob itself:
+
+    perl -MSymbol -e 'my $x=bless \gensym,q/t/; *$$x=$x'
+
+Bug #27344 shows a pos() bug which happens only when taint mode is on.
+
+    http://groups.google.com/groups?selm=rt-3.0.8-27344-80480.18.8941338152323%40perl.org
+
+Lukas Mai remarks that the C<(;$)> prototype doesn't mimic closely the
+way length() is parsed, making it impossible to override fully. (Bug
+#27380.)
+
+    http://groups.google.com/groups?selm=rt-3.0.8-27380-80726.0.626385108255718%40perl.org
+
+Ton Hospel finds that returning the special arrays @+ or @- from a
+subroutine don't appear to work correctly. (no bug number for this one.)
+
+    http://groups.google.com/groups?selm=c26p20$34b$1%40post.home.lunix
+
+=head2 In Brief
+
+Dave Mitchell explains that closures are broken "by design" inside
+C</(?{...})/> blocks.
+
+    http://groups.google.com/groups?selm=20040306155204.GA18953%40fdisolutions.com
+
+Jarkko Hietaniemi provided a patch to significantly speed up case-related
+operations with UTF-8 strings (lc(), uc(), //i, etc.).
+
+Christopher Madsen reported that Win32::GetOSVersion() was recently
+broken. It was repaired by Steve Hay. (Bug #27357.)
+
+=head2 About this summary
+
+This summary was written by Rafael Garcia-Suarez.  Weekly summaries are
+published on F<http://use.perl.org/> and posted on a mailing list, which
+subscription address is F<perl5-summary-subscribe@perl.org>.  Corrections
+and comments are welcome.

@@ -1,0 +1,194 @@
+# dev.perl.org redirections
+
+/perl-styles.css	http://dev.perl.org/css/old-develooper.css
+
+/rfc				        /perl6/rfc
+/rfc/(.*)				/perl6/rfc/$1
+/pdd					/perl6/pdd
+/pdd/(.*)				/perl6/pdd/$1
+/lists					/perl6/lists
+/lists/(.*)				/perl6/lists/$1
+
+/cvs                http://svn.perl.org/
+/cvs/(.*)           http://svn.perl.org/
+
+/parrot/?			http://www.parrotcode.org/
+
+/perl6/architecture		/perl6/architecture.html
+/perl6/code			/perl6/code.html
+/perl6/people			/perl6/people.html
+/perl6/status			/perl6/status.html
+
+/perl6/doc(/(design/?)?)?       /perl6/architecture.html   perm
+/perl6/doc/design/apo/?         /perl6/doc/apocalypse.html perm
+/perl6/doc/design/syn/?         /perl6/doc/synopsis.html   perm
+/perl6/doc/design/exe/?         /perl6/doc/exegesis.html   perm
+
+# Synopses moved a while back, lets redirect!
+/perl6/doc/design/syn/S(\d+).html http://feather.perl6.nl/syn/S$1.html
+/perl6/doc/synopsis.html          http://feather.perl6.nl/syn/
+
+/perl5/lists/?			/perl5/lists.html
+/perl1/(.*)			/ perm
+
+/perl5/source/?			/perl5/source.html
+
+/auth/(.*)			http://auth.perl.org/auth/$1	perm
+
+# Whee
+/perl6/synopsis/5.html /perl6/synopsis/S05.html
+
+/perl6/apocalypse/(\d) /perl6/apocalypse/A0$1.html
+/perl6/exegesis/(\d) /perl6/exegesis/E0$1.html
+
+# moved stuff even more (4/2/05)
+/perl6/apocalypse/?  /perl6/doc/apocalypse.html
+/perl6/exegesis/?    /perl6/doc/exegesis.html
+/perl6/synopsis/?    /perl6/doc/synopsis.html
+/perl6/apocalypse/(A.*)  /perl6/doc/design/apo/$1
+/perl6/exegesis/(E.*)    /perl6/doc/design/exe/$1
+/perl6/synopsis/(S.*)    /perl6/doc/design/syn/$1
+
+
+# Perl6 List Summaries
+
+/perl6/list-summaries/index.rss /perl6/list-summaries/index_rss.html internal
+
+/perl6/list-summaries/p6-sum1.html	    /perl6/list-summaries/2002/p6summary.2002-06-23.html
+/perl6/list-summaries/p6-sum2.html	    /perl6/list-summaries/2002/p6summary.2002-06-30.html
+/perl6/list-summaries/p6-sum3.html	    /perl6/list-summaries/2002/p6summary.2002-07-07.html
+/perl6/list-summaries/p6-sum4.html	    /perl6/list-summaries/2002/p6summary.2002-07-14.html
+/perl6/list-summaries/p6-sum4a.html	    /perl6/list-summaries/2002/p6summary.2002-07-21.html
+/perl6/list-summaries/p6summary5.html	    /perl6/list-summaries/2002/p6summary.2002-07-28.html
+/perl6/list-summaries/p6summary6.html	    /perl6/list-summaries/2002/p6summary.2002-08-04.html
+
+/perl6/list-summaries/p6summary.2002-06-30.html	/perl6/list-summaries/2002/p6summary.2002-06-30.html
+/perl6/list-summaries/p6summary.2002-06-33.html	/perl6/list-summaries/2002/p6summary.2002-06-33.html
+/perl6/list-summaries/p6summary.2002-07-07.html	/perl6/list-summaries/2002/p6summary.2002-07-07.html
+/perl6/list-summaries/p6summary.2002-07-14.html	/perl6/list-summaries/2002/p6summary.2002-07-14.html
+/perl6/list-summaries/p6summary.2002-07-21.html	/perl6/list-summaries/2002/p6summary.2002-07-21.html
+/perl6/list-summaries/p6summary.2002-07-28.html	/perl6/list-summaries/2002/p6summary.2002-07-28.html
+/perl6/list-summaries/p6summary.2002-08-04.html	/perl6/list-summaries/2002/p6summary.2002-08-04.html
+/perl6/list-summaries/p6summary.2002-08-11.html	/perl6/list-summaries/2002/p6summary.2002-08-11.html
+/perl6/list-summaries/p6summary.2002-08-18.html	/perl6/list-summaries/2002/p6summary.2002-08-18.html
+/perl6/list-summaries/p6summary.2002-08-25.html	/perl6/list-summaries/2002/p6summary.2002-08-25.html
+/perl6/list-summaries/p6summary.2002-09-01.html	/perl6/list-summaries/2002/p6summary.2002-09-01.html
+/perl6/list-summaries/p6summary.2002-09-08.html	/perl6/list-summaries/2002/p6summary.2002-09-08.html
+/perl6/list-summaries/p6summary.2002-09-15.html	/perl6/list-summaries/2002/p6summary.2002-09-15.html
+/perl6/list-summaries/p6summary.2002-09-22.html	/perl6/list-summaries/2002/p6summary.2002-09-22.html
+/perl6/list-summaries/p6summary.2002-09-29.html	/perl6/list-summaries/2002/p6summary.2002-09-29.html
+/perl6/list-summaries/p6summary.2002-10-20.html	/perl6/list-summaries/2002/p6summary.2002-10-20.html
+/perl6/list-summaries/p6summary.2002-10-27.pod.html	/perl6/list-summaries/2002/p6summary.2002-10-27.html
+/perl6/list-summaries/p6summary.2002-11-03.pod.html	/perl6/list-summaries/2002/p6summary.2002-11-03.html
+/perl6/list-summaries/p6summary.2002-11-10.pod.html	/perl6/list-summaries/2002/p6summary.2002-11-10.html
+/perl6/list-summaries/p6summary.2002-11-17.pod.html	/perl6/list-summaries/2002/p6summary.2002-11-17.html
+/perl6/list-summaries/p6summary.2002-11-24.pod.html	/perl6/list-summaries/2002/p6summary.2002-11-24.html
+/perl6/list-summaries/p6summary.2002-12-01.pod.html	/perl6/list-summaries/2002/p6summary.2002-12-01.html
+/perl6/list-summaries/p6summary.2002-12-08.pod.html	/perl6/list-summaries/2002/p6summary.2002-12-08.html
+/perl6/list-summaries/p6summary.2002-12-15.pod.html	/perl6/list-summaries/2002/p6summary.2002-12-15.html
+/perl6/list-summaries/p6summary.2002-12-22.pod.html	/perl6/list-summaries/2002/p6summary.2002-12-22.html
+/perl6/list-summaries/p6summary.2002-12-29.pod.html	/perl6/list-summaries/2002/p6summary.2002-12-29.html
+
+/perl6/list-summaries/p6summary.2003-01-05.pod.html	/perl6/list-summaries/2003/p6summary.2003-01-05.html
+/perl6/list-summaries/p6summary.2003-01-12.pod.html	/perl6/list-summaries/2003/p6summary.2003-01-12.html
+/perl6/list-summaries/p6summary.2003-01-19.pod.html	/perl6/list-summaries/2003/p6summary.2003-01-19.html
+/perl6/list-summaries/p6summary.2003-01-26.pod.html	/perl6/list-summaries/2003/p6summary.2003-01-26.html
+/perl6/list-summaries/p6summary.2003-02-02.pod.html	/perl6/list-summaries/2003/p6summary.2003-02-02.html
+/perl6/list-summaries/p6summary.2003-02-09.pod.html	/perl6/list-summaries/2003/p6summary.2003-02-09.html
+/perl6/list-summaries/p6summary.2003-02-16.pod.html	/perl6/list-summaries/2003/p6summary.2003-02-16.html
+/perl6/list-summaries/p6summary.2003-02-23.pod.html	/perl6/list-summaries/2003/p6summary.2003-02-23.html
+/perl6/list-summaries/p6summary.2003-03-02.pod.html	/perl6/list-summaries/2003/p6summary.2003-03-02.html
+/perl6/list-summaries/p6summary.2003-03-09.pod.html	/perl6/list-summaries/2003/p6summary.2003-03-09.html
+/perl6/list-summaries/p6summary.2003-03-16.pod.html	/perl6/list-summaries/2003/p6summary.2003-03-16.html
+/perl6/list-summaries/p6summary.2003-03-23.pod.html	/perl6/list-summaries/2003/p6summary.2003-03-23.html
+/perl6/list-summaries/p6summary.2003-03-30.pod.html	/perl6/list-summaries/2003/p6summary.2003-03-30.html
+/perl6/list-summaries/p6summary.2003-04-06.pod.html	/perl6/list-summaries/2003/p6summary.2003-04-06.html
+/perl6/list-summaries/p6summary.2003-04-13.pod.html	/perl6/list-summaries/2003/p6summary.2003-04-13.html
+/perl6/list-summaries/p6summary.2003-04-20.pod.html	/perl6/list-summaries/2003/p6summary.2003-04-20.html
+/perl6/list-summaries/p6summary.2003-04-27.pod.html	/perl6/list-summaries/2003/p6summary.2003-04-27.html
+/perl6/list-summaries/p6summary.2003-05-04.pod.html	/perl6/list-summaries/2003/p6summary.2003-05-04.html
+/perl6/list-summaries/p6summary.2003-05-11.pod.html	/perl6/list-summaries/2003/p6summary.2003-05-11.html
+/perl6/list-summaries/p6summary.2003-05-18.pod.html	/perl6/list-summaries/2003/p6summary.2003-05-18.html
+/perl6/list-summaries/p6summary.2003-05-25.pod.html	/perl6/list-summaries/2003/p6summary.2003-05-25.html
+/perl6/list-summaries/p6summary.2003-06-01.pod.html	/perl6/list-summaries/2003/p6summary.2003-06-01.html
+/perl6/list-summaries/p6summary.2003-06-08.pod.html	/perl6/list-summaries/2003/p6summary.2003-06-08.html
+/perl6/list-summaries/p6summary.2003-06-15.pod.html	/perl6/list-summaries/2003/p6summary.2003-06-15.html
+/perl6/list-summaries/p6summary.2003-06-22.pod.html	/perl6/list-summaries/2003/p6summary.2003-06-22.html
+/perl6/list-summaries/p6summary.2003-06-29.pod.html	/perl6/list-summaries/2003/p6summary.2003-06-29.html
+
+# Perl 5 List Summaries
+/perl5/list-summaries/p5p-200207-1.pod.html	/perl5/list-summaries/2002/p5p-200207-1.html
+/perl5/list-summaries/p5p-200207-2.pod.html	/perl5/list-summaries/2002/p5p-200207-2.html
+/perl5/list-summaries/p5p-200207-3.pod.html	/perl5/list-summaries/2002/p5p-200207-3.html
+/perl5/list-summaries/p5p-200207-4.pod.html	/perl5/list-summaries/2002/p5p-200207-4.html
+/perl5/list-summaries/p5p-200207-5.pod.html	/perl5/list-summaries/2002/p5p-200207-5.html
+/perl5/list-summaries/p5p-200208-1.pod.html     /perl5/list-summaries/2002/p5p-200208-1.html
+/perl5/list-summaries/week34.pod.html	/perl5/list-summaries/2002/p5p-200208-2.html
+/perl5/list-summaries/week35.pod.html	/perl5/list-summaries/2002/p5p-200208-3.html
+/perl5/list-summaries/p5p-200208-4.pod.html	/perl5/list-summaries/2002/p5p-200208-4.html
+/perl5/list-summaries/p5p-200209-1.pod.html	/perl5/list-summaries/2002/p5p-200209-1.html
+/perl5/list-summaries/p5p-200209-2.pod.html	/perl5/list-summaries/2002/p5p-200209-2.html
+/perl5/list-summaries/p5p-200209-3.pod.html	/perl5/list-summaries/2002/p5p-200209-3.html
+/perl5/list-summaries/p5p-200209-4.pod.html	/perl5/list-summaries/2002/p5p-200209-4.html
+/perl5/list-summaries/p5p-200210-1.pod.html	/perl5/list-summaries/2002/p5p-200210-1.html
+/perl5/list-summaries/p5p-200210-2.pod.html	/perl5/list-summaries/2002/p5p-200210-2.html
+/perl5/list-summaries/p5p-200210-3.pod.html	/perl5/list-summaries/2002/p5p-200210-3.html
+/perl5/list-summaries/p5p-200210-4.pod.html	/perl5/list-summaries/2002/p5p-200210-4.html
+/perl5/list-summaries/p5p-200210-5.pod.html	/perl5/list-summaries/2002/p5p-200210-5.html
+/perl5/list-summaries/p5p-200211-1.pod.html	/perl5/list-summaries/2002/p5p-200211-1.html
+/perl5/list-summaries/p5p-200211-2.pod.html	/perl5/list-summaries/2002/p5p-200211-2.html
+/perl5/list-summaries/p5p-200211-3.pod.html	/perl5/list-summaries/2002/p5p-200211-3.html
+/perl5/list-summaries/p5p-200211-4.pod.html	/perl5/list-summaries/2002/p5p-200211-4.html
+/perl5/list-summaries/p5p-200212-1.pod.html	/perl5/list-summaries/2002/p5p-200212-1.html
+/perl5/list-summaries/p5p-200212-2.pod.html	/perl5/list-summaries/2002/p5p-200212-2.html
+/perl5/list-summaries/p5p-200212-3.pod.html	/perl5/list-summaries/2002/p5p-200212-3.html
+/perl5/list-summaries/p5p-200212-4.pod.html     /perl5/list-summaries/2002/p5p-200212-4.html
+
+/perl5/list-summaries/p5p-200301-1.pod.html	/perl5/list-summaries/2003/p5p-200301-1.html
+/perl5/list-summaries/p5p-200301-2.pod.html	/perl5/list-summaries/2003/p5p-200301-2.html
+/perl5/list-summaries/p5p-200301-3.pod.html	/perl5/list-summaries/2003/p5p-200301-3.html
+/perl5/list-summaries/p5p-200301-4.pod.html	/perl5/list-summaries/2003/p5p-200301-4.html
+/perl5/list-summaries/p5p-200301-5.pod.html	/perl5/list-summaries/2003/p5p-200301-5.html
+/perl5/list-summaries/p5p-200302-1.pod.html	/perl5/list-summaries/2003/p5p-200302-1.html
+/perl5/list-summaries/p5p-200302-2.pod.html	/perl5/list-summaries/2003/p5p-200302-2.html
+/perl5/list-summaries/p5p-200302-3.pod.html	/perl5/list-summaries/2003/p5p-200302-3.html
+/perl5/list-summaries/p5p-200303-1.pod.html	/perl5/list-summaries/2003/p5p-200303-1.html
+/perl5/list-summaries/p5p-200303-2.pod.html	/perl5/list-summaries/2003/p5p-200303-2.html
+/perl5/list-summaries/p5p-200303-3.pod.html	/perl5/list-summaries/2003/p5p-200303-3.html
+/perl5/list-summaries/p5p-200304-1.pod.html	/perl5/list-summaries/2003/p5p-200304-1.html
+
+# standardize naming
+
+/perl5/news/2003/perl581-RC1.html /perl5/news/2003/perl-5.8.1-RC1.html
+/perl5/news/2003/perl581-RC2.html /perl5/news/2003/perl-5.8.1-RC2.html
+/perl5/news/2003/perl581-RC3.html /perl5/news/2003/perl-5.8.1-RC3.html
+
+# Move talks around
+
+/perl6/talks/als/(.*) /perl6/talks/2000/als/$1
+/perl6/talks/onion2002/(.*) /perl6/talks/2002/onion2002/$1
+/perl6/talks/onion2003/(.*) /perl6/talks/2003/onion2003/$1 
+
+/perl6-updates/?	    /perl6/talks/ 
+
+/dd-oscon2003/(.*)	    http://dev.x.perl.org/dd-oscon2003/$1
+/dubaby.jpg		    http://dev.x.perl.org/dubaby.jpg
+
+# licenses
+/licenses/artistic/?   /licenses/artistic.html internal
+/licenses/Artistic/?   /licenses/artistic.html internal
+/licenses/gpl/?        /licenses/gpl1.html internal
+/licenses/gpl1/?       /licenses/gpl1.html internal
+/licenses/Copying       /licenses/gpl1.html internal
+
+
+# cvs.perl.org
+/cvs/info(.*)	    /cvs/index.html$1	internal
+/cvs/favicon.ico    /favicon.ico	internal
+
+# stupid idiots
+/cgi-bin/formmail/.*   http://www.army.mil/
+/_vti_bin/.*	       http://www.af.mil/
+/_vti_inf.*	       http://www.whitehouse.gov/
+/MSOffice/.*	       http://www.navy.mil/
+

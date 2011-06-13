@@ -1,0 +1,126 @@
+=head1 This Week on perl5-porters (5-11 May 2003)
+
+Summary of this week's summary : scoops about RedHat 9 ; the possible
+future of CPAN packaging ; some overloading ; old and new error messages ;
+Windows killing ; and other interesting stuff.
+
+=head2 MakeMaker and RedHat 9
+
+Michael G Schwern currently gets a load of bug reports about MakeMaker not
+working on RedHat 9. This is because RedHat 9 ships with a snapshot of the
+maintenance branch of perl, which corrects some of the UTF8-related bugs,
+but unfortunately one of the remaining bugs I<seems to bite MakeMaker
+especially bad>, as says Jarkko.
+
+The workaround is to set the environment variable C<LANG> to C<C> before
+building a module.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg97360.html
+
+=head2 External dependencies of CPAN distributions
+
+Stas Bekman initiated another of those long, difficult-to-summarize
+(but-nevertheless-interesting) threads about possible enhancements to the
+way to build, distribute, install and upgrade modules. This time Stas
+tells us about the problem of incompatible upgrades, that occurs when a
+package Foo goes from version 1.XX to 2.00, with incompatible API changes,
+and thus being not suitable for upgrade for all users. (A good example
+would be mod_perl 1.XX vs. mod_perl 2.0.)
+
+Andreas Koenig says that this problem can't be solved without a major
+redesign of the indexing process, but that bundles can be used to solve
+this class of problems.
+
+Ken Williams provided some insight about what kind of metadata about
+external dependencies could be embedded in distributions.
+
+Autrijus Tang and Brian Ingerson give some interesting spoilers about the
+soon-to-be-released C<Module::Install> framework. Or should I say virus ?
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg97282.html
+
+=head2 CORE::readline() calls overloaded <>
+
+Christian Jaeger reported (bug #22042) that, when the <> operator has been
+overloaded for a class Foo, calling CORE::readline() on a object of this
+class calls the overloaded function. Rafael Garcia-Suarez showed that a
+similar behavior occurs for int(), and explained why he thinks it's not a
+bug.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg96064.html
+
+=head2 Destruction uses too much memory
+
+Ton Hospel produced a core dump (bug #22095) by building a large double
+linked list and destroying it. This is due to a hard stack overflow. Ton
+suggested that there's some recursion occurring during refcount decrement
+inside the perl interpreter, and that (1) replacing the recursion by an
+iterative algorithm would be a gain, (2) that each step of recursion uses
+probably too much memory. As said Arthur, patches are welcome.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg97243.html
+
+=head2 Making tests run anywhere
+
+The test suite for perl currently modifies @INC to be sure to always
+include the modules from the perl being built. Ilya Zakharevich proposed
+to make this behavior dependent on a C<NO_PERL_CORE> environment variable.
+The goal is to be able to run the test suite against an installed perl,
+and optionally to unbundle the test suite. Rafael recalls that F<t/TEST>
+already includes support to run the test suite using an arbitrary perl
+interpreter, via the C<PERL> environment variable.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg97271.html
+
+=head2 Old bugs, new fixes
+
+Casey West continues his journey through the bug database, fixing
+documentation as he finds doc bugs. He's not the only one that visits
+perlbug : Dave Mitchell, for example, reduced old bug #3420 to the amusing
+snippet
+
+    $ perl -Te '@{%h}{x}'
+    Bizarre copy of HASH in leave at -e line 1.
+
+and explained what happens here, but he doesn't know how to fix it.
+
+=head2 Error messages, added and removed
+
+Yitzchak Scott-Thoennes added a new fatal error (and fixed bug #17718 by
+doing so) :
+
+    Can't provide tied hash usage; use keys(%hash) to test if empty
+
+And here's the explanation : you probably know that a hash, evaluated in
+scalar context, provides bucket usage :
+
+    $ perl -le '%h=(1..6);print scalar %h'
+    3/8
+
+As an empty hash returns C<0> here, this can be used to test hashes for
+emptiness. But this operation can't be done on tied hashes, and returned
+until now unreliable data. Thus, tied hashes are no more allowed in scalar
+context. This modification will probably be part of perl 5.8.1 as well.
+
+Meanwhile, Rafael removed two unnecessary error messages : C<Final @
+should be \@ or @name> and C<Final % should be \% or %name>. (The second
+one wasn't even documented in the perldiag manpage.)
+
+In warnings land : Dave Mitchell proposed to add the name of the offending
+variable to the well-known I<use of undefined value> warning (when
+possible and reasonably easy).
+
+=head2 Killing processes on Windows
+
+Daniel Berger proposed an alternative implementation of kill() on Win32
+systems. Gurusamy Sarathy and Jan Dubois provided some insightful
+comments.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg97540.html
+
+=head2 About this summary
+
+This summary was brought to you by Rafael Garcia-Suarez. Weekly summaries
+are available on L<http://use.perl.org/> and via a mailing list, which
+subscription address is L<perl5-summary-subscribe@perl.org>. Feedback
+is (as always) welcome.

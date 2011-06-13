@@ -1,0 +1,44 @@
+=head1 TITLE
+
+Require explicit m on matches, even with ?? and // as delimiters.
+
+=head1 VERSION
+
+  Maintainer: Nathan Torkington <gnat@frii.com>
+  Date: 20 Aug 2000
+  Last Modified: 15 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 135
+  Version: 3
+  Status: Frozen
+
+=head1 ABSTRACT
+
+C<?...?> and C</.../> are what makes Perl hard to tokenize.  Requiring
+them to be written C<m?...?> and C<m/.../> would solve this.
+
+=head1 CHANGES
+
+Version 2 of this RFC redirects discussion of this topic to 
+perl6-language-regex@perl.org.
+
+=head1 DESCRIPTION
+
+Damian Conway's Text::Balanced module does a pretty good job of
+tokenizing Perl code.  However, bare C</.../> and C<?...?> require
+semantic analyis to distinguish them from division and the hook
+(C<A?B:C>) operator.
+
+To remove this hassle, and thus permit programs that analyze the
+source-code of other programs, I propose requiring that all matches
+require an explicit C<m>.
+
+=head1 IMPLEMENTATION
+
+Remove the bare C</.../> and C<?...?> from the grammar :-)  When
+converting perl5 programs to perl6, put the C<m> in.
+
+=head1 REFERENCES
+
+perl6-language message
+C<200008182343.JAA00690@indy05.csse.monash.edu.au> by Damian Conway

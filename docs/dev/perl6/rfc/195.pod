@@ -1,0 +1,70 @@
+=head1 TITLE
+
+Retire chop().
+
+=head1 VERSION
+
+  Maintainer: Nathan Torkington <gnat@frii.com>
+  Date: 5 Sep 2000
+  Last Modified: 18 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 195
+  Version: 3
+  Status: Frozen
+  Frozen since: v2
+
+=head1 ABSTRACT
+
+Remove chop() from the core.  Its purpose is better served by chomp(),
+so its remaining applications are few and limited.
+
+=head1 CHANGES
+
+ * fixed perl526 translation. (v3)
+
+ * Added mention of how per-filehandle autochomping would affect this
+   RFC. (v2)
+
+=head1 DESCRIPTION
+
+chop()'s original purpose was to remove trailing line terminators.
+However, chop() is dangerous: it always removes the last character,
+and it doesn't care whether the last character is a line terminator
+or not.
+
+So chomp() was introduced.  This only removes the value of $/, and if
+there's no $/ at the end of the string then it doesn't remove
+anything.  This makes it safer: if you don't know whether your string
+is chomp()ed or not, you can chomp() it anyway.  With chop() you had
+to have a separate explicit test.  chop() also doesn't know about $/
+and the different values it might have.
+
+chop() is still occasionally used, but very rarely.  Not enough, in
+my opinion, for chop() to stay in the core.  Its functionality might
+be available in a library.
+
+
+If filehandles gain the ability to automatically remove their record
+separators, then chomp() will still be needed.
+
+=head1 IMPLEMENTATION
+
+The perl526 translator can simply use
+
+  do { my ($foo) = s/(.)\z//s; $foo }
+
+for a chop() action.  If there were a chop() in a standard library
+then the conversion would simply be a matter of putting:
+
+  use String::Chop;	# or whatever
+
+at the top of any converted program that uses chop().
+
+Implementation in perl6 is very straightforward: don't implement
+chop().
+
+=head1 REFERENCES
+
+RFC 58: C<chomp()> changes.
+
+perlfunc manpage for discussion of chomp() and chop()

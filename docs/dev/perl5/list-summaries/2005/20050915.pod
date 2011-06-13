@@ -1,0 +1,477 @@
+=head1 This Week on perl5-porters - 12-18 September 2005
+
+Nicholas Clark announced the plan for perl 5.8.8, so it
+was only fitting that someone should post a question asking
+how to compile 5.004. Elsewhere there continued to be lots
+of discussion of VMS, carrying on from last week. All told,
+a fairly busy week with lots of single post threads, which
+made summarising a bit difficult. 
+
+=head2 5.8.8 is Coming
+
+Nicholas Clark posted a plan for 5.8.8. 
+
+The deadline for changes (in blead, to be integrated in maint) is
+B<16th October 2005>. He will be "mostly incommunicado" for the first
+weeks of October, but explained that it isn't a problem. Fixes of
+bugs in pseudohashes and 5.005 threads go directly to maint and
+little else does. Steve Peters suggested that changes to re-entrant
+functions could be another exception, but for Nicholas it would
+have to wait for someone to figure out how to merge the code.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00223.html
+
+  The Current TODO
+  http://mirrors.develooper.com/perl/APC/perl-current/pod/perltodo.pod
+
+=head2 New Core Module Releases
+
+Jarkko Hietaniemi, fulfilling the promise of last week's "Math::Complex
+atan2 bug" thread, announced a patch with several pending updates
+for C<Math::Complex> and C<Math::Trig>.
+
+The result of C<atan2(0,0)> is now documented as being
+dependent on the underlying library.
+
+Nadeem Douba pointed what he called a small technical bug. He called
+for an optional argument, C<rho>, to the subroutine
+C<great_circle_destination> and explained the rationale of a solution.
+Jarkko countered that he was confused by the proposal, which does
+not fit the usual concept of radians. The default coordinate system
+cannot be changed without breaking existing code and there is no
+I<correct> spherical coordinate system. He proposed a special export
+tag as a possible way to incorporate Nadeem's suggestion.
+
+John Peacock released version-0.48 to CPAN and a corresponding patch
+vs. bleadperl. A pure Perl implementation is coming and John hopes
+he soon will be done with this project. But before that, the PAUSE
+indexer needs to be fixed and C<CPANPLUS>, C<CPAN>, C<Module::Build>
+patched to use F<version.pm> "fulltime".
+
+=head2 Zlib on VMS
+
+The efforts to make C<Compress::Zlib> work in blead on VMS continue.
+A long thread developed involving John E. Malmberg, Paul Marquess 
+(C<Compress::Zlib>), Tom Hughes (C<IO::Zlib>), Jarkko Hietaniemi (external 
+gzip support in C<IO::Zlib>). It seems there are a zillion options 
+to configure VMS Unix emulation and not all of these are handled 
+gracefully by the Perl source code. Uncertainty concerning
+the differences of environment remains.
+
+The thread went on under the subject "Zlib 2.00_03 / Blead 25366 
+on VMS + patched vms.c" where John Malmberg and Paul Marquess 
+continued the detective work. John's last message is investigating 
+a possible problem with C<glob()> on VMS which can be responsible for 
+some of the test failures. It was found that by just removing
+leading "./" from directory variables on a test script
+made all its tests to pass. Craig Berry explained how limited
+is the home-grown glob() on VMS and John Malmberg
+notices that, as of OpenVMS 7.3-2, a C<glob()> function is
+provided in the C library that is better be used on
+releases that supported it.
+
+Paul Marquess and John Malmberg went on to discuss
+issues on the consistency of VMS conversions
+and how it could be made better. Peter Prymer
+confirmed some VMS oddities on filename handling.
+
+    ZLIB 2.0 / Blead 25366 on VMS 
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00200.html
+
+=head2 More VMS Issues
+
+John E. Malmberg spotted a bug on the VMS specific C<Perl_cando()>
+and squashed it with patch @25388. H. Merijn Brand applied it.
+
+    The patch
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00243.html
+
+John also confirmed C<ExtUtils::CBuilder> 0.13_01 tests ok.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00238.html
+
+He added a few comments on the discussion with Ken Williams about
+an enhanced file spec handling for current VMS versions. 
+
+The week closed with the posting by John Malmberg of an RFC
+proposing some VMS behavior changes. Apparently those changes
+may improve the consistency and precision of VMS perl.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00395.html
+
+=head2 Fiddling with the Bloody Grammar
+
+After the closing act of Michael Schwern, there was some subsequent
+traffic. Randal Schwartz discussed using "for example", "such as",
+"and so on" to say precisely what we mean. He thought it may be
+used as a general guideline for future writings, without crusades
+to fix it "in the past".
+
+There was silence for a while. And then David Nicol offered a 92K
+patch over 5.9.2 replacing every C<e\.?g\.?> and C<i\.?e\.?> with
+I<for example> and I<that is>. Adding commas and removing C<< IE<lt>italicsE<gt> >>
+were left as an exercise for some willing person. No one volunteered.
+
+    Michael closes
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00236.html
+
+    Randal's advice
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00278.html
+
+    Chainsaw patch
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00282.html
+
+=head2 OS X 10.4 Issues
+
+"make test" for maint on OXS 10.4 fails F<lib/locale.t>.
+Randal says: "At least it fails on only one thing".
+Rafael remembers it's a problem
+with system locales. Dominic Dunlop notices
+this problem is recorded as bug #35895 (and 
+logged as a bug with Apple as well - with no
+return). Dominic proposes a patch on Darwin
+to skip lib/locale.t tests on locales containing
+eu_ES as well as Byelorussian and Catalan locales.
+It applies to versions between 8.0.0 and 8.2.0,
+and hopefully will get fixed on the next Apple release.
+Patch applied.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00312.html
+
+
+Randal L. Schwartz posted a test failure building Storable on OS X.
+It basically said "no weak references here". Steve Peters
+remembered seeing something similar before: the default Perl on
+OS X 10.4 was built without compiling the XS portion of C<Scalar::Utils>.
+A fresh install of C<Scalar::Utils> fixes the problem. Randal checked
+it and thought Storable would need C<Scalar::Util> as a prereq in order
+to have the the issue handled automatically.
+
+Fixing the Storable's test to ignore the "weak isn't supported"
+error would be the bug report for p5p. Nicholas Clark said that
+Randal should send a bug report to his Perl distributor asking "why isn't it
+installing the XS version of a core module?"
+Randal insisted that 'maintperl' was used. Nicholas
+and Randal have not reached a consensus yet.
+
+To be continued, no doubt, next week.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00312.html
+
+=head2 Configuring ranlib for perl on OSX
+
+Steve Peters revived the interest in a bug (#36448) and patch
+reported by Luke Closs back in July. It concerned a change
+Apple did in how ar works in Tiger and was a "rather simple change".
+As a matter of fact, H. Merijn Brand had it in his queue and had
+been waiting for someone with access to a MacOS-like OS. Nicholas
+checked it and applied it.
+
+  http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00184.html
+
+=head2 The Return of the Consting
+
+Background: Andy Lester has been spending his copious spare time
+in the recent months bringing const (and other goodies) to the perl
+sources, the rationale being to piggy-back the analysis that modern
+compilers can perform as a way to help squash bugs.
+
+Andy was back with a 13K "patch of accumulated goodness", promptly
+applied by H. Merijn. Robin Barker reported still getting warning
+messages related to attributes.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00246.html
+
+=head2 Optional arrow operator on C<< (LIST)[LIST]-> >>
+
+The thread named "perlref Documentation About Optional -> Is Too Vague"
+has long changed to a proposal on a syntax extension.
+Prodded by Yitzchak Scott-Thoennes, Rafael Garcia-Suarez applied a
+patch that made the following syntactically correct:
+
+    my $x = (foo())[0][1];
+
+just like 
+
+    my $x = (foo())[0]->[1];
+
+Sometime ago, he had expressed a minor concern on the possibility
+it allows to people unaware of the problem write 
+non-backwards-compatible code with 5.10. Back then, Yitzchak 
+answered that could be a reason not to
+include the patch in maint. Rafael thought that was the case, but
+Nicholas Clark has the final word.
+
+    Yitzchak pings
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00224.html
+
+    Rafael answers
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00276.html
+
+=head2 Pod Indexing Project Status and Plan
+
+Ivan Tubert-Brohman reported on the current status of the Pod
+Indexing Project, with a nice summary and details. He pointed the
+perl-5.8.8 deadline at Oct 16, 2005 and the opportunity to maximize
+the number of indexed files. Volunteers are anxiously waited.
+
+    The project page
+    http://pod-indexing.annocpan.org/wiki/
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00289.html
+
+=head2 Instrumenting perl at Runtime
+
+Alexander Kolbasov kicked off a long, fascinating thread discussing
+DTrace, a Solaris tool that allows one to dynamically instrument a
+running program and gather useful information about its behaviour. 
+The first difficulty Alexander encountered was matching the underlying
+C code to the Perl code being executed.
+
+DTrace is being ported to FreeBSD and already
+understands Java, PHP and Ruby.
+
+Rafael pointed to Alan Burlison's work in the same
+area, and pimped his own C<Runops::Switch> module, that allows you to
+replace perl's runloop at (script) compile time. He also answered,
+or provided pointers for, a number of questions raised by Alexander.
+
+For it to really work, some adaptations need to be made to the
+sources.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00252.html
+
+    Alan Burlison's blog
+    http://blogs.sun.com/roller/page/alanbur?entry=dtrace_and_perl
+
+=head2 Compiling perl 5.004
+
+Shaun Daredia pleaded for help to get 5.004 running on some
+Linux-type platform. The trouble is essentially that
+5.004 is old, and the configuration script gets confused by
+the results that modern versions of C<gcc> emit in response
+to its probes. H. Merijn Brand provided a clue as to how to
+fix the problem, but with no certainty.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00298.html
+
+=head2 PXPerl New Site
+
+PXPerl is a full-featured Perl, Pugs and Parrot binary 
+distribution for Windows. Grégoire Péan announced 
+the new address for the project.
+
+The current distribution PXPerl 5.8.7-4 contains Perl 5.8.7, 
+Pugs 6.2.9 and Parrot 0.2.2. 
+
+The aim of the project is to provide
+an always up-to-date build. Vive Perl!
+Vive Grégoire! Windows users must be grateful.
+
+    The announcement
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00382.html
+
+    The website
+    http://pxperl.com/
+
+=head2 Parallel Testing
+
+Nicholas notices how the core regression test is getting more
+comprehensive. This is a good thing, except that it takes longer
+to run. He asks: would it be feasible to run tests in parallel?
+Of course, it involves some issues to solve and he advances some
+of them. This topic was entered in C<perltodo> which was reordered
+so as to not scare people any more with brain-melting things.
+
+Yuval Kogman stated that Pugs (the experimental Perl 6 compiler)
+actually supports running tests in parallel.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00379.html
+
+=head2 Lots of warnings building 5.8.8@24637
+
+Paul Marquess reports lots of warnings while
+building 5.8.8@24637. Nicholas Clark answers most of
+them are the same errors blead showed up
+when Andy Lester started adding const to blead.
+He hopes to see these warnings going away as
+he brings in fixing patches. VMS or Windows
+can be broken by those last changes, as Nicholas
+were not able to try them yet. Andy asks
+whether he can provide some help on this effort
+and Nicholas says Andy's later changes needs
+to be merged and then some work will be in 
+order to get maint warning free again.
+
+After carping on glibc headers,
+Nicholas adds clean system headers to his growing wish list .
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00371.html
+
+=head2 C<malloc_size> and C<malloc_good_size>
+
+Steve Peters announced the detection 
+of malloc_size/malloc_good_size added to Configure.
+
+John E. Malmberg produces a patch for VMS in
+order to deal with the new configure parameters
+C<malloc_size> and C<malloc_good_size>. Merijn
+applied it and also asked if someone tested 
+for problems with win32. Steve
+Peters reported to not have seen any problems.
+
+    The patch
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00329.html
+
+    The fix
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00390.html
+
+=head2 UTF8-Related Bug Reports
+
+Christian Jaeger reported that taint mode still
+breaks UTF-8 handling.
+Problems can be seen with code as simple as
+
+    use Encode;
+    open F,"some/file/containing_utf8_text" or die $!;
+    my $buf;
+    read F,$buf,10,1000 or die $!;
+    my $str= Encode::decode_utf8($buf);
+
+Things work fine unless the -T switch is used. Dan "the Encode Maintainer" Kogai
+duplicated the behaviour on 5.8.6, isolated it and wondered if a POD
+fix is in order or is it an authentic undocumented bug?
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00322.html
+
+John Gardiner Myers shows a code snippet in bug #37161
+where a thread writes ISO-88591-1 encoded
+data when it should output UTF-8 instead. Code in
+threads seems not to respect the C<:utf8> discipline.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00292.html
+
+Jim McKim registrated the bug #37183 about
+the ability of the tiny script below to cause
+perl to segfault. No reply yet.
+
+    #!/usr/local/bin/perl -w
+    use encoding 'utf8';
+    my $x = /¨\.\//;
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00353.html
+
+=head2 Perl 5 Bug Summary
+
+Robert Spier delivered  the Perl5 bug summary. 1508 open tickets. 
+8 more I<gasp> than last week.
+
+    The summary
+    http://rt.perl.org/rt3/NoAuth/perl5/Overview.html
+
+=head2 In Brief
+
+Nicholas Clark followed up on a conversation
+with Salvador Fandiño about how 
+assertion support could be improved, including
+opening new possibilities for what independent
+modules can achieve with hooks affecting code in
+compile time.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00341.html
+
+In bug #37190, Nicholas Clark reports OS X
+and FreeBSD crashing when using C<-DT> with 
+C<use warnings;> He suspects of a real bug
+somewhere. Rick Delaney gives some clues
+on the interpretation of the debugging log.
+
+John Damm Sørensen reports in #37156 on a problem
+on compiling 5.8.7 on IA64. It concerns
+a well known issue for which some workarounds
+are listed and have been found to work fine.
+Nevertheless, these are not mentioned
+in perl README files. 
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00290.html
+
+Rahul Sharma reported (in bug #37162) a problem during
+'make test' on HP-UX using cc to compile Perl.
+It had to do with missing gmake. But gmake
+should not have being used. Merijn, Nicholas,
+and Andy Dougherty discussed how it could have
+happened, it it were a bug and how to fix it.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00291.html
+
+Hiroshi Manabe reported bug #37144, showing sample code which causes
+very unpredictable results when running under the debugger.
+
+    for ($i = 0; $i < 10; ++$i) {
+        $temp = "\x{100}X";
+        $temp =~ s/[^X]+//;  # bad things happen here (under the debugger)
+    }
+
+No-one offered any insights as to what was happening. Things like
+this make you wonder how nobody encountered it before.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00212.html
+
+During work on a Pod processor, Joshua Hobblit
+found quirks in the POD specs, C<Pod::Perldoc> and 
+C<Pod::Parser>. Should the chunk
+
+    bar
+       baz
+
+parse as an ordinary paragraph or
+two separate ones (with "   baz" in a verbatim paragraph)? 
+Rafael points Sean Burke as the one to clarify matters.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00299.html
+
+Aaron Kaplan reported in #37142 that C<h2xs> produces no code for
+an enum constant with explicit negative value like
+C<enum foo { bar = -1 }>. He supplied a patch and it was applied.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00222.html
+
+"Dentom_Sam" states in bug #37191 that he can consistently get the error:
+
+    Can't call method "close" on an undefined value
+
+on C<IPC::Open3>. He diagnosed it has to do with redirections
+leading to failure and suggested a possible fix.
+
+David Austin complains about C<IO::Select>
+not having a way to distinguish between
+timeout and errors. He suggests how
+a timeout must be returned and mentions
+how it is not documented what C<< IO::Select-E<gt>select >>
+returns after a timeout.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00340.html
+
+Jos Boumans waved goodbye to the last smoke report
+from a BSDI box, the last one of that particular server farm.
+Yitzchak regrets they had never got a chance to track an F<op/int.t> failure.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2005-09/msg00306.html
+
+=head2 About this summary
+
+This summary was written by Adriano Ferreira with some additions
+by David Landgren.
+
+Information concerning bugs referenced in this summary (as #nnnnn)
+may be viewed at http://rt.perl.org/rt3/Ticket/Display.html?id=nnnnn
+
+Weekly summaries are published on F<http://use.perl.org/> and posted
+on a mailing list, (subscription: F<perl5-summary-subscribe@perl.org>).
+The archive is at F<http://dev.perl.org/perl5/list-summaries/>.
+Corrections and comments are welcome.
+
+If you found this summary useful or enjoyable, please consider
+contributing to the Perl Foundation to help support the development
+of Perl.
+

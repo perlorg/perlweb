@@ -1,0 +1,46 @@
+=head2 Combust Features
+
+=over 4 
+
+=item MVC architected
+
+Combust is primarily a set of "controllers" and utility modules that
+makes it easy to write views (that's a fancy word for your content in
+most cases) and models (if you are writing an application rather than
+just a content site).
+
+=item Clever integrated utility modules
+
+Your custom controllers can easily use the Combust::Cache module to
+cache data. Cache entries can be complex data structures, include meta
+data, have individual expiry times and more.
+
+Combust::Cookie takes all the work out of setting, reading and
+validating cookies.
+
+=item Subversion backed
+
+It's not a requirement, but Combust is built to have it's documents
+(templates, pod files) stored in a Subversion repository. 
+
+Combust itself is in Subversion.
+
+=item Automatic POD formatting
+
+We write pod.  Web browsers read HTML.
+
+If you have a "file.pod" file and request "file.html" the POD will
+magically be converted to HTML and processed like it was a regular
+HTML template.
+
+You can also just include "file.html" in your HTML templates and
+Combust will do the right thing.
+
+=item Supports staging areas with branches and other goodies
+
+=item Easy to install a local development version
+
+=item Easy to reuse for other (unrelated) sites and web applications
+
+=back
+

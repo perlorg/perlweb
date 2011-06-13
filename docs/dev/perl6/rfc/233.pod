@@ -1,0 +1,102 @@
+=head1 TITLE
+
+Replace Exporter by a better scaling mechanism
+
+=head1 VERSION
+
+  Maintainer: Ilya Zakharevich <ilya@math.ohio-state.edu>
+  Date: 15 Sep 2000
+  Mailing List: perl6-stdlib@perl.org
+  Number: 233
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+This RFC proposes a minimal efficient well-scaling mechanism for exporting.
+Only export of subroutines and tags are supported by this mechanism.
+
+=head1 DESCRIPTION
+
+C<Exporter> gives an enormous efficiency hit for modules with a large
+list of exportable symbols (but which are very small nevertheless, say,
+because everything is autoloaded).  It is supposed to be optimized for
+speed, with a lot of caching and keeping things close at hand.  However,
+all these actions are in fact only slowing things down, since they create
+a lot of code to compile, and a lot of data structures to maintain.
+
+In many cases the Exporter-support data creates up to 90% of memory overhead
+of the module (so may be supposed to provide a similar fraction of the load
+time overhead).
+
+Lessons learned: 
+
+=over
+
+=item *
+
+instead of keeping a lot of arrays and a hash storing a lot of redundant data,
+store the information in a string, and use RExen to extract it from
+this string.
+
+This provides a crucial advantage in the memory footprint, and may provide
+speed advantages (maybe even if the module is imported from many times).
+
+This string may contain items of two kinds: symbols, and tag lists of the
+form C<":tag[ :subtag1 :subtag2 symbol1 symbol2 ]">.  If symbols appears
+inside a tag, it need not be repeated again.  The default exporting list
+should be provided the same as the list for the C<:DEFAULT> tag.
+
+=item *
+
+The symbols may be followed by the prototypes.  Example:
+
+     ' :DEFAULT[:micro :mini additional_f(\%)] :micro[ func1($$) ]
+       :mini[ func2($) ] :extra[ func3() ] func4($) '
+
+Having the prototypes in this list may be useful, since the same list
+may be used by the compile-time action of autoloading, reducing the
+overhead yet more.  (See RFC on flexible autoloading.)
+
+=item *
+
+The export string should be registered as the argument to the pragma.
+Example:
+
+     use export q( func1($$) func2($) );	# No default
+
+=item * 
+
+The export list may be substituted by a subroutine reference which returns
+such a string (cached to avoid such a call for future exporting).  Example:
+
+     use export sub { local $/; my $l = <DATA>; eval 'use export $l'; $l };
+     ...
+     __DATA__
+     func1($$)
+     func2($)
+
+This is desirable since the subroutine may be autoloaded (either explicitly,
+or as above), thus reducing yet more the overhead of import-less
+
+     use Module ();
+
+=item *
+
+export.pm should support only this barebone API.  Anything hairer
+should be implicitly requested via a separate module (Export::Methods),
+so that the overhead of export.pm is as small as possible.
+
+=back
+
+=head1 MIGRATION ISSUES
+
+None.
+
+=head1 IMPLEMENTATION
+
+Straightforward.
+
+=head1 REFERENCES
+
+None.

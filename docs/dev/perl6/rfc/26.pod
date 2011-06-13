@@ -1,0 +1,54 @@
+=head1 TITLE
+
+Named operators versus functions
+
+=head1 VERSION
+
+  Maintainer: Johan Vromans <jvromans@squirrel.nl>
+  Date: 4 Aug 2000
+  Last Modified: 28 Aug 2000
+  Mailing List: perl6-language@perl.org
+  Number: 26
+  Version: 2
+  Status: Frozen
+
+=head1 ABSTRACT
+
+Perl distinguishes named operators and functions. For Perl6, this
+disctinction can be dropped.
+
+=head1 DESCRIPTION
+
+Named operators, like C<abs>, can be called like functions in which
+case they behave like functions. This has always been so in Perl.
+
+Recent versions of Perl allow user-defined functions to be called as
+operators, using context coercion templates to resolve argument
+passing.
+
+Larry said: "Theoretically, we'd like to make subs run as fast as ops."
+
+Since there is no real difference between named operators and
+functions anymore, they can be treated identically. The difference in
+terminology can be applied to how it is called instead of how it is
+defined.
+
+So, a I<function> is a user-defined or built-in function called with a
+parenthesized list of arguments, and a I<named operator> is a
+user-defined or built-in function called with its arguments "bare".
+The latter form is subject to the usual restrictions.
+
+Note that this applies to the language aspects. The actual
+implementation may be different for user-defined and built-in
+functions.
+
+=head1 CHANGES
+
+After the first release we had some discussions on perl6-language. These
+discussions didn't add any new insights.  The discussion is over, and
+it's now up to Larry to decide.
+
+=head1 REFERENCES
+
+[i] perldoc perlop
+

@@ -1,0 +1,122 @@
+=head1 TITLE 
+
+Objects should have builtin stringifying STRING method
+
+=head1 VERSION
+
+  Maintainer: Nathan Wiger <nate@wiger.org>
+  Date: 6 Aug 2000
+  Last Modified: 14 Sep 2000
+  Mailing List: perl6-language-objects@perl.org
+  Number: 49
+  Version: 3
+  Status: Frozen
+
+=head1 ABSTRACT
+
+Currently, $ single-whatzitz types in Perl can hold several different
+things. One of the things that these are commonly used to hold are
+objects, such as:
+
+   $q = new CGI;
+   $r = Apache->request;
+
+Unfortunately, there is no easy way to tell these are actually objects
+without lots of annoying ref checks throughout your code. So if you say:
+
+   print "$q";
+
+This prints out something like this:
+
+   CGI=HASH(0x80ba4e8)
+
+Which isn't very useful. This RFC attempts to fix this by providing
+builtin special method C<STRING> which is automatically called when an
+object is "stringified".
+
+While this can be accomplished through the use of 'use overload', a more
+automatic, object-specific method has certain advantages. For more
+details on this, please see RFC 159.
+
+=head1 NOTES ON FREEZE
+
+This RFC goes into details on the uses of C<STRING>, but what you really
+want to read is L<RFC 159: True Polymorphic Objects>, which extends
+these concepts to other Perl operators and contexts.
+
+=head1 DESCRIPTION
+
+Currently, there is no way to easily distinguish between these two
+syntaxes:
+
+   $scalar  =  date;     # scalar ctime date, same as localtime()
+   $object  =  date;     # date object with accessor functions
+
+As such, there is no easy way to have the C<date()> function return both
+- it must decide what to return within the general scalar context.
+Damian's excellent RFC 21 on C<want()> addresses several specific cases,
+several have suggested alternate syntaxes, such as:
+
+   my Date $object = date;   # return object of class 'Date'
+   my tm $object = date;     # return object of struct 'tm'
+
+However, this doesn't solve the problem, since printing out either of
+these in a scalar context still results in "garbage".
+
+I suggest that objects provide a default method called C<STRING> that
+determines what they produce in a string context. When stringified, an
+object would automatically call its C<STRING> function and return the
+correct value. For example, RFC 48 describes a new C<date()> interface.
+In a scalar context, it could produce a date object always:
+
+   $date = date;
+
+However, when you went to do anything with it in a string context, it
+would call the appropriate method:
+
+   print "$date";     # calls $date->STRING, which in this case would
+                      # print out a ctime formatted date string
+
+The call to C<$object->STRING> would be a decision made by Perl, similar
+to the way that C<tie()> works. The object simply has to provide the
+method; Perl does the rest.
+
+This gives us several other really neat side effects. First, we can now
+return a list of objects and have them act the same as a "regular old
+list":
+
+   (@objects) = Class->new;
+
+Since, in a stringifying context, each of these objects would call their
+C<STRING> methods:
+
+   print "@objects";   # calls $objects[0]->STRING, $objects[1]->STRING,
+                       # and so on for the whole array, thus making it
+                       # look like a plain old list
+
+As such, we no longer have to distinguish between objects and "true"
+scalars. Objects are automatically converted when appropriate. 
+
+=head1 IMPLEMENTATION
+
+All core objects should be modified to include a C<STRING> function.
+This function may just be a typeglob pointing to another function, or it
+may be an actual separate function.
+
+Hooks will have to be put in Perl's string context so that if something
+is an object, then that object's C<STRING> method is called
+automatically if it exists.
+
+=head1 MIGRATION
+
+None. This introduces new functionality.
+
+=head1 REFERENCES
+
+RFC 159: True Polymorphic Objects
+
+RFC 21: Replace wantarray with a generic want function 
+
+RFC 48: Replace localtime() and gmtime() with date() and utcdate()
+
+Lots of people on perl6-language for great input, thanks!

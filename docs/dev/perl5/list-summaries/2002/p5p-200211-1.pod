@@ -1,0 +1,104 @@
+=head1 This Week on perl5-porters (4-10 November 2002)
+
+The usual suspects are once again rounded up. Unicode bugs, PerlIO bugs
+and closure bugs are featured in this week's summary. In a sense, that's a
+good thing, meaning that the older or more widely used features seem to
+work quite well.
+
+=head2 Determine whether a scalar is a number
+
+Slaven Rezic proposed to include a Perl function that hooks to the
+internal function Perl_looks_like_number() in the Scalar::Util module. He
+thinks I<this would be easier to handle and remember than the regexps
+described in perlfaq4.pod, 'How do I determine whether a scalar is a
+number...'.> Graham Barr, author of Scalar::Util, found that this was a
+good idea, and Slaven sent a patch.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg88658.html
+    http://www.perldoc.com/perl5.8.0/pod/perlapi.html#SV-Manipulation-Functions
+
+=head2 Two UTF8 bugs
+
+Abhijit Menon-Sen take a look at the bug #18107 reported last week, about
+uc(), lc(), ucfirst() and lcfirst() not working correctly with C<s///> on
+UTF8 strings. It appeared that this was caused by the unfortunate
+interaction of several obscure bugs, on which he worked with Hugo and
+others.
+
+Andreas Koenig found a case where Test::ok() reports a success, and
+Test::More::ok() reports (incorrectly) a failure (bug #18232).
+His test case involves UTF8 strings, captured by a regular expression.
+Sadahiro Tomoyuki seems to have found the cause : I<SVf_UTF8 of $1 is
+dropped off after an inner block>. In other words, the internal UTF8
+property of a $<digit> string seems to be incorrectly localized.
+
+=head2 Lexical quandry
+
+Dave Mitchell began to ask a question about the semantics of eval(string)
+inside closures : what should the following code output ?
+
+    $x = 'global';
+    my $x = 'lexical';
+    eval q[ sub f { eval '$x' } ];
+    my $r = f();
+    print "got $r\n";
+
+The thread is not that long, but my brain hurts when I try to summarize
+it. Basically Sarathy explained that eval() has been implemented to be
+efficient, but that the implementation could be reworked to do something
+that appears to be more correct (i.e. capture the whole lexical context of
+the eval()), if an efficient way to do it is worked out. Read all the
+details at the archive :
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg88857.html
+
+Bug #18286 is another demonstration of this same behavior, but with
+another bug as well.
+
+    http://archive.develooper.com/perl5-porters@perl.org/msg88895.html
+
+=head2 In brief
+
+Rafael Garcia-Suarez applied a fix for the B::* problems reported last
+week, and waved hands towards a general direction for a test suite for the
+B API.
+
+Chip Turner (who builds the perl that ships on RedHat systems) plans to
+build an RPM of perl 5.8.0 that integrates several recent changes,
+including some UTF8/PerlIO fixes.
+
+Chip also reported a bug (#18265) related to read() on nonblocking file
+descriptors, which can return undef without setting $!, when PerlIO is
+used.
+
+Hugo van der Sanden and Dave Mitchell looked at bug #17920, a core dump
+case during the parsing of nested closures containing a syntax error.
+Apparently the problem comes from the error recovery logic of the yacc
+parser, that shouldn't make any assumption about the erroneous code it
+skips.
+
+Brian Ingerson found a way to make perl segfault when using a source
+filter, and Slaven Rezic provided a patch.
+
+Nicholas Clark found an interesting way to make xsubpp generate nested C
+comments, which is, of course, a bad thing. (Bug #18256.)
+
+Dan Kogai released Encode 1.81, which includes an I<ingenious patch by
+Nicholas Clark that reduces shlib sizes by 50% with no penalty and
+backward compatibility preserved>.
+
+Andreas Koenig reported that character C<\x{df}>, upgraded to UTF8,
+satisfies both the \w and \W regular expression atoms. (Bug #18281.)
+
+Ian Phillipps sent a patch to B::Lint, to have it detect implicitly
+quoted bare words that happen to match the name of a subroutine.
+
+The smoke tests (and testers!) helped to discover, hunt down, and fix, a
+couple of obscure bugs, again.
+
+=head2 About this summary
+
+This summary brought to you by Rafael Garcia-Suarez. It's
+also available via a mailing list, which subscription address is
+F<perl5-summary-subscribe@perl.org>. Comments and corrections are, as
+always, welcome.

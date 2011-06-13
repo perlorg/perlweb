@@ -1,0 +1,109 @@
+=head1 TITLE
+
+POD and comments handling in perl
+
+=head1 VERSION
+
+  Maintainer: Richard Foley <richard@rfi.net>
+  Date: 25 Sep 2000
+  Mailing List: perl6-internals@perl.org
+  Number: 325
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+POD and comment syntax behaviour.
+
+=head1 DESCRIPTION
+
+Many people, especially shell programmers, are used to the B<#> style of comments, and when confronted with YAPS (Yet Another Possible Style :), they give up and can't be bothered to learn how POD may actually be useful.
+
+This is a shame and it may be possible to incorporate an implementation which would allow for both styles, and would also enable inclusion of the old style with mimimal effort, thus dragging old-coders screaming into the 21st century.
+
+For example B<perldoc perldiag> or B<perldoc -f delete> can save a lot of time and head-scratching.  Being able to do that to your own code is sometimes extremely useful, if only to realise how much better you could have written it in hindsight.
+
+Typically a lot of code is commented like this:
+
+	# ################# #
+	# How to use sub foo
+	# 
+	#   my $bar = &foo($arg1, $arg2);
+	# 
+	# and so on
+	# ################# #
+
+A typical POD representation could be:
+
+	=item foo
+		
+		How to use sub foo
+		
+			my $bar = &foo($arg1, $arg2);
+		
+		and so on
+	
+	=cut
+
+There are 2 potential problems with the standard (IMHO on the whole excellent)
+POD approach:
+
+1. Sometimes it is visually difficult to seperate the code from the
+comments, especially for those without full colour syntax highlighters
+(or who have perhaps switched them off).
+
+2. Some people just don't want to learn a new/old way of doing something,
+(if it's too different to what they are used to).  While not condoning
+the ostrich-head-in-sand approach, there are a lot of people out there
+who just don't look at POD, even if they've heard of it, purely because
+the different syntax scares them off.  This reaction from grown men
+(etc.) may of course be frowned upon, or even denied, but it doesn't
+stop it being true.
+
+
+=head1 IMPLEMENTATION
+
+A couple of possiblities raise their tentacles to allow a 'middle-ware' syntax:
+
+1. Allow the key words after comments too, which would reduce the
+modifications to existing code/modules and maintain the readability.
+
+	# =item foo
+	# How to use sub foo
+	# 
+	#   my $bar = &foo($arg1, $arg2);
+	# 
+	# and so on
+	# =cut
+
+2. Allow 'comment key' to work as well as 'equals key', with or without
+the spaces:
+
+	# item foo
+
+	How to use sub foo
+
+		my $bar = &foo($arg1, $arg2);
+
+		and so on
+
+	# cut
+
+Either approach, while not perhaps as elegant as B<pure POD>, would
+encourage more general compliance with, and usage of, the simply excellent
+POD system, without overly complicating it.
+
+Essentially extend C</^=\w+/> to C</^(=|(\#\s*\=))\w+/>
+
+You could even include the typical B<C> comment characters:
+
+	C</^(=|(\#\s*\=)|(\/\*)\w+/>
+
+But that may be stretching it a bit :-)
+	
+
+=head1 REFERENCES
+
+RFC 5: Multiline Comments for Perl.
+
+RFC 102: Inline Comments for Perl.

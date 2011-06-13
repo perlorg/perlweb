@@ -1,0 +1,109 @@
+=head1 TITLE
+
+Standardize ALL Perl platforms on UNIX epoch
+
+=head1 VERSION
+
+  Maintainer: Nathan Wiger <nate@wiger.org>
+  Date: 14 Aug 2000
+  Last Modified: 28 Sep 2000
+  Mailing List: perl6-language-datetime@perl.org
+  Number: 99
+  Version: 4
+  Status: Frozen
+
+=head1 ABSTRACT
+
+Currently, internal time in Perl is maintained via C<time>, which is
+highly system-dependent. On some systems, this is relative to the UNIX
+epoch, while others use their own epochs (MacPerl uses 1904, for
+example).
+
+All versions of Perl on all platforms should maintain time both
+internally and externally as seconds since the UNIX epoch (00:00:00 01
+Jan 1970 UTC). 
+
+=head1 DESCRIPTION
+
+=head2 UNIX Epoch
+
+Time is a dicey issue. While everyone disagrees on what the "right"
+epoch is to use, everyone generally agrees that time synchronization
+across different versions of Perl is a good thing.
+
+The UNIX epoch is already a widely-established standard and seems as
+good as any. This has the added benefit that most users will see no
+change, since most users use a version of Perl which is already based on
+the UNIX epoch.
+
+=head2 Other Time Properties
+
+Everyone seems pretty well agreed that while they want a standard epoch,
+they also really want access to important alternative information, such
+as ISO and native system time.
+
+There are three alternatives:
+
+   1. Do not provide this information
+   2. Add additional builtins to deal with this information
+   3. Make time into a function that returns a polymorphic object
+
+Option 3 seems the most gracious, and nobody else was willing to even
+entertain numbers 1 or 2. As such, we'll explore what could be returned
+from said time object.
+
+However, note this is only needed if we decide the other information is
+important enough to be core-worthy. The opinion seems split on this one.
+
+=head2 Potential Time Object
+
+A time object could, conceivably, look like this:
+
+   $t = time;        # time object in scalar context
+
+   $t++;             # ->NUMBER, same as ->unix
+   print "$t";       # ->STRING, same as ->unix
+
+   $t->unix          # UNIX epoch seconds
+   $t->iso           # ISO format
+   $t->mjd           # modified julian date
+   $t->native        # native time, whatever that may be
+
+For example. Despite offering it up as a possibility, however, this RFC
+does not strictly require a time object be returned from C<time>. Note
+that by creating a polymorphic object C<time> will look just like it
+created a scalar to users, meaning they don't have to even know it's an
+object if they don't want to.
+
+=head1 IMPLEMENTATION
+
+The C<time> core function must be changed to return the number of
+seconds since the UNIX epoch on ALL platforms. Note this behavior is
+inconsistent with previous versions of C<time> and must be noted clearly
+in the documentation.
+
+The C<time> value should be maintained as a 64-bit int (or float) with a
+ridiculous amount of precision, per  RFC 7. 
+
+The issue is still open as to whether or not time should be maintained
+internally via TAI or UTC. Both have their pros and cons. TAI is more
+accurate, but does not have any close correlation to many platforms. UTC
+has leap-second trickery, but has the distinct advantage that it would
+remain consistent with UNIX platforms. This means C<time> would appear
+unchanged to all the Linux hackers, which is probably a good thing.
+
+=head1 REFERENCES
+
+RFC 7:   Higher resolution time values
+
+RFC 48:  Replace localtime() and gmtime() with date() and utcdate()
+
+RFC 159: True Polymorphic Objects
+
+http://www.mail-archive.com/perl6-language-datetime%40perl.org/msg00001.html
+
+http://www.mail-archive.com/perl6-language-datetime%40perl.org/msg00002.html
+
+http://www.mail-archive.com/perl6-language-datetime%40perl.org/msg00025.html
+
+http://www.mail-archive.com/perl6-language-datetime%40perl.org/msg00035.html

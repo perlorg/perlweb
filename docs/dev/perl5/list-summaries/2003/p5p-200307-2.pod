@@ -1,0 +1,170 @@
+=head1 This Week on perl5-porters (7-13 July 2003)
+
+In a two-release-candidate-week, there are plenty of things to summarize.
+Learn what happened behind the scenes : random seeding of hashing,
+deprecation of vstrings, signals, floats, and the other things.
+
+=head2 5.8.1-RC1 and -RC2
+
+As I was saying, this week, Jarkko Hietaniemi packaged I<two> release
+candidates of the upcoming maintenance release of perl, 5.8.1. There won't
+be another one before two weeks, because he's on a well-deserved vacation
+now. That gives you plenty of time to test the RC2 with your favourite
+applications !
+
+    http://www.cpan.org/authors/id/J/JH/JHI/perl-5.8.1-RC2.tar.gz
+
+=head2 Random hash seeding and security
+
+At some point between the two release candidates, Jarkko decided to change
+the default setting for the hash seed randomization patch (which is
+discussed for two weeks -- see our previous episodes.) For RC1, hashes
+were randomized by default ; in other words, the hash key for a given
+string changes across executions of perl -- and with it, the order in
+which keys() returns the keys of a given hash, constructed in a given way.
+-- This is no longer true with 5.8.1-RC2, where this feature must be
+explicitly enabled, either by an environment variable, or by a
+configure-time compilation flag.
+
+Chip Salzenberg, Tels, and other members of the crew expressed disapproval
+and think that randomization (that benefits to security) should be the
+default -- arguing that only broken programs will break with this change
+anyway.
+
+    RC2 is out : http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg00710.html
+
+Scott A Crosby confesses he is now analysing worst cases of regular
+expression matching.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg00745.html
+
+=head2 vstrings RIP
+
+Version strings (a.k.a. vstrings) are now Officially Deprecated in perl
+5.8.1. They will be removed in perl 5.10.0. This is apparently the result
+of an anti-vstring cabal, lead by Casey West and other influential people,
+at OSCON.
+
+    vstrings must die! - http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg00470.html
+
+There is another welcomed change in vstrings behaviour for 5.8.1 : the
+vstrings that begin with a C<v> and that don't contain dots now get
+autoquoted by C<< => >>, thanks to John Peacock. That means that the
+following hash :
+
+    %h = ( v65 => 1 );
+
+contains the key C<"A"> with perl 5.6.0 up to 5.8.0, and contains (less
+surprisingly) the key C<"v65"> with all other perls. (The behaviour for
+vstrings that contains dots, such as C<5.8.1> or C<v65.66>, doesn't
+change. In other words this change only affects bareword-like vstrings.)
+
+John posted also a roadmap to remove vstrings from bleadperl, and to
+replace them by version objects.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg00666.html
+
+=head2 5.6.1++
+
+Rafael Garcia-Suarez pleads for a new release in the 5.6.x branch. The
+modest goal is not to fix bugs, upgrade modules or improve docs, but only
+to enable compilation on recent systems (more precisely, with the gcc 3
+compiler or on recent UnixWare variants -- other compilation fixes
+welcomed.) The difference with 5.6.1 being minimal (complete patch in the
+mailing list archives), Rafael suggests the version number 5.6.1a, buts
+lots of people come with lots of good arguments in favor of a full-fledged
+increment, 5.6.2.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg00623.html
+
+=head2 Sort subroutine edge cases
+
+The subroutine optionally used to give a sort criterion to C<sort> shall
+not return an undefined value. If it does so, it produces the fatal error
+I<Sort subroutine didn't return a numeric value>. Rafael (after Matt
+Sergeant) notices that an innocent-looking numerical comparison subroutine
+may throw this error, because on systems that support not-a-number values,
+the C<< <=> >> operator returns C<undef> when one of its operands is NaN.
+
+Rafael asks whether another more satisfactory behaviour can be found : for
+example, producing a warning and/or returning an empty list. But it was
+finally decided that the current behaviour was fine. In the case one would
+want to safeguard a numerical sort against NaNs, the correct way to do it
+is to filter them out beforehand :
+
+    my @sorted = sort { $a <=> $b } grep { $_ == $_ } @unsorted ;
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg00508.html
+
+=head2 Safe and unsafe signals
+
+Chip Salzenberg notices that POSIX::sigaction is not using the safe (or
+I<deferred>) signal mechanism. Bug or feature ? The POSIX module is
+supposed to give interfaces to the C-level routines, and the C-level
+sigaction is unsafe from the point of view of Perl ; but on the other
+hand, someone who needs the features from the POSIX sigaction can't rely
+on perl-level safe signals. Chip then implemented optional safe signals
+via POSIX::sigaction, using a new C<safe> flag.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg00386.html
+
+=head2 Floating point exceptions
+
+Paul Bostrom reported a problem with the SIGFPE signal : programs that are
+run from a perl script ignore it. That's because perl, unable to handle it
+consistently, chooses to always ignore it.
+
+Chip solved this with a patch that remembers the original state of the
+SIGFPE signal handler, and that temporarily sets it back to that state for
+the duration of each exec() call.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg00571.html
+
+=head2 More about floats
+
+Philip Newton noticed long ago that B::Deparse deparses infinite floats as
+the bareword C<inf> (bug #6944). Stephen McCamant looked at it, and more
+generally, at ways to convert any bit pattern that can appear in an NV to
+a piece of Perl code to produce the same value, whether it's finite or
+infinite. He finds out that the round-trip property of perl's
+implementation of atof() is far from perfect : when a numerical value is
+printed in decimal by perl, and then parsed again into a float, the final
+value isn't (in a large number of cases) exactly the same than the
+original one, due to rounding. Yitzchak Scott-Thoennes suggests that
+B::Deparse could emit pack/unpack code instead, but in fact an
+exponent/mantissa decomposition should be enough.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg00373.html
+
+=head2 In Brief
+
+Stas Bekman asks for an API to set the hash seed internally before the
+interpreter is started, to be used by mod_perl 2. As of this writing,
+mod_perl 2 can't be built against the release candidates.
+
+Using perl's malloc() on FreeBSD produce spurious failures in the
+threading stress tests. Consequently, Jarkko reverted perl to use
+FreeBSD's malloc(), in spite of its slowness (see Dan Kogai's analysis in
+last week summary.)
+
+Randal L. Schwartz and Michael Schwern apparently came to a conclusion
+regarding the C<UNINST=1> feature of ExtUtils::MakeMaker : its behaviour
+will not change, and the problems it causes, notably by conflicting with
+the version of C<base.pm> that lives on CPAN, will be worked around for
+now.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg00466.html
+
+Claes Jacobsson finds that attribute handlers are apparently not invoked
+from within an C<eval(STRING)>.
+
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2003-07/msg00760.html
+
+Ken Williams released File::Spec 0.84 on CPAN (and is going the maintain
+it). It's in sync with the version currently in bleadperl and maintperl.
+
+=head2 About this summary
+
+I began to work on those weekly summaries exactly one year ago.
+
+To celebrate this anniversary, I want a B<Ponie> !

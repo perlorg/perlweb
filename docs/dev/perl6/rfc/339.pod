@@ -1,0 +1,80 @@
+=head1 TITLE
+
+caller->eval BLOCK
+
+=head1 VERSION
+
+  Maintainer: David Nicol <perl6rfc@davidnicol.com>
+  Date: 28 Sep 2000
+  Mailing List: perl6-language@perl.org
+  Number: 339
+  Version: 1
+  Status: Developing
+
+=head1 ABSTRACT
+
+C<caller> is extended to allow complete access to the "call frame" of
+the current subroutine call.
+
+=head1 DESCRIPTION
+
+Some new syntax is introduced, involving the C<caller> keyword,
+that allows evaluation of expressions from the point of view of the
+situation from which the current method was called.  After thinking
+about it for a while I think
+
+	caller->eval EXPRESSION;
+
+would work well, with the prototype and semantics of this construction being
+identical to regular C<eval>, except that resolution of names is done as
+if the eval was happening where the call happened.
+
+
+Neat tricks become possible by directly accessing the immediate symbol
+table of the calling context.
+
+=item caller->eval and the hastily destructing return
+
+Also, if we adopt
+<a href=http://www.mail-archive.com/perl6-internals@perl.org/msg01442.html>
+a hastily destructing C<return> 
+</a> (or even if we don't, but easier if we do) we might be able to
+break out of loops in the calling context, for instance
+
+	return caller->eval{return undef} if $WeAreDone;
+
+would, in the case of C<$WeAreDone> being true, make a first pass over
+the expression to be returned, incrementing the reference counts therein,
+in this case evaluating "caller" for a value, but not running its eval method,
+then destroy the subroutine context (except for rescued values, which there
+are none of here) and then evaluate the returned expression.
+
+In this case, the returned expression is a flow control directive, which
+will be followed,  returning an undefined value from the calling routine.
+
+In this case, prefixing C<caller->eval> with C<return> might be optional.
+
+=head1 IMPLEMENTATION
+
+
+C<caller> is altered to return a tied scalar that stringifies to
+the "caller's package name" if defined, to match perl5.  This object
+has some other methods though, in particular an "eval" method which
+is described above.
+
+
+we will still need to keep track of the names of lexical variables that
+have been lost to packed offset optimizations, in case they get referred
+to by name from within a called function.
+
+
+If C<caller->eval> contains flow control directives which take us out
+of the calling context, the current context must be destroyed
+
+
+=head1 REFERENCES
+
+perldoc -f caller
+
+How To Implement Tail Recursion: 
+http://www.mail-archive.com/perl6-internals@perl.org/msg01442.html

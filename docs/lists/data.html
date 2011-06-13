@@ -1,0 +1,61 @@
+[%
+    page.import({
+        title    => 'Perl Mailing Lists - Data and Contributing',
+        section  => 'home',
+        description
+            => 'lists.perl.org database',
+    });
+%]
+
+<h2>Contributing Changes</h2>
+
+<p>We know that a lot of the data is out of date, as it has been
+collected from a variety of sources.  Updates are welcome and
+encouraged.</p>
+
+<p>Please send patches for lists.json (available below) as unified
+diffs (<code>diff -u</code>) to <tt>webmaster at perl.org</tt>.</p>
+
+<p>Please use <a href="data/validate.pl">validate.pl</a> to make sure
+your <a href="http://www.json.org/">JSON</a> parses correctly
+(requires <a href="http://search.cpan.org/dist/JSON/">JSON</a> from
+CPAN).  The <code>-d</code> flag dumps out a properly formatted
+file.</p>
+
+<p>Here's a suggested workflow:</p>
+<pre>
+cp lists.json lists.json.old
+cp lists.json lists.json.new
+edit lists.json.new
+validate.pl -d lists.json.new > lists.json
+diff -u lists.json.old lists.json
+</pre>
+
+<h2>Data</h2>
+
+<p>The underlying data for lists.perl.org is available for download in
+<a href="http://www.json.org">JSON</a>
+format: <a href="data/lists.json">lists.json</a>.
+</p>
+
+<p>Key points:</p>
+<ul>
+  <li>All tags should be sorted. (i.e. <code>$json->canonical(1);</code>)</li>
+  <li>Top level keys should match <code>/^[a-z0-9_.-]+$/</code></li>
+  <li><tt>archive, nntp, rssfeed</tt> may be lists.</li>
+</ul>
+
+<h2>TODO List</h2>
+
+<ul>
+  <li>Create a "short description" and "long description" for each list.</li>
+  <li>Mark inactive lists as such.</li>
+  <li>Move categorization into the JSON file (maybe a "tags" element?)
+  instead of hardcoding in the templates</li>
+  <li>Add missing lists. (There are some lists linked on the category
+  pages that aren't in the JSON file, as well as lists we just don't
+  know about.)</li>
+  <li>Write an automated archive-scraper for updating the "last
+  message" timestamp?</li>
+  <li>Do we want to add all public perl monger lists?  If so, write a script to sync.</li>
+</ul>
