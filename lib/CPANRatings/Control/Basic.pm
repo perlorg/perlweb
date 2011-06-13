@@ -7,7 +7,7 @@ sub render {
   my $self = shift;
 
   if ($self->request->uri =~ m!^/(index\.html)?$!) {
-      $self->tpl_param('reviews', [ CPANRatings::Model::Reviews->search_recent ]);
+      $self->tpl_param('reviews', scalar CPANRatings::Model::Reviews->search_recent );
   }
 
   $self->SUPER::render(@_);

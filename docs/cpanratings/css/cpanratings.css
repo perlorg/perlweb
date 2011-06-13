@@ -1,7 +1,7 @@
 
 h3.review_header { margin-top: 0em; }
 
-span.helpfulq { font-style: italic; font-size:90%; color:#444; }
+div.helpfulq { font-style: italic; font-size:90%; color:#444; display: inline }
 
 blockquote.review {
 	border-left: 1px dotted #004444;
@@ -10,13 +10,15 @@ blockquote.review {
 	/* line-height: 150%; */
 }
 
-a.js_link {
+span.helpful {
    cursor:pointer;
    text-decoration: underline;
 }
 
+span.error { color: red; }
+
 span.vote_thanks {
   color:#990000;
   margin-left:5px;
-  display: inline;
+  display: none;
 }

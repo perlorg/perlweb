@@ -20,9 +20,4 @@ rating for each distribution.
 
 <h2>Recent reviews <span style="font-size:0.6em;">(<a href="/index.rss">RSS feed</a>)</span></h2>
 
-[% FOR review = reviews %]
-
-[% PROCESS display/short_review.html, review => review %]
-
-[% END %]
-
+[% PROCESS display/show_list.html, reviews = reviews %]

@@ -1,44 +1,55 @@
 
-
-CR.Helpful = {};
-
-CR.Helpful.Vote = function(review_id, vote) {
-
-  var status_span = YAHOO.util.Dom.get("thanks_" + review_id);
-  if (!status_span)
-    return;
-
-   var callback = {
-        success:function(o) {
-          var review_id = o.argument.review_id;
-          var status_span = YAHOO.util.Dom.get("thanks_" + review_id);
-          var response =  eval( '(' + o.responseText + ')' );
-          var status_text = '';
-          if (response.error) {
-            status_text = response.error;
-          }
-          else {
-            status_text = 'Thanks! ' + response.message;
-          }
-          status_span.innerHTML = status_text;
-        },
-        failure:function(o) {
-          var review_id = o.argument.review_id;
-          var status_span = YAHOO.util.Dom.get("thanks_" + review_id);
-          var status_text = o.statusText;
-          if (o.status == -1)
-            status_text = 'Timeout / Transaction aborted';
-          status_span.innerHTML = 'Error: ' + status_text;
-        },
-        timeout: 15000,
-        argument: { review_id: review_id }
-   };
-
-  status_span.innerHTML = '<img src="/images/progress.gif">';
-
-  var transaction = YAHOO.util.Connect.asyncRequest('POST', '/api/helpful/vote', callback,
-                                                    'auth_token=' + global_auth_token 
-                                                    + '&review_id=' + review_id
-                                                    + '&vote=' + vote); 
-
+if (!CR) {
+    var CR = {};
 }
+
+$(document).ready(function() {
+
+  $("span.helpful").click(function(ev) {
+       var review = $(this).parents("div.review");
+       var review_id = review.attr('data-review');
+
+       var thanks_span = review.find("span.thanks");
+
+       // $("#reviews").find("span.thanks.done").not(thanks_span).fadeOut();
+
+       thanks_span.removeClass("error");
+       thanks_span.html("Saving ...");
+       thanks_span.show();
+
+       var set_error = function (err) {
+           thanks_span.html(err);
+           thanks_span.addClass("error");
+           thanks_span.addClass("done");
+       };
+
+       $.ajax({ url: "/api/helpful/vote",
+                success: function(data) {
+                    if (data.error) {
+                        thanks_span.html( data.error );
+                        thanks_span.addClass("error");
+                        return;
+                    }
+                    thanks_span.addClass("done");
+                    thanks_span.html(data.message);
+                },
+                data: { "auth_token": global_auth_token,
+                          "vote": "yes",
+                          "review_id": review_id
+                      },
+
+                dataType: "json",
+                type: "POST",
+                statusCode: {
+                    412: function() {
+                        set_error("Auth failure");
+                    }
+                },
+                error: function(msg) {
+                    set_error("Whoops - something went wrong!<br>" + msg);
+                }
+             });
+  });
+
+  /* images/progress.gif */
+});
