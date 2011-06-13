@@ -1,10 +1,7 @@
 
-[% UNLESS page.added_helpful_js;
-    page.added_helpful_js = 1;
-    page.morehead = page.morehead _ ' 
-<script type="text/javascript" src="/js/helpful.js"></script>
-';
-  END;
+[% 
+  page.js.push("helpful.js");
+
   UNLESS (page.added_cpanratings_css);
     page.css_more.push('/css/cpanratings.css');
     page.added_cpanratings_css = 1;

@@ -1,17 +1,9 @@
-[%-  page = {
-            title = template.title,
-            style = template.style or 'default.html',
-	    site  = "CPAN Ratings"
-    };
+[%- page.site = "CPAN Ratings";
 
     page.morehead = page.morehead _ '
      <script type="text/javascript">
        var global_auth_token = \'' _ combust.user_auth_token _ "';
      </script>";
-
-    page.morehead = page.morehead _ '
-       <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
-    ';
 
     page.banner_prefix = page.site;	
 
