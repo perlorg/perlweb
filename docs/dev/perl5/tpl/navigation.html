@@ -1,6 +1,5 @@
 <DIV class="MENU">
-[% r_now = r.main || r.prev || r;
-  FILTER navigation(r_now.uri) %]
+[% FILTER navigation(combust.request.path) %]
 &nbsp;&nbsp; <a href="/perl5/">Perl 5</a><br>
 <br>&nbsp;&nbsp; <a href="/perl5/news">News</a>
 <br>&nbsp;&nbsp; <a href="/perl5/lists.html">Mailing lists</a>

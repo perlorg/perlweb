@@ -1,6 +1,5 @@
 <div align="right">
-[% r_now = r.main || r.prev || r;
-  FILTER navigation(r_now.uri,'<b>','</b>') %]
+[% FILTER navigation(combust.request.path,'<b>','</b>') %]
 &bull;&nbsp;
 <A HREF="/svn/svnpolicy.html">Policy</A> 
 &bull;&nbsp;
