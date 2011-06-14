@@ -118,9 +118,7 @@ sub error {
   my ($self, $message) = @_;
 
   $self->tpl_param(error => {message => $message});
-
-  $self->r->update_mtime(time);
-
+  $self->no_cache(1);
   return OK, $self->evaluate_template('rate/rate_error.html');
 }
 
