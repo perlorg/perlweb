@@ -21,6 +21,7 @@ $(document).ready(function() {
        var review_id = review.attr('data-review');
 
        var thanks_span = review.find("span.thanks");
+       var vote = $(this).text().toLowerCase();
 
        // $("#reviews").find("span.thanks.done").not(thanks_span).fadeOut();
 
@@ -45,7 +46,7 @@ $(document).ready(function() {
                     thanks_span.html(data.message);
                 },
                 data: { "auth_token": global_auth_token,
-                          "vote": "yes",
+                          "vote": vote,
                           "review_id": review_id
                       },
 
