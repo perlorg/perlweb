@@ -4,6 +4,7 @@ use LWP::Simple qw(get);
 use XML::XPath;
 use JSON;
 use Combust::Cache;
+use URI::Escape ();
 
 my $json = JSON->new->utf8;
 
@@ -46,17 +47,22 @@ sub _search {
 	my $author = { link => $author_link };
 	$author->{id} = $author_link;
 	$author->{id} =~ s!.*author/([A-Z]+)/$!$1!;
-	my $distribution = $module->find('link')->string_value;
+	$author->{id} =~ s!.*/~([a-zA-Z]+)/$!$1!;
+
+        my $link = $module->find('link')->string_value;
+        $link = URI::Escape::uri_unescape($link);
+
+	my $distribution = $link;
 	$distribution =~ s!(.*?author/[A-Z]+/([^/]+)).*!$2!;
 	my $distribution_link = $1 ? $1 . "/" : '' ;
 	$distribution =~ s!-\d+(\.\d+)?(_\d+)?$!!;
-        
+
         my $name = $module->find('name')->string_value;
 
 	push @results, { name    => $name,
 			 description => $module->find('description')->string_value,
 			 version => $module->find('version')->string_value,
-			 link    => $module->find('link')->string_value,
+			 link    => $link,
 			 author  => $author,
 			 distribution => { name => $name,
 					   link => $distribution_link,
@@ -64,6 +70,9 @@ sub _search {
 		       };
       }
       $data = \@results;
+
+      #use Data::Dump qw(pp);
+      #warn pp($data);
     }
     else {
       $data = [];
