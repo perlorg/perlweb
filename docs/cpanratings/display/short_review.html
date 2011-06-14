@@ -37,8 +37,6 @@
 [% END %]
 </h3>
 
-<p>
-
 [% IF review_has_detail_ratings %]
 <!-- should post the detailed ratings here... -->
 [% END %]
@@ -46,7 +44,7 @@
 <blockquote class="review_text">
 [% review.review_html %]
 </blockquote>
-</p>
+
 
 <p class="review_attribution">
 <a href="/user/[% review.user.username | html %]">[% review.user_name %]</a> - [% review.updated %]
