@@ -1,0 +1,12 @@
+  <VirtualHost *:[% config.port %]>
+    ServerName [% config.site.$site.servername %]
+    [% expandServerAliases( config.site.$site.aliases ) %]
+
+    PerlSetVar site [% site %]
+
+    <Location />
+       SetHandler perl-script
+       PerlHandler Combust::Control::Basic->super
+    </Location>
+
+  </VirtualHost>
