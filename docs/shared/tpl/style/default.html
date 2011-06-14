@@ -46,7 +46,7 @@
         href="[% page.css || "/css/perl.css" %]" 
         title="Default">
  [% FOR css = page.css_more %]
- <link rel="stylesheet" type="text/css" href="[% css %]">
+ <link rel="stylesheet" type="text/css" href="[% combust.static_url(css) || css %]">
  [% END %]
  <link rel="shortcut icon" href="[% page.favicon || "/favicon.ico" %]">
   [% IF page.description;

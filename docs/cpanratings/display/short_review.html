@@ -3,7 +3,7 @@
   page.js.push("helpful.js");
 
   UNLESS (page.added_cpanratings_css);
-    page.css_more.push('/css/cpanratings.css');
+    page.css_more.push('/cpanratings/cpanratings.css');
     page.added_cpanratings_css = 1;
   END;
 %]
@@ -33,7 +33,8 @@
 [% END %]
 
 [% IF review.rating_overall %]
-<img src="/images/stars-[% review.rating_overall %].0.png" alt="[% star = '*'; star.repeat(review.rating_overall) %]">
+[% star_image = "/cpanratings/images/stars-" _ review.rating_overall _ ".0.png" %]
+<img src="[% combust.static_url(star_image) %]" alt="[% star = '*'; star.repeat(review.rating_overall) %]">
 [% END %]
 </h3>
 

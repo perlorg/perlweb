@@ -1,6 +1,6 @@
 package CPANRatings::Control;
-use strict;
-use base qw(Combust::Control Combust::Control::Bitcard);
+use Moose;
+extends qw(Combust::Control Combust::Control::Bitcard Combust::Control::StaticFiles);
 use LWP::Simple qw(get);
 use CPANRatings::Model::Reviews;
 use CPANRatings::Model::User;
