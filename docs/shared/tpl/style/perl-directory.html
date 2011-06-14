@@ -28,7 +28,7 @@
   isindex = r.uri.match('^/(index.html)?$');
 
   UNLESS page.css;
-    page.css = "/css/perl.css";
+    page.css = combust.static_url("css/perl.css");
   END;
 
 %]
@@ -97,7 +97,7 @@
        HEIGHT=30 WIDTH=30
        ALT="The Perl Onion"
        BORDER=0
-       SRC="/simages/onion/onion-30x30a.gif"></a>
+       SRC="[% combust.static_url("images/onion/onion-30x30a.gif") %]"></a>
    &#169; Copyright 2002-[% USE date; year = date.format(date.now, '%Y'); year %] <a href="http://www.perlfoundation.org/">The&nbsp;Perl&nbsp;Foundation</a><BR>
    <A HREF="[% page.siteinfo || "http://www.perl.org/siteinfo.html" %]"
     >Site Information and Contacts</A> [% page.morecontacts %]
@@ -153,7 +153,7 @@
 [% # this should not be hardcoded to www.perl.org  %]
 <A HREF="http://www.perl.org/camel.html">
 <img border=0
-     src="/simages/lcamel.gif"  
+     src="[% combust.static_url("/images/lcamel.gif") %]"  
      alt="the camel">&nbsp;&nbsp;&nbsp;&nbsp;
 </A>
 [% END %]

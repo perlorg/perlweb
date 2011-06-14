@@ -34,7 +34,7 @@
   isindex = r.uri.match('^/(index.html)?$');
 
   UNLESS page.css;
-    page.css = "/css/perl.css";
+    page.css = combust.static_url("css/perl.css");
   END;
 
 
@@ -43,7 +43,7 @@
 <head>
   <title>[% page.title %]</title>
   <link rel="stylesheet" type="text/css" 
-        href="[% page.css || "/css/perl.css" %]" 
+        href="[% page.css %]" 
         title="Default">
  [% FOR css = page.css_more %]
  <link rel="stylesheet" type="text/css" href="[% combust.static_url(css) || css %]">
@@ -112,7 +112,7 @@
   <IMG STYLE="float:right; position: relative; padding-left: 3px"
        HEIGHT=24 WIDTH=24
        BORDER=0
-       SRC="/simages/onion/onion-24x24.gif"></A>
+       SRC="[% combust.static_url("images/onion/onion-24x24.gif") %]"></A>
    &#169; Copyright 2002-[% USE date; year = date.format(date.now, '%Y'); year %] <a href="http://www.perlfoundation.org">The&nbsp;Perl&nbsp;Foundation</a><BR>
    <A HREF="[% page.siteinfo || "http://www.perl.org/siteinfo.html" %]"
     >Site Information and Contacts</A>
@@ -132,7 +132,7 @@
      alt="[% page.logobutton.alt %]">
 [% ELSE %]
 <img border=0
-     src="/simages/lcamel.gif" 
+     src="[% combust.static_url("/images/lcamel.gif") %]" 
      alt="the camel">
 [% END %]
 </TD>

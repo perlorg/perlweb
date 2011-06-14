@@ -24,7 +24,7 @@
   isindex = r.uri.match('^/(index.html)?$');
 
   UNLESS page.css;
-    page.css = "/css/perl.css";
+    page.css = combust.static_url("css/perl.css");
   END;
 
 %]
@@ -32,7 +32,7 @@
 <html>
 <head>
   <title>[% page.title %]</title>
-  <link rel="stylesheet" type="text/css" href="[% page.css || "/css/perl.css" %]" title="Default CSS2" media="screen">
+  <link rel="stylesheet" type="text/css" href="[% page.css %]" title="Default CSS2" media="screen">
   <link rel="shortcut icon" href="[% page.favicon || "/favicon.ico" %]">
 </head>
 <body>
@@ -134,7 +134,7 @@ When you need perl, think perl.org
 [% # this should not be hardcoded to www.perl.org  %]
 <A HREF="http://www.perl.org/camel.html">
 <img border=0
-     src="/simages/lcamel.gif"  
+     src="[% combust.static_url("/images/lcamel.gif") %]"  
      alt="the camel">&nbsp;&nbsp;&nbsp;&nbsp;
 </A>
 [% END %]
