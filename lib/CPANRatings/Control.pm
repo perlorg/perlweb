@@ -97,5 +97,12 @@ sub as_rss {
   $output;
 }
 
+sub post_process {
+    my $self = shift;
+    unless ($self->no_cache) {
+        $self->request->header_out('Cache-Control', 'max-age=600');
+    }
+    return OK;
+}
 
 1;

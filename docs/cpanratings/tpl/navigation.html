@@ -3,14 +3,8 @@
  <a href="/">Home</a> |
  <a href="/search">Search</a> |
  <a href="/about.html">About</a> |
-[% IF combust.user_info.id %]
  <a href="[% combust.account_url %]">Bitcard Account</a> |
- <a href="/logout">Logout</a>
-[% ELSE %]
- <a href="[% combust.login_url %]">Login</a>
-[% END %]
-
-
+ <a id="login_link" class="login" href="[% combust.login_url %]">Login</a>
 [% END %]
 
 

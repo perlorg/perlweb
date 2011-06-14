@@ -1,9 +1,12 @@
 [%- page.site = "CPAN Ratings";
 
-    page.morehead = page.morehead _ '
+
+    page.morehead = BLOCK;
+      page.morehead; %]
      <script type="text/javascript">
-       var global_auth_token = \'' _ combust.user_auth_token _ "';
-     </script>";
+       var global_auth_token = "[% combust.user ? combust.user_auth_token : "" %]";
+     </script>
+    [% END;
 
     page.banner_prefix = page.site;	
 
@@ -14,6 +17,9 @@
     END;
 
     PROCESS tpl/quicknews;
+
+    page.js.push("jquery.cookie.js");
+    page.js.push("helpful.js");
 
     # don't include any whitespace from here...
  #   RETURN;
