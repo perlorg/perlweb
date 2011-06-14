@@ -97,25 +97,5 @@ sub as_rss {
   $output;
 }
 
-sub no_cache {
-    my $self = shift;
-    my $status = shift;
-    $status = 1 unless defined $status;
-    $self->{no_cache} = $status;
-}
-
-sub post_process {
-    my $self = shift;
-
-    if ($self->{no_cache}) {
-        my $r = $self->request;
-
-        $r->header_out('Expires', HTTP::Date::time2str( time() ));
-        $r->header_out('Cache-Control', 'max-age=0,private,no-cache');
-        $r->header_out('Pragma', 'no-cache');
-    }
-    
-    return OK;
-}
 
 1;
