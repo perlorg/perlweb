@@ -12,11 +12,6 @@
      page.section = "perl5";
     END;
 
-
-    # don't include any whitespace from here...
- #   RETURN;
--%]
-[%-
     # Configuration for this site
     SET site = {
         name            => 'dev.perl.org',
@@ -25,8 +20,8 @@
 
     PROCESS tpl/stats.html;
 
--%]
-[%- BLOCK nav_tabs %]
+
+    BLOCK nav_tabs %]
 <ul>
     <li[% ' class="selected"' IF page.section == 'home' %]>
         <a href="/">Home</a>
@@ -39,10 +34,10 @@
     </li>
 
 </ul>
-[% END -%]
+[% END;
 
-[%- BLOCK quick_link_creator %]
-[%-
+   BLOCK quick_link_creator;
+
     IF quick_link_list.size == 0;
         RETURN;
     END;
@@ -57,8 +52,10 @@
         [% END %]
         </div>
 </div>
-[% END -%]
-[%- BLOCK tip %][% UNLESS tip; RETURN; END; %]
+[% END;
+   BLOCK tip;
+     UNLESS tip; RETURN; END; %]
+
 <div class="quick_links">
         <h4 class="round">
             Tip
@@ -70,9 +67,9 @@
         </p>
     </div>
 </div>
-[% END -%]
+[% END;
 
-[%- BLOCK quick_links_1;
+   BLOCK quick_links_1;
 
     SET source = {};
 
@@ -87,9 +84,8 @@
             quick_link_title => source.quick_links_1_title,
             quick_link_list => source.quick_links_1_list; 
     END;
--%]
-[% END -%]
-[%- BLOCK quick_links_2;
+   END;
+   BLOCK quick_links_2;
 
     SET source = {};
 
@@ -104,9 +100,9 @@
             quick_link_title => source.quick_links_2_title,
             quick_link_list => source.quick_links_2_list; 
     END;
--%]
-[% END -%]
-[%- BLOCK quick_links_3;
+   END;
+
+   BLOCK quick_links_3;
 
     SET source = {};
 
@@ -121,23 +117,13 @@
             quick_link_title => source.quick_links_3_title,
             quick_link_list => source.quick_links_3_list; 
     END;
--%]
-[% END -%]
 
+   END;
 
-
-[%#  page = {
-	    title = template.title,
-            style = template.style or 'default.html'
-    };
-
-    IF r.uri.match("^/perl1/") ;
+   IF r.uri.match("^/perl1/") ;
      page.site = "perl1";
-    END;
+   END;
 
-
-
-    # don't include any whitespace from here...
- #   RETURN;
+   # don't include any whitespace from here...
+   RETURN;
 -%]
-
