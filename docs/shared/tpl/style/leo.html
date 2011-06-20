@@ -1,8 +1,10 @@
-[%- TRY -%]
-[%- PROCESS "tpl/sections/${page.section}_config.html" -%]
-[%- CATCH %]
-[%- do_something_so_no_return_character = 1 -%]
-[%- END -%]
+[%-
+   TRY;
+      PROCESS "tpl/sections/${page.section}_config.html";
+   CATCH;
+     do_something_so_no_return_character = 1;
+   END;
+-%]
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">

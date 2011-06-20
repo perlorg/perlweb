@@ -4,7 +4,7 @@
 	    site  = "DBI"
     };
 
-    IF r.uri.match("^/phalanx/") ;
+    IF combust.request.path.match("^/phalanx/") ;
      page.section = "phalanx";
     END;
 

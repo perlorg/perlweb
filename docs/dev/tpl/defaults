@@ -4,11 +4,11 @@
     };
 
 
-    IF r.uri.match("^/perl6/") ;
+    IF combust.request.path.match("^/perl6/") ;
      page.section = "perl6";
     END;
 
-    IF r.uri.match("^/perl5/") ;
+    IF combust.request.path.match("^/perl5/") ;
      page.section = "perl5";
     END;
 
@@ -120,7 +120,7 @@
 
    END;
 
-   IF r.uri.match("^/perl1/") ;
+   IF combust.request.path.match("^/perl1/") ;
      page.site = "perl1";
    END;
 
