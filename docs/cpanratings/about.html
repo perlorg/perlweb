@@ -1,6 +1,41 @@
 [% page.title = 'About' %]
 
 <h3>Contact</h3>
+
+<div id="twitter">
+<script src="http://widgets.twimg.com/j/2/widget.js"></script>
+<script>
+new TWTR.Widget({
+  version: 2,
+  type: 'profile',
+  rpp: 4,
+  interval: 6000,
+  width: 'auto',
+  height: 300,
+  theme: {
+    shell: {
+      background: '#225bbd',
+      color: '#ffffff'
+    },
+    tweets: {
+      background: '#ffffff',
+      color: '#000000',
+      links: '#000ea6'
+    }
+  },
+  features: {
+    scrollbar: false,
+    loop: false,
+    live: false,
+    hashtags: true,
+    timestamp: true,
+    avatars: false,
+    behavior: 'all'
+  }
+}).render().setUser('perlorg').start();
+</script>
+</div>
+
 <p>
 Report issues in
 the <a href="https://github.com/perlorg/perlweb/issues?labels=cpanratings&sort=created&direction=desc&state=open&page=1">issue
@@ -9,6 +44,7 @@ us</a>.
 </p>
 
 <h3>News</h3>
+
 [% quicknews('cpanratings', "", 5) %]
 
 <h3>Release Notes</h3>
