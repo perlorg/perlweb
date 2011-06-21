@@ -1,5 +1,26 @@
 # perlweb
 
+Sites moved to new perlweb:
+
+- cpanratings
+- dbi
+- debugger
+- dev
+- noc
+- qa
+
+Sites still running on old perlweb:
+
+- ldap
+- learn
+- lists
+- perl4lib
+- sdl
+- svnaccount
+- www
+- xml
+
+
 ## Clone the source
 
 ```sh
