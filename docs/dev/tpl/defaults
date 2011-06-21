@@ -1,8 +1,5 @@
-[%-  page = {
-            title = template.title,
-            style = 'leo.html',
-    };
-
+[%-
+    page.style = 'leo.html';
 
     IF combust.request.path.match("^/perl6/") ;
      page.section = "perl6";

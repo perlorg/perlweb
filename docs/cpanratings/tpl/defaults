@@ -1,5 +1,6 @@
 [%- page.site = "CPAN Ratings";
 
+    page.css.push("css/cpanratings.css");
 
     page.morehead = BLOCK;
       page.morehead; %]
@@ -21,6 +22,8 @@
     page.js.push("/common/jquery.cookie.js");
     page.js.push("/cpanratings/cpanratings.js");
 
+    page.css_more.push('/cpanratings/cpanratings.css');
+
     # don't include any whitespace from here...
- #   RETURN;
+    RETURN;
 -%]

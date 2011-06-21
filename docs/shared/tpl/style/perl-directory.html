@@ -27,8 +27,10 @@
   # top level one?
   isindex = combust.request.path.match('^/(index.html)?$');
 
-  UNLESS page.css;
-    page.css = combust.static_url("css/perl.css");
+  #USE Dumper; Dumper.dump(page);
+
+  UNLESS page.css.count;
+    page.css.push("css/perl.css");
   END;
 
 %]
@@ -36,10 +38,11 @@
 <html>
 <head>
   <title>[% page.title %]</title>
-  <link rel="stylesheet" type="text/css" 
-        href="[%- page.css -%]"
-        title="Default CSS2" media="screen">
-  <link rel="shortcut icon" href="[% page.favicon || "/favicon.ico" %]">
+
+  [% PROCESS tpl/common/css_include.html %]
+
+  <link rel="shortcut icon" href="[% combust.static_url(page.favicon || "/favicon.ico") %]">
+
   [% IF page.description;
      '<META name="description" content="' _ page.description _ '">';
      END

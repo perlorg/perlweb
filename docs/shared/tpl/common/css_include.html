@@ -1,0 +1,9 @@
+[% 
+   IF (page.css_more);
+      page.css.push(page.css_more);
+   END;
+
+   FOR css = page.css %]
+      <link rel="stylesheet" type="text/css" href="[% combust.static_url(css) || css %]"> [%
+   END;
+ %]

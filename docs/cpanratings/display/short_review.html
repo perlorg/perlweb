@@ -1,12 +1,4 @@
 
-[% 
-  UNLESS (page.added_cpanratings_css);
-    page.css_more.push('/cpanratings/cpanratings.css');
-    page.added_cpanratings_css = 1;
-  END;
-%]
-
-
 <div class="review" data-review="[% review.id %]">
 <a name="[% review.id %]"></a>
 [% IF review.helpful_total %]

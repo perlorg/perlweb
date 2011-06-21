@@ -11,14 +11,21 @@
 <head>
     <title>[% page.title %] - [% site.name %]</title>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-	<link type="text/css" rel="stylesheet" href="/css/leostyle.css" />
-	<link type="text/css" rel="stylesheet" href="/css/site.css" />
+
+    [% 
+        page.css.unshift("css/leostyle.css");
+        page.css.push("css/" _ combust.site _ ".css");
+        PROCESS tpl/common/css_include.html;
+    %]
+
+    <link rel="shortcut icon" href="[% combust.static_url(page.favicon || "/favicon.ico") %]">
 
     [% IF page.description %]<meta name="description" content="[% page.description %]" />[% END %]
     [% IF page.keywords %]<meta name="keywords" content="[% page.keywords %]" />[% END %]
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
-    <script src="/js/jquery.corner.js" type="text/javascript" charset="utf-8"></script>
-    <script src="/js/leo.js" type="text/javascript" charset="utf-8"></script>
+    <script src="[% combust.static_url("/js/jquery.corner.js") %]" type="text/javascript" charset="utf-8"></script>
+    <script src="[% combust.static_url("/js/leo.js") %]" type="text/javascript" charset="utf-8"></script>
+
 </head>
 <body[% ' class="section_' _ page.section _ '"' IF page.section %]>
 
@@ -32,7 +39,7 @@
            
             [% IF site.brand != 'com' %]
 
-            <a href="/"><img src="[% site.logo || '/i/camel_head.png' %]" id="logo" alt="[% site.tag_line || 'Perl programming' %]" height="65" align="right" /></a>
+            <a href="/"><img src="[% site.logo || combust.static_url('/images/camel_head.png') %]" id="logo" alt="[% site.tag_line || 'Perl programming' %]" height="65" align="right" /></a>
             [% END %]
 
 			 <span>[% site.name %]</span>

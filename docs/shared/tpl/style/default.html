@@ -33,22 +33,22 @@
   # top level one?
   isindex = combust.request.path.match('^/(index.html)?$');
 
-  UNLESS page.css;
-    page.css = combust.static_url("css/perl.css");
-  END;
-
-
 %]
 <html>
 <head>
   <title>[% page.title %]</title>
-  <link rel="stylesheet" type="text/css" 
-        href="[% page.css %]" 
-        title="Default">
- [% FOR css = page.css_more %]
- <link rel="stylesheet" type="text/css" href="[% combust.static_url(css) || css %]">
- [% END %]
- <link rel="shortcut icon" href="[% page.favicon || "/favicon.ico" %]">
+
+  [%
+     # to stay compatible with how things used to be done; have perl.css
+     # only be added by default if none others are
+     UNLESS page.css.count;
+       page.css.push("css/perl.css");
+     END;
+     PROCESS tpl/common/css_include.html;
+   %]
+
+  <link rel="shortcut icon" href="[% combust.static_url(page.favicon || "/favicon.ico") %]">
+
   [% IF page.description;
      '<META name="description" content="' _ page.description _ '">';
      END

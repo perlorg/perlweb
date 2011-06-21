@@ -1,8 +1,4 @@
-[%-  page = {
-            title = template.title,
-            style = 'leo.html',
-	    site  = "DBI"
-    };
+[%-  page.style = 'leo.html';
 
     IF combust.request.path.match("^/phalanx/") ;
      page.section = "phalanx";

@@ -1,16 +1,9 @@
-[%-  page = {
-	    title = template.title,
-        style = template.style or 'leo.html'
-    };
-
-    # don't include any whitespace from here...
-#   RETURN;
--%]
 [%-
+    page.style = "leo.html";
+
     # Configuration for this site
     SET site = {
         name            => 'www.perl.org',
-        logo            => '/i/camel_head.png',
         tag_line        => 'Perl, modern programming',
         strap_line      => 'When you need <em>Perl</em> think <strong>perl.org</strong>',
         crum            => '<a href="/">Home</a>',
