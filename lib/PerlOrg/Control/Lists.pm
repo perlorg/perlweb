@@ -1,7 +1,7 @@
 # lists.perl.org
 package PerlOrg::Control::Lists;
-use strict;
-use base qw(Combust::Control::Basic);
+use Moose;
+extends 'PerlOrg::Control::Basic';
 use Combust::Config;
 use JSON qw();
 use File::Slurp qw(slurp);

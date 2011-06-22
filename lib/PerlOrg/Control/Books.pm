@@ -1,6 +1,6 @@
 package PerlOrg::Control::Books;
 use strict;
-use base 'Combust::Control';
+use base 'PerlOrg::Control';
 
 my %bookstores =
   ( 'amazon' => 'http://www.amazon.com/exec/obidos/ASIN/#ISBN#/develooper',

@@ -4,10 +4,6 @@
      page.section = "phalanx";
     END;
 
-    # don't include any whitespace from here...
- #   RETURN;
--%]
-[%-
     # Configuration for this site
     SET site = {
         name            => 'qa.perl.org',
@@ -15,8 +11,7 @@
      
     PROCESS tpl/stats.html;
 
--%]
-[%- BLOCK nav_tabs %]
+    BLOCK nav_tabs %]
 <ul>
     <li[% ' class="selected"' IF page.section == 'home' %]>
         <a href="/">Home</a>
@@ -29,10 +24,9 @@
     <a href="/phalanx/">Inactive projects</a></li>
 
 </ul>
-[% END -%]
+[% END;
 
-[%- BLOCK quick_link_creator %]
-[%-
+  BLOCK quick_link_creator;
     IF quick_link_list.size == 0;
         RETURN;
     END;
@@ -104,5 +98,10 @@
     <img alt="[QA]" src="/images/qa.png" width="150" height="150" align="middle" />
 </p>
 </div>
-[% END -%]
 
+[% END;
+
+   # don't include any whitespace from here...
+   RETURN;
+
+-%]
