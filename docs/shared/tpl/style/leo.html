@@ -69,12 +69,8 @@
             [% INCLUDE tpl/quick_links_1 %]
             [% INCLUDE tpl/quick_links_2 %]
             [% INCLUDE tpl/quick_links_3 %]
-            [% IF page.include_sponsor %]
-                [% INCLUDE sponsor %]
-            [% ELSE %]
-                [% INCLUDE tip %]
-            [% END %]
-            
+            [% INCLUDE tpl/tip %]
+            [% INCLUDE tpl/sponsor.html %]
 
             <div id="spacer_for_google"></div>
             
