@@ -149,7 +149,7 @@ div p {
 	color: #999999;
 	padding-right: 15px;
 	margin-right: 8px;
-	background: transparent url(/i/arrow_grey.gif) no-repeat center right;
+	background: transparent url([% combust.static_url("/images/arrow_grey.gif") %]) no-repeat center right;
 }
 
 /* @end */
@@ -285,7 +285,7 @@ div p {
 .masthead {
 	margin: 0px 0 13px 0;
 	padding:32px 20px 10px 20px;
-	background:#f0f0f0 url(/i/masthead/camel/camel_bg.gif) no-repeat right top;
+	background:#f0f0f0 url([% combust.static_url("/images/masthead/camel/camel_bg.gif") %]) no-repeat right top;
 }
 .masthead .headline{
 	width:500px;
@@ -307,7 +307,7 @@ div p {
 	float:right !important;
 }
 .cta{
-	background:transparent url(/i/arrow_grey.gif) no-repeat left center;
+	background:transparent url([% combust.static_url("/images/arrow_grey.gif") %]) no-repeat left center;
 	padding-left:12px;
 }
 /* @end */
@@ -421,7 +421,7 @@ div p {
 /* @group Content modules */
 
 .module {
-	background: transparent url(/i/shadow_line.jpg) repeat-x;
+	background: transparent url([% combust.static_url("/images/shadow_line.jpg") %]) repeat-x;
 	padding: 10px;
 }
 
@@ -464,7 +464,7 @@ div p {
 	text-transform:uppercase;
 	text-decoration:none;
 	font-size:120%;
-	background:transparent url(/i/icons/download_arrow.gif) no-repeat left center;
+	background:transparent url([% combust.static_url("/images/icons/download_arrow.gif") %]) no-repeat left center;
 }
 .button a:hover{
 	text-decoration:underline;
