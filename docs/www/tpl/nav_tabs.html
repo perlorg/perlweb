@@ -1,0 +1,27 @@
+<ul>
+    <li[% ' class="selected"' IF page.section == 'home' %]>
+        <a href="/">Home</a>
+    </li>
+    <li[% ' class="selected"' IF page.section == 'learn' %]>
+        <a href="/learn.html">Learn</a>
+    </li>
+    <li[% ' class="selected"' IF page.section == 'docs' %]>
+        <a href="/docs.html">Documentation</a>
+    </li>
+    <li[% ' class="selected"' IF page.section == 'cpan' %]>
+        <a href="/cpan.html">CPAN</a>
+    </li>
+    <li[% ' class="selected"' IF page.section == 'community' 
+                                || page.section == 'events' %]>
+        <a href="/community.html">Community</a>
+    </li>
+    <li[% ' class="selected"' IF page.section == 'contribute' %]>
+        <a href="/contribute.html">Get Involved</a>
+    </li>
+    <li class="sub[% ' selected' IF page.section == 'about' %]">
+        <a href="/about.html">About Perl</a>
+    </li>
+    <li class="sub[% ' selected' IF page.section == 'download' %]">
+        <a href="/get.html">Download</a>
+    </li>
+</ul>
