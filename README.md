@@ -24,10 +24,9 @@ Sites still running on old perlweb:
 ## Clone the source
 
 ```sh
-   git clone git://git.develooper.com/perlweb.git  # or from github
+   git clone git://git.develooper.com/perlweb.git  # or from github fork
    cd perlweb
    git submodule update --init
-   svn co http://svn.perl.org/perl.org/docs/ 
 ```
 
 The templates and HTML documents are still hosted in Subversion
@@ -73,4 +72,3 @@ You should now be able to access http://wwwperl.local:8225/
 ## Copyright
 
 `perlweb` is Copyright 2003-2011 Ask Bjørn Hansen.  See the LICENSE file.
-
