@@ -1,0 +1,22 @@
+[%
+    SET source = {};
+
+#    SET source = {
+#        quick_links_1_title => 'Related sites',
+#        quick_links_1_list => [
+#            '<a href="http://www.perl.org">Perl.org</a>',
+#        ],
+#    };
+
+    IF page.quick_links_1_title;
+        source = page;
+    ELSIF section_data && section_data.quick_links_1_title;
+        source = section_data;
+    END;
+
+    IF source.quick_links_1_title;
+        PROCESS tpl/quick_link_creator
+            quick_link_title => source.quick_links_1_title,
+            quick_link_list => source.quick_links_1_list; 
+    END;
+%]

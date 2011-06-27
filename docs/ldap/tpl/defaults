@@ -1,17 +1,20 @@
-[%-  page = {
-            title = template.title,
-            style = template.style or 'default.html'
-	    site  = "Perl-LDAP"
-	    css   = "/site.css"
-    };
+[%- 
+
+    page.import({
+        title    => 'Perl LDAP',
+        style    => 'leo.html',
+        site     => 'Perl-LDAP',
+    });
+
+    SET site = {
+        name            => 'ldap.perl.org',
+    }; 
 
     ldap = {
       version  = "0.39"
       released = "October 2008"
     };
 
-    nofooter = 1;
-
     # don't include any whitespace from here...
- #   RETURN;
+    RETURN;
 -%]

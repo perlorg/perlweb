@@ -1,0 +1,15 @@
+[%
+    IF quick_link_list.size == 0;
+        RETURN;
+    END;
+-%]
+<div class="quick_links">
+        <h4 class="round">
+            [% quick_link_title %]
+        </h4>
+        <div class="list">
+        [% FOREACH p = quick_link_list %]
+        <p>[% p %]</p>        
+        [% END %]
+        </div>
+</div>

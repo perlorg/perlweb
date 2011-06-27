@@ -5,39 +5,33 @@ $(document).ready(function(){
         // $('.ext').filter(function(obj) {
         //     this.target="_blank";
         //     return 1;
-        // }).after(' <img src="/i/external.png" alt="external link"/>');
-        //       
+        // }).after(' <img src="/i/external.v1.png" alt="external link"/>');
+        //
         // $("a:not(img)").filter(function(obj) {
         //     this.target="_blank";
         //     return 1;
-        // }).after(' <img src="/i/external.png" alt="external link"/>');
-        //       
-        
-        
-        $('#content a').filter(function() {
+        // }).after(' <img src="/i/external.v1.png" alt="external link"/>');
+        //
+
+        var link_filter = function() {
             // If it's an image, do NOT show icon
             if($(this).find('img').length)
                 return 0;
+            // some widgets get an image via CSS
+            if( $(this).html().length == 0) {
+                return 0;
+            }
             // If it's external, ok
             if(this.hostname && this.hostname !== location.hostname) {
                 this.target="_blank";
-                return 1;                
+                $(this).after('<img class="extlink" src="/i/external.v1.png" alt="external link"/>');
             }
             return 0;
-        }).after('<img class="extlink" src="/i/external.png" alt="external link"/>');
-        
-        $('#footer a').filter(function() {
-            // If it's an image, do NOT show icon
-            if($(this).find('img').length)
-                return 0;
-                // If it's external, ok
-                if(this.hostname && this.hostname !== location.hostname) {
-                    this.target="_blank";
-                    return 1;                
-                }
-                return 0;
-        }).after('<img class="extlink" src="/i/external.png" alt="external link"/>');
-            
+        };
+
+        $('#content a').filter(link_filter);
+        $('#footer a').filter(link_filter);
+
         $('.round').corner("7px top");
 		$('.module').corner("10px top");
 		//$('.button').corner("7px");

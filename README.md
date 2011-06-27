@@ -6,19 +6,19 @@ Sites moved to new perlweb:
 - dbi
 - debugger
 - dev
-- noc
-- qa
-
-Sites still running on old perlweb:
-
 - ldap
 - learn
 - lists
+- noc
 - perl4lib
+- qa
 - sdl
-- svnaccount
 - www
 - xml
+
+Sites still running on old perlweb:
+
+- svnaccount
 
 
 ## Clone the source
