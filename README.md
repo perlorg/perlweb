@@ -6,18 +6,18 @@ Sites moved to new perlweb:
 - dbi
 - debugger
 - dev
+- ldap
+- learn
 - noc
 - qa
+- www
 
 Sites still running on old perlweb:
 
-- ldap
-- learn
 - lists
 - perl4lib
 - sdl
 - svnaccount
-- www
 - xml
 
 
