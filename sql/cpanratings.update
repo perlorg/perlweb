@@ -1,13 +1,4 @@
-# top reviewers:
-#  select IF(u.name is not null, u.name,u.username), u.username  ,sum(helpful) as helpful
-#  from reviews_helpful rh inner join reviews r USING(review_id)  inner join review_users u ON(u.id=r.user_id)
-#  group by r.user_id order by helpful desc limit 20;
-
-# helpfulfoo: 
-#  select u.username,sum(helpful) as helpful
-#   from reviews_helpful rh inner join review_users u ON(u.id=rh.user_id)
-#   group by rh.user_id order by 2;
-
+#1
 CREATE TABLE `review_users` (
   `id` mediumint(8) unsigned NOT NULL auto_increment,
   `bitcard_id` char(40) default NULL,
@@ -44,4 +35,17 @@ create table reviews_helpful (
   primary key (review, user),
   constraint foreign key (review) references reviews(id)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+
+#todo
+
+# top reviewers:
+#  select IF(u.name is not null, u.name,u.username), u.username  ,sum(helpful) as helpful
+#  from reviews_helpful rh inner join reviews r USING(review_id)  inner join review_users u ON(u.id=r.user_id)
+#  group by r.user_id order by helpful desc limit 20;
+
+# helpfulfoo: 
+#  select u.username,sum(helpful) as helpful
+#   from reviews_helpful rh inner join review_users u ON(u.id=rh.user_id)
+#   group by rh.user_id order by 2;
 

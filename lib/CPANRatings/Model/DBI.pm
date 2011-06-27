@@ -9,7 +9,7 @@ sub dbh {
 
 sub db_Main { 
   my $class = shift;
-  return db_open('combust', {$class->_default_attributes})
+  return db_open('cpanratings', {$class->_default_attributes})
 }
 
 sub get {

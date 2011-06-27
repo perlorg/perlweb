@@ -57,6 +57,27 @@ servername = wwwperl.local
 ... etc.  Add wwwperl.local and cpanratings.local to your /etc/hosts
 file so they point to 127.0.0.1.
 
+## Database setup
+
+For some sites you also need to configure a (MySQL) database server.
+Setup the `[database-combust]` section in the `combust.conf` file and add a section for cpanratings like:
+
+```
+[database-cpanratings]
+alias = combust
+```
+
+Then run:
+
+```sh
+   export CBROOTLOCAL=`pwd`
+   export CBROOT=$CBROOTLOCAL/combust
+   ./combust/bin/database_update combust
+   ./combust/bin/database_update cpanratings
+```
+
+To setup the database schemas.  When the schemas change, you can run
+the `database_update` command again to get updated.
 
 ## Start httpd
 
