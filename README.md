@@ -8,17 +8,17 @@ Sites moved to new perlweb:
 - dev
 - ldap
 - learn
+- lists
 - noc
+- perl4lib
 - qa
+- sdl
 - www
+- xml
 
 Sites still running on old perlweb:
 
-- lists
-- perl4lib
-- sdl
 - svnaccount
-- xml
 
 
 ## Clone the source
