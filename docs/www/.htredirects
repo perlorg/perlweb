@@ -10,6 +10,7 @@
 # Permanent gives a 301 response, the default gives a 302 response and
 # the temporary just silently changes the request URL.
 
+/pub/(.*) http://www.perl.com/pub/$1 perm
 
 # Ask likes short names like this
 /docs/?     /docs.html   internal
