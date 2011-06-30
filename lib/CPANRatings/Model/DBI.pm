@@ -2,6 +2,7 @@ package CPANRatings::Model::DBI;
 use strict;
 use base qw(Class::DBI::mysql);
 use Combust::DB qw(db_open);
+use Encode ();
 
 sub dbh {
   shift->db_Main;

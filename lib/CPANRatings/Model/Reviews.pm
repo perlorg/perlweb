@@ -1,6 +1,8 @@
 package CPANRatings::Model::Reviews;
 use base qw(CPANRatings::Model::DBI);
 use strict;
+use String::Truncate qw(elide);
+use Combust::Util qw(escape_html);
 use Class::DBI::Plugin::AbstractCount;
 
 __PACKAGE__->table('reviews');
@@ -72,11 +74,29 @@ sub has_detail_ratings {
 
 sub review_html {
   my $self = shift;
-  my $review = $self->review;
-  $review =~ s/^\s+//s;
-  $review =~ s/\s+$//s;
-  $review =~ s!\n!<br />!g;
-  $review;
+  convert_to_html( $self->review );
+}
+
+sub convert_to_html {
+    my $str = shift;
+
+    return "" unless defined $str and $str ne '';
+    #$str =~ s@<.+?>@ @gs;
+
+    $str = escape_html($str);
+
+    $str
+      =~ s!(https?://(.+?))([,.;-]+\s|\s|$)!"<a href=\"$1\" rel=\"nofollow\">"._shorten_text($2)."</a>$3"!egi;
+    $str =~ s!\n\s*[\n\s]+!<br><br>!g;
+    $str =~ s!\n!<br>\n!g;
+
+    $str;
+}
+
+sub _shorten_text {
+    my $linktext = shift;
+    my $length   = shift || 40;
+    return elide($linktext, $length);
 }
 
 

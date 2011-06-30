@@ -36,6 +36,11 @@ create table reviews_helpful (
   constraint foreign key (review) references reviews(id)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
+#2
+-- backup old table
+create table reviews_old like reviews;
+insert into reviews_old select * from reviews;
+-- now data update script runs
 
 #todo
 
