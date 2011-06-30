@@ -6,13 +6,28 @@ if (!CR) {
 $(document).ready(function() {
 
   var c = $.cookie('c')
+
   if (c) {
       var bc_u = c.match(/bc_u\/~([0-9]+)/);
       if (bc_u && bc_u[1] > 0) {
+          c = bc_u[1];
           var login_link = $("#login_link");
           login_link.html("Logout");
           login_link.attr('href', '/logout');
       }
+      else {
+          c = 0;
+      }
+  }
+
+  if (c) {
+      $("div.review").each(
+          function() {
+              var attr = $(this).attr("data-user");
+              if (attr == c) {
+                  $(this).find(".helpfulq").html("&nbsp;");
+              }
+          });
   }
 
 
