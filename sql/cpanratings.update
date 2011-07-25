@@ -42,6 +42,10 @@ create table reviews_old like reviews;
 insert into reviews_old select * from reviews;
 -- now data update script runs
 
+#3
+alter table review_users
+  add content_suppressed tinyint unsigned not null default 0;
+
 #todo
 
 # top reviewers:
