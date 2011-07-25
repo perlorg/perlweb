@@ -1,13 +1,22 @@
 package CPANRatings::Control;
 use Moose;
-extends qw(Combust::Control Combust::Control::Bitcard Combust::Control::StaticFiles);
+extends qw(Combust::Control Combust::Control::Bitcard::DBIC Combust::Control::StaticFiles);
 use LWP::Simple qw(get);
-use CPANRatings::Model::Reviews;
-use CPANRatings::Model::User;
+use CPANRatings::Schema;
 use Digest::SHA qw(sha1_hex);
 use Encode qw();
 use Combust::Constant qw(OK);
 use XML::RSS;
+
+has schema => (
+    isa => 'CPANRatings::Schema',
+    is  => 'ro',
+    lazy_build => 1,
+);
+
+sub _build_schema {
+    return CPANRatings::Schema->new;
+}
 
 sub init {
   my $self = shift;
@@ -19,7 +28,7 @@ sub init {
 }
 
 sub bc_user_class {
-  'CPANRatings::Model::User';
+   shift->schema->user;
 }
 
 # old code here
@@ -28,7 +37,6 @@ sub user_info { shift->user(@_) }
 sub bc_info_required {
   'username'
 }
-
 
 sub user_auth_token {
     my $self = shift;

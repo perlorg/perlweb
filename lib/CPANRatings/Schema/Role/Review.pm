@@ -1,30 +1,23 @@
-package CPANRatings::Model::Reviews;
-use base qw(CPANRatings::Model::DBI);
-use strict;
+package CPANRatings::Schema::Role::Review;
+use Moose::Role;
 use String::Truncate qw(elide);
 use Combust::Util qw(escape_html);
-use Class::DBI::Plugin::AbstractCount;
+use namespace::clean;
 
-__PACKAGE__->table('reviews');
+has '_helpful_total' => (
+    is      => 'rw',
+    isa     => 'Int',
+);
 
-__PACKAGE__->columns(All => qw/id user user_name module distribution version_reviewed updated 
-			review rating_overall rating_1 rating_2 rating_3 rating_4/);
+has '_helpful_yes' => (
+    is      => 'rw',
+    isa     => 'Int',
+);
 
-__PACKAGE__->columns(TEMP => qw/_helpful_total _helpful_yes/);
-
-__PACKAGE__->has_a('user' => 'CPANRatings::Model::User');
-
-__PACKAGE__->add_constructor(search_review => 'distribution = ? AND module = ? AND user = ?');
-
-__PACKAGE__->add_constructor(search_author => 'user=?', { order_by => 'updated' });
-
-__PACKAGE__->set_sql(recent => qq{
-                      SELECT __ESSENTIAL__
-                      FROM __TABLE__
-                      ORDER BY updated DESC
-                      LIMIT 25
-        });
-
+# temporary until everything is changed to use DBIx::Class methods
+sub dbh {
+    shift->result_source->storage->dbh;
+}
 
 sub add_helpful {
   my $self = shift;
@@ -37,8 +30,10 @@ sub add_helpful {
 
 sub helpful_total {
   my $self = shift;
+  # use Data::Dump qw(pp);
+  # warn "SELF: ", pp($self);
   return $self->_helpful_total if defined $self->_helpful_total;
-  my ($count) = $self->db_Main->selectrow_array(q[select count(*) from reviews_helpful where review=?], undef, $self->id);
+  my ($count) = $self->dbh->selectrow_array(q[select count(*) from reviews_helpful where review=?], undef, $self->id);
   $self->_helpful_total($count);  
   $count;
 }
@@ -46,7 +41,7 @@ sub helpful_total {
 sub helpful_yes {
   my $self = shift;
   return $self->_helpful_yes if defined $self->_helpful_yes;
-  my ($count) = $self->db_Main->selectrow_array(q[select count(*) from reviews_helpful where review=? and helpful='1'], undef, $self->id);
+  my ($count) = $self->dbh->selectrow_array(q[select count(*) from reviews_helpful where review=? and helpful='1'], undef, $self->id);
   $self->_helpful_yes($count); 
   $count;
 }
@@ -101,3 +96,4 @@ sub _shorten_text {
 
 
 1;
+

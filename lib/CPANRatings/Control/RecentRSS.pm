@@ -1,7 +1,6 @@
 package CPANRatings::Control::RecentRSS;
 use strict;
 use base qw(CPANRatings::Control);
-use CPANRatings::Model::Reviews;
 use Combust::Constant qw(OK);
 
 sub render {

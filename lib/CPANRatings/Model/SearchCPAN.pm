@@ -122,7 +122,7 @@ sub get_releases {
   }
 
   my $json_data = get "http://search.cpan.org/api/dist/$distribution";
-  my $data = $json->decode($json_data);
+  my $data = eval { $json->decode($json_data) };
 
   #warn Data::Dumper->Dump([\$data], [qw(data)]);
 

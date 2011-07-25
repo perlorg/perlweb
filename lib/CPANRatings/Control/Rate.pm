@@ -1,7 +1,6 @@
 package CPANRatings::Control::Rate;
 use strict;
 use base qw(CPANRatings::Control);
-use CPANRatings::Model::Reviews;
 use POSIX qw(strftime);
 use Combust::Constant qw(OK);
 use HTML::Entities qw(encode_entities);
@@ -34,16 +33,24 @@ sub render {
 				      };
 
   if ($submit) {
-    my $errors = {};
+    my %errors;
 
     # TODO should check if the module is valid for the distribution
 
     my @fields = qw(rating_1 rating_2 rating_3 rating_4 rating_overall review version_reviewed module distribution);
     my %data;
     for my $f (@fields) {
-      $data{$f} = $self->req_param($f) || '';
+      $data{$f} = $self->req_param($f);
+      if ($f =~ m/^rating_/) {
+          $data{$f} = undef if defined $data{$f} and $data{$f} eq '';
+      }
+      else {
+          $data{$f} //= '';
+      }
+
+      # warn "DATA: $f => [". (defined $data{$f} ? $data{$f} : 'undef') . "]";
       if (grep { $f eq $_ } qw(distribution version_reviewed review)) {
-	$errors->{$f} = "Required field"
+	$errors{$f} = "Required field"
 	  unless defined $data{$f} and $data{$f} ne "";
       }
     }
@@ -51,23 +58,28 @@ sub render {
     $data{user} = $self->user_info->id;
     $data{user_name} = $self->user_info->name || $self->user_info->username;
 
-    unless (%$errors) {
+    unless (%errors) {
 
       $data{updated} = strftime "%Y-%m-%d %T", localtime
 	unless $self->req_param('minor_edit');
 
       my $review;
-      if (($review) = CPANRatings::Model::Reviews->search(distribution => $data{distribution},
-							  user         => $data{user},
-							 )) {
-	for my $f (keys %data) {
-	  $review->$f($data{$f});
-	}
-	$review->update;
-      }
-      else {
-	$review = CPANRatings::Model::Reviews->create(\%data);
-      }
+    if (($review) = $self->schema->review->search(
+            {   distribution => $data{distribution},
+                user         => $data{user},
+            }
+        )
+      )
+    {
+        for my $f (keys %data) {
+            $review->$f($data{$f});
+        }
+        $review->update;
+
+    }
+    else {
+        $review = $self->schema->review->create(\%data);
+    }
 
       $self->tpl_param('review', $review);
 
@@ -75,14 +87,14 @@ sub render {
     } 
     else {
       $self->setup_rate_form;
-      $self->tpl_param(errors => $errors);
+      $self->tpl_param(errors => \%errors);
     }
   }
   else {
-    my ($review) = CPANRatings::Model::Reviews->search(distribution => $distribution,
-						       #module       => $self->tpl_param('module') || '',
-						       user         => $self->user_info->id,
-						      );
+    my ($review) = $self->schema->review->search({ distribution => $distribution,
+                                                   user         => $self->user_info->id,
+                                                 }
+                                                );
 
     if ($review) {
       $self->tpl_param('review', $review);

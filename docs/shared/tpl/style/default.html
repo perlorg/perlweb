@@ -142,7 +142,7 @@
 [% END %]
  
 [%
-   page.js.unshift("http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js");
+   page.js.unshift("/cdn/libs/jquery/1.6/jquery.js");
    PROCESS tpl/js_includes.html(js_files = page.js);
 %]
 

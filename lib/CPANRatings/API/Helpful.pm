@@ -1,6 +1,6 @@
 package CPANRatings::API::Helpful;
 use strict;
-use base qw(Combust::API::Base);
+use base qw(CPANRatings::API::Base);
 
 sub vote {
   my $self = shift;
@@ -13,10 +13,11 @@ sub vote {
 
   my $user = $self->user or return { error => 'You must be logged in to vote' };
 
-  my $review = CPANRatings::Model::Reviews->retrieve($review_id)
+  my $review = $self->_schema->review->find($review_id)
       or return { error => 'There was an error processing your request. Please try again later.' };
 
-  return { error => 'You are not allowed to vote on your own review.' } if $review->user->id == $user->id;
+  return { error => 'You are not allowed to vote on your own review.' }
+    if $review->user->id == $user->id;
 
   my $updated = $review->add_helpful({ user => $user, helpful => $vote eq 'yes' ? 1 : 0 });
 

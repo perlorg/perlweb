@@ -1,7 +1,6 @@
 package CPANRatings::Control::Show;
 use strict;
 use base qw(CPANRatings::Control);
-use CPANRatings::Model::Reviews;
 use CPANRatings::Model::SearchCPAN qw();
 use Combust::Constant qw(OK NOT_FOUND);
 
@@ -15,19 +14,18 @@ sub render {
   $format = 'html' unless $format eq "rss";
 
   if ($mode eq 'a') {
-    my $user = CPANRatings::Model::User->retrieve($id) or return NOT_FOUND;
-    return $self->redirect("/user/" . $user->username . ($format ne "html" ? ".$format" : ''));
+      my $user = $self->schema->user->find($id) or return NOT_FOUND;
+      return $self->redirect("/user/" . $user->username . ($format ne "html" ? ".$format" : ''));
   }
   elsif ($mode eq 'd') {
-    return $self->redirect("/dist/$id" . ($format ne "html" ? ".$format" : ''));
+      return $self->redirect("/dist/$id" . ($format ne "html" ? ".$format" : ''));
   }
-
 
   my $mode_element = $id;
 
   my $user;
   if ($mode eq 'user') {
-    ($user) = CPANRatings::Model::User->search(username => $id) or return NOT_FOUND;
+    ($user) = $self->schema->user->search({username => $id}) or return NOT_FOUND;
     $id = $user->id;
     $mode_element = $user->username;
   }
@@ -48,16 +46,14 @@ sub render {
     unless (CPANRatings::Model::SearchCPAN->valid_distribution($id)) {
       return NOT_FOUND;
     }
-    my ($first_review) = CPANRatings::Model::Reviews->search(distribution => $id);
+    my ($first_review) = $self->schema->review->search({distribution => $id}, { limit => 1 });
     $self->tpl_param('distribution' => $first_review->distribution) if $first_review;
     $self->tpl_param('distribution' => $id) unless $first_review;
   }
 
-  my $reviews = CPANRatings::Model::Reviews->search(
-                                                    $mode => $id,
-						    { order_by => 'updated desc' }
-						   );
-
+  my $reviews = $self->schema->review->search({$mode => $id},
+                                              {order_by => {-desc => 'updated'}}
+                                             );
 
   $self->tpl_param('reviews' => $reviews); 
 
