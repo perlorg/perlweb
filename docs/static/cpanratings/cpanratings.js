@@ -69,7 +69,7 @@ $(document).ready(function() {
                 type: "POST",
                 statusCode: {
                     412: function() {
-                        set_error("Auth failure");
+                        set_error("Login before voting");
                     }
                 },
                 error: function(msg) {
