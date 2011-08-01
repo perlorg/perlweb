@@ -146,12 +146,21 @@ has 'review' => (
         distribution => {
             data_type     => 'VARCHAR',
             default_value => undef,
-            extra         => {
-                'character set' => 'utf8',
-                collate         => 'utf8_bin'
-            },
-            is_nullable => 0,
-            size        => 255
+            is_nullable   => 0,
+            size          => 255
+        },
+        status => {
+            data_type     => 'ENUM',
+            default_value => 'active',
+            extra         => { list => [ 'active', 'deleted', 'blocked' ] },
+            is_nullable   => 0,
+            size          => 7
+        },
+        helpful_score => {
+            data_type     => 'TINYINT',
+            default_value => '1',
+            is_nullable   => 0,
+            size          => 4
         },
         version_reviewed => {
             data_type     => 'VARCHAR',
