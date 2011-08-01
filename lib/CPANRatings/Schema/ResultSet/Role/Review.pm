@@ -5,6 +5,7 @@ sub recent {
     my $self  = shift;
     my %query = %{$_[0] || {}};
     my %attr  = %{$_[1] || {}};
+    $query{helpful_score} ||= { '>', 0 };
     return $self->search(
         {%query},
         {   order_by => {-desc => 'updated'},

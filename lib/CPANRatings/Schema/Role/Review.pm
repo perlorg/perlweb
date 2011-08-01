@@ -24,33 +24,59 @@ sub dbh {
     shift->result_source->storage->dbh;
 }
 
+sub update_helpful_score {
+    my $self = shift;
+    my $score = $self->_calculate_helpful_score;
+    $self->helpful_score($score);
+    $self->update;
+}
+
+sub _calculate_helpful_score {
+    my $self = shift;
+    my $total = $self->helpful_total;
+    my $yes   = $self->helpful_yes;
+    return 1 unless $total >= 4;
+    my $p     = ( 100 / $total * $yes );
+    return -1 if $p < 30;
+    return 1;
+}
+
 sub add_helpful {
-  my $self = shift;
-  my $args = shift;
-  # 2: updated, 1: insert, 0: something went wrong.
-  $self->dbh->do(q[replace into reviews_helpful (review, user, helpful) values (?,?,?)], undef,
-		 $self->id, $args->{user}->id, $args->{helpful}
-		);
+    my $self = shift;
+    my $args = shift;
+    $args->{helpful} = undef unless $args->{helpful};
+    my $rv = 0;
+
+    my $helpful =
+      $self->find_or_new_related('helpfuls',
+        {helpful => $args->{helpful}, user => $args->{user}->id});
+
+    if ($helpful->in_storage) {
+        $helpful->helpful($args->{helpful});
+        $helpful->update;
+        $rv = 2;
+    }
+    elsif ($helpful->insert) {
+        $rv = 1;
+    }
+
+    if ($rv > 0) {
+        $self->update_helpful_score;
+    }
+
+    return $rv;
+
 }
 
 sub helpful_total {
   my $self = shift;
-  # use Data::Dump qw(pp);
-  # warn "SELF: ", pp($self);
-  return $self->_helpful_total if defined $self->_helpful_total;
-  my ($count) = $self->dbh->selectrow_array(q[select count(*) from reviews_helpful where review=?], undef, $self->id);
-  $self->_helpful_total($count);  
-  $count;
+  return $self->helpfuls->count;
 }
 
 sub helpful_yes {
   my $self = shift;
-  return $self->_helpful_yes if defined $self->_helpful_yes;
-  my ($count) = $self->dbh->selectrow_array(q[select count(*) from reviews_helpful where review=? and helpful='1'], undef, $self->id);
-  $self->_helpful_yes($count); 
-  $count;
+  return $self->helpfuls->count({ helpful => 1 });
 }
-
 
 sub checked_rating {
   my $self = shift;

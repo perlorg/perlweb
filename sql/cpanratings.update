@@ -54,6 +54,10 @@ alter table reviews
 #5
 alter table reviews drop user_name;
 
+#6
+alter table reviews_helpful modify helpful tinyint unsigned default 1;
+update reviews_helpful set helpful = NULL where helpful=2;
+
 #todo
 
 # top reviewers:
