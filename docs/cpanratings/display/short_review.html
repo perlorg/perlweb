@@ -24,7 +24,7 @@
 
 [% IF review.rating_overall %]
 [% star_image = "/cpanratings/images/stars-" _ review.rating_overall _ ".0.png" %]
-<img src="[% combust.static_url(star_image) %]" alt="[% star = '*'; star.repeat(review.rating_overall) %]">
+<img src="[% combust.static_url(star_image) || '/static' _ star_image  %]" alt="[% star = '*'; star.repeat(review.rating_overall) %]">
 [% END %]
 </h3>
 

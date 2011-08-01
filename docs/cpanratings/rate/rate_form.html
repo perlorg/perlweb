@@ -52,9 +52,14 @@ any ratings but just leave the review as a comment.
 
 Version <select name="version_reviewed">
 [% FOR release = distribution.releases %]
-<option [% release.latest ? 'selected="selected"' : '' %] value="[% release.version %]">[% release.version %] [% IF release.beta %](beta)[% END %]
-[% END %]
+     <option [% release.latest ? 'selected="selected"' : '' %]
+      value="[% release.version %]">[% release.version %] [% IF release.beta %](beta)[% END;
+   END
+ -%]
 </select>
+
+[% IF errors.version_reviewed %](<span class="error">[% errors.version_reviewed %]</span>)[% END %]
+
 </td>
 
 </tr>
@@ -75,7 +80,7 @@ Version <select name="version_reviewed">
 [% IF  1 OR question.field != 'rating_overall' %]
 undef<input type="radio" name="[% question.field %]" [% checked.${question.field}.0 %] selected value="">&nbsp;
 [% END %]
-[% IF errors.${question.field} %](<font class="error">[% errors.${question.field} %]</font>)[% END %]
+[% IF errors.${question.field} %](<span class="error">[% errors.${question.field} %]</span>)[% END %]
 </td>
 </tr>
 <tr><td colspan="3" style="background-color:#ccc"></td></tr>
@@ -89,7 +94,7 @@ undef<input type="radio" name="[% question.field %]" [% checked.${question.field
 
 <tr>
 <td colspan="3">
-<b>Review</b> [% IF errors.review %](<font class="error">[% errors.review %]</font>)[% END %] <br />
+<b>Review</b> [% IF errors.review %](<span class="error">[% errors.review %]</span>)[% END %] <br />
 <textarea name="review" cols="70" rows="12">[% review.review %]</textarea>
 <br />
 [% IF review.id %]

@@ -30,6 +30,24 @@ $(document).ready(function() {
           });
   }
 
+  $("#show_unhelpful").click(function(ev) {
+       var unhelpful_div = $(this);
+       $.ajax({ url: "/api/review/get",
+                success: function(data) {
+                    if (data.html) {
+                        unhelpful_div.parents("#reviews").append( data.html );
+                        unhelpful_div.hide();
+                    }
+                },
+                data: { "auth_token": global_auth_token,
+                        "dist": $(this).attr('data-dist'),
+                        "unhelpful": 1,
+                        "html": 1
+                      },
+                dataType: "json",
+                type: "GET"
+      });
+  });
 
   $("span.helpful").click(function(ev) {
        var review = $(this).parents("div.review");
@@ -69,7 +87,7 @@ $(document).ready(function() {
                 type: "POST",
                 statusCode: {
                     412: function() {
-                        set_error("Auth failure");
+                        set_error("Login before voting");
                     }
                 },
                 error: function(msg) {

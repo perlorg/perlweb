@@ -42,6 +42,22 @@ create table reviews_old like reviews;
 insert into reviews_old select * from reviews;
 -- now data update script runs
 
+#3
+alter table review_users
+  add content_suppressed tinyint unsigned not null default 0;
+
+#4
+alter table reviews
+  add status enum ('active', 'deleted', 'blocked') default 'active' not null after distribution,
+  add helpful_score tinyint not null default 1 after status; 
+
+#5
+alter table reviews drop user_name;
+
+#6
+alter table reviews_helpful modify helpful tinyint unsigned default 1;
+update reviews_helpful set helpful = NULL where helpful=2;
+
 #todo
 
 # top reviewers:

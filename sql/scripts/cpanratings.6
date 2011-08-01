@@ -12,6 +12,5 @@ my $schema = CPANRatings::Schema->new;
 my $reviews = $schema->review->search();
 
 while (my $review = $reviews->next) {
-    $review->review( decode_entities( utf8_safe($review->review) ) );
-    $review->update;
+    $review->update_helpful_score;
 }
