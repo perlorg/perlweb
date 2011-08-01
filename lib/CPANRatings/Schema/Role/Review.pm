@@ -14,6 +14,11 @@ has '_helpful_yes' => (
     isa     => 'Int',
 );
 
+sub user_name {
+    my $self = shift;
+    $self->user->name || $self->user->username;
+}
+
 # temporary until everything is changed to use DBIx::Class methods
 sub dbh {
     shift->result_source->storage->dbh;

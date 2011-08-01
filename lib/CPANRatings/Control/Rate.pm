@@ -3,7 +3,6 @@ use strict;
 use base qw(CPANRatings::Control);
 use POSIX qw(strftime);
 use Combust::Constant qw(OK);
-use HTML::Entities qw(encode_entities);
 
 sub render {
 
@@ -58,7 +57,6 @@ sub render {
         }
 
         $data{user} = $self->user_info->id;
-        $data{user_name} = $self->user_info->name || $self->user_info->username;
 
         unless (%errors) {
 
@@ -101,8 +99,6 @@ sub render {
 
         if ($review) {
             $self->tpl_param( 'review', $review );
-
-            #warn $review->rating_overall;
         }
 
         $self->setup_rate_form;
