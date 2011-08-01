@@ -4,6 +4,23 @@ use String::Truncate qw(elide);
 use Combust::Util qw(escape_html);
 use namespace::clean;
 
+sub TO_JSON {
+    my $self = shift;
+
+    my $data = { 
+                map +($_ => $self->$_),
+                @{$self->serializable_columns}
+               };
+
+    for my $f (qw(helpful_total helpful_yes)) {
+        $data->{$f} = $self->$f;
+    }
+
+    $data->{updated} = "" . $data->{updated};
+
+    return $data;
+}
+
 has '_helpful_total' => (
     is      => 'rw',
     isa     => 'Int',

@@ -1,4 +1,3 @@
-<div id="reviews">
 
 [% WHILE (review = reviews.next) %]
 [% PROCESS display/short_review.html, 
@@ -6,6 +5,3 @@
              no_more => (mode == 'distribution') 
 %]
 [% END %]
-
-</div>
-

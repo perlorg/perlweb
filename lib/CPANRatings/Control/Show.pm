@@ -43,6 +43,17 @@ sub render {
 
     if ( $mode eq "user" ) {
         $self->tpl_param( 'header' => "Reviews by " . $user->name );
+
+        my $reviews = $self->schema->review->search(
+            {   $mode  => $id,
+                status => 'active',
+            },
+            { order_by => { -desc => 'updated' } }
+        );
+
+        $self->tpl_param( 'reviews' => $reviews );
+
+
     }
     else {
         unless ( CPANRatings::Model::SearchCPAN->valid_distribution($id) ) {
@@ -52,18 +63,33 @@ sub render {
           $self->schema->review->search( { distribution => $id }, { rows => 1 } );
         $self->tpl_param( 'distribution' => $first_review->distribution ) if $first_review;
         $self->tpl_param( 'distribution' => $id ) unless $first_review;
+
+        my $reviews = $self->schema->review->search(
+            {   $mode  => $id,
+                status => 'active',
+                helpful_score => { '>', 0 }
+            },
+            { order_by => { -desc => 'updated' } }
+        );
+
+        my $unhelpful_count = $self->schema->review->count(
+            {   $mode  => $id,
+                status => 'active',
+                helpful_score => { '<=', 0 }
+            },
+        );
+        $self->tpl_param( 'reviews' => $reviews );
+
+        $self->tpl_param( 'unhelpful_count' => $unhelpful_count );
+
+
     }
-
-    my $reviews =
-      $self->schema->review->search( { $mode => $id }, { order_by => { -desc => 'updated' } } );
-
-    $self->tpl_param( 'reviews' => $reviews );
 
     if ( $format eq "html" ) {
         return OK, $self->evaluate_template($template), 'text/html';
     }
     elsif ( $format eq "rss" ) {
-        my $output = $self->as_rss( $reviews, $mode, $mode_element );
+        my $output = $self->as_rss( $self->tpl_param('reviews'), $mode, $mode_element );
         return OK, $output, 'application/rss+xml';
     }
 
