@@ -18,7 +18,7 @@ sub render {
 
   for my $r (@$results) {
       my $dist_name = $r->{distribution}->{name};
-      my $reviews_count = CPANRatings::Model::Reviews->count_search_where({ distribution => $dist_name }); 
+      my $reviews_count = $self->schema->review->count({ distribution => $dist_name }); 
       $r->{distribution}->{reviews_count} = $reviews_count;
   }
 

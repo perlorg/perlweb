@@ -46,7 +46,7 @@ sub render {
     unless (CPANRatings::Model::SearchCPAN->valid_distribution($id)) {
       return NOT_FOUND;
     }
-    my ($first_review) = $self->schema->review->search({distribution => $id}, { limit => 1 });
+    my ($first_review) = $self->schema->review->search({distribution => $id}, { rows => 1 });
     $self->tpl_param('distribution' => $first_review->distribution) if $first_review;
     $self->tpl_param('distribution' => $id) unless $first_review;
   }

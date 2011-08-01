@@ -6,9 +6,10 @@ sub recent {
     my %query = %{$_[0] || {}};
     my %attr  = %{$_[1] || {}};
     return $self->search(
-                         { %query
-                         },
-                         {   order_by => {-desc => 'updated'}, limit => 25,
+        {%query},
+        {   order_by => {-desc => 'updated'},
+            rows     => 25,
+            prefetch => 'user',
             %attr
         },
     );

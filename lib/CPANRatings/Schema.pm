@@ -2,6 +2,7 @@ package CPANRatings::Schema;
 use Moose;
 with 'CPANRatings::Schema::_scaffold';
 use Combust::Config;
+use DBI;
 
 has '+dbic' => (handles => [qw(txn_do txn_scope_guard txn_begin txn_commit txn_rollback)],);
 

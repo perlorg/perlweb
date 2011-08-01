@@ -9,7 +9,9 @@ sub render {
   my $dbh = db_open;
   
   my $sth = $dbh->prepare('select distribution,ROUND(avg(rating_overall),1),count(*)
-                           from reviews where rating_overall > 0 group by distribution');
+                           from reviews
+                           where rating_overall > 0
+                           group by distribution');
 
   $sth->execute;
 
