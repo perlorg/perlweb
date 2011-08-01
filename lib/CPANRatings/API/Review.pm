@@ -5,9 +5,6 @@ use base qw(CPANRatings::API::Base);
 sub get {
     my $self = shift;
 
-    use Data::Dump qw(pp);
-    pp($self);
-
     my $distribution = $self->_required_param(qw(dist));
     my $unhelpful    =  $self->_optional_param(qw(unhelpful));
 
