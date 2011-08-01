@@ -25,8 +25,8 @@ sub connect_args {
         {   on_connect_do => [
                 "SET sql_mode = 'STRICT_TRANS_TABLES'",
                 "SET time_zone = 'UTC'",
-                "SET names utf8",
-                "SET character set utf8",
+#                "SET names utf8",
+#                "SET character set utf8",
             ],
         }
     );

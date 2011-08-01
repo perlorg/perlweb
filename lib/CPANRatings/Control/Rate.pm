@@ -12,6 +12,8 @@ sub render {
 
     my $template = 'rate/rate_form.html';
 
+    $self->no_cache(1);
+
     return $self->login
       unless $self->is_logged_in;
 
