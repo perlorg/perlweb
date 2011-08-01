@@ -23,12 +23,12 @@ sub TO_JSON {
 
 has '_helpful_total' => (
     is      => 'rw',
-    isa     => 'Int',
+    isa     => 'Maybe[Int]',
 );
 
 has '_helpful_yes' => (
     is      => 'rw',
-    isa     => 'Int',
+    isa     => 'Maybe[Int]',
 );
 
 sub user_name {
