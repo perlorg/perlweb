@@ -8,22 +8,27 @@ has '+dbic' => (handles => [qw(txn_do txn_scope_guard txn_begin txn_commit txn_r
 my $config = Combust::Config->new;
 
 sub connect_args {
- (   sub { DBI->connect($config->database->{data_source},
-                        $config->database->{user},
-                        $config->database->{password},
-                        {
-                           AutoCommit        => 1,
-                           RaiseError        => 1,
-                           mysql_enable_utf8 => 1,
-                        },
-                       ) },
-     {   quote_char => q{`},
-         name_sep   => q{.},
-         on_connect_do => [ "SET sql_mode = 'STRICT_TRANS_TABLES'",
-                            "SET time_zone = 'UTC'",
-                          ],
-     }
- );
+    return (
+        sub {
+            DBI->connect(
+                $config->database->{data_source},
+                $config->database->{user},
+                $config->database->{password},
+                {   AutoCommit        => 1,
+                    RaiseError        => 1,
+                    mysql_enable_utf8 => 1,
+                },
+            );
+
+        },
+        {   on_connect_do => [
+                "SET sql_mode = 'STRICT_TRANS_TABLES'",
+                "SET time_zone = 'UTC'",
+                "SET names utf8",
+                "SET character set utf8",
+            ],
+        }
+    );
 }
 
 sub dbh {
