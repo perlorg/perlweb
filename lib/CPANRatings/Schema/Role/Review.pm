@@ -64,18 +64,24 @@ sub add_helpful {
         $self->update_helpful_score;
     }
 
+    $self->_helpful_total(undef);
+    $self->_helpful_yes(undef);
+
     return $rv;
 
 }
 
 sub helpful_total {
   my $self = shift;
-  return $self->helpfuls->count;
+  return $self->_helpful_total if defined $self->_helpful_total;
+  return $self->_helpful_total($self->helpfuls->count({}));
 }
 
 sub helpful_yes {
   my $self = shift;
-  return $self->helpfuls->count({ helpful => 1 });
+  return 0 unless $self->helpful_total;
+  return $self->_helpful_yes if defined $self->_helpful_yes;
+  return $self->_helpful_yes($self->helpfuls->count({ helpful => 1 }));
 }
 
 sub checked_rating {
