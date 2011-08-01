@@ -49,7 +49,7 @@ $(document).ready(function() {
       });
   });
 
-  $("span.helpful").click(function(ev) {
+  $("span.helpful").live('click', function(ev) {
        var review = $(this).parents("div.review");
        var review_id = review.attr('data-review');
 
