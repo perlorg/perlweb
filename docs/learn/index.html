@@ -1,62 +1,57 @@
-[% 
-    page.import({
-        title    => 'Learn Perl',
-        section  => 'home',
-        description 
-            => 'Learn Perl, useful tutorials and links',
+[%- 
+    USE Comma;
+    USE Dumper;
+
+    page.import = ({
+        title => 'Home page',
+        section => 'home',
+        description => 'Learn Perl 5',
     });
-    
-%]
+-%]
 
-<div class="masthead">
- 	<p class="headline">Learning Perl</p>
+<h3>Welcome to learn.perl.org</h3>
 
- 	<p class="strap">Resources and references for learning Perl</p>
-</div>
+<p>
+    <em>Helping you get started with <a href=
+    "http://www.perl.org/">Perl 5</a> (<a href="http://www.perl.org/about/">What is Perl?</a>)....</em>
+</p>
 
-<table class="content_table">
-    <tr>
-        <td>
-            <h4>
-                There are many ways to start...
-            </h4>
-            <ul>
-                <li>
-                    <a href="http://perldoc.perl.org/perlintro.html">A brief introduction</a>
-                </li>
-                <li>
-                    <a href="/books.html">Perl books</a>
-                </li>
-                <li>
-                    <a href="/tutorials/">Perl tutorials (including videos and slideshows)</a>
-                </li>
-            </ul>
-            <h4>
-                The Perl FAQ
-            </h4>
-            <p>
-                Perl FAQs are available as part of your Perl distribution with the<br>
-                <code>perldoc perlfaq</code> command.
-            </p>
-            <ul>
-                <li>Read FAQs online at <a href="http://perldoc.perl.org/index-faq.html">http://perldoc.perl.org/index-faq.html</a>
-                </li>
-            </ul>
-        </td>
-        <td>
-            <h4>
-                Mailing lists
-            </h4>
-            <p>
-                If you're new to Perl, consider joining the <a href="/faq/beginners.html">beginners list</a> (<a href="http://www.nntp.perl.org/group/perl.beginners/">read online</a>). Or choose more specific help from the many <a href="http://lists.perl.org/">Perl lists</a>.
-            </p>
-            <h4>
-                Documentation
-            </h4>
-            <p>
-                You can read the <a href="http://perldoc.perl.org/">Perl documentation</a> on our perldoc site. Did you know that you can also access the Perl documentation with the <code>perldoc</code> command? Try "<code>perldoc <a href="http://perldoc.perl.org/perlreftut.html">perlreftut</a></code>" at your command line prompt.
-            </p>
-        </td>
-    </tr>
-</table>
+<p>
+    This site will take you through <a href="/installing/">installing Perl 5</a>,
+    your <a href="/first_steps/">first program</a> and some basic best
+    practices.
+</p>
+<p>
+    We'll also introduce you to <a href="/modules/">Perl Modules</a>, a few
+    <a href="/examples/">examples</a>, the <a href="/docs/">Perl
+    documentation</a> and <a href="/books/">Perl books</a> (some freely
+    available online) as well as other resources.
+</p>
+<p>
+    Perl offers many advantage over other languages, including <a href=
+    "http://www.cpan.org/">CPAN</a> which has [% perl_modules | comma %]
+    modules ready to help you with many different types of task.
+</p>
+<p>
+    Finally we'll show you where to get more help and how to join the
+     <a href="http://www.perl.org/community.html">Perl
+    community</a> - one of the best aspects of Perl.
+</p>
 
+<h4>Existing developers / sysadmins</h4>
+
+<p>
+    If you are already a developer or systems administrator, in any language,
+    on any platform, please skim through the site, there are lots of details and
+    resources which you will still find useful. It is also worth
+    reviewing to find out what 'Modern' Perl actually is.
+    <!-- #TODO: Create section of recommended reading for programmers -->
+</p>
+<p>
+<!-- #TODO: ROTATING SHORT EXAMPLES HERE -->
+</p>
+
+<p>
+    If you see this image: 
+    <img src="/i/external.png" /> the link before it will take you to an external website.
+</p>
