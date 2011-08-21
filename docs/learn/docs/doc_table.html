@@ -1,0 +1,16 @@
+[% BLOCK doc_table %]
+    [% words = perldoc_keywords.$section %]
+
+    [% USE table(words, cols=4) %]
+    <h3 id="[% section %]">[% section_desc || section | ucfirst %]</h3>
+
+    <table width="100%">
+    [% FOREACH row IN table.rows %]
+        <tr>
+       [% FOREACH word IN row %]
+          <td><a href="http://perldoc.perl.org/[% word.url %]">[% word.name %]</a></td>
+       [% END %]
+       </tr>
+    [% END %]
+      </table>
+[% END %]

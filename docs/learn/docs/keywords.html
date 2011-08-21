@@ -1,0 +1,42 @@
+[%- page.import = ({
+    title => 'Perl keywords',
+}) -%]
+
+<h2>
+    Perl Keywords
+</h2>
+<p>
+    Below is a list of all the keywords available in the core of Perl, each
+    links through to the relevant <a href=
+    "http://perldoc.perl.org/">perldoc</a> page.
+</p>
+<ul>
+    <li>
+        <a href="#functions">Perl functions</a>
+    </li>
+    <li>
+        <a href="#barewords">Perl syntax</a>
+    </li>
+    <li>
+        <a href="#perlvar">Perl variables</a>
+    </li>
+    <li>
+        <a href="#file_handles">Perl file handles</a>
+    </li>
+    <li>
+        <a href="#misc">Various</a>
+    </li>
+</ul>
+
+[% USE JSON %]
+[% perldoc_data = INSERT perldoc_data.json %]
+[% perldoc_keywords = JSON.json_decode(perldoc_data) %]
+
+[% PROCESS "docs/doc_table.html" %]
+
+
+[% INCLUDE doc_table section => 'functions', section_desc => 'Perl functions' %]
+[% INCLUDE doc_table section => 'barewords', section_desc => 'Perl syntax' %]
+[% INCLUDE doc_table section => 'perlvar', section_desc => 'Perl variables' %]
+[% INCLUDE doc_table section => 'file_handles', section_desc => 'File Handles' %]
+[% INCLUDE doc_table section => 'misc' %]

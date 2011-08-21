@@ -1,0 +1,22 @@
+[%- page.import = ({
+    title => 'Sending an email with Perl',
+}) -%]
+
+[% WRAPPER code_chunk %]
+     #!/usr/bin/env perl
+     use Dancer;
+
+     get '/' => sub {
+         "Hello World!"
+     };
+
+     dance;
+
+
+     $ perl bin/app.pl &
+     ...
+     $ curl http://localhost:3000/
+     Hello world!
+[% END %]
+
+http://perldancer.org/

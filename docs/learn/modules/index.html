@@ -1,0 +1,60 @@
+[%- page.import = ({
+    title => 'Perl modules',
+}) -%]
+
+<h4>What is a module?</h4>
+
+<p>
+    A Perl <a href=
+    "http://perldoc.perl.org/perlmod.html">module</a> 
+    is a set of related functions in a library file, i.e., a
+    Perl package with the same name as the file.  It is specifically
+    designed to be reusable by other modules or programs. 
+    <a href="http://www.cpan.org/">CPAN</a> has [% perl_modules | comma %] 
+    modules ready for you to use in just this way.
+</p>
+
+<p> 
+    Most Perl modules are written in Perl, some use <a href=
+    "http://perldoc.perl.org/perlxs.html">XS</a> (they are written in <a href=
+    "http://en.wikipedia.org/wiki/C_(programming_language)">C</a>) so require a
+    C <a href="http://en.wikipedia.org/wiki/Compiler">compiler</a> (if you followed
+    the <a href="/installing/">installing</a> instructions you already
+    have one). Modules may have dependencies on other modules
+    (almost always on <a href="http://www.cpan.org/">CPAN</a>) and cannot be
+    installed without them (or without a specific version of them). Many modules on
+    CPAN now require a recent version of Perl (version 5.8 or above).
+</p>
+
+<h4>How do I install a module?</h4>
+
+[% WRAPPER code_snippet %]cpanm Module::Name[% END %]
+
+<h4>What do I do if it doesn't install?</h4>
+
+<ul>
+    <li><a href="https://rt.cpan.org/Public/">https://rt.cpan.org/Public/</a> - Has anyone reported the same issue?</li>
+    <li><a href="http://www.cpantesters.org/">http://www.cpantesters.org/</a> - Are the tests failing on other peoples systems?</li>
+</ul>
+
+<h4>Which module should I use?</h4>
+
+<p>
+    Have a look at
+    <a href="https://metacpan.org/release/Task-Kensho/">Task::Kensho</a>,
+    modules are added to this listed based on discussions with various 
+    subject matter experts in the Perl Community, so it is a good 
+    place to start.
+</p>
+
+<h4>Can I create my own package/module?</h4>
+<p>
+    Yes! - anything other than a very simple
+    scripts are often better to write as a module, so that it
+    can be tested and reused.
+
+    #TODO add link to how to create a module.
+</p>
+
+
+

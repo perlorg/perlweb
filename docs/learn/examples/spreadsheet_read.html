@@ -1,0 +1,10 @@
+[%- page.import = ({
+    title => 'Extract data from a spreadsheet',
+}) -%]
+
+[% WRAPPER code_chunk %]
+use Spreadsheet::Read;
+
+my $workbook = ReadData ("test.xls");
+print $workbook->[1]{A3} . "\n";
+[% END %]

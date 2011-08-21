@@ -1,0 +1,17 @@
+[%- page.import = ({
+    title => 'Validating an email address',
+}) -%]
+
+[% WRAPPER code_chunk %]
+# Validate and email address
+use strict;
+use warnings;
+use Email::Valid;
+
+my $email_address = 'a.n@example.com';
+
+unless( Email::Valid->address($email_address) ) {
+    print "Sorry, that email address is not valid!";
+}
+
+[% END %]

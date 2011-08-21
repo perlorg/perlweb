@@ -1,0 +1,46 @@
+[%- page.import = ({
+        title => 'Installing Perl on Windows',
+    })
+-%]
+
+<h3>
+    A good setup for Perl on Windows is as follows.
+</h3>
+<iframe style="float:right; margin: 20px 0px 20px 20px" width="480" height="390" src="http://www.youtube.com/embed/1RHYPM6e55o" frameborder="0" allowfullscreen></iframe>
+
+<ul class="instructions">
+    <li>Make sure you do not have a Perl already installed [%# (including from <a href="http://www.mingw.org/wiki/msys">msys</a> - but people might need for some other build systems  %] - uninstall it if you do.</li>
+    <li>
+        <a href=
+        "[% strawberry_pro %]">
+        Download</a> and install Strawberry Perl Professional.<br />
+    </li>
+    
+    <li>Go to your start menu, then click the "Perl command" link.
+    </li>
+    <li>Installing <a href=
+    "https://metacpan.org/release/App-cpanminus/">App-cpanminus</a>:
+        [% WRAPPER code_snippet %]cpan App::cpanminus[% END %]
+    </li>
+</ul>
+
+<h3>
+    Explanation of this setup
+</h3>
+<ul class="instructions">
+    <li><a href="[% strawberry_pro %]">Strawberry Perl Professional</a> is recommended, even though it is
+    technically in beta and not the latest version of Perl. The big advantage
+    is that many useful Perl modules (especially those tricky to install on
+    Windows) are part of the installation.
+    </li>
+    <li>To interact with the command line and run Perl commands, you need to
+    run 'cmd'. There are better <a href=
+    "http://sourceforge.net/projects/console/">alternatives</a> available as
+    well.
+    </li>
+    <li>
+        <a href="https://metacpan.org/release/App-cpanminus/">App-cpanminus</a>
+        provides the <code>cpanm</code> tool, which makes <a href=
+        "/modules/installing.html">installing modules</a> very simple to do.
+    </li>
+</ul>

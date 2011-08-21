@@ -1,5 +1,13 @@
+[%- BLOCK code_chunk %]
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">[% content | html %]</pre>
+[% END %]
+[% BLOCK code_snippet %]
+<pre><code>[% content %]</code></pre>
+[% END %]
 [%- 
     page.style = 'leo.html';
+    
+    USE Comma;
 
     # Configuration for this site
     SET site = {

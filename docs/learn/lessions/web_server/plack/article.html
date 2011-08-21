@@ -1,0 +1,204 @@
+<h2>Summary:</h2>
+<p>
+<em>Use Perl as a simple and powerful framework for your web site; this article will demonstrate how easy it is to get going and then customise a <a href="https://metacpan.org/release/Plack">Plack</a> application for your own needs.</em>
+</p><p>
+Most Perl frameworks work with (or are migrating to) Plack.
+</p><p>
+Plack is Perl superglue for web frameworks and web servers. Plack sits between your code (whether you use a web framework or not) and the web server (Apache, Starman, etc). This means that you (and your framework) do not need to worry about specifics of a web server, and vice-versa.
+</p><p>
+You should already have followed the <a href="/installing/">installing Perl</a> instructions.
+</p><p>
+    
+<h2>Setting up Plack</h2>
+<pre>
+cpanm Plack
+# Please also run this as we will us it in the demonstration later
+cpanm Plack::App::TemplateToolkit
+</pre>
+
+<h2>First test</h2>
+<p>
+The next step is to create a .psgi configuration file which will allow us to 
+return a web page.
+</p>
+
+<pre>
+# Tell Perl where our lib is (ALWAYS use this)
+use lib "$ENV{HOME}/perl5/lib/perl5";
+
+# ensure we declare everything correctly (ALWAYS use this)
+use strict;
+
+# Give us diagnostic warnings where possible (ALWAYS use this)
+use warnings;
+
+# Allow us to build our application
+use Plack::Builder;
+
+# A basic app
+my $default_app = sub {
+    my $env = shift;
+    return [
+        200,    # HTTP Status code
+        [ 'Content-Type' => 'text/html' ],    # HTTP Headers,
+        ["All is good"]                       # Content
+    ];
+};
+
+# Return the builder
+return builder {
+    $default_app;
+}
+</pre>
+<p>
+
+Save <a href="psgi_examples/1.psgi">this</a> to a file, called 1.psgi, then use the <a href="https://metacpan.org/release/Plack/scripts/plackup">plackup</a> command to start your web server from the command line as follows: 
+<pre>
+plackup 1.psgi
+</pre>
+<p>
+You will see:
+</p>
+<pre>
+HTTP::Server::PSGI: Accepting connections at http://SERVER_IP:5000/
+</pre>
+<p>
+Using your web browser, go to http://SERVER_IP:5000/, if you are developing
+on your desktop computer then <a href="http://localhost:5000/">http://localhost:5000/</a> will work.
+You should now see a page with 'All is good'. In fact if you go to <em>any</em> page this is what you will see,
+e.g. <a href="http://localhost:5000/any_page.html">http://localhost:5000/any_page.html</a> because
+we are always returning this, irrespective of the request.
+</p><p>
+You will notice that on the command line you can see the access logs for the web server, this
+is because Plack defaults to development mode and turns on a few extra middleware layers for you,
+specifically <a href="https://metacpan.org/release/Plack/lib/Plack/Middleware/AccessLog.pm">AccessLog</a>, <a href="https://metacpan.org/release/Plack/lib/Plack/Middleware/StackTrace.pm">StackTrace</a> and <a href="https://metacpan.org/release/Plack/lib/Plack/Middleware/Lint.pm">Lint</a>.
+</p><p>
+To see StackTrace in operation comment out line 27 of 1.psgi by adding a hash (#) in front of it:
+<pre>
+    # ["All is good"]                       # Content
+</pre>
+Restart your plackup command (type Ctrl+C to stop the process, then run <code>plackup 1.psgi</code> to start it).
+Now in your web browser go to <a href="http://localhost:5000/">http://localhost:5000/</a> again and you will see
+a StackTrace of the error. Note the main error message at the top of the page "response needs to be 3 element array, or 2 element in streaming". You can then follow each step of the trace, click on the 'Show function arguments' and 'Show lexical variables' links under any section of the trace to help debug the issue.
+</p>
+<p>
+Remove the # and restart, so we have a working .psgi file again.
+</p>
+<h2>Development</h2>
+<p>
+There are several command line arguments to the plackup command, running <code>perldoc plackup</code> command will
+show you the documentation. The most used is '-r' or '--reload' this tells plackup to monitor you .psgi file
+(if you have a 'lib' directory along side your .psgi file it will also be monitored).
+<pre>
+    plackup -r 1.psgi
+</pre>
+</p>
+
+<h2>Extending your application</h2>
+<p>
+    Plack already has many useful applications which you may want to integrate with your web portal, here for example
+    we are using <a href="https://metacpan.org/release/Plack/lib/Plack/App/Directory.pm">Plack::App::Directory</a> to
+    get a directory listing and to serve it's content as static files. We will use <a href="https://metacpan.org/release/Plack/lib/Plack/App/URLMap.pm">Plack::App::URLMap</a> to choose which URL we want to 'mount' this application on.
+</p>
+<p>
+    <a href="psgi_examples/2.psgi">2.psgi</a>
+    
+<pre>
+use lib "$ENV{HOME}/perl5/lib/perl5";
+
+use strict;
+use warnings;
+use Plack::Builder;
+
+# 'mount' applications on specific URLs
+use Plack::App::URLMap;
+
+# Get directory listings and serve files
+use Plack::App::Directory;
+
+my $default_app = sub {
+    my $env = shift;
+    return [ 200, [ 'Content-Type' => 'text/html' ], ["All is good"] ];
+};
+
+# Get the Directory app, configured with a root directory
+my $dir_app = Plack::App::Directory->new( { root => "/tmp/" } )->to_app;
+
+# Create a mapper object
+my $mapper = Plack::App::URLMap->new();
+
+# mount our apps on urls
+$mapper->mount('/'    => $default_app);
+$mapper->mount('/tmp' => $dir_app);
+
+# extract the new overall app from the mapper
+my $app = $mapper->to_app();
+
+# Return the builder
+return builder {
+    $app;
+}
+</pre>
+If you visit <a href="http://localhost/tmp/">http://localhost/tmp/</a> in your browser
+you will now see a directory listing of '/tmp/' - also not <a href="http://localhost/anything_else.html">http://localhost/anything_else.html</a> still hits
+the default_app which we built.
+</p>
+
+<h2>More Middleware and Apps</h2>
+<p>
+    There are many <a href="http://search.cpan.org/search?query=Plack::App&mode=module">Plack::Apps</a> and <a href="http://search.cpan.org/search?query=Plack::Middleware&mode=module">Plack::Middleware</a> modules available to 
+help with common tasks. We are going to look at <a href="https://metacpan.org/release/Plack-App-TemplateToolkit/">
+Plack::App::TemplateToolkit</a>, which parses files through the templating engine <a href="https://metacpan.org/release/">Template-Toolkit</a> (TT). Images and other static content should not
+go through TT, so we are going to configure <a href="https://metacpan.org/release/Plack/lib/Plack/Middleware/Static.pm">Plack::Middleware::Static</a> to directly
+serve files with specific extensions. On top of this we want to have a nice looking page when there is a 404 (file not found), for this we will use <a href="https://metacpan.org/release/Plack/lib/Plack/Middleware/ErrorDocument.pm">Plack::Middleware::ErrorDocument</a>.
+All the code we need to add is as follows:
+
+<pre>
+    
+# A link to your htdocs root folder
+my $root = '/path/to/htdocs/';
+
+# Create a new template toolkit application (which we will default to)
+my $default_app = Plack::App::TemplateToolkit->new(
+    root => $root,    # Required
+)->to_app();
+
+return builder {
+
+    # Page to show when requested file is missing
+    # this will not be processes with TT
+    enable "Plack::Middleware::ErrorDocument",
+        404 => "$root/page_not_found.html";
+
+    # These files can be served directly
+    enable "Plack::Middleware::Static",
+        path => qr{[gif|png|jpg|swf|ico|mov|mp3|pdf|js|css]$},
+        root => $root;
+
+    # Our application
+    $default_app;
+}
+    
+</pre>
+
+At this stage it is probably worth investigating one of the many
+web frameworks which offer PSGI support, so can be run with Plack.
+These frameworks offer far structure and support for doing more complex tasks.
+Have a look at <a href="http://www.catalystframework.org/">Catalyst</a>,
+<a href="http://www.mojolicious.org/">Mojolicious</a> or <a href="http://perldancer.org/">Dancer</a>. The Perl.org <a href="http://www.perl.org/about/whitepapers/perl-webframework.html">web frameworks white paper</a> discusses just a few of the advantages of using a framework.
+</p>
+
+
+<h2>Further resources</h2>
+<p>
+Perl has a vast number of modules available for use on
+<a href="http://search.cpan.org/">CPAN</a>. The only real problem
+being to work out which are best to use. A good place to start is
+ <a href="https://metacpan.org/release/Task-Kensho/">Task::Kensho</a>
+ which recommends current best practices.
+</p><p>
+
+</p><p>
+
+<a href="http://www.perl.org/about/whitepapers/">Perl Whitepapers</a>
+</p>
