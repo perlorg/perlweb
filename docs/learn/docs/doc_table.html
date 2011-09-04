@@ -1,10 +1,10 @@
 [% BLOCK doc_table %]
     [% words = perldoc_keywords.$section %]
 
-    [% USE table(words, cols=4) %]
+    [% USE table(words, cols = tabel_columns || 4) %]
     <h3 id="[% section %]">[% section_desc || section | ucfirst %]</h3>
 
-    <table width="100%">
+    <table width="100%" class="text">
     [% FOREACH row IN table.rows %]
         <tr>
        [% FOREACH word IN row %]

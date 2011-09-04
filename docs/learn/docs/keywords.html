@@ -31,7 +31,7 @@
 </ul>
 
 [% USE JSON %]
-[% perldoc_data = INSERT perldoc_data.json %]
+[% perldoc_data = INSERT "learn/docs/perldoc_data.json" %]
 [% perldoc_keywords = JSON.json_decode(perldoc_data) %]
 
 [% PROCESS "docs/doc_table.html" %]
@@ -39,6 +39,6 @@
 
 [% INCLUDE doc_table section => 'functions', section_desc => 'Perl functions' %]
 [% INCLUDE doc_table section => 'barewords', section_desc => 'Perl syntax' %]
-[% INCLUDE doc_table section => 'perlvar', section_desc => 'Perl variables' %]
-[% INCLUDE doc_table section => 'file_handles', section_desc => 'File Handles' %]
-[% INCLUDE doc_table section => 'misc' %]
+[% INCLUDE doc_table section => 'perlvar', section_desc => 'Perl variables', tabel_columns => 3 %]
+[% INCLUDE doc_table section => 'file_handles', section_desc => 'File Handles', tabel_columns => 3 %]
+[% INCLUDE doc_table section => 'misc', tabel_columns => 3 %]
