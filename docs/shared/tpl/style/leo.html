@@ -19,12 +19,23 @@
     %]
 
     <link rel="shortcut icon" href="[% combust.static_url(page.favicon || "/favicon.ico") %]">
-
+[% IF site.syntaxhighlight %]
+    <link rel="stylesheet" title="perl" type="text/css" href="[% combust.static_url("/css/shCore.css") %]" media="all">
+    <link rel="stylesheet" title="perl" type="text/css" href="[% combust.static_url("/css/shThemeDefault.css") %]" media="all">
+    <script type="text/javascript" charset="utf-8" src="[% combust.static_url("/js/shCore.js") %]"></script>
+    <script type="text/javascript" charset="utf-8" src="[% combust.static_url("/js/shBrushPerl.js") %]"></script>
+[% END %]
     [% IF page.description %]<meta name="description" content="[% page.description %]" />[% END %]
     [% IF page.keywords %]<meta name="keywords" content="[% page.keywords %]" />[% END %]
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="[% combust.static_url("/js/jquery.corner.js") %]" type="text/javascript" charset="utf-8"></script>
     <script src="[% combust.static_url("/js/leo.js") %]" type="text/javascript" charset="utf-8"></script>
+
+[% IF site.syntaxhighlight %]
+    <script type="text/javascript" charset="utf-8">
+        SyntaxHighlighter.all();
+    </script>
+[% END %]
 
 </head>
 <body[% ' class="section_' _ page.section _ '"' IF page.section %]>
