@@ -14,9 +14,17 @@
  	</p>
 </div>
 
-<p>
-(<a href="http://www.perl.org/about/">What is Perl?</a>)
-</p>
+<ul id="examplesList">
+    [% 
+        PROCESS "examples/example_list.html";
+        USE Shuffle;
+        examples = example_list.shuffle.splice(0,4);
+    %]
+    <li><a href="/examples/"><strong>Perl examples</strong></a></li>
+    [% FOREACH example = examples %]
+    <li>[% example %]</li>
+    [% END %]    
+</ul>
 
 <ul>
     <li>
@@ -43,14 +51,9 @@
 </ul>
 
 <p>
-    Perl offers many advantage over other languages, including <a href=
+    <a href="http://www.perl.org/about/">Perl</a> offers many advantage over other languages, including <a href=
     "http://www.cpan.org/">CPAN</a> which has [% perl_modules | comma %]
     modules ready to help you with many different types of task.
-</p>
-<p>
-    Finally we'll show you where to get more help and how to join the
-     <a href="http://www.perl.org/community.html">Perl
-    community</a> - one of the best aspects of Perl.
 </p>
 
 <h4>Existing developers / sysadmins</h4>
@@ -61,9 +64,6 @@
     resources which you will still find useful. It is also worth
     reviewing to find out what 'Modern' Perl actually is.
     <!-- #TODO: Create section of recommended reading for programmers -->
-</p>
-<p>
-<!-- #TODO: ROTATING SHORT EXAMPLES HERE -->
 </p>
 
 <p>

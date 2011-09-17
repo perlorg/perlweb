@@ -4,6 +4,9 @@
 }) -%]
 
 [% WRAPPER code_chunk %]
+use Net::DNS::Resolver;
+
+my $hostname = 'perl.org';
 my $res = Net::DNS::Resolver->new(
   nameservers => [qw(10.5.0.1)],
 );
