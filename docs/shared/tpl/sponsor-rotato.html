@@ -24,5 +24,15 @@
   </a>
 [%- END %]
 
+[% TRY %]
 [%- USE Rotato(i) %]
 [%- Rotato.pick(h) %]
+[% CATCH %]
+[%
+  # This does not weight the advert
+  USE Shuffle;
+  sponsors = i.keys;
+  s = sponsors.shuffle.shift;
+  i.$s.data;
+%]
+[% END %]

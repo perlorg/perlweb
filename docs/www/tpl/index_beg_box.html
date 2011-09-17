@@ -67,5 +67,17 @@ Perl -- Because life's too short to code without punctuation.
 
 
 [% # end of rotation %]
+[% TRY %]
 [%- USE Rotato(h) %]
 [%- Rotato.pick(h) %]
+[% CATCH %]
+[%
+  # This does not weight the advert
+  USE Shuffle;
+  sponsors = h.keys;
+  s = sponsors.shuffle.shift;
+  h.$s.data;
+%]
+
+
+[% END %]

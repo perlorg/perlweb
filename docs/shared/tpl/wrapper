@@ -3,8 +3,7 @@
    content = PROCESS $template;
 
    #USE Dumper; Dumper.dump_html(page template)
-
-   IF page.style == 'none';
+   IF page.style == 'none' || template.name.match('css$');
       content;
    ELSE;
       default_style_template = "tpl/style/" _ page.style;
