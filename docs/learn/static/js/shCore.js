@@ -1067,7 +1067,7 @@ function processUrls(code)
 		
 		return '<a href="' + m + '">' + m + '</a>' + suffix;
 	});
-	return code.replace(/(<code class="pl keyword">(use|package|require)<\/code> <code class="pl plain">)([A-Za-z0-9\:]+)(.*?<\/code>)/g, '$1<a href="/module/$3">$3</a>$4');
+	return code.replace(/(<code class="pl keyword">(use|package|require)<\/code> <code class="pl plain">)([A-Za-z0-9\:]+)(.*?<\/code>)/g, '$1<a href="https://metacpan.org/module/$3">$3</a>$4');
 };
 
 /**

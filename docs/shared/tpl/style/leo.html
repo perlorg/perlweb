@@ -12,12 +12,6 @@
     <title>[% page.title %] - [% site.name %]</title>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 
-    [% 
-        page.css.unshift("css/leostyle.css");
-        page.css.push("css/" _ combust.site _ ".css");
-        PROCESS tpl/common/css_include.html;
-    %]
-
     <link rel="shortcut icon" href="[% combust.static_url(page.favicon || "/favicon.ico") %]">
 [% IF site.syntaxhighlight %]
     <link rel="stylesheet" title="perl" type="text/css" href="[% combust.static_url("/css/shCore.css") %]" media="all">
@@ -25,6 +19,13 @@
     <script type="text/javascript" charset="utf-8" src="[% combust.static_url("/js/shCore.js") %]"></script>
     <script type="text/javascript" charset="utf-8" src="[% combust.static_url("/js/shBrushPerl.js") %]"></script>
 [% END %]
+
+[% 
+    page.css.unshift("css/leostyle.css");
+    page.css.push("css/" _ combust.site _ ".css");
+    PROCESS tpl/common/css_include.html;
+%]
+
     [% IF page.description %]<meta name="description" content="[% page.description %]" />[% END %]
     [% IF page.keywords %]<meta name="keywords" content="[% page.keywords %]" />[% END %]
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
