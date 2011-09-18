@@ -15,9 +15,6 @@
 
 <div class="instructions">
     
-<p>
-    #TODO Video of these instructions being followed out
-</p>  
 <ul>
     <li>Check your version of Perl:
         [% WRAPPER code_snippet %]perl -v[% END %]
@@ -26,7 +23,8 @@
         [% WRAPPER code_snippet %]perl -e "print qq{hi\n}"[% END %]
         this introduces more potential issues and it is usually better to save the code to a file...
     </li>
-    <li>Download the following file <a href="01_hello_world.pl">01_hello_world.pl</a> (maybe into a 'perl_tests' directory) <br />
+    <li>Download the following file <a href="01_hello_world.pl">01_hello_world.pl</a> 
+        (maybe into a 'perl_tests' directory - you will need to be able to find this from the command line) <br />
          [% WRAPPER code_chunk -%]
          [%- PROCESS 'first_steps/01_hello_world.pl' -%]
          [%- END %]
@@ -50,6 +48,10 @@
 </ul>
 </div>
 
+<h3>Video of the above steps</h3>
+<p>
+    <iframe width="640" height="480" src="http://www.youtube.com/embed/_D5d1PHJTXM" frameborder="0" allowfullscreen></iframe>
+</p>
 
 <a href="very_basics_01.html">Next step</a>
 
