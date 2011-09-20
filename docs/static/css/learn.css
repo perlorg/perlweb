@@ -82,5 +82,56 @@ code {
 /* @group Not used */
 
 #page_image {
-	background: transparent url([% combust.static_url("/images/icons/learn.png") %]) no-repeat left top;
+	background: transparent url("/static/images/icons/learn.png") no-repeat left top;
+}
+
+
+/*
+Changes added by Kam
+*/
+#content_holder{
+    overflow:hidden;
+}
+
+.clear { 
+    clear:both;
+}
+
+#main ul.large h4, ul.small h4 {
+    background:#004065;
+    color:#fff;
+    padding:2px 5px;
+    font-size:14px;
+    font-weight:normal;
+}
+
+#main ul.large {
+    list-style:none;
+    float:left;
+    width:55%;
+    padding: 0px;
+}
+
+#main ul.large li {
+    margin: 0;
+    padding:4px 0;
+}
+
+#main ul.large li a {
+    padding: 5px 0;
+    text-decoration:none;
+}
+
+#main ul.small{
+    float:right;
+    width:40%;
+    font-size:14px;
+    padding: 0px;
+    padding-left: 0px !important;
+    margin: 0px;
+}
+
+#main ul.small li {
+    margin: 0 0 0 15px;
+    padding: 2px 0;
 }

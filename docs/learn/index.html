@@ -14,41 +14,47 @@
  	</p>
 </div>
 
-<ul id="examplesList">
+<ul class="small">
     [% 
         PROCESS "examples/example_list.html";
         USE Shuffle;
         examples = example_list.shuffle.splice(0,4);
     %]
-    <li><a href="/examples/"><strong>Perl examples</strong></a></li>
+    <h4>Perl examples</h4>
+    <!-- <li><a href="/examples/"><strong>Perl examples</strong></a></li> -->
     [% FOREACH example = examples %]
     <li>[% example %]</li>
     [% END %]    
 </ul>
 
-<ul>
+<ul class="large">
+    <h4> What would you like to learn?</h4>
     <li>
-        <a href="/installing/">Installing Perl 5</a> - and setup guide
+        <a href="/installing/">&gt; Installing Perl 5 - and setup guide</a>
     </li>
     <li>
-        <a href="/first_steps/">First program</a> - and some basic best
-        practices.
+        <a href="/first_steps/">&gt; First program - and some basic best
+        practices</a>
     </li>
-    <li><a href="/modules/">Perl Modules</a> - introduction
-    </li>
-    <li>
-        <a href="/examples/">Examples</a> - what can you do with Perl?
+    <li><a href="/modules/">&gt; Perl Modules - introduction</a>
     </li>
     <li>
-        <a href="/docs/">Perl documentation</a>
+        <a href="/examples/">&gt; Examples - what can you do with Perl?</a>
     </li>
     <li>
-        <a href="/books/">Perl books</a>
+        <a href="/docs/">&gt; Perl documentation</a>
     </li>
     <li>
-        <a href="/faq/">Frequently Asked Questions</a>
+        <a href="/books/">&gt; Perl books</a>
+    </li>
+    <li>
+        <a href="/faq/">&gt; Frequently Asked Questions</a>
     </li>
 </ul>
+
+<div class="clear"></div>
+
+<h4>About Perl</h4>
 
 <p>
     <a href="http://www.perl.org/about/">Perl</a> offers many advantage over other languages, including <a href=
