@@ -1,0 +1,21 @@
+[%- page.import({
+    title => 'Reading the contents of a directory',
+    section => 'examples',
+}) -%]
+
+[% WRAPPER code_chunk -%]
+[% INCLUDE "examples/script_head.html" -%]
+use Path::Class;
+
+my $dir = dir('foo','bar'); # foo/bar
+
+# Iterate over the content of foo/bar
+while (my $file = $dir->next) {
+    
+    # See if it is a directory and skip
+    next if $file->is_dir();
+    
+    # Print out the file name and path
+    print $file->stringify . "\n";
+}
+[%- END %]
