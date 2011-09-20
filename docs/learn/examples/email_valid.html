@@ -4,9 +4,7 @@
 }) -%]
 
 [% WRAPPER code_chunk %]
-# Validate and email address
-use strict;
-use warnings;
+[% INCLUDE "examples/script_head.html" -%]
 use Email::Valid;
 
 my $email_address = 'a.n@example.com';

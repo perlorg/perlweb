@@ -33,35 +33,34 @@
     CPAN now require a recent version of Perl (version 5.8 or above).
 </p>
 
-<h4>How do I install a module?</h4>
-
-[% WRAPPER code_snippet %]cpanm Module::Name[% END %]
-
-<h4>What do I do if it doesn't install?</h4>
-
-<ul>
-    <li><a href="https://rt.cpan.org/Public/">https://rt.cpan.org/Public/</a> - Has anyone reported the same issue?</li>
-    <li><a href="http://www.cpantesters.org/">http://www.cpantesters.org/</a> - Are the tests failing on other peoples systems?</li>
-</ul>
+<h4>Where can I find modules?</h4>
+<p>
+    <a href="https://metacpan.org/">https://metacpan.org/</a> lets you
+    search for modules, sometimes you get a lot of results!
+</p>
 
 <h4>Which module should I use?</h4>
-
 <p>
-    Have a look at
-    <a href="https://metacpan.org/release/Task-Kensho/">Task::Kensho</a>,
-    modules are added to this listed based on discussions with various 
+    Metacpan has user ratings, also have a look at
+    <a href="https://metacpan.org/release/Task-Kensho/">Task::Kensho</a>.
+    Modules are added to this listed based on discussions with various 
     subject matter experts in the Perl Community, so it is a good 
     place to start.
 </p>
 
-<h4>Can I create my own package/module?</h4>
-<p>
-    Yes! - anything other than a very simple
-    scripts are often better to write as a module, so that it
-    can be tested and reused.
 
-    #TODO add link to how to create a module.
-</p>
+<h4>How do I install a module?</h4>
 
+<p>If you haven't already <a href="https://metacpan.org/module/App::cpanminus#INSTALLATION">install cpanm</a> do that first:</p>
+[% WRAPPER code_snippet %]cpan App::cpanminus[% END %]
+
+<p>Then use that to install any module from CPAN</p>
+[% WRAPPER code_snippet %]cpanm Module::Name[% END %]
+
+<h4>What do I do if it doesn't install?</h4>
+<ul>
+    <li><a href="https://rt.cpan.org/Public/">https://rt.cpan.org/Public/</a> - Has anyone reported the same issue?</li>
+    <li><a href="http://www.cpantesters.org/">http://www.cpantesters.org/</a> - Are the tests failing on other peoples systems?</li>
+</ul>
 
 

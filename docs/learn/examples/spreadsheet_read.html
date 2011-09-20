@@ -4,6 +4,7 @@
 }) -%]
 
 [% WRAPPER code_chunk %]
+[% INCLUDE "examples/script_head.html" -%]
 use Spreadsheet::Read;
 
 my $workbook = ReadData ("test.xls");

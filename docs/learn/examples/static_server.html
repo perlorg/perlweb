@@ -3,12 +3,19 @@
     section => 'examples',
 }) -%]
 
+<p>Save the following into a file called app.psgi</p>
 [% WRAPPER code_chunk %]
-    # Serve static files from document root with a directory index
-    # app.psgi
-    use Plack::App::Directory;
-    my $app = Plack::App::Directory->new({ root => "/path/to/htdocs" })->to_app;
+[% INCLUDE "examples/script_head.html" -%]
+# Serve static files from document root with a directory index
+# app.psgi
+use Plack::App::Directory;
+my $app = Plack::App::Directory->new({ 
+                root => "/path/to/htdocs" 
+            })->to_app;
+[% END %]
 
-    > plackup
-    > Accepting connections at http://0:5000/
+<p>Then run</p>
+[% WRAPPER code_chunk %]
+> plackup
+> Accepting connections at http://0:5000/
 [% END %]

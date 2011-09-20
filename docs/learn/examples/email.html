@@ -4,6 +4,7 @@
 }) -%]
 
 [% WRAPPER code_chunk -%]
+[% INCLUDE "examples/script_head.html" -%]
 # first, create your message
 use Email::MIME;
 my $message = Email::MIME->create(
@@ -14,7 +15,8 @@ my $message = Email::MIME->create(
   ],
   body_str => 'Happy birthday to you!',
 );
- 
+
+# send the message
 use Email::Sender::Simple qw(sendmail);
 sendmail($message);
 [%- END %]
