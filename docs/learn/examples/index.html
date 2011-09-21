@@ -11,14 +11,46 @@
 <p>
 These are just a few simple examples of what you can do with Perl. </p>
 
-<ul>
-    [% PROCESS "examples/example_list.html"; %]
-    [% FOREACH example = example_list %]
-    <li>[% example %]</li>
+[% PROCESS "examples/example_list.html"; %]
+
+<ul class="small">
+    <h4>Email</h4>
+    [% FOREACH example = example_email_list %]
+    <li>&gt; [% example %]</li>
+    [% END %]
+
+</ul>
+
+<ul class="large">
+    <h4>Various</h4>
+    [% FOREACH example = example_misc_list %]
+    <li>&gt; [% example %]</li>
     [% END %]
 </ul>
+
+<div class="clear"></div>
+
+<ul class="small">
+    <h4>Files </h4>
+    [% FOREACH example = example_files_list %]
+    <li>&gt; [% example %]</li>
+    [% END %]
+
+</ul>
+
+<ul class="large">
+    <h4>Various</h4>
+    [% FOREACH example = example_misc_list %]
+    <li>&gt; [% example %]</li>
+    [% END %]
+</ul>
+
+<div class="clear"></div>
+
+
 
 <p>
     If you are looking for other recommended modules have a look at
      <a href="https://metacpan.org/release/Task-Kensho">Task::Kensho</a>
 </p>
+
