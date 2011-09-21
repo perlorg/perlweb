@@ -10,14 +10,13 @@
  	<p class="headline">Learning Perl</p>
 
     <p class="strap"><em>Helping you get started with <a href=
-    "http://www.perl.org/">Perl 5</a>....</em>
+    "/installing/">Perl 5</a>....</em>
  	</p>
 </div>
 
 <p>
-    There are many reasons to use <a href="http://www.perl.org/about/">Perl</a>, including <a href=
-    "http://www.cpan.org/">CPAN</a> which has [% perl_modules | comma %]
-    modules ready for you to use.
+    There are many reasons to use Perl, including <a href="/modules/">[% perl_modules | comma %]
+    modules</a> ready for you to use.
 </p>
 
 
@@ -25,7 +24,7 @@
     [% 
         PROCESS "examples/example_list.html";
         USE Shuffle;
-        examples = example_list.shuffle.splice(0,4);
+        examples = example_list.shuffle.splice(0,8);
     %]
     <h4>Perl examples</h4>
     <!-- <li><a href="/examples/"><strong>Perl examples</strong></a></li> -->
