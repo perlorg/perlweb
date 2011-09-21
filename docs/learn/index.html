@@ -14,7 +14,14 @@
  	</p>
 </div>
 
-<ul class="small">
+<p>
+    There are many reasons to use <a href="http://www.perl.org/about/">Perl</a>, including <a href=
+    "http://www.cpan.org/">CPAN</a> which has [% perl_modules | comma %]
+    modules ready for you to use.
+</p>
+
+
+<ul class="homesmall">
     [% 
         PROCESS "examples/example_list.html";
         USE Shuffle;
@@ -27,7 +34,7 @@
     [% END %]    
 </ul>
 
-<ul class="large">
+<ul class="homelarge">
     <h4> What would you like to learn?</h4>
     <li>
         <a href="/installing/">&gt; Installing Perl 5 - and setup guide</a>
@@ -54,24 +61,16 @@
 
 <div class="clear"></div>
 
-<h4>About Perl</h4>
 
-<p>
-    <a href="http://www.perl.org/about/">Perl</a> offers many advantages over other languages, including <a href=
-    "http://www.cpan.org/">CPAN</a> which has [% perl_modules | comma %]
-    modules ready to help you with many different types of task.
-</p>
-
-<h4>Existing developers / sysadmins</h4>
+<h4>Existing developers / system administrators</h4>
 
 <p>
     If you are already a developer or systems administrator, in any language,
     on any platform, please skim through the site, there are lots of details and
     resources which you will still find useful. It is also worth
     reviewing to find out what 'Modern' Perl actually is.
-    <!-- #TODO: Create section of recommended reading for programmers -->
 </p>
-
+<hr />
 <p>
     If you see this image: 
     <img src="/i/external.png" /> the link before it will take you to an external website.

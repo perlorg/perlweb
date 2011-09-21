@@ -13,7 +13,7 @@ These are just a few simple examples of what you can do with Perl. </p>
 
 [% PROCESS "examples/example_list.html"; %]
 
-<ul class="small">
+<ul class="listright list">
     <h4>Email</h4>
     [% FOREACH example = example_email_list %]
     <li>&gt; [% example %]</li>
@@ -21,7 +21,7 @@ These are just a few simple examples of what you can do with Perl. </p>
 
 </ul>
 
-<ul class="large">
+<ul class="listleft list">
     <h4>Various</h4>
     [% FOREACH example = example_misc_list %]
     <li>&gt; [% example %]</li>
@@ -30,7 +30,7 @@ These are just a few simple examples of what you can do with Perl. </p>
 
 <div class="clear"></div>
 
-<ul class="small">
+<ul class="listright list">
     <h4>Files </h4>
     [% FOREACH example = example_files_list %]
     <li>&gt; [% example %]</li>
@@ -38,7 +38,7 @@ These are just a few simple examples of what you can do with Perl. </p>
 
 </ul>
 
-<ul class="large">
+<ul class="listleft list">
     <h4>Various</h4>
     [% FOREACH example = example_misc_list %]
     <li>&gt; [% example %]</li>

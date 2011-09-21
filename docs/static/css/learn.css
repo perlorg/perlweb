@@ -97,7 +97,7 @@ Changes added by Kam
     clear:both;
 }
 
-#main ul.large h4, ul.small h4 {
+#main ul.list h4 {
     background:#004065;
     color:#fff;
     padding:2px 5px;
@@ -105,24 +105,67 @@ Changes added by Kam
     font-weight:normal;
 }
 
-#main ul.large {
+#main ul.list {
+    padding: 0;
+    list-style:none;
+    width:47%;
+}
+
+
+#main ul.list li {
+    list-style: ;
+    margin: 0;
+    padding:4px 0;
+}
+
+#main ul.list li a {
+    padding: 5px 0;
+    text-decoration:none;
+}
+
+#main ul.listleft {
+    float:left;
+}
+
+#main ul.listright{
+    float:right;
+}
+
+/*#main ul.listright li {
+    margin: 0 0 0 15px;
+    padding: 2px 0;
+}
+*/
+
+/* Home page */
+
+#main ul.homelarge h4, ul.homesmall h4 {
+    background:#004065;
+    color:#fff;
+    padding:2px 5px;
+    font-size:14px;
+    font-weight:normal;
+}
+
+
+#main ul.homelarge {
     list-style:none;
     float:left;
     width:55%;
     padding: 0px;
 }
 
-#main ul.large li {
+#main ul.homelarge li {
     margin: 0;
     padding:4px 0;
 }
 
-#main ul.large li a {
+#main ul.homelarge li a {
     padding: 5px 0;
     text-decoration:none;
 }
 
-#main ul.small{
+#main ul.homesmall{
     float:right;
     width:40%;
     font-size:14px;
@@ -131,7 +174,7 @@ Changes added by Kam
     margin: 0px;
 }
 
-#main ul.small li {
+#main ul.homesmall li {
     margin: 0 0 0 15px;
     padding: 2px 0;
 }
