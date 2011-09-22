@@ -36,7 +36,7 @@
 <h4>Where can I find modules?</h4>
 <p>
     <a href="https://metacpan.org/">https://metacpan.org/</a> lets you
-    search for modules, sometimes you get a lot of results!
+    search the [% perl_stats.cpan_modules | comma %] modules on CPAN.
 </p>
 
 <h4>Which module should I use?</h4>
@@ -44,7 +44,7 @@
     Metacpan has user ratings, also have a look at
     <a href="https://metacpan.org/release/Task-Kensho/">Task::Kensho</a>.
     The <a href="/examples/">examples</a> section and <a href="/faq/">FAQ</a> 
-    also have some recommendations.
+    also have some recommendations, you could also ask the Perl <a href="http://www.perl.org/community.html">community</a>.
 </p>
 
 
@@ -54,8 +54,9 @@
 <p>
 [% WRAPPER code_snippet %]cpan App::cpanminus[% END %]
 </p>
-<p>Then use that to install any module from CPAN</p>
+<p>Then to install any module from CPAN</p>
 <p>
 [% WRAPPER code_snippet %]cpanm Module::Name[% END %]
 </p>
 
+<!-- TODO: Video of this -->
