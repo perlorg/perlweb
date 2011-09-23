@@ -17,16 +17,11 @@
 </p>
     
 <p>
-Check your version of Perl:
+See if you have Perl installed (ideally a version greater than 5.8, otherwise <a href="/installing/">install</a> a new version):
 [% WRAPPER code_snippet %]perl -v[% END %]
 </p>
 
-<p>Although you can run code without saving it to a file e.g:
-        [% WRAPPER code_snippet %]perl -e "print qq{hi\n}"[% END %]</p>
-<p>
-        this introduces more potential issues and it is usually better to save the code to a file...
-    </p>
-    <p>Download the following file <a href="01_hello_world.pl">01_hello_world.pl</a> 
+<p>Download the following file <a href="01_hello_world.pl">01_hello_world.pl</a> 
         (maybe into a 'perl_tests' directory - you will need to be able to find this from the command line) <br />
          [% WRAPPER code_chunk -%]
          [%- PROCESS 'first_steps/01_hello_world.pl' -%]

@@ -26,19 +26,17 @@
     <li>
         Install a <a href=
         "http://en.wikipedia.org/wiki/Compiler">compiler</a>, such as
-        gcc through your system package management (e.g. XXX, YYY).
+        gcc through your system package management (e.g. apt, yum).
     </li>
     <li>Open a <em>Terminal</em> 
-    and copy &amp; paste the following command below
+    and copy &amp; paste the command below
         into it (then press the 'return' key).
-    </li>
-    <li>
         [% WRAPPER code_snippet %]curl -L http://xrl.us/installperlnix | bash[% END %]
     </li>
 </ul>
 
 <h3 id="explained">
-    Explanation of this setup
+    If you are interest in the details of the setup above..
 </h3>
 <ul class="explained">
     <li>To build and install Perl and many of the thousands of useful
@@ -55,11 +53,11 @@
     Perl than the default one which comes with your OS.
     </li>
     <li>
-        <a href="http://www.perlbrew.pl/">Perlbrew</a> does let you have
-        multiple versions of Perl installed (very useful for testing if you
-        want to upgrade to a new version), for the purposes of learning Perl
-        you will only need one version which is why we 'switch' to use this as
-        the default.
+        <a href="http://www.perlbrew.pl/">Perlbrew</a> is used by the this
+        setup because it separates your installation from the system Perl, this
+        makes upgrading OSX less likely to cause issues with your own Perl
+        setup. It also means you can use a newer Perl than the default one
+        which comes with OSX.
     </li>
     <li>
         <a href="https://metacpan.org/release/App-cpanminus/">App-cpanminus</a>
@@ -67,6 +65,7 @@
         "/modules/">installing modules</a> very simple to do.
     </li>
 </ul>
+
 
 
 

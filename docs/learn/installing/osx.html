@@ -20,8 +20,6 @@
     <li>
         <a href="osx_tools.html">OSX Tools</a>
     </li>
-    <li>Video
-    </li>
 </ul>
 
 <ul class="instructions">
@@ -32,44 +30,46 @@
         this, it is a very large download), or from your OSX software DVD/SSD
          if possible (any version will work).
     </li>
-    <li>Open the <em>Terminal.app</em> (Found in Applications -&gt; Utilities)
-    and copy &amp; paste the following command below into it (then press the
-    'return' key).
-    </li>
-    <li>
-        [% WRAPPER code_snippet %]curl -L http://xrl.us/installperlosx | bash[% END %]
+    <li>Open the <em>Terminal.app</em> (found in Applications -&gt; Utilities)
+    and copy &amp; paste the command below into it (then press the
+    'return' key):
+    [% WRAPPER code_snippet %]curl -L http://xrl.us/installperlosx | bash[% END %]
+    
     </li>
 </ul>
 
 
 <h3 id="explained">
-    Explanation of this setup
+    If you are interest in the details of the setup above..
 </h3>
 <ul class="explained">
     <li>To build and install Perl and many of the thousands of useful
         <a href="/modules/">Perl modules</a> you need to have a <a href=
-        "http://en.wikipedia.org/wiki/Compiler">compiler</a>, for OSX the
-        easiest way to get this is to use Apple's Xcode. Some versions of the
-        OSX install DVDs or SSDs come with the 'developer tools', you can
-        install using these, only 'unix tools' is actually required. No
-        specific version of Xcode is needed, the latest is available directly
-        through the App Store.
+        "http://en.wikipedia.org/wiki/Compiler">compiler</a>. For OSX the
+        easiest way to get a compiler is to install <a href=
+        "http://itunes.apple.com/us/app/xcode/id422352214?mt=12&amp;ls=1">Apple's
+        Xcode</a>. Some versions of the OSX install DVD or SSD come with the
+        'developer tools', which contains Xcode. Only the 'unix tools' section
+        of Xcode is actually required, no specific version of Xcode is needed,
+        the latest is available directly through the App Store.
     </li>
     <li>To interact with the command line and run Perl commands, a terminal
     application is needed. OSX comes with Terminal.app by default, there are
-    <a href="/installing/osx_tools.html#command_line">alternatives</a> available as well.
+    <a href="/installing/osx_tools.html#command_line">alternatives</a>
+    available as well.
     </li>
     <li>OSX uses .bash_profile, but most other systems (and instructions) look
-    for .bashrc, this code sets up .bash_profie to <em>also</em> run anything in
-    .bashrc. There are <a href=
+    for .bashrc, this code sets up .bash_profie to <em>also</em> run anything
+    in .bashrc. There are <a href=
     "http://www.joshstaiger.org/archives/2005/07/bash_profile_vs.html">other
     differences</a> but these are not important to us.
     </li>
-    <li>The <a href="http://www.perlbrew.pl/">Perlbrew</a> website lists many
-    of it's advantages. We recommend it here because it separates your
-    installation from the system Perl, this makes upgrading OSX less likely to
-    cause issues with your own Perl setup. It also means you can use a newer
-    Perl than the default one which comes with OSX.
+    <li>
+        <a href="http://www.perlbrew.pl/">Perlbrew</a> is used by the this
+        setup because it separates your installation from the system Perl, this
+        makes upgrading OSX less likely to cause issues with your own Perl
+        setup. It also means you can use a newer Perl than the default one
+        which comes with OSX.
     </li>
     <li>
         <a href="http://www.perlbrew.pl/">Perlbrew</a> does let you have
