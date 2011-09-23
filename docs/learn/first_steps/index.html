@@ -17,29 +17,34 @@
 </p>
     
 <p>
-See if you have Perl installed (ideally a version greater than 5.8, otherwise <a href="/installing/">install</a> a new version):
+Check you have Perl installed by typing the command below into
+your command line program:
 [% WRAPPER code_snippet %]perl -v[% END %]
 </p>
 
-<p>Download the following file <a href="01_hello_world.pl">01_hello_world.pl</a> 
-        (maybe into a 'perl_tests' directory - you will need to be able to find this from the command line) <br />
+<p>
+    Now create a 'perl_tests' folder to save your test files into, you will need to be able to find this from the command line.
+</p>
+
+<p>Open a text editor (<a href="/installing/windows_tools.html#editors">Windows</a>, 
+<a href="/installing/osx_tools.html#editors">Mac OSX</a>, 
+<a href="/installing/unix_linux_tools.html#editors">Unix/Linux</a>) creating a new file with the following
+    content</p> 
          [% WRAPPER code_chunk -%]
          [%- PROCESS 'first_steps/01_hello_world.pl' -%]
          [%- END %]
+
+<p>Save this file as <a href="http://en.wikipedia.org/wiki/Plain_text">plain text</a> into your 'perl_tests' folder, name the file 'hello_world.pl'.
 </p>
-    
-<p>Then from the command line type:
-         [% WRAPPER code_snippet %]perl /path/to/perl_tests/01_hello_world.pl[% END %]
+
+<p>Then run the script from the command line by typing:
+         [% WRAPPER code_snippet %]perl /path/to/perl_tests/hello_world.pl[% END %]
     </p>
     <p>
-        Open the file in a text editor (<a href="/installing/windows_tools.html#editors">Windows</a>, 
-        <a href="/installing/osx_tools.html#editors">Mac OSX</a>, 
-        <a href="/installing/unix_linux_tools.html#editors">Unix/Linux</a>),
-        and replace NAME, with your name. Save the file (make sure that it
-        stays as <a href="http://en.wikipedia.org/wiki/Plain_text">plain text</a>, do <em>not</em> save it as RDF or Word).
+        Open the file again and replace NAME, with your name. Save the file.
     </p>
     <p>
-        Run the script again by typing [% WRAPPER code_snippet %]perl /path/to/perl_tests/01_hello_world.pl[% END %]
+        Run the script again by typing [% WRAPPER code_snippet %]perl /path/to/perl_tests/hello_world.pl[% END %]
     </p>
 
 <h3>Video of the above steps</h3>
