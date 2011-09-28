@@ -4,13 +4,13 @@
 [% BLOCK code_snippet %]
 <pre><code>[% content %]</code></pre>
 [% END %]
-[%- 
+[%-
     page.style = 'leo.html';
-    
+
     USE Comma;
-    
+
     SET strawberry_pro = 'http://strawberryperl.com/download/professional/strawberry-perl-professional-5.10.1.3-alpha-2.msi';
-    
+
     SET strawberry_pro_perl_version = '5.10.1';
 
     # Configuration for this site
@@ -23,6 +23,7 @@
     # Perl.org always wants all stats
     PROCESS tpl/stats.html;
     PROCESS tpl/tips.html;
+    PROCESS tpl/social.html;
 -%]
 [%- section_crum = {
     'home' => '',
