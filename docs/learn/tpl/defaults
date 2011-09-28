@@ -4,7 +4,7 @@
 [% BLOCK code_snippet %]
 <pre><code>[% content %]</code></pre>
 [% END %]
-[%- 
+[%-
     page.style = 'leo.html';
     
     USE Comma;
@@ -18,6 +18,7 @@
         name            => 'learn.perl.org',
         tag_line        => 'Learn Perl, modern programming',
         syntaxhighlight => 1,
+        add_this        => 1,
     };
 
     # Perl.org always wants all stats
