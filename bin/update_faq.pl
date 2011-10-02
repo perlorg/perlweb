@@ -125,7 +125,8 @@ sub page_header {
             title    => "--page_name--",
             section  => "faq",
             description 
-                => "Perl Frequently Asked Questions",
+                => "Perl Frequently Asked Questions, Perl FAQ",
+            keywords => "perl, perl faq, perlfaq"
         });
     -%]
     <div class="pod">'
