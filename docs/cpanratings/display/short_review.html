@@ -43,7 +43,7 @@
   module_param = review.module ? ";module=" _ review.module : ""; 
   module_param | uri %]">edit</a>
 [% END %]
-(<a href="#[% review.id %]">permalink</a>)
+(<a href="/dist/[% review.distribution | uri %]#[% review.id %]">permalink</a>)
 </p>
 
 <div class="helpfulq">Was this review helpful to you?&nbsp;
