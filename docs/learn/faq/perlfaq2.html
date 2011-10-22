@@ -5,8 +5,10 @@
             title    => "perlfaq2",
             section  => "faq",
             description 
-                => "Perl Frequently Asked Questions",
+                => "Perl Frequently Asked Questions, Perl FAQ",
+            keywords => "perl, perl faq, perlfaq"
         });
+        perlfaq_version = 5.0150036;
     -%]
     <div class="pod">
 
@@ -14,10 +16,10 @@
   <li><a href="#NAME">NAME</a></li>
   <li><a href="#DESCRIPTION">DESCRIPTION</a>
     <ul>
-      <li><a href="#What-machines-support-perl-Where-do-I-get-it-">What machines support perl? Where do I get it?</a></li>
-      <li><a href="#How-can-I-get-a-binary-version-of-perl-">How can I get a binary version of perl?</a></li>
+      <li><a href="#What-machines-support-Perl-Where-do-I-get-it-">What machines support Perl? Where do I get it?</a></li>
+      <li><a href="#How-can-I-get-a-binary-version-of-Perl-">How can I get a binary version of Perl?</a></li>
       <li><a href="#I-dont-have-a-C-compiler.-How-can-I-build-my-own-Perl-interpreter-">I don&#39;t have a C compiler. How can I build my own Perl interpreter?</a></li>
-      <li><a href="#I-copied-the-perl-binary-from-one-machine-to-another-but-scripts-dont-work.">I copied the perl binary from one machine to another, but scripts don&#39;t work.</a></li>
+      <li><a href="#I-copied-the-Perl-binary-from-one-machine-to-another-but-scripts-dont-work.">I copied the Perl binary from one machine to another, but scripts don&#39;t work.</a></li>
       <li><a href="#I-grabbed-the-sources-and-tried-to-compile-but-gdbm-dynamic-loading-malloc-linking-...-failed.-How-do-I-make-it-work-">I grabbed the sources and tried to compile but gdbm/dynamic loading/malloc/linking/... failed. How do I make it work?</a></li>
       <li><a href="#What-modules-and-extensions-are-available-for-Perl-What-is-CPAN-">What modules and extensions are available for Perl? What is CPAN?</a></li>
       <li><a href="#Where-can-I-get-information-on-Perl-">Where can I get information on Perl?</a></li>
@@ -42,15 +44,15 @@
 
 <p>This section of the FAQ answers questions about where to find source and documentation for Perl, support, and related matters.</p>
 
-<h2 id="What-machines-support-perl-Where-do-I-get-it-">What machines support perl? Where do I get it?</h2>
+<h2 id="What-machines-support-Perl-Where-do-I-get-it-">What machines support Perl? Where do I get it?</h2>
 
-<p>The standard release of perl (the one maintained by the perl development team) is distributed only in source code form. You can find the latest releases at <a href="http://www.cpan.org/src/">http://www.cpan.org/src/</a>.</p>
+<p>The standard release of Perl (the one maintained by the Perl development team) is distributed only in source code form. You can find the latest releases at <a href="http://www.cpan.org/src/">http://www.cpan.org/src/</a>.</p>
 
 <p>Perl builds and runs on a bewildering number of platforms. Virtually all known and current Unix derivatives are supported (perl&#39;s native platform), as are other systems like VMS, DOS, OS/2, Windows, QNX, BeOS, OS X, MPE/iX and the Amiga.</p>
 
 <p>Binary distributions for some proprietary platforms can be found <a href="http://www.cpan.org/ports/">http://www.cpan.org/ports/</a> directory. Because these are not part of the standard distribution, they may and in fact do differ from the base perl port in a variety of ways. You&#39;ll have to check their respective release notes to see just what the differences are. These differences can be either positive (e.g. extensions for the features of the particular platform that are not supported in the source release of perl) or negative (e.g. might be based upon a less current source release of perl).</p>
 
-<h2 id="How-can-I-get-a-binary-version-of-perl-">How can I get a binary version of perl?</h2>
+<h2 id="How-can-I-get-a-binary-version-of-Perl-">How can I get a binary version of Perl?</h2>
 
 <p>See <a href="http://www.cpan.org/ports/">CPAN Ports</a></p>
 
@@ -60,7 +62,7 @@
 
 <p>Otherwise if you really do want to build Perl, you need to get a binary version of <code>gcc</code> for your system first. Use a search engine to find out how to do this for your operating system.</p>
 
-<h2 id="I-copied-the-perl-binary-from-one-machine-to-another-but-scripts-dont-work.">I copied the perl binary from one machine to another, but scripts don&#39;t work.</h2>
+<h2 id="I-copied-the-Perl-binary-from-one-machine-to-another-but-scripts-dont-work.">I copied the Perl binary from one machine to another, but scripts don&#39;t work.</h2>
 
 <p>That&#39;s probably because you forgot libraries, or library paths differ. You really should build the whole distribution on the machine it will eventually live on, and then type <code>make install</code>. Most other approaches are doomed to failure.</p>
 
@@ -101,9 +103,6 @@
 
 </li>
 <li><p><a href="http://learn.perl.org/">http://learn.perl.org/</a></p>
-
-</li>
-<li><p><a href="http://faq.perl.org/">http://faq.perl.org/</a></p>
 
 </li>
 </ul>
@@ -192,5 +191,5 @@
 
 <p>Irrespective of its distribution, all code examples here are in the public domain. You are permitted and encouraged to use this code and any derivatives thereof in your own programs for fun or for profit as you see fit. A simple comment in the code giving credit to the FAQ would be courteous but is not required.</p>
 
-</div>
+<p><em>Version: 5.0150036</em></p></div>
 

@@ -5,8 +5,10 @@
             title    => "perlfaq5",
             section  => "faq",
             description 
-                => "Perl Frequently Asked Questions",
+                => "Perl Frequently Asked Questions, Perl FAQ",
+            keywords => "perl, perl faq, perlfaq"
         });
+        perlfaq_version = 5.0150036;
     -%]
     <div class="pod">
 
@@ -718,7 +720,7 @@
 
 <p>The <code>&lt;&gt;</code> operator performs a globbing operation (see above). In Perl versions earlier than v5.6.0, the internal glob() operator forks csh(1) to do the actual glob expansion, but csh can&#39;t handle more than 127 items and so gives the error message <code>Argument list too long</code>. People who installed tcsh as csh won&#39;t have this problem, but their users may be surprised by it.</p>
 
-<p>To get around this, either upgrade to Perl v5.6.0 or later, do the glob yourself with readdir() and patterns, or use a module like File::KGlob, one that doesn&#39;t use the shell to do globbing.</p>
+<p>To get around this, either upgrade to Perl v5.6.0 or later, do the glob yourself with readdir() and patterns, or use a module like <a href="https://metacpan.org/module/File::Glob">File::Glob</a>, one that doesn&#39;t use the shell to do globbing.</p>
 
 <h2 id="Is-there-a-leak-bug-in-glob-">Is there a leak/bug in glob()? </h2>
 
@@ -819,8 +821,8 @@
 
 <p>However, if you have fixed sized records, then you might do something more like this:</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    $RECSIZE = 220; # size of record, in bytes
-    $recno   = 37;  # which record to update
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    my $RECSIZE = 220; # size of record, in bytes
+    my $recno   = 37;  # which record to update
     open my $fh, &#39;+&lt;&#39;, &#39;somewhere&#39; or die &quot;can&#39;t update somewhere: $!&quot;;
     seek $fh, $recno * $RECSIZE, 0;
     read $fh, $record, $RECSIZE == $RECSIZE or die &quot;can&#39;t read record $recno: $!&quot;;
@@ -839,7 +841,7 @@
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    my $write_secs = (stat($file))[9];
     printf &quot;file %s updated at %s\n&quot;, $file,
-    scalar localtime($write_secs);</pre>
+        scalar localtime($write_secs);</pre>
 
 <p>If you prefer something more legible, use the File::stat module (part of the standard distribution in version 5.004 and later):</p>
 
@@ -870,11 +872,11 @@
 
 <h2 id="How-do-I-print-to-more-than-one-file-at-once-">How do I print to more than one file at once? </h2>
 
-<p>To connect one filehandle to several output filehandles, you can use the IO::Tee or Tie::FileHandle::Multiplex modules.</p>
+<p>To connect one filehandle to several output filehandles, you can use the <a href="https://metacpan.org/module/IO::Tee">IO::Tee</a> or <a href="https://metacpan.org/module/Tie::FileHandle::Multiplex">Tie::FileHandle::Multiplex</a> modules.</p>
 
 <p>If you only have to do this once, you can print individually to each filehandle.</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    for my $fh (FH1, FH2, FH3) { print $fh &quot;whatever\n&quot; }</pre>
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    for my $fh ($fh1, $fh2, $fh3) { print $fh &quot;whatever\n&quot; }</pre>
 
 <h2 id="How-can-I-read-in-an-entire-file-all-at-once-">How can I read in an entire file all at once?  </h2>
 
@@ -1054,18 +1056,18 @@
 
 <p>First try</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    seek(GWFILE, 0, 1);</pre>
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    seek($gw_fh, 0, 1);</pre>
 
-<p>The statement <code>seek(GWFILE, 0, 1)</code> doesn&#39;t change the current position, but it does clear the end-of-file condition on the handle, so that the next <code>&lt;GWFILE&gt;</code> makes Perl try again to read something.</p>
+<p>The statement <code>seek($gw_fh, 0, 1)</code> doesn&#39;t change the current position, but it does clear the end-of-file condition on the handle, so that the next <code>&lt;$gw_fh&gt;</code> makes Perl try again to read something.</p>
 
 <p>If that doesn&#39;t work (it relies on features of your stdio implementation), then you need something more like this:</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    for (;;) {
-      for ($curpos = tell(GWFILE); &lt;GWFILE&gt;; $curpos = tell(GWFILE)) {
+      for ($curpos = tell($gw_fh); &lt;$gw_fh&gt;; $curpos =tell($gw_fh)) {
         # search for some stuff and put it into files
       }
       # sleep for a while
-      seek(GWFILE, $curpos, 0);  # seek to where we had been
+      seek($gw_fh, $curpos, 0);  # seek to where we had been
     }</pre>
 
 <p>If this still doesn&#39;t work, look into the <code>clearerr</code> method from <a href="https://metacpan.org/module/IO::Handle">IO::Handle</a>, which resets the error and end-of-file states on the handle.</p>
@@ -1077,7 +1079,7 @@
 <p>If you check <a href="https://metacpan.org/module/perlfunc#open">&quot;open&quot; in perlfunc</a>, you&#39;ll see that several of the ways to call open() should do the trick. For example:</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    open my $log, &#39;&gt;&gt;&#39;, &#39;/foo/logfile&#39;;
-    open STDERR, &#39;&gt;&amp;LOG&#39;;</pre>
+    open STDERR, &#39;&gt;&amp;&#39;, $log;</pre>
 
 <p>Or even with a literal numeric descriptor:</p>
 
@@ -1105,7 +1107,7 @@
 <p>Or, just use the fdopen(3S) feature of <code>open()</code>:</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    {
-        open my( $fh ), &quot;&lt;&amp;=$fd&quot; or die &quot;Cannot reopen fd=$fd: $!&quot;;
+        open my $fh, &quot;&lt;&amp;=$fd&quot; or die &quot;Cannot reopen fd=$fd: $!&quot;;
         close $fh;
     }</pre>
 
@@ -1238,5 +1240,5 @@
 
 <p>Irrespective of its distribution, all code examples here are in the public domain. You are permitted and encouraged to use this code and any derivatives thereof in your own programs for fun or for profit as you see fit. A simple comment in the code giving credit to the FAQ would be courteous but is not required.</p>
 
-</div>
+<p><em>Version: 5.0150036</em></p></div>
 

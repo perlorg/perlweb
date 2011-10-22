@@ -5,8 +5,10 @@
             title    => "perlfaq9",
             section  => "faq",
             description 
-                => "Perl Frequently Asked Questions",
+                => "Perl Frequently Asked Questions, Perl FAQ",
+            keywords => "perl, perl faq, perlfaq"
         });
+        perlfaq_version = 5.0150036;
     -%]
     <div class="pod">
 
@@ -27,15 +29,15 @@
       <li><a href="#How-do-I-redirect-to-another-page-">How do I redirect to another page?</a></li>
       <li><a href="#How-do-I-put-a-password-on-my-web-pages-">How do I put a password on my web pages?</a></li>
       <li><a href="#How-do-I-edit-my-.htpasswd-and-.htgroup-files-with-Perl-">How do I edit my .htpasswd and .htgroup files with Perl?</a></li>
-      <li><a href="#How-do-I-make-sure-users-cant-enter-values-into-a-form-that-cause-my-CGI-script-to-do-bad-things-">How do I make sure users can&#39;t enter values into a form that cause my CGI script to do bad things?</a></li>
+      <li><a href="#How-do-I-make-sure-users-cant-enter-values-into-a-form-that-causes-my-CGI-script-to-do-bad-things-">How do I make sure users can&#39;t enter values into a form that causes my CGI script to do bad things?</a></li>
       <li><a href="#How-do-I-parse-a-mail-header-">How do I parse a mail header?</a></li>
       <li><a href="#How-do-I-decode-a-CGI-form-">How do I decode a CGI form?</a></li>
       <li><a href="#How-do-I-check-a-valid-mail-address-">How do I check a valid mail address?</a></li>
       <li><a href="#How-do-I-decode-a-MIME-BASE64-string-">How do I decode a MIME/BASE64 string?</a></li>
       <li><a href="#How-do-I-return-the-users-mail-address-">How do I return the user&#39;s mail address?</a></li>
-      <li><a href="#How-do-I-send-mail-">How do I send mail?</a></li>
+      <li><a href="#How-do-I-send-email-">How do I send email?</a></li>
       <li><a href="#How-do-I-use-MIME-to-make-an-attachment-to-a-mail-message-">How do I use MIME to make an attachment to a mail message?</a></li>
-      <li><a href="#How-do-I-read-mail-">How do I read mail?</a></li>
+      <li><a href="#How-do-I-read-email-">How do I read email?</a></li>
       <li><a href="#How-do-I-find-out-my-hostname-domainname-or-IP-address-">How do I find out my hostname, domainname, or IP address? </a></li>
       <li><a href="#How-do-I-fetch-a-news-article-or-the-active-newsgroups-">How do I fetch a news article or the active newsgroups?</a></li>
       <li><a href="#How-do-I-fetch-put-an-FTP-file-">How do I fetch/put an FTP file?</a></li>
@@ -51,13 +53,13 @@
 
 <h1 id="DESCRIPTION">DESCRIPTION</h1>
 
-<p>This section deals with questions related to networking, the internet, and a few on the web.</p>
+<p>This section deals with questions related to networking, the Internet, and a few about the Web.</p>
 
 <h2 id="What-is-the-correct-form-of-response-from-a-CGI-script-">What is the correct form of response from a CGI script?</h2>
 
 <p>(Alan Flavell &lt;flavell+www@a5.ph.gla.ac.uk&gt; answers...)</p>
 
-<p>The Common Gateway Interface (CGI) specifies a software interface between a program (&quot;CGI script&quot;) and a web server (HTTPD). It is not specific to Perl, and has its own FAQs and tutorials, and usenet group, comp.infosystems.<a href="https://metacpan.org/module/www.authoring.cgi">www.authoring.cgi</a></p>
+<p>The Common Gateway Interface (CGI) specifies a software interface between a program (&quot;CGI script&quot;) and a web server (HTTPD). It is not specific to Perl, and has its own FAQs and tutorials, and a Usenet group, comp.infosystems.www.authoring.cgi.</p>
 
 <p>The CGI specification is outlined in an informational RFC: <a href="http://www.ietf.org/rfc/rfc3875">http://www.ietf.org/rfc/rfc3875</a></p>
 
@@ -73,7 +75,7 @@
 
 <p>(contributed by brian d foy)</p>
 
-<p>There are many things that might be wrong with your CGI program, and only some of them might be related to Perl. Try going through the <a href="https://metacpan.org/module/http://www.perlmonks.org/?node_id=380424">troubleshooting guide</a> on <a href="https://metacpan.org/module/http://www.perlmonks.org">Perlmonks</a></p>
+<p>There are many things that might be wrong with your CGI program, and only some of them might be related to Perl. Try going through the <a href="https://metacpan.org/module/http://www.perlmonks.org/?node_id=380424">troubleshooting guide</a> on <a href="https://metacpan.org/module/http://www.perlmonks.org/">Perlmonks</a> .</p>
 
 <h2 id="How-can-I-get-better-error-messages-from-a-CGI-program-">How can I get better error messages from a CGI program?</h2>
 
@@ -85,9 +87,10 @@
 
 <p>The following use of <a href="https://metacpan.org/module/CGI::Carp">CGI::Carp</a> also redirects errors to a file of your choice, placed in a <code>BEGIN</code> block to catch compile-time warnings as well:</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    BEGIN {
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use vars qw($log_fh);
+    BEGIN {
         use CGI::Carp qw(carpout);
-        open(LOG, &quot;&gt;&gt;/var/local/cgi-logs/mycgi-log&quot;)
+        open($log_fh, &quot;&gt;&gt;/var/local/cgi-logs/mycgi-log&quot;)
             or die &quot;Unable to append to mycgi-log: $!\n&quot;;
         carpout(*LOG);
     }</pre>
@@ -184,13 +187,13 @@
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use LWP::Simple qw(get);
 
-    my $html = get( &quot;<a href="http://www.example.com/index.html&quot;">http://www.example.com/index.html&quot;</a> );</pre>
+    my $html = get( &quot;http://www.example.com/index.html&quot; );</pre>
 
 <p>It can also store the resource directly in a file:</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use LWP::Simple qw(getstore);
 
-    getstore( &quot;<a href="http://www.example.com/index.html&quot;">http://www.example.com/index.html&quot;</a>, &quot;foo.html&quot; );</pre>
+    getstore( &quot;http://www.example.com/index.html&quot;, &quot;foo.html&quot; );</pre>
 
 <p>If you need to do something more complicated, you can use <a href="https://metacpan.org/module/LWP::UserAgent">LWP::UserAgent</a> module to create your own user-agent (e.g. browser) to get the job done. If you want to simulate an interactive web browser, you can use the <a href="https://metacpan.org/module/WWW::Mechanize">WWW::Mechanize</a> module.</p>
 
@@ -212,10 +215,10 @@
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use HTTP::Request::Common qw(POST);
     use LWP::UserAgent;
 
-    $ua = LWP::UserAgent-&gt;new();
+    my $ua = LWP::UserAgent-&gt;new();
     my $req = POST &#39;<a href="http://www.perl.com/cgi-bin/cpan_mod&#39;">http://www.perl.com/cgi-bin/cpan_mod&#39;</a>,
                    [ module =&gt; &#39;DB_File&#39;, readme =&gt; 1 ];
-    $content = $ua-&gt;request($req)-&gt;as_string;</pre>
+    my $content = $ua-&gt;request($req)-&gt;as_string;</pre>
 
 <h2 id="How-do-I-decode-or-create-those--encodings-on-the-web-">How do I decode or create those %-encodings on the web?     </h2>
 
@@ -281,7 +284,7 @@
       -&gt;new(DB =&gt; &quot;/foo/.htpasswd&quot;)
       -&gt;add($username =&gt; $password);</pre>
 
-<h2 id="How-do-I-make-sure-users-cant-enter-values-into-a-form-that-cause-my-CGI-script-to-do-bad-things-">How do I make sure users can&#39;t enter values into a form that cause my CGI script to do bad things?</h2>
+<h2 id="How-do-I-make-sure-users-cant-enter-values-into-a-form-that-causes-my-CGI-script-to-do-bad-things-">How do I make sure users can&#39;t enter values into a form that causes my CGI script to do bad things?</h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -331,7 +334,7 @@
 
 <p>You might also try <a href="https://metacpan.org/module/CGI::Minimal">CGI::Minimal</a> which is a lightweight version of the same thing. Other CGI::* modules on CPAN might work better for you, too.</p>
 
-<p>Many people try to write their own decoder (or copy one from another program) and then run into one of the many &quot;gotchas&quot; of the task. It&#39;s much easier and less hassle to use <code>CGI.pm</code>.</p>
+<p>Many people try to write their own decoder (or copy one from another program) and then run into one of the many &quot;gotchas&quot; of the task. It&#39;s much easier and less of a hassle to use <code>CGI.pm</code>.</p>
 
 <h2 id="How-do-I-check-a-valid-mail-address-">How do I check a valid mail address?</h2>
 
@@ -354,7 +357,7 @@
 <p>The <a href="https://metacpan.org/module/MIME::Base64">MIME::Base64</a> package handles this as well as the MIME/QP encoding. Decoding base 64 becomes as simple as:</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use MIME::Base64;
-    $decoded = decode_base64($encoded);</pre>
+    my $decoded = decode_base64($encoded);</pre>
 
 <p>The <a href="https://metacpan.org/module/Email::MIME">Email::MIME</a> module can decode base 64-encoded email message parts transparently so the developer doesn&#39;t need to worry about it.</p>
 
@@ -366,7 +369,7 @@
 
 <p>But note that you still cannot make any assumptions about whether this is correct unless your policy says it is. And then there are things like localpart extensions (foo+bar@example.com). You really are best off asking the user.</p>
 
-<h2 id="How-do-I-send-mail-">How do I send mail?</h2>
+<h2 id="How-do-I-send-email-">How do I send email?</h2>
 
 <p>Use the <a href="https://metacpan.org/module/Email::MIME">Email::MIME</a> and <a href="https://metacpan.org/module/Email::Sender::Simple">Email::Sender::Simple</a> modules, like so:</p>
 
@@ -420,7 +423,7 @@
 
 <p><a href="https://metacpan.org/module/Email::MIME">Email::MIME</a> directly supports multipart messages. <a href="https://metacpan.org/module/Email::MIME">Email::MIME</a> objects themselves are parts and can be attached to other <a href="https://metacpan.org/module/Email::MIME">Email::MIME</a> objects. Consult the <a href="https://metacpan.org/module/Email::MIME">Email::MIME</a> documentation for more information, including all of the supported methods and examples of their use.</p>
 
-<h2 id="How-do-I-read-mail-">How do I read mail?</h2>
+<h2 id="How-do-I-read-email-">How do I read email?</h2>
 
 <p>Use the <a href="https://metacpan.org/module/Email::Folder">Email::Folder</a> module, like so:</p>
 
@@ -482,7 +485,7 @@
 
     my $data = get( &#39;<a href="ftp://some.ftp.site/some/file.txt&#39;">ftp://some.ftp.site/some/file.txt&#39;</a> );</pre>
 
-<p>If you want more direct or low-level control of the FTP process, you can use the <a href="https://metacpan.org/module/Net::FTP">Net::FTP</a> module (in the Standard Library since Perl 5.8). It&#39;s documentation has examples showing you just how to do that.</p>
+<p>If you want more direct or low-level control of the FTP process, you can use the <a href="https://metacpan.org/module/Net::FTP">Net::FTP</a> module (in the Standard Library since Perl 5.8). Its documentation has examples showing you just how to do that.</p>
 
 <h2 id="How-can-I-do-RPC-in-Perl-">How can I do RPC in Perl?</h2>
 
@@ -498,5 +501,5 @@
 
 <p>Irrespective of its distribution, all code examples in this file are hereby placed into the public domain. You are permitted and encouraged to use this code in your own programs for fun or for profit as you see fit. A simple comment in the code giving credit would be courteous but is not required.</p>
 
-</div>
+<p><em>Version: 5.0150036</em></p></div>
 

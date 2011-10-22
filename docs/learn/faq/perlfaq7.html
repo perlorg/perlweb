@@ -5,8 +5,10 @@
             title    => "perlfaq7",
             section  => "faq",
             description 
-                => "Perl Frequently Asked Questions",
+                => "Perl Frequently Asked Questions, Perl FAQ",
+            keywords => "perl, perl faq, perlfaq"
         });
+        perlfaq_version = 5.0150036;
     -%]
     <div class="pod">
 
@@ -33,7 +35,7 @@
       <li><a href="#Whats-the-difference-between-dynamic-and-lexical-static-scoping-Between-local-and-my-">What&#39;s the difference between dynamic and lexical (static) scoping? Between local() and my()?</a></li>
       <li><a href="#How-can-I-access-a-dynamic-variable-while-a-similarly-named-lexical-is-in-scope-">How can I access a dynamic variable while a similarly named lexical is in scope?</a></li>
       <li><a href="#Whats-the-difference-between-deep-and-shallow-binding-">What&#39;s the difference between deep and shallow binding?</a></li>
-      <li><a href="#Why-doesnt-my-foo-FILE-work-right-">Why doesn&#39;t &quot;my($foo) = &lt;FILE&gt;;&quot; work right?</a></li>
+      <li><a href="#Why-doesnt-my-foo-fhgt-work-right-">Why doesn&#39;t &quot;my($foo) = &lt;$fh&lt;gt&gt;;&quot; work right?</a></li>
       <li><a href="#How-do-I-redefine-a-builtin-function-operator-or-method-">How do I redefine a builtin function, operator, or method?</a></li>
       <li><a href="#Whats-the-difference-between-calling-a-function-as-foo-and-foo-">What&#39;s the difference between calling a function as &amp;foo and foo()?</a></li>
       <li><a href="#How-do-I-create-a-switch-or-case-statement-">How do I create a switch or case statement?</a></li>
@@ -93,13 +95,13 @@
 <p>The final semicolon in a block is optional, as is the final comma in a list. Good style (see <a href="https://metacpan.org/module/perlstyle">perlstyle</a>) says to put them in except for one-liners:</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    if ($whoops) { exit 1 }
-    @nums = (1, 2, 3);
+    my @nums = (1, 2, 3);
 
     if ($whoops) {
         exit 1;
     }
 
-    @lines = (
+    my @lines = (
         &quot;There Beren came from mountains cold&quot;,
         &quot;And lost he wandered under leaves&quot;,
     );</pre>
@@ -120,25 +122,25 @@
 
 <h2 id="How-do-I-temporarily-block-warnings-">How do I temporarily block warnings?</h2>
 
-<p>If you are running Perl 5.6.0 or better, the <code>use warnings</code> pragma allows fine control of what warning are produced. See <a href="https://metacpan.org/module/perllexwarn">perllexwarn</a> for more details.</p>
+<p>If you are running Perl 5.6.0 or better, the <code>use warnings</code> pragma allows fine control of what warnings are produced. See <a href="https://metacpan.org/module/perllexwarn">perllexwarn</a> for more details.</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    {
         no warnings;          # temporarily turn off warnings
-        $a = $b + $c;         # I know these might be undef
+        $x = $y + $z;         # I know these might be undef
     }</pre>
 
 <p>Additionally, you can enable and disable categories of warnings. You turn off the categories you want to ignore and you can still get other categories of warnings. See <a href="https://metacpan.org/module/perllexwarn">perllexwarn</a> for the complete details, including the category names and hierarchy.</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    {
         no warnings &#39;uninitialized&#39;;
-        $a = $b + $c;
+        $x = $y + $z;
     }</pre>
 
 <p>If you have an older version of Perl, the <code>$^W</code> variable (documented in <a href="https://metacpan.org/module/perlvar">perlvar</a>) controls runtime warnings for a block:</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    {
         local $^W = 0;        # temporarily turn off warnings
-        $a = $b + $c;         # I know these might be undef
+        $x = $y + $z;         # I know these might be undef
     }</pre>
 
 <p>Note that like all the punctuation variables, you cannot currently use my() on <code>$^W</code>, only local().</p>
@@ -166,11 +168,11 @@
 
 <p>The &quot;English&quot; operators (<code>and</code>, <code>or</code>, <code>xor</code>, and <code>not</code>) deliberately have precedence lower than that of list operators for just such situations as the one above.</p>
 
-<p>Another operator with surprising precedence is exponentiation. It binds more tightly even than unary minus, making <code>-2**2</code> produce a negative not a positive four. It is also right-associating, meaning that <code>2**3**2</code> is two raised to the ninth power, not eight squared.</p>
+<p>Another operator with surprising precedence is exponentiation. It binds more tightly even than unary minus, making <code>-2**2</code> produce a negative four and not a positive one. It is also right-associating, meaning that <code>2**3**2</code> is two raised to the ninth power, not eight squared.</p>
 
-<p>Although it has the same precedence as in C, Perl&#39;s <code>?:</code> operator produces an lvalue. This assigns $x to either $a or $b, depending on the trueness of $maybe:</p>
+<p>Although it has the same precedence as in C, Perl&#39;s <code>?:</code> operator produces an lvalue. This assigns $x to either $if_true or $if_false, depending on the trueness of $maybe:</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    ($maybe ? $a : $b) = $x;</pre>
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    ($maybe ? $if_true : $if_false) = $x;</pre>
 
 <h2 id="How-do-I-declare-create-a-structure-">How do I declare/create a structure?</h2>
 
@@ -244,8 +246,8 @@
         return sub { shift() + shift() };
     }
 
-    $add_sub = add_function_generator();
-    $sum = $add_sub-&gt;(4,5);                # $sum is 9 now.</pre>
+    my $add_sub = add_function_generator();
+    my $sum = $add_sub-&gt;(4,5);                # $sum is 9 now.</pre>
 
 <p>The anonymous subroutine returned by add_function_generator() isn&#39;t technically a closure because it refers to no lexicals outside its own scope. Using a closure gives you a <i>function template</i> with some customization slots left out to be filled later.</p>
 
@@ -256,10 +258,10 @@
         return sub { shift() + $addpiece };
     }
 
-    $f1 = make_adder(20);
-    $f2 = make_adder(555);</pre>
+    my $f1 = make_adder(20);
+    my $f2 = make_adder(555);</pre>
 
-<p>Now <code>&amp;$f1($n)</code> is always 20 plus whatever $n you pass in, whereas <code>&amp;$f2($n)</code> is always 555 plus whatever $n you pass in. The $addpiece in the closure sticks around.</p>
+<p>Now <code>$f1-&gt;($n)</code> is always 20 plus whatever $n you pass in, whereas <code>$f2-&gt;($n)</code> is always 555 plus whatever $n you pass in. The $addpiece in the closure sticks around.</p>
 
 <p>Closures are often used for less esoteric purposes. For example, when you want to pass in a bit of code into a function:</p>
 
@@ -291,7 +293,7 @@
     T;
     print &quot;Finally $f\n&quot;;</pre>
 
-<p>If you are experiencing variable suicide, that <code>my $f</code> in the subroutine doesn&#39;t pick up a fresh copy of the <code>$f</code> whose value is &lt;foo&gt;. The output shows that inside the subroutine the value of <code>$f</code> leaks through when it shouldn&#39;t, as in this output:</p>
+<p>If you are experiencing variable suicide, that <code>my $f</code> in the subroutine doesn&#39;t pick up a fresh copy of the <code>$f</code> whose value is <code>&#39;foo&#39;</code>. The output shows that inside the subroutine the value of <code>$f</code> leaks through when it shouldn&#39;t, as in this output:</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    foobar
     foobarbar
@@ -353,7 +355,7 @@
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    sub compare($$) {
         my ($val1, $regex) = @_;
         my $retval = $val1 =~ /$regex/;
-    return $retval;
+        return $retval;
     }
     $match = compare(&quot;old McDonald&quot;, qr/d.*D/i);</pre>
 
@@ -373,7 +375,7 @@
 
 <p>Or, you can use a closure to bundle up the object, its method call, and arguments:</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    my $whatnot =  sub { $some_obj-&gt;obfuscate(@args) };
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    my $whatnot = sub { $some_obj-&gt;obfuscate(@args) };
     func($whatnot);
     sub func {
         my $code = shift;
@@ -482,20 +484,20 @@
 
 <p>In deep binding, lexical variables mentioned in anonymous subroutines are the same ones that were in scope when the subroutine was created. In shallow binding, they are whichever variables with the same names happen to be in scope when the subroutine is called. Perl always uses deep binding of lexical variables (i.e., those created with my()). However, dynamic variables (aka global, local, or package variables) are effectively shallowly bound. Consider this just one more reason not to use them. See the answer to <a href="#What-s-a-closure-">&quot;What&#39;s a closure?&quot;</a>.</p>
 
-<h2 id="Why-doesnt-my-foo-FILE-work-right-">Why doesn&#39;t &quot;my($foo) = &lt;FILE&gt;;&quot; work right?</h2>
+<h2 id="Why-doesnt-my-foo-fhgt-work-right-">Why doesn&#39;t &quot;my($foo) = &lt;$fh&lt;gt&gt;;&quot; work right?</h2>
 
-<p><code>my()</code> and <code>local()</code> give list context to the right hand side of <code>=</code>. The &lt;FH&gt; read operation, like so many of Perl&#39;s functions and operators, can tell which context it was called in and behaves appropriately. In general, the scalar() function can help. This function does nothing to the data itself (contrary to popular myth) but rather tells its argument to behave in whatever its scalar fashion is. If that function doesn&#39;t have a defined scalar behavior, this of course doesn&#39;t help you (such as with sort()).</p>
+<p><code>my()</code> and <code>local()</code> give list context to the right hand side of <code>=</code>. The &lt;$fh&gt; read operation, like so many of Perl&#39;s functions and operators, can tell which context it was called in and behaves appropriately. In general, the scalar() function can help. This function does nothing to the data itself (contrary to popular myth) but rather tells its argument to behave in whatever its scalar fashion is. If that function doesn&#39;t have a defined scalar behavior, this of course doesn&#39;t help you (such as with sort()).</p>
 
 <p>To enforce scalar context in this particular case, however, you need merely omit the parentheses:</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    local($foo) = &lt;FILE&gt;;        # WRONG
-    local($foo) = scalar(&lt;FILE&gt;);   # ok
-    local $foo  = &lt;FILE&gt;;        # right</pre>
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    local($foo) = &lt;$fh&gt;;        # WRONG
+    local($foo) = scalar(&lt;$fh&gt;);   # ok
+    local $foo  = &lt;$fh&gt;;        # right</pre>
 
 <p>You should probably be using lexical variables anyway, although the issue is the same here:</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    my($foo) = &lt;FILE&gt;;    # WRONG
-    my $foo  = &lt;FILE&gt;;    # right</pre>
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    my($foo) = &lt;$fh&gt;;    # WRONG
+    my $foo  = &lt;$fh&gt;;    # right</pre>
 
 <h2 id="How-do-I-redefine-a-builtin-function-operator-or-method-">How do I redefine a builtin function, operator, or method?</h2>
 
@@ -676,7 +678,7 @@
 
 <p>(contributed by brian d foy)</p>
 
-<p>The quick-and-dirty way to comment out more than one line of Perl is to surround those lines with Pod directives. You have to put these directives at the beginning of the line and somewhere where Perl expects a new statement (so not in the middle of statements like the # comments). You end the comment with <code>=cut</code>, ending the Pod section:</p>
+<p>The quick-and-dirty way to comment out more than one line of Perl is to surround those lines with Pod directives. You have to put these directives at the beginning of the line and somewhere where Perl expects a new statement (so not in the middle of statements like the <code>#</code> comments). You end the comment with <code>=cut</code>, ending the Pod section:</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    =pod
 
@@ -747,7 +749,7 @@
 <p>The other reason why using a variable to hold the name of another variable is a bad idea is that the question often stems from a lack of understanding of Perl data structures, particularly hashes. By using symbolic references, you are just using the package&#39;s symbol-table hash (like <code>%main::</code>) instead of a user-defined hash. The solution is to use your own hash or a real reference instead.</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    $USER_VARS{&quot;fred&quot;} = 23;
-    $varname = &quot;fred&quot;;
+    my $varname = &quot;fred&quot;;
     $USER_VARS{$varname}++;  # not $$varname++</pre>
 
 <p>There we&#39;re using the %USER_VARS hash instead of symbolic references. Sometimes this comes up in reading strings from the user with variable references and wanting to expand them to the values of your perl program&#39;s variables. This is also a bad idea because it conflates the program-addressable namespace and the user-addressable one. Instead of reading a string and expanding it to the actual contents of your program&#39;s own variables:</p>
@@ -817,5 +819,5 @@
 
 <p>Irrespective of its distribution, all code examples in this file are hereby placed into the public domain. You are permitted and encouraged to use this code in your own programs for fun or for profit as you see fit. A simple comment in the code giving credit would be courteous but is not required.</p>
 
-</div>
+<p><em>Version: 5.0150036</em></p></div>
 

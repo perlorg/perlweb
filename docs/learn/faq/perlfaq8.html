@@ -5,8 +5,10 @@
             title    => "perlfaq8",
             section  => "faq",
             description 
-                => "Perl Frequently Asked Questions",
+                => "Perl Frequently Asked Questions, Perl FAQ",
+            keywords => "perl, perl faq, perlfaq"
         });
+        perlfaq_version = 5.0150036;
     -%]
     <div class="pod">
 
@@ -118,7 +120,10 @@
 <dt>Mouse</dt>
 <dd>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    Tk                      CPAN</pre>
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    Tk                      CPAN
+    Wx                      CPAN
+    Gtk2                    CPAN
+    Qt4                     kdebindings4 package</pre>
 
 </dd>
 </dl>
@@ -167,10 +172,12 @@
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    # HotKey.pm
     package HotKey;
 
-    @ISA = qw(Exporter);
-    @EXPORT = qw(cbreak cooked readkey);
-
     use strict;
+    use warnings;
+
+    use parent &#39;Exporter&#39;;
+    our @EXPORT = qw(cbreak cooked readkey);
+
     use POSIX qw(:termios_h);
     my ($term, $oterm, $echo, $noecho, $fd_stdin);
 
@@ -214,7 +221,7 @@
 
     ReadMode(&#39;cbreak&#39;);
 
-    if (defined ($char = ReadKey(-1)) ) {
+    if (defined (my $char = ReadKey(-1)) ) {
         # input was waiting and it was $char
     } else {
         # no input was waiting
@@ -239,8 +246,8 @@
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use Term::Cap;
 
-    $terminal = Term::Cap-&gt;Tgetent( { OSPEED =&gt; 9600 } );
-    $clear_string = $terminal-&gt;Tputs(&#39;cl&#39;);
+    my $terminal = Term::Cap-&gt;Tgetent( { OSPEED =&gt; 9600 } );
+    my $clear_string = $terminal-&gt;Tputs(&#39;cl&#39;);
 
     print $clear_screen;</pre>
 
@@ -248,14 +255,14 @@
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    Win32::Console;
 
-    $OUT = Win32::Console-&gt;new(STD_OUTPUT_HANDLE);
+    my $OUT = Win32::Console-&gt;new(STD_OUTPUT_HANDLE);
     my $clear_string = $OUT-&gt;Cls;
 
     print $clear_screen;</pre>
 
 <p>If you have a command-line program that does the job, you can call it in backticks to capture whatever it outputs so you can use it later:</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    $clear_string = `clear`;
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    my $clear_string = `clear`;
 
     print $clear_string;</pre>
 
@@ -264,17 +271,17 @@
 <p>If you have <a href="https://metacpan.org/module/Term::ReadKey">Term::ReadKey</a> module installed from CPAN, you can use it to fetch the width and height in characters and in pixels:</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use Term::ReadKey;
-    ($wchar, $hchar, $wpixels, $hpixels) = GetTerminalSize();</pre>
+    my ($wchar, $hchar, $wpixels, $hpixels) = GetTerminalSize();</pre>
 
 <p>This is more portable than the raw <code>ioctl</code>, but not as illustrative:</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    require &#39;sys/ioctl.ph&#39;;
     die &quot;no TIOCGWINSZ &quot; unless defined &amp;TIOCGWINSZ;
-    open(TTY, &quot;+&lt;/dev/tty&quot;)                     or die &quot;No tty: $!&quot;;
-    unless (ioctl(TTY, &amp;TIOCGWINSZ, $winsize=&#39;&#39;)) {
+    open(my $tty_fh, &quot;+&lt;/dev/tty&quot;)                     or die &quot;No tty: $!&quot;;
+    unless (ioctl($tty_fh, &amp;TIOCGWINSZ, $winsize=&#39;&#39;)) {
         die sprintf &quot;$0: ioctl TIOCGWINSZ (%08x: $!)\n&quot;, &amp;TIOCGWINSZ;
     }
-    ($row, $col, $xpixel, $ypixel) = unpack(&#39;S4&#39;, $winsize);
+    my ($row, $col, $xpixel, $ypixel) = unpack(&#39;S4&#39;, $winsize);
     print &quot;(row,col) = ($row,$col)&quot;;
     print &quot;  (xpixel,ypixel) = ($xpixel,$ypixel)&quot; if $xpixel || $ypixel;
     print &quot;\n&quot;;</pre>
@@ -290,11 +297,11 @@
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use Term::ReadKey;
 
     ReadMode(&#39;noecho&#39;);
-    $password = ReadLine(0);</pre>
+    my $password = ReadLine(0);</pre>
 
 <h2 id="How-do-I-read-and-write-the-serial-port-">How do I read and write the serial port?</h2>
 
-<p>This depends on which operating system your program is running on. In the case of Unix, the serial ports will be accessible through files in /dev; on other systems, device names will doubtless differ. Several problem areas common to all device interaction are the following:</p>
+<p>This depends on which operating system your program is running on. In the case of Unix, the serial ports will be accessible through files in <code>/dev</code>; on other systems, device names will doubtless differ. Several problem areas common to all device interaction are the following:</p>
 
 <dl>
 
@@ -326,18 +333,18 @@
 
 <p>If you expect characters to get to your device when you <code>print()</code> them, you&#39;ll want to autoflush that filehandle. You can use <code>select()</code> and the <code>$|</code> variable to control autoflushing (see <a href="https://metacpan.org/module/perlvar#pod-">&quot;$|&quot; in perlvar</a> and <a href="https://metacpan.org/module/perlfunc#select">&quot;select&quot; in perlfunc</a>, or <a href="perlfaq5.html">perlfaq5</a>, &quot;How do I flush/unbuffer an output filehandle? Why must I do this?&quot;):</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    $oldh = select(DEV);
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    my $old_handle = select($dev_fh);
     $| = 1;
-    select($oldh);</pre>
+    select($old_handle);</pre>
 
 <p>You&#39;ll also see code that does this without a temporary variable, as in</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    select((select(DEV), $| = 1)[0]);</pre>
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    select((select($deb_handle), $| = 1)[0]);</pre>
 
 <p>Or if you don&#39;t mind pulling in a few thousand lines of code just because you&#39;re afraid of a little <code>$|</code> variable:</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use IO::Handle;
-    DEV-&gt;autoflush(1);</pre>
+    $dev_fh-&gt;autoflush(1);</pre>
 
 <p>As mentioned in the previous item, this still doesn&#39;t work when using socket I/O between Unix and Macintosh. You&#39;ll need to hard code your line terminators, in that case.</p>
 
@@ -378,7 +385,7 @@
 
 <p>(contributed by brian d foy)</p>
 
-<p>There&#39;s not a single way to run code in the background so you don&#39;t have to wait for it to finish before your program moves on to other tasks. Process management depends on your particular operating system, and many of the techniques are in <a href="https://metacpan.org/module/perlipc">perlipc</a>.</p>
+<p>There&#39;s not a single way to run code in the background so you don&#39;t have to wait for it to finish before your program moves on to other tasks. Process management depends on your particular operating system, and many of the techniques are covered in <a href="https://metacpan.org/module/perlipc">perlipc</a>.</p>
 
 <p>Several CPAN modules may be able to help, including <a href="https://metacpan.org/module/IPC::Open2">IPC::Open2</a> or <a href="https://metacpan.org/module/IPC::Open3">IPC::Open3</a>, <a href="https://metacpan.org/module/IPC::Run">IPC::Run</a>, <a href="https://metacpan.org/module/Parallel::Jobs">Parallel::Jobs</a>, <a href="https://metacpan.org/module/Parallel::ForkManager">Parallel::ForkManager</a>, <a href="https://metacpan.org/module/POE">POE</a>, <a href="https://metacpan.org/module/Proc::Background">Proc::Background</a>, and <a href="https://metacpan.org/module/Win32::Process">Win32::Process</a>. There are many other modules you might use, so check those namespaces for other options too.</p>
 
@@ -459,7 +466,7 @@
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    $ENV{TZ} = &quot;MST7MDT&quot;;           # Unixish
     $ENV{&#39;SYS$TIMEZONE_DIFFERENTIAL&#39;}=&quot;-5&quot; # vms
-    system &quot;trn comp.lang.perl.misc&quot;;</pre>
+    system(&#39;trn&#39;, &#39;comp.lang.perl.misc&#39;);</pre>
 
 <h2 id="How-can-I-sleep-or-alarm-for-under-a-second-">How can I sleep() or alarm() for under a second?    </h2>
 
@@ -507,7 +514,7 @@
 
 <p>Historically, these would be generated by the <a href="https://metacpan.org/module/h2ph">h2ph</a> tool, part of the standard perl distribution. This program converts <code>cpp(1)</code> directives in C header files to files containing subroutine definitions, like <code>&amp;SYS_getitimer</code>, which you can use as arguments to your functions. It doesn&#39;t work perfectly, but it usually gets most of the job done. Simple files like <i>errno.h</i>, <i>syscall.h</i>, and <i>socket.h</i> were fine, but the hard ones like <i>ioctl.h</i> nearly always need to be hand-edited. Here&#39;s how to install the *.ph files:</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    1. become super-user
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    1. Become the super-user
     2. cd /usr/include
     3. h2ph *.h */*.h</pre>
 
@@ -529,16 +536,16 @@
 
 <p>You&#39;re confusing the purpose of <code>system()</code> and backticks (``). <code>system()</code> runs a command and returns exit status information (as a 16 bit value: the low 7 bits are the signal the process died from, if any, and the high 8 bits are the actual exit value). Backticks (``) run a command and return what it sent to STDOUT.</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    $exit_status   = system(&quot;mail-users&quot;);
-    $output_string = `ls`;</pre>
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    my $exit_status   = system(&quot;mail-users&quot;);
+    my $output_string = `ls`;</pre>
 
 <h2 id="How-can-I-capture-STDERR-from-an-external-command-">How can I capture STDERR from an external command?</h2>
 
 <p>There are three basic ways of running external commands:</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    system $cmd;        # using system()
-    $output = `$cmd`;        # using backticks (``)
-    open (PIPE, &quot;cmd |&quot;);    # using open()</pre>
+    my $output = `$cmd`;        # using backticks (``)
+    open (my $pipe_fh, &quot;$cmd |&quot;);    # using open()</pre>
 
 <p>With <code>system()</code>, both STDOUT and STDERR will go the same place as the script&#39;s STDOUT and STDERR, unless the <code>system()</code> command redirects them. Backticks and <code>open()</code> read <b>only</b> the STDOUT of your command.</p>
 
@@ -722,8 +729,8 @@
 
 <li><p>Try keeping around the seekpointer and go there, like this:</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    $where = tell(LOG);
-    seek(LOG, $where, 0);</pre>
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    my $where = tell($log_fh);
+    seek($log_fh, $where, 0);</pre>
 
 </li>
 <li><p>If that doesn&#39;t work, try seeking to a different part of the file and then back.</p>
@@ -748,7 +755,7 @@
 <p>If all you want to do is pretend to be telnet but don&#39;t need the initial telnet handshaking, then the standard dual-process approach will suffice:</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use IO::Socket;             # new in 5.004
-    $handle = IO::Socket::INET-&gt;new(&#39;<a href="https://metacpan.org/module/www.perl.com:80&amp;#39;)">www.perl.com:80&#39;)</a>
+    my $handle = IO::Socket::INET-&gt;new(&#39;<a href="https://metacpan.org/module/www.perl.com:80&amp;#39;)">www.perl.com:80&#39;)</a>
         or die &quot;can&#39;t connect to port 80 on <a href="https://metacpan.org/module/www.perl.com:">www.perl.com:</a> $!&quot;;
     $handle-&gt;autoflush(1);
     if (fork()) {               # XXX: undef means failure
@@ -762,7 +769,7 @@
 
 <h2 id="How-can-I-write-expect-in-Perl-">How can I write expect in Perl?</h2>
 
-<p>Once upon a time, there was a library called <i>chat2.pl</i> (part of the standard perl distribution), which never really got finished. If you find it somewhere, <i>don&#39;t use it</i>. These days, your best bet is to look at the Expect module available from CPAN, which also requires two other modules from CPAN, <a href="https://metacpan.org/module/IO::Pty">IO::Pty</a> and <a href="https://metacpan.org/module/IO::Stty">IO::Stty</a>.</p>
+<p>Once upon a time, there was a library called <i>chat2.pl</i> (part of the standard perl distribution), which never really got finished. If you find it somewhere, <i>don&#39;t use it</i>. These days, your best bet is to look at the <a href="https://metacpan.org/module/Expect">Expect</a> module available from CPAN, which also requires two other modules from CPAN, <a href="https://metacpan.org/module/IO::Pty">IO::Pty</a> and <a href="https://metacpan.org/module/IO::Stty">IO::Stty</a>.</p>
 
 <h2 id="Is-there-a-way-to-hide-perls-command-line-from-programs-such-as-ps-">Is there a way to hide perl&#39;s command line from programs such as &quot;ps&quot;?</h2>
 
@@ -865,9 +872,9 @@
 
 <h2 id="How-do-I-use-an-SQL-database-">How do I use an SQL database?</h2>
 
-<p>The <a href="https://metacpan.org/module/DBI">DBI</a> module provides an abstract interface to most database servers and types, including Oracle, DB2, Sybase, mysql, Postgresql, ODBC, and flat files. The DBI module accesses each database type through a database driver, or DBD. You can see a complete list of available drivers on CPAN: <a href="http://www.cpan.org/modules/by-module/DBD/">http://www.cpan.org/modules/by-module/DBD/</a> . You can read more about DBI on <a href="http://dbi.perl.org">http://dbi.perl.org</a> .</p>
+<p>The <a href="https://metacpan.org/module/DBI">DBI</a> module provides an abstract interface to most database servers and types, including Oracle, DB2, Sybase, mysql, Postgresql, ODBC, and flat files. The DBI module accesses each database type through a database driver, or DBD. You can see a complete list of available drivers on CPAN: <a href="http://www.cpan.org/modules/by-module/DBD/">http://www.cpan.org/modules/by-module/DBD/</a> . You can read more about DBI on <a href="http://dbi.perl.org/">http://dbi.perl.org/</a> .</p>
 
-<p>Other modules provide more specific access: <a href="https://metacpan.org/module/Win32::ODBC">Win32::ODBC</a>, <a href="https://metacpan.org/module/Alzabo">Alzabo</a>, <code>iodbc</code>, and others found on CPAN Search: <a href="http://search.cpan.org">http://search.cpan.org</a> .</p>
+<p>Other modules provide more specific access: <a href="https://metacpan.org/module/Win32::ODBC">Win32::ODBC</a>, <a href="https://metacpan.org/module/Alzabo">Alzabo</a>, <code>iodbc</code>, and others found on CPAN Search: <a href="http://search.cpan.org/">http://search.cpan.org/</a> .</p>
 
 <h2 id="How-do-I-make-a-system-exit-on-control-C-">How do I make a system() exit on control-C?</h2>
 
@@ -881,7 +888,7 @@
 <p>If you&#39;re lucky enough to be using a system that supports non-blocking reads (most Unixish systems do), you need only to use the <code>O_NDELAY</code> or <code>O_NONBLOCK</code> flag from the <code>Fcntl</code> module in conjunction with <code>sysopen()</code>:</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use Fcntl;
-    sysopen(FH, &quot;/foo/somefile&quot;, O_WRONLY|O_NDELAY|O_CREAT, 0644)
+    sysopen(my $fh, &quot;/foo/somefile&quot;, O_WRONLY|O_NDELAY|O_CREAT, 0644)
         or die &quot;can&#39;t open /foo/somefile: $!&quot;:</pre>
 
 <h2 id="How-do-I-tell-the-difference-between-errors-from-the-shell-and-perl-">How do I tell the difference between errors from the shell and perl?</h2>
@@ -1113,7 +1120,7 @@
 
 <h2 id="What-is-socket.ph-and-where-do-I-get-it-">What is socket.ph and where do I get it?</h2>
 
-<p>It&#39;s a Perl 4 style file defining values for system networking constants. Sometimes it is built using <a href="https://metacpan.org/module/h2ph">h2ph</a> when Perl is installed, but other times it is not. Modern programs <code>use Socket;</code> instead.</p>
+<p>It&#39;s a Perl 4 style file defining values for system networking constants. Sometimes it is built using <a href="https://metacpan.org/module/h2ph">h2ph</a> when Perl is installed, but other times it is not. Modern programs should use <code>use Socket;</code> instead.</p>
 
 <h1 id="AUTHOR-AND-COPYRIGHT">AUTHOR AND COPYRIGHT</h1>
 
@@ -1123,5 +1130,5 @@
 
 <p>Irrespective of its distribution, all code examples in this file are hereby placed into the public domain. You are permitted and encouraged to use this code in your own programs for fun or for profit as you see fit. A simple comment in the code giving credit would be courteous but is not required.</p>
 
-</div>
+<p><em>Version: 5.0150036</em></p></div>
 

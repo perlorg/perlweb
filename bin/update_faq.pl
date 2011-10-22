@@ -19,15 +19,16 @@ use warnings;
 use Cwd;
 use Path::Class;
 use LWP::Simple;
+
 # use File::Copy;
 # use File::Copy::Recursive qw(dircopy);
 use Pod::Simple::XHTML;
 use JSON;
 
-my $latest_version = fetch_latest_perlfaq();
+my ( $latest_name, $latest_version ) = fetch_latest_perlfaq();
 
 # constants
-my $SOURCE             = '/tmp/' . $latest_version . '/lib';
+my $SOURCE             = '/tmp/' . $latest_name . '/lib';
 my $DESTINATION        = './docs/learn/faq/';
 my $HTML_CHARSET       = 'UTF-8';
 my $PERLDOC_URL_PREFIX = 'https://metacpan.org/module/';
@@ -42,9 +43,9 @@ my $PERLDOC_URL_PREFIX = 'https://metacpan.org/module/';
 
         my $parser = Pod::Simple::XHTML->new;
         $parser->html_header( page_header() );
-        $parser->html_footer('</div>');
+        $parser->html_footer('<p><em>Version: --perlfaq_version--</em></p></div>');
         $parser->html_charset($HTML_CHARSET);
-        $parser->index($pod_file->stringify =~ /perlfaq.pod$/ ? 0 : 1);
+        $parser->index( $pod_file->stringify =~ /perlfaq.pod$/ ? 0 : 1 );
         $parser->perldoc_url_prefix($PERLDOC_URL_PREFIX);
 
         my $html = '';
@@ -56,10 +57,11 @@ my $PERLDOC_URL_PREFIX = 'https://metacpan.org/module/';
         $basename =~ s/.pod$//;
 
         $html =~ s/--page_name--/$basename/g;
+        $html =~ s/--perlfaq_version--/$latest_version/g;
 
         # Add the .html to our perlfaq pages
         $html =~ s{perlfaq(\d*?)">}{perlfaq$1.html">}g;
-        
+
         # Might be linking to a section
         $html =~ s{perlfaq(\d*?)#(.+?)">}{perlfaq$1.html#$2">}g;
 
@@ -86,14 +88,15 @@ my $PERLDOC_URL_PREFIX = 'https://metacpan.org/module/';
 
     # dircopy( "static", $destination->subdir('static')->stringify );
 }
-# 
+
+#
 # sub decorate_link {
 #     my ( $url, $left, $right ) = @_;
-# 
+#
 #     # Skip already marked links.
 #     return $url if ( $left  =~ /href=["']$/ );
 #     return $url if ( $right =~ qr|^</a>| );
-# 
+#
 #     # HACK: we don't want to decorate links that
 #     # are in <pre> tags - so look line by line for
 #     # backup the source to see if the last tag was <pre...>
@@ -101,17 +104,17 @@ my $PERLDOC_URL_PREFIX = 'https://metacpan.org/module/';
 #     foreach my $line (@lines) {
 #         if ( $line =~ /\<.+\>/ ) {
 #             if ( $line =~ /<pre.+>/ ) {
-# 
+#
 #                 # There was a start pre tag before this url, so don't like
 #                 return $url;
 #             } else {
-# 
+#
 #                 # must be some other tag so decorate
 #                 last;
 #             }
 #         }
 #     }
-# 
+#
 #     my $label = $url;
 #     $url = "http://$url" if ( $url =~ /^www/i );
 #     return qq|<a href="$url">$label</a>|;
@@ -128,29 +131,30 @@ sub page_header {
                 => "Perl Frequently Asked Questions, Perl FAQ",
             keywords => "perl, perl faq, perlfaq"
         });
+        perlfaq_version = --perlfaq_version--;
     -%]
     <div class="pod">'
-    ;
+        ;
 }
 
 sub fetch_latest_perlfaq {
-    
+
     my $cwd = getcwd();
-    
+
     my $json = JSON->new();
 
     my $latest_meta_source = get('http://api.metacpan.org/release/perlfaq');
-    my $latest_meta = $json->decode($latest_meta_source);
-    my $download_url = $latest_meta->{download_url};
+    my $latest_meta        = $json->decode($latest_meta_source);
+    my $download_url       = $latest_meta->{download_url};
 
     chdir '/tmp/';
-    mirror($download_url, "/tmp/perlfaq.tar.gz");
+    mirror( $download_url, "/tmp/perlfaq.tar.gz" );
     system('tar -xzf perlfaq.tar.gz');
-    
+
     # Back to previous dir please
     chdir $cwd;
-    
-    return $latest_meta->{name};
-    
+
+    return $latest_meta->{name}, $latest_meta->{version};
+
 }
 

@@ -5,8 +5,10 @@
             title    => "perlfaq6",
             section  => "faq",
             description 
-                => "Perl Frequently Asked Questions",
+                => "Perl Frequently Asked Questions, Perl FAQ",
+            keywords => "perl, perl faq, perlfaq"
         });
+        perlfaq_version = 5.0150036;
     -%]
     <div class="pod">
 
@@ -115,7 +117,7 @@
 
 <p>Read <a href="https://metacpan.org/module/perlre">perlre</a> to help you decide which of <code>/s</code> and <code>/m</code> (or both) you might want to use: <code>/s</code> allows dot to include newline, and <code>/m</code> allows caret and dollar to match next to a newline, not just at the end of the string. You do need to make sure that you&#39;ve actually got a multiline string in there.</p>
 
-<p>For example, this program detects duplicate words, even when they span line breaks (but not paragraph ones). For this example, we don&#39;t need <code>/s</code> because we aren&#39;t using dot in a regular expression that we want to cross line boundaries. Neither do we need <code>/m</code> because we aren&#39;t wanting caret or dollar to match at any point inside the record next to newlines. But it&#39;s imperative that $/ be set to something other than the default, or else we won&#39;t actually ever have a multiline record read in.</p>
+<p>For example, this program detects duplicate words, even when they span line breaks (but not paragraph ones). For this example, we don&#39;t need <code>/s</code> because we aren&#39;t using dot in a regular expression that we want to cross line boundaries. Neither do we need <code>/m</code> because we don&#39;t want caret or dollar to match at any point inside the record next to newlines. But it&#39;s imperative that $/ be set to something other than the default, or else we won&#39;t actually ever have a multiline record read in.</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    $/ = &#39;&#39;;          # read in whole paragraph, not just one line
     while ( &lt;&gt; ) {
@@ -124,7 +126,7 @@
         }
     }</pre>
 
-<p>Here&#39;s code that finds sentences that begin with &quot;From &quot; (which would be mangled by many mailers):</p>
+<p>Here&#39;s some code that finds sentences that begin with &quot;From &quot; (which would be mangled by many mailers):</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    $/ = &#39;&#39;;          # read in whole paragraph, not just one line
     while ( &lt;&gt; ) {
@@ -157,8 +159,8 @@
 <p>Here&#39;s another example of using <code>..</code>:</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    while (&lt;&gt;) {
-        $in_header =   1  .. /^$/;
-        $in_body   = /^$/ .. eof;
+        my $in_header =   1  .. /^$/;
+        my $in_body   = /^$/ .. eof;
     # now choose between them
     } continue {
         $. = 0 if eof;    # fix $.
@@ -168,7 +170,7 @@
 
 <p>(contributed by brian d foy)</p>
 
-<p>If you just want to get work done, use a module and forget about the regular expressions. The <a href="https://metacpan.org/module/XML::Parser">XML::Parser</a> and <a href="https://metacpan.org/module/HTML::Parser">HTML::Parser</a> modules are good starts, although each namespace has other parsing modules specialized for certain tasks and different ways of doing it. Start at CPAN Search ( <a href="http://search.cpan.org">http://search.cpan.org</a> ) and wonder at all the work people have done for you already! :)</p>
+<p>If you just want to get work done, use a module and forget about the regular expressions. The <a href="https://metacpan.org/module/XML::Parser">XML::Parser</a> and <a href="https://metacpan.org/module/HTML::Parser">HTML::Parser</a> modules are good starts, although each namespace has other parsing modules specialized for certain tasks and different ways of doing it. Start at CPAN Search ( <a href="http://search.cpan.org/">http://search.cpan.org/</a> ) and wonder at all the work people have done for you already! :)</p>
 
 <p>The problem with things such as XML is that they have balanced text containing multiple levels of balanced text, but sometimes it isn&#39;t balanced text, as in an empty tag (<code>&lt;br/&gt;</code>, for instance). Even then, things can occur out-of-order. Just when you think you&#39;ve got a pattern that matches your input, someone throws you a curveball.</p>
 
@@ -199,7 +201,7 @@
 
 <p>$/ has to be a string. You can use these examples if you really need to do this.</p>
 
-<p>If you have File::Stream, this is easy.</p>
+<p>If you have <a href="https://metacpan.org/module/File::Stream">File::Stream</a>, this is easy.</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use File::Stream;
 
@@ -288,9 +290,9 @@
     sub preserve_case($$)
     {
         my ($old, $new) = @_;
-        my ($state) = 0; # 0 = no change; 1 = lc; 2 = uc
+        my $state = 0; # 0 = no change; 1 = lc; 2 = uc
         my ($i, $oldlen, $newlen, $c) = (0, length($old), length($new));
-        my ($len) = $oldlen &lt; $newlen ? $oldlen : $newlen;
+        my $len = $oldlen &lt; $newlen ? $oldlen : $newlen;
 
         for ($i = 0; $i &lt; $len; $i++) {
             if ($c = substr($old, $i, 1), $c =~ /[\W\d_]/) {
@@ -378,7 +380,7 @@
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use re &#39;debug&#39;;
 
-    $regex = &#39;Perl&#39;;
+    my $regex = &#39;Perl&#39;;
     foreach ( qw(Perl Java Ruby Python) ) {
         print STDERR &quot;-&quot; x 73, &quot;\n&quot;;
         print STDERR &quot;Trying $_...\n&quot;;
@@ -546,7 +548,7 @@
 
 <p>An example:</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    $s1 = $s2 = &quot;I am very very cold&quot;;
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    my $s1 = my $s2 = &quot;I am very very cold&quot;;
     $s1 =~ s/ve.*y //;      # I am cold
     $s2 =~ s/ve.*?y //;     # I am very cold</pre>
 
@@ -557,7 +559,7 @@
 <p>Use the split function:</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    while (&lt;&gt;) {
-        foreach $word ( split ) {
+        foreach my $word ( split ) {
             # do something with $word here
         }
     }</pre>
@@ -576,23 +578,26 @@
 
 <p>To do this, you have to parse out each word in the input stream. We&#39;ll pretend that by word you mean chunk of alphabetics, hyphens, or apostrophes, rather than the non-whitespace chunk idea of a word given in the previous question:</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    while (&lt;&gt;) {
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    my (%seen);
+    while (&lt;&gt;) {
         while ( /(\b[^\W_\d][\w&#39;-]+\b)/g ) {   # misses &quot;`sheep&#39;&quot;
             $seen{$1}++;
         }
     }
 
-    while ( ($word, $count) = each %seen ) {
+    while ( my ($word, $count) = each %seen ) {
         print &quot;$count $word\n&quot;;
     }</pre>
 
 <p>If you wanted to do the same thing for lines, you wouldn&#39;t need a regular expression:</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    while (&lt;&gt;) {
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    my (%seen);
+
+    while (&lt;&gt;) {
         $seen{$_}++;
     }
 
-    while ( ($line, $count) = each %seen ) {
+    while ( my ($line, $count) = each %seen ) {
         print &quot;$count $line&quot;;
     }</pre>
 
@@ -600,7 +605,7 @@
 
 <h2 id="How-can-I-do-approximate-matching-">How can I do approximate matching?  </h2>
 
-<p>See the module String::Approx available from CPAN.</p>
+<p>See the module <a href="https://metacpan.org/module/String::Approx">String::Approx</a> available from CPAN.</p>
 
 <h2 id="How-do-I-efficiently-match-many-regular-expressions-at-once-">How do I efficiently match many regular expressions at once?   </h2>
 
@@ -650,7 +655,7 @@
         print if /\b(?:$regex)\b/i;
     }</pre>
 
-<p>For more details on regular expression efficiency, see <i>Mastering Regular Expressions</i> by Jeffrey Friedl. He explains how regular expressions engine work and why some patterns are surprisingly inefficient. Once you understand how perl applies regular expressions, you can tune them for individual situations.</p>
+<p>For more details on regular expression efficiency, see <i>Mastering Regular Expressions</i> by Jeffrey Friedl. He explains how the regular expressions engine works and why some patterns are surprisingly inefficient. Once you understand how perl applies regular expressions, you can tune them for individual situations.</p>
 
 <h2 id="Why-dont-word-boundary-searches-with-b-work-for-me-">Why don&#39;t word-boundary searches with <code>\b</code> work for me? </h2>
 
@@ -791,17 +796,20 @@
 
 <p>Or like this:</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    @chars = $martian =~ m/([A-Z][A-Z]|[^A-Z])/g;
-    # above is conceptually similar to:     @chars = $text =~ m/(.)/g;
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    my @chars = $martian =~ m/([A-Z][A-Z]|[^A-Z])/g;
+    # above is conceptually similar to:     my @chars = $text =~ m/(.)/g;
     #
-    foreach $char (@chars) {
+    foreach my $char (@chars) {
         print &quot;found GX!\n&quot;, last if $char eq &#39;GX&#39;;
     }</pre>
 
 <p>Or like this:</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    while ($martian =~ m/\G([A-Z][A-Z]|.)/gs) {  # \G probably unneeded
-        print &quot;found GX!\n&quot;, last if $1 eq &#39;GX&#39;;
+        if ($1 eq &#39;GX&#39;) {
+            print &quot;found GX!\n&quot;;
+            last;
+        }
     }</pre>
 
 <p>Here&#39;s another, slightly less painful, way to do it from Benjamin Goldberg, who uses a zero-width negative look-behind assertion.</p>
@@ -886,5 +894,5 @@
 
 <p>Irrespective of its distribution, all code examples in this file are hereby placed into the public domain. You are permitted and encouraged to use this code in your own programs for fun or for profit as you see fit. A simple comment in the code giving credit would be courteous but is not required.</p>
 
-</div>
+<p><em>Version: 5.0150036</em></p></div>
 
