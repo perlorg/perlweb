@@ -56,10 +56,12 @@ while( my $line = $file_handle->getline() ) {
 
 <p>
     [% PROCESS cpan_link module=>'Path::Class' %] makes working with
-    directories and files clean and easy to do. Try to work
-    with file() or dir() objects throughout your code, but remember if
-    you are calling other Perl modules you will often need to convert the
-    object to a string using 'stringify':
+    directories ([% PROCESS cpan_link module=>'Path::Class::Dir' %]) and 
+    files ([% PROCESS cpan_link module=>'Path::Class::File' %]) clean 
+    and easy to do.
+    Try to work with file() or dir() objects throughout your code, 
+    but remember if you are calling other Perl modules you will often need 
+    to convert the object to a string using 'stringify':
     [% WRAPPER code_chunk -%]
     $file->stringify();
     $dir->stringify();
