@@ -4,6 +4,9 @@
 [% BLOCK code_snippet %]
 <pre><code>[% content %]</code></pre>
 [% END %]
+[% BLOCK cpan_link %]
+<a href="https://metacpan.org/module/[% module %]">[% module %]</a>
+[% END %]
 [%-
     page.style = 'leo.html';
     
