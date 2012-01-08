@@ -168,34 +168,7 @@
 
 <h2 id="How-do-I-match-XML-HTML-or-other-nasty-ugly-things-with-a-regex-">How do I match XML, HTML, or other nasty, ugly things with a regex?       </h2>
 
-<p>(contributed by brian d foy)</p>
-
-<p>If you just want to get work done, use a module and forget about the regular expressions. The <a href="https://metacpan.org/module/XML::Parser">XML::Parser</a> and <a href="https://metacpan.org/module/HTML::Parser">HTML::Parser</a> modules are good starts, although each namespace has other parsing modules specialized for certain tasks and different ways of doing it. Start at CPAN Search ( <a href="http://search.cpan.org/">http://search.cpan.org/</a> ) and wonder at all the work people have done for you already! :)</p>
-
-<p>The problem with things such as XML is that they have balanced text containing multiple levels of balanced text, but sometimes it isn&#39;t balanced text, as in an empty tag (<code>&lt;br/&gt;</code>, for instance). Even then, things can occur out-of-order. Just when you think you&#39;ve got a pattern that matches your input, someone throws you a curveball.</p>
-
-<p>If you&#39;d like to do it the hard way, scratching and clawing your way toward a right answer but constantly being disappointed, besieged by bug reports, and weary from the inordinate amount of time you have to spend reinventing a triangular wheel, then there are several things you can try before you give up in frustration:</p>
-
-<ul>
-
-<li><p>Solve the balanced text problem from another question in <a href="perlfaq6.html">perlfaq6</a></p>
-
-</li>
-<li><p>Try the recursive regex features in Perl 5.10 and later. See <a href="https://metacpan.org/module/perlre">perlre</a></p>
-
-</li>
-<li><p>Try defining a grammar using Perl 5.10&#39;s <code>(?DEFINE)</code> feature.</p>
-
-</li>
-<li><p>Break the problem down into sub-problems instead of trying to use a single regex</p>
-
-</li>
-<li><p>Convince everyone not to use XML or HTML in the first place</p>
-
-</li>
-</ul>
-
-<p>Good luck!</p>
+<p>Do not use regexes. Use a module and forget about the regular expressions. The <a href="https://metacpan.org/module/XML::LibXML">XML::LibXML</a>, <a href="https://metacpan.org/module/HTML::TokeParser">HTML::TokeParser</a> and <a href="https://metacpan.org/module/HTML::TreeBuilder">HTML::TreeBuilder</a> modules are good starts, although each namespace has other parsing modules specialized for certain tasks and different ways of doing it. Start at CPAN Search ( <a href="http://metacpan.org/">http://metacpan.org/</a> ) and wonder at all the work people have done for you already! :)</p>
 
 <h2 id="I-put-a-regular-expression-into-but-it-didnt-work.-Whats-wrong-">I put a regular expression into $/ but it didn&#39;t work. What&#39;s wrong?   </h2>
 

@@ -53,7 +53,7 @@
 
 <p>Yes. If you are building a web site with any level of interactivity (forms / users / databases), you will want to use a framework to make handling requests and responses easier.</p>
 
-<p>If there is no interactivity then you may still want to look at using something like <a href="https://metacpan.org/module/Template">Template Toolkit</a> or <a href="https://metacpan.org/module/Plack::Middleware::TemplateToolkit">Plack::Middleware::TemplateToolkit</a> so maintenence of your HTML files (and other assets) is easier.</p>
+<p>If there is no interactivity then you may still want to look at using something like <a href="https://metacpan.org/module/Template">Template Toolkit</a> or <a href="https://metacpan.org/module/Plack::Middleware::TemplateToolkit">Plack::Middleware::TemplateToolkit</a> so maintenance of your HTML files (and other assets) is easier.</p>
 
 <h2 id="Which-web-framework-should-I-use-">Which web framework should I use?     </h2>
 
@@ -75,7 +75,7 @@
 </dd>
 </dl>
 
-<p>These are just a few of the more widley used ones. All of them interact with or use <a href="https://metacpan.org/module/Plack">Plack</a> which is worth understanding the basics of, as there is a lot of useful <a href="https://metacpan.org/search?q=plack%3A%3Amiddleware">Plack::Middleware</a>.</p>
+<p>These are just a few of the more widely used ones. All of them interact with or use <a href="https://metacpan.org/module/Plack">Plack</a> which is worth understanding the basics of, as there is a lot of useful <a href="https://metacpan.org/search?q=plack%3A%3Amiddleware">Plack::Middleware</a>.</p>
 
 <p>As to which one you should use, it depends on the complexity of the site you are trying to build. Review the three listed above and see which suites your needs best. Many of them share the same <a href="http://en.wikipedia.org/wiki/Model-view-controller">MVC</a> concepts so once you understand one it is easier to understand the others.</p>
 
@@ -89,11 +89,11 @@
 
 <h2 id="How-do-I-remove-HTML-from-a-string-">How do I remove HTML from a string?</h2>
 
-<p>The best way it to use <a href="https://metacpan.org/module/HTML::Parser">HTML::Parser</a>from CPAN. You could also use <a href="https://metacpan.org/module/HTML::FormatText">HTML::FormatText</a> which not only removes HTML but also attempts to do a little simple formatting of the resulting plain text.</p>
+<p>Use <a href="https://metacpan.org/module/HTML::Strip">HTML::Strip</a>, or <a href="https://metacpan.org/module/HTML::FormatText">HTML::FormatText</a> which not only removes HTML but also attempts to do a little simple formatting of the resulting plain text.</p>
 
 <h2 id="How-do-I-extract-URLs-">How do I extract URLs?</h2>
 
-<p><a href="https://metacpan.org/module/HTML::SimpleLinkExtor">HTML::SimpleLinkExtor</a> will extract URLS from HTML, it handles anchors, images, objects, frames, and many other tags that can contain a URL. If you need anything more complex, you can create your own subclass of <a href="https://metacpan.org/module/HTML::LinkExtor">HTML::LinkExtor</a> or <a href="https://metacpan.org/module/HTML::Parser">HTML::Parser</a>. You might even use <a href="https://metacpan.org/module/HTML::SimpleLinkExtor">HTML::SimpleLinkExtor</a> as an example for something specifically suited to your needs.</p>
+<p><a href="https://metacpan.org/module/HTML::SimpleLinkExtor">HTML::SimpleLinkExtor</a> will extract URLs from HTML, it handles anchors, images, objects, frames, and many other tags that can contain a URL. If you need anything more complex, you can create your own subclass of <a href="https://metacpan.org/module/HTML::LinkExtor">HTML::LinkExtor</a> or <a href="https://metacpan.org/module/HTML::Parser">HTML::Parser</a>. You might even use <a href="https://metacpan.org/module/HTML::SimpleLinkExtor">HTML::SimpleLinkExtor</a> as an example for something specifically suited to your needs.</p>
 
 <p>You can use <a href="https://metacpan.org/module/URI::Find">URI::Find</a> to extract URLs from an arbitrary text document.</p>
 
