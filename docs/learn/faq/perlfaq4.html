@@ -8,7 +8,7 @@
                 => "Perl Frequently Asked Questions, Perl FAQ",
             keywords => "perl, perl faq, perlfaq"
         });
-        perlfaq_version = 5.0150036;
+        perlfaq_version = 5.0150037;
     -%]
     <div class="pod">
 
@@ -104,6 +104,7 @@
       <li><a href="#How-can-I-make-the-Perl-equivalent-of-a-C-structure-C-class-hash-or-array-of-hashes-or-arrays-">How can I make the Perl equivalent of a C structure/C++ class/hash or array of hashes or arrays?</a></li>
       <li><a href="#How-can-I-use-a-reference-as-a-hash-key-">How can I use a reference as a hash key?</a></li>
       <li><a href="#How-can-I-check-if-a-key-exists-in-a-multilevel-hash-">How can I check if a key exists in a multilevel hash?</a></li>
+      <li><a href="#How-can-I-prevent-addition-of-unwanted-keys-into-a-hash-">How can I prevent addition of unwanted keys into a hash?</a></li>
     </ul>
   </li>
   <li><a href="#Data:-Misc">Data: Misc</a>
@@ -395,20 +396,18 @@
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    my @results = map { some_func($_) } (5 .. 25);</pre>
 
-<p>but you should be aware that the <code>..</code> operator creates a list of all integers in the range. This can take a lot of memory for large ranges. Instead use:</p>
+<p>but you should be aware that in this form, the <code>..</code> operator creates a list of all integers in the range, which can take a lot of memory for large ranges. However, the problem does not occur when using <code>..</code> within a <code>for</code> loop, because in that case the range operator is optimized to <i>iterate</i> over the range, without creating the entire list. So</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    my @results = ();
-    for (my $i=5; $i &lt;= 500_005; $i++) {
+    for my $i (5 .. 500_005) {
         push(@results, some_func($i));
     }</pre>
 
-<p>This situation has been fixed in Perl5.005. Use of <code>..</code> in a <code>for</code> loop will iterate over the range, without creating the entire range.</p>
+<p>or even</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    for my $i (5 .. 500_005) {
-        push(@results, some_func($i));
-    }</pre>
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">   push(@results, some_func($_)) for 5 .. 500_005;</pre>
 
-<p>will not create a list of 500,000 integers.</p>
+<p>will not create an intermediate list of 500,000 integers.</p>
 
 <h2 id="How-can-I-output-Roman-numerals-">How can I output Roman numerals?</h2>
 
@@ -424,7 +423,7 @@
 
 <p>Computers are good at being predictable and bad at being random (despite appearances caused by bugs in your programs :-). The <i>random</i> article in the &quot;Far More Than You Ever Wanted To Know&quot; collection in <a href="http://www.cpan.org/misc/olddoc/FMTEYEWTK.tgz">http://www.cpan.org/misc/olddoc/FMTEYEWTK.tgz</a>, courtesy of Tom Phoenix, talks more about this. John von Neumann said, &quot;Anyone who attempts to generate random numbers by deterministic means is, of course, living in a state of sin.&quot;</p>
 
-<p>If you want numbers that are more random than <code>rand</code> with <code>srand</code> provides, you should also check out the <a href="https://metacpan.org/module/Math::TrulyRandom">Math::TrulyRandom</a> module from CPAN. It uses the imperfections in your system&#39;s timer to generate random numbers, but this takes quite a while. If you want a better pseudorandom generator than the one that comes with your operating system, look at &quot;Numerical Recipes in C&quot; at <a href="http://www.nr.com/">http://www.nr.com/</a>.</p>
+<p>Perl relies on the underlying system for the implementation of <code>rand</code> and <code>srand</code>; on some systems, the generated numbers are not random enough (especially on Windows : see <a href="http://www.perlmonks.org/?node_id=803632">http://www.perlmonks.org/?node_id=803632</a>). Several CPAN modules in the <code>Math</code> namespace implement better pseudorandom generators; see for example <a href="https://metacpan.org/module/Math::Random::MT">Math::Random::MT</a> (&quot;Mersenne Twister&quot;, fast), or <a href="https://metacpan.org/module/Math::TrulyRandom">Math::TrulyRandom</a> (uses the imperfections in the system&#39;s timer to generate random numbers, which is rather slow). More algorithms for random numbers are described in &quot;Numerical Recipes in C&quot; at <a href="http://www.nr.com/">http://www.nr.com/</a></p>
 
 <h2 id="How-do-I-get-a-random-number-between-X-and-Y-">How do I get a random number between X and Y?</h2>
 
@@ -673,27 +672,9 @@
 
 <h2 id="How-do-I-find-matching-nesting-anything-">How do I find matching/nesting anything?</h2>
 
-<p>This isn&#39;t something that can be done in one regular expression, no matter how complicated. To find something between two single characters, a pattern like <code>/x([^x]*)x/</code> will get the intervening bits in $1. For multiple ones, then something more like <code>/alpha(.*?)omega/</code> would be needed. But none of these deals with nested patterns. For balanced expressions using <code>(</code>, <code>{</code>, <code>[</code> or <code>&lt;</code> as delimiters, use the CPAN module Regexp::Common, or see <a href="https://metacpan.org/module/perlre#code-">&quot;(??{ code })&quot; in perlre</a>. For other cases, you&#39;ll have to write a parser.</p>
+<p>To find something between two single characters, a pattern like <code>/x([^x]*)x/</code> will get the intervening bits in $1. For multiple ones, then something more like <code>/alpha(.*?)omega/</code> would be needed. For nested patterns and/or balanced expressions, see the so-called <a href="https://metacpan.org/module/perlre#PARNO--PARNO-PARNO-R-0-">(?PARNO)</a> construct (available since perl 5.10). The CPAN module <a href="https://metacpan.org/module/Regexp::Common">Regexp::Common</a> can help to build such regular expressions (see in particular <a href="https://metacpan.org/module/Regexp::Common::balanced">Regexp::Common::balanced</a> and <a href="https://metacpan.org/module/Regexp::Common::delimited">Regexp::Common::delimited</a>).</p>
 
-<p>If you are serious about writing a parser, there are a number of modules or oddities that will make your life a lot easier. There are the CPAN modules <a href="https://metacpan.org/module/Parse::RecDescent">Parse::RecDescent</a>, <a href="https://metacpan.org/module/Parse::Yapp">Parse::Yapp</a>, and <a href="https://metacpan.org/module/Text::Balanced">Text::Balanced</a>; and the <code>byacc</code> program. Starting from perl 5.8 the <a href="https://metacpan.org/module/Text::Balanced">Text::Balanced</a> is part of the standard distribution.</p>
-
-<p>One simple destructive, inside-out approach that you might try is to pull out the smallest nesting parts one at a time:</p>
-
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    while (s/BEGIN((?:(?!BEGIN)(?!END).)*)END//gs) {
-        # do something with $1
-    }</pre>
-
-<p>A more complicated and sneaky approach is to make Perl&#39;s regular expression engine do it for you. This is courtesy Dean Inada, and rather has the nature of an Obfuscated Perl Contest entry, but it really does work:</p>
-
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    # $_ contains the string to parse
-    # BEGIN and END are the opening and closing markers for the
-    # nested text.
-
-    @( = (&#39;(&#39;,&#39;&#39;);
-    @) = (&#39;)&#39;,&#39;&#39;);
-    ($re=$_)=~s/((BEGIN)|(END)|.)/$)[!$3]\Q$1\E$([!$2]/gs;
-    @$ = (eval{/$re/},$@!~/unmatched/i);
-    print join(&quot;\n&quot;,@$[0..$#$]) if( $$[-1] );</pre>
+<p>More complex cases will require to write a parser, probably using a parsing module from CPAN, like <a href="https://metacpan.org/module/Regexp::Grammars">Regexp::Grammars</a>, <a href="https://metacpan.org/module/Parse::RecDescent">Parse::RecDescent</a>, <a href="https://metacpan.org/module/Parse::Yapp">Parse::Yapp</a>, <a href="https://metacpan.org/module/Text::Balanced">Text::Balanced</a>, or <a href="https://metacpan.org/module/Marpa">Marpa</a>.</p>
 
 <h2 id="How-do-I-reverse-a-string-">How do I reverse a string?</h2>
 
@@ -1351,7 +1332,12 @@
         if( /Perl/ ) { $found = $_; last }
     }</pre>
 
-<p>If you want the array index, you can iterate through the indices and check the array element at each index until you find one that satisfies the condition.</p>
+<p>If you want the array index, use the <code>firstidx()</code> function from <code>List::MoreUtils</code>:</p>
+
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use List::MoreUtils qw(firstidx);
+    my $index = firstidx { /Perl/ } @array;</pre>
+
+<p>Or write it yourself, iterating through the indices and checking the array element at each index until you find one that satisfies the condition:</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    my( $found, $index ) = ( undef, -1 );
     for( $i = 0; $i &lt; @array; $i++ ) {
@@ -1726,7 +1712,7 @@
 
 <p>The <code>each</code> operator returns the pairs in apparently random order, so if ordering matters to you, you&#39;ll have to stick with the <code>keys</code> method.</p>
 
-<p>The <code>each()</code> operator can be a bit tricky though. You can&#39;t add or delete keys of the hash while you&#39;re using it without possibly skipping or re-processing some pairs after Perl internally rehashes all of the elements. Additionally, a hash has only one iterator, so if you use <code>keys</code>, <code>values</code>, or <code>each</code> on the same hash, you can reset the iterator and mess up your processing. See the <code>each</code> entry in <a href="https://metacpan.org/module/perlfunc">perlfunc</a> for more details.</p>
+<p>The <code>each()</code> operator can be a bit tricky though. You can&#39;t add or delete keys of the hash while you&#39;re using it without possibly skipping or re-processing some pairs after Perl internally rehashes all of the elements. Additionally, a hash has only one iterator, so if you mix <code>keys</code>, <code>values</code>, or <code>each</code> on the same hash, you risk resetting the iterator and messing up your processing. See the <code>each</code> entry in <a href="https://metacpan.org/module/perlfunc">perlfunc</a> for more details.</p>
 
 <h2 id="How-do-I-merge-two-hashes-">How do I merge two hashes?   </h2>
 
@@ -2108,6 +2094,10 @@
        return 1;
     }</pre>
 
+<h2 id="How-can-I-prevent-addition-of-unwanted-keys-into-a-hash-">How can I prevent addition of unwanted keys into a hash?</h2>
+
+<p>Since version 5.8.0, hashes can be <i>restricted</i> to a fixed number of given keys. Methods for creating and dealing with restricted hashes are exported by the <a href="https://metacpan.org/module/Hash::Util">Hash::Util</a> module.</p>
+
 <h1 id="Data:-Misc">Data: Misc</h1>
 
 <h2 id="How-do-I-handle-binary-data-correctly-">How do I handle binary data correctly?</h2>
@@ -2208,5 +2198,5 @@
 
 <p>Irrespective of its distribution, all code examples in this file are hereby placed into the public domain. You are permitted and encouraged to use this code in your own programs for fun or for profit as you see fit. A simple comment in the code giving credit would be courteous but is not required.</p>
 
-<p><em>Version: 5.0150036</em></p></div>
+<p><em>Version: 5.0150037</em></p></div>
 

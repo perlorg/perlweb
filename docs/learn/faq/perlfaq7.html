@@ -8,7 +8,7 @@
                 => "Perl Frequently Asked Questions, Perl FAQ",
             keywords => "perl, perl faq, perlfaq"
         });
-        perlfaq_version = 5.0150036;
+        perlfaq_version = 5.0150037;
     -%]
     <div class="pod">
 
@@ -35,7 +35,7 @@
       <li><a href="#Whats-the-difference-between-dynamic-and-lexical-static-scoping-Between-local-and-my-">What&#39;s the difference between dynamic and lexical (static) scoping? Between local() and my()?</a></li>
       <li><a href="#How-can-I-access-a-dynamic-variable-while-a-similarly-named-lexical-is-in-scope-">How can I access a dynamic variable while a similarly named lexical is in scope?</a></li>
       <li><a href="#Whats-the-difference-between-deep-and-shallow-binding-">What&#39;s the difference between deep and shallow binding?</a></li>
-      <li><a href="#Why-doesnt-my-foo-fhgt-work-right-">Why doesn&#39;t &quot;my($foo) = &lt;$fh&lt;gt&gt;;&quot; work right?</a></li>
+      <li><a href="#Why-doesnt-my-foo-fh-work-right-">Why doesn&#39;t &quot;my($foo) = &lt;$fh&gt;;&quot; work right?</a></li>
       <li><a href="#How-do-I-redefine-a-builtin-function-operator-or-method-">How do I redefine a builtin function, operator, or method?</a></li>
       <li><a href="#Whats-the-difference-between-calling-a-function-as-foo-and-foo-">What&#39;s the difference between calling a function as &amp;foo and foo()?</a></li>
       <li><a href="#How-do-I-create-a-switch-or-case-statement-">How do I create a switch or case statement?</a></li>
@@ -393,7 +393,7 @@
 
 <p>In Perl 5.10, declare the variable with <code>state</code>. The <code>state</code> declaration creates the lexical variable that persists between calls to the subroutine:</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    sub counter { state $count = 1; $counter++ }</pre>
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    sub counter { state $count = 1; $count++ }</pre>
 
 <p>You can fake a static variable by using a lexical variable which goes out of scope. In this example, you define the subroutine <code>counter</code>, and it uses the lexical variable <code>$count</code>. Since you wrap this in a BEGIN block, <code>$count</code> is defined at compile-time, but also goes out of scope at the end of the BEGIN block. The BEGIN block also ensures that the subroutine and the value it uses is defined at compile-time so the subroutine is ready to use just like any other subroutine, and you can put this code in the same place as other subroutines in the program text (i.e. at the end of the code, typically). The subroutine <code>counter</code> still has a reference to the data, and is the only way you can access the value (and each time you do, you increment the value). The data in chunk of memory defined by <code>$count</code> is private to <code>counter</code>.</p>
 
@@ -484,7 +484,7 @@
 
 <p>In deep binding, lexical variables mentioned in anonymous subroutines are the same ones that were in scope when the subroutine was created. In shallow binding, they are whichever variables with the same names happen to be in scope when the subroutine is called. Perl always uses deep binding of lexical variables (i.e., those created with my()). However, dynamic variables (aka global, local, or package variables) are effectively shallowly bound. Consider this just one more reason not to use them. See the answer to <a href="#What-s-a-closure-">&quot;What&#39;s a closure?&quot;</a>.</p>
 
-<h2 id="Why-doesnt-my-foo-fhgt-work-right-">Why doesn&#39;t &quot;my($foo) = &lt;$fh&lt;gt&gt;;&quot; work right?</h2>
+<h2 id="Why-doesnt-my-foo-fh-work-right-">Why doesn&#39;t &quot;my($foo) = &lt;$fh&gt;;&quot; work right?</h2>
 
 <p><code>my()</code> and <code>local()</code> give list context to the right hand side of <code>=</code>. The &lt;$fh&gt; read operation, like so many of Perl&#39;s functions and operators, can tell which context it was called in and behaves appropriately. In general, the scalar() function can help. This function does nothing to the data itself (contrary to popular myth) but rather tells its argument to behave in whatever its scalar fashion is. If that function doesn&#39;t have a defined scalar behavior, this of course doesn&#39;t help you (such as with sort()).</p>
 
@@ -819,5 +819,5 @@
 
 <p>Irrespective of its distribution, all code examples in this file are hereby placed into the public domain. You are permitted and encouraged to use this code in your own programs for fun or for profit as you see fit. A simple comment in the code giving credit would be courteous but is not required.</p>
 
-<p><em>Version: 5.0150036</em></p></div>
+<p><em>Version: 5.0150037</em></p></div>
 

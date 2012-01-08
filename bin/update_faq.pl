@@ -19,6 +19,7 @@ use warnings;
 use Cwd;
 use Path::Class;
 use LWP::Simple;
+use File::Copy;
 
 # use File::Copy;
 # use File::Copy::Recursive qw(dircopy);
@@ -139,22 +140,42 @@ sub page_header {
 
 sub fetch_latest_perlfaq {
 
+    my $local_name;
+    my $local_version;
+
+    my $tmp_file = "/tmp/perlfaq.tar.gz";
+
+    if($ARGV[0] && $ARGV[0] =~ /gz$/) {
+        my $zip = file($ARGV[0]);
+        $local_name = $zip->basename();
+        $local_name =~ s/\.tar\.gz$//;
+        $local_version = $local_name;
+        $local_version =~ s/^perlfaq-//;
+        
+        copy( $zip->stringify, $tmp_file);
+        
+    } else {
+        my $json = JSON->new();
+
+        my $latest_meta_source = get('http://api.metacpan.org/release/perlfaq');
+        my $latest_meta        = $json->decode($latest_meta_source);
+        my $download_url       = $latest_meta->{download_url};
+
+        mirror( $download_url, $tmp_file );
+
+        # Back to previous dir please
+        $local_name = $latest_meta->{name};
+        $local_version = $latest_meta->{version};
+        
+    }
+    
     my $cwd = getcwd();
-
-    my $json = JSON->new();
-
-    my $latest_meta_source = get('http://api.metacpan.org/release/perlfaq');
-    my $latest_meta        = $json->decode($latest_meta_source);
-    my $download_url       = $latest_meta->{download_url};
-
     chdir '/tmp/';
-    mirror( $download_url, "/tmp/perlfaq.tar.gz" );
     system('tar -xzf perlfaq.tar.gz');
-
-    # Back to previous dir please
     chdir $cwd;
+    return $local_name, $local_version;
 
-    return $latest_meta->{name}, $latest_meta->{version};
+
 
 }
 

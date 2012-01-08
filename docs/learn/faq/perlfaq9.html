@@ -8,7 +8,7 @@
                 => "Perl Frequently Asked Questions, Perl FAQ",
             keywords => "perl, perl faq, perlfaq"
         });
-        perlfaq_version = 5.0150036;
+        perlfaq_version = 5.0150037;
     -%]
     <div class="pod">
 
@@ -16,31 +16,25 @@
   <li><a href="#NAME">NAME</a></li>
   <li><a href="#DESCRIPTION">DESCRIPTION</a>
     <ul>
-      <li><a href="#What-is-the-correct-form-of-response-from-a-CGI-script-">What is the correct form of response from a CGI script?</a></li>
-      <li><a href="#My-CGI-script-runs-from-the-command-line-but-not-the-browser.-500-Server-Error-">My CGI script runs from the command line but not the browser. (500 Server Error)</a></li>
-      <li><a href="#How-can-I-get-better-error-messages-from-a-CGI-program-">How can I get better error messages from a CGI program?</a></li>
+      <li><a href="#Should-I-use-a-web-framework-">Should I use a web framework?</a></li>
+      <li><a href="#Which-web-framework-should-I-use-">Which web framework should I use?     </a></li>
+      <li><a href="#What-is-Plack-and-PSGI-">What is Plack and PSGI?</a></li>
       <li><a href="#How-do-I-remove-HTML-from-a-string-">How do I remove HTML from a string?</a></li>
       <li><a href="#How-do-I-extract-URLs-">How do I extract URLs?</a></li>
-      <li><a href="#How-do-I-download-a-file-from-the-users-machine-How-do-I-open-a-file-on-another-machine-">How do I download a file from the user&#39;s machine? How do I open a file on another machine?</a></li>
-      <li><a href="#How-do-I-make-an-HTML-pop-up-menu-with-Perl-">How do I make an HTML pop-up menu with Perl?</a></li>
       <li><a href="#How-do-I-fetch-an-HTML-file-">How do I fetch an HTML file?</a></li>
       <li><a href="#How-do-I-automate-an-HTML-form-submission-">How do I automate an HTML form submission?</a></li>
-      <li><a href="#How-do-I-decode-or-create-those--encodings-on-the-web-">How do I decode or create those %-encodings on the web?     </a></li>
+      <li><a href="#How-do-I-decode-or-create-those--encodings-on-the-web-">How do I decode or create those %-encodings on the web?   </a></li>
       <li><a href="#How-do-I-redirect-to-another-page-">How do I redirect to another page?</a></li>
       <li><a href="#How-do-I-put-a-password-on-my-web-pages-">How do I put a password on my web pages?</a></li>
-      <li><a href="#How-do-I-edit-my-.htpasswd-and-.htgroup-files-with-Perl-">How do I edit my .htpasswd and .htgroup files with Perl?</a></li>
       <li><a href="#How-do-I-make-sure-users-cant-enter-values-into-a-form-that-causes-my-CGI-script-to-do-bad-things-">How do I make sure users can&#39;t enter values into a form that causes my CGI script to do bad things?</a></li>
       <li><a href="#How-do-I-parse-a-mail-header-">How do I parse a mail header?</a></li>
-      <li><a href="#How-do-I-decode-a-CGI-form-">How do I decode a CGI form?</a></li>
       <li><a href="#How-do-I-check-a-valid-mail-address-">How do I check a valid mail address?</a></li>
       <li><a href="#How-do-I-decode-a-MIME-BASE64-string-">How do I decode a MIME/BASE64 string?</a></li>
-      <li><a href="#How-do-I-return-the-users-mail-address-">How do I return the user&#39;s mail address?</a></li>
       <li><a href="#How-do-I-send-email-">How do I send email?</a></li>
       <li><a href="#How-do-I-use-MIME-to-make-an-attachment-to-a-mail-message-">How do I use MIME to make an attachment to a mail message?</a></li>
       <li><a href="#How-do-I-read-email-">How do I read email?</a></li>
       <li><a href="#How-do-I-find-out-my-hostname-domainname-or-IP-address-">How do I find out my hostname, domainname, or IP address? </a></li>
-      <li><a href="#How-do-I-fetch-a-news-article-or-the-active-newsgroups-">How do I fetch a news article or the active newsgroups?</a></li>
-      <li><a href="#How-do-I-fetch-put-an-FTP-file-">How do I fetch/put an FTP file?</a></li>
+      <li><a href="#How-do-I-fetch-put-an-S-FTP-file-">How do I fetch/put an (S)FTP file?</a></li>
       <li><a href="#How-can-I-do-RPC-in-Perl-">How can I do RPC in Perl?</a></li>
     </ul>
   </li>
@@ -49,135 +43,59 @@
 
 <h1 id="NAME">NAME</h1>
 
-<p>perlfaq9 - Networking</p>
+<p>perlfaq9 - Web, Email and Networking</p>
 
 <h1 id="DESCRIPTION">DESCRIPTION</h1>
 
-<p>This section deals with questions related to networking, the Internet, and a few about the Web.</p>
+<p>This section deals with questions related to networking, the Internet, and running Web sites.</p>
 
-<h2 id="What-is-the-correct-form-of-response-from-a-CGI-script-">What is the correct form of response from a CGI script?</h2>
+<h2 id="Should-I-use-a-web-framework-">Should I use a web framework?</h2>
 
-<p>(Alan Flavell &lt;flavell+www@a5.ph.gla.ac.uk&gt; answers...)</p>
+<p>Yes. If you are building a web site with any level of interactivity (forms / users / databases), you will want to use a framework to make handling requests and responses easier.</p>
 
-<p>The Common Gateway Interface (CGI) specifies a software interface between a program (&quot;CGI script&quot;) and a web server (HTTPD). It is not specific to Perl, and has its own FAQs and tutorials, and a Usenet group, comp.infosystems.www.authoring.cgi.</p>
+<p>If there is no interactivity then you may still want to look at using something like <a href="https://metacpan.org/module/Template">Template Toolkit</a> or <a href="https://metacpan.org/module/Plack::Middleware::TemplateToolkit">Plack::Middleware::TemplateToolkit</a> so maintenence of your HTML files (and other assets) is easier.</p>
 
-<p>The CGI specification is outlined in an informational RFC: <a href="http://www.ietf.org/rfc/rfc3875">http://www.ietf.org/rfc/rfc3875</a></p>
+<h2 id="Which-web-framework-should-I-use-">Which web framework should I use?     </h2>
 
-<p>These Perl FAQs very selectively cover some CGI issues. However, Perl programmers are strongly advised to use the <code>CGI.pm</code> module, to take care of the details for them.</p>
+<p>There are many Perl web frameworks, e.g. :</p>
 
-<p>The similarity between CGI response headers (defined in the CGI specification) and HTTP response headers (defined in the HTTP specification, RFC2616) is intentional, but can sometimes be confusing.</p>
+<dl>
 
-<p>The CGI specification defines two kinds of script: the &quot;Parsed Header&quot; script, and the &quot;Non Parsed Header&quot; (NPH) script. Check your server documentation to see what it supports. &quot;Parsed Header&quot; scripts are simpler in various respects. The CGI specification allows any of the usual newline representations in the CGI response (it&#39;s the server&#39;s job to create an accurate HTTP response based on it). So &quot;\n&quot; written in text mode is technically correct, and recommended. NPH scripts are more tricky: they must put out a complete and accurate set of HTTP transaction response headers; the HTTP specification calls for records to be terminated with carriage-return and line-feed; i.e., ASCII \015\012 written in binary mode.</p>
+<dt><a href="https://metacpan.org/module/Web::Simple">Web::Simple</a> - A quick and easy way to build simple web applications</dt>
+<dd>
 
-<p>Using <code>CGI.pm</code> gives excellent platform independence, including EBCDIC systems. <code>CGI.pm</code> selects an appropriate newline representation (<code>$CGI::CRLF</code>) and sets binmode as appropriate.</p>
+</dd>
+<dt><a href="https://metacpan.org/module/Dancer">Dancer</a> - Lightweight yet powerful web application framework</dt>
+<dd>
 
-<h2 id="My-CGI-script-runs-from-the-command-line-but-not-the-browser.-500-Server-Error-">My CGI script runs from the command line but not the browser. (500 Server Error)</h2>
+</dd>
+<dt><a href="https://metacpan.org/module/Catalyst">Catalyst</a> - Elegant MVC Web Application Framework</dt>
+<dd>
 
-<p>(contributed by brian d foy)</p>
+</dd>
+</dl>
 
-<p>There are many things that might be wrong with your CGI program, and only some of them might be related to Perl. Try going through the <a href="https://metacpan.org/module/http://www.perlmonks.org/?node_id=380424">troubleshooting guide</a> on <a href="https://metacpan.org/module/http://www.perlmonks.org/">Perlmonks</a> .</p>
+<p>These are just a few of the more widley used ones. All of them interact with or use <a href="https://metacpan.org/module/Plack">Plack</a> which is worth understanding the basics of, as there is a lot of useful <a href="https://metacpan.org/search?q=plack%3A%3Amiddleware">Plack::Middleware</a>.</p>
 
-<h2 id="How-can-I-get-better-error-messages-from-a-CGI-program-">How can I get better error messages from a CGI program?</h2>
+<p>As to which one you should use, it depends on the complexity of the site you are trying to build. Review the three listed above and see which suites your needs best. Many of them share the same <a href="http://en.wikipedia.org/wiki/Model-view-controller">MVC</a> concepts so once you understand one it is easier to understand the others.</p>
 
-<p>Use the <a href="https://metacpan.org/module/CGI::Carp">CGI::Carp</a> module. It replaces <code>warn</code> and <code>die</code>, plus the normal <a href="https://metacpan.org/module/Carp">Carp</a> module&#39;s <code>carp</code>, <code>croak</code>, and <code>confess</code> functions with more verbose and safer versions. It still sends them to the normal server error log.</p>
+<h2 id="What-is-Plack-and-PSGI-">What is Plack and PSGI?</h2>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use CGI::Carp;
-    warn &quot;This is a complaint&quot;;
-    die &quot;But this one is serious&quot;;</pre>
+<p><a href="https://metacpan.org/module/PSGI">PSGI</a> is the Perl Web Server Gateway Interface Specification, it is a standard that many Perl web frameworks use, you should not need to understand it to build a web site, the part you might want to use is <a href="https://metacpan.org/module/Plack">Plack</a>.</p>
 
-<p>The following use of <a href="https://metacpan.org/module/CGI::Carp">CGI::Carp</a> also redirects errors to a file of your choice, placed in a <code>BEGIN</code> block to catch compile-time warnings as well:</p>
+<p><a href="https://metacpan.org/module/Plack">Plack</a> is a set of tools for using the PSGI stack. It contains <a href="https://metacpan.org/search?q=plack%3A%3Amiddleware">middleware</a> components, a reference server and utilities for Web application frameworks. Plack is like Ruby&#39;s Rack or Python&#39;s Paste for WSGI.</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use vars qw($log_fh);
-    BEGIN {
-        use CGI::Carp qw(carpout);
-        open($log_fh, &quot;&gt;&gt;/var/local/cgi-logs/mycgi-log&quot;)
-            or die &quot;Unable to append to mycgi-log: $!\n&quot;;
-        carpout(*LOG);
-    }</pre>
-
-<p>You can even arrange for fatal errors to go back to the client browser, which is nice for your own debugging, but might confuse the end user.</p>
-
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use CGI::Carp qw(fatalsToBrowser);
-    die &quot;Bad error here&quot;;</pre>
-
-<p>Even if the error happens before you get the HTTP header out, the module will try to take care of this to avoid the dreaded server 500 errors. Normal warnings still go out to the server error log (or wherever you&#39;ve sent them with <code>carpout</code>) with the application name and date stamp prepended.</p>
+<p>You could build a web site using <a href="https://metacpan.org/module/Plack">Plack</a> and your own code, but for anything other than a very basic web site, using a web framework (that uses <a href="https://metacpan.org/module/Plack">Plack</a>) is a better option.</p>
 
 <h2 id="How-do-I-remove-HTML-from-a-string-">How do I remove HTML from a string?</h2>
 
-<p>The most correct way (albeit not the fastest) is to use <a href="https://metacpan.org/module/HTML::Parser">HTML::Parser</a> from CPAN. Another mostly correct way is to use <a href="https://metacpan.org/module/HTML::FormatText">HTML::FormatText</a> which not only removes HTML but also attempts to do a little simple formatting of the resulting plain text.</p>
-
-<p>Many folks attempt a simple-minded regular expression approach, like <code>s/&lt;.*?&gt;//g</code>, but that fails in many cases because the tags may continue over line breaks, they may contain quoted angle-brackets, or HTML comments may be present. Plus, folks forget to convert entities--like <code>&amp;lt;</code> for example.</p>
-
-<p>Here&#39;s one &quot;simple-minded&quot; approach, that works for most files:</p>
-
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    #!/usr/bin/perl -p0777
-    s/&lt;(?:[^&gt;&#39;&quot;]*|([&#39;&quot;]).*?\g1)*&gt;//gs</pre>
-
-<p>If you want a more complete solution, see the 3-stage striphtml program in <a href="http://www.cpan.org/authors/Tom_Christiansen/scripts/striphtml.gz">http://www.cpan.org/authors/Tom_Christiansen/scripts/striphtml.gz</a> .</p>
-
-<p>Here are some tricky cases that you should think about when picking a solution:</p>
-
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    &lt;IMG SRC = &quot;foo.gif&quot; ALT = &quot;A &gt; B&quot;&gt;
-
-    &lt;IMG SRC = &quot;foo.gif&quot;
-     ALT = &quot;A &gt; B&quot;&gt;
-
-    &lt;!-- &lt;A comment&gt; --&gt;
-
-    &lt;script&gt;if (a&lt;b &amp;&amp; a&gt;c)&lt;/script&gt;
-
-    &lt;# Just data #&gt;
-
-    &lt;![INCLUDE CDATA [ &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; ]]&gt;</pre>
-
-<p>If HTML comments include other tags, those solutions would also break on text like this:</p>
-
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    &lt;!-- This section commented out.
-        &lt;B&gt;You can&#39;t see me!&lt;/B&gt;
-    --&gt;</pre>
+<p>The best way it to use <a href="https://metacpan.org/module/HTML::Parser">HTML::Parser</a>from CPAN. You could also use <a href="https://metacpan.org/module/HTML::FormatText">HTML::FormatText</a> which not only removes HTML but also attempts to do a little simple formatting of the resulting plain text.</p>
 
 <h2 id="How-do-I-extract-URLs-">How do I extract URLs?</h2>
 
-<p>You can easily extract all sorts of URLs from HTML with <a href="https://metacpan.org/module/HTML::SimpleLinkExtor">HTML::SimpleLinkExtor</a> which handles anchors, images, objects, frames, and many other tags that can contain a URL. If you need anything more complex, you can create your own subclass of <a href="https://metacpan.org/module/HTML::LinkExtor">HTML::LinkExtor</a> or <a href="https://metacpan.org/module/HTML::Parser">HTML::Parser</a>. You might even use <a href="https://metacpan.org/module/HTML::SimpleLinkExtor">HTML::SimpleLinkExtor</a> as an example for something specifically suited to your needs.</p>
+<p><a href="https://metacpan.org/module/HTML::SimpleLinkExtor">HTML::SimpleLinkExtor</a> will extract URLS from HTML, it handles anchors, images, objects, frames, and many other tags that can contain a URL. If you need anything more complex, you can create your own subclass of <a href="https://metacpan.org/module/HTML::LinkExtor">HTML::LinkExtor</a> or <a href="https://metacpan.org/module/HTML::Parser">HTML::Parser</a>. You might even use <a href="https://metacpan.org/module/HTML::SimpleLinkExtor">HTML::SimpleLinkExtor</a> as an example for something specifically suited to your needs.</p>
 
 <p>You can use <a href="https://metacpan.org/module/URI::Find">URI::Find</a> to extract URLs from an arbitrary text document.</p>
-
-<p>Less complete solutions involving regular expressions can save you a lot of processing time if you know that the input is simple. One solution from Tom Christiansen runs 100 times faster than most module-based approaches but only extracts URLs from anchors where the first attribute is HREF and there are no other attributes.</p>
-
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    #!/usr/bin/perl -n00
-    # qxurl - tchrist@perl.com
-    print &quot;$2\n&quot; while m{
-        &lt; \s*
-          A \s+ HREF \s* = \s* ([&quot;&#39;]) (.*?) \g1
-        \s* &gt;
-    }gsix;</pre>
-
-<h2 id="How-do-I-download-a-file-from-the-users-machine-How-do-I-open-a-file-on-another-machine-">How do I download a file from the user&#39;s machine? How do I open a file on another machine?</h2>
-
-<p>In this case, download means to use the file upload feature of HTML forms. You allow the web surfer to specify a file to send to your web server. To you it looks like a download, and to the user it looks like an upload. No matter what you call it, you do it with what&#39;s known as <b>multipart/form-data</b> encoding. The <code>CGI.pm</code> module (which comes with Perl as part of the Standard Library) supports this in the <code>start_multipart_form()</code> method, which isn&#39;t the same as the <code>startform()</code> method.</p>
-
-<p>See the section in the <code>CGI.pm</code> documentation on file uploads for code examples and details.</p>
-
-<h2 id="How-do-I-make-an-HTML-pop-up-menu-with-Perl-">How do I make an HTML pop-up menu with Perl?</h2>
-
-<p>(contributed by brian d foy)</p>
-
-<p>The <code>CGI.pm</code> module (which comes with Perl) has functions to create the HTML form widgets. See the <code>CGI.pm</code> documentation for more examples.</p>
-
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use CGI qw/:standard/;
-    print header,
-        start_html(&#39;Favorite Animals&#39;),
-
-        start_form,
-            &quot;What&#39;s your favorite animal? &quot;,
-        popup_menu(
-            -name   =&gt; &#39;animal&#39;,
-            -values =&gt; [ qw( Llama Alpaca Camel Ram ) ]
-            ),
-        submit,
-
-        end_form,
-        end_html;</pre>
 
 <h2 id="How-do-I-fetch-an-HTML-file-">How do I fetch an HTML file?</h2>
 
@@ -220,15 +138,11 @@
                    [ module =&gt; &#39;DB_File&#39;, readme =&gt; 1 ];
     my $content = $ua-&gt;request($req)-&gt;as_string;</pre>
 
-<h2 id="How-do-I-decode-or-create-those--encodings-on-the-web-">How do I decode or create those %-encodings on the web?     </h2>
+<h2 id="How-do-I-decode-or-create-those--encodings-on-the-web-">How do I decode or create those %-encodings on the web?   </h2>
 
-<p>(contributed by brian d foy)</p>
+<p>Most of the time you should not need to do this as your web framework, or if you are making a request, the <a href="https://metacpan.org/module/LWP">LWP</a> or other module would handle it for you.</p>
 
-<p>Those <code>%</code> encodings handle reserved characters in URIs, as described in RFC 2396, Section 2. This encoding replaces the reserved character with the hexadecimal representation of the character&#39;s number from the US-ASCII table. For instance, a colon, <code>:</code>, becomes <code>%3A</code>.</p>
-
-<p>In CGI scripts, you don&#39;t have to worry about decoding URIs if you are using <code>CGI.pm</code>. You shouldn&#39;t have to process the URI yourself, either on the way in or the way out.</p>
-
-<p>If you have to encode a string yourself, remember that you should never try to encode an already-composed URI. You need to escape the components separately then put them together. To encode a string, you can use the <a href="https://metacpan.org/module/URI::Escape">URI::Escape</a> module. The <code>uri_escape</code> function returns the escaped string:</p>
+<p>To encode a string yourself, use the <a href="https://metacpan.org/module/URI::Escape">URI::Escape</a> module. The <code>uri_escape</code> function returns the escaped string:</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    my $original = &quot;Colon : Hash # Percent %&quot;;
 
@@ -242,53 +156,29 @@
 
     print $unescaped; # back to original</pre>
 
-<p>If you wanted to do it yourself, you simply need to replace the reserved characters with their encodings. A global substitution is one way to do it:</p>
-
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    # encode
-    $string =~ s/([^^A-Za-z0-9\-_.!~*&#39;()])/ sprintf &quot;%%%0x&quot;, ord $1 /eg;
-
-    #decode
-    $string =~ s/%([A-Fa-f\d]{2})/chr hex $1/eg;</pre>
+<p>Remember not to encode a full URI, you need to escape each component separately and then join them together.</p>
 
 <h2 id="How-do-I-redirect-to-another-page-">How do I redirect to another page?</h2>
 
-<p>Specify the complete URL of the destination (even if it is on the same server). This is one of the two different kinds of CGI &quot;Location:&quot; responses which are defined in the CGI specification for a Parsed Headers script. The other kind (an absolute URLpath) is resolved internally to the server without any HTTP redirection. The CGI specifications do not allow relative URLs in either case.</p>
+<p>Most Perl Web Frameworks will have a mechanism for doing this, using the <a href="https://metacpan.org/module/Catalyst">Catalyst</a> framework it would be:</p>
 
-<p>Use of <code>CGI.pm</code> is strongly recommended. This example shows redirection with a complete URL. This redirection is handled by the web browser.</p>
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    $c-&gt;res-&gt;redirect($url);
+    $c-&gt;detach();
+    </pre>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use CGI qw/:standard/;
-
-    my $url = &#39;<a href="http://www.cpan.org/&#39;">http://www.cpan.org/&#39;</a>;
-    print redirect($url);</pre>
-
-<p>This example shows a redirection with an absolute URLpath. This redirection is handled by the local web server.</p>
-
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    my $url = &#39;/CPAN/index.html&#39;;
-    print redirect($url);</pre>
-
-<p>But if coded directly, it could be as follows (the final &quot;\n&quot; is shown separately, for clarity), using either a complete URL or an absolute URLpath.</p>
-
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    print &quot;Location: $url\n&quot;;   # CGI response header
-    print &quot;\n&quot;;                 # end of headers</pre>
+<p>If you are using Plack (which most frameworks do), then <a href="https://metacpan.org/module/Plack::Middleware::Rewrite">Plack::Middleware::Rewrite</a> is worth looking at if you are migrating from Apache or have URL&#39;s you want to always redirect.</p>
 
 <h2 id="How-do-I-put-a-password-on-my-web-pages-">How do I put a password on my web pages?</h2>
 
-<p>To enable authentication for your web server, you need to configure your web server. The configuration is different for different sorts of web servers--apache does it differently from iPlanet which does it differently from IIS. Check your web server documentation for the details for your particular server.</p>
+<p>See if the web framework you are using has an authentication system and if that fits your needs.</p>
 
-<h2 id="How-do-I-edit-my-.htpasswd-and-.htgroup-files-with-Perl-">How do I edit my .htpasswd and .htgroup files with Perl?</h2>
-
-<p>The <a href="https://metacpan.org/module/HTTPD::UserAdmin">HTTPD::UserAdmin</a> and <a href="https://metacpan.org/module/HTTPD::GroupAdmin">HTTPD::GroupAdmin</a> modules provide a consistent OO interface to these files, regardless of how they&#39;re stored. Databases may be text, dbm, Berkeley DB or any database with a DBI compatible driver. <a href="https://metacpan.org/module/HTTPD::UserAdmin">HTTPD::UserAdmin</a> supports files used by the &quot;Basic&quot; and &quot;Digest&quot; authentication schemes. Here&#39;s an example:</p>
-
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use HTTPD::UserAdmin ();
-    HTTPD::UserAdmin
-      -&gt;new(DB =&gt; &quot;/foo/.htpasswd&quot;)
-      -&gt;add($username =&gt; $password);</pre>
+<p>Alternativly look at <a href="https://metacpan.org/module/Plack::Middleware::Auth::Basic">Plack::Middleware::Auth::Basic</a>, or one of the other <a href="https://metacpan.org/search?q=plack+auth">Plack authentication</a> options.</p>
 
 <h2 id="How-do-I-make-sure-users-cant-enter-values-into-a-form-that-causes-my-CGI-script-to-do-bad-things-">How do I make sure users can&#39;t enter values into a form that causes my CGI script to do bad things?</h2>
 
 <p>(contributed by brian d foy)</p>
 
-<p>You can&#39;t prevent people from sending your script bad data. Even if you add some client-side checks, people may disable them or bypass them completely. For instance, someone might use a module such as <a href="https://metacpan.org/module/LWP">LWP</a> to access your CGI program. If you want to prevent data that try to use SQL injection or other sorts of attacks (and you should want to), you have to not trust any data that enter your program.</p>
+<p>You can&#39;t prevent people from sending your script bad data. Even if you add some client-side checks, people may disable them or bypass them completely. For instance, someone might use a module such as <a href="https://metacpan.org/module/LWP">LWP</a> to submit to your web site. If you want to prevent data that try to use SQL injection or other sorts of attacks (and you should want to), you have to not trust any data that enter your program.</p>
 
 <p>The <a href="https://metacpan.org/module/perlsec">perlsec</a> documentation has general advice about data security. If you are using the <a href="https://metacpan.org/module/DBI">DBI</a> module, use placeholder to fill in data. If you are running external programs with <code>system</code> or <code>exec</code>, use the list forms. There are many other precautions that you should take, too many to list here, and most of them fall under the category of not using any data that you don&#39;t intend to use. Trust no one.</p>
 
@@ -307,34 +197,6 @@
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">  my $mail_message_object = read_message();
   my $abstract = Email::Abstract-&gt;new($mail_message_object);
   my $email_mime_object = $abstract-&gt;cast(&#39;Email::MIME&#39;);</pre>
-
-<h2 id="How-do-I-decode-a-CGI-form-">How do I decode a CGI form?</h2>
-
-<p>(contributed by brian d foy)</p>
-
-<p>Use the <code>CGI.pm</code> module that comes with Perl. It&#39;s quick, it&#39;s easy, and it actually does quite a bit of work to ensure things happen correctly. It handles GET, POST, and HEAD requests, multipart forms, multivalued fields, query string and message body combinations, and many other things you probably don&#39;t want to think about.</p>
-
-<p>It doesn&#39;t get much easier: the <code>CGI.pm</code> module automatically parses the input and makes each value available through the <code>param()</code> function.</p>
-
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use CGI qw(:standard);
-
-    my $total = param( &#39;price&#39; ) + param( &#39;shipping&#39; );
-
-    my @items = param( &#39;item&#39; ); # multiple values, same field name</pre>
-
-<p>If you want an object-oriented approach, <code>CGI.pm</code> can do that too.</p>
-
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use CGI;
-
-    my $cgi = CGI-&gt;new();
-
-    my $total = $cgi-&gt;param( &#39;price&#39; ) + $cgi-&gt;param( &#39;shipping&#39; );
-
-    my @items = $cgi-&gt;param( &#39;item&#39; );</pre>
-
-<p>You might also try <a href="https://metacpan.org/module/CGI::Minimal">CGI::Minimal</a> which is a lightweight version of the same thing. Other CGI::* modules on CPAN might work better for you, too.</p>
-
-<p>Many people try to write their own decoder (or copy one from another program) and then run into one of the many &quot;gotchas&quot; of the task. It&#39;s much easier and less of a hassle to use <code>CGI.pm</code>.</p>
 
 <h2 id="How-do-I-check-a-valid-mail-address-">How do I check a valid mail address?</h2>
 
@@ -360,14 +222,6 @@
     my $decoded = decode_base64($encoded);</pre>
 
 <p>The <a href="https://metacpan.org/module/Email::MIME">Email::MIME</a> module can decode base 64-encoded email message parts transparently so the developer doesn&#39;t need to worry about it.</p>
-
-<h2 id="How-do-I-return-the-users-mail-address-">How do I return the user&#39;s mail address?</h2>
-
-<p>Ask them for it. There are so many email providers available that it&#39;s rather unlikely the local system has any idea how to determine a user&#39;s email address. The one notable exception is for organization-specific email (e.g. foo@yourcompany.com) where policy can be codified in your program. In that case, you can look at $ENV{USER}, $ENV{LOGNAME}, and getpwuid($&lt;) in scalar context, like so:</p>
-
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">  my $user_name = getpwuid($&lt;)</pre>
-
-<p>But note that you still cannot make any assumptions about whether this is correct unless your policy says it is. And then there are things like localpart extensions (foo+bar@example.com). You really are best off asking the user.</p>
 
 <h2 id="How-do-I-send-email-">How do I send email?</h2>
 
@@ -468,30 +322,13 @@
         scalar gethostbyname( $host || &#39;localhost&#39; )
     );</pre>
 
-<h2 id="How-do-I-fetch-a-news-article-or-the-active-newsgroups-">How do I fetch a news article or the active newsgroups?</h2>
+<h2 id="How-do-I-fetch-put-an-S-FTP-file-">How do I fetch/put an (S)FTP file?</h2>
 
-<p>Use the <a href="https://metacpan.org/module/Net::NNTP">Net::NNTP</a> or <a href="https://metacpan.org/module/News::NNTPClient">News::NNTPClient</a> modules, both available from CPAN. This can make tasks like fetching the newsgroup list as simple as</p>
-
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    perl -MNews::NNTPClient
-      -e &#39;print News::NNTPClient-&gt;new-&gt;list(&quot;newsgroups&quot;)&#39;</pre>
-
-<h2 id="How-do-I-fetch-put-an-FTP-file-">How do I fetch/put an FTP file?</h2>
-
-<p>(contributed by brian d foy)</p>
-
-<p>The <a href="https://metacpan.org/module/LWP">LWP</a> family of modules (available on CPAN as the libwww-perl distribution) can work with FTP just like it can with many other protocols. <a href="https://metacpan.org/module/LWP::Simple">LWP::Simple</a> makes it quite easy to fetch a file:</p>
-
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use LWP::Simple;
-
-    my $data = get( &#39;<a href="ftp://some.ftp.site/some/file.txt&#39;">ftp://some.ftp.site/some/file.txt&#39;</a> );</pre>
-
-<p>If you want more direct or low-level control of the FTP process, you can use the <a href="https://metacpan.org/module/Net::FTP">Net::FTP</a> module (in the Standard Library since Perl 5.8). Its documentation has examples showing you just how to do that.</p>
+<p><a href="https://metacpan.org/module/Net::FTP">Net::FTP</a>, and <a href="https://metacpan.org/module/Net::SFTP">Net::SFTP</a> allow you to interact with FTP and SFTP (Secure FTP) servers.</p>
 
 <h2 id="How-can-I-do-RPC-in-Perl-">How can I do RPC in Perl?</h2>
 
-<p>(contributed by brian d foy)</p>
-
-<p>Use one of the RPC modules you can find on CPAN ( <a href="http://search.cpan.org/search?query=RPC&amp;mode=all">http://search.cpan.org/search?query=RPC&amp;mode=all</a> ).</p>
+<p>Use one of the RPC modules( <a href="https://metacpan.org/search?q=RPC">https://metacpan.org/search?q=RPC</a> ).</p>
 
 <h1 id="AUTHOR-AND-COPYRIGHT">AUTHOR AND COPYRIGHT</h1>
 
@@ -501,5 +338,5 @@
 
 <p>Irrespective of its distribution, all code examples in this file are hereby placed into the public domain. You are permitted and encouraged to use this code in your own programs for fun or for profit as you see fit. A simple comment in the code giving credit would be courteous but is not required.</p>
 
-<p><em>Version: 5.0150036</em></p></div>
+<p><em>Version: 5.0150037</em></p></div>
 
