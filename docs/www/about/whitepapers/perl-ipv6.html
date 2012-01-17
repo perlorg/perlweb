@@ -15,7 +15,7 @@
 </p>
 <p>
     To enable IPv6 in Perl, replace any use of IO::Socket::INET with <a href=
-    "http://search.cpan.org/dist/IO-Socket-IP/">IO::Socket::IP</a> and you will
+    "https://metacpan.org/module/IO::Socket::IP">IO::Socket::IP</a> and you will
     be able to use both <a href="http://en.wikipedia.org/wiki/Ipv4">IPv4</a>
     and <a href="http://en.wikipedia.org/wiki/IPv6">IPv6</a>. Perl 5.14 has the
     full set of IPv6 functions as part of it's core Socket module.
@@ -53,10 +53,10 @@
     "http://en.wikipedia.org/wiki/XS_(Perl)">XS</a> code.
 </p>
 <p>
-    On earlier versions of Perl, IO::Socket::IP uses <a href=
-    "http://search.cpan.org/dist/Socket-GetAddrInfo/">Socket::GetAddrInfo</a>
-    to provide the IP protocol-neutral support by way of the getaddrinfo and
-    getnameinfo functions. This requires XS code to build.
+    On versions of Perl before 5.14, IO::Socket::IP needs a newer version of 
+    <a href="https://metacpan.org/module/Socket">Socket</a> to 
+    provide the IP protocol-neutral support, by way of the getaddrinfo and getnameinfo 
+    functions. This is available on CPAN and requires XS code to build.
 </p>
 <h4>
     Resources:
