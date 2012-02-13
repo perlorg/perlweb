@@ -47,8 +47,9 @@ sub render {
 
   my $url;
   eval { $url = $self->find_url() };
-  $self->notes(error => "$@") if $@;
-  die $@ if $@;
+  if (my $err = $@) {
+      warn "find_url error: $err";
+  }
   if ($url) {
     return $self->redirect($url);
   }
