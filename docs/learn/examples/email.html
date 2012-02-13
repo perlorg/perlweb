@@ -13,7 +13,11 @@ my $message = Email::MIME->create(
     To      => 'friend@example.com',
     Subject => 'Happy birthday!',
   ],
-  body_str => 'Happy birthday to you!',
+  attributes => {
+    encoding => 'quoted-printable',
+    charset  => 'ISO-8859-1',
+  },
+  body_str => "Happy birthday to you!\n",
 );
 
 # send the message
