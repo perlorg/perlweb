@@ -16,6 +16,9 @@
 /perl5/docs/perlhack.html http://perldoc.perl.org/perlhack.html perm
 /perl5/docs/perlrepository.html http://perldoc.perl.org/perlrepository.html perm
 
+# The p5p FAQ is out of date so just move to /perl5/
+/perl5/docs/(.*)		/perl5/ perm
+
 /auth/(.*)			http://auth.perl.org/auth/$1	perm
 
 # Perl 5 List Summaries
