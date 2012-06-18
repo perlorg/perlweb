@@ -8,7 +8,7 @@
                 => "Perl Frequently Asked Questions, Perl FAQ",
             keywords => "perl, perl faq, perlfaq"
         });
-        perlfaq_version = 5.0150039;
+        perlfaq_version = 5.0150040;
     -%]
     <div class="pod">
 
@@ -137,7 +137,7 @@
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use LWP::Simple;
     use URI::URL;
 
-    my $url = url(&#39;<a href="http://www.perl.com/cgi-bin/cpan_mod&#39;)">http://www.perl.com/cgi-bin/cpan_mod&#39;)</a>;
+    my $url = url(&#39;L&lt;http://www.perl.com/cgi-bin/cpan_mod&#39;)&gt;;
     $url-&gt;query_form(module =&gt; &#39;DB_File&#39;, readme =&gt; 1);
     $content = get($url);</pre>
 
@@ -147,7 +147,7 @@
     use LWP::UserAgent;
 
     my $ua = LWP::UserAgent-&gt;new();
-    my $req = POST &#39;<a href="http://www.perl.com/cgi-bin/cpan_mod&#39;">http://www.perl.com/cgi-bin/cpan_mod&#39;</a>,
+    my $req = POST &#39;L&lt;http://www.perl.com/cgi-bin/cpan_mod&#39;&gt;,
                    [ module =&gt; &#39;DB_File&#39;, readme =&gt; 1 ];
     my $content = $ua-&gt;request($req)-&gt;as_string;</pre>
 
@@ -258,7 +258,7 @@
     ],
     attributes =&gt; {
       encoding =&gt; &#39;quoted-printable&#39;,
-      charset  =&gt; &#39;ISO-8859-1&#39;,
+      charset  =&gt; &#39;utf-8&#39;,
     },
     body_str =&gt; &quot;Happy birthday to you!\n&quot;,
   );
@@ -364,5 +364,5 @@
 
 <p>Irrespective of its distribution, all code examples in this file are hereby placed into the public domain. You are permitted and encouraged to use this code in your own programs for fun or for profit as you see fit. A simple comment in the code giving credit would be courteous but is not required.</p>
 
-<p><em>Version: 5.0150039</em></p></div>
+<p><em>Version: 5.0150040</em></p></div>
 

@@ -8,7 +8,7 @@
                 => "Perl Frequently Asked Questions, Perl FAQ",
             keywords => "perl, perl faq, perlfaq"
         });
-        perlfaq_version = 5.0150039;
+        perlfaq_version = 5.0150040;
     -%]
     <div class="pod">
 
@@ -348,7 +348,7 @@
 
 <p>Here&#39;s an example of how to pass in a string and a regular expression for it to match against. You construct the pattern with the <code>qr//</code> operator:</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    sub compare($$) {
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    sub compare {
         my ($val1, $regex) = @_;
         my $retval = $val1 =~ /$regex/;
         return $retval;
@@ -478,7 +478,7 @@
 
 <h2 id="Whats-the-difference-between-deep-and-shallow-binding-">What&#39;s the difference between deep and shallow binding?</h2>
 
-<p>In deep binding, lexical variables mentioned in anonymous subroutines are the same ones that were in scope when the subroutine was created. In shallow binding, they are whichever variables with the same names happen to be in scope when the subroutine is called. Perl always uses deep binding of lexical variables (i.e., those created with my()). However, dynamic variables (aka global, local, or package variables) are effectively shallowly bound. Consider this just one more reason not to use them. See the answer to <a href="#What-s-a-closure-">&quot;What&#39;s a closure?&quot;</a>.</p>
+<p>In deep binding, lexical variables mentioned in anonymous subroutines are the same ones that were in scope when the subroutine was created. In shallow binding, they are whichever variables with the same names happen to be in scope when the subroutine is called. Perl always uses deep binding of lexical variables (i.e., those created with my()). However, dynamic variables (aka global, local, or package variables) are effectively shallowly bound. Consider this just one more reason not to use them. See the answer to <a href="#Whats-a-closure-">&quot;What&#39;s a closure?&quot;</a>.</p>
 
 <h2 id="Why-doesnt-my-foo-fh-work-right-">Why doesn&#39;t &quot;my($foo) = &lt;$fh&gt;;&quot; work right?</h2>
 
@@ -686,7 +686,7 @@
 
     =cut</pre>
 
-<p>The quick-and-dirty method only works well when you don&#39;t plan to leave the commented code in the source. If a Pod parser comes along, you&#39;re multiline comment is going to show up in the Pod translation. A better way hides it from Pod parsers as well.</p>
+<p>The quick-and-dirty method only works well when you don&#39;t plan to leave the commented code in the source. If a Pod parser comes along, your multiline comment is going to show up in the Pod translation. A better way hides it from Pod parsers as well.</p>
 
 <p>The <code>=begin</code> directive can mark a section for a particular purpose. If the Pod parser doesn&#39;t want to handle it, it just ignores it. Label the comments with <code>comment</code>. End the comment using <code>=end</code> with the same label. You still need the <code>=cut</code> to go back to Perl code from the Pod comment:</p>
 
@@ -815,5 +815,5 @@
 
 <p>Irrespective of its distribution, all code examples in this file are hereby placed into the public domain. You are permitted and encouraged to use this code in your own programs for fun or for profit as you see fit. A simple comment in the code giving credit would be courteous but is not required.</p>
 
-<p><em>Version: 5.0150039</em></p></div>
+<p><em>Version: 5.0150040</em></p></div>
 

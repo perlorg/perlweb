@@ -8,7 +8,7 @@
                 => "Perl Frequently Asked Questions, Perl FAQ",
             keywords => "perl, perl faq, perlfaq"
         });
-        perlfaq_version = 5.0150039;
+        perlfaq_version = 5.0150040;
     -%]
     <div class="pod">
 
@@ -226,7 +226,7 @@
 
 <p>And here it is as a subroutine, modeled after the above:</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    sub preserve_case($$) {
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    sub preserve_case {
         my ($old, $new) = @_;
         my $mask = uc $old ^ $old;
 
@@ -260,7 +260,7 @@
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    # Original by Nathan Torkington, massaged by Jeffrey Friedl
     #
-    sub preserve_case($$)
+    sub preserve_case
     {
         my ($old, $new) = @_;
         my $state = 0; # 0 = no change; 1 = lc; 2 = uc
@@ -867,5 +867,5 @@
 
 <p>Irrespective of its distribution, all code examples in this file are hereby placed into the public domain. You are permitted and encouraged to use this code in your own programs for fun or for profit as you see fit. A simple comment in the code giving credit would be courteous but is not required.</p>
 
-<p><em>Version: 5.0150039</em></p></div>
+<p><em>Version: 5.0150040</em></p></div>
 
