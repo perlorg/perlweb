@@ -70,7 +70,7 @@
     <dt>[% name %]</dt>
     <dd>
       <ul>
-      [% FOREACH url = list.$field.list %]
+      [% FOREACH url = list.$field.list.reverse %]
       <li>[% link(list, url) %]</li>
       [% END %]
       </ul>
