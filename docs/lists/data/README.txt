@@ -1,4 +1,6 @@
-How to add a new mailing list to http://lists.perl.org/
+----------------------------------------------------------------------
+How to ADD a new mailing list to http://lists.perl.org/
+----------------------------------------------------------------------
 
 1) Edit lists.json and add info for the new list.  (Look at other
    entries for more examples.)
@@ -33,3 +35,12 @@ validate.pl -d lists.json.new > lists.json
 diff -u lists.json.old lists.json
 
 if there are any inappropriate diffs, edit lists.json.new and repeat.
+
+----------------------------------------------------------------------
+To DELETE a list...
+----------------------------------------------------------------------
+
+Just mark the list as "defunct".  (Set the value to 1.)
+
+We are keeping the data for the old lists in the file, as it may come
+in handy at some point in the future.
