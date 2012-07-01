@@ -12,14 +12,36 @@
             => list.summary || 'Perl mailing lists for ' _ list.name,
     });
 -%]
+[%- MACRO link(list,url,nofollow) BLOCK -%]
+  [%- IF nofollow;
+       nofollow = " rel=\"nofollow\"";
+     ELSE;
+       nofollow = "";
+       IF NOT url.match('//(groups\.yahoo\.com|aspn\.activestate\.com|groups\.google\.com|lists\.sourceforge\.net|(?:www\.)?nntp\.perl\.org|www\.mail-archive\.com)/');
+         # reconsider how this works.  it will miss some of the
+         # smaller, but good archive sites.
+         nofollow = " rel=\"nofollow\"";
+       END;
+     END;
+   -%]
+  [%- IF list.defunct -%]
+    <span class="url">[% url | trim %]</span>
+  [%- ELSE -%]
+    <a href="[% url | trim %]"[% nofollow %]>[% url %]</a>
+  [%- END -%]
+[%- END -%]
 
-<h2>[% IF list.defunct %]DEFUNCT[% END %] List: [% list.name %]</h2>
+<h2>List: [% list.name %]</h2>
 
-[% IF list.defunct %]<div class="defunct">No longer active</div>[% END %]
+[% IF list.defunct -%]
+<div class="defunct">The <i>[% list.name %]</i> mailing
+  list is no longer active.  This page exists for historical purposes
+  only.</div>
+[%- END %]
 
 <div id="[% list.name %]" class="mailinglist">
     [% IF list.url %]
-    <p><a href="[% list.url %]">[% list.url %]</a></p>
+    <p>[% link(list, list.url) %]</p>
     [% END %]
     [% IF list.date_last_confirmed_active %]
     Last confirmed active: [% list.date_last_confirmed_active %]
@@ -49,7 +71,7 @@
     <dd>
       <ul>
       [% FOREACH url = list.$field.list %]
-      <li><a href="[% url | trim %]" >[% url %]</a></li>
+      <li>[% link(list, url) %]</li>
       [% END %]
       </ul>
     </dd>
