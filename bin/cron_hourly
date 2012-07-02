@@ -51,7 +51,8 @@ function getcpanstats () {
     fi
 
     # Switch over to using this:
-    lwp-mirror http://www.cpan.org/indices/cpan-stats.json $targetpath/cpan-stats.json
+    lwp-mirror -t10m http://www.cpan.org/indices/cpan-stats.json $targetpath/cpan-stats.json 2> >(grep -v 'up to date')
+
 }
 
 getcpanstats
