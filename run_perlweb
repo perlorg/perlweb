@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# A quick helper for setting environment variables and starting the server.
+
+mypath=$(dirname $(readlink -f $0))
+(
+cd ${mypath};
+export CBROOTLOCAL=`pwd`
+export CBROOT=${CBROOTLOCAL}/combust
+./combust/bin/httpd
+)
