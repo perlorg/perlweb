@@ -31,6 +31,50 @@
   [%- END -%]
 [%- END -%]
 
+[%- MACRO perlorg_subscribe(list,listaddr) BLOCK -%]
+<script>
+function showAdvanced() {
+  $("a#show_advanced").hide();
+  $("#perlorg_subscribe_advanced").show();
+}
+</script>
+<div id="perlorg_subscribe">
+  <p>To <b>subscribe</b> to [% list.name %], send an email to <tt>[%
+      listaddr %]-subscribe@perl.org</tt></p>
+
+  <p>To <b>unsubscribe</b> from [% list.name %], send an email to <tt>[%
+      listaddr %]-unsubscribe@perl.org</tt></p>
+
+  <p>To get <b>help</b> regarding your subscription, send an email to <tt>[% 
+      listaddr %]-help@perl.org</tt></p>
+  
+  <p><a id="show_advanced" onClick="showAdvanced();">Show advanced instructions...</a></p>
+  <div id="perlorg_subscribe_advanced">
+    <p><u>Advanced Instructions</u></p>
+
+    <p>Our mailing list manager (ezmlm) uses
+    the <a href="http://www.pobox.com/helpspot/index.php?pg=kb.page&id=260">envelope
+    sender</a> to determine what your email address is.  Sometimes
+    this might not be what you expect or want to be subscribed to the
+    mailing list.
+    </p>
+
+    <p> You can start a subscription for an alternate address, for
+      example "john@host.domain", just add a hyphen and your address
+      (with '=' instead of '@') after the command word:<br>
+      <tt>[% listaddr %]-subscribe-john=host.domain@perl.org</tt><br>
+      To unsubscribe this address, mail:<br>
+      <tt>[% listaddr %]-unsubscribe-john=host.domain@perl.org</tt>
+    </p>
+
+    <p>All subscription requests must be confirmed.  You should
+    receive a confirmation request a few minutes after you send your
+    request in.</p>
+
+  </div>
+</div>
+[%- END -%]
+
 <h2>List: [% list.name %]</h2>
 
 [% IF list.defunct -%]
@@ -56,11 +100,16 @@
     [% END %]
     [% END %]
     <h5>Subscribing and help</h5>
+    [% listaddr = list.sub.match('mailto: (\S+)-subscribe@perl.org');
+       IF listaddr;
+         perlorg_subscribe(list,listaddr.0);
+       ELSE -%]
     <dl>
     [% FOREACH field = ['unsub','sub','help' ] %]
     [% IF list.$field %]
     <dt>[% field %]</dt>
     <dd>[% list.$field | lower | trim %]</dd>
+    [% END %]
     [% END %]
     [% END %]
     </dl>
