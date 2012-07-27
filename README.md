@@ -1,37 +1,14 @@
 # perlweb
 
-Sites moved to new perlweb:
-
-- cpanratings
-- dbi
-- debugger
-- dev
-- ldap
-- learn
-- lists
-- noc
-- perl4lib
-- qa
-- sdl
-- www
-- xml
-
-Sites still running on old perlweb:
-
-- svnaccount
-
+Code for various perl.org sites hosted in the main perl.org infrastructure.
 
 ## Clone the source
 
 ```sh
-   git clone git://git.develooper.com/perlweb.git  # or from github fork
+   git clone git://github.com/perlorg/perlweb.git
    cd perlweb
    git submodule update --init
 ```
-
-The templates and HTML documents are still hosted in Subversion
-despite some of the sites being dependent on the docs/ files. Work in
-progress to get that sorted!
 
 ## Install dependencies
 
@@ -92,4 +69,4 @@ You should now be able to access http://wwwperl.local:8225/
 
 ## Copyright
 
-`perlweb` is Copyright 2003-2011 Ask Bjørn Hansen.  See the LICENSE file.
+`perlweb` is Copyright 2003-2012 Ask Bjørn Hansen.  See the LICENSE file.
