@@ -78,7 +78,7 @@ Version <select name="version_reviewed">
 [% i %]<input type="radio" name="[% question.field %]" [% checked.${question.field}.$i %] value="[%i%]">&nbsp;
 [% END %]
 [% IF  1 OR question.field != 'rating_overall' %]
-undef<input type="radio" name="[% question.field %]" [% checked.${question.field}.0 %] selected value="">&nbsp;
+undef<input type="radio" name="[% question.field %]" [% checked.${question.field}.0 %] checked value="">&nbsp;
 [% END %]
 [% IF errors.${question.field} %](<span class="error">[% errors.${question.field} %]</span>)[% END %]
 </td>
