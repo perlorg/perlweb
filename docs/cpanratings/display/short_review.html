@@ -1,4 +1,3 @@
-
 <div class="review" data-review="[% review.id %]" data-user="[% review.user.id %]">
 <a name="[% review.id %]"></a>
 [% IF review.helpful_total %]
@@ -44,6 +43,7 @@
   module_param = review.module ? ";module=" _ review.module : ""; 
   module_param | uri %]">edit</a>
 [% END %]
+(<a href="/dist/[% review.distribution | uri %]#[% review.id %]">permalink</a>)
 </p>
 
 <div class="helpfulq">Was this review helpful to you?&nbsp;
