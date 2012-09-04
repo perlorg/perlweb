@@ -58,6 +58,21 @@ alter table reviews drop user_name;
 alter table reviews_helpful modify helpful tinyint unsigned default 1;
 update reviews_helpful set helpful = NULL where helpful=2;
 
+#7
+drop table reviews_old;
+
+#8
+alter table reviews 
+  drop FOREIGN KEY `reviews_ibfk_1`,
+  add CONSTRAINT `reviews_user` FOREIGN KEY (`user`) REFERENCES `review_users` (`id`)
+    on delete cascade;
+
+#9
+alter table reviews_helpful 
+  drop foreign key `reviews_helpful_ibfk_1`,
+  add CONSTRAINT `reviews_helpful_review` FOREIGN KEY (`review`) REFERENCES `reviews` (`id`)
+    on delete cascade;
+
 #todo
 
 # top reviewers:
