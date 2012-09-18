@@ -8,6 +8,11 @@ use Return::Value;
 
 sub check_auth {
     my $self = shift;
+    my $method = shift;
+
+    # allow anyone to fetch the unhelpful reviews via API
+    return success if $method eq 'review/get';
+
     return failure 'Invalid Auth Token'
       unless (($self->req_param('auth_token') || '')
               eq $self->user_auth_token($self->cookie('uq')));
