@@ -14,7 +14,7 @@
 [% PROCESS display/show_list.html, reviews = reviews %]
 
 [% IF unhelpful_count %]
-<div data-dist="[% reviews.first.distribution | html %]" id="show_unhelpful">
+<div data-dist="[% distribution | html %]" id="show_unhelpful">
    [% unhelpful_count %] hidden unhelpful review[% unhelpful_count == 1 ? '' : 's' %]
 </div>
 [% END %]
