@@ -68,19 +68,18 @@ Version <select name="version_reviewed">
 
 [% checked = review.checked_rating %]
 
-
-
 [% FOR question = questions %]
 <tr>
 <td><b>[% question.name %]</b></td>
 <td colspan="2">
 [% FOR i = [ 1..5 ] %]
-[% i %]<input type="radio" name="[% question.field %]" [% checked.${question.field}.$i %] value="[%i%]">&nbsp;
+[% i %] <input type="radio" name="[% question.field %]" [% checked.${question.field}.$i %] value="[%i%]">&nbsp;
 [% END %]
-[% IF  1 OR question.field != 'rating_overall' %]
-undef<input type="radio" name="[% question.field %]" [% checked.${question.field}.0 %] checked value="">&nbsp;
-[% END %]
+
+undef <input type="radio" name="[% question.field %]" [% checked.${question.field}.0 %] value="">&nbsp;
+
 [% IF errors.${question.field} %](<span class="error">[% errors.${question.field} %]</span>)[% END %]
+
 </td>
 </tr>
 <tr><td colspan="3" style="background-color:#ccc"></td></tr>
