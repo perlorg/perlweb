@@ -5,18 +5,9 @@
 
 [% page.rss = '/index.rss' %]
 
-<h2>Rate a module</h2>
+<h3>Rate a module</h3>
 
 [% PROCESS search/search_form.html %]
-
-[% UNLESS combust.user_info.id %]
-<p>To write a review you'll need a <a href="[% combust.login_url | html %]">Bitcard account</a>.</p>
-[% END %]
-
-<h2>Browse reviews</h2>
-
-<a href="http://search.cpan.org/">Search CPAN</a> displays the average
-rating for each distribution.
 
 <h2>Recent reviews <span style="font-size:0.6em;">(<a href="/index.rss">RSS feed</a>)</span></h2>
 
