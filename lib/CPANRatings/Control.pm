@@ -6,6 +6,7 @@ use CPANRatings::Schema;
 use Digest::SHA qw(sha1_hex);
 use Encode qw();
 use Combust::Constant qw(OK);
+use PerlOrg::Template::Filters;
 use XML::RSS;
 
 has schema => (
@@ -16,6 +17,17 @@ has schema => (
 
 sub _build_schema {
     return CPANRatings::Schema->new;
+}
+
+my $ctemplate;
+
+sub tt {
+    my $self = shift;
+    return $ctemplate ||= Combust::Template->new(
+        filters =>
+          {'navigation_class' => [\&PerlOrg::Template::Filters::navigation_filter_factory, 1],},
+        @_
+    ) or die "Could not initialize Combust::Template object: $Template::ERROR";
 }
 
 sub init {
