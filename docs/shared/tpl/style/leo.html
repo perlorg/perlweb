@@ -26,9 +26,10 @@
 
     [% IF page.description %]<meta name="description" content="[% page.description %]" />[% END %]
     [% IF page.keywords %]<meta name="keywords" content="[% page.keywords %]" />[% END %]
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
-    <script src="[% combust.static_url("/js/jquery.corner.js") %]" type="text/javascript" charset="utf-8"></script>
-    <script src="[% combust.static_url("/js/leo.js") %]" type="text/javascript" charset="utf-8"></script>
+
+    [% page.js.push("/js/jquery.corner.js");
+       page.js.push("/js/leo.js");
+    %]
 
 [% page.morehead %]
 
@@ -110,10 +111,20 @@
         </p>
 [% END %]
 
-
-
         <div style="clear:both"></div>
-        <div id="google_translate_element"></div><script type="text/javascript">
+        <div id="google_translate_element"></div>
+</script>
+    </div>
+</div>
+
+[%-
+   PROCESS "tpl/ie6nomore.html";
+   PROCESS "tpl/googleanalytics.html";
+   page.js.unshift("http://st.pimg.net/cdn/libs/jquery/1.7.1/jquery.min.js");
+   PROCESS tpl/js_includes.html(js_files = page.js);
+%]
+
+<script type="text/javascript">
 function googleTranslateElementInit() {
           new google.translate.TranslateElement({
             pageLanguage: 'en',
@@ -126,14 +137,6 @@ function googleTranslateElementInit() {
           }, 'google_translate_element');
         }
         </script><script src="http://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" type="text/javascript">
-</script>
-    </div>
-</div>
-
-
-[% PROCESS "tpl/ie6nomore.html" -%]
-
-[%- PROCESS "tpl/googleanalytics.html" -%]
 
 [% IF site.syntaxhighlight %]
     <script type="text/javascript" charset="utf-8" src="[% combust.static_url("/js/shCore.js") %]"></script>
