@@ -8,7 +8,7 @@
                 => "Perl Frequently Asked Questions, Perl FAQ",
             keywords => "perl, perl faq, perlfaq"
         });
-        perlfaq_version = 5.0150040;
+        perlfaq_version = 5.0150041;
     -%]
     <div class="pod">
 
@@ -220,11 +220,11 @@
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    open my $in,  &#39;&lt;&#39;,  $file      or die &quot;Can&#39;t read old file: $!&quot;
     open my $out, &#39;&gt;&#39;, &quot;$file.new&quot; or die &quot;Can&#39;t write new file: $!&quot;;
 
-    my @lines = do { local $/; &lt;$in&gt; }; # slurp!
+    my $content = do { local $/; &lt;$in&gt; }; # slurp!
 
         # do your magic here
 
-    print $out @lines;</pre>
+    print $out $content;</pre>
 
 <p>Modules such as <a href="https://metacpan.org/module/File::Slurp">File::Slurp</a> and <a href="https://metacpan.org/module/Tie::File">Tie::File</a> can help with that too. If you can, however, avoid reading the entire file at once. Perl won&#39;t give that memory back to the operating system until the process finishes.</p>
 
@@ -1229,5 +1229,5 @@
 
 <p>Irrespective of its distribution, all code examples here are in the public domain. You are permitted and encouraged to use this code and any derivatives thereof in your own programs for fun or for profit as you see fit. A simple comment in the code giving credit to the FAQ would be courteous but is not required.</p>
 
-<p><em>Version: 5.0150040</em></p></div>
+<p><em>Version: 5.0150041</em></p></div>
 
