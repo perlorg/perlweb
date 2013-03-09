@@ -152,8 +152,11 @@
 
 <table class="content_table">
   <tr>
-    <td colspan="2">
+    <td>
         [% quicknews ("cpanrecent", 'Latest Uploads to <a href="http://www.cpan.org/">CPAN</a>', 10) %]
+    </td>
+    <td>
+        [% quicknews ("perlnews", '<a href="http://perlnews.org/">Perlnews</a>', 5) %]
     </td>
   </tr>
 </table>

@@ -10,7 +10,7 @@
         [% END %]
             [%- USE news = XML.RSS(combust.config.work_path _ "/rss/${shortname}.rss") %]
             [% FOREACH item = news.items %]
-                <li class="rss_content rss_content_col"><a href="[% item.link | html %]">[% item.title %]</a></li>
+                <li class="rss_content"><a href="[% item.link | html %]">[% item.title %]</a></li>
                 [% count = count - 1 %]
                 [% LAST IF count == 0 %]
             [% END %]
