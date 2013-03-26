@@ -1,8 +1,5 @@
 <div class="review" data-review="[% review.id %]" data-user="[% review.user.id %]">
 <a name="[% review.id %]"></a>
-[% IF review.helpful_total %]
-<i>[% review.helpful_yes %] out of [% review.helpful_total %] found this review helpful:<br /></i>
-[% END %]
 <h3 class="review_header">
 [% IF review.module AND review.module != review.distribution %]
 [% review.module | html %] / 
@@ -46,7 +43,11 @@
 (<a href="/dist/[% review.distribution | uri %]#[% review.id %]">permalink</a>)
 </p>
 
-<div class="helpfulq">Was this review helpful to you?&nbsp;
+<div class="helpfulq">
+[% IF review.helpful_total %]
+[% review.helpful_yes %] out of [% review.helpful_total %] found this review helpful.
+[% END %]
+Was this review helpful to you?&nbsp;
 
 <!-- we should add non-js links to rate stuff helpful/not helpful too... -->
 
