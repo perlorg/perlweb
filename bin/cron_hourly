@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# grr.  argh 
+# grr.  argh
 if [ -z $CBROOTLOCAL ];
 then
     echo "CBROOTLOCAL not configured"
@@ -27,7 +27,7 @@ function getrss () {
 
 }
 
-getrss "cpanrecent" "http://search.cpan.org/uploads.rdf"
+getrss "cpanrecent" "http://metacpan.org/feed/recent?f="
 getrss "perl-foundation" "http://www.perlfoundation.org/news/tpf_rss_10.rss"
 getrss "tpfblog" "http://news.perlfoundation.org/index.xml"
 getrss "noc" "http://log.perl.org/feeds/posts/default?alt=rss"
@@ -40,7 +40,7 @@ function getcpanstats () {
     targettemp="${workpath}/cpan.dat.new"
 
     echo "mb : mirrors : authors : modules" > $targettemp
-    
+
     /usr/bin/lwp-request http://www.cpan.org/index.html |
     perl -ne 'm!(\d+) MB (\d+) mirrors<br/>(\d+) authors (\d+) modules!i && print qq!$1 : $2 : $3 : $4\n!' >> $targettemp
 
