@@ -6,18 +6,18 @@
         tag_line        => 'Perl, modern programming',
         strap_line      => 'When you need <em>Perl</em> think <strong>perl.org</strong>',
         crum            => '<a href="/">Home</a>',
-    }; 
+    };
 
     page.import({
         quick_links_1_title => 'Find out more',
         quick_links_1_list => [
-            '<a href="http://search.cpan.org/author/TIMB/DBI/">Download latest</a>',
-            '<a href="http://search.cpan.org/author/TIMB/DBI/DBI.pm">Perldoc</a>',
-            '<a href="http://search.cpan.org/search?query=DBD%3A%3A&mode=module">Latest DBD modules</a>',
+            '<a href="https://metacpan.org/release/DBI">Download latest</a>',
+            '<a href="https://metacpan.org/pod/DBI">Perldoc</a>',
+            '<a href="https://metacpan.org/search?q=DBD%3A%3A">Latest DBD modules</a>',
             '<a href="http://dbi.tiddlyspot.com/">FAQ</a>',
         ],
     });
- 
+
     PROCESS tpl/tips.html;
 
 -%]
