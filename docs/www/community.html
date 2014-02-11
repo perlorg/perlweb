@@ -60,11 +60,27 @@
             <h4>
                 Chat
             </h4>
-            <p><a href="http://irchelp.org/irchelp/irctutorial.html">IRC</a> (Internet Relay Chat) enables communities to
-               gather in 'channels' on-line and chat in real-time.  It's a great place
+            <p><a href="http://irchelp.org/irchelp/irctutorial.html">IRC</a> (Internet Relay Chat) is a great place
                to get help if you're polite and ask
                <a href="http://catb.org/~esr/faqs/smart-questions.html">smart questions</a>.
+               We have put an experimental <a href="http://scrollback.io/perl/">Scrollback gateway</a>
+               at the bottom of this page. If it gets abused we will take it away, so be nice.
                </p>
+<script>
+/***** added by freeside <mengwong@pobox.com> 20140211 as an experimental gateway to freenote #perl. *****/
+ window.scrollback = {
+  streams:["perl"],
+  theme: 'light',
+  ticker: true
+ };
+ 
+ /***** don't edit below *****/
+ (function(d,s,h,e){e=d.createElement(s);e.async=1;
+ e.src=h+'/client.min.js';scrollback.host=h;
+ d.getElementsByTagName(s)[0].parentNode.appendChild(e);}
+ (document,'script',(location.protocol=="https:"?"https:":"http:")+'//scrollback.io'));
+</script>
+
             <ul>
                 <li>
                     <a href="http://www.irc.perl.org">irc.perl.org</a> (<a href="http://www.irc.perl.org/channels.html">channel list</a>)
