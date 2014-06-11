@@ -113,7 +113,6 @@
 
         <div style="clear:both"></div>
         <div id="google_translate_element"></div>
-</script>
     </div>
 </div>
 
@@ -136,7 +135,9 @@ function googleTranslateElementInit() {
         [% END -%]
           }, 'google_translate_element');
         }
-        </script><script src="http://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" type="text/javascript">
+</script>
+
+<script src="http://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" type="text/javascript"></script>
 
 [% IF site.syntaxhighlight %]
     <script type="text/javascript" charset="utf-8" src="[% combust.static_url("/js/shCore.js") %]"></script>
