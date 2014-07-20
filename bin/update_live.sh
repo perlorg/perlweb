@@ -18,7 +18,7 @@ sleep 10
 for h in ${PERLWEB_HOSTS}; do
     echo "Updating ${h} ..."
     if host ${h} >/dev/null 2>/dev/null; then
-      ssh -A perlweb@${h} '(cd ~/perlweb ; git pull --rebase ; git submodule update )'; 
+      ssh -x -A perlweb@${h} '(cd ~/perlweb ; git pull --rebase ; git submodule update )'; 
     else
       echo "ERROR: host ${h} not found.  Skipping" >/dev/stderr
     fi
