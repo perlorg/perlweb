@@ -38,6 +38,6 @@ $(document).ready(function(){
 		// Any divs that should get hidden onload should have this as a class
 		$('.hidediv').toggle();
 
-		(new Image()).src = "http://www.mapper.ntppool.org/none";
+		(new Image()).src = "//www.mapper.ntppool.org/none";
 });
 

@@ -76,8 +76,8 @@
             [% IF site.add_this %]
             <div id="addthis">
                 <!-- AddThis Button BEGIN -->
-                <a class="addthis_button" href="http://www.addthis.com/bookmark.php?v=250&amp;pubid=ra-4e8353aa661005b2"><img src="http://s7.addthis.com/static/btn/v2/lg-share-en.gif" width="125" height="16" alt="Bookmark and Share" style="border:0"/></a>
-                <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid=ra-4e8353aa661005b2"></script>
+                <a class="addthis_button" href="http://www.addthis.com/bookmark.php?v=250&amp;pubid=ra-4e8353aa661005b2"><img src="//s7.addthis.com/static/btn/v2/lg-share-en.gif" width="125" height="16" alt="Bookmark and Share" style="border:0"/></a>
+                <script type="text/javascript" src="//s7.addthis.com/js/250/addthis_widget.js#pubid=ra-4e8353aa661005b2"></script>
                 <!-- AddThis Button END -->
             </div>
             [% END %]
@@ -100,14 +100,14 @@
         
 [% IF site.brand == 'com' %]
 <p class="copyright">
-    <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/us/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/us/80x15.png" /></a> © 2002-[% USE date; date.format(date.now, '%Y') %] Perl.com | <a href="/siteinfo.html">Site Info</a>
+    <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/us/"><img alt="Creative Commons License" style="border-width:0" src="[% combust.static_url('/images/icons/creativecommons-by-nc-nd-3.0-us-80x15.png') %]" /></a> © 2002-[% USE date; date.format(date.now, '%Y') %] Perl.com | <a href="/siteinfo.html">Site Info</a>
 </p>
 [% ELSE %]
         <p class="sites">
             &nbsp;When you need <em>Perl</em> think <strong>Perl.org</strong>: <a href="http://www.perl.org/">www</a> | <a href="http://blogs.perl.org/">blogs</a> | <a href="http://jobs.perl.org/">jobs</a> | <a href="http://learn.perl.org/">learn</a> <!-- | <a href="http://lists.perl.org/">lists</a> --> | <a href="http://dev.perl.org/">dev</a>   
         </p>
         <p class="copyright">
-            <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/us/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/us/80x15.png" /></a> © 2002-[% USE date; date.format(date.now, '%Y') %] Perl.org | <a href="/siteinfo.html">Site Info</a>
+            <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/us/"><img alt="Creative Commons License" style="border-width:0" src="[% combust.static_url('/images/icons/creativecommons-by-nc-nd-3.0-us-80x15.png') %]" /></a> © 2002-[% USE date; date.format(date.now, '%Y') %] Perl.org | <a href="/siteinfo.html">Site Info</a>
         </p>
 [% END %]
 
@@ -119,7 +119,7 @@
 [%-
    PROCESS "tpl/ie6nomore.html";
    PROCESS "tpl/googleanalytics.html";
-   page.js.unshift("http://st.pimg.net/cdn/libs/jquery/1.7.1/jquery.min.js");
+   page.js.unshift("//st.pimg.net/cdn/libs/jquery/1.7.1/jquery.min.js");
    PROCESS tpl/js_includes.html(js_files = page.js);
 %]
 
@@ -137,7 +137,7 @@ function googleTranslateElementInit() {
         }
 </script>
 
-<script src="http://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" type="text/javascript"></script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" type="text/javascript"></script>
 
 [% IF site.syntaxhighlight %]
     <script type="text/javascript" charset="utf-8" src="[% combust.static_url("/js/shCore.js") %]"></script>
