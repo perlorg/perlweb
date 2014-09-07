@@ -31,6 +31,11 @@
        page.js.push("/js/leo.js");
     %]
 
+    [% IF combust.site == "www" %]
+    <link rel="canonical" href="https://www.perl.org[% combust.request.path | html %]" />
+    [% END %]
+
+
 [% page.morehead %]
 
 </head>
