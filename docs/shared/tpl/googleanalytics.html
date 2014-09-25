@@ -8,6 +8,7 @@
 
   ga('create', '[% siteconfig.googleanalytics %]', 'auto');
   ga('require', 'linkid', 'linkid.js');
+  ga('set', 'dimension1', window.location.protocol);
   ga('send', 'pageview');
 </script>
 [% END -%]
