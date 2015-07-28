@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-=head1 NAME 
+=head1 NAME
 
 update_faq.pl - Converts Pod to HTML for the /faq/ section
 
@@ -128,7 +128,7 @@ sub page_header {
         page.import({
             title    => "--page_name--",
             section  => "faq",
-            description 
+            description
                 => "Perl Frequently Asked Questions, Perl FAQ",
             keywords => "perl, perl faq, perlfaq"
         });
@@ -151,24 +151,24 @@ sub fetch_latest_perlfaq {
         $local_name =~ s/\.tar\.gz$//;
         $local_version = $local_name;
         $local_version =~ s/^perlfaq-//;
-        
+
         copy( $zip->stringify, $tmp_file);
-        
+
     } else {
         my $json = JSON->new();
 
         my $latest_meta_source = get('http://api.metacpan.org/release/perlfaq');
         my $latest_meta        = $json->decode($latest_meta_source);
         my $download_url       = $latest_meta->{download_url};
-
+warn $download_url;
         mirror( $download_url, $tmp_file );
 
         # Back to previous dir please
         $local_name = $latest_meta->{name};
         $local_version = $latest_meta->{version};
-        
+
     }
-    
+
     my $cwd = getcwd();
     chdir '/tmp/';
     system('tar -xzf perlfaq.tar.gz');
@@ -178,4 +178,3 @@ sub fetch_latest_perlfaq {
 
 
 }
-
