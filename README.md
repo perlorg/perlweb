@@ -2,6 +2,10 @@
 
 Code for various perl.org sites hosted in the main perl.org infrastructure.
 
+This repository contains the sources for such sites as http://www.perl.org/ ,
+http://learn.perl.org/ , http://lists.perl.org/ , http://qa.perl.org/ ,
+and http://dbi.perl.org/ .
+
 ## Clone the source
 
 ```sh
