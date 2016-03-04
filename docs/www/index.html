@@ -1,8 +1,8 @@
-[% 
+[%
     page.import({
         title    => 'The Perl Programming Language',
         section  => 'home',
-        description 
+        description
             => 'The Perl Programming Language at Perl.org. Links and '
             _ 'other helpful resources for new and experienced Perl programmers.',
         include_sponsor => 1,
@@ -20,7 +20,7 @@
     });
 %]
 
-[%  
+[%
     # Setup random messages
     cpan_msg = perl_stats.cpan_dists _ ' extensions on CPAN';
     headlines = [
@@ -35,13 +35,13 @@
 
 <div class="masthead">
 	<p class="headline">[% headline %]</p>
-	
+
 	<p class="strap">That's why we love Perl 5</p>
-	
-	
+
+
 	<p class="button"><a href="/get.html" class="download">Download Perl</a></p>
-	
-	
+
+
 	<p class="cta"><a href="/get.html">Get started</a></p>
 
 </div>
@@ -130,7 +130,10 @@
                     <a href="http://www.perl6.org/">Perl 6</a>
                 </h4>
                 <p>
-                    Perl 6 is a sister language, part of the Perl family. Perl 6 is not production ready yet, you can get involved with its <a href="/dev.html">development</a> though.
+                    Perl 6 is a sister language, part of the Perl family,
+                    not intended as a replacement for Perl 5,
+                    but as its own thing - libraries exist to allow you
+                    to call Perl 5 code from Perl 6 programs and vice versa.
                 </p>
             </div>
         </td>
