@@ -8,7 +8,7 @@
                 => "Perl Frequently Asked Questions, Perl FAQ",
             keywords => "perl, perl faq, perlfaq"
         });
-        perlfaq_version = 5.021010;
+        perlfaq_version = 5.021011;
     -%]
     <div class="pod">
 
@@ -128,7 +128,7 @@
 
 <h1 id="VERSION">VERSION</h1>
 
-<p>version 5.021010</p>
+<p>version 5.021011</p>
 
 <h1 id="DESCRIPTION">DESCRIPTION</h1>
 
@@ -2115,24 +2115,22 @@
 
 <h2 id="How-do-I-determine-whether-a-scalar-is-a-number-whole-integer-float">How do I determine whether a scalar is a number/whole/integer/float?</h2>
 
-<p>Assuming that you don&#39;t care about IEEE notations like &quot;NaN&quot; or &quot;Infinity&quot;, you probably just want to use a regular expression:</p>
+<p>Assuming that you don&#39;t care about IEEE notations like &quot;NaN&quot; or &quot;Infinity&quot;, you probably just want to use a regular expression (see also <a href="https://metacpan.org/module/perlretut">perlretut</a> and <a href="https://metacpan.org/module/perlre">perlre</a>):</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use 5.010;
 
-    given( $number ) {
-        when( /\D/ )
-            { say &quot;\thas nondigits&quot;; continue }
-        when( /^\d+\z/ )
-            { say &quot;\tis a whole number&quot;; continue }
-        when( /^-?\d+\z/ )
-            { say &quot;\tis an integer&quot;; continue }
-        when( /^[+-]?\d+\z/ )
-            { say &quot;\tis a +/- integer&quot;; continue }
-        when( /^-?(?:\d+\.?|\.\d)\d*\z/ )
-            { say &quot;\tis a real number&quot;; continue }
-        when( /^[+-]?(?=\.?\d)\d*\.?\d*(?:e[+-]?\d+)?\z/i)
-            { say &quot;\tis a C float&quot; }
-    }</pre>
+    if ( /\D/ )
+        { say &quot;\thas nondigits&quot;; }
+    if ( /^\d+\z/ )
+        { say &quot;\tis a whole number&quot;; }
+    if ( /^-?\d+\z/ )
+        { say &quot;\tis an integer&quot;; }
+    if ( /^[+-]?\d+\z/ )
+        { say &quot;\tis a +/- integer&quot;; }
+    if ( /^-?(?:\d+\.?|\.\d)\d*\z/ )
+        { say &quot;\tis a real number&quot;; }
+    if ( /^[+-]?(?=\.?\d)\d*\.?\d*(?:e[+-]?\d+)?\z/i )
+        { say &quot;\tis a C float&quot; }</pre>
 
 <p>There are also some commonly used modules for the task. <a href="https://metacpan.org/module/Scalar::Util">Scalar::Util</a> (distributed with 5.8) provides access to perl&#39;s internal function <code>looks_like_number</code> for determining whether a variable looks like a number. <a href="https://metacpan.org/module/Data::Types">Data::Types</a> exports functions that validate data types using both the above and other regular expressions. Thirdly, there is <a href="https://metacpan.org/module/Regexp::Common">Regexp::Common</a> which has regular expressions to match various types of numbers. Those three modules are available from the CPAN.</p>
 
@@ -2203,5 +2201,5 @@
 
 <p>Irrespective of its distribution, all code examples in this file are hereby placed into the public domain. You are permitted and encouraged to use this code in your own programs for fun or for profit as you see fit. A simple comment in the code giving credit would be courteous but is not required.</p>
 
-<p><em>Version: 5.021010</em></p></div>
+<p><em>Version: 5.021011</em></p></div>
 
