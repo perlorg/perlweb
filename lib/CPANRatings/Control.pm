@@ -68,7 +68,7 @@ sub as_json {
     my ($self, $reviews, $mode, $id) = @_;
 
     my $data = {
-        ($mode eq "author" ? "user" : "dist") => $id,
+        $mode => $id,
         reviews => [],
     };
 
