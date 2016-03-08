@@ -8,6 +8,8 @@ use Encode qw();
 use Combust::Constant qw(OK);
 use PerlOrg::Template::Filters;
 use XML::RSS;
+use JSON;
+use DateTime;
 
 has schema => (
     isa => 'CPANRatings::Schema',
@@ -62,6 +64,60 @@ sub _calc_auth_token {
     return '1-' . sha1_hex('8wae4ko -  this is very secret!' . $cookie);
 }
 
+sub as_json {
+    my ($self, $reviews, $mode, $id) = @_;
+
+    my $data = {
+        ($mode eq "author" ? "user" : "dist") => $id,
+        reviews => [],
+    };
+
+    # arbitrary choice of one year being outdated...
+    my $outdated = DateTime->now->subtract( years => 1 );
+
+    my %sum;
+
+    while (my $review = $reviews->next) {
+
+        my $is_outdated = ( $review->updated < $outdated ) ? 1 : 0;
+        my $review_for_data = {
+            review   => $review->review,
+            version  => $review->version_reviewed,
+            status   => $review->status,
+            rating   => int( $review->rating_overall ),
+            user     => $review->user_name,
+            date     => $review->updated->iso8601,
+            outdated => $is_outdated ? JSON::true : JSON::false,
+            helpful  => $review->helpful_score > 0 ? JSON::true : JSON::false,
+        };
+
+        $sum{all}     += int( $review->rating_overall );
+        $sum{recent}  += $is_outdated ? 0 : int( $review->rating_overall );
+        $sum{helpful} += $review->helpful_score > 0 ? int( $review->rating_overall ) : 0;
+        $sum{recent_helpful} += ! $is_outdated && $review->helpful_score > 0
+            ? int( $review->rating_overall ) : 0;
+
+        push( @{ $data->{reviews} },$review_for_data );
+    }
+
+    if ( my @reviews = @{ $data->{reviews} } ) {
+
+        my @recent      = grep { !$_->{outdated} } @reviews;
+        my @helpful     = grep { $_->{helpful} } @reviews;
+        my @recent_help = grep { $_->{helpful} && !$_->{outdated} } @reviews;
+
+        $data->{ratings} = {
+            all            => @reviews ? sprintf( "%.1f",$sum{all} / @reviews ) : 0,
+            recent         => @recent ? sprintf( "%.1f",$sum{recent} / @recent ) : 0,
+            helpful        => @helpful ? sprintf( "%.1f",$sum{helpful} / @helpful ) : 0,
+            recent_helpful => @recent_help ? sprintf( "%.1f",$sum{recent_helpful} / @recent_help ) : 0,
+        };
+    } else {
+        $data->{ratings} = {};
+    }
+
+    return JSON->new->utf8->encode( $data );
+}
 
 sub as_rss {
   my ($self, $reviews, $mode, $id) = @_;

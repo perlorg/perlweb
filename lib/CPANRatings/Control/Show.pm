@@ -8,11 +8,11 @@ sub render {
     my $self = shift;
 
     my ( $mode, $id, $format ) =
-      ( $self->request->path =~ m!^/([ad]|user|dist)/([^/]+?)(?:\.(html|rss))?$! );
+      ( $self->request->path =~ m!^/([ad]|user|dist)/([^/]+?)(?:\.(html|rss|json))?$! );
     return 404 unless $mode and $id;
 
     $format = $self->req_param('format') || $format || 'html';
-    $format = 'html' unless $format eq "rss";
+    $format = 'html' unless $format =~ /^(rss|json)$/;
 
     if ( $mode eq 'a' ) {
         my $user = $self->schema->user->find($id) or return NOT_FOUND;
@@ -67,7 +67,7 @@ sub render {
         my $reviews = $self->schema->review->search(
             {   $mode  => $id,
                 status => 'active',
-                helpful_score => { '>', 0 }
+                ( $format eq 'json' ? () : ( helpful_score => { '>', 0 } ) ),
             },
             { order_by => { -desc => 'updated' } }
         );
@@ -91,6 +91,10 @@ sub render {
     elsif ( $format eq "rss" ) {
         my $output = $self->as_rss( $self->tpl_param('reviews'), $mode, $mode_element );
         return OK, $output, 'application/rss+xml';
+    }
+    elsif ( $format eq "json" ) {
+        my $output = $self->as_json( $self->tpl_param('reviews'), $mode, $mode_element );
+        return OK, $output, 'application/json';
     }
 
     return OK, 'huh? unknown output format', 'text/plain';
