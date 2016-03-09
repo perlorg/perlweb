@@ -91,10 +91,8 @@ sub as_json {
             helpful  => $review->helpful_score > 0 ? JSON::true : JSON::false,
         };
 
-        $sum{all}     += int( $review->rating_overall );
-        $sum{recent}  += $is_outdated ? 0 : int( $review->rating_overall );
-        $sum{helpful} += $review->helpful_score > 0 ? int( $review->rating_overall ) : 0;
-        $sum{recent_helpful} += ! $is_outdated && $review->helpful_score > 0
+        $sum{all}    += $review->helpful_score > 0 ? int( $review->rating_overall ) : 0;
+        $sum{recent} += ! $is_outdated && $review->helpful_score > 0
             ? int( $review->rating_overall ) : 0;
 
         push( @{ $data->{reviews} },$review_for_data );
@@ -102,15 +100,12 @@ sub as_json {
 
     if ( my @reviews = @{ $data->{reviews} } ) {
 
-        my @recent      = grep { !$_->{outdated} } @reviews;
-        my @helpful     = grep { $_->{helpful} } @reviews;
-        my @recent_help = grep { $_->{helpful} && !$_->{outdated} } @reviews;
+        my @all     = grep { $_->{helpful} } @reviews;
+        my @recent  = grep { $_->{helpful} && !$_->{outdated} } @reviews;
 
         $data->{ratings} = {
-            all            => @reviews ? sprintf( "%.1f",$sum{all} / @reviews ) : 0,
-            recent         => @recent ? sprintf( "%.1f",$sum{recent} / @recent ) : 0,
-            helpful        => @helpful ? sprintf( "%.1f",$sum{helpful} / @helpful ) : 0,
-            recent_helpful => @recent_help ? sprintf( "%.1f",$sum{recent_helpful} / @recent_help ) : 0,
+            all    => @all    ? sprintf( "%.1f",$sum{all} / @all ) : 0,
+            recent => @recent ? sprintf( "%.1f",$sum{recent} / @recent ) : 0,
         };
     } else {
         $data->{ratings} = {};
