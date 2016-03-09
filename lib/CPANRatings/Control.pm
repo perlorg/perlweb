@@ -3,12 +3,14 @@ use Moose;
 extends qw(Combust::Control Combust::Control::Bitcard::DBIC Combust::Control::StaticFiles);
 use LWP::Simple qw(get);
 use CPANRatings::Schema;
+use CPANRatings::Model::SearchCPAN;
 use Digest::SHA qw(sha1_hex);
 use Encode qw();
 use Combust::Constant qw(OK);
 use PerlOrg::Template::Filters;
 use XML::RSS;
 use JSON;
+use DateTime::Format::ISO8601;
 use DateTime;
 
 has schema => (
@@ -72,8 +74,23 @@ sub as_json {
         reviews => [],
     };
 
-    # arbitrary choice of one year being outdated...
+    # default to one year being outdated...
     my $outdated = DateTime->now->subtract( years => 1 );
+
+    if ( $mode eq 'distribution' ) {
+        # go by date of latest version
+        my $search = CPANRatings::Model::SearchCPAN->new;
+        if ( my $releases = $search->get_releases( $id ) ) {
+            my $last_release_date = DateTime::Format::ISO8601->parse_datetime(
+                $releases->[0]->{released}
+            );
+
+            # if last release date was within the last year, then use the last
+            # release date as the cutoff point
+            $outdated = $last_release_date
+                if $last_release_date > $outdated;
+        }
+    }
 
     my %sum;
 
@@ -104,8 +121,8 @@ sub as_json {
         my @recent  = grep { $_->{helpful} && !$_->{outdated} } @reviews;
 
         $data->{ratings} = {
-            all    => @all    ? sprintf( "%.1f",$sum{all} / @all ) : 0,
-            recent => @recent ? sprintf( "%.1f",$sum{recent} / @recent ) : 0,
+            all    => @all    ? sprintf( "%.1f",$sum{all} / @all ) : undef,
+            recent => @recent ? sprintf( "%.1f",$sum{recent} / @recent ) : undef,
         };
     } else {
         $data->{ratings} = {};
