@@ -96,9 +96,8 @@ sub as_rss {
 
   my $i; 
   while (my $review = $reviews->next) {
-    my $text = $review->review; # substr($review->review, 0, 150);
-    #$text .= " ..." if (length $text < length $review->review);
-    $text = "Rating: ". $review->rating_overall . " stars\n" . $text
+    my $text = "<p>@{[$review->review_html]}</p>";
+    $text = "<p>Rating: @{[$review->rating_overall]} stars</p>$text"
       if ($review->rating_overall);
     $rss->add_item(
 		   title       => (!$mode || $mode eq "author" ? $review->distribution : $review->user_name),
