@@ -1,0 +1,28 @@
+# author  = Ask Bjørn Hansen <ask@develooper.com>
+# license = Perl_5
+# copyright_holder = Ask Bjørn Hansen
+
+local::lib
+
+# for cpanratings
+DBI
+DBD::mysql
+DBIx::Class
+DBIx::Class::Helper::Row::ToJSON
+XML::RSS
+Template::Plugin::XML::RSS
+DateTime::Format::ISO8601
+Encode
+String::Truncate
+
+# general
+Template::Plugin::JSON
+Template::Plugin::Comma
+Template::Plugin::Date
+Template::Plugin::Shuffle
+Date::Calc
+Config::Simple
+File::Slurp
+
+# need SSL for rss feed
+IO::Socket::SSL
