@@ -24,7 +24,7 @@ error_uri | uri %]</tt>. <br /><br />
 <script type="text/javascript" 
     src="https://linkhelp.clients.google.com/tbproxy/lh/wm/fixurl.js"></script>
 
-Go to <a href="/">the front page</a> or <a href="mailto:ask@develooper.com">send mail to the staff</a>.
+  Go to <a href="/">the front page</a> or send mail to the staff at <tt>webmaster at perl.org</tt>.
 
 [% ELSIF error == 500 %]
 
@@ -32,15 +32,14 @@ Go to <a href="/">the front page</a> or <a href="mailto:ask@develooper.com">send
 <i>[% error_text %]</i></p><p>
 [% END %]
 
-Ouch!  The server made a boo-boo.  In other words: We #$%^#$ up!
+Ouch!  The server made a boo-boo.  In other words: We messed up!
 Sincere apologies all around.  The server has already sent angry mails
-to the staff, so please be kind if you also choose to <a
-href="mailto:ask@develooper.com">send a mail</a>.
+to the staff, so please be kind if you also choose to contact us by email <tt>webmaster at perl.org</tt>.
 
 [% ELSE %]
 
 Unhandled error!  UFO's in the sky?  Call the X-Files!  Or <a
-href="mailto:ask@develooper.com">send a mail</a>.
+href="mailto:webmaster@perl.org">send a mail</a>.
 
 [% END %]
 </p>
