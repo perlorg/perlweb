@@ -3,7 +3,6 @@
 
 @letter-spacing-base: 0.13em;
 @font-size-smaller: 10px;
-@navbar-large: @navbar-height + 50px;
 
 html {
   height: 100%;
@@ -30,6 +29,7 @@ h3 {
   display: inline-block;
   padding: @padding-small-vertical;
   border-bottom: 2px solid @brand-success;
+  text-align: center;
 }
 h3.alternate {
   font-weight: 500;
@@ -45,6 +45,7 @@ h4 {
 
 /* Navbar */
 .navbar-inverse {
+  margin-bottom: 0;
   #gradient .vertical(@brand-primary; @brand-primary-darker; 0%; 100%);
 }
 .navbar-brand {
@@ -68,30 +69,6 @@ h4 {
 .nav .open>a:focus {
   border-color: transparent;
 }
-
-/* Buttons and Dropdowns */
-.btn {
-  text-transform: uppercase;
-  letter-spacing: @letter-spacing-base;
-  padding: @padding-large-vertical @padding-large-horizontal;
-}
-.btn-ic {
-  margin-right: 20px;
-}
-.btn:hover,
-.btn:focus,
-.btn:active,
-.dropdown-toggle {
-  box-shadow: none !important;
-}
-.btn .caret {
-  margin-left: 6px;
-}
-.dropdown .typeahead {
-  padding: @padding-large-horizontal;
-}
-
-/* Nav */
 .sub {
   a {
     position: relative;
@@ -103,6 +80,9 @@ h4 {
     &:hover {
       color: @brand-warning !important;
     }
+  }
+  &.selected a {
+    color: @brand-warning !important;
   }
   .header-img-nav {
     display: block;
@@ -122,15 +102,45 @@ h4 {
     }
   }
 }
+.navbar-fixed-top {
+  .animation(moveFromTop .6s ease both);
+  .header-img-nav {
+    display: none;
+  }
+  .page-logo {
+    width: 135px;
+  }
+}
+
+/* Buttons and Dropdowns */
+.btn {
+  text-transform: uppercase;
+  letter-spacing: @letter-spacing-base;
+  padding: @padding-large-vertical @padding-large-horizontal;
+}
+.btn-ic {
+  margin-right: 20px;
+}
+.btn:hover,
+.btn:focus,
+.btn:active,
+.dropdown-toggle {
+  box-shadow: none !important;
+}
+.btn .caret {
+  margin-left: 6px;
+}
 
 
 /* Jumbotron */
 .jumbotron {
-  margin-top: @navbar-large;
   #gradient .vertical(@gray-lighter; @gray-light; 0%; 100%);
   h1 {
     margin-top: 10px;
   }
+}
+.jumbotron-internal {
+  padding: @jumbotron-padding/2;
 }
 
 /* Highlight module */
@@ -140,6 +150,8 @@ h4 {
   margin-bottom: @grid-gutter-width;
   border-radius: @border-radius-large;
   color: #fff;
+  display: block;
+  height: 100%;
   &:hover {
     color: #fff;
     background: fade(@brand-primary, 90%);
@@ -152,11 +164,6 @@ h4 {
     right: 30px;
     top: 0;
   }
-}
-
-/* Internal */
-.container-internal {
-  margin-top: @navbar-large;
 }
 
 /* sidebar */
@@ -222,6 +229,25 @@ span.highlight {
   }
 }
 
+/* Quick links */
+.quicklinks {
+  border: 5px solid @gray-lighter;
+  overflow: hidden;
+  padding: @padding-large-vertical @padding-large-horizontal;
+}
+
+/* Misc */
+#amzn_widget {
+  width: 100%;
+}
+#goog-fixurl .content {
+  overflow: hidden;
+  padding: 0 0 20px;
+  ul {
+    padding: 0;
+  }
+}
+
 
 /* Footer */
 .footer {
@@ -240,6 +266,29 @@ span.highlight {
 }
 
 
+/* Spaces */
+.space-top-xl {
+  padding-top: @grid-gutter-width*3;
+}
+.space-top-large {
+  padding-top: @grid-gutter-width;
+}
+
+
+/* Animation */
+@-webkit-keyframes moveFromTop {
+  from { -webkit-transform: translateY(-100%); }
+}
+@-moz-keyframes moveFromTop {
+  from { -moz-transform: translateY(-100%); }
+}
+@keyframes moveFromTop {
+  from { transform: translateY(-100%); }
+}
+
+
+
+/* Resonsive */
 @media (max-width: @screen-md-min) {
   .navbar-nav>li, .navbar-nav>li a {
     margin-left: 0;
@@ -251,7 +300,7 @@ span.highlight {
 
 
 @media (max-width: @screen-sm-min) {
-  .page-logo {
+  .page-logo, .navbar-fixed-top .page-logo {
     width: 120px;
   }
   .footer {
@@ -262,9 +311,6 @@ span.highlight {
   }
   .highlight-module {
     margin-bottom: 20px;
-  }
-  .jumbotron, .container-internal {
-    margin-top: @navbar-height;
   }
   .jumbotron .btn {
     width: 100%;

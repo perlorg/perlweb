@@ -45,7 +45,7 @@
     [% page.morehead %]
   </head>
   <body[% ' class="section_' _ page.section _ '"' IF page.section %]>
-    <nav class="navbar navbar-inverse navbar-fixed-top">
+    <nav class="navbar navbar-inverse" data-height="120">
       <div class="container-fluid">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -54,7 +54,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">
+          <a class="navbar-brand" href="/">
             <img src="[% site.logo || combust.static_url('/images/logo.svg') %]" alt="[% page.title %] | [% site.tag_line || 'Perl programming' %]" class="page-logo">
           </a>
         </div>
@@ -65,6 +65,18 @@
     </nav>
 
     [% content %]
+
+    [% IF page.section != 'home' && page.section != 'error' %]
+    <div class="container space-top-large">
+      <div class="row">
+        <div class="quicklinks">
+          [% INCLUDE tpl/quick_links_1 %]
+          [% INCLUDE tpl/quick_links_2 %]
+          [% INCLUDE tpl/quick_links_3 %]
+        </div>
+      </div>
+    </div>
+    [% END %]
 
     <div class="container-fluid">
       <footer class="row">

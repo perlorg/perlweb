@@ -1,14 +1,21 @@
-[% 
+[%
     page.import({
         title    = 'The Perl Spoofathon: Rules',
         section  = 'about',
-        description 
+        description
             = '',
     });
 %]
 
 [% PROCESS advocacy/spoofathon/tpl/navigation.html %]
+<div class="jumbotron jumbotron-internal">
+  <div class="container text-center">
+    <h1>[% page.title %]</h1>
+    <p>[% page.description %]</p>
+  </div>
+</div>
 
+<div class="container">
 <p>The rules aren't very formal. The idea is to have fun.</p>
 <h2>Who gets what when?</h2>
 <p>The author of each "winning" work only gets the kudos (and Google page rank
@@ -50,4 +57,4 @@ that this is impractical for technical reasons.</p>
 <p>It's likely that the judges will wait a couple of weeks to gauge the level of
 interest. However, don't delay, as I've already seen two side splitting draft
 entries.</p>
-
+</div>
