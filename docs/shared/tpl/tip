@@ -1,13 +1,5 @@
 [% UNLESS tip; RETURN; END; %]
-<div class="quick_links">
-        <h4 class="round">
-            Tip
-        </h4>
-        <div class="list">
-        <p>
-            <strong>[% tip.title %]</strong>
-            [% tip.desc %]
-        </p>
-    </div>
+<div class="tip-module text-center">
+  <span class="tip-highlight">Tip</span>
+  [% tip.title %] [% tip.desc %]
 </div>
-

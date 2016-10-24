@@ -4,21 +4,19 @@
             count = 5;
         END;
         TRY; %]
-        <ul>
         [% IF title %]
-            <li class="rss round">[% title %]</li>
+            <li>[% title %]</li>
         [% END %]
             [%- USE news = XML.RSS(combust.config.work_path _ "/rss/${shortname}.rss") %]
             [% FOREACH item = news.items %]
-                <li class="rss_content"><a href="[% item.link | html %]">[% item.title %]</a></li>
+                <li><a href="[% item.link | html %]">[% item.title %]</a></li>
                 [% count = count - 1 %]
                 [% LAST IF count == 0 %]
             [% END %]
         [%- CATCH %]
-                <li class="rss_content">RSS config broken</li>
+                <li>RSS config broken</li>
                 [%- FILTER stderr %][% error.info %][% END %]
         [%- END %]
-        </ul>
      [%- END;
 
      RETURN;
