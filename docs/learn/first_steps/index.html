@@ -1,23 +1,19 @@
 [%- page.import({
     title => 'First steps',
-    section => 'first_steps',  
-    description => "Running your first Perl script",
+    section => 'first_steps',
+    description => "How to get started with your first Perl script",
     keywords => "Perl, Command line, Perl script",
 }) -%]
-
-<h2>
-    How to get started with your first Perl script
-</h2>
 
 <p>
     After <a href="/installing/">installing Perl</a> you will want to actually
     run some Perl code. You need to use
-    a command line (<a href="/installing/windows_tools.html#command_line">Windows</a>, 
-    <a href="/installing/osx_tools.html#command_line">Mac OSX</a>, 
-    <a href="/installing/unix_linux_tools.html#command_line">Unix/Linux</a>) 
+    a command line (<a href="/installing/windows_tools.html#command_line">Windows</a>,
+    <a href="/installing/osx_tools.html#command_line">Mac OSX</a>,
+    <a href="/installing/unix_linux_tools.html#command_line">Unix/Linux</a>)
     program to do this.
 </p>
-    
+
 <p>
 Check you have Perl installed by typing the command below into
 your command line program:
@@ -28,10 +24,10 @@ your command line program:
     Now create a 'perl_tests' folder to save your test files into, you will need to be able to find this from the command line.
 </p>
 
-<p>Open a text editor (<a href="/installing/windows_tools.html#editors">Windows</a>, 
-<a href="/installing/osx_tools.html#editors">Mac OSX</a>, 
+<p>Open a text editor (<a href="/installing/windows_tools.html#editors">Windows</a>,
+<a href="/installing/osx_tools.html#editors">Mac OSX</a>,
 <a href="/installing/unix_linux_tools.html#editors">Unix/Linux</a>) creating a new file with the following
-    content</p> 
+    content</p>
          [% WRAPPER code_chunk -%]
          [%- PROCESS 'first_steps/01_hello_world.pl' -%]
          [%- END %]
@@ -54,4 +50,3 @@ your command line program:
    <iframe width="640" height="480" src="https://www.youtube.com/embed/0cupB4XOU84" frameborder="0" allowfullscreen></iframe>
 </p>
 <p>(<a href="http://youtu.be/_D5d1PHJTXM">Mac version</a>)</p>
-

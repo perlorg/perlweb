@@ -93,7 +93,13 @@
     [% content %]
     </div>
 
-    [% IF page.section != 'home' && page.section != 'error' %]
+    [% IF (page.quick_links_1_title
+        || page.quick_links_2_title
+        || page.quick_links_3_title
+        || section_data.quick_links_1_title
+        || section_data.quick_links_2_title
+        || section_data.quick_links_3_title)
+    %]
     <div class="container space-top-large">
       <div class="row">
         <div class="quicklinks">

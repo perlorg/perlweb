@@ -1,27 +1,22 @@
 [%- page.import({
     title => 'Perl modules',
     section => 'modules',
-    description => "Introduction to Perl Modules",
+    description => "Perl modules, what are they and why do I care?",
     keywords => "Perl, Perl Modules, Perl Packages",
 }) -%]
 
-<h2>
-    Perl modules, what are they and why do I care?
-</h2>
-
-
-<h4>What is a Perl module?</h4>
+<h3>What is a Perl module?</h3>
 
 <p>
     Perl <a href=
-    "http://perldoc.perl.org/perlmod.html">modules</a> 
+    "http://perldoc.perl.org/perlmod.html">modules</a>
     are a set of related functions in a library file. They are specifically
-    designed to be reusable by other modules or programs. 
-    There are [% perl_stats.cpan_modules | comma %] 
-    modules ready for you to use on the <a href="http://www.cpan.org/">Comprehensive Perl Archive Network</a>. 
+    designed to be reusable by other modules or programs.
+    There are [% perl_stats.cpan_modules | comma %]
+    modules ready for you to use on the <a href="http://www.cpan.org/">Comprehensive Perl Archive Network</a>.
 </p>
 
-<p> 
+<p>
     You should be aware that most Perl modules are written in Perl but some use <a href=
     "http://perldoc.perl.org/perlxs.html">XS</a> (they are written in <a href=
     "http://en.wikipedia.org/wiki/C_(programming_language)">C</a>) so require a
@@ -33,22 +28,22 @@
     CPAN now require a recent version of Perl (version 5.8 or above).
 </p>
 
-<h4>Where can I find modules?</h4>
+<h3>Where can I find modules?</h3>
 <p>
     <a href="https://metacpan.org/">https://metacpan.org/</a> lets you
     search the [% perl_stats.cpan_modules | comma %] modules on CPAN.
 </p>
 
-<h4>Which modules should I use?</h4>
+<h3>Which modules should I use?</h3>
 <p>
     Metacpan has user ratings, also have a look at
     <a href="https://metacpan.org/release/Task-Kensho/">Task::Kensho</a>.
-    The <a href="/examples/">examples</a> section and <a href="/faq/">FAQ</a> 
+    The <a href="/examples/">examples</a> section and <a href="/faq/">FAQ</a>
     also have some recommendations, you could also ask the Perl <a href="http://www.perl.org/community.html">community</a>.
 </p>
 
 
-<h4>How do I install a module?</h4>
+<h3>How do I install a module?</h3>
 
 <p>If you haven't already <a href="https://metacpan.org/module/App::cpanminus#INSTALLATION">installed cpanm</a>, do that first:</p>
 <p>
