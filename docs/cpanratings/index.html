@@ -1,14 +1,22 @@
 
-[% page.title = 'Ratings and Reviews for CPAN';
+[%
+  page.title = 'CPAN Ratings';
+  page.description = 'Ratings and Reviews for CPAN';
    page.forcenavigation = 1;
   %]
 
 [% page.rss = '/index.rss' %]
 
-<h3>Rate a distribution</h3>
+<div class="row">
+  <div class="col-xs-12">
+  <h3>Rate a distribution</h3>
 
-[% PROCESS search/search_form.html %]
+  [% PROCESS search/search_form.html %]
 
-<h2>Recent reviews <span style="font-size:0.6em;">(<a href="/index.rss">RSS feed</a>)</span></h2>
+  </div>
+  <div class="col-xs-12">
+  <h3 class="space-top-large">Recent reviews <span style="font-size:0.6em;">(<a href="/index.rss">RSS feed</a>)</span></h3><br/>
 
-[% PROCESS display/show_list.html, reviews = reviews %]
+  [% PROCESS display/show_list.html, reviews = reviews %]
+  </div>
+</div>
