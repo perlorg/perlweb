@@ -1,11 +1,14 @@
-[%- page.style = "leo.html";
+[%- page.style = "perlweb_bootstrap.html";
 
     # Configuration for this site
     SET site = {
         name            => 'dbi.perl.org',
-        tag_line        => 'Perl, modern programming',
+        tag_line        => 'Perl\'s Database Interface',
         strap_line      => 'When you need <em>Perl</em> think <strong>perl.org</strong>',
         crum            => '<a href="/">Home</a>',
+        logo            => '_dbi',
+        link            => 'View the Docs',
+        url            => '/docs/'
     };
 
     page.import({

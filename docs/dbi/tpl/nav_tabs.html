@@ -1,18 +1,15 @@
-<ul>
-    <li[% ' class="selected"' IF page.section == 'home' %]>
-        <a href="/">Home</a>
-    </li>
-    <li class="[% ' selected' IF page.section == 'about' %]">
+<ul class="list-inline text-center nav navbar-nav navbar-right">
+    <li class="sub [% ' selected' IF page.section == 'about' %]">
         <a href="/about/">About DBI</a>
     </li>
-    <li class="[% ' selected' IF page.section == 'docs' %]">
+    <li class="sub [% ' selected' IF page.section == 'docs' %]">
         <a href="/docs/">Documentation</a>
     </li>
 
-    <li[% ' class="selected"' IF page.section == 'contribute' %]>
+    <li class="sub [% ' selected' IF page.section == 'contribute' %]">
         <a href="/contributing/">Contributing</a>
     </li>
-    <li[% ' class="selected"' IF page.section == 'support' %]>
+    <li class="sub [% ' selected' IF page.section == 'support' %]">
         <a href="/support/">Support</a>
     </li>
 
