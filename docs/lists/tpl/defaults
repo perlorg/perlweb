@@ -1,10 +1,13 @@
 [%-
-    page.style = 'leo.html';
+    page.style = 'perlweb_bootstrap.html';
 
     # Configuration for this site
     SET site = {
         name            => 'lists.perl.org',
-        tag_line        => 'Perl, modern programming',
+        tag_line        => 'Perl in your inbox',
+        logo            => '_lists',
+        link            => 'Browse topics',
+        url             => '/all.html'
     };
 
    # we want to get the parsed datastructure cached in mod_perl, but
@@ -15,4 +18,3 @@
      lists = JSON.json_decode(json_string);
    END;
 -%]
-

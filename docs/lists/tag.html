@@ -6,16 +6,16 @@
     page.import({
         title    => 'Tag: ' _ tag,
         section  => tag,
-        description 
+        description
             => 'Perl mailing lists tagged ' _ tag,
     });
 -%]
 
-<h2>[% tag | ucfirst %]</h2>
+<h3>[% tag | ucfirst %]</h3>
+<br/>
 [% FOREACH list = tagmap.$tag.sort %]
   [% IF lists.$list.defunct; NEXT; END; %]
 <a href="/list/[% list %].html">[% lists.$list.name %]</a>
   &mdash; [% lists.$list.summary.substr(0, 50)
    %][% IF lists.$list.summary && lists.$list.summary.length > 50; %]...[% END %]<br />
 [% END %]
-
