@@ -144,13 +144,23 @@ h4 {
 
 /* Jumbotron */
 .jumbotron {
+  position: relative;
   #gradient .vertical(@gray-lighter; @gray-light; 0%; 100%);
   h1 {
     margin-top: 10px;
   }
 }
+.over-image {
+  z-index: 999;
+  position: relative;
+}
 .jumbotron-internal {
   padding: @jumbotron-padding/2;
+}
+.jumbotron .img-camel {
+  position:absolute;
+  right: -20px;
+  top: 20px;
 }
 
 /* Highlight module */
@@ -306,12 +316,18 @@ span.highlight {
     padding-left: @padding-xs-horizontal;
     padding-right: @padding-xs-horizontal;
   }
+  .jumbotron .img-camel {
+    right: -60px;
+  }
 }
 
 
 @media (max-width: @screen-sm-min) {
   .page-logo, .navbar-fixed-top .page-logo {
     width: 95px;
+  }
+  .section_home .jumbotron {
+    background: none;
   }
   .navbar-brand {
     padding: 8px 15px;
@@ -329,6 +345,15 @@ span.highlight {
     width: 100%;
     margin-bottom: 10px;
     overflow: hidden;
+    position: relative;
+    top: 30px;
+    margin-top: 30px;
+  }
+  .jumbotron .img-camel {
+    position: absolute;
+    right: 0;
+    top: auto;
+    bottom: -200px;
   }
   .sidebar {
     position: absolute;
