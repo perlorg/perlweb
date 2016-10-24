@@ -1,126 +1,69 @@
 [%
     page.import({
-        title    => 'Perl - Download',
+        title    => 'Perl Download',
         section  => 'download',
         description
-            => 'Downloading Perl',
+            => 'Getting started quickly',
         quick_links_1_title => 'Learning Perl',
         quick_links_1_list => ['<a href="http://learn.perl.org/">learn.perl.org</a> has many resources to help you get started, also contact others in the <a href="/community.html">Perl Community</a> to find out more and get help.'],
         quick_links_2_title => 'Commercial Support',
         quick_links_2_list => ['<a href="http://www.activestate.com/">ActiveState</a> offers commercial support for Perl.'],
         quick_links_3_title => 'CPAN',
         quick_links_3_list => ['The <a href="http://cpan.perl.org">Comprehensive Perl Archive Network</a> (CPAN) is a large repository of Perl software, modules, and documentation.  <a href="/cpan.html">Find out more...</a>.'],
-
-
     });
     # Add note recommending either building your own perl or using local::lib.
 %]
-[% BLOCK tip %]
-[%# no tips on this page %]
-[% END %]
 
-<h2>
-    Download Perl Distributions
-</h2>
-<h4>
-    Getting started quickly:
-</h4>
+<div class="jumbotron jumbotron-internal">
+  <div class="container text-center">
+    <h1>[% page.title %]</h1>
+    <p>[% page.description %]</p>
+  </div>
+</div>
 
-<style type="text/css">
-	.highlight{
-		background-color:#f0f0f0;
-	}
-	.download_table{
-		margin:20px 0;
-		text-align:center;
-	}
-	.download_table th,
-	.download_table td{
-		padding:10px;
-		text-align:center;
-		vertical-align:top;
-		font-size:0.90em;
-		border-right:1px dashed #fff;
-
-	}
-	.download_table th{
-		text-align:left;
-		font-size:0.85em;
-		border-bottom:1px dashed #f0f0f0;
-	}
-	.download_table td img{
-		vertical-align: middle;
-	}
-	.download_logos td{
-		color:#999;
-	}
-    .download_logos img:hover {
-      border: solid 1px blue;
-    }
-    .download_logos a:hover {
-      color: blue;
-    }
-
-	td .logo{
-		margin-bottom:3px;
-		display:inline;
-		border:1px solid #f0f0f0;
-	}
-	.button{
-		float:none;
-		margin:0 10px;
-	}
-	.button .extlink{
-		display:none;
-	}
-    .button.no-table {
-        width: 25%;
-        float: right;
-        clear: right;
-    }
-    .button .download img {
-      float: right;
-      margin-top: 5px;
-    }
-    .osinfo {
-      margin: 1em;
-      padding: 1em;
-      border: solid 1px black;
-
-    }
-</style>
-<table class="download_table highlight" cellspacing="0" cellpadding="0" width="100%">
-	<tr class="download_logos">
-		<td><a href="#unix_like"><img src="[% combust.static_url("/images/logos/linux.gif") %]" class="logo" alt="Unix/Linux" /><br />Unix/Linux</a></td>
-		<td><a href="#osx"><img src="[% combust.static_url("/images/logos/mac.gif") %]" class="logo" alt="Mac" /><br />Mac OS X</a></td>
-		<td><a href="#win32"><img src="[% combust.static_url("/images/logos/windows.gif") %]" class="logo" alt="Windows" /><br />Windows</a></td>
-	</tr>
-	<tr>
-		<td><img src="[% combust.static_url("/images/icons/tick.png") %]" alt="Included" /> Included<br /><small>(may not be latest)</small></td>
-		<td><img src="[% combust.static_url("/images/icons/tick.png") %]" alt="Included" /> Included<br /><small>(may not be latest)</small></td>
-        <td>
-            <a href="http://strawberryperl.com" class="download" title="Strawberry Perl"><img src="[% combust.static_url("/images/icons/download_arrow.gif") %]" alt="Download Needed" /></a><a href="http://strawberryperl.com" class="download" title="Strawberry Perl">Strawberry Perl</a><br />
-            <a href="http://www.activestate.com/activeperl/downloads" class="download" title="ActiveState Perl"><img src="[% combust.static_url("/images/icons/download_arrow.gif") %]" alt="Download Needed" /></a><a href="http://www.activestate.com/activeperl/downloads" class="download" title="ActiveState Perl">ActiveState Perl</a>
-        </td>
-	</tr>
-</table>
+<div class="container">
+  <div class="row row-height">
+    <div class="col-xs-12">
+      <h3>Perl runs on over [% perl_stats.platforms %] platforms!</h3>
+      <p>
+          We recommend that you always run the latest stable version, currently [% perl_stats.perl_version %].  If you're running a version older than 5.8.3, you may find that the latest version of CPAN modules will not work.
+      </p>
+    </div>
+    <div class="col-xs-12 col-sm-4 text-center">
+      <h3>Unix/Linux</h3>
+      <img src="[% combust.static_url("/images/logos/linux.gif") %]" width="120" alt="Unix/Linux" style="margin:auto;"/>
+      Included<br /><small>(may not be latest)</small><br/>
+      <a class="btn btn-success btn-block" href="#unix_like" role="button">
+        <img src="[% combust.static_url("/images/icons/ic_download.svg") %]" class="btn-ic hidden-xs">Get Started
+      </a>
+    </div>
+    <div class="col-xs-12 col-sm-4 text-center">
+      <h3>Mac OSX</h3>
+      <img src="[% combust.static_url("/images/logos/mac.gif") %]" width="120" alt="Windows" style="margin:auto;"/>
+      Included<br /><small>(may not be latest)</small><br/>
+      <a class="btn btn-success btn-block" href="#osx" role="button">
+        <img src="[% combust.static_url("/images/icons/ic_download.svg") %]" class="btn-ic hidden-xs">Get Started
+      </a>
+    </div>
+    <div class="col-xs-12 col-sm-4 text-center">
+      <h3>Windows</h3>
+      <img src="[% combust.static_url("/images/logos/windows.gif") %]" width="120" alt="Windows" style="margin:auto;"/>
+      <a href="http://strawberryperl.com" class="download" title="Strawberry Perl">Strawberry Perl</a> &
+      <a href="http://www.activestate.com/activeperl/downloads" class="download" title="ActiveState Perl">ActiveState Perl</a><br/>
+      <a class="btn btn-success btn-block" href="#win32" role="button">
+        <img src="[% combust.static_url("/images/icons/ic_download.svg") %]" class="btn-ic hidden-xs">Get Started
+      </a>
+    </div>
+  </div>
+</div>
 
 
-<p>
-    Perl runs on over [% perl_stats.platforms %] platforms!
-</p>
-
-<p>
-    We recommend that you always run the latest stable version, currently [% perl_stats.perl_version %].  If you're running a version older than 5.8.3, you may find that the latest version of CPAN modules will not work.
-</p>
-
-<h4>Operating System Information:</h4>
-
+<div class="container">
 [% BLOCK source %]
 <h3>
     Source
 </h3>
-<ul>
+<ul class="list-unstyled">
     <li> <p class="button no-table">
           <a href="http://www.cpan.org/src/5.0/perl-[% perl_stats.perl_version %].tar.gz"
              class="download" title="Latest Source Tarball"
@@ -139,17 +82,18 @@
 [% END %]
 
 
-<div id="unix_like" class="osinfo">
+<div id="unix_like" class="space-top-large">
     <h2>Unix</h2>
     <p>
       Running Linux, Solaris, AIX, HPUX, or any other UNIX-like system?
     </p>
 
     <h3>Binaries</h3>
-    <ul>
+    <ul class="list-unstyled">
       <li>
         <p class="button no-table">
-          <a style="background-image: url([% combust.static_url("/images/icons/tick.png);") %]">Already Installed</a>
+          <a style="background-image: url([% combust.static_url("/images/icons/tick.png);     background-repeat: no-repeat;
+    padding-left: 20px;") %]">Already Installed</a>
         </p>You probably already have perl
         installed. Type <code>perl&nbsp;-v</code> on a command line to
         find out which version.
@@ -170,16 +114,17 @@
 
 </div>
 
-<div id="osx" class="osinfo">
+<div id="osx" class="space-top-large">
     <h2>Mac OS X</h2>
     <p>
     </p>
 
     <h3>Binaries</h3>
-    <ul>
+    <ul class="list-unstyled">
       <li>
         <p class="button no-table">
-          <a style="background-image: url([% combust.static_url("/images/icons/tick.png);") %]">Already Installed</a>
+          <a style="background-image: url([% combust.static_url("/images/icons/tick.png); background-repeat: no-repeat;
+    padding-left: 20px;") %]">Already Installed</a>
         </p>Mac OS X already has Perl installed. Open a <i>Terminal</i> application (in the Utilities folder of your Applications folder) and run <code>perl&nbsp;-v</code> to find out which version.
       </li>
 
@@ -198,7 +143,7 @@
 
 </div>
 
-<div id="win32" class="osinfo">
+<div id="win32" class="space-top-large">
     <h2>Windows</h2>
     <p>
         Windows does not have Perl installed by default.
@@ -206,7 +151,7 @@
 
     <h3>Binaries</h3>
 
-    <ul>
+    <ul class="list-unstyled">
         <li>
             <p
             class="button no-table"><a href="http://www.activestate.com/activeperl/downloads"
@@ -240,13 +185,8 @@
             modules as possible.
             It even comes with <a href="http://padre.perlide.org/">Padre, the Perl IDE</a>.
       </li>
-
-
-
-
     </ul>
 
     [% INCLUDE source %]
-
 </div>
-
+</div>

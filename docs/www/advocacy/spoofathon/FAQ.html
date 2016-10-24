@@ -1,13 +1,20 @@
-[% 
+[%
     page.import({
         title    = 'The Perl Spoofathon: FAQ',
         section  = 'about',
-        description 
+        description
             = '',
     });
 
 %]
+<div class="jumbotron jumbotron-internal">
+  <div class="container text-center">
+    <h1>[% page.title %]</h1>
+    <p>[% page.description %]</p>
+  </div>
+</div>
 
+<div class="container">
 [% PROCESS advocacy/spoofathon/tpl/navigation.html %]
 
 <h2>Should the article follow a given structure?</h2>
@@ -39,4 +46,4 @@ verbose) then they are free to send it back to you with suggestions on how
 they think it could be improved. This isn't supposed to be a very formal
 competition, and the role of the judges is to get the funniest articles, not
 to determine who is the funniest author.</p>
-
+</div>

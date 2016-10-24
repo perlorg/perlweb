@@ -3,13 +3,11 @@
         RETURN;
     END;
 -%]
-<div class="quick_links">
-        <h4 class="round">
-            [% quick_link_title %]
-        </h4>
-        <div class="list">
+<div class="col-xs-12 col-sm-4">
+        <h4>[% quick_link_title %]</h4>
+        <ul class="list-unstyled">
         [% FOREACH p = quick_link_list %]
-        <p>[% p %]</p>        
+        <li>[% p %]</li>
         [% END %]
-        </div>
+        </ul>
 </div>

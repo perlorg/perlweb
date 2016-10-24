@@ -1,18 +1,20 @@
-[% 
+[%
     page.import({
         title    => 'Infrastructure Wishlist',
         section  => 'about',
-        description 
+        description
             => 'Perl.org Infrastructure Wishlist',
     });
-    
+
 %]
-<p>
-    <a name="wishlist" id="wishlist"></a>
-</p>
-<h4>
-    Wishlist
-</h4>
+<div class="jumbotron jumbotron-internal">
+  <div class="container text-center">
+    <h1>[% page.title %]</h1>
+    <p>[% page.description %]</p>
+  </div>
+</div>
+
+<div class="container">
 <ul>
     <li>1U or 2U servers, preferably i386 or AMD64 for our <a href="http://noc.perl.org/">various services</a> (web, email, revision control, ...). At least 8GB ram and room for two or more disks (we have all our system disks mirrored).
     </li>
@@ -31,3 +33,4 @@
 <p>
     If you have some other useful spare hardware or can help in another way, email webmaster at perl.org and we'll see if we can make use of it.
 </p>
+</div>

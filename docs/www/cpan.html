@@ -6,43 +6,50 @@
             => 'CPAN, Comprehensive Perl Archive Network has over '
             _ perl_stats.cpan_dists _ ' open source modules available for download.',
     });
-
-    # FIXME: mention number of authors
-
 -%]
 
-<h2>Comprehensive Perl Archive Network</h2>
-<p>
-The Comprehensive Perl Archive Network (<a href="http://www.cpan.org/">CPAN</a>) is an archive of over [% perl_stats.cpan_dists %] distributions of software written in Perl, as well as documentation for it. It is searchable <a href="http://metacpan.org/">http://metacpan.org/</a> or <a href="http://search.cpan.org/">http://search.cpan.org/</a> and <a href="http://mirrors.cpan.org/">mirrored</a> in over [% perl_stats.cpan_mirrors %] locations around the world.
-</p>
-<p>
-CPAN can denote either the archive network itself, or the <a href="http://metacpan.org/module/CPAN">Perl program</a> that acts as an interface to the network and as an automated software installer (somewhat like a package manager). Most software on CPAN is free and open source.
-</p>
+<div class="jumbotron jumbotron-internal">
+  <div class="container text-center">
+    <h1>[% page.title %]</h1>
+    <p>[% page.description %]</p>
+  </div>
+</div>
 
-<h4>Useful CPAN related sites</h4>
-<ul>
-    <li><a href="http://metacpan.org/">http://metacpan.org/</a> - search CPAN modules, distributions and authors</li>
-    <li><a href="http://search.cpan.org/">http://search.cpan.org/</a> - search CPAN modules, distributions and authors</li>
-    <li><a href="http://www.cpantesters.org/">http://www.cpantesters.org/</a> - test reports on CPAN modules</li>
-    <li><a href="http://rt.cpan.org/">http://rt.cpan.org/</a> - bug reports/wish list for CPAN modules</li>
-    <li><a href="http://www.cpanforum.com/">http://www.cpanforum.com/</a> - discussion of CPAN modules</li>
-    <li><a href="http://www.annocpan.org/">http://www.annocpan.org/</a> - find additional documentation on a specific module</li>
-    <li><a href="http://cpanratings.perl.org/">http://cpanratings.perl.org/</a> - find out ratings of specific modules</li>
-    <li><a href="http://prepan.org/">http://prepan.org/</a> - discuss module ideas and get feedback.
-</ul>
-
-<h4>
-    White paper
-</h4>
-<p>
-    <a href="/about/whitepapers/perl-cpan.html">CPAN white paper</a>
-</p>
-<h4>
-    Recommended modules
-</h4>
-<p>
-    If you are after a list of recommended modules, look at <a href="http://metacpan.org/module/Task::Kensho">Task::Kensho</a>.
-</p>
-
-
-[% quicknews ("cpanrecent", 'Latest Uploads to <a href="http://www.cpan.org/">CPAN</a>', 10) %]
+<div class="container">
+  <div class="row row-height">
+    <div class="col-xs-12">
+      <h3>Comprehensive Perl Archive Network</h3>
+      <p>
+      The Comprehensive Perl Archive Network (<a href="http://www.cpan.org/">CPAN</a>) is an archive of over [% perl_stats.cpan_dists %] distributions of software written in Perl, as well as documentation for it. It is searchable <a href="http://metacpan.org/">http://metacpan.org/</a> or <a href="http://search.cpan.org/">http://search.cpan.org/</a> and <a href="http://mirrors.cpan.org/">mirrored</a> in over [% perl_stats.cpan_mirrors %] locations around the world.
+      </p>
+      <p>
+      CPAN can denote either the archive network itself, or the <a href="http://metacpan.org/module/CPAN">Perl program</a> that acts as an interface to the network and as an automated software installer (somewhat like a package manager). Most software on CPAN is free and open source.
+      </p>
+    </div>
+    <div class="col-xs-12 col-sm-6">
+      <h3>Useful CPAN related sites</h3>
+      <ul>
+          <li><a href="http://metacpan.org/">http://metacpan.org/</a> - search CPAN modules, distributions and authors</li>
+          <li><a href="http://search.cpan.org/">http://search.cpan.org/</a> - search CPAN modules, distributions and authors</li>
+          <li><a href="http://www.cpantesters.org/">http://www.cpantesters.org/</a> - test reports on CPAN modules</li>
+          <li><a href="http://rt.cpan.org/">http://rt.cpan.org/</a> - bug reports/wish list for CPAN modules</li>
+          <li><a href="http://www.cpanforum.com/">http://www.cpanforum.com/</a> - discussion of CPAN modules</li>
+          <li><a href="http://www.annocpan.org/">http://www.annocpan.org/</a> - find additional documentation on a specific module</li>
+          <li><a href="http://cpanratings.perl.org/">http://cpanratings.perl.org/</a> - find out ratings of specific modules</li>
+          <li><a href="http://prepan.org/">http://prepan.org/</a> - discuss module ideas and get feedback.
+      </ul>
+    </div>
+    <div class="col-xs-12 col-sm-3">
+      <h3>White paper</h3>
+      <p>
+          <a href="/about/whitepapers/perl-cpan.html">CPAN white paper</a>
+      </p>
+    </div>
+    <div class="col-xs-12 col-sm-3">
+      <h3>Modules</h3>
+      <p>
+          If you are after a list of recommended modules, look at <a href="http://metacpan.org/module/Task::Kensho">Task::Kensho</a>.
+      </p>
+    </div>
+  </div>
+</div>

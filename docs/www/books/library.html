@@ -1,66 +1,77 @@
-[% 
+[%
     page.import({
-        title    = 'The Perl.org Online Library',
+        title    = 'Library',
         section  = 'learn',
-        description 
-        = 'Perl.org free online Perl books',
+        description
+        = 'The Perl.org free online Perl books',
     });
 
 
 
 %]
 
+<div class="jumbotron jumbotron-internal">
+  <div class="container text-center">
+    <h1>[% page.title %]</h1>
+    <p>[% page.description %]</p>
+  </div>
+</div>
 
+<div class="container">
 [% MACRO booklink(name,title) BLOCK %]
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<a href="#[% name %]">[% title %]</a>
+<li><a href="#[% name %]">[% title %]</a></li>
 [%- END %]
-    
 
-<p>
-    <a href="#fulltext"><b><u>Full Text</u></b></a> 
+<div class="row row-height">
+  <div class="col-xs-12 col-sm-6">
+    <h3>Full Text</h3>
+    <ul class="list-unstyled">
     [%
-       booklink("beginningperl","Beginning Perl"); 
-       booklink("modernperl","Modern Perl"); 
-       booklink("impatientperl","Impatient Perl"); 
-       booklink("extremeperl","Extreme Perl"); 
-       booklink("masonbook","Embedding Perl in HTML with Mason"); 
-       booklink("pup","Picking Up Perl"); 
-       booklink("perl5int","Perl 5 Internals"); 
-       booklink("pmp","Practical Mod Perl"); 
-       booklink("perllwp","Perl &amp; LWP"); 
+       booklink("beginningperl","Beginning Perl");
+       booklink("modernperl","Modern Perl");
+       booklink("impatientperl","Impatient Perl");
+       booklink("extremeperl","Extreme Perl");
+       booklink("masonbook","Embedding Perl in HTML with Mason");
+       booklink("pup","Picking Up Perl");
+       booklink("perl5int","Perl 5 Internals");
+       booklink("pmp","Practical Mod Perl");
+       booklink("perllwp","Perl &amp; LWP");
     %]
-    <br />
-    <br />
-    <a href="#sampletext"><b><u>Sample Chapters</u></b></a>
-    [% 
+  </ul>
+  </div>
+  <div class="col-xs-12 col-sm-6">
+    <h3>Sample chapters</h3>
+    <ul class="list-unstyled">
+    [%
        booklink("wampc","Writing Apache Modules with Perl and C");
        booklink("mpc","mod_perl Developer's Cookbook");
-       booklink("lwp","Perl &amp; LWP"); 
-    %]<a name="fulltext" id="fulltext"></a>
-</p>
-<h2>
-    Full Text
-</h2>
-
-[% BLOCK book_block %]
-<div class="book">
-    [% IF isbn %]
-        <iframe class="amazon" src="//rcm-na.amazon-adsystem.com/e/cm?lt1=_blank&amp;bc1=FFFFFF&amp;IS2=1&amp;bg1=FFFFFF&amp;fc1=000000&amp;lc1=0000FF&amp;t=develooper&amp;o=1&amp;p=8&amp;l=as1&amp;m=amazon&amp;f=ifr&amp;asins=[% isbn %]" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>[% END %]
-    <b><a name="[% name %]" class="title"[% IF link %] href="[% link %]"[% END %]>[% title %]</a></b> <br />
-    <span class="author">[% author %]</span><br />
-    <p class="description">
-        [% IF link %]<a [% IF link.match('http') %] [% END %] href="[% link %]"><strong>Read [% IF sample %]sample chapters[% ELSE %]the entire book free[% END %] online...</strong></a><br />[% END %]
-[% description %]
-        
-    </p>
-    [% IF isbn %]
-    <p class="buy">
-        Buy from: [% INCLUDE "tpl/bookstore-links" style="text" %]
-    </p>
-    [% END %]
+       booklink("lwp","Perl &amp; LWP");
+    %]
+  </ul>
+  </div>
 </div>
-[% END %]
+
+<div class="row row-height">
+  [% BLOCK book_block %]
+  <div class="col-xs-12 col-sm-6 space-top-large">
+      <h3 id="[% name %]">[% title %]</h3>
+      [% IF isbn %]
+          <iframe class="amazon" src="http://rcm-na.amazon-adsystem.com/e/cm?lt1=_blank&amp;bc1=FFFFFF&amp;IS2=1&amp;bg1=FFFFFF&amp;fc1=000000&amp;lc1=0000FF&amp;t=develooper&amp;o=1&amp;p=8&amp;l=as1&amp;m=amazon&amp;f=ifr&amp;asins=[% isbn %]" style="width:120px;height:240px;margin:0 auto" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+      [% ELSE %]
+        <img src="[% combust.static_url('/images/icons/empty-book.png') %]" style="width:120px;height:240px;margin:0 auto">
+      [% END %]
+      <span class="author">[% author %]</span><br />
+      <p class="description">
+          [% IF link %]<a [% IF link.match('http') %] [% END %] href="[% link %]"><strong>Read [% IF sample %]sample chapters[% ELSE %]the entire book free[% END %] online...</strong></a><br />[% END %]
+  [% description %]
+      </p>
+      [% IF isbn %]
+      <p class="buy">
+          Buy from: [% INCLUDE "tpl/bookstore-links" style="text" %]
+      </p>
+      [% END %]
+  </div>
+  [% END %]
 
 [% PROCESS book_block
     name => 'beginningperl',
@@ -154,21 +165,13 @@
     264 pages;
      O\'Reilly Media; first edition (20 Jun 2002) with corrections (2007)',
     description => "
-    <i>Perl &amp; LWP</i> explains how to write programs that browse the Web, 
-    using the excellent Library for the World Wide Web or LWP. It is aimed 
-    at developers who already know both Perl and HTML, although you 
+    <i>Perl &amp; LWP</i> explains how to write programs that browse the Web,
+    using the excellent Library for the World Wide Web or LWP. It is aimed
+    at developers who already know both Perl and HTML, although you
     don't need to be an expert in either.
     ",
 %]
 
-<div class="book">
-<p>
-    <a name="sampletext" id="sampletext"></a>
-</p>
-<h2>
-    Sample Chapters Only:
-</h2>
-</div>
 
 [% PROCESS book_block
     name => 'wampc',
@@ -199,3 +202,5 @@
     author => "by Sean M. Burke. 264 pages. O'Reilly &amp; Associates. (June 2002)",
     description => "The LWP (Library for WWW in Perl) suite of modules lets your programs download and extract information from the Web. Perl &amp; LWP shows how to make web requests, submit forms, and even provide authentication information, and it demonstrates using regular expressions, tokens, and trees to parse HTML. This book is a must have for Perl programmers who want to automate and mine the Web.",
 %]
+</div>
+</div>

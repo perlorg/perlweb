@@ -1,11 +1,20 @@
-[% 
+[%
     page.import({
         title    = 'Impatient Perl (free)',
         section  = 'learn',
-        description 
+        description
             = 'Perl.org free online Perl books: Impatient Perl',
     });
 %]
+
+<div class="jumbotron jumbotron-internal">
+  <div class="container text-center">
+    <h1>[% page.title %]</h1>
+    <p>[% page.description %]</p>
+  </div>
+</div>
+
+<div class="container">
 
 <h2>by Greg London</h2>
 
@@ -16,7 +25,7 @@
            >View online (HTML)</a></li>
     <li><a href="http://docs.google.com/viewer?url=[% 'http://blob.perl.org/books/impatient-perl/iperl.pdf' | uri %]">View online (PDF)</a></li>
     <li><a href="http://blob.perl.org/books/impatient-perl/iperl.pdf">Download (PDF)</a></li>
-    <li>Author's Website: 
+    <li>Author's Website:
       <a href="http://www.greglondon.com/">www.greglondon.com</a></li>
     </ul>
 
@@ -53,3 +62,4 @@ circa 1987. A few changes have occurred between then and now. The
 current version of Perl has exceeded 5.8.0 and is a highly recommended
 upgrade.
 </p>
+</div>

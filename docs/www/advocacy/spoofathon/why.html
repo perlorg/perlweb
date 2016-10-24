@@ -1,14 +1,21 @@
-[% 
+[%
     page.import({
         title    = 'The Perl Spoofathon: Why?',
         section  = 'about',
-        description 
+        description
             = '',
     });
 %]
 
 [% PROCESS advocacy/spoofathon/tpl/navigation.html %]
+<div class="jumbotron jumbotron-internal">
+  <div class="container text-center">
+    <h1>[% page.title %]</h1>
+    <p>[% page.description %]</p>
+  </div>
+</div>
 
+<div class="container">
 <h2>Why the advocacy spoofathon?</h2>
 <p>There seem to be many language advocates who like writing "my language is
 better than your language" comparison articles.  There have been several badly
@@ -48,3 +55,4 @@ over all other solutions (not just perl). Mis-education benefits no-one.
 <p>I can't stop third parties writing these articles. But I do hope I can start
 to make people treat them with the seriousness that they deserve. Hence the
 competition.</p>
+</div>
