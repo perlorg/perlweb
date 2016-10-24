@@ -1,23 +1,17 @@
 [%
   FILTER navigation_class(combust.request.path) %]
-<ul>
-    <li>
-        <a href="/">Home</a>
-    </li>
-    <li>
+<ul class="list-inline text-center nav navbar-nav navbar-right">
+    <li class="sub">
         <a href="/search">Search</a>
     </li>
-    <li>
+    <li class="sub">
         <a href="/about.html">About</a>
     </li>
-    <li>
-        <a href="[% combust.account_url | html %]">Bitcard Account</a>
-    </li> 
-    <li>
+    <li class="sub">
+        <a href="[% html(combust.account_url)  %]">Bitcard Account</a>
+    </li>
+    <li class="sub">
         <a id="login_link" class="login" href="[% combust.login_url | html %]">Login</a>
     </li>
 </ul>
 [% END %]
-
-
-
