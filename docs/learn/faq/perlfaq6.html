@@ -46,19 +46,19 @@
   <li><a href="#AUTHOR-AND-COPYRIGHT">AUTHOR AND COPYRIGHT</a></li>
 </ul>
 
-<h1 id="NAME">NAME</h1>
+<h2 id="NAME">NAME</h2>
 
 <p>perlfaq6 - Regular Expressions</p>
 
-<h1 id="VERSION">VERSION</h1>
+<h2 id="VERSION">VERSION</h2>
 
 <p>version 5.021011</p>
 
-<h1 id="DESCRIPTION">DESCRIPTION</h1>
+<h2 id="DESCRIPTION">DESCRIPTION</h2>
 
 <p>This section is surprisingly small because the rest of the FAQ is littered with answers involving regular expressions. For example, decoding a URL and checking whether something is a number can be handled with regular expressions, but those answers are found elsewhere in this document (in <a href="perlfaq9.html">perlfaq9</a>: &quot;How do I decode or create those %-encodings on the web&quot; and <a href="perlfaq4.html">perlfaq4</a>: &quot;How do I determine whether a scalar is a number/whole/integer/float&quot;, to be precise).</p>
 
-<h2 id="How-can-I-hope-to-use-regular-expressions-without-creating-illegible-and-unmaintainable-code">How can I hope to use regular expressions without creating illegible and unmaintainable code?    </h2>
+<h3 id="How-can-I-hope-to-use-regular-expressions-without-creating-illegible-and-unmaintainable-code">How can I hope to use regular expressions without creating illegible and unmaintainable code?    </h3>
 
 <p>Three techniques can make regular expressions maintainable and understandable.</p>
 
@@ -114,7 +114,7 @@
 </dd>
 </dl>
 
-<h2 id="Im-having-trouble-matching-over-more-than-one-line.-Whats-wrong">I&#39;m having trouble matching over more than one line. What&#39;s wrong?   </h2>
+<h3 id="Im-having-trouble-matching-over-more-than-one-line.-Whats-wrong">I&#39;m having trouble matching over more than one line. What&#39;s wrong?   </h3>
 
 <p>Either you don&#39;t have more than one line in the string you&#39;re looking at (probably), or else you aren&#39;t using the correct modifier(s) on your pattern (possibly).</p>
 
@@ -149,7 +149,7 @@
         }
     }</pre>
 
-<h2 id="How-can-I-pull-out-lines-between-two-patterns-that-are-themselves-on-different-lines">How can I pull out lines between two patterns that are themselves on different lines? </h2>
+<h3 id="How-can-I-pull-out-lines-between-two-patterns-that-are-themselves-on-different-lines">How can I pull out lines between two patterns that are themselves on different lines? </h3>
 
 <p>You can use Perl&#39;s somewhat exotic <code>..</code> operator (documented in <a href="https://metacpan.org/module/perlop">perlop</a>):</p>
 
@@ -171,11 +171,11 @@
         $. = 0 if eof;    # fix $.
     }</pre>
 
-<h2 id="How-do-I-match-XML-HTML-or-other-nasty-ugly-things-with-a-regex">How do I match XML, HTML, or other nasty, ugly things with a regex?       </h2>
+<h3 id="How-do-I-match-XML-HTML-or-other-nasty-ugly-things-with-a-regex">How do I match XML, HTML, or other nasty, ugly things with a regex?       </h3>
 
 <p>Do not use regexes. Use a module and forget about the regular expressions. The <a href="https://metacpan.org/module/XML::LibXML">XML::LibXML</a>, <a href="https://metacpan.org/module/HTML::TokeParser">HTML::TokeParser</a> and <a href="https://metacpan.org/module/HTML::TreeBuilder">HTML::TreeBuilder</a> modules are good starts, although each namespace has other parsing modules specialized for certain tasks and different ways of doing it. Start at CPAN Search ( <a href="http://metacpan.org/">http://metacpan.org/</a> ) and wonder at all the work people have done for you already! :)</p>
 
-<h2 id="I-put-a-regular-expression-into-but-it-didnt-work.-Whats-wrong">I put a regular expression into $/ but it didn&#39;t work. What&#39;s wrong?   </h2>
+<h3 id="I-put-a-regular-expression-into-but-it-didnt-work.-Whats-wrong">I put a regular expression into $/ but it didn&#39;t work. What&#39;s wrong?   </h3>
 
 <p>$/ has to be a string. You can use these examples if you really need to do this.</p>
 
@@ -212,7 +212,7 @@
         substr( $_, 0, pos ) = &quot;&quot; if pos;
     }</pre>
 
-<h2 id="How-do-I-substitute-case-insensitively-on-the-LHS-while-preserving-case-on-the-RHS">How do I substitute case-insensitively on the LHS while preserving case on the RHS?    </h2>
+<h3 id="How-do-I-substitute-case-insensitively-on-the-LHS-while-preserving-case-on-the-RHS">How do I substitute case-insensitively on the LHS while preserving case on the RHS?    </h3>
 
 <p>Here&#39;s a lovely Perlish solution by Larry Rosler. It exploits properties of bitwise xor on ASCII strings.</p>
 
@@ -294,19 +294,19 @@
         return $new;
     }</pre>
 
-<h2 id="How-can-I-make-w-match-national-character-sets">How can I make <code>\w</code> match national character sets? </h2>
+<h3 id="How-can-I-make-w-match-national-character-sets">How can I make <code>\w</code> match national character sets? </h3>
 
 <p>Put <code>use locale;</code> in your script. The \w character class is taken from the current locale.</p>
 
 <p>See <a href="https://metacpan.org/module/perllocale">perllocale</a> for details.</p>
 
-<h2 id="How-can-I-match-a-locale-smart-version-of-a-zA-Z">How can I match a locale-smart version of <code>/[a-zA-Z]/</code>? </h2>
+<h3 id="How-can-I-match-a-locale-smart-version-of-a-zA-Z">How can I match a locale-smart version of <code>/[a-zA-Z]/</code>? </h3>
 
 <p>You can use the POSIX character class syntax <code>/[[:alpha:]]/</code> documented in <a href="https://metacpan.org/module/perlre">perlre</a>.</p>
 
 <p>No matter which locale you are in, the alphabetic characters are the characters in \w without the digits and the underscore. As a regex, that looks like <code>/[^\W\d_]/</code>. Its complement, the non-alphabetics, is then everything in \W along with the digits and the underscore, or <code>/[\W\d_]/</code>.</p>
 
-<h2 id="How-can-I-quote-a-variable-to-use-in-a-regex">How can I quote a variable to use in a regex?   </h2>
+<h3 id="How-can-I-quote-a-variable-to-use-in-a-regex">How can I quote a variable to use in a regex?   </h3>
 
 <p>The Perl parser will expand $variable and @variable references in regular expressions unless the delimiter is a single quote. Remember, too, that the right-hand side of a <code>s///</code> substitution is considered a double-quoted string (see <a href="https://metacpan.org/module/perlop">perlop</a> for more details). Remember also that any regex special characters will be acted on unless you precede the substitution with \Q. Here&#39;s an example:</p>
 
@@ -328,7 +328,7 @@
 
 <p>The use of <code>\Q</code> causes the &lt;.&gt; in the regex to be treated as a regular character, so that <code>P.</code> matches a <code>P</code> followed by a dot.</p>
 
-<h2 id="What-is-o-really-for">What is <code>/o</code> really for?  </h2>
+<h3 id="What-is-o-really-for">What is <code>/o</code> really for?  </h3>
 
 <p>(contributed by brian d foy)</p>
 
@@ -365,7 +365,7 @@
         print STDERR &quot;\t$_ is good!\n&quot; if m/$regex/;
     }</pre>
 
-<h2 id="How-do-I-use-a-regular-expression-to-strip-C-style-comments-from-a-file">How do I use a regular expression to strip C-style comments from a file?</h2>
+<h3 id="How-do-I-use-a-regular-expression-to-strip-C-style-comments-from-a-file">How do I use a regular expression to strip C-style comments from a file?</h3>
 
 <p>While this actually can be done, it&#39;s much harder than you&#39;d think. For example, this one-liner</p>
 
@@ -421,7 +421,7 @@
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false"> s#/\*[^*]*\*+([^/*][^*]*\*+)*/|//([^\\]|[^\n][\n]?)*?\n|(&quot;(\\.|[^&quot;\\])*&quot;|&#39;(\\.|[^&#39;\\])*&#39;|.[^/&quot;&#39;\\]*)#defined $3 ? $3 : &quot;&quot;#gse;</pre>
 
-<h2 id="Can-I-use-Perl-regular-expressions-to-match-balanced-text">Can I use Perl regular expressions to match balanced text?         </h2>
+<h3 id="Can-I-use-Perl-regular-expressions-to-match-balanced-text">Can I use Perl regular expressions to match balanced text?         </h3>
 
 <p>(contributed by brian d foy)</p>
 
@@ -520,7 +520,7 @@
     Found:
         &lt;nested twice&gt;</pre>
 
-<h2 id="What-does-it-mean-that-regexes-are-greedy-How-can-I-get-around-it">What does it mean that regexes are greedy? How can I get around it?  </h2>
+<h3 id="What-does-it-mean-that-regexes-are-greedy-How-can-I-get-around-it">What does it mean that regexes are greedy? How can I get around it?  </h3>
 
 <p>Most people mean that greedy regexes match as much as they can. Technically speaking, it&#39;s actually the quantifiers (<code>?</code>, <code>*</code>, <code>+</code>, <code>{}</code>) that are greedy rather than the whole pattern; Perl prefers local greed and immediate gratification to overall greed. To get non-greedy versions of the same quantifiers, use (<code>??</code>, <code>*?</code>, <code>+?</code>, <code>{}?</code>).</p>
 
@@ -532,7 +532,7 @@
 
 <p>Notice how the second substitution stopped matching as soon as it encountered &quot;y &quot;. The <code>*?</code> quantifier effectively tells the regular expression engine to find a match as quickly as possible and pass control on to whatever is next in line, as you would if you were playing hot potato.</p>
 
-<h2 id="How-do-I-process-each-word-on-each-line">How do I process each word on each line? </h2>
+<h3 id="How-do-I-process-each-word-on-each-line">How do I process each word on each line? </h3>
 
 <p>Use the split function:</p>
 
@@ -552,7 +552,7 @@
         }
     }</pre>
 
-<h2 id="How-can-I-print-out-a-word-frequency-or-line-frequency-summary">How can I print out a word-frequency or line-frequency summary?</h2>
+<h3 id="How-can-I-print-out-a-word-frequency-or-line-frequency-summary">How can I print out a word-frequency or line-frequency summary?</h3>
 
 <p>To do this, you have to parse out each word in the input stream. We&#39;ll pretend that by word you mean chunk of alphabetics, hyphens, or apostrophes, rather than the non-whitespace chunk idea of a word given in the previous question:</p>
 
@@ -581,11 +581,11 @@
 
 <p>If you want these output in a sorted order, see <a href="perlfaq4.html">perlfaq4</a>: &quot;How do I sort a hash (optionally by value instead of key)?&quot;.</p>
 
-<h2 id="How-can-I-do-approximate-matching">How can I do approximate matching?  </h2>
+<h3 id="How-can-I-do-approximate-matching">How can I do approximate matching?  </h3>
 
 <p>See the module <a href="https://metacpan.org/module/String::Approx">String::Approx</a> available from CPAN.</p>
 
-<h2 id="How-do-I-efficiently-match-many-regular-expressions-at-once">How do I efficiently match many regular expressions at once?   </h2>
+<h3 id="How-do-I-efficiently-match-many-regular-expressions-at-once">How do I efficiently match many regular expressions at once?   </h3>
 
 <p>(contributed by brian d foy)</p>
 
@@ -635,7 +635,7 @@
 
 <p>For more details on regular expression efficiency, see <i>Mastering Regular Expressions</i> by Jeffrey Friedl. He explains how the regular expressions engine works and why some patterns are surprisingly inefficient. Once you understand how perl applies regular expressions, you can tune them for individual situations.</p>
 
-<h2 id="Why-dont-word-boundary-searches-with-b-work-for-me">Why don&#39;t word-boundary searches with <code>\b</code> work for me? </h2>
+<h3 id="Why-dont-word-boundary-searches-with-b-work-for-me">Why don&#39;t word-boundary searches with <code>\b</code> work for me? </h3>
 
 <p>(contributed by brian d foy)</p>
 
@@ -678,7 +678,7 @@
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    &quot;Sam&quot;      # no word boundary before &quot;a&quot;, but one after &quot;m&quot;
     &quot;I am Sam&quot; # &quot;am&quot; surrounded by non-word chars</pre>
 
-<h2 id="Why-does-using-or-slow-my-program-down">Why does using $&amp;, $`, or $&#39; slow my program down?      </h2>
+<h3 id="Why-does-using-or-slow-my-program-down">Why does using $&amp;, $`, or $&#39; slow my program down?      </h3>
 
 <p>(contributed by Anno Siegel)</p>
 
@@ -688,7 +688,7 @@
 
 <p>Perl 5.10 added three specials, <code>${^MATCH}</code>, <code>${^PREMATCH}</code>, and <code>${^POSTMATCH}</code> to do the same job but without the global performance penalty. Perl 5.10 only sets these variables if you compile or execute the regular expression with the <code>/p</code> modifier.</p>
 
-<h2 id="What-good-is-G-in-a-regular-expression">What good is <code>\G</code> in a regular expression? </h2>
+<h3 id="What-good-is-G-in-a-regular-expression">What good is <code>\G</code> in a regular expression? </h3>
 
 <p>You use the <code>\G</code> anchor to start the next match on the same string where the last match left off. The regular expression engine cannot skip over any characters to find the next match with this anchor, so <code>\G</code> is similar to the beginning of string anchor, <code>^</code>. The <code>\G</code> anchor is typically used with the <code>g</code> flag. It uses the value of <code>pos()</code> as the position to start the next match. As the match operator makes successive matches, it updates <code>pos()</code> with the position of the next character past the last match (or the first character of the next match, depending on how you like to look at it). Each string has its own <code>pos()</code> value.</p>
 
@@ -741,17 +741,17 @@
 
 <p>For each line, the <code>PARSER</code> loop first tries to match a series of digits followed by a word boundary. This match has to start at the place the last match left off (or the beginning of the string on the first match). Since <code>m/ \G( \d+\b )/gcx</code> uses the <code>c</code> flag, if the string does not match that regular expression, perl does not reset pos() and the next match starts at the same position to try a different pattern.</p>
 
-<h2 id="Are-Perl-regexes-DFAs-or-NFAs-Are-they-POSIX-compliant">Are Perl regexes DFAs or NFAs? Are they POSIX compliant?   </h2>
+<h3 id="Are-Perl-regexes-DFAs-or-NFAs-Are-they-POSIX-compliant">Are Perl regexes DFAs or NFAs? Are they POSIX compliant?   </h3>
 
 <p>While it&#39;s true that Perl&#39;s regular expressions resemble the DFAs (deterministic finite automata) of the egrep(1) program, they are in fact implemented as NFAs (non-deterministic finite automata) to allow backtracking and backreferencing. And they aren&#39;t POSIX-style either, because those guarantee worst-case behavior for all cases. (It seems that some people prefer guarantees of consistency, even when what&#39;s guaranteed is slowness.) See the book &quot;Mastering Regular Expressions&quot; (from O&#39;Reilly) by Jeffrey Friedl for all the details you could ever hope to know on these matters (a full citation appears in <a href="perlfaq2.html">perlfaq2</a>).</p>
 
-<h2 id="Whats-wrong-with-using-grep-in-a-void-context">What&#39;s wrong with using grep in a void context? </h2>
+<h3 id="Whats-wrong-with-using-grep-in-a-void-context">What&#39;s wrong with using grep in a void context? </h3>
 
 <p>The problem is that grep builds a return list, regardless of the context. This means you&#39;re making Perl go to the trouble of building a list that you then just throw away. If the list is large, you waste both time and space. If your intent is to iterate over the list, then use a for loop for this purpose.</p>
 
 <p>In perls older than 5.8.1, map suffers from this problem as well. But since 5.8.1, this has been fixed, and map is context aware - in void context, no lists are constructed.</p>
 
-<h2 id="How-can-I-match-strings-with-multibyte-characters">How can I match strings with multibyte characters?     </h2>
+<h3 id="How-can-I-match-strings-with-multibyte-characters">How can I match strings with multibyte characters?     </h3>
 
 <p>Starting from Perl 5.6 Perl has had some level of multibyte character support. Perl 5.8 or later is recommended. Supported multibyte character repertoires include Unicode, and legacy encodings through the Encode module. See <a href="https://metacpan.org/module/perluniintro">perluniintro</a>, <a href="https://metacpan.org/module/perlunicode">perlunicode</a>, and <a href="https://metacpan.org/module/Encode">Encode</a>.</p>
 
@@ -802,7 +802,7 @@
 
 <p>It does have the drawback of putting the wrong thing in $-[0] and $+[0], but this usually can be worked around.</p>
 
-<h2 id="How-do-I-match-a-regular-expression-thats-in-a-variable">How do I match a regular expression that&#39;s in a variable?       </h2>
+<h3 id="How-do-I-match-a-regular-expression-thats-in-a-variable">How do I match a regular expression that&#39;s in a variable?       </h3>
 
 <p>(contributed by brian d foy)</p>
 
@@ -864,7 +864,7 @@
         warn $@;
     }</pre>
 
-<h1 id="AUTHOR-AND-COPYRIGHT">AUTHOR AND COPYRIGHT</h1>
+<h2 id="AUTHOR-AND-COPYRIGHT">AUTHOR AND COPYRIGHT</h2>
 
 <p>Copyright (c) 1997-2010 Tom Christiansen, Nathan Torkington, and other authors as noted. All rights reserved.</p>
 

@@ -53,25 +53,25 @@
   <li><a href="#AUTHOR-AND-COPYRIGHT">AUTHOR AND COPYRIGHT</a></li>
 </ul>
 
-<h1 id="NAME">NAME</h1>
+<h2 id="NAME">NAME</h2>
 
 <p>perlfaq7 - General Perl Language Issues</p>
 
-<h1 id="VERSION">VERSION</h1>
+<h2 id="VERSION">VERSION</h2>
 
 <p>version 5.021011</p>
 
-<h1 id="DESCRIPTION">DESCRIPTION</h1>
+<h2 id="DESCRIPTION">DESCRIPTION</h2>
 
 <p>This section deals with general Perl language issues that don&#39;t clearly fit into any of the other sections.</p>
 
-<h2 id="Can-I-get-a-BNF-yacc-RE-for-the-Perl-language">Can I get a BNF/yacc/RE for the Perl language?</h2>
+<h3 id="Can-I-get-a-BNF-yacc-RE-for-the-Perl-language">Can I get a BNF/yacc/RE for the Perl language?</h3>
 
 <p>There is no BNF, but you can paw your way through the yacc grammar in perly.y in the source distribution if you&#39;re particularly brave. The grammar relies on very smart tokenizing code, so be prepared to venture into toke.c as well.</p>
 
 <p>In the words of Chaim Frenkel: &quot;Perl&#39;s grammar can not be reduced to BNF. The work of parsing perl is distributed between yacc, the lexer, smoke and mirrors.&quot;</p>
 
-<h2 id="What-are-all-these-punctuation-signs-and-how-do-I-know-when-to-use-them">What are all these $@%&amp;* punctuation signs, and how do I know when to use them?</h2>
+<h3 id="What-are-all-these-punctuation-signs-and-how-do-I-know-when-to-use-them">What are all these $@%&amp;* punctuation signs, and how do I know when to use them?</h3>
 
 <p>They are type specifiers, as detailed in <a href="https://metacpan.org/module/perldata">perldata</a>:</p>
 
@@ -89,7 +89,7 @@
 
 <p>Note that &lt;FILE&gt; is <i>neither</i> the type specifier for files nor the name of the handle. It is the <code>&lt;&gt;</code> operator applied to the handle FILE. It reads one line (well, record--see <a href="https://metacpan.org/module/perlvar#pod">&quot;$/&quot; in perlvar</a>) from the handle FILE in scalar context, or <i>all</i> lines in list context. When performing open, close, or any other operation besides <code>&lt;&gt;</code> on files, or even when talking about the handle, do <i>not</i> use the brackets. These are correct: <code>eof(FH)</code>, <code>seek(FH, 0, 2)</code> and &quot;copying from STDIN to FILE&quot;.</p>
 
-<h2 id="Do-I-always-never-have-to-quote-my-strings-or-use-semicolons-and-commas">Do I always/never have to quote my strings or use semicolons and commas?</h2>
+<h3 id="Do-I-always-never-have-to-quote-my-strings-or-use-semicolons-and-commas">Do I always/never have to quote my strings or use semicolons and commas?</h3>
 
 <p>Normally, a bareword doesn&#39;t need to be quoted, but in most cases probably should be (and must be under <code>use strict</code>). But a hash key consisting of a simple word and the left-hand operand to the <code>=&gt;</code> operator both count as though they were quoted:</p>
 
@@ -112,7 +112,7 @@
         &quot;And lost he wandered under leaves&quot;,
     );</pre>
 
-<h2 id="How-do-I-skip-some-return-values">How do I skip some return values?</h2>
+<h3 id="How-do-I-skip-some-return-values">How do I skip some return values?</h3>
 
 <p>One way is to treat the return values as a list and index into it:</p>
 
@@ -126,7 +126,7 @@
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    ($dev, $ino, $uid, $gid) = ( stat($file) )[0,1,4,5];</pre>
 
-<h2 id="How-do-I-temporarily-block-warnings">How do I temporarily block warnings?</h2>
+<h3 id="How-do-I-temporarily-block-warnings">How do I temporarily block warnings?</h3>
 
 <p>If you are running Perl 5.6.0 or better, the <code>use warnings</code> pragma allows fine control of what warnings are produced. See <a href="https://metacpan.org/module/perllexwarn">perllexwarn</a> for more details.</p>
 
@@ -151,11 +151,11 @@
 
 <p>Note that like all the punctuation variables, you cannot currently use my() on <code>$^W</code>, only local().</p>
 
-<h2 id="Whats-an-extension">What&#39;s an extension?</h2>
+<h3 id="Whats-an-extension">What&#39;s an extension?</h3>
 
 <p>An extension is a way of calling compiled C code from Perl. Reading <a href="https://metacpan.org/module/perlxstut">perlxstut</a> is a good place to learn more about extensions.</p>
 
-<h2 id="Why-do-Perl-operators-have-different-precedence-than-C-operators">Why do Perl operators have different precedence than C operators?</h2>
+<h3 id="Why-do-Perl-operators-have-different-precedence-than-C-operators">Why do Perl operators have different precedence than C operators?</h3>
 
 <p>Actually, they don&#39;t. All C operators that Perl copies have the same precedence in Perl as they do in C. The problem is with operators that C doesn&#39;t have, especially functions that give a list context to everything on their right, eg. print, chmod, exec, and so on. Such functions are called &quot;list operators&quot; and appear as such in the precedence table in <a href="https://metacpan.org/module/perlop">perlop</a>.</p>
 
@@ -180,7 +180,7 @@
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    ($maybe ? $if_true : $if_false) = $x;</pre>
 
-<h2 id="How-do-I-declare-create-a-structure">How do I declare/create a structure?</h2>
+<h3 id="How-do-I-declare-create-a-structure">How do I declare/create a structure?</h3>
 
 <p>In general, you don&#39;t &quot;declare&quot; a structure. Just use a (probably anonymous) hash reference. See <a href="https://metacpan.org/module/perlref">perlref</a> and <a href="https://metacpan.org/module/perldsc">perldsc</a> for details. Here&#39;s an example:</p>
 
@@ -190,7 +190,7 @@
 
 <p>If you&#39;re looking for something a bit more rigorous, try <a href="https://metacpan.org/module/perlootut">perlootut</a>.</p>
 
-<h2 id="How-do-I-create-a-module">How do I create a module?</h2>
+<h3 id="How-do-I-create-a-module">How do I create a module?</h3>
 
 <p><a href="https://metacpan.org/module/perlnewmod">perlnewmod</a> is a good place to start, ignore the bits about uploading to CPAN if you don&#39;t want to make your module publicly available.</p>
 
@@ -198,9 +198,9 @@
 
 <p>Detailed documentation about modules can be found at: <a href="https://metacpan.org/module/perlmod">perlmod</a>, <a href="https://metacpan.org/module/perlmodlib">perlmodlib</a>, <a href="https://metacpan.org/module/perlmodstyle">perlmodstyle</a>.</p>
 
-<p>If you need to include C code or C library interfaces use h2xs. h2xs will create the module distribution structure and the initial interface files. <a href="https://metacpan.org/module/perlxs">perlxs</a> and <a href="https://metacpan.org/module/perlxstut">perlxstut</a> explain the details.</p>
+<p>If you need to include C code or C library interfaces use h3xs. h3xs will create the module distribution structure and the initial interface files. <a href="https://metacpan.org/module/perlxs">perlxs</a> and <a href="https://metacpan.org/module/perlxstut">perlxstut</a> explain the details.</p>
 
-<h2 id="How-do-I-adopt-or-take-over-a-module-already-on-CPAN">How do I adopt or take over a module already on CPAN?</h2>
+<h3 id="How-do-I-adopt-or-take-over-a-module-already-on-CPAN">How do I adopt or take over a module already on CPAN?</h3>
 
 <p>Ask the current maintainer to make you a co-maintainer or transfer the module to you.</p>
 
@@ -222,7 +222,7 @@
 </li>
 </ul>
 
-<h2 id="How-do-I-create-a-class">How do I create a class?  </h2>
+<h3 id="How-do-I-create-a-class">How do I create a class?  </h3>
 
 <p>(contributed by brian d foy)</p>
 
@@ -230,11 +230,11 @@
 
 <p>See also <a href="https://metacpan.org/module/perlootut">perlootut</a>, a tutorial that covers class creation, and <a href="https://metacpan.org/module/perlobj">perlobj</a>.</p>
 
-<h2 id="How-can-I-tell-if-a-variable-is-tainted">How can I tell if a variable is tainted?</h2>
+<h3 id="How-can-I-tell-if-a-variable-is-tainted">How can I tell if a variable is tainted?</h3>
 
 <p>You can use the tainted() function of the Scalar::Util module, available from CPAN (or included with Perl since release 5.8.0). See also <a href="https://metacpan.org/module/perlsec#Laundering-and-Detecting-Tainted-Data">&quot;Laundering and Detecting Tainted Data&quot; in perlsec</a>.</p>
 
-<h2 id="Whats-a-closure">What&#39;s a closure?</h2>
+<h3 id="Whats-a-closure">What&#39;s a closure?</h3>
 
 <p>Closures are documented in <a href="https://metacpan.org/module/perlref">perlref</a>.</p>
 
@@ -281,7 +281,7 @@
 
 <p>This is discussed in more detail in <a href="https://metacpan.org/module/perlsub">perlsub</a>; see the entry on <i>Persistent Private Variables</i>.</p>
 
-<h2 id="What-is-variable-suicide-and-how-can-I-prevent-it">What is variable suicide and how can I prevent it?</h2>
+<h3 id="What-is-variable-suicide-and-how-can-I-prevent-it">What is variable suicide and how can I prevent it?</h3>
 
 <p>This problem was fixed in perl 5.004_05, so preventing it means upgrading your version of perl. ;)</p>
 
@@ -309,7 +309,7 @@
     foobar
     Finally foo</pre>
 
-<h2 id="How-can-I-pass-return-a-Function-FileHandle-Array-Hash-Method-Regex">How can I pass/return a {Function, FileHandle, Array, Hash, Method, Regex}?</h2>
+<h3 id="How-can-I-pass-return-a-Function-FileHandle-Array-Hash-Method-Regex">How can I pass/return a {Function, FileHandle, Array, Hash, Method, Regex}?</h3>
 
 <p>You need to pass references to these objects. See <a href="https://metacpan.org/module/perlsub#Pass-by-Reference">&quot;Pass by Reference&quot; in perlsub</a> for this particular question, and <a href="https://metacpan.org/module/perlref">perlref</a> for information on references.</p>
 
@@ -389,7 +389,7 @@
 </dd>
 </dl>
 
-<h2 id="How-do-I-create-a-static-variable">How do I create a static variable?</h2>
+<h3 id="How-do-I-create-a-static-variable">How do I create a static variable?</h3>
 
 <p>(contributed by brian d foy)</p>
 
@@ -422,7 +422,7 @@
 
 <p>See <a href="https://metacpan.org/module/perlsub#Persistent-Private-Variables">&quot;Persistent Private Variables&quot; in perlsub</a> for more information. The discussion of closures in <a href="https://metacpan.org/module/perlref">perlref</a> may help you even though we did not use anonymous subroutines in this answer. See <a href="https://metacpan.org/module/perlsub#Persistent-Private-Variables">&quot;Persistent Private Variables&quot; in perlsub</a> for details.</p>
 
-<h2 id="Whats-the-difference-between-dynamic-and-lexical-static-scoping-Between-local-and-my">What&#39;s the difference between dynamic and lexical (static) scoping? Between local() and my()?</h2>
+<h3 id="Whats-the-difference-between-dynamic-and-lexical-static-scoping-Between-local-and-my">What&#39;s the difference between dynamic and lexical (static) scoping? Between local() and my()?</h3>
 
 <p><code>local($x)</code> saves away the old value of the global variable <code>$x</code> and assigns a new value for the duration of the subroutine <i>which is visible in other functions called from that subroutine</i>. This is done at run-time, so is called dynamic scoping. local() always affects global variables, also called package variables or dynamic variables.</p>
 
@@ -456,7 +456,7 @@
 
 <p>See <a href="https://metacpan.org/module/perlsub#Private-Variables-via-my">&quot;Private Variables via my()&quot; in perlsub</a> and <a href="https://metacpan.org/module/perlsub#Temporary-Values-via-local">&quot;Temporary Values via local()&quot; in perlsub</a> for excruciating details.</p>
 
-<h2 id="How-can-I-access-a-dynamic-variable-while-a-similarly-named-lexical-is-in-scope">How can I access a dynamic variable while a similarly named lexical is in scope?</h2>
+<h3 id="How-can-I-access-a-dynamic-variable-while-a-similarly-named-lexical-is-in-scope">How can I access a dynamic variable while a similarly named lexical is in scope?</h3>
 
 <p>If you know your package, you can just mention it explicitly, as in $Some_Pack::var. Note that the notation $::var is <b>not</b> the dynamic $var in the current package, but rather the one in the &quot;main&quot; package, as though you had written $main::var.</p>
 
@@ -482,11 +482,11 @@
         print &quot;global  is $var\n&quot;;
     }</pre>
 
-<h2 id="Whats-the-difference-between-deep-and-shallow-binding">What&#39;s the difference between deep and shallow binding?</h2>
+<h3 id="Whats-the-difference-between-deep-and-shallow-binding">What&#39;s the difference between deep and shallow binding?</h3>
 
 <p>In deep binding, lexical variables mentioned in anonymous subroutines are the same ones that were in scope when the subroutine was created. In shallow binding, they are whichever variables with the same names happen to be in scope when the subroutine is called. Perl always uses deep binding of lexical variables (i.e., those created with my()). However, dynamic variables (aka global, local, or package variables) are effectively shallowly bound. Consider this just one more reason not to use them. See the answer to <a href="#Whats-a-closure">&quot;What&#39;s a closure?&quot;</a>.</p>
 
-<h2 id="Why-doesnt-my-foo-fh-work-right">Why doesn&#39;t &quot;my($foo) = &lt;$fh&gt;;&quot; work right?</h2>
+<h3 id="Why-doesnt-my-foo-fh-work-right">Why doesn&#39;t &quot;my($foo) = &lt;$fh&gt;;&quot; work right?</h3>
 
 <p><code>my()</code> and <code>local()</code> give list context to the right hand side of <code>=</code>. The &lt;$fh&gt; read operation, like so many of Perl&#39;s functions and operators, can tell which context it was called in and behaves appropriately. In general, the scalar() function can help. This function does nothing to the data itself (contrary to popular myth) but rather tells its argument to behave in whatever its scalar fashion is. If that function doesn&#39;t have a defined scalar behavior, this of course doesn&#39;t help you (such as with sort()).</p>
 
@@ -501,7 +501,7 @@
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    my($foo) = &lt;$fh&gt;;    # WRONG
     my $foo  = &lt;$fh&gt;;    # right</pre>
 
-<h2 id="How-do-I-redefine-a-builtin-function-operator-or-method">How do I redefine a builtin function, operator, or method?</h2>
+<h3 id="How-do-I-redefine-a-builtin-function-operator-or-method">How do I redefine a builtin function, operator, or method?</h3>
 
 <p>Why do you want to do that? :-)</p>
 
@@ -511,7 +511,7 @@
 
 <p>If you&#39;re talking about obscuring method calls in parent classes, see <a href="https://metacpan.org/module/perlootut#Overriding-methods-and-method-resolution">&quot;Overriding methods and method resolution&quot; in perlootut</a>.</p>
 
-<h2 id="Whats-the-difference-between-calling-a-function-as-foo-and-foo">What&#39;s the difference between calling a function as &amp;foo and foo()?</h2>
+<h3 id="Whats-the-difference-between-calling-a-function-as-foo-and-foo">What&#39;s the difference between calling a function as &amp;foo and foo()?</h3>
 
 <p>(contributed by brian d foy)</p>
 
@@ -560,7 +560,7 @@
 
 <p>The main use of the <code>@_</code> pass-through feature is to write subroutines whose main job it is to call other subroutines for you. For further details, see <a href="https://metacpan.org/module/perlsub">perlsub</a>.</p>
 
-<h2 id="How-do-I-create-a-switch-or-case-statement">How do I create a switch or case statement?</h2>
+<h3 id="How-do-I-create-a-switch-or-case-statement">How do I create a switch or case statement?</h3>
 
 <p>In Perl 5.10, use the <code>given-when</code> construct described in <a href="https://metacpan.org/module/perlsyn">perlsyn</a>:</p>
 
@@ -644,7 +644,7 @@
 
 <p>Starting from Perl 5.8, a source filter module, <code>Switch</code>, can also be used to get switch and case. Its use is now discouraged, because it&#39;s not fully compatible with the native switch of Perl 5.10, and because, as it&#39;s implemented as a source filter, it doesn&#39;t always work as intended when complex syntax is involved.</p>
 
-<h2 id="How-can-I-catch-accesses-to-undefined-variables-functions-or-methods">How can I catch accesses to undefined variables, functions, or methods?</h2>
+<h3 id="How-can-I-catch-accesses-to-undefined-variables-functions-or-methods">How can I catch accesses to undefined variables, functions, or methods?</h3>
 
 <p>The AUTOLOAD method, discussed in <a href="https://metacpan.org/module/perlsub#Autoloading">&quot;Autoloading&quot; in perlsub</a> lets you capture calls to undefined functions and methods.</p>
 
@@ -652,7 +652,7 @@
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use warnings FATAL =&gt; qw(uninitialized);</pre>
 
-<h2 id="Why-cant-a-method-included-in-this-same-file-be-found">Why can&#39;t a method included in this same file be found?</h2>
+<h3 id="Why-cant-a-method-included-in-this-same-file-be-found">Why can&#39;t a method included in this same file be found?</h3>
 
 <p>Some possible reasons: your inheritance is getting confused, you&#39;ve misspelled the method name, or the object is of the wrong type. Check out <a href="https://metacpan.org/module/perlootut">perlootut</a> for details about any of the above cases. You may also use <code>print ref($object)</code> to find out the class <code>$object</code> was blessed into.</p>
 
@@ -660,7 +660,7 @@
 
 <p>Make sure to read about creating modules in <a href="https://metacpan.org/module/perlmod">perlmod</a> and the perils of indirect objects in <a href="https://metacpan.org/module/perlobj#Method-Invocation">&quot;Method Invocation&quot; in perlobj</a>.</p>
 
-<h2 id="How-can-I-find-out-my-current-or-calling-package">How can I find out my current or calling package?</h2>
+<h3 id="How-can-I-find-out-my-current-or-calling-package">How can I find out my current or calling package?</h3>
 
 <p>(contributed by brian d foy)</p>
 
@@ -695,7 +695,7 @@
 
 <p>You can safely replace <code>isa</code> with <code>DOES</code> (although the converse is not true).</p>
 
-<h2 id="How-can-I-comment-out-a-large-block-of-Perl-code">How can I comment out a large block of Perl code?</h2>
+<h3 id="How-can-I-comment-out-a-large-block-of-Perl-code">How can I comment out a large block of Perl code?</h3>
 
 <p>(contributed by brian d foy)</p>
 
@@ -729,7 +729,7 @@
 
 <p>For more information on Pod, check out <a href="https://metacpan.org/module/perlpod">perlpod</a> and <a href="https://metacpan.org/module/perlpodspec">perlpodspec</a>.</p>
 
-<h2 id="How-do-I-clear-a-package">How do I clear a package?</h2>
+<h3 id="How-do-I-clear-a-package">How do I clear a package?</h3>
 
 <p>Use this code, provided by Mark-Jason Dominus:</p>
 
@@ -753,7 +753,7 @@
 
 <p>Or, if you&#39;re using a recent release of Perl, you can just use the Symbol::delete_package() function instead.</p>
 
-<h2 id="How-can-I-use-a-variable-as-a-variable-name">How can I use a variable as a variable name?</h2>
+<h3 id="How-can-I-use-a-variable-as-a-variable-name">How can I use a variable as a variable name?</h3>
 
 <p>Beginners often think they want to have a variable contain the name of a variable.</p>
 
@@ -816,7 +816,7 @@
 
 <p>So, sometimes you might want to use symbolic references to manipulate the symbol table directly. This doesn&#39;t matter for formats, handles, and subroutines, because they are always global--you can&#39;t use my() on them. For scalars, arrays, and hashes, though--and usually for subroutines-- you probably only want to use hard references.</p>
 
-<h2 id="What-does-bad-interpreter-mean">What does &quot;bad interpreter&quot; mean?</h2>
+<h3 id="What-does-bad-interpreter-mean">What does &quot;bad interpreter&quot; mean?</h3>
 
 <p>(contributed by brian d foy)</p>
 
@@ -832,13 +832,13 @@
 
 <p>If you get a message like &quot;perl: command not found&quot;, perl is not in your PATH, which might also mean that the location of perl is not where you expect it so you need to adjust your shebang line.</p>
 
-<h2 id="Do-I-need-to-recompile-XS-modules-when-there-is-a-change-in-the-C-library">Do I need to recompile XS modules when there is a change in the C library?</h2>
+<h3 id="Do-I-need-to-recompile-XS-modules-when-there-is-a-change-in-the-C-library">Do I need to recompile XS modules when there is a change in the C library?</h3>
 
 <p>(contributed by Alex Beamish)</p>
 
 <p>If the new version of the C library is ABI-compatible (that&#39;s Application Binary Interface compatible) with the version you&#39;re upgrading from, and if the shared library version didn&#39;t change, no re-compilation should be necessary.</p>
 
-<h1 id="AUTHOR-AND-COPYRIGHT">AUTHOR AND COPYRIGHT</h1>
+<h2 id="AUTHOR-AND-COPYRIGHT">AUTHOR AND COPYRIGHT</h2>
 
 <p>Copyright (c) 1997-2013 Tom Christiansen, Nathan Torkington, and other authors as noted. All rights reserved.</p>
 
