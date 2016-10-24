@@ -20,14 +20,17 @@
 <!-- Main jumbotron for a primary marketing message or call to action -->
 <div class="jumbotron">
   <div class="container text-center">
-    <h2>That's why we love Perl 5</h2>
-    <h1>[% headline %]</h1>
-    <p>Perl 5 is a highly capable, feature-rich programming language with over [% perl_stats.perl_age %] years of development.</p>
-    <p>
-      <a class="btn btn-success" href="/get.html" role="button">
-        <img src="[% combust.static_url("/images/icons/ic_download.svg") %]" class="btn-ic hidden-xs">Download and Get Started
-      </a>
-    </p>
+    <img src="[% combust.static_url("/images/icons/header_camel.png") %]" class="img-camel" alt="Perl5 Camel">
+    <div class="over-image">
+      <h2>That's why we love Perl 5</h2>
+      <h1>[% headline %]</h1>
+      <p>Perl 5 is a highly capable, feature-rich programming language with over [% perl_stats.perl_age %] years of development.</p>
+      <p>
+        <a class="btn btn-success" href="/get.html" role="button">
+          <img src="[% combust.static_url("/images/icons/ic_download.svg") %]" class="btn-ic hidden-xs">Download and Get Started
+        </a>
+      </p>
+    </div>
   </div>
 </div>
 
