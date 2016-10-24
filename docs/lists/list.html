@@ -7,8 +7,8 @@
 
     page.import({
         title    => 'List: ' _ list.name,
-        section  => 'home',
-        description 
+        section  => 'home-sublist',
+        description
             => list.summary || 'Perl mailing lists for ' _ list.name,
     });
 -%]
@@ -54,9 +54,9 @@ function showAdvanced() {
   <p>To <b>unsubscribe</b> from [% list.name %], send an email to <tt>[%
       listaddr %]-unsubscribe@perl.org</tt></p>
 
-  <p>To get <b>help</b> regarding your subscription, send an email to <tt>[% 
+  <p>To get <b>help</b> regarding your subscription, send an email to <tt>[%
       listaddr %]-help@perl.org</tt></p>
-  
+
   <p><a id="show_advanced" onClick="showAdvanced();">Show advanced instructions...</a></p>
   <div id="perlorg_subscribe_advanced">
     <p><u>Advanced Instructions</u></p>
@@ -84,8 +84,6 @@ function showAdvanced() {
 </div>
 [%- END -%]
 
-<h2>List: [% list.name %]</h2>
-
 [% IF list.defunct -%]
 <div class="defunct">The <i>[% list.name %]</i> mailing
   list is no longer active.  This page exists for historical purposes
@@ -96,9 +94,8 @@ function showAdvanced() {
     [% IF list.url %]
     <p>[% link(list, list.url) %]</p>
     [% END %]
-    [% '<p id="summary">' _ list.summary _ '</p>' IF list.summary %]
 
-    <h5>Subscribing and help</h5>
+    <h3>Subscribing and help</h3>
     [% listaddr = list.sub.match('mailto: (\S+)-subscribe@perl.org');
        IF listaddr;
          perlorg_subscribe(list, listaddr.0);
@@ -112,15 +109,15 @@ function showAdvanced() {
            END %]
       </dl>
     [% END %]
-    
-    <h5>Feeds and archives</h5>
+
+    <h3>Feeds and archives</h3>
     <dl>
      [%- format_content("Archives","archive") IF list.archive -%]
      [%- format_content("Feeds","rssfeed") IF list.rssfeed -%]
      [%- format_content("NNTP","nntp") IF list.rssfeed %]
     </dl>
 
-    <h5>Metadata</h5>
+    <h3>Metadata</h3>
     <dl>
     [% IF list.tags %]
     <dt>Tags</dt>

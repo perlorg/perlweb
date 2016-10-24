@@ -1,32 +1,23 @@
-<ul>
-    <li[% ' class="selected"' IF page.section == 'home' %]>
-        <a href="/">Home</a>
-    </li>
-    <li[% ' class="selected"' IF page.section == 'beginners' %]>
+<ul class="list-inline text-center nav navbar-nav navbar-right">
+    <li class="sub[% ' selected' IF page.section == 'beginners' %]">
         <a href="/tag/beginners.html">Beginners</a>
     </li>
-    <li[% ' class="selected"' IF page.section == 'os' %]>
+    <li class="sub[% ' selected' IF page.section == 'os' %]">
         <a href="/tag/os.html">OS</a>
     </li>
-    <li[% ' class="selected"' IF page.section == 'db' %]>
+    <li class="sub[% ' selected' IF page.section == 'db' %]">
         <a href="/tag/db.html">DB</a>
     </li>
-    <li[% ' class="selected"' IF page.section == 'modules' %]>
+    <li class="sub[% ' selected' IF page.section == 'modules' %]">
         <a href="/tag/modules.html">Modules</a>
     </li>
-    <li[% ' class="selected"' IF page.section == 'community' %]>
-        <a href="/tag/community.html">community</a>
-    </li>
-    <li[% ' class="selected"' IF page.section == 'web' %]>
+    <li class="sub[% ' selected' IF page.section == 'web' %]">
         <a href="/tag/web.html">Web</a>
     </li>
-    <li[% ' class="selected"' IF page.section == 'science' %]>
+    <li class="sub[% ' selected' IF page.section == 'science' %]">
         <a href="/tag/science.html">Science</a>
     </li>
-    <li[% ' class="selected"' IF page.section == 'internals' %]>
-        <a href="/tag/internals.html">Internals</a>
-    </li>
-    <li[% ' class="selected"' IF page.section == 'more' %]>
+    <li class="sub[% ' selected' IF page.section == 'more' %]">
         <a href="/all.html">More</a>
     </li>
 
