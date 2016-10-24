@@ -50,10 +50,12 @@ h4 {
 }
 .navbar-brand {
   padding: 25px;
+  .page-logo {
+    width: 100px
+  }
 }
 .navbar-nav {
-  margin-top: 18px;
-  margin-left: 0;
+  margin: 0;
 }
 .navbar-right {
   margin-right: 0;
@@ -94,11 +96,13 @@ h4 {
     width: 100%;
     left: 0;
     position: absolute;
-    top: 25px;
+    top: 10px;
+    font-size: @font-size-smaller;
     .version-highlight {
-      padding: @padding-xs-vertical @padding-xs-horizontal;
+      padding: @padding-xs-horizontal;
       background: @brand-success;
       color: @brand-primary;
+      border-radius: @border-radius-base;
     }
   }
 }
@@ -108,7 +112,13 @@ h4 {
     display: none;
   }
   .page-logo {
-    width: 135px;
+    width: 95px;
+  }
+  .perl-version {
+    display: none;
+  }
+  .navbar-brand {
+    padding: 8px 15px;
   }
 }
 
@@ -301,7 +311,10 @@ span.highlight {
 
 @media (max-width: @screen-sm-min) {
   .page-logo, .navbar-fixed-top .page-logo {
-    width: 120px;
+    width: 95px;
+  }
+  .navbar-brand {
+    padding: 8px 15px;
   }
   .footer {
     text-align: center;
