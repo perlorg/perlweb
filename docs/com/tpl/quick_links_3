@@ -12,23 +12,17 @@
 [% rand_idx = asins.size.rand %]
 [% asin = asins.$rand_idx %]
 
-<div class="quick_links dbi_book">
-        <h4 class="round">
-            Sponsor
-        </h4>
-        <div class="list">
-           <p><a href="http://training.perl.com/">Perl Training</a></p>
-        </div>
-
-
-<div class="quick_links dbi_book">
-        <h4 class="round">
-            Perl Books
-        </h4>
-        <div class="list">
-        <p align="center">
-        <iframe align="center" src="//rcm-na.amazon-adsystem.com/e/cm?lt1=_blank&bc1=FFFFFF&IS2=1&bg1=FFFFFF&fc1=000000&lc1=0000FF&t=develooper&o=1&p=8&l=as1&m=amazon&f=ifr&asins=[% asin %]" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
-        </p>     
-        </div>
+<div class="col-xs-12 col-sm-4">
+    <h4 class="round">
+        Sponsor
+    </h4>
+    <ul class="list-unstyled">
+       <p><a href="http://training.perl.com/">Perl Training</a></p>
+    </ul>
 </div>
-
+<div class="col-xs-12 col-sm-4">
+  <h4>Perl books</h4>
+  <p>
+  <iframe align="center" src="http://rcm-na.amazon-adsystem.com/e/cm?lt1=_blank&bc1=FFFFFF&IS2=1&bg1=FFFFFF&fc1=000000&lc1=0000FF&t=develooper&o=1&p=8&l=as1&m=amazon&f=ifr&asins=[% asin %]" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+  </p>
+</div>
