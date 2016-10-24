@@ -1,8 +1,8 @@
-[%- 
+[%-
     page.import({
         title => 'Learn Perl',
         section  => 'home',
-        description => "Learn Perl - this is how to begin learning Perl"
+        description => "Helping you get started with Perl 5."
         keywords => 'Learn Perl 5, beginning Perl, Perl, Perl tutorials, Perl FAQ, Perl documentation',
     });
 -%]
@@ -22,7 +22,7 @@
 
 
 <ul class="homesmall">
-    [% 
+    [%
         PROCESS "examples/example_list.html";
         USE Shuffle;
         examples = example_list.shuffle.splice(0,8);
@@ -31,7 +31,7 @@
     <!-- <li><a href="/examples/"><strong>Perl examples</strong></a></li> -->
     [% FOREACH example = examples %]
     <li>[% example %]</li>
-    [% END %]    
+    [% END %]
 </ul>
 
 <ul class="homelarge">
@@ -72,6 +72,6 @@
 </p>
 <hr />
 <p>
-    If you see this image: 
+    If you see this image:
     <img src="/i/external.png" /> the link before it will take you to an external website.
 </p>

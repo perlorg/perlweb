@@ -5,20 +5,19 @@
 
 [% IF url  %]
 
-<DIV ALIGN="CENTER" STYLE="margin: 3%; border: solid black;">
 <P>
 The off-site URL <u><tt>[% url | uri%]</tt></u> is no longer accessible.
 </P>
 
 <P>
 
-You may be able to 
+You may be able to
 <A HREF="http://web.archive.org/web/*/[% url | uri %]">access it</A> through the <A
    HREF="http://www.archive.org/web/web.php">Wayback Machine</A>
 <BR>
 
 <A HREF="http://www.archive.org/web/web.php">
-  <IMG BORDER=0 SRC="https://www.archive.org/images/wayback.gif" 
+  <IMG BORDER=0 SRC="https://www.archive.org/images/wayback.gif"
   ALT="Internet Archive Wayback Machine"></A>.
 </P>
 <P>
@@ -27,9 +26,6 @@ You may be able to
 </A>
 </P>
 
-</DIV>
-
 [% ELSE %]
 Invalid Link
 [% END %]
-
