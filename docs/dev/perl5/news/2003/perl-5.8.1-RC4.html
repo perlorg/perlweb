@@ -71,7 +71,7 @@ the <em>perl58delta</em>, which describes differences between 5.6.0 and
 <h1><a name="incompatible_changes">Incompatible Changes</a></h1>
 <p>
 </p>
-<h2><a name="hash_randomisation">Hash Randomisation</a></h2>
+<h3><a name="hash_randomisation">Hash Randomisation</a></h2>
 <p>Mainly due to security reasons, the ``random ordering'' of hashes
 has been made even more random.  Previously while the order of hash
 elements from keys(), values(), and <code>each()</code> was essentially random,
@@ -115,14 +115,14 @@ completely in compile time, compile with <code>-DNO_HASH_SEED</code> (see <em>IN
 rationale behind this change.</p>
 <p>
 </p>
-<h2><a name="utf8_on_filehandles_no_longer_activated_by_locale">UTF-8 On Filehandles No Longer Activated By Locale</a></h2>
+<h3><a name="utf8_on_filehandles_no_longer_activated_by_locale">UTF-8 On Filehandles No Longer Activated By Locale</a></h2>
 <p>In Perl 5.8.0 all filehandles, including the standard filehandles,
 were implicitly set to be in Unicode UTF-8 if the locale settings
 indicated the use of UTF-8.  This feature caused too many problems,
 so the feature was turned off and redesigned: see <a href="#core_enhancements">Core Enhancements</a>.</p>
 <p>
 </p>
-<h2><a name="singlenumber_vstrings_are_no_longer_vstrings_before_=>">Single-number v-strings are no longer v-strings before ``=&gt;''</a></h2>
+<h3><a name="singlenumber_vstrings_are_no_longer_vstrings_before_=>">Single-number v-strings are no longer v-strings before ``=&gt;''</a></h2>
 <p>The version strings or v-strings (see <em>perldata/``Version Strings''</em>)
 feature introduced in Perl 5.6.0 has been a source of some confusion--
 especially when the user did not want to use it, but Perl thought it
@@ -143,7 +143,7 @@ be v-strings in Perl 5.8.  Note, however, that v-strings as a whole
 are now deprecated, see <a href="#deprecation_warnings">Deprecation Warnings</a>.</p>
 <p>
 </p>
-<h2><a name="(win32)_the_c_switch_has_been_repurposed">(Win32) The -C Switch Has Been Repurposed</a></h2>
+<h3><a name="(win32)_the_c_switch_has_been_repurposed">(Win32) The -C Switch Has Been Repurposed</a></h2>
 <p>The -C switch has changed in an incompatible way.  The old semantics
 of this switch only made sense in Win32 and only in the ``use utf8''
 universe in 5.6.x releases, and do not make sense for the Unicode
@@ -154,7 +154,7 @@ data-dependent fashion in a future release.</p>
 <p>For the new life of this switch, see <a href="#utf8_no_longer_default_under_utf8_locales">UTF-8 no longer default under UTF-8 locales</a>, and <em>perlrun/-C</em>.</p>
 <p>
 </p>
-<h2><a name="(win32)_the_/d_switch_of_cmd.exe">(Win32) The /d Switch Of cmd.exe</a></h2>
+<h3><a name="(win32)_the_/d_switch_of_cmd.exe">(Win32) The /d Switch Of cmd.exe</a></h2>
 <p>Perl 5.8.1 uses the /d switch when running the cmd.exe shell
 internally for system(), backticks, and when opening pipes to external
 programs.  The extra switch disables the execution of AutoRun commands
@@ -167,7 +167,7 @@ the older behavior, set PERL5SHELL in your environment to <code>cmd /x/c</code>.
 <h1><a name="core_enhancements">Core Enhancements</a></h1>
 <p>
 </p>
-<h2><a name="utf8_no_longer_default_under_utf8_locales">UTF-8 no longer default under UTF-8 locales</a></h2>
+<h3><a name="utf8_no_longer_default_under_utf8_locales">UTF-8 no longer default under UTF-8 locales</a></h2>
 <p>In Perl 5.8.0 many Unicode features were introduced.   One of them
 was found to be of more nuisance than benefit: the automagic
 (and silent) ``UTF-8-ification'' of filehandles, including the
@@ -194,7 +194,7 @@ arguments.  See <em>perlrun</em> for more information.</p>
 See <em>POSIX/POSIX::SigAction</em>.</p>
 <p>
 </p>
-<h2><a name="unsafe_signals_again_available">Unsafe signals again available</a></h2>
+<h3><a name="unsafe_signals_again_available">Unsafe signals again available</a></h2>
 <p>In Perl 5.8.0 the so-called ``safe signals'' were introduced.  This
 means that Perl no longer handles signals immediately but instead
 ``between opcodes'', when it is safe to do so.  The earlier immediate
@@ -212,7 +212,7 @@ PERL_SIGNALS to <code>unsafe</code>, and the old immediate (and unsafe)
 signal handling behaviour returns.</p>
 <p>
 </p>
-<h2><a name="tied_arrays_with_negative_array_indices">Tied Arrays with Negative Array Indices</a></h2>
+<h3><a name="tied_arrays_with_negative_array_indices">Tied Arrays with Negative Array Indices</a></h2>
 <p>Formerly, the indices passed to <code>FETCH</code>, <code>STORE</code>, <code>EXISTS</code>, and
 <code>DELETE</code> methods in tied array class were always non-negative.  If
 the actual argument was negative, Perl would call FETCHSIZE implicitly
@@ -223,7 +223,7 @@ a true value, negative values will be passed to <code>FETCH</code>, <code>STORE<
 <code>EXISTS</code>, and <code>DELETE</code> unchanged.</p>
 <p>
 </p>
-<h2><a name="local_${$x}">local ${$x}</a></h2>
+<h3><a name="local_${$x}">local ${$x}</a></h2>
 <p>The syntaxes</p>
 <pre>
         local ${$x}
@@ -232,13 +232,13 @@ a true value, negative values will be passed to <code>FETCH</code>, <code>STORE<
 <p>now do localise variables, given that the $x is a valid variable name.</p>
 <p>
 </p>
-<h2><a name="unicode_character_database_4.0.0">Unicode Character Database 4.0.0</a></h2>
+<h3><a name="unicode_character_database_4.0.0">Unicode Character Database 4.0.0</a></h2>
 <p>The copy of the Unicode Character Database included in Perl 5.8 has
 been updated to 4.0.0 from 3.2.0.  This means for example that the
 Unicode character properties are as in Unicode 4.0.0.</p>
 <p>
 </p>
-<h2><a name="deprecation_warnings">Deprecation Warnings</a></h2>
+<h3><a name="deprecation_warnings">Deprecation Warnings</a></h2>
 <p>There is one new feature deprecation.  Perl 5.8.0 forgot to add
 some deprecation warnings, these warnings have now been added.
 Finally, a reminder of an impending feature removal.</p>
@@ -289,7 +289,7 @@ the deprecation warnings, use:</p>
     no warnings 'deprecated';</pre>
 <p>
 </p>
-<h2><a name="miscellaneous_enhancements">Miscellaneous Enhancements</a></h2>
+<h3><a name="miscellaneous_enhancements">Miscellaneous Enhancements</a></h2>
 <p>PerlIO::get_layers(FH) returns the names of the PerlIO layers
 active on a filehandle.</p>
 <p>utf8::is_utf8() has been added as a quick way to test whether
@@ -300,7 +300,7 @@ a scalar is encoded internally in UTF-8 (Unicode).</p>
 <h1><a name="modules_and_pragmata">Modules and Pragmata</a></h1>
 <p>
 </p>
-<h2><a name="updated_modules">Updated Modules</a></h2>
+<h3><a name="updated_modules">Updated Modules</a></h2>
 <p>B::Concise</p>
 <p>B::Deparse</p>
 <p>Benchmark - an optional feature, <code>:hireswallclock</code>, now allows
@@ -396,7 +396,7 @@ Configure flags <code>-Dnoextensions=...</code> and <code>-Donlyextensions=...</
 see <em>INSTALL</em>.</p>
 <p>
 </p>
-<h2><a name="platformspecific_enhancements">Platform-specific enhancements</a></h2>
+<h3><a name="platformspecific_enhancements">Platform-specific enhancements</a></h2>
 <p>In Cygwin Perl can now be built with threads (<code>Configure -Duseithreads</code>).</p>
 <p>In newer FreeBSD releases Perl 5.8.0 compilation failed because of
 trying to use <em>malloc.h</em>, which in FreeBSD is just a dummy file, and
@@ -427,7 +427,7 @@ memory use otherwise.</p>
 <h1><a name="selected_bug_fixes">Selected Bug Fixes</a></h1>
 <p>
 </p>
-<h2><a name="closures,_eval_and_lexicals">Closures, eval and lexicals</a></h2>
+<h3><a name="closures,_eval_and_lexicals">Closures, eval and lexicals</a></h2>
 <p>There have been many fixes in the area of anonymous subs, lexicals and
 closures. Although this means that Perl is now more ``correct'', it is
 possible that some existing code will break that happens to rely on
@@ -435,7 +435,7 @@ the faulty behaviour.  In practice this is unlikely unless your code
 contains a very complex nesting of anonymous subs, evals and lexicals.</p>
 <p>
 </p>
-<h2><a name="generic_fixes">Generic fixes</a></h2>
+<h3><a name="generic_fixes">Generic fixes</a></h2>
 <p>binmode(SOCKET, ``:utf8'') only worked on the input side, not
 on the output side of the socket.  Now it works both ways.</p>
 <p>For threaded Perls certain system database functions like <code>getpwent()</code>
@@ -467,7 +467,7 @@ from generated code.  Now linenumbers can go all the way to
 4294967296, or 2**32.</p>
 <p>
 </p>
-<h2><a name="modulespecific_fixes">Module-specific fixes</a></h2>
+<h3><a name="modulespecific_fixes">Module-specific fixes</a></h2>
 <p>Encode: if a filehandle has been marked as to have an encoding,
 unmappable characters are detected already during input, not later
 (when the corrupted data is being used).</p>
@@ -475,7 +475,7 @@ unmappable characters are detected already during input, not later
 variables, see <em>perlvar</em>) now works.</p>
 <p>
 </p>
-<h2><a name="platformspecific_fixes">Platform-specific fixes</a></h2>
+<h3><a name="platformspecific_fixes">Platform-specific fixes</a></h2>
 <p>Linux</p>
 <ul>
 <li></li>
@@ -554,7 +554,7 @@ when there were errors in the underlying call.  This is now fixed.
 informative and consistent.</p>
 <p>
 </p>
-<h2><a name="changed_a_thread_exited_while_%d_threads_were_running">Changed ``A thread exited while %d threads were running''</a></h2>
+<h3><a name="changed_a_thread_exited_while_%d_threads_were_running">Changed ``A thread exited while %d threads were running''</a></h2>
 <p>The old version</p>
 <pre>
     A thread exited while %d other threads were still running</pre>
@@ -562,32 +562,32 @@ informative and consistent.</p>
 the warning.</p>
 <p>
 </p>
-<h2><a name="removed_attempt_to_clear_a_restricted_hash">Removed ``Attempt to clear a restricted hash''</a></h2>
+<h3><a name="removed_attempt_to_clear_a_restricted_hash">Removed ``Attempt to clear a restricted hash''</a></h2>
 <p>It is not illegal to clear a restricted hash, so the warning
 was removed.</p>
 <p>
 </p>
-<h2><a name="new_illegal_declaration_of_anonymous_subroutine">New ``Illegal declaration of anonymous subroutine''</a></h2>
+<h3><a name="new_illegal_declaration_of_anonymous_subroutine">New ``Illegal declaration of anonymous subroutine''</a></h2>
 <p>You must specify the block of code for <code>sub</code>.</p>
 <p>
 </p>
-<h2><a name="changed_invalid_range_%s_in_transliteration_operator">Changed ``Invalid range ''%s`` in transliteration operator''</a></h2>
+<h3><a name="changed_invalid_range_%s_in_transliteration_operator">Changed ``Invalid range ''%s`` in transliteration operator''</a></h2>
 <p>The old version</p>
 <pre>
     Invalid [] range &quot;%s&quot; in transliteration operator</pre>
 <p>was simply wrong because there are no ``[] ranges'' in tr///.</p>
 <p>
 </p>
-<h2><a name="new_missing_control_char_name_in_\c">New ``Missing control char name in \c''</a></h2>
+<h3><a name="new_missing_control_char_name_in_\c">New ``Missing control char name in \c''</a></h2>
 <p>Self-explanatory.</p>
 <p>
 </p>
-<h2><a name="new_newline_in_leftjustified_string_for_%s">New ``Newline in left-justified string for %s''</a></h2>
+<h3><a name="new_newline_in_leftjustified_string_for_%s">New ``Newline in left-justified string for %s''</a></h2>
 <p>The padding spaces would appear after the newline, which is
 probably not what you had in mind.</p>
 <p>
 </p>
-<h2><a name="new_possible_precedence_problem_on_bitwise_%c_operator">New ``Possible precedence problem on bitwise %c operator''</a></h2>
+<h3><a name="new_possible_precedence_problem_on_bitwise_%c_operator">New ``Possible precedence problem on bitwise %c operator''</a></h2>
 <p>If you think this</p>
 <pre>
     $x &amp; $y == 0</pre>
@@ -595,32 +595,32 @@ probably not what you had in mind.</p>
 you will like this warning.</p>
 <p>
 </p>
-<h2><a name="new_pseudohashes_are_deprecated">New ``Pseudo-hashes are deprecated''</a></h2>
+<h3><a name="new_pseudohashes_are_deprecated">New ``Pseudo-hashes are deprecated''</a></h2>
 <p>This warning should have been already in 5.8.0, since they are.</p>
 <p>
 </p>
-<h2><a name="new_read()_on_%s_filehandle_%s">New ``read() on %s filehandle %s''</a></h2>
+<h3><a name="new_read()_on_%s_filehandle_%s">New ``read() on %s filehandle %s''</a></h2>
 <p>You cannot <code>read()</code> (or <code>sysread())</code> from a closed or unopened filehandle.</p>
 <p>
 </p>
-<h2><a name="new_5.005_threads_are_deprecated">New ``5.005 threads are deprecated''</a></h2>
+<h3><a name="new_5.005_threads_are_deprecated">New ``5.005 threads are deprecated''</a></h2>
 <p>This warning should have been already in 5.8.0, since they are.</p>
 <p>
 </p>
-<h2><a name="new_tied_variable_freed_while_still_in_use">New ``Tied variable freed while still in use''</a></h2>
+<h3><a name="new_tied_variable_freed_while_still_in_use">New ``Tied variable freed while still in use''</a></h2>
 <p>Something pulled the plug on a live free variable, Perl plays
 safe by bailing out.</p>
 <p>
 </p>
-<h2><a name="new_to%s:_illegal_mapping_'%s'">New ``To%s: illegal mapping '%s'''</a></h2>
+<h3><a name="new_to%s:_illegal_mapping_'%s'">New ``To%s: illegal mapping '%s'''</a></h2>
 <p>An illegal user-defined Unicode casemapping was specified.</p>
 <p>
 </p>
-<h2><a name="new_use_of_freed_value_in_iteration_(perhaps_you_modified_the_iterated_array_within_the_loop)">New ``Use of freed value in iteration (perhaps you modified the iterated array within the loop?)''</a></h2>
+<h3><a name="new_use_of_freed_value_in_iteration_(perhaps_you_modified_the_iterated_array_within_the_loop)">New ``Use of freed value in iteration (perhaps you modified the iterated array within the loop?)''</a></h2>
 <p>Something modified the values being iterated over.  This is not good.</p>
 <p>
 </p>
-<h2><a name="new_vstrings_are_deprecated">New ``v-strings are deprecated''</a></h2>
+<h3><a name="new_vstrings_are_deprecated">New ``v-strings are deprecated''</a></h2>
 <p>The marginal benefits of v-strings were greatly outweighed by the
 potential for Surprise and Confusion.</p>
 <p>
@@ -692,7 +692,7 @@ VMS) have large enough testing and expert population that they are
 doing well.</p>
 <p>
 </p>
-<h2><a name="tied_hashes_in_scalar_context">tied hashes in scalar context</a></h2>
+<h3><a name="tied_hashes_in_scalar_context">tied hashes in scalar context</a></h2>
 <p>Tied hashes do not currently return anything useful in scalar context,
 for example when used as boolean tests:</p>
 <pre>
@@ -703,7 +703,7 @@ regardless of whether the hash is empty or has elements.</p>
 tied hashes to implement the behaviour of a hash in scalar context.</p>
 <p>
 </p>
-<h2><a name="lib/net/ping/t/510_ping_udp.t_subtest_2">lib/Net/Ping/t/510_ping_udp.t subtest 2</a></h2>
+<h3><a name="lib/net/ping/t/510_ping_udp.t_subtest_2">lib/Net/Ping/t/510_ping_udp.t subtest 2</a></h2>
 <p>The subtest 2 of lib/Net/Ping/t/510_ping_udp.t might fail if you have
 an unusual networking setup.  The test is trying to send a UDP ping to
 the IP address 127.0.0.1.</p>
@@ -713,12 +713,12 @@ the IP address 127.0.0.1.</p>
 <h1><a name="platform_specific_problems">Platform Specific Problems</a></h1>
 <p>
 </p>
-<h2><a name="ebcdic_platforms">EBCDIC Platforms</a></h2>
+<h3><a name="ebcdic_platforms">EBCDIC Platforms</a></h2>
 <p>IBM z/OS and other EBCDIC platforms continue to be problematic
 regarding Unicode support.</p>
 <p>
 </p>
-<h2><a name="freebsd:_malloc_dilemma">FreeBSD: malloc dilemma</a></h2>
+<h3><a name="freebsd:_malloc_dilemma">FreeBSD: malloc dilemma</a></h2>
 <p>The choice of malloc (the C-level memory management interface)
 when building Perl is problematic in FreeBSD.</p>
 <p>Using FreeBSD's system malloc for Perl was found to be very slow:
@@ -736,7 +736,7 @@ programs.  No such problems were found in other platforms, however.</p>
 of the performance problems.</p>
 <p>
 </p>
-<h2><a name="hpux:_hp_cc_warnings_about_sendfile">HP-UX: HP cc warnings about sendfile</a></h2>
+<h3><a name="hpux:_hp_cc_warnings_about_sendfile">HP-UX: HP cc warnings about sendfile</a></h2>
 <p>With certain HP C compiler releases (e.g. B.11.11.02) you will
 get many warnings like this:</p>
 <pre>
@@ -744,20 +744,20 @@ get many warnings like this:</p>
 <p>This warning, however, is not serious and can be ignored.</p>
 <p>
 </p>
-<h2><a name="irix:_t/uni/tr_7jis.t_falsely_failing">IRIX: t/uni/tr_7jis.t falsely failing</a></h2>
+<h3><a name="irix:_t/uni/tr_7jis.t_falsely_failing">IRIX: t/uni/tr_7jis.t falsely failing</a></h2>
 <p>The test t/uni/tr_7jis.t is known to report failure under 'make test'
 or the test harness with certain releases of IRIX (at least IRIX 6.5
 and MIPSpro Compilers Version 7.3.1.1m), but if run manually the test
 fully passes.</p>
 <p>
 </p>
-<h2><a name="tru64:_no_threaded_builds_with_gnu_cc_(gcc)">Tru64: No threaded builds with GNU cc (gcc)</a></h2>
+<h3><a name="tru64:_no_threaded_builds_with_gnu_cc_(gcc)">Tru64: No threaded builds with GNU cc (gcc)</a></h2>
 <p>In the latest Tru64 releases (e.g. v5.1B) the gcc (3.3) cannot be
 used to compile a threaded Perl (-Duseithreads) because the system
 &lt;pthread.h&gt; file doesn't know about gcc.</p>
 <p>
 </p>
-<h2><a name="win32:_sysopen,_sysread,_syswrite">Win32: sysopen, sysread, syswrite</a></h2>
+<h3><a name="win32:_sysopen,_sysread,_syswrite">Win32: sysopen, sysread, syswrite</a></h2>
 <p>As of the 5.8.0 release, <code>sysopen()/sysread()/syswrite()</code> do not behave
 like they used to in 5.6.1 and earlier with respect to ``text'' mode.
 These built-ins now always operate in ``binary'' mode (even if <code>sysopen()</code>

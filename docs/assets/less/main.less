@@ -49,10 +49,16 @@ h4 {
   #gradient .vertical(@brand-primary; @brand-primary-darker; 0%; 100%);
 }
 .navbar-brand {
-  padding: 25px;
+  padding: 15px;
   .page-logo {
-    width: 100px
+    width: 75px;
   }
+}
+.page-www .page-logo {
+  width: 100px
+}
+.page-www .navbar-brand {
+  width: 25px;
 }
 .navbar-nav {
   margin: 0;
@@ -111,15 +117,16 @@ h4 {
   .header-img-nav {
     display: none;
   }
-  .page-logo {
-    width: 95px;
-  }
   .perl-version {
     display: none;
   }
-  .navbar-brand {
-    padding: 8px 15px;
-  }
+}
+
+.page-www .navbar-fixed-top .page-logo {
+  width: 95px;
+}
+.page-www .navbar-fixed-top .navbar-brand {
+  padding: 8px 15px;
 }
 
 /* Buttons and Dropdowns */
@@ -323,14 +330,14 @@ span.highlight {
 
 
 @media (max-width: @screen-sm-min) {
-  .page-logo, .navbar-fixed-top .page-logo {
+  .page-www .page-logo, .page-www .navbar-fixed-top .page-logo {
     width: 95px;
+  }
+  .page-www .navbar-brand {
+    padding: 8px 15px;
   }
   .section_home .jumbotron {
     background: none;
-  }
-  .navbar-brand {
-    padding: 8px 15px;
   }
   .footer {
     text-align: center;

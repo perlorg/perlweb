@@ -1,11 +1,8 @@
-<ul>
-    <li[% ' class="selected"' IF page.section == 'home' %]>
-        <a href="/">Home</a>
-    </li>
-    <li class="[% ' selected' IF page.section == 'perl5' %]">
+<ul class="list-inline text-center nav navbar-nav navbar-right">
+    <li class="sub[% ' selected' IF page.section == 'perl5' %]">
         <a href="/perl5/">Perl 5</a>
     </li>
-    <li class="[% ' selected' IF page.section == 'perl6' %]">
+    <li class="sub[% ' selected' IF page.section == 'perl6' %]">
         <a href="http://www.perl6.org/">Perl6.org</a>
     </li>
 

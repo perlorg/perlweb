@@ -44,7 +44,7 @@
 
     [% page.morehead %]
   </head>
-  <body[% ' class="section_' _ page.section _ '"' IF page.section %]>
+  <body class="page-[% combust.site %][% ' section_' _ page.section IF page.section %]">
     <nav class="navbar navbar-inverse" data-height="120">
       <div class="container-fluid">
         <div class="navbar-header">
@@ -55,7 +55,8 @@
             <span class="icon-bar"></span>
           </button>
           <a class="navbar-brand" href="/">
-            <img src="[% site.logo || combust.static_url('/images/logo.svg') %]" alt="[% page.title %] | [% site.tag_line || 'Perl programming' %]" class="page-logo">
+            [% logo = '/images/logo' _ site.logo _ '.svg' %]
+            <img src="[% combust.static_url(logo) %]" alt="[% page.title %] | [% site.tag_line || 'Perl programming' %]" class="page-logo">
           </a>
         </div>
         <div id="navbar" class="collapse navbar-collapse">
@@ -64,7 +65,34 @@
       </div>
     </nav>
 
+    [% IF page.section == 'home' && combust.site == 'www' %]
+    <div class="jumbotron">
+      <div class="container text-center">
+        <img src="[% combust.static_url("/images/icons/header_camel.png") %]" class="img-camel" alt="Perl5 Camel">
+        <div class="over-image">
+          <h2>That's why we love Perl 5</h2>
+          <h1>[% headline %]</h1>
+          <p>Perl 5 is a highly capable, feature-rich programming language with over [% perl_stats.perl_age %] years of development.</p>
+          <p>
+            <a class="btn btn-success" href="/get.html" role="button">
+              <img src="[% combust.static_url("/images/icons/ic_download.svg") %]" class="btn-ic hidden-xs">Download and Get Started
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+    [% ELSE %]
+    <div class="jumbotron jumbotron-internal">
+      <div class="container text-center">
+          <h1>[% page.title %]</h1>
+          <p>[% page.description %]</p>
+      </div>
+    </div>
+    [% END %]
+
+    <div class="container">
     [% content %]
+    </div>
 
     [% IF page.section != 'home' && page.section != 'error' %]
     <div class="container space-top-large">
@@ -78,16 +106,19 @@
     </div>
     [% END %]
 
-    <div class="container-fluid">
+    <div class="container-fluid[% ' space-top-xl' IF combust.site != 'www' %]">
       <footer class="row">
-        [% INCLUDE tpl/tip %]
+        [% INCLUDE tpl/tip IF combust.site == 'www' %]
         <div class="footer">
+
+        [% IF combust.site == 'www' %]
           <ul class="col-xs-12 col-sm-4 list-unstyled">
             [% quicknews ("cpanrecent", '<h4>Latest Uploads to CPAN</h4>', 10) %]
           </ul>
           <ul class="col-xs-12 col-sm-4 list-unstyled">
             [% quicknews ("perlnews", '<h4>Perl News</h4>', 5) %]
           </ul>
+        [% END %]
           <ul class="col-xs-12 col-sm-2 list-unstyled">
             <li><h4>Perl.org</h4></li>
             <li><a href="http://www.perl.org/">www</a></li>

@@ -1,162 +1,152 @@
 [%
-    page.import({
-        title    = 'About Perl',
-        section  = 'about',
-        description
-            = 'What is Perl? Features and History.',
-    });
+  page.import({
+      title    = 'About Perl',
+      section  = 'about',
+      description
+          = 'What is Perl? Features and History.',
+  });
 
 %]
-
-<div class="jumbotron jumbotron-internal">
-  <div class="container text-center">
-    <h1>[% page.title %]</h1>
-    <p>[% page.description %]</p>
+<div class="row row-height">
+  <div class="col-xs-12 col-sm-6">
+    <h3>Powerful, stable, mature, portable</h3>
+    <p>
+        Perl 5 is a highly capable, feature-rich programming language with over [% perl_stats.perl_age %] years of development. Perl 5 runs on over [% perl_stats.platforms %] platforms from portables to mainframes and is suitable for both rapid prototyping and large scale development projects.
+    </p>
+    <p>"Perl" is a family of languages, "Perl 6" is part of
+        the family, but it is a separate language which
+        has its own development team. Its existence
+        has no significant impact on the continuing
+        development of "Perl 5".
+    </p>
   </div>
-</div>
-
-<div class="container">
-  <div class="row row-height">
-    <div class="col-xs-12 col-sm-6">
-      <h3>Powerful, stable, mature, portable</h3>
-      <p>
-          Perl 5 is a highly capable, feature-rich programming language with over [% perl_stats.perl_age %] years of development. Perl 5 runs on over [% perl_stats.platforms %] platforms from portables to mainframes and is suitable for both rapid prototyping and large scale development projects.
-      </p>
-      <p>"Perl" is a family of languages, "Perl 6" is part of
-          the family, but it is a separate language which
-          has its own development team. Its existence
-          has no significant impact on the continuing
-          development of "Perl 5".
-      </p>
-    </div>
-    <div class="col-xs-12 col-sm-6">
-      <h3>White papers: Technical Showcases</h3>
-      <p><a href="/about/whitepapers/">White papers</a> of Perl 5 technology at your disposal.</p>
-      <ul class="list-unstyled">
-          [% INCLUDE 'about/whitepapers/whitepapers_list.html' %]
-      </ul>
-    </div>
-    <div class="col-xs-12 col-sm-6">
-      <h3>Perl5 features</h3>
-      <h4>
-          Mission critical
-      </h4>
-      <p>
-          Used for mission critical projects in the public and private sectors.
-      </p>
-      <h4>
-          Object-oriented, procedural and functional
-      </h4>
-      <p>
-          Supports object-oriented, procedural and functional programming.
-      </p>
-      <h4>
-          Easily extendible
-      </h4>
-      <p>
-          There are over [% perl_stats.cpan_dists %] open source modules available from the Comprehensive Perl Archive Network (<a href="http://cpan.perl.org">CPAN</a>).
-      </p>
-      <h4>
-          Text manipulation
-      </h4>
-      <p>
-          Perl includes powerful tools for processing text that make it ideal for working with HTML, XML, and all other mark-up and natural languages.
-      </p>
-      <h4>
-          Unicode support
-      </h4>
-      <p>
-          Supports <a href="http://www.unicode.org/">Unicode version 6</a> (from Perl 5.14).
-      </p>
-      <h4>
-          Database integration
-      </h4>
-      <p>
-          Perl's database integration interface (<a href="http://dbi.perl.org">DBI</a>) supports third-party databases including Oracle, Sybase, <a href="http://www.postgresql.org">Postgres</a>, <a href="http://www.mysql.com">MySQL</a> and <a href="https://metacpan.org/search?q=DBD%3A%3A">many</a> others.
-      </p>
-      <h4>
-          C/C++ library interface
-      </h4>
-      <p>
-          Perl interfaces with external C/C++ libraries through XS or <a href="http://www.swig.org">SWIG</a>.
-      </p>
-      <h4>
-          Embeddable
-      </h4>
-      <p>
-          The Perl interpreter can be embedded into other systems such as <a href="http://perl.apache.org/">web servers</a> and <a href="http://www.postgresql.org/docs/8.4/interactive/plperl.html">database servers</a>.
-      </p>
-      <h4>
-          Open Source
-      </h4>
-      <p>
-          Perl is <a href="http://www.opensource.org/">Open Source</a> software, <a href="http://dev.perl.org/licenses/">licensed</a> under its <a href="http://dev.perl.org/licenses/artistic.html">Artistic License</a>, or the <a href="http://dev.perl.org/licenses/gpl1.html">GNU General Public License (GPL)</a>.
-      </p>
-    </div>
-    <div class="col-xs-12 col-sm-6">
-      <h3>Perl5 and the Eeb</h3>
-      <h4>
-          Ideal web programming language
-      </h4>
-      <p>
-          Perl is an ideal web programming language due to its text manipulation capabilities and rapid development cycle.
-      </p>
-      <h4>
-          Web Frameworks
-      </h4>
-      <p>
-          There are many web frameworks written in Perl, a leading one is <a href="http://www.catalystframework.org/">Catalyst</a>.
-      </p>
-      <h4>
-          Database integration
-      </h4>
-      <p>
-          Perl's <a href="http://dbi.perl.org">DBI</a> package makes web-database integration easy. <a href="https://metacpan.org/module/DBIx::Class">DBIx::Class</a> - is available as an Object Relational Mapper.
-      </p>
-      <h4>
-          Web modules
-      </h4>
-      <p>
-          <a href="http://www.cpan.org/">CPAN</a> offers thousands of modules, so almost any task you need to accomplish will be made easier, from URL or image manipulation, to Amazon EC2 APIs and much more.
-      </p>
-      <h4>
-          Duct-tape of the internet, and more...
-      </h4>
-      <p>
-          Perl has long been known as "<a href="http://www.google.com/search?q=the%20duct-tape%20of%20the%20Internet">the duct-tape of the Internet</a>", however many large web based applications are also written solely in Perl.
-      </p>
-      <h4>
-          Encryption capable
-      </h4>
-      <p>
-          Perl can handle encrypted Web data, including e-commerce transactions.
-      </p>
-      <h4>
-          Embed into Apache
-      </h4>
-      <p>
-          Perl can be embedded into web servers to speed up processing by as much as 2000%, <a href="http://perl.apache.org">mod_perl</a> allows the Apache web server to embed a Perl interpreter.
-      </p>
-    </div>
-    <div class="col-xs-12 col-sm-12 text-center">
-      <h3>Larry Wall on Perl...</h3>
-      <ul class="list-unstyled">
-          <li>
-              <a href="http://www.perl.com/pub/a/1999/03/pm.html">Perl, the first postmodern computer language</a>
-          </li>
-          <li>
-              <a href="http://oreilly.com/catalog/opensources/book/larry.html">Diligence, Patience, and Humility"</a> in Open Sources: Voices from the Open Source Revolution
-          </li>
-          <li>
-              <a href="http://www.amazon.com/exec/obidos/tg/feature/-/7137/">Amazon.com interview with Larry Wall</a>
-          </li>
-          <li>
-              <a href="http://www.linuxjournal.com/issue61/3394.html">Linux Journal interview</a> (May 1999)
-          </li>
-          <li>
-              <a href="http://www.salon.com/1998/10/13/feature_269/">The Joy Of Perl</a>
-          </li>
-      </ul>
-    </div>
+  <div class="col-xs-12 col-sm-6">
+    <h3>White papers: Technical Showcases</h3>
+    <p><a href="/about/whitepapers/">White papers</a> of Perl 5 technology at your disposal.</p>
+    <ul class="list-unstyled">
+        [% INCLUDE 'about/whitepapers/whitepapers_list.html' %]
+    </ul>
+  </div>
+  <div class="col-xs-12 col-sm-6">
+    <h3>Perl5 features</h3>
+    <h4>
+        Mission critical
+    </h4>
+    <p>
+        Used for mission critical projects in the public and private sectors.
+    </p>
+    <h4>
+        Object-oriented, procedural and functional
+    </h4>
+    <p>
+        Supports object-oriented, procedural and functional programming.
+    </p>
+    <h4>
+        Easily extendible
+    </h4>
+    <p>
+        There are over [% perl_stats.cpan_dists %] open source modules available from the Comprehensive Perl Archive Network (<a href="http://cpan.perl.org">CPAN</a>).
+    </p>
+    <h4>
+        Text manipulation
+    </h4>
+    <p>
+        Perl includes powerful tools for processing text that make it ideal for working with HTML, XML, and all other mark-up and natural languages.
+    </p>
+    <h4>
+        Unicode support
+    </h4>
+    <p>
+        Supports <a href="http://www.unicode.org/">Unicode version 6</a> (from Perl 5.14).
+    </p>
+    <h4>
+        Database integration
+    </h4>
+    <p>
+        Perl's database integration interface (<a href="http://dbi.perl.org">DBI</a>) supports third-party databases including Oracle, Sybase, <a href="http://www.postgresql.org">Postgres</a>, <a href="http://www.mysql.com">MySQL</a> and <a href="https://metacpan.org/search?q=DBD%3A%3A">many</a> others.
+    </p>
+    <h4>
+        C/C++ library interface
+    </h4>
+    <p>
+        Perl interfaces with external C/C++ libraries through XS or <a href="http://www.swig.org">SWIG</a>.
+    </p>
+    <h4>
+        Embeddable
+    </h4>
+    <p>
+        The Perl interpreter can be embedded into other systems such as <a href="http://perl.apache.org/">web servers</a> and <a href="http://www.postgresql.org/docs/8.4/interactive/plperl.html">database servers</a>.
+    </p>
+    <h4>
+        Open Source
+    </h4>
+    <p>
+        Perl is <a href="http://www.opensource.org/">Open Source</a> software, <a href="http://dev.perl.org/licenses/">licensed</a> under its <a href="http://dev.perl.org/licenses/artistic.html">Artistic License</a>, or the <a href="http://dev.perl.org/licenses/gpl1.html">GNU General Public License (GPL)</a>.
+    </p>
+  </div>
+  <div class="col-xs-12 col-sm-6">
+    <h3>Perl5 and the Eeb</h3>
+    <h4>
+        Ideal web programming language
+    </h4>
+    <p>
+        Perl is an ideal web programming language due to its text manipulation capabilities and rapid development cycle.
+    </p>
+    <h4>
+        Web Frameworks
+    </h4>
+    <p>
+        There are many web frameworks written in Perl, a leading one is <a href="http://www.catalystframework.org/">Catalyst</a>.
+    </p>
+    <h4>
+        Database integration
+    </h4>
+    <p>
+        Perl's <a href="http://dbi.perl.org">DBI</a> package makes web-database integration easy. <a href="https://metacpan.org/module/DBIx::Class">DBIx::Class</a> - is available as an Object Relational Mapper.
+    </p>
+    <h4>
+        Web modules
+    </h4>
+    <p>
+        <a href="http://www.cpan.org/">CPAN</a> offers thousands of modules, so almost any task you need to accomplish will be made easier, from URL or image manipulation, to Amazon EC2 APIs and much more.
+    </p>
+    <h4>
+        Duct-tape of the internet, and more...
+    </h4>
+    <p>
+        Perl has long been known as "<a href="http://www.google.com/search?q=the%20duct-tape%20of%20the%20Internet">the duct-tape of the Internet</a>", however many large web based applications are also written solely in Perl.
+    </p>
+    <h4>
+        Encryption capable
+    </h4>
+    <p>
+        Perl can handle encrypted Web data, including e-commerce transactions.
+    </p>
+    <h4>
+        Embed into Apache
+    </h4>
+    <p>
+        Perl can be embedded into web servers to speed up processing by as much as 2000%, <a href="http://perl.apache.org">mod_perl</a> allows the Apache web server to embed a Perl interpreter.
+    </p>
+  </div>
+  <div class="col-xs-12 col-sm-12 text-center">
+    <h3>Larry Wall on Perl...</h3>
+    <ul class="list-unstyled">
+        <li>
+            <a href="http://www.perl.com/pub/a/1999/03/pm.html">Perl, the first postmodern computer language</a>
+        </li>
+        <li>
+            <a href="http://oreilly.com/catalog/opensources/book/larry.html">Diligence, Patience, and Humility"</a> in Open Sources: Voices from the Open Source Revolution
+        </li>
+        <li>
+            <a href="http://www.amazon.com/exec/obidos/tg/feature/-/7137/">Amazon.com interview with Larry Wall</a>
+        </li>
+        <li>
+            <a href="http://www.linuxjournal.com/issue61/3394.html">Linux Journal interview</a> (May 1999)
+        </li>
+        <li>
+            <a href="http://www.salon.com/1998/10/13/feature_269/">The Joy Of Perl</a>
+        </li>
+    </ul>
   </div>
 </div>

@@ -5,19 +5,8 @@
         description
         = 'The Perl.org free online Perl books',
     });
-
-
-
 %]
 
-<div class="jumbotron jumbotron-internal">
-  <div class="container text-center">
-    <h1>[% page.title %]</h1>
-    <p>[% page.description %]</p>
-  </div>
-</div>
-
-<div class="container">
 [% MACRO booklink(name,title) BLOCK %]
 <li><a href="#[% name %]">[% title %]</a></li>
 [%- END %]
@@ -202,5 +191,4 @@
     author => "by Sean M. Burke. 264 pages. O'Reilly &amp; Associates. (June 2002)",
     description => "The LWP (Library for WWW in Perl) suite of modules lets your programs download and extract information from the Web. Perl &amp; LWP shows how to make web requests, submit forms, and even provide authentication information, and it demonstrates using regular expressions, tokens, and trees to parse HTML. This book is a must have for Perl programmers who want to automate and mine the Web.",
 %]
-</div>
 </div>
