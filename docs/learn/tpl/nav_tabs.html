@@ -1,41 +1,27 @@
-<ul>
-    <li[% ' class="selected"' IF page.section == 'home' %]>
-        <a href="/">Home</a>
-    </li>
+<ul class="list-inline text-center nav navbar-nav navbar-right">
+  <li class="sub[% ' selected' IF page.section == 'installing' %]">
+      <a href="/installing/">Install</a>
+  </li>
 
-<!--     <li[% ' class="selected"' IF page.section == 'tutorials' %]>
-        <a href="/tutorials/">Tutorials</a>
-    </li>
-    <li[% ' class="selected"' IF page.section == 'faq' %]>
-        <a href="/faq/">FAQ</a>
-    </li>
- -->
-    <li[% ' class="selected"' IF page.section == 'installing' %]>
-        <a href="/installing/">Installing Perl</a>
-    </li>
+  <li class="sub[% ' selected' IF page.section == 'first_steps' %]">
+      <a href="/first_steps/">Start</a>
+  </li>
 
-    <li[% ' class="selected"' IF page.section == 'first_steps' %]>
-        <a href="/first_steps/">First steps</a>
-    </li>
+  <li class="sub[% ' selected' IF page.section == 'modules' %]">
+      <a href="/modules/">Modules</a>
+  </li>
 
-    <li[% ' class="selected"' IF page.section == 'modules' %]>
-        <a href="/modules/">Modules</a>
-    </li>
+  <li class="sub[% ' selected' IF page.section == 'examples' %]">
+      <a href="/examples/">Examples</a>
+  </li>
 
-    <li[% ' class="selected"' IF page.section == 'examples' %]>
-        <a href="/examples/">Examples</a>
-    </li>
-
-    <li[% ' class="selected"' IF page.section == 'docs' %]>
-        <a href="/docs/">Documentation</a>
-    </li>
-    <li[% ' class="selected"' IF page.section == 'books' %]>
-        <a href="/books/">Books</a>
-    </li>
-    <li[% ' class="selected"' IF page.section == 'faq' %]>
-        <a href="/faq/">FAQ / Help</a>
-    </li>
-
+  <li class="sub[% ' selected' IF page.section == 'docs' %]">
+      <a href="/docs/">Docs</a>
+  </li>
+  <li class="sub[% ' selected' IF page.section == 'books' %]">
+      <a href="/books/">Books</a>
+  </li>
+  <li class="sub[% ' selected' IF page.section == 'faq' %]">
+      <a href="/faq/">FAQ</a>
+  </li>
 </ul>
-
-

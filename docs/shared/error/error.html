@@ -1,13 +1,12 @@
-[% title = "Error " _ error %]
+[% page.title = "Error " _ error %]
+[% page.section = 'error' %]
 [% shortfooter = 1 %]
-[% page.style = "default.html" %]
-<h3>[% error %] - [% error_header %]</h3>
 
 <p>
 [% IF error == 404 %]
 
-Sorry, we looked high and low and just could not find the file <tt>[%
-error_uri | uri %]</tt>. <br /><br />
+<P>Sorry, we looked high and low and just could not find the file <tt>[%
+error_uri | uri %]</tt>. </P>
 
 <style type="text/css">
   #goog-wm { }
@@ -19,9 +18,10 @@ error_uri | uri %]</tt>. <br /><br />
 </style>
 <script type="text/javascript">
   var GOOG_FIXURL_LANG = 'en';
-  var GOOG_FIXURL_SITE = 'http://[% r.hostname %]';
+  var GOOG_FIXURL_SITE = 'http://www.perl.org/';
 </script>
-<script type="text/javascript" 
+
+<script type="text/javascript"
     src="https://linkhelp.clients.google.com/tbproxy/lh/wm/fixurl.js"></script>
 
   Go to <a href="/">the front page</a> or send mail to the staff at <tt>webmaster at perl.org</tt>.
@@ -43,4 +43,3 @@ href="mailto:webmaster@perl.org">send a mail</a>.
 
 [% END %]
 </p>
-

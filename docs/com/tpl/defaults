@@ -14,7 +14,7 @@
         tag_line        => 'Perl, modern programming',
         crum            => '<a href="/">Home</a>',
         brand          => 'com',
-    }; 
+    };
     PROCESS tpl/stats.html;
 
     page.import({
@@ -25,7 +25,7 @@
             '<a href="http://blogs.perl.org/">Perl Blogs</a>',
         ],
     });
- 
+
     SET section_data = {
         quick_links_2_title => 'Technical Showcases',
         quick_links_2_list => [

@@ -25,7 +25,6 @@
 
     [%
         page.css.push("css/perlweb_bootstrap.min.css");
-        page.css.push("css/" _ combust.site _ ".css");
         PROCESS tpl/common/css_include.html;
     %]
 
@@ -65,17 +64,17 @@
       </div>
     </nav>
 
-    [% IF page.section == 'home' && combust.site == 'www' %]
+    [% IF page.section == 'home' %]
     <div class="jumbotron">
       <div class="container text-center">
         <img src="[% combust.static_url("/images/icons/header_camel.png") %]" class="img-camel" alt="Perl5 Camel">
         <div class="over-image">
-          <h2>That's why we love Perl 5</h2>
-          <h1>[% headline %]</h1>
-          <p>Perl 5 is a highly capable, feature-rich programming language with over [% perl_stats.perl_age %] years of development.</p>
+          <h2>[% combust.site == 'www' ? 'That\'s why we love Perl 5' : page.title %]</h2>
+          <h1>[% headline || site.tag_line %]</h1>
+          <p>[% combust.site == 'www' ? 'Perl 5 is a highly capable, feature-rich programming language with over ' _  perl_stats.perl_age _ ' years of development.' : page.description %]</p>
           <p>
-            <a class="btn btn-success" href="/get.html" role="button">
-              <img src="[% combust.static_url("/images/icons/ic_download.svg") %]" class="btn-ic hidden-xs">Download and Get Started
+            <a class="btn btn-success" href="[% site.url || 'http://www.perl.org/get.html' %]" role="button">
+              [% IF combust.site == 'www' %]<img src="[% combust.static_url("/images/icons/ic_download.svg") %]" class="btn-ic hidden-xs">[% END %][% site.link || 'Donwload and Get Started' %]
             </a>
           </p>
         </div>
