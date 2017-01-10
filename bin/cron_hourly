@@ -18,8 +18,11 @@ function getrss () {
     targettemp="${workpath}/${target}.new"
     url=$2
 
-    lwp-request \
-      $url > ${targettemp}
+    timecond=""
+    if [ -e ${target} ]; then
+       timecond="-z ${target}"
+    fi
+    curl -LA "www.perl.org/cron_hourly (github.com/perlorg/perlweb)" -sf ${timecond} -o ${targettemp} $url
 
     if [ $? -eq 0 ]; then
       mv $targettemp $targetpath/$target
@@ -27,7 +30,7 @@ function getrss () {
 
 }
 
-getrss "cpanrecent" "http://metacpan.org/feed/recent?f="
+getrss "cpanrecent" "https://metacpan.org/feed/recent?f="
 getrss "tpfblog" "http://news.perlfoundation.org/index.xml"
 getrss "noc" "http://log.perl.org/feeds/posts/default?alt=rss"
 getrss "jobs"        "http://jobs.perl.org/rss/standard.rss?limit=5"
@@ -35,21 +38,11 @@ getrss "perlbuzz"    "http://perlbuzz.com/rss.xml"
 getrss "perlnews"    "http://feeds.feedburner.com/PerlNews"
 
 function getcpanstats () {
-    target="cpan.dat"
-    targettemp="${workpath}/cpan.dat.new"
-
-    echo "mb : mirrors : authors : modules" > $targettemp
-
-    lwp-request http://www.cpan.org/index.html |
-    perl -ne 'm!(\d+) MB (\d+) mirrors<br/>(\d+) authors (\d+) modules!i && print qq!$1 : $2 : $3 : $4\n!' >> $targettemp
-
-    if [ $? -eq 0 ]; then
-      mv $targettemp $targetpath/$target
-    fi
-
-    # Switch over to using this:
-    lwp-mirror -t10m http://www.cpan.org/indices/cpan-stats.json $targetpath/cpan-stats.json 2> >(grep -v 'up to date')
-
+    curl -LA 'www.perl.org/cron_hourly' \
+        -sf \
+        -o $targetpath/cpan-stats.json \
+        -z $targetpath/cpan-stats.json \
+        http://www.cpan.org/indices/cpan-stats.json
 }
 
 getcpanstats
