@@ -9,7 +9,7 @@ else
 	git submodule update
 fi
 
-# download RSS files etc
-./bin/cron &
+# download RSS files etc on restarts
+./bin/cron_hourly &
 
 ./combust/bin/httpd
