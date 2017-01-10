@@ -18,7 +18,7 @@ function getrss () {
     targettemp="${workpath}/${target}.new"
     url=$2
 
-    /usr/bin/lwp-request \
+    lwp-request \
       $url > ${targettemp}
 
     if [ $? -eq 0 ]; then
@@ -40,7 +40,7 @@ function getcpanstats () {
 
     echo "mb : mirrors : authors : modules" > $targettemp
 
-    /usr/bin/lwp-request http://www.cpan.org/index.html |
+    lwp-request http://www.cpan.org/index.html |
     perl -ne 'm!(\d+) MB (\d+) mirrors<br/>(\d+) authors (\d+) modules!i && print qq!$1 : $2 : $3 : $4\n!' >> $targettemp
 
     if [ $? -eq 0 ]; then
