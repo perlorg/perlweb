@@ -5,7 +5,7 @@ if [ -e .git ]; then
 	echo Already has a git checkout
 else
 	git clone --recursive https://github.com/perlorg/perlweb.git .
-	git checkout -b docker origin/docker
+	git checkout -b master origin/master
 	git submodule update
 fi
 
