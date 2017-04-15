@@ -9,7 +9,7 @@ use Cwd;
 use Text::Wrap qw( wrap ); $Text::Wrap::columns = 76;
 
 my $dir = cwd();
-my $sourcedir = "$dir/sources";
+my $sourcedir = "$dir/inputs";
 croak "Could not locate '$sourcedir'" unless (-d $sourcedir);
 my $outdir = "$dir/outputs";
 croak "Could not locate '$outdir'" unless (-d $outdir);
