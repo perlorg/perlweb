@@ -2,25 +2,109 @@
 use strict;
 use warnings;
 use 5.10.1;
-use Data::Dumper;$Data::Dumper::Indent=1;
-use Data::Dump qw( dd pp );
+#use Data::Dump qw( dd pp );
 use Carp;
-use Cwd;
 use Text::Wrap qw( wrap ); $Text::Wrap::columns = 76;
+use Getopt::Long;
 
-my $dir = cwd();
-my $sourcedir = "$dir/inputs";
-croak "Could not locate '$sourcedir'" unless (-d $sourcedir);
-my $outdir = "$dir/outputs";
-croak "Could not locate '$outdir'" unless (-d $outdir);
+=head1 NAME
 
-croak "No Perl version specified on command-line" unless @ARGV == 1;
-my $version = shift(@ARGV);
+source-to-template.pl
+
+=head1 USAGE
+
+    perl /home/username/gitwork/perlweb/docs/dev/perl5/prep/source-to-template.pl \
+        --repo=/home/username/gitwork/perlweb \
+        --version=5.16.2
+
+=cut
+
+my ($repodir, $version);
+GetOptions(
+    "repo=s"        => \$repodir,
+    "version=s"     => \$version,
+);
+
+croak "Cannot locate top-level of checkout of 'perlweb'"
+    unless (-d $repodir);
 croak "Perl version '$version' incorrectly specified"
     unless $version =~ m/^5\.\d{2}\.\d{1,2}$/;
 
-my $input = "$sourcedir/$version.source.txt";
+
+=head1 ASSUMPTIONS
+
+=head2 Directory and File Structure
+
+    .../perlweb/docs/dev/perl5/prep/inputs
+    .../perlweb/docs/dev/perl5/prep/inputs/5.16.2.source.txt
+    ...
+    .../perlweb/docs/dev/perl5/prep/outputs
+    .../perlweb/docs/dev/perl5/prep/outputs/5.16.2.html
+    ...
+    .../perlweb/docs/dev/perl5/news/2012
+    .../perlweb/docs/dev/perl5/news/2013
+    ...
+    .../perlweb/docs/dev/perl5/news/index.html
+
+F<.../perlweb> is the top-level directory of a checkout of the I<perlweb> repository.
+
+=cut
+
+
+my $prepdir = "$repodir/docs/dev/perl5/prep";
+my $indir = "$prepdir/inputs";
+croak "Could not locate '$indir'" unless (-d $indir);
+my $outdir = "$prepdir/outputs";
+croak "Could not locate '$outdir'" unless (-d $outdir);
+
+my $input = "$indir/$version.source.txt";
 croak "Could not locate input file '$input'" unless (-f $input);
+
+
+=head2 Input File
+
+The input file must be placed in F<.../perlweb/docs/dev/perl5/prep/inputs/>.  Its basename must be composed of the Perl 3-part version number supplied on the command-line followed by C<.source.txt>.  Example:
+
+    .../perlweb/docs/dev/perl5/prep/inputs/5.16.2.source.txt
+
+Assumed structure of input file:  Paragraphs separated by a single linespace.  There are 3 kinds of paragraphs; each paragraph must conform to exactly one kind.
+
+=over 4
+
+=item 1
+
+Regular paragraph:  Text flush left to margin.
+
+Examples:
+
+    The Perl 5 development team is gratified to announce the release of
+    Perl 5.16.2!
+
+    You can find a full list of changes in the file "perldelta.pod" located in
+    the "pod" directory inside the release and on the web.
+
+=item 2
+
+Paragraph with download link:  Text flush left to margin.  Download link at metacpan.org is final line.
+
+Example:
+
+    You can download Perl 5.16.2 from your favorite CPAN mirror or from:
+    https://www.metacpan.org/release/RJBS/perl-5.16.2/
+
+=item 3
+
+SHA digests:  Each line indented 4 spaces from margin.  40-character SHA.  2 spaces.  Basename of tarball.
+
+Example:
+
+        674380237fa5a44447c6531e15bd3590d987e4b4  perl-5.16.2.tar.bz2
+        9e20e38e3460ebbac895341fd70a02189d03a490  perl-5.16.2.tar.gz
+
+=back
+
+=cut
+
 
 my @paragraphs_raw = ();
 open my $IN, '<', $input or croak "Unable to open '$input' for reading";
@@ -54,13 +138,6 @@ for my $p (@paragraphs_raw) {
     }
     else {
         my $unwrapped = $p =~ s/\n/ /gr;
-
-=pod
-
-        You can download Perl 5.16.2 from your favorite CPAN mirror or from:
-        <a href="https://www.metacpan.org/release/RJBS/perl-5.16.2/">https://www.metacpan.org/release/RJBS/perl-5.16.2/</a>
-
-=cut
         if ($unwrapped =~ m/^(.*)(https:\/\/www\.metacpan\.org.*)$/) {
             ($para{text}, $para{url_raw}) = ($1,$2);
         }
@@ -72,40 +149,37 @@ for my $p (@paragraphs_raw) {
 }
 #dd(\@paragraphs_refined);
 
+
+=head2 Output File
+
+The output file is content for an HTML C<E<lt>bodyE<gt>E<lt>/bodyE<gt>> tag (Template::Toolkit ??).  It will be created in F<.../perlweb/docs/dev/perl5/prep/outputs/>.  Its basename will be composed of the Perl 3-part version number supplied on the command-line followed by C<.html>.  Example:
+
+    .../perlweb/docs/dev/perl5/prep/outputs/5.16.2.html
+
+=cut
+
+
 my $output = "$outdir/perl-${version}.html";
 open my $OUT, '>', $output or croak "Unable to open '$output' for writing";
 say $OUT '[% page.title = "Perl ' . $version . ' Release Announcement" %]';
 for my $p (@paragraphs_refined) {
     say $OUT '';
+    say $OUT '<p>';
     if (exists $p->{url_raw}) {
-
-=pod
-
-<p>
-You can download Perl 5.16.2 from your favorite CPAN mirror or from:
-<a href="https://www.metacpan.org/release/RJBS/perl-5.16.2/">https://www.metacpan.org/release/RJBS/perl-5.16.2/</a>
-</p>
-
-=cut
-        say $OUT '<p>';
         say $OUT wrap('','',$p->{text});
         say $OUT '<a href="' . $p->{url_raw} . '">' . $p->{url_raw} . '</a>';
-        say $OUT '</p>';
     }
     elsif (exists $p->{shas}) {
-        say $OUT '<p>';
-        say $OUT '<code>';
+        say $OUT '<pre>';
         for my $el (@{$p->{shas}}) {
             say $OUT "    $el->{sha}  $el->{file}";
         }
-        say $OUT '</code>';
-        say $OUT '</p>';
+        say $OUT '</pre>';
     }
     else {
-        say $OUT '<p>';
         say $OUT wrap('','',$p->{text});
-        say $OUT '</p>';
     }
+    say $OUT '</p>';
 }
 close $OUT or croak "Unable to close '$output' after writing";
 say "Finished!";
