@@ -46,7 +46,8 @@ croak "Perl version '$version' incorrectly specified"
     ...
     .../perlweb/docs/dev/perl5/news/index.html
 
-F<.../perlweb> is the top-level directory of a checkout of the I<perlweb> repository.
+F<.../perlweb> is the top-level directory of a checkout of the I<perlweb>
+repository.
 
 =cut
 
@@ -63,11 +64,15 @@ croak "Could not locate input file '$input'" unless (-f $input);
 
 =head2 Input File
 
-The input file must be placed in F<.../perlweb/docs/dev/perl5/prep/inputs/>.  Its basename must be composed of the Perl 3-part version number supplied on the command-line followed by C<.source.txt>.  Example:
+The input file must be placed in F<.../perlweb/docs/dev/perl5/prep/inputs/>.
+Its basename must be composed of the Perl 3-part version number supplied on
+the command-line followed by C<.source.txt>.  Example:
 
     .../perlweb/docs/dev/perl5/prep/inputs/5.16.2.source.txt
 
-Assumed structure of input file:  Paragraphs separated by a single linespace.  There are 3 kinds of paragraphs; each paragraph must conform to exactly one kind.
+Assumed structure of input file:  Paragraphs separated by a single linespace.
+There are 3 kinds of paragraphs; each paragraph must conform to exactly one
+kind.
 
 =over 4
 
@@ -85,16 +90,17 @@ Examples:
 
 =item 2
 
-Paragraph with download link:  Text flush left to margin.  Download link at metacpan.org is final line.
+Single line with download link to metacpan.org:  May or may not be flush left
+to margin.
 
 Example:
 
-    You can download Perl 5.16.2 from your favorite CPAN mirror or from:
     https://www.metacpan.org/release/RJBS/perl-5.16.2/
 
 =item 3
 
-SHA digests:  Each line indented 4 spaces from margin.  40-character SHA.  2 spaces.  Basename of tarball.
+SHA digests:  Each line indented 1-4 spaces from margin.  40-character SHA.  2
+spaces.  Basename of tarball.
 
 Example:
 
@@ -138,8 +144,8 @@ for my $p (@paragraphs_raw) {
     }
     else {
         my $unwrapped = $p =~ s/\n/ /gr;
-        if ($unwrapped =~ m/^(.*)(https:\/\/www\.metacpan\.org.*)$/) {
-            ($para{text}, $para{url_raw}) = ($1,$2);
+        if ($unwrapped =~ m/^\s*(https:\/\/www\.metacpan\.org.*)$/) {
+            $para{url_raw} = $1;
         }
         else {
             $para{text} = $unwrapped;
@@ -152,7 +158,11 @@ for my $p (@paragraphs_raw) {
 
 =head2 Output File
 
-The output file is content for an HTML C<E<lt>bodyE<gt>E<lt>/bodyE<gt>> tag (Template::Toolkit ??).  It will be created in F<.../perlweb/docs/dev/perl5/prep/outputs/>.  Its basename will be composed of the Perl 3-part version number supplied on the command-line followed by C<.html>.  Example:
+The output file is content for an HTML C<E<lt>bodyE<gt>E<lt>/bodyE<gt>> tag
+(Template::Toolkit ??).  It will be created in
+F<.../perlweb/docs/dev/perl5/prep/outputs/>.  Its basename will be composed of
+the Perl 3-part version number supplied on the command-line followed by
+C<.html>.  Example:
 
     .../perlweb/docs/dev/perl5/prep/outputs/5.16.2.html
 
@@ -166,7 +176,6 @@ for my $p (@paragraphs_refined) {
     say $OUT '';
     say $OUT '<p>';
     if (exists $p->{url_raw}) {
-        say $OUT wrap('','',$p->{text});
         say $OUT '<a href="' . $p->{url_raw} . '">' . $p->{url_raw} . '</a>';
     }
     elsif (exists $p->{shas}) {
