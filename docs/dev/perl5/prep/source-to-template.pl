@@ -172,6 +172,7 @@ C<.html>.  Example:
 my $output = "$outdir/perl-${version}.html";
 open my $OUT, '>', $output or croak "Unable to open '$output' for writing";
 say $OUT '[% page.title = "Perl ' . $version . ' Release Announcement" %]';
+say $OUT '<meta charset="utf-8">';
 for my $p (@paragraphs_refined) {
     say $OUT '';
     say $OUT '<p>';
@@ -186,7 +187,7 @@ for my $p (@paragraphs_refined) {
         say $OUT '</pre>';
     }
     else {
-        say $OUT wrap('','',$p->{text});
+        say $OUT wrap('','', $p->{text});
     }
     say $OUT '</p>';
 }
