@@ -8,49 +8,55 @@
 -%]
 
 <div class="row row-height">
-  <div class="col-xs-12">
-    <p>
+  <div class="col-xs-12 hidden-xs">
+    <p class="text-center">
       There are many reasons to use Perl, including <a href="/modules/">[% perl_stats.cpan_modules | comma %] modules</a> ready for you to use.
     </p>
   </div>
 
-  <ul class="col-xs-12 col-sm-6 list-unstyled">
-      [%
-          PROCESS "examples/example_list.html";
-          USE Shuffle;
-          examples = example_list.shuffle.splice(0,8);
-      %]
-      <h3>Perl examples</h3>
-      <!-- <li><a href="/examples/"><strong>Perl examples</strong></a></li> -->
-      [% FOREACH example = examples %]
-      <li>[% example %]</li>
-      [% END %]
-  </ul>
 
-  <ul class="col-xs-12 col-sm-6 list-unstyled">
-      <h3> What would you like to learn?</h3>
-      <li>
-          <a href="/installing/">&gt; Installing Perl 5 - and setup guide</a>
-      </li>
-      <li>
-          <a href="/first_steps/">&gt; First program - and some basic best
-          practices</a>
-      </li>
-      <li><a href="/modules/">&gt; Perl Modules - introduction</a>
-      </li>
-      <li>
-          <a href="/examples/">&gt; Examples - what can you do with Perl?</a>
-      </li>
-      <li>
-          <a href="/docs/">&gt; Perl documentation</a>
-      </li>
-      <li>
-          <a href="/books/">&gt; Perl books</a>
-      </li>
-      <li>
-          <a href="/faq/">&gt; Frequently Asked Questions</a>
-      </li>
-  </ul>
+  <div class="col-xs-12 col-sm-6">
+    <h3>Perl examples</h3>
+    <ul class="list-unstyled">
+        [%
+            PROCESS "examples/example_list.html";
+            USE Shuffle;
+            examples = example_list.shuffle.splice(0,8);
+        %]
+        <!-- <li><a href="/examples/"><strong>Perl examples</strong></a></li> -->
+        [% FOREACH example = examples %]
+        <li>[% example %]</li>
+        [% END %]
+    </ul>
+  </div>
+
+  <div class="col-xs-12 col-sm-6">
+    <h3> What would you like to learn?</h3>
+    <ul class="list-unstyled">
+        <li>
+            · <a href="/installing/">Installing Perl 5 - and setup guide</a>
+        </li>
+        <li>
+            · <a href="/first_steps/">First program - and some basic best
+            practices</a>
+        </li>
+        <li>
+          · <a href="/modules/">Perl Modules - introduction</a>
+        </li>
+        <li>
+          · <a href="/examples/">Examples - what can you do with Perl?</a>
+        </li>
+        <li>
+          · <a href="/docs/">Perl documentation</a>
+        </li>
+        <li>
+          · <a href="/books/">Perl books</a>
+        </li>
+        <li>
+          · <a href="/faq/">Frequently Asked Questions</a>
+        </li>
+    </ul>
+  </div>
 
   <div class="col-xs-12">
     <h3>Existing developers / system administrators</h3>

@@ -10,12 +10,12 @@
 @gray-base:              #7C8487;
 @gray-darker:            darken(@gray-base, 20%);
 @gray-dark:              darken(@gray-base, 10%);
-@gray:                   lighten(@gray-base, 20%);
-@gray-light:             lighten(@gray-base, 30%);
+@gray:                   lighten(@gray-base, 15%);
+@gray-light:             lighten(@gray-base, 35%);
 @gray-lighter:           lighten(@gray-base, 45%);
 
 @brand-primary:         #0073A1;
-@brand-primary-darker:  #00456E;
+@brand-primary-darker:  darken(#00456E,5%);
 @brand-success:         #61C5BA;
 @brand-success-darker:  #55A89F;
 @brand-info:            @gray-base;
@@ -30,7 +30,7 @@
 //** Background color for `<body>`.
 @body-bg:               #fff;
 //** Global text color on `<body>`.
-@text-color:            @gray-base;
+@text-color:            @gray-dark;
 
 //** Global textual link color.
 @link-color:            @brand-primary;
@@ -93,7 +93,7 @@
 @padding-base-horizontal:   12px;
 
 @padding-large-vertical:    10px;
-@padding-large-horizontal:  16px;
+@padding-large-horizontal:  24px;
 
 @padding-small-vertical:    5px;
 @padding-small-horizontal:  10px;
@@ -146,7 +146,7 @@
 
 @btn-font-weight:                normal;
 
-@btn-default-color:              #fff;
+@btn-default-color:              @brand-success;
 @btn-default-bg:                 transparent;
 @btn-default-border:             @brand-success;
 
@@ -489,7 +489,7 @@
 @jumbotron-bg:                   @gray-lighter;
 @jumbotron-heading-color:        inherit;
 @jumbotron-font-size:            @font-size-base;
-@jumbotron-heading-font-size:    ceil((@font-size-base * 4.5));
+@jumbotron-heading-font-size:    ceil((@font-size-base * 2.5));
 
 
 //== Form states and alerts

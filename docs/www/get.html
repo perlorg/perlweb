@@ -55,129 +55,129 @@
 <h3>
   Source
 </h3>
-<ul class="list-unstyled">
-  <li> <p class="button no-table">
-        <a href="http://www.cpan.org/src/5.0/perl-[% perl_stats.perl_version %].tar.gz"
-           class="download" title="Latest Source Tarball"
-           >Download Latest Stable Source ([% perl_stats.perl_version %])</a>
-      </p>Consider looking at <a href="https://metacpan.org/release/App-perlbrew/">App::perlbrew</a> to help compile and manage Perl from source</li>
-<li>
- Find out more about the source code, development versions as well
-  as current releases of
-  the <a href="http://www.cpan.org/src/README.html">Perl source
-  code</a>.
-</li>
-<li><a href="https://dev.perl.org/perl5/source.html">Latest
+<p>
+Consider looking at <a href="https://metacpan.org/release/App-perlbrew/">App::perlbrew</a> to help compile and manage Perl from source.
+</p>
+<p>Find out more about the source code, development versions as well
+  as current releases of the <a href="http://www.cpan.org/src/README.html">Perl source code</a>.
+</p>
+<p><a href="https://dev.perl.org/perl5/source.html">Latest
   under development source code</a>
-</li>
-</ul>
+</p>
+<p class="space-top-small">
+  <a href="http://www.cpan.org/src/5.0/perl-[% perl_stats.perl_version %].tar.gz"
+     class="btn btn-sm btn-default" title="ActiveState"
+     >Download Latest Stable Source ([% perl_stats.perl_version %])</a>
+</p>
 [% END %]
 
 
-<div id="unix_like" class="space-top-large">
+<div id="unix_like" class="space-top-large row">
   <h2>Unix</h2>
   <p>
     Running Linux, Solaris, AIX, HPUX, or any other UNIX-like system?
   </p>
-
-  <h3>Binaries</h3>
-  <ul class="list-unstyled">
-    <li>
-      <p class="button no-table">
-        <a style="background-image: url([% combust.static_url("/images/icons/tick.png);     background-repeat: no-repeat;
-  padding-left: 20px;") %]">Already Installed</a>
-      </p>You probably already have perl
-      installed. Type <code>perl&nbsp;-v</code> on a command line to
-      find out which version.
-    </li>
-
-    <li>
-      <p class="button no-table">
-        <a href="http://www.activestate.com/activeperl/downloads"
-           class="download" title="ActiveState"
-           >Download ActivePerl</a>
-      </p><a href="http://www.activestate.com/activeperl/downloads">ActiveState Perl</a>
-      has binary distributions of Perl for many platforms.
-      This is the simplest way to install the latest version of Perl.
-    </li>
-  </ul>
-
+  <div class="col-xs-12 col-sm-6">
+    <h3>Binaries</h3>
+    <ul class="list-unstyled">
+      <li>
+        <p class="button no-table">
+          <span style="background-image: url([% combust.static_url("/images/icons/tick.png); background-repeat: no-repeat;
+    padding-left: 20px;") %]">Already Installed</span>
+        </p>You probably already have perl
+        installed. Type <code>perl&nbsp;-v</code> on a command line to
+        find out which version.
+      </li>
+      <li>
+        <a href="http://www.activestate.com/activeperl/downloads">ActiveState Perl</a>
+        has binary distributions of Perl for many platforms.
+        This is the simplest way to install the latest version of Perl.
+        <p class="space-top-small">
+          <a href="http://www.activestate.com/activeperl/downloads"
+             class="btn btn-sm btn-default" title="ActiveState"
+             >Download ActivePerl</a>
+        </p>
+      </li>
+    </ul>
+  </div>
+  <div class="col-xs-12 col-sm-6">
   [% INCLUDE source %]
-
+  </div>
 </div>
 
-<div id="osx" class="space-top-large">
+<div id="osx" class="space-top-large row">
   <h2>Mac OS X</h2>
-  <p>
-  </p>
 
-  <h3>Binaries</h3>
-  <ul class="list-unstyled">
-    <li>
-      <p class="button no-table">
-        <a style="background-image: url([% combust.static_url("/images/icons/tick.png); background-repeat: no-repeat;
-  padding-left: 20px;") %]">Already Installed</a>
-      </p>Mac OS X already has Perl installed. Open a <i>Terminal</i> application (in the Utilities folder of your Applications folder) and run <code>perl&nbsp;-v</code> to find out which version.
-    </li>
+  <div class="col-xs-12 col-sm-6">
+    <h3>Binaries</h3>
+        <p class="button no-table">
+          <span style="background-image: url([% combust.static_url("/images/icons/tick.png); background-repeat: no-repeat;
+    padding-left: 20px;") %]">Already Installed</span>
+        </p>
+        <p>Mac OS X already has Perl installed. Open a <i>Terminal</i> application (in the Utilities folder of your Applications folder) and run <code>perl&nbsp;-v</code> to find out which version.</p>
 
-    <li>
-      <p class="button no-table">
-        <a href="http://www.activestate.com/activeperl/downloads"
-           class="download" title="ActiveState"
-           >Download ActivePerl</a>
-      </p><a href="http://www.activestate.com/activeperl/downloads">ActiveState Perl</a>
-      has binary distributions of Perl for Mac OS X.
-      This is the simplest way to install the latest version of Perl.
-    </li>
-  </ul>
+        <p><a href="http://www.activestate.com/activeperl/downloads">ActiveState Perl</a>
+        has binary distributions of Perl for Mac OS X.
+        This is the simplest way to install the latest version of Perl.
+        </p>
 
-  [% INCLUDE source %]
+        <p class="space-top-small">
+          <a href="http://www.activestate.com/activeperl/downloads"
+             class="btn btn-sm btn-default" title="ActiveState"
+             >Download ActivePerl</a>
+        </p>
+  </div>
+
+  <div class="col-xs-12 col-sm-6">
+    [% INCLUDE source %]
+  </div>
 
 </div>
 
-<div id="win32" class="space-top-large">
+<div id="win32" class="space-top-large row">
   <h2>Windows</h2>
   <p>
       Windows does not have Perl installed by default.
   </p>
 
-  <h3>Binaries</h3>
 
-  <ul class="list-unstyled">
-      <li>
-          <p
-          class="button no-table"><a href="http://www.activestate.com/activeperl/downloads"
-          class="download" title="Download ActivePerl">
-        Download ActivePerl</a>
-        </p><a href="http://www.activestate.com/activeperl/downloads">ActiveState Perl</a>
-        ActiveState offers both a free community version and a
-        commercially supported binary distribution of Perl for
-        Win32 and Perl for Win64.
-      </li>
-
-    <li>
-      <p class="button no-table"><a href="http://strawberryperl.com"
-      class="download" title="Strawberry Perl">
-          Download Strawberry Perl</a></p>
+  <div class="col-xs-12 col-sm-6">
+    <h3>Binaries</h3>
+    <p class="space-top-small">
+      <a href="http://www.activestate.com/activeperl/downloads">ActiveState Perl</a>
+      ActiveState offers both a free community version and a
+      commercially supported binary distribution of Perl for
+      Win32 and Perl for Win64.
+    </p>
+    <p class="space-top-small">
+      <a href="http://www.activestate.com/activeperl/downloads"
+      class="btn btn-sm btn-default" title="Download ActivePerl">
+      Download ActivePerl</a>
+    </p>
+    <p class="space-top-small">
       <a href="http://strawberryperl.com">Strawberry Perl</a>: A
       100% Open Source Perl for Windows that is exactly the same as Perl
       everywhere else; this includes using modules from <a href="/cpan.html">CPAN</a>, without the
       need for binary packages. Help is available from other Windows
       Perl developers on the #win32 irc channel on irc.perl.org (see <a href="http://strawberryperl.com">website</a> for access through a browser).
-    </li>
+    </p>
+    <p class="space-top-small"><a href="http://strawberryperl.com"
+    class="btn btn-sm btn-default" title="Strawberry Perl">
+        Download Strawberry Perl</a></p>
+    <p>
+    <p class="space-top-small">
+        <a href="http://dwimperl.com/windows.html">DWIM Perl for Windows</a>:
+        A 100% Open Source Perl for
+        Windows, based on Strawberry Perl. It aims to include as many useful CPAN
+        modules as possible.
+        It even comes with <a href="http://padre.perlide.org/">Padre, the Perl IDE</a>.
+    </p>
+    <p class="space-top-small"><a href="http://dwimperl.com/windows.html"
+    class="btn btn-sm btn-default" title="DWIM Perl">
+        Download DWIM Perl</a></p>
+  </div>
 
-
-    <li>
-      <p class="button no-table"><a href="http://dwimperl.com/windows.html"
-      class="download" title="DWIM Perl">
-          Download DWIM Perl</a></p>
-          <a href="http://dwimperl.com/windows.html">DWIM Perl for Windows</a>:
-          A 100% Open Source Perl for
-          Windows, based on Strawberry Perl. It aims to include as many useful CPAN
-          modules as possible.
-          It even comes with <a href="http://padre.perlide.org/">Padre, the Perl IDE</a>.
-    </li>
-  </ul>
-
-  [% INCLUDE source %]
+  <div class="col-xs-12 col-sm-6">
+    [% INCLUDE source %]
+  </div>
 </div>

@@ -44,6 +44,17 @@ h4 {
   color: @gray-darker;
 }
 
+/* UI items */
+.list-unstyled {
+  margin-top: @padding-base-vertical;
+}
+pre {
+  margin-top: @padding-large-vertical;
+}
+ul li {
+  margin-bottom: @padding-small-vertical;
+}
+
 /* Navbar */
 .navbar-inverse {
   margin-bottom: 0;
@@ -135,6 +146,7 @@ h4 {
   text-transform: uppercase;
   letter-spacing: @letter-spacing-base;
   padding: @padding-large-vertical @padding-large-horizontal;
+  font-size: @font-size-small;
 }
 .btn-ic {
   margin-right: 20px;
@@ -161,13 +173,15 @@ h4 {
 .over-image {
   z-index: 999;
   position: relative;
+  max-width: 64%;
+  margin: auto;
 }
 .jumbotron-internal {
   padding: @jumbotron-padding/2;
 }
 .jumbotron .img-camel {
   position:absolute;
-  right: -20px;
+  right: 0;
   top: 20px;
 }
 
@@ -301,7 +315,9 @@ span.highlight {
 .space-top-large {
   padding-top: @grid-gutter-width;
 }
-
+.space-top-small {
+  padding-top: @grid-gutter-width/2;
+}
 
 /* Animation */
 @-webkit-keyframes moveFromTop {
@@ -327,6 +343,9 @@ span.highlight {
   .jumbotron .img-camel {
     right: -60px;
   }
+  .over-image {
+    max-width: 60%;
+  }
 }
 
 
@@ -339,6 +358,9 @@ span.highlight {
   }
   .section_home .jumbotron {
     background: none;
+  }
+  .over-image {
+    max-width: 90%;
   }
   .footer {
     text-align: center;
