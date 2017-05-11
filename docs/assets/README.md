@@ -33,7 +33,7 @@ Ready? Now let's get to work!
 Just run ```grunt watch``` from your command line once, before editing any .less or .js files. This will run predefined tasks whenever watched file patterns are added, changed or deleted.
 
 ## Or manually
-You can just run ```grunt``` from your command line any time you make changes to .less or .js files in the assets folder.
+You can just run ```grunt``` from your command line anytime you make changes to .less or .js files in the assets folder.
 
 Also, all plugins can be run separately, so if you don't want to go through all grunt tasks every time you change a file,  you can just run ```grunt less``` if you changed .less files or ```grunt uglify``` for .js files.
 
