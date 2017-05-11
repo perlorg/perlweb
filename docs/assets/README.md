@@ -1,55 +1,65 @@
-Want to edit CSS or Javascript in perl.org sites? You can refer to [Grunt's get started page](https://gruntjs.com/getting-started) or follow the usper quick and easy instructions below :)
+#CSS & JS editing
+
+Want to edit CSS or Javascript in this repo? You can refer to [Grunt's get started page](https://gruntjs.com/getting-started) or follow the super quick and easy instructions below!
 
 ###First things first
-Say hi to Grunt, a task runner to automate minification, compilation, unit testing, linting and much more.
-We're using Grunt to compile this repo's source .js and .less into minified .js and .css files.
-The tasks we're currently automating can be found in Gruntfile.js and our project configuration and devDependencies in package.json.
+Say hi to [Grunt](https://gruntjs.com), a task runner that automates minification, compilation, unit testing, linting and much more. We're using Grunt to compile this repo's source .js and .less into minified .js and .css files.
+
+The tasks we're currently automating can be found in our [Gruntfile.js](../../Gruntfile.js) and the project configuration and devDependencies in our [package.json](../../package.json).
 
 
 ###Installing Grunt
 
-First, update npm
+First, make sure npm is updated:
+
 ```npm update -g npm```
 
+Then, install grunt's command line interface (CLI) – you may need to use sudo:
 
-Then, install the CLI (you may need to use sudo)
 ```npm install -g grunt-cli```
+
 This will put the grunt command in your system path, allowing it to be run from any directory.
 
-###Installing the plugins
-For automating our tasks we use a few grunt plugins (less, uglify and watch). You'll find explanations about those plugins below. In order to edit css and js in this repo, you'll need to install the plugins simply by:
+###Installing the plugins in use
+In order to edit CSS and Javascript in this repo, you'll need to install the grunt plugins in use simply by:
 
-- Change to the project's root directory.
-- Install project dependencies with npm install.
-- Run Grunt with ```grunt```
+- Changing to the project's root directory.
+- Installing project dependencies with ```npm install```.
+- Run Grunt with ```grunt``` from your command line.
 
-###Running grunt automatically (recommended)
-Just run ```grunt watch``` from your command line. This will run predefined tasks whenever watched file patterns are added, changed or deleted. So if you make a change to any of the .less or .js assets, grunt will run automatically.
+Ready? Now let's get to work!
 
-###Running grunt manually
-After all is installed and working, you can just run ```grunt``` from your command line every time you make a change to css or js files in the assets folder. This way, the new minified files will be created in the correct public folder.
+###You can run grunt automatically (recommended)
+Just run ```grunt watch``` from your command line once, before editing any .less or .js files. This will run predefined tasks whenever watched file patterns are added, changed or deleted.
 
-All plugins can be run separately, so if you don't want to go through all grunt tasks every time you change a file – it could take a while if you have too many assets –,  you can run just ```grunt less``` for .less files or ```grunt uglify``` for .js files.
+###Or manually
+You can just run ```grunt``` from your command line any time you make changes to .less or .js files in the assets folder.
+
+Also, all plugins can be run separately, so if you don't want to go through all grunt tasks every time you change a file,  you can just run ```grunt less``` if you changed .less files or ```grunt uglify``` for .js files.
 
 
 ###You're ready to go
 If you are changing .less or .js files and your changes are not taking effect, it could be that you didn't ```grunt watch``` before editing the files and didn't manually run ```grunt``` either.
 
 
-###Extra: Plugins configuration
+###How to configure a plugin in use
 
-We use *grunt-contrib-less* to minify .less files. All things this plugin does can be found in the grunt/less.js file. You can also refer to the [plugin documentation](https://github.com/gruntjs/grunt-contrib-less).
-
-
-We use *grunt-contrib-uglify* to concat and minify .js files. All things this plugin does can be found in the grunt/uglify.js file. You can also refer to the [plugin documentation](https://github.com/gruntjs/grunt-contrib-uglify).
-
-We use *grunt-contrib-watch* to watch for changes on folders/files. All things this plugin does can be found in the grunt/watch.js file. You can also refer to the [plugin documentation](https://github.com/gruntjs/grunt-contrib-watch).
+We use **grunt-contrib-less** to minify .less files. All things this plugin does can be found in the [grunt/less.js](../../grunt/less.js) file. You can also refer to the [plugin documentation](https://github.com/gruntjs/grunt-contrib-less).
 
 
-###If you need to install a new plugin
-There are [many plugins to help automate all sorts of things](https://gruntjs.com/plugins). After you found the one you can't live without, just run
+We use **grunt-contrib-uglify** to concat and minify .js files. All things this plugin does can be found in the [grunt/uglify.js](../../grunt/uglify.js) file. You can also refer to the [plugin documentation](https://github.com/gruntjs/grunt-contrib-uglify).
+
+We use **grunt-contrib-watch** to watch for changes on folders/files. All things this plugin does can be found in the [grunt/watch.js](../../grunt/watch.js) file. You can also refer to the [plugin documentation](https://github.com/gruntjs/grunt-contrib-watch).
+
+
+###How to install a new plugin
+There are [many plugins to help automate all sorts of things](https://gruntjs.com/plugins). After you found the one you can't live without - in our example [JSHint](http://jshint.com/) - just run:
+
 ```npm install grunt-contrib-jshint --save-dev```
 
-This way, the plugin will be installed and added to the devDependencies section of package.json.
+This way the plugin will be installed and added to the devDependencies section of [package.json](../../package.json).
 
-###Bônus
+###Bonus
+
+ - Getting started with [Less](http://lesscss.org/)
+ - Getting started with [Bootstrap v3.3.6](http://bootstrapdocs.com/v3.3.6/docs/getting-started/)
