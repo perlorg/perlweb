@@ -1,33 +1,38 @@
-  <VirtualHost *:[% config.port %]>
-    ServerName [% config.site.www.servername %]
-    [% expandServerAliases( config.site.www.aliases ) %]
-    PerlSetVar site www
+<VirtualHost *:[% config.port %]>
+   ServerName [% config.site.www.servername %]
+   [% expandServerAliases( config.site.www.aliases ) %]
+   PerlSetVar site www
 
-    PerlRequire [% root %]/apache/conf/sites/www.pl
+   PerlRequire [% root %]/apache/conf/sites/www.pl
 
-    <Location />
-       SetHandler perl-script
-       PerlHandler PerlOrg::Control::Basic
-    </Location>
+   <Location />
+      SetHandler perl-script
+      PerlHandler PerlOrg::Control::Basic
+   </Location>
 
-    <Location /redirect/>
-       SetHandler   perl-script
-       PerlHandler +PerlOrg::Control::Books->super
-    </Location>
+   <Location /redirect/>
+      SetHandler   perl-script
+      PerlHandler +PerlOrg::Control::Books->super
+   </Location>
 
-    <Location /server-status>
-      SetHandler server-status
-    </Location>
+   <Location /static/css/>
+      SetHandler perl-script
+      PerlHandler PerlOrg::Control::CSS
+   </Location>
 
-    <Location /cgi-bin/>
-       SetHandler cgi-script
-    </Location>
-    ScriptAlias /cgi-bin/ "[% root %]/apache/cgi-bin/"
-    <Directory "[% root %]/apache/cgi-bin">
-        AllowOverride None
-        Options None
-        Order allow,deny
-        Allow from all
-    </Directory>
+   <Location /server-status>
+     SetHandler server-status
+   </Location>
 
-  </VirtualHost>
+   <Location /cgi-bin/>
+      SetHandler cgi-script
+   </Location>
+   ScriptAlias /cgi-bin/ "[% root %]/apache/cgi-bin/"
+   <Directory "[% root %]/apache/cgi-bin">
+       AllowOverride None
+       Options None
+       Order allow,deny
+       Allow from all
+   </Directory>
+
+ </VirtualHost>
