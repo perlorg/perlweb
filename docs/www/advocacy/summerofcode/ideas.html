@@ -1,13 +1,12 @@
-[% 
+[%
     page.import({
-        title    = 'Summer of Code: Ideas',
+        title    = 'Ideas',
         section  = 'about',
-        description 
+        description
             = 'Summer of Code Ideas',
     });
-    
-%]
 
+%]
 <p>Good projects...</p>
 <ul>
   <li>...build on or integrate well with existing code</li>
@@ -54,7 +53,7 @@
           <li>Integrate profiling into reports.</li>
           <li>Threads support.</li>
           <li>Analyse tests and indicate how to improve coverage.</li>
-          <li>Improve <code>cpancover</code> and create a central coverage 
+          <li>Improve <code>cpancover</code> and create a central coverage
               repository.</li>
           <li>Implement path coverage.</li>
           <li>Implement mutation coverage.</li>
@@ -127,7 +126,7 @@
    <ul><li>opens the appropriate library with NCI or Parrot NCI</li>
        <li>binds to the functions with the appropriate data types</li>
        <li>declares the defined structs appropriately</li></ul>
-                                                                              
+
     Developers should be able to include this generated code in the
     distribution so that <em>end users never have to run this compiler tools
     themselves or even have the headers for the libraries installed</em>.
@@ -143,7 +142,7 @@
       are syntactically more complex (<i>i.e.</i>, <code>(?...)</code>
       extensions) or otherwise more involved to implement, so this should
       provide plenty of interest. With the syntax is fully implemented, the
-      next stage is to analyze and start to port over the optimizations from 
+      next stage is to analyze and start to port over the optimizations from
       the Perl 5 engine. (likely mentor: Patrick Michaud)</li>
 
   <li>A Perl 5 to Perl 6 translator.<br />
@@ -277,7 +276,7 @@
   tests when run with a Perl binary built from maintenance branch checked out
   from version control. The initial challenge in this project is automating the
   system sufficiently well that it runs reliably without attention or filling
-  the local disks. Once that's done the interesting part can be tackled - 
+  the local disks. Once that's done the interesting part can be tackled -
   correctly identifying all the test failure modes:
   <ul><li>when a module failing tests with an existing released Perl version is
   that the module author's fault, or a local setup problem?</li>
@@ -315,8 +314,8 @@
   migrating everyone else's complex repositories.</li>
 
   <li>Ajax library for Template Toolkit, akin to the Ajax support in Ruby in Rails (likely mentor: the <a href="http://www.perl.com/pub/a/2005/06/02/catalyst.html">Catalyst</a> project).</li>
-  
+
   <li>Build a suite of tools around WxWidgets for cross-platform GUI apps with low overhead (i.e., don't require Tk or GNOME overhead).</li>
-  
+
   <li>A Perl SOAP library including WSDL support.</li>
 </ul>

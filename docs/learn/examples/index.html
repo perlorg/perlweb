@@ -1,49 +1,39 @@
 [%- page.import({
     title => 'Examples',
     section => 'examples',
+    description => 'What can be done with Perl?',
 }) -%]
 
-<h2>
-    What can be done with Perl?
-</h2>
+<div class="row">
+  <p class="col-xs-12">
+  These are just a few simple examples of what you can do with Perl <a href="/modules/">modules</a>. </p>
 
+  [% PROCESS "examples/example_list.html"; %]
 
-<p>
-These are just a few simple examples of what you can do with Perl <a href="/modules/">modules</a>. </p>
+  <ul class="list-unstyled col-xs-12 col-sm-4">
+      <h3>Email</h3>
+      [% FOREACH example = example_email_list %]
+      <li>[% example %]</li>
+      [% END %]
 
-[% PROCESS "examples/example_list.html"; %]
+  </ul>
+  <ul class="list-unstyled  col-xs-12 col-sm-4">
+      <h3>Files </h3>
+      [% FOREACH example = example_files_list %]
+      <li>[% example %]</li>
+      [% END %]
 
-<ul class="listright list">
-    <h4>Email</h4>
-    [% FOREACH example = example_email_list %]
-    <li>&gt; [% example %]</li>
-    [% END %]
+  </ul>
 
-</ul>
-<ul class="listleft list">
-    <h4>Files </h4>
-    [% FOREACH example = example_files_list %]
-    <li>&gt; [% example %]</li>
-    [% END %]
+  <ul class="list-unstyled  col-xs-12 col-sm-4">
+      <h3>Various</h3>
+      [% FOREACH example = example_misc_list %]
+      <li>[% example %]</li>
+      [% END %]
+  </ul>
 
-</ul>
-<div class="clear"></div>
-
-
-<ul class="listright list">
-</ul>
-<ul class="listleft list">
-    <h4>Various</h4>
-    [% FOREACH example = example_misc_list %]
-    <li>&gt; [% example %]</li>
-    [% END %]
-</ul>
-<div class="clear"></div>
-
-
-
-<p>
-    If you are looking for other recommended modules have a look at
-     <a href="https://metacpan.org/release/Task-Kensho">Task::Kensho</a>
-</p>
-
+  <p class="col-xs-12 space-top-large">
+      If you are looking for other recommended modules have a look at
+       <a href="https://metacpan.org/release/Task-Kensho">Task::Kensho</a>
+  </p>
+</div>

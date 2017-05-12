@@ -8,20 +8,22 @@
 <a href="https://metacpan.org/module/[% module %]">[% module %]</a>
 [%- END %]
 [%-
-    page.style = 'leo.html';
-    
+    page.style = 'perlweb_bootstrap.html';
+
     USE Comma;
-    
+
     SET strawberry_padre = 'http://code.google.com/p/padre-perl-ide/downloads/list';
-    
+
     SET strawberry_padre_perl_version = '5.12.3';
 
     # Configuration for this site
     SET site = {
         name            => 'learn.perl.org',
-        tag_line        => 'Learn Perl, modern programming',
+        tag_line        => 'A modern programming language',
         syntaxhighlight => 1,
         add_this        => 1,
+        logo            => '_learn',
+        url             => '/installing/'
     };
 
     # Perl.org always wants all stats

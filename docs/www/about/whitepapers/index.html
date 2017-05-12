@@ -1,25 +1,29 @@
 [%
-    page.import({
-        title    => 'Perl 5 white papers: technical showcases',
-        section  => 'about',
-        description
-            => 'Perl 5 white papers: technical showcases and best practices',
-    });
+  page.import({
+      title    => 'Perl 5 White Papers',
+      section  => 'about',
+      description
+          => 'Technical showcases and best practices',
+  });
 
-    # Add note recommending either building your own perl or using local::lib.
+  # Add note recommending either building your own perl or using local::lib.
 %]
-<h2>
-    White papers: Modern Perl 5 tools and best practices
-</h2>
-<p>
-    These short articles provide an overview for each topic. They are intended to help you in understanding why modern Perl is a good tool for many different types of project and also to provide pointers for those starting out in Perl.
-</p>
-<ul>
-    [% INCLUDE 'about/whitepapers/whitepapers_list.html' %]
-</ul>
 
-<h4>White Papers which we are looking for someone to write:</h4>
-
+<div class="row row-height">
+  <div class="col-xs-12 col-sm-6">
+    <h3>White papers</h3>
+    <p>
+        These short articles provide an overview for each topic. They are intended to help you in understanding why modern Perl is a good tool for many different types of project and also to provide pointers for those starting out in Perl.
+    </p>
+    <ul>
+        [% INCLUDE 'about/whitepapers/whitepapers_list.html' %]
+    </ul>
+  </div>
+  <div class="col-xs-12  col-sm-6">
+    <h3>Contribute</h3>
+    <p>
+      White Papers which we are looking for someone to write:
+    </p>
     <ul>
         <li>Perl::Critic - "quality" for Perl</li>
         <li>Quality - Devel::Cover, Perl::Critic, PerlTidy</li>
@@ -27,6 +31,8 @@
         <li>Event-driven Programming</li>
         <li>GUI development</li>
     </ul>
-<p>
-Contact leo [at] perl.org if you are interested in contributing
-</p>
+    <p>
+    Contact leo [at] perl.org if you are interested in contributing
+    </p>
+  </div>
+</div>

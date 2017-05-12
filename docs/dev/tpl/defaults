@@ -1,5 +1,5 @@
 [%-
-    page.style = 'leo.html';
+    page.style = 'perlweb_bootstrap.html';
 
     IF combust.request.path.match("^/perl6/") ;
      page.section = "perl6";
@@ -12,7 +12,9 @@
     # Configuration for this site
     SET site = {
         name            => 'dev.perl.org',
-    }; 
+        logo            => '_dev',
+        tag_line        => 'Perl for the next 29 years',
+    };
 
     PROCESS tpl/stats.html;
 

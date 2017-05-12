@@ -1,64 +1,62 @@
-[% 
+[%
     page.import({
         title    => 'Testing your code',
         section  => 'testing',
-        description 
+        description
             => 'How to test your Perl code',
     });
-    
+
 %]
+  <h3>
+      Testing cheat sheets
+  </h3>
+  <p>
+      Ian Langworth, author of <cite><a href="http://oreilly.com/catalog/9780596100926">Perl Testing: A Developer's Notebook</a></cite> has put together a tremendous <a href="http://langworth.com/downloads/perl_test_refcard.pdf">Perl testing quick reference card</a>.
+  </p>
+  <h3>
+      Testing articles
+  </h3>
+  <p>
+      <a href="http://perl.com/">perl.com</a> has published a number of articles on specific testing techniques:
+  </p>
+  <ul>
+      <li>
+          <a href="http://www.perl.com/pub/a/2004/10/21/taint_testing_kata.html">Testing Taint</a>
+      </li>
+      <li>
+          <a href="http://www.perl.com/pub/a/2004/12/16/import_kata.html">Testing Imports</a>
+      </li>
+      <li>
+          <a href="http://www.perl.com/lpt/a/2005/02/10/database_kata.html">Testing Databases</a>
+      </li>
+      <li>
+          <a href="http://www.perl.com/pub/a/2005/04/07/mockobject_kata.html">Mocking Objects</a>
+      </li>
+  </ul>
+  <h3>
+      Testing Modules
+  </h3>
+  <p>
+      The CPAN has a wide variety of modules to help with your automated testing. Here's a <a href="/test-modules.html">summary of what's available</a>.
+  </p>
+  <p>
+      Here's a <a href="/testing-guidelines.html">handy summary of guidelines for writing effective tests</a>, compiled from lessons learned when improving the tests for DBI.
+  </p>
 
-<h3>
-    Testing cheat sheets
-</h3>
-<p>
-    Ian Langworth, author of <cite><a href="http://oreilly.com/catalog/9780596100926">Perl Testing: A Developer's Notebook</a></cite> has put together a tremendous <a href="http://langworth.com/downloads/perl_test_refcard.pdf">Perl testing quick reference card</a>.
-</p>
-<h3>
-    Testing articles
-</h3>
-<p>
-    <a href="http://perl.com/">perl.com</a> has published a number of articles on specific testing techniques:
-</p>
-<ul>
-    <li>
-        <a href="http://www.perl.com/pub/a/2004/10/21/taint_testing_kata.html">Testing Taint</a>
-    </li>
-    <li>
-        <a href="http://www.perl.com/pub/a/2004/12/16/import_kata.html">Testing Imports</a>
-    </li>
-    <li>
-        <a href="http://www.perl.com/lpt/a/2005/02/10/database_kata.html">Testing Databases</a>
-    </li>
-    <li>
-        <a href="http://www.perl.com/pub/a/2005/04/07/mockobject_kata.html">Mocking Objects</a>
-    </li>
-</ul>
-<h3>
-    Testing Modules
-</h3>
-<p>
-    The CPAN has a wide variety of modules to help with your automated testing. Here's a <a href="/test-modules.html">summary of what's available</a>.
-</p>
-<p>
-    Here's a <a href="/testing-guidelines.html">handy summary of guidelines for writing effective tests</a>, compiled from lessons learned when improving the tests for DBI.
-</p>
-
-<h3>
-    Automated testing with Perl
-</h3>
-<p>
-    Automated testing is a key part of software development, especially in environments that have embraced extreme programming. Perl's <a href="http://search.cpan.org/dist/Test-Harness/">Test::Harness</a> framework, along with <a href="http://search.cpan.org/dist/Test-Simple/">Test::Simple and Test::More</a>, allow flexible testing of all parts of your development projects.
-</p>
-<p>
-    A starter list of resources:
-</p>
-<ul>
-    <li>
-        <a href="http://search.cpan.org/dist/Test-Simple/lib/Test/Tutorial.pod">Test::Tutorial</a>, part of the Test::Simple distro
-    </li>
-    <li>
-        <a href="http://petdance.com/perl/automated-testing/">Automated Testing With Perl</a>, a presentation by Andy Lester
-    </li>
-</ul>
-
+  <h3>
+      Automated testing with Perl
+  </h3>
+  <p>
+      Automated testing is a key part of software development, especially in environments that have embraced extreme programming. Perl's <a href="http://search.cpan.org/dist/Test-Harness/">Test::Harness</a> framework, along with <a href="http://search.cpan.org/dist/Test-Simple/">Test::Simple and Test::More</a>, allow flexible testing of all parts of your development projects.
+  </p>
+  <p>
+      A starter list of resources:
+  </p>
+  <ul>
+      <li>
+          <a href="http://search.cpan.org/dist/Test-Simple/lib/Test/Tutorial.pod">Test::Tutorial</a>, part of the Test::Simple distro
+      </li>
+      <li>
+          <a href="http://petdance.com/perl/automated-testing/">Automated Testing With Perl</a>, a presentation by Andy Lester
+      </li>
+  </ul>

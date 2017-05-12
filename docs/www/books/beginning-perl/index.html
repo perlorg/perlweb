@@ -1,8 +1,8 @@
-[% 
+[%
     page.import({
         title    = 'Beginning Perl (free)',
         section  = 'learn',
-        description 
+        description
             = 'Perl.org free online Perl books: Beginning Perl',
     });
 
@@ -19,15 +19,15 @@
 <p><a href="[% UNLESS nogviewer %]http://docs.google.com/viewer?url=[% base _ pdf | uri %][% ELSE %][% base %][% pdf %][% END %]">[% title %]</a>&nbsp;<a href="[% base %][% pdf %]"><b>&#8681;</b></a></p>
 [% END %]
 
-<h2>
+<h3>
     by Simon Cozens
 </h2>
 
 <div class="feature_list">
-  <!-- <A HREF="[% base %]3145_Prelims.pdf">Prelims</A><br /> -->  
+  <!-- <A HREF="[% base %]3145_Prelims.pdf">Prelims</A><br /> -->
   <!-- <A HREF="[% base %]3145_SOC.pdf">SOC</A><br />
        <A HREF="[% base %]3145_TOC.pdf">Table of Contents</A><br />
-       --> 
+       -->
   [% chapter("3145_Intro.pdf","Introduction") %]
   [% chapter("3145_Chap01.pdf","Chapter 1: First Steps In Perl") %]
   [% chapter("3145_Chap02.pdf","Chapter 2: Working with Simple Values") %]
@@ -97,4 +97,3 @@
 <p>
     This book is for those new to programming who want to learn with Perl. You will find it easier if you already have some basic programming experience, but the material covered can be mastered by anyone with just a text editor, some common sense and a computer. If you want to learn how to program with Perl and then find out how far you can go with it, this is the book for you. An excellent companion on any programming course.
 </p>
-

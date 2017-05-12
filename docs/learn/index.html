@@ -1,77 +1,75 @@
-[%- 
+[%-
     page.import({
         title => 'Learn Perl',
         section  => 'home',
-        description => "Learn Perl - this is how to begin learning Perl"
+        description => "Helping you get started with Perl 5."
         keywords => 'Learn Perl 5, beginning Perl, Perl, Perl tutorials, Perl FAQ, Perl documentation',
     });
 -%]
 
-<div class="masthead">
- 	<p class="headline">Learning Perl</p>
+<div class="row row-height">
+  <div class="col-xs-12 hidden-xs">
+    <p class="text-center">
+      There are many reasons to use Perl, including <a href="/modules/">[% perl_stats.cpan_modules | comma %] modules</a> ready for you to use.
+    </p>
+  </div>
 
-    <p class="strap"><em>Helping you get started with <a href=
-    "/installing/">Perl 5</a>....</em>
- 	</p>
+
+  <div class="col-xs-12 col-sm-6">
+    <h3>Perl examples</h3>
+    <ul class="list-unstyled">
+        [%
+            PROCESS "examples/example_list.html";
+            USE Shuffle;
+            examples = example_list.shuffle.splice(0,8);
+        %]
+        <!-- <li><a href="/examples/"><strong>Perl examples</strong></a></li> -->
+        [% FOREACH example = examples %]
+        <li>[% example %]</li>
+        [% END %]
+    </ul>
+  </div>
+
+  <div class="col-xs-12 col-sm-6">
+    <h3> What would you like to learn?</h3>
+    <ul class="list-unstyled">
+        <li>
+            · <a href="/installing/">Installing Perl 5 - and setup guide</a>
+        </li>
+        <li>
+            · <a href="/first_steps/">First program - and some basic best
+            practices</a>
+        </li>
+        <li>
+          · <a href="/modules/">Perl Modules - introduction</a>
+        </li>
+        <li>
+          · <a href="/examples/">Examples - what can you do with Perl?</a>
+        </li>
+        <li>
+          · <a href="/docs/">Perl documentation</a>
+        </li>
+        <li>
+          · <a href="/books/">Perl books</a>
+        </li>
+        <li>
+          · <a href="/faq/">Frequently Asked Questions</a>
+        </li>
+    </ul>
+  </div>
+
+  <div class="col-xs-12">
+    <h3>Existing developers / system administrators</h3>
+    <p>
+        If you are already a developer or systems administrator, in any language,
+        on any platform, please skim through the site, there are lots of details and
+        resources which you will still find useful. It is also worth
+        reviewing to find out what 'Modern' Perl actually is.
+    </p>
+    <hr />
+    <p>
+        If you see this image:
+        <img src="/i/external.png" /> the link before it will take you to an external website.
+    </p>
+  </div>
 </div>
-
-<p>
-    There are many reasons to use Perl, including <a href="/modules/">[% perl_stats.cpan_modules | comma %]
-    modules</a> ready for you to use.
-</p>
-
-
-<ul class="homesmall">
-    [% 
-        PROCESS "examples/example_list.html";
-        USE Shuffle;
-        examples = example_list.shuffle.splice(0,8);
-    %]
-    <h4>Perl examples</h4>
-    <!-- <li><a href="/examples/"><strong>Perl examples</strong></a></li> -->
-    [% FOREACH example = examples %]
-    <li>[% example %]</li>
-    [% END %]    
-</ul>
-
-<ul class="homelarge">
-    <h4> What would you like to learn?</h4>
-    <li>
-        <a href="/installing/">&gt; Installing Perl 5 - and setup guide</a>
-    </li>
-    <li>
-        <a href="/first_steps/">&gt; First program - and some basic best
-        practices</a>
-    </li>
-    <li><a href="/modules/">&gt; Perl Modules - introduction</a>
-    </li>
-    <li>
-        <a href="/examples/">&gt; Examples - what can you do with Perl?</a>
-    </li>
-    <li>
-        <a href="/docs/">&gt; Perl documentation</a>
-    </li>
-    <li>
-        <a href="/books/">&gt; Perl books</a>
-    </li>
-    <li>
-        <a href="/faq/">&gt; Frequently Asked Questions</a>
-    </li>
-</ul>
-
-<div class="clear"></div>
-
-
-<h4>Existing developers / system administrators</h4>
-
-<p>
-    If you are already a developer or systems administrator, in any language,
-    on any platform, please skim through the site, there are lots of details and
-    resources which you will still find useful. It is also worth
-    reviewing to find out what 'Modern' Perl actually is.
-</p>
-<hr />
-<p>
-    If you see this image: 
-    <img src="/i/external.png" /> the link before it will take you to an external website.
-</p>

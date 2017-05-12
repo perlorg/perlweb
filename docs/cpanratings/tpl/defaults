@@ -1,5 +1,13 @@
-[%- page.site = "CPAN Ratings";
+[%-
 
+    # Configuration for this site
+    SET site = {
+        name            => 'cpanratings.perl.org',
+        tag_line        => 'Perl, modern programming',
+        logo            => '_cpanratings',
+    };
+
+    page.site = "CPAN Ratings";
     page.css.push("css/cpanratings.css");
 
     page.morehead = BLOCK;
@@ -9,9 +17,9 @@
      </script>
     [% END;
 
-    page.banner_prefix = page.site;	
+    page.banner_prefix = page.site;
 
-    page.style = 'leo.html';
+    page.style = 'perlweb_bootstrap.html';
     page.section = 'onion';
 
     PROCESS tpl/quicknews;

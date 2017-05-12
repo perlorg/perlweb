@@ -1,90 +1,56 @@
 [%-
-    page.import({
-        title    => 'Perl Core Development',
-        section  => 'home',
-        description
-            => 'Developing the Perl Core',
-    });
+page.import({
+title       => 'Perl Core Development',
+section     => 'home',
+description => 'Resources and useful links for developers.',
+});
 %]
-<style type="text/css" media="screen">
-    #google_translate_element {
-        float: right;
-    }
-</style>
-<div class="masthead">
-	<p class="headline">Perl Core Development</p>
+<div class="row row-height">
+  <div class="col-xs-12 col-sm-6">
+    <h3>Perl 5</h3>
+    <h4>Production-ready, under active development</h4>
+    <p>
+        Get involved: <a href="http://dev.perl.org/perl5/">http://dev.perl.org/perl5/</a>
+    </p>
+    <p>
+        Perl <a href="[% perl_stats.perl_version_link %]">[% perl_stats.perl_version %]</a> is the current stable version of Perl. Perl 5 is <a href="https://www.ohloh.net/p/perl/commits">actively maintained</a> and <a href="http://perl5.git.perl.org/perl.git">developed (git repository)</a> by a large group of <a href="https://www.ohloh.net/p/perl/contributors">dedicated volunteers</a>. Perl 5 will be developed and maintained for many years to come.
+    </p>
 
-	<p class="strap">Perl for the next [% perl_stats.perl_age %] years</p>
-
+    <h4>
+        Strawberry Perl
+    </h4>
+    <p>
+        <a href="http://strawberryperl.com/">http://strawberryperl.com/</a>
+    </p>
+    <p>
+        Strawberry Perl is a distribution of the Perl programming language for the Microsoft Windows platform. While most other distributions rely on the user having software development tools already set up to install certain Perl components, Strawberry Perl ships with the most commonly used tools pre-configured and packaged.
+    </p>
+  </div>
+  <div class="col-xs-12 col-sm-6">
+    <h3>Perl 6</h3>
+    <p>
+        <a href="http://www.perl6.org/">http://www.perl6.org/</a>
+    </p>
+    <p>
+        The <a href="http://www.perl6.org/">Perl 6</a> project is a new language. Perl 5 and Perl 6 are two languages in the Perl family, but of different lineages. Perl 6 is not intended as a replacement for Perl 5, but as its own thing - and libraries exist to allow you to call Perl 5 code from Perl 6 programs and vice versa.
+    </p>
+    <h4>
+        Rakudo
+    </h4>
+    <p>
+        <a href="http://rakudo.org/">http://rakudo.org/</a>
+    </p>
+    <p>
+        Rakudo Perl is an implementation of the Perl 6 specification that runs on multiple backends, including MoarVM and the JVM.
+    </p>
+    <h4>
+        MoarVM
+    </h4>
+    <p>
+        <a href="http://www.moarvm.org/">http://www.moarvm.org/</a>
+    </p>
+    <p>
+        MoarVM is a virtual machine built especially for Rakudo Perl 6 and the NQP Compiler Toolchain.
+    </p>
+  </div>
 </div>
-
-
-<table class="content_table">
-    <tr>
-        <td>
-            <h2>
-                Perl 5 - Production-ready, under active development
-            </h2>
-            <div class="box">
-                <h4>
-                    Perl 5
-                </h4>
-                <p>
-                    Get involved: <a href="http://dev.perl.org/perl5/">http://dev.perl.org/perl5/</a>
-                </p>
-                <p>
-                    Perl <a href="[% perl_stats.perl_version_link %]">[% perl_stats.perl_version %]</a> is the current stable version of Perl. Perl 5 is <a href="https://www.ohloh.net/p/perl/commits">actively maintained</a> and <a href="http://perl5.git.perl.org/perl.git">developed (git repository)</a> by a large group of <a href="https://www.ohloh.net/p/perl/contributors">dedicated volunteers</a>. Perl 5 will be developed and maintained for many years to come.
-                </p>
-                <h4>
-                    Strawberry Perl
-                </h4>
-                <p>
-                    <a href="http://strawberryperl.com/">http://strawberryperl.com/</a>
-                </p>
-                <p>
-                    Strawberry Perl is a distribution of the Perl programming language for the Microsoft Windows platform. While most other distributions rely on the user having software development tools already set up to install certain Perl components, Strawberry Perl ships with the most commonly used tools pre-configured and packaged.
-                </p>
-            </div>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <h2>
-                Perl 6
-            </h2>
-            <div class="box">
-                <h4>
-                    Perl 6
-                </h4>
-                <p>
-                    <a href="http://www.perl6.org/">http://www.perl6.org/</a>
-                </p>
-                <p>
-                    The <a href="http://www.perl6.org/">Perl 6</a> project is a new language. Perl 5 and Perl 6 are two languages in the Perl family, but of different lineages. Perl 6 is not intended as a replacement for Perl 5, but as its own thing - and libraries exist to allow you to call Perl 5 code from Perl 6 programs and vice versa.
-                </p>
-                <h4>
-                    Rakudo
-                </h4>
-                <p>
-                    <a href="http://rakudo.org/">http://rakudo.org/</a>
-                </p>
-                <p>
-                    Rakudo Perl is an implementation of the Perl 6 specification that runs on multiple backends, including MoarVM and the JVM.
-                </p>
-                <h4>
-                    MoarVM
-                </h4>
-                <p>
-                    <a href="http://www.moarvm.org/">http://www.moarvm.org/</a>
-                </p>
-                <p>
-                    MoarVM is a virtual machine built especially for Rakudo Perl 6 and the NQP Compiler Toolchain.
-                </p>
-            </div>
-        </td>
-    </tr>
-</table>
-
-[%# Not needed?
-  <td><font size="+2"><a href="http://www.pugscode.org/">Pugs</a></font></td>
-%]

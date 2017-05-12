@@ -1,102 +1,83 @@
 [%
-    page.import({
-        title    = 'The Perl Community',
-        section  = 'community',
-        description
-            = 'The Perl Community',
-    });
+  page.import({
+      title    = 'Community',
+      section  = 'community',
+      description
+          = 'One of Perl\'s biggest strengths is its community',
+  });
 %]
+<div class="row row-height">
+  <div class="col-xs-12 col-sm-4">
+    <h3>Local Communities</h3>
+    <p>
+      <a href="http://www.pm.org/">Perl Mongers</a> - find your local Perl group from over [% perl_stats.monger_groups %] groups world wide
+    </p>
+  </div>
+  <div class="col-xs-12 col-sm-4">
+    <h3>Events</h3>
+    <p>
+      <a href="/events.html">Events</a> - Perl conferences, hackathons and workshops and local groups around the world
+    </p>
+  </div>
+  <div class="col-xs-12 col-sm-4">
+    <h3>Mail Lists</h3>
+    <p>
+        <a href="http://lists.perl.org/">lists.perl.org</a> has information on all the Perl mailing lists you can join.  If you're just starting, you probably want to join <a href="http://learn.perl.org/faq/beginners.html">perl-beginners</a>.
+    </p>
+  </div>
+  <div class="col-xs-12 col-sm-4">
+    <h3>Community Sites</h3>
+    <ul class="list-unstyled">
+        <li>
+            <a href="http://www.perl.org/">Perl.org</a> - You are here
+        </li>
+        <li>
+            <a href="http://blogs.perl.org/">blogs.perl.org</a> - Personal Perl blogs
+        </li>
+        <li>
+            <a href="http://www.perlmonks.com/">PerlMonks</a> - A community committed to sharing Perl knowledge and coding tips. The site contains questions and answers, useful snippets, and a library of code
+        </li>
+        <li>
+            <a href="http://ironman.enlightenedperl.org/">Planet Perl Iron Man</a> - open Perl blogging challenge
+        </li>
+        <li>
+            <a href="http://perlsphere.net/">Perlsphere</a> - another aggregation of selected Perl blogs
+        </li>
+    </ul>
+  </div>
+  <div class="col-xs-12 col-sm-4">
+    <h3>Chat</h3>
+    <p><a href="http://irchelp.org/irchelp/irctutorial.html">IRC</a> (Internet Relay Chat) enables communities to
+       gather in 'channels' on-line and chat in real-time.  It's a great place
+       to get help if you're polite and ask
+       <a href="http://catb.org/~esr/faqs/smart-questions.html">smart questions</a>.
+       </p>
+    <ul class="list-unstyled">
+        <li>
+            <a href="http://www.irc.perl.org">irc.perl.org</a> (<a href="http://www.irc.perl.org/channels.html">channel list</a>)
+        </li>
+        <li>
+            <a href="http://scrollback.io/perl">Freeenode's #perl channel on Scrollback</a>
+        </li>
+    </ul>
+  </div>
 
-<h2>One of Perl's biggest strengths is its community...</h2>
-<table class="content_table">
-    <tr>
-        <td>
-            <h4>
-                Local Communities
-            </h4>
-            <ul>
-                <li>
-                    <a href="http://www.pm.org/">Perl Mongers</a> - find your local Perl group from over [% perl_stats.monger_groups %] groups world wide
-                </li>
-            </ul>
-            <h4>
-                Events
-            </h4>
-            <ul>
-                <li>
-                    <a href="/events.html">Events</a> - Perl conferences, hackathons and workshops and local groups around the world
-                </li>
-            </ul>
-            <h4>
-                Community Web Sites
-            </h4>
-            <ul>
-                <li>
-                    <a href="http://www.perl.org/">Perl.org</a> - You are here
-                </li>
-                <li>
-                    <a href="http://blogs.perl.org/">blogs.perl.org</a> - Personal Perl blogs
-                </li>
-                <li>
-                    <a href="http://www.perlmonks.com/">PerlMonks</a> - A community committed to sharing Perl knowledge and coding tips. The site contains questions and answers, useful snippets, and a library of code
-                </li>
-                <li>
-                    <a href="http://ironman.enlightenedperl.org/">Planet Perl Iron Man</a> - open Perl blogging challenge
-                </li>
-                <li>
-                    <a href="http://perlsphere.net/">Perlsphere</a> - another aggregation of selected Perl blogs
-                </li>
-            </ul>
-            <h4>
-                Mail Lists
-            </h4>
-            <p>
-                <a href="http://lists.perl.org/">lists.perl.org</a> has information on all the Perl mailing lists you can join.  If you're just starting, you probably want to join <a href="http://learn.perl.org/faq/beginners.html">perl-beginners</a>.
-            </p>
-
-
-        </td>
-        <td>
-            <h4>
-                Chat
-            </h4>
-            <p><a href="http://irchelp.org/irchelp/irctutorial.html">IRC</a> (Internet Relay Chat) enables communities to
-               gather in 'channels' on-line and chat in real-time.  It's a great place
-               to get help if you're polite and ask
-               <a href="http://catb.org/~esr/faqs/smart-questions.html">smart questions</a>.
-               </p>
-            <ul>
-                <li>
-                    <a href="http://www.irc.perl.org">irc.perl.org</a> (<a href="http://www.irc.perl.org/channels.html">channel list</a>)
-                </li>
-                <li>
-                    <a href="http://scrollback.io/perl">Freeenode's #perl channel on Scrollback</a>
-                </li>
-            </ul>
-
-
-            <h4>
-                Organizations
-            </h4>
-            <ul>
-                <li>
-                    <a href="http://www.perlfoundation.org/">The Perl Foundation</a>
-                    - dedicated to the advancement of the Perl programming language through open discussion, collaboration, design, and code
-                </li>
-                <li>
-                    <a href="http://www.enlightenedperl.org/">Enlightened Perl Organization</a>
-                    - a membership organization created to support the new wave of CPAN
-                    (Catalyst, DBIx::Class, Moose, etc.) and to evangelize the new
-                    Perl enlightenment
-                </li>
-                <li>
-                    <a href="http://www.yapceurope.org/">YAPC Europe Foundation</a> - The YAPC::Europe Foundation (YEF) is a non-profit organization which works to promote Perl in Europe primarily through public events
-                </li>
-            </ul>
-
-        </td>
-    </tr>
-</table>
-
-
-
+  <div class="col-xs-12 col-sm-4">
+    <h3>Organizations</h3>
+    <ul class="list-unstyled">
+        <li>
+            <a href="http://www.perlfoundation.org/">The Perl Foundation</a>
+            - dedicated to the advancement of the Perl programming language through open discussion, collaboration, design, and code
+        </li>
+        <li>
+            <a href="http://www.enlightenedperl.org/">Enlightened Perl Organization</a>
+            - a membership organization created to support the new wave of CPAN
+            (Catalyst, DBIx::Class, Moose, etc.) and to evangelize the new
+            Perl enlightenment
+        </li>
+        <li>
+            <a href="http://www.yapceurope.org/">YAPC Europe Foundation</a> - The YAPC::Europe Foundation (YEF) is a non-profit organization which works to promote Perl in Europe primarily through public events
+        </li>
+    </ul>
+  </div>
+</div>

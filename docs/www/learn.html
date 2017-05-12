@@ -1,121 +1,109 @@
 [%
-    page.import({
-        title    => 'Learn Perl',
-        section  => 'learn',
-        description
-            => 'Useful links if you are interested in learning Perl',
-    });
+  page.import({
+      title    => 'Learn Perl',
+      section  => 'learn',
+      description
+          => 'Useful links if you are interested in learning Perl',
+  });
 
 %]
+<div class="row row-height">
+  <div class="col-xs-12 col-sm-4">
+    <h3>Get Started</h3>
+    <ul>
+        <li>
+            <a href="http://learn.perl.org/">learn.perl.org</a>
+        </li>
+        <li>
+            <a href="http://perldoc.perl.org/perlintro.html">A brief introduction</a>
+        </li>
 
-<table class="content_table">
-    <tr>
-        <td>
-            <h4>
-                There are many ways to start...
-            </h4>
-            <ul>
-                <li>
-                    <a href="http://learn.perl.org/">learn.perl.org</a>
-                </li>
-                <li>
-                    <a href="http://perldoc.perl.org/perlintro.html">A brief introduction</a>
-                </li>
+        <li>
+            <a href="/books/library.html">Free online Perl books</a>
+        </li>
+        <li>
+            <a href="/community.html">Join your local community</a>
+        </li>
+        <li>
+            <a href="/media.html">Books and More</a>
+        </li>
+    </ul>
+  </div>
+  <div class="col-xs-12 col-sm-4">
+    <h3>Modules</h3>
+    <p>
+        If you are looking for a list of recommended modules for many day-to-day tasks, look at <a href="https://metacpan.org/module/Task::Kensho">Task::Kensho</a>.
+    </p>
+  </div>
+  <div class="col-xs-12 col-sm-4">
+    <h3>The Perl FAQ</h3>
+    <p>
+        Perl FAQs are available as part of your Perl distribution with the<br />
+        <code>perldoc perlfaq</code> command. Read FAQs online at <a href="http://learn.perl.org/faq/">http://learn.perl.org/faq/</a>
+    </p>
+  </div>
+  <div class="col-xs-12 col-sm-4">
+    <h3>Videos</h3>
+    <p>
+        <a href="http://yapc.tv/">Videos</a> of presentations from conferences and workshops, more at <a href="http://www.presentingperl.org/">Presenting Perl</a>.
+    </p>
+    <ul>
+          <li>
+              <a href="http://blip.tv/file/1887791/">Testing your code</a>
+          </li>
+          <li>
+              <a href="http://yapc.tv/2008/lpw/mike-whitaker-intro-moose/">Moose (Object Oriented Programming) introduction</a>
+          </li>
+          <li>
+              <a href="http://yapc.tv/2008/ipw/marcus_ramberg_-_introduction_to_catalyst/">Catalyst web framework introduction</a>
+          </li>
+      </ul>
+  </div>
+  <div class="col-xs-12 col-sm-4">
+    <h3>Presentations</h3>
+    <p>
+        Presentations are not necessarily the best way to learn, but they
+        can be worth reviewing.
+    </p>
+    <ul>
+        <li>
+            Introduction to Perl:
+              <a href="http://www.slideshare.net/davorg/introduction-to-perl-day-1">Part 1</a>,
+              <a href="http://www.slideshare.net/davorg/introduction-to-perl-day-2">Part 2</a>
+        </li>
+        <li>
+            <a href="http://www.slideshare.net/ranguard/dbixclass-beginners-presentation">DBIx::Class - Database ORM introduction</a>
+        </li>
+        <li>
+            <a href="http://www.slideshare.net/dandv/introduction-to-catalyst-part-1?src=related_normal&amp;rel=283100">Catalyst web framework</a>
+        </li>
+    </ul>
+  </div>
+  <div class="col-xs-12 space-top-large">
+  [%
+      asins = [
+          '1430223650',  # The Definitive Guide to Catalyst
+          '1558607013',  # Higher-Order Perl
+          '1884777791',  # Object Oriented Perl
+          '0596004761',  # Template Toolkit
+          '0596001738',  # Perl Best Practices
+          '0596520107',  # Learning Perl
+          '0977920178'   # Modern Perl
+      ];
+  %]
 
-                <li>
-                    <a href="/books/library.html">Free online Perl books</a>
-                </li>
-                <li>
-                    <a href="/community.html">Join your local community</a>
-                </li>
-                <li>
-                    <a href="/media.html">Books and More</a>
-                </li>
-            </ul>
-            <h4>
-                Recommended modules
-            </h4>
-            <p>
-                If you are looking for a list of recommended modules for many day-to-day tasks, look at <a href="https://metacpan.org/module/Task::Kensho">Task::Kensho</a>.
-            </p>
-            <h4>
-                The Perl FAQ
-            </h4>
-            <p>
-                Perl FAQs are available as part of your Perl distribution with the<br />
-                <code>perldoc perlfaq</code> command.
-            </p>
-            <ul>
-                <li>Read FAQs online at <a href="http://learn.perl.org/faq/">http://learn.perl.org/faq/</a>
-                </li>
-            </ul>
-        </td>
-        <td>
-            <h4>
-                Videos
-            </h4>
-                <p>
-                    <a href="http://yapc.tv/">Videos</a> of presentations from conferences and workshops, more at <a href="http://www.presentingperl.org/">Presenting Perl</a>.
-                </p>
-            <ul>
-                <li>
-                    <a href="http://blip.tv/file/1887791/">Testing your code</a>
-                </li>
-                <li>
-                    <a href="http://yapc.tv/2008/lpw/mike-whitaker-intro-moose/">Moose (Object Oriented Programming) introduction</a>
-                </li>
-                <li>
-                    <a href="http://yapc.tv/2008/ipw/marcus_ramberg_-_introduction_to_catalyst/">Catalyst web framework introduction</a>
-                </li>
-            </ul>
-            <h4>
-                Presentations
-            </h4>
-            <p>
-                Presentations are not necessarily the best way to learn, but they
-                can be worth reviewing.
-            </p>
-            <ul>
-                <li>
-                    Introduction to Perl:
-                      <a href="http://www.slideshare.net/davorg/introduction-to-perl-day-1">Part 1</a>,
-                      <a href="http://www.slideshare.net/davorg/introduction-to-perl-day-2">Part 2</a>
-                </li>
-                <li>
-                    <a href="http://www.slideshare.net/ranguard/dbixclass-beginners-presentation">DBIx::Class - Database ORM introduction</a>
-                </li>
-                <li>
-                    <a href="http://www.slideshare.net/dandv/introduction-to-catalyst-part-1?src=related_normal&amp;rel=283100">Catalyst web framework</a>
-                </li>
-            </ul>
-        </td>
-    </tr>
-</table>
-
-<div style="padding-top: 1em;">
-[%
-    asins = [
-        '1430223650',  # The Definitive Guide to Catalyst
-        '1558607013',  # Higher-Order Perl
-        '1884777791',  # Object Oriented Perl
-        '0596004761',  # Template Toolkit
-        '0596001738',  # Perl Best Practices
-        '0596520107',  # Learning Perl
-        '0977920178'   # Modern Perl
-    ];
-%]
-
-<script type='text/javascript'>
-var amzn_wdgt={widget:'Carousel'};
-amzn_wdgt.tag='develooper';
-amzn_wdgt.widgetType='ASINList';
-amzn_wdgt.title='Books to help learn Perl';
-amzn_wdgt.width='600';
-amzn_wdgt.height='200';
-amzn_wdgt.ASIN='[% asins.join(',') %]';
-amzn_wdgt.shuffleProducts='True';
-amzn_wdgt.marketPlace='US';
-</script>
-<script type='text/javascript' src='//wms.assoc-amazon.com/20070822/US/js/swfobject_1_5.js'>
-</script>
+  <script type='text/javascript'>
+  var amzn_wdgt={widget:'Carousel'};
+  amzn_wdgt.tag='develooper';
+  amzn_wdgt.widgetType='ASINList';
+  amzn_wdgt.title='Books to help learn Perl';
+  amzn_wdgt.width='600';
+  amzn_wdgt.height='200';
+  amzn_wdgt.ASIN='[% asins.join(',') %]';
+  amzn_wdgt.shuffleProducts='True';
+  amzn_wdgt.marketPlace='US';
+  </script>
+  <script type='text/javascript' src='//wms.assoc-amazon.com/20070822/US/js/swfobject_1_5.js'>
+  </script>
+  </div>
 </div>

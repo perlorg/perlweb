@@ -1,280 +1,277 @@
-[% 
+[%
     page.import({
-        title    => 'Perl.com',
+        title    => 'Welcome to',
         section  => 'home',
-        description 
-            => 'Perl.com',
+        description => 'The modern programming language',
     });
-    
+
 %]
 
 
-<table class="content_table">
-
-<tr><td style="width:200px">
-<h3 style="padding-top:0;margin-top:0">What is Perl?</h3>
-<p>Perl is a highly capable, feature-rich programming language with over [% perl_stats.perl_age %] years of development.</p>
-</td><td style="width:200px">
-<h3 style="padding-top:0;margin-top:0">What can Perl do?</h3>
-<p>Modern Perl runs large and small web sites, <a href="http://en.wikipedia.org/wiki/Customer_relationship_management">CRMs</a>, <a href="http://en.wikipedia.org/wiki/Content_management_system">CMS</a>, streaming media and <em>many</em> other types of systems, and it's still good for sysadmin.</p>
-</td><td style="width:200px">
-<h3 style="padding-top:0;margin-top:0">Are there Plugins?</h3>
-<p>
-    With over [% perl_stats.cpan_dists %] <a href="http://search.cpan.org/">CPAN</a> modules,
-    whatever problem space you are working with there is likely to be
-    something already written to help you.    
-</p>
-</td>
-</tr>
-</table>
-
-<ul>
-    <li class="rss round">Perl Pub Articles</li>
-</ul>
-
-        <h3 id="title"><a href="http://www.perl.org/pub/2010/03/idioms-or-how-to-write-perlish-perl.html" rel="bookmark">Idioms, or How to Write Perlish Perl</a></h3>
-          <p>Any language&mdash;programming or natural&mdash;develops <em>idioms</em>,
-        or common patterns of expression. The earth revolves, but we speak of the
-        sun rising or setting. We talk of clever hacks and nasty hacks and slinging
-        code. We ping each other on IRC to discuss spaghetti code, and we factor
-        and refactor away the artifacts of copy pasta.</p> 
-
-        <p>As you learn Perl 5 in more detail, you will begin to see and understand
-        common idioms. They're not quite language features&mdash;you don't
-        <em>have</em> to use them&mdash;and they're not quite large enough that you
-        can encapsulate them away behind functions and methods. They're something
-        more than habits. They're mannerisms. They're our shared jargon of code.
-        They're ways of writing Perl with a Perlish accent.</p> 
-
-        <h4><strong>The Object as <code>$self</code></strong></h4> 
-
-        <p><a href="http://learnperl.scratchcomputing.com/tutorials/objects/">Perl 5's
-            object system</a> treats the invocant of a method as a mundane parameter.
-        The invocant of a class method (a string containing the name of the class) is
-        that method's first parameter. The invocant of an object or instance method,
-        the object itself, is that method's first parameter. You are free to use or
-        ignore it as you see fit.</p> 
-
-        <p>Idiomatic Perl 5 uses <code>$class</code> as the name of the class
-        method and <code>$self</code> for the name of the object invocant. This is
-        a convention not enforced by the language itself, but it is a convention
-        strong enough that useful extensions such as <a 
-        href="http://search.cpan.org/perldoc?MooseX::Method::Signatures">MooseX::Method::Signatures</a> assume you will use <code>$self</code> as the name of
-        the invocant by default.</p> 
-
-        <p>This is true even if you use <a 
-        href="http://moose.perl.org/">Moose</a>.</p> 
-
-        <h4><strong>Named Parameters</strong></h4> 
-
-        <p>Without a module such as <a 
-        href="http://search.cpan.org/perldoc?signatures">signatures</a> or <a 
-        href="http://search.cpan.org/perldoc?MooseX::Multimethods">MooseX::Multimethods</a>, Perl 5's argument passing mechanism is simple: all arguments
-        flatten into a single list accessible through <code>@_</code> 
-        (function_parameters). While this simplicity is occasionally too
-        simple&mdash;named parameters can be very useful at times&mdash;it does not
-        preclude the use of idioms to provide named parameters.</p> 
-
-        <p>The list context evaluation and assignment of <code>@_</code> allows you
-        to unpack named parameters pairwise. Even though this function call is
-        equivalent to passing a comma-separated or <code>qw//</code>-created list,
-        arranging the arguments as if they were true pairs of keys and values makes
-        the caller-side look like the function supports named parameters:</p> 
-
-        <div class="programlisting"> 
-
-        <pre><code>    make_ice_cream_sundae(
-                whipped_cream =&gt; 1,
-                sprinkles     =&gt; 1,
-                banana        =&gt; 0,
-                ice_cream     =&gt; &#39;mint chocolate chip&#39;,
-            );</code></pre> 
-
-        </div> 
-
-        <p>The callee side can unpack these parameters into a hash and treate the
-        hash as if it were a single argument:</p> 
-
-        <div class="programlisting"> 
-
-        <pre><code>    sub make_ice_cream_sundae
-            {
-                <b>my %args = @_;</b> 
-
-                my $ice_cream = get_ice_cream( $args{ice_cream}) );
-                ...
-            }</code></pre> 
-
-        </div> 
-
-        <div class="sidebar"> 
-
-        <p><a href="http://books.google.com/books?id=yMMRnPQ7CSMC">Perl Best
-        Practices</a> suggests passing a hash reference instead. This has one
-        benefit of performing hash construction checking on the caller side, where
-        it's most likely you'll make mistakes and another benefit of minimizing
-        copying and memory use. The former benefit is compelling, if somewhat less
-        common in practice.</p> 
+<div class="row">
+  <div class="col-xs-12 col-sm-4">
+    <h3>What is Perl?</h3>
+    <p>Perl is a highly capable, feature-rich programming language with over [% perl_stats.perl_age %] years of development.</p>
+  </div>
+  <div class="col-xs-12 col-sm-4">
+    <h3>What can Perl do?</h3>
+    <p>Modern Perl runs large and small web sites, <a href="http://en.wikipedia.org/wiki/Customer_relationship_management">CRMs</a>, <a href="http://en.wikipedia.org/wiki/Content_management_system">CMS</a>, streaming media and <em>many</em> other types of systems, and it's still good for sysadmin.</p>
+  </div>
+  <div class="col-xs-12 col-sm-4">
+    <h3>Are there Plugins?</h3>
+    <p>
+        With over [% perl_stats.cpan_dists %] <a href="http://search.cpan.org/">CPAN</a> modules,
+        whatever problem space you are working with there is likely to be
+        something already written to help you.
+    </p>
+  </div>
+  <div class="col-xs-12">
+
+            <h3 id="title"><a href="http://www.perl.org/pub/2010/03/idioms-or-how-to-write-perlish-perl.html" rel="bookmark">Idioms, or How to Write Perlish Perl</a></h3>
+              <p>Any language&mdash;programming or natural&mdash;develops <em>idioms</em>,
+            or common patterns of expression. The earth revolves, but we speak of the
+            sun rising or setting. We talk of clever hacks and nasty hacks and slinging
+            code. We ping each other on IRC to discuss spaghetti code, and we factor
+            and refactor away the artifacts of copy pasta.</p>
+
+            <p>As you learn Perl 5 in more detail, you will begin to see and understand
+            common idioms. They're not quite language features&mdash;you don't
+            <em>have</em> to use them&mdash;and they're not quite large enough that you
+            can encapsulate them away behind functions and methods. They're something
+            more than habits. They're mannerisms. They're our shared jargon of code.
+            They're ways of writing Perl with a Perlish accent.</p>
+
+            <h4><strong>The Object as <code>$self</code></strong></h4>
+
+            <p><a href="http://learnperl.scratchcomputing.com/tutorials/objects/">Perl 5's
+                object system</a> treats the invocant of a method as a mundane parameter.
+            The invocant of a class method (a string containing the name of the class) is
+            that method's first parameter. The invocant of an object or instance method,
+            the object itself, is that method's first parameter. You are free to use or
+            ignore it as you see fit.</p>
+
+            <p>Idiomatic Perl 5 uses <code>$class</code> as the name of the class
+            method and <code>$self</code> for the name of the object invocant. This is
+            a convention not enforced by the language itself, but it is a convention
+            strong enough that useful extensions such as <a
+            href="http://search.cpan.org/perldoc?MooseX::Method::Signatures">MooseX::Method::Signatures</a> assume you will use <code>$self</code> as the name of
+            the invocant by default.</p>
+
+            <p>This is true even if you use <a
+            href="http://moose.perl.org/">Moose</a>.</p>
+
+            <h4><strong>Named Parameters</strong></h4>
+
+            <p>Without a module such as <a
+            href="http://search.cpan.org/perldoc?signatures">signatures</a> or <a
+            href="http://search.cpan.org/perldoc?MooseX::Multimethods">MooseX::Multimethods</a>, Perl 5's argument passing mechanism is simple: all arguments
+            flatten into a single list accessible through <code>@_</code>
+            (function_parameters). While this simplicity is occasionally too
+            simple&mdash;named parameters can be very useful at times&mdash;it does not
+            preclude the use of idioms to provide named parameters.</p>
+
+            <p>The list context evaluation and assignment of <code>@_</code> allows you
+            to unpack named parameters pairwise. Even though this function call is
+            equivalent to passing a comma-separated or <code>qw//</code>-created list,
+            arranging the arguments as if they were true pairs of keys and values makes
+            the caller-side look like the function supports named parameters:</p>
+
+            <div class="programlisting">
+
+            <pre><code>    make_ice_cream_sundae(
+                    whipped_cream =&gt; 1,
+                    sprinkles     =&gt; 1,
+                    banana        =&gt; 0,
+                    ice_cream     =&gt; &#39;mint chocolate chip&#39;,
+                );</code></pre>
+
+            </div>
+
+            <p>The callee side can unpack these parameters into a hash and treate the
+            hash as if it were a single argument:</p>
+
+            <div class="programlisting">
+
+            <pre><code>    sub make_ice_cream_sundae
+                {
+                    <b>my %args = @_;</b>
+
+                    my $ice_cream = get_ice_cream( $args{ice_cream}) );
+                    ...
+                }</code></pre>
+
+            </div>
+
+            <div class="sidebar">
+
+            <p><a href="http://books.google.com/books?id=yMMRnPQ7CSMC">Perl Best
+            Practices</a> suggests passing a hash reference instead. This has one
+            benefit of performing hash construction checking on the caller side, where
+            it's most likely you'll make mistakes and another benefit of minimizing
+            copying and memory use. The former benefit is compelling, if somewhat less
+            common in practice.</p>
 
-        </div> 
+            </div>
 
-        <p>This technique works well with <a 
-        href="http://perldoc.perl.org/functions/import.html">import()</a>; you can
-        process as many parameters as you like before slurping the remainder into a
-        hash:</p> 
+            <p>This technique works well with <a
+            href="http://perldoc.perl.org/functions/import.html">import()</a>; you can
+            process as many parameters as you like before slurping the remainder into a
+            hash:</p>
 
-        <div class="programlisting"> 
+            <div class="programlisting">
 
-        <pre><code>    sub import
-            {
-                <b>my ($class, %args)  = @_;</b> 
-                my $calling_package = caller();
+            <pre><code>    sub import
+                {
+                    <b>my ($class, %args)  = @_;</b>
+                    my $calling_package = caller();
 
-                ...
-            }</code></pre> 
+                    ...
+                }</code></pre>
 
-        </div> 
+            </div>
 
-        <p>Note how this idiom falls naturally out of list assignment; that makes
-        this idiom Perlish.</p> 
+            <p>Note how this idiom falls naturally out of list assignment; that makes
+            this idiom Perlish.</p>
 
-        <h4><strong>The Schwartzian Transform</strong></h4> 
+            <h4><strong>The Schwartzian Transform</strong></h4>
 
-        <p>People new to Perl sometimes overlook the importance of lists and list
-        processing as a fundamental component of expression evaluation<font 
-        class="footnote"> (footnote: People explaining its importance in this
-        fashion do not help)</font>. Put more simply, the ability for Perl
-        programmers to chain expressions which evaluate to variable-length lists
-        gives them countless ways to manipulate data effectively.</p> 
+            <p>People new to Perl sometimes overlook the importance of lists and list
+            processing as a fundamental component of expression evaluation<font
+            class="footnote"> (footnote: People explaining its importance in this
+            fashion do not help)</font>. Put more simply, the ability for Perl
+            programmers to chain expressions which evaluate to variable-length lists
+            gives them countless ways to manipulate data effectively.</p>
 
-        <p>The <em>Schwartzian transform</em> is an elegant demonstration of that
-        principle as an idiom handily borrowed from the Lisp family of languages.
-        (<a 
-        href="http://groups.google.com/group/comp.unix.shell/browse_frm/thread/31da
-        970cebb30c6d?hl=en&pli=1">Randal Schwartz's initial posting of the
-        Schwartzian transform</a> mentions "Speak[ing] with a lisp in Perl.")</p> 
+            <p>The <em>Schwartzian transform</em> is an elegant demonstration of that
+            principle as an idiom handily borrowed from the Lisp family of languages.
+            (<a
+            href="http://groups.google.com/group/comp.unix.shell/browse_frm/thread/31da
+            970cebb30c6d?hl=en&pli=1">Randal Schwartz's initial posting of the
+            Schwartzian transform</a> mentions "Speak[ing] with a lisp in Perl.")</p>
 
-        <p>Suppose you have a Perl hash which associates the names of your
-        co-workers with their phone extensions:</p> 
+            <p>Suppose you have a Perl hash which associates the names of your
+            co-workers with their phone extensions:</p>
 
-        <div class="programlisting"> 
+            <div class="programlisting">
 
-        <pre><code>    use 5.010;
+            <pre><code>    use 5.010;
 
-            my %extensions =
-            (
-                1004 =&gt; &#39;Jerryd&#39;,
-                1005 =&gt; &#39;Rudy&#39;,
-                1006 =&gt; &#39;Juwan&#39;,
-                1007 =&gt; &#39;Brandon&#39;,
-                1010 =&gt; &#39;Joel&#39;,
-                1012 =&gt; &#39;LaMarcus&#39;,
-                1021 =&gt; &#39;Marcus&#39;,
-                1024 =&gt; &#39;Andre&#39;,
-                1023 =&gt; &#39;Martell&#39;,
-                1052 =&gt; &#39;Greg&#39;,
-                1088 =&gt; &#39;Nic&#39;,
-            );</code></pre> 
+                my %extensions =
+                (
+                    1004 =&gt; &#39;Jerryd&#39;,
+                    1005 =&gt; &#39;Rudy&#39;,
+                    1006 =&gt; &#39;Juwan&#39;,
+                    1007 =&gt; &#39;Brandon&#39;,
+                    1010 =&gt; &#39;Joel&#39;,
+                    1012 =&gt; &#39;LaMarcus&#39;,
+                    1021 =&gt; &#39;Marcus&#39;,
+                    1024 =&gt; &#39;Andre&#39;,
+                    1023 =&gt; &#39;Martell&#39;,
+                    1052 =&gt; &#39;Greg&#39;,
+                    1088 =&gt; &#39;Nic&#39;,
+                );</code></pre>
 
-        </div> 
+            </div>
 
-        <p>Suppose you want to print a list of extensions and co-workers sorted by
-        their names, not their extensions. In other words, you need to sort a hash
-        by its keys. Sorting the values of the hash in string order is easy:</p> 
+            <p>Suppose you want to print a list of extensions and co-workers sorted by
+            their names, not their extensions. In other words, you need to sort a hash
+            by its keys. Sorting the values of the hash in string order is easy:</p>
 
-        <div class="programlisting"> 
+            <div class="programlisting">
 
-        <pre><code>    my @sorted_names = sort values %extensions;</code></pre> 
+            <pre><code>    my @sorted_names = sort values %extensions;</code></pre>
 
-        </div> 
+            </div>
 
-        <p>... but that loses the association of names with extensions. The beauty
-        of the Schwartzian transform is that it solves this problem almost
-        trivially. All you have to do is transform the data before and after
-        sorting it to preserve the necessary information. This is most obvious when
-        explained in multiple steps. First, convert the hash into a list of data
-        structures which contain the vital information in sortable fashion. In this
-        case, converting the hash pairs into two-element anonymous arrays will
-        help:</p> 
+            <p>... but that loses the association of names with extensions. The beauty
+            of the Schwartzian transform is that it solves this problem almost
+            trivially. All you have to do is transform the data before and after
+            sorting it to preserve the necessary information. This is most obvious when
+            explained in multiple steps. First, convert the hash into a list of data
+            structures which contain the vital information in sortable fashion. In this
+            case, converting the hash pairs into two-element anonymous arrays will
+            help:</p>
 
-        <div class="programlisting"> 
+            <div class="programlisting">
 
-        <pre><code>    my @pairs = map { [ $_, $extensions{$_} ] } keys %extensions;</code></pre> 
+            <pre><code>    my @pairs = map { [ $_, $extensions{$_} ] } keys %extensions;</code></pre>
 
-        </div> 
+            </div>
 
-        <div class="sidebar"> 
+            <div class="sidebar">
 
-        <p>Reversing the hash <em>in place</em> would work if no one had the same
-        name. In this case, that is no problem, but defensive coding anticipates
-        data changes.</p> 
+            <p>Reversing the hash <em>in place</em> would work if no one had the same
+            name. In this case, that is no problem, but defensive coding anticipates
+            data changes.</p>
 
-        </div> 
+            </div>
 
-        <p><code>sort</code> gets the list of anonymous arrays and can compare the
-        second elements (the names) with a stringwise comparison:</p> 
+            <p><code>sort</code> gets the list of anonymous arrays and can compare the
+            second elements (the names) with a stringwise comparison:</p>
 
-        <div class="programlisting"> 
+            <div class="programlisting">
 
-        <pre><code>    my @sorted_pairs = sort { $a-&gt;[1] cmp $b-&gt;[1] } @pairs;</code></pre> 
+            <pre><code>    my @sorted_pairs = sort { $a-&gt;[1] cmp $b-&gt;[1] } @pairs;</code></pre>
 
-        </div> 
+            </div>
 
-        <p>Given <code>@sorted_pairs</code>, a second <code>map</code> operation
-        can convert the data structure to a more usable form:</p> 
+            <p>Given <code>@sorted_pairs</code>, a second <code>map</code> operation
+            can convert the data structure to a more usable form:</p>
 
-        <div class="programlisting"> 
+            <div class="programlisting">
 
-        <pre><code>    my @formatted_exts = map { &quot;$_-&gt;[1], ext. $_-&gt;[0]&quot; } @sorted_pairs;</code></pre> 
+            <pre><code>    my @formatted_exts = map { &quot;$_-&gt;[1], ext. $_-&gt;[0]&quot; } @sorted_pairs;</code></pre>
 
-        </div> 
+            </div>
 
-        <p>... and now you can print the whole thing:</p> 
+            <p>... and now you can print the whole thing:</p>
 
-        <div class="programlisting"> 
+            <div class="programlisting">
 
-        <pre><code>    say for @formatted_exts;</code></pre> 
+            <pre><code>    say for @formatted_exts;</code></pre>
 
-        </div> 
+            </div>
 
-        <p>Of course, this uses several temporary variables (with admittedly bad
-        names). It's a worthwhile technique and good to understand, but the real
-        magic is in the combination:</p> 
+            <p>Of course, this uses several temporary variables (with admittedly bad
+            names). It's a worthwhile technique and good to understand, but the real
+            magic is in the combination:</p>
 
-        <div class="programlisting"> 
+            <div class="programlisting">
 
-        <pre><code>    say for
-                map  { &quot; $_-&gt;[1], ext. $_-&gt;[0]&quot;          }
-                sort {   $a-&gt;[1] cmp   $b-&gt;[1]           }
-                map  { [ $_      =&gt;    $extensions{$_} ] }
-                    keys %extensions;</code></pre> 
+            <pre><code>    say for
+                    map  { &quot; $_-&gt;[1], ext. $_-&gt;[0]&quot;          }
+                    sort {   $a-&gt;[1] cmp   $b-&gt;[1]           }
+                    map  { [ $_      =&gt;    $extensions{$_} ] }
+                        keys %extensions;</code></pre>
 
-        </div> 
+            </div>
 
-        <p>Read the expression from right to left, in the order of evaluation. For
-        each key in the extensions hash, make a two-item anonymous array containing
-        the key and the value from the hash. Sort that list of anonymous arrays by
-        their second elements, the values from the hash. Create a nicely formatted
-        string of output from those sorted arrays.</p> 
+            <p>Read the expression from right to left, in the order of evaluation. For
+            each key in the extensions hash, make a two-item anonymous array containing
+            the key and the value from the hash. Sort that list of anonymous arrays by
+            their second elements, the values from the hash. Create a nicely formatted
+            string of output from those sorted arrays.</p>
 
-        <p>The Schwartzian transform is this pipeline of
-        <code>map</code>-<code>sort</code>-<code>map</code> where you transform a
-        data structure into another form easier for sorting and then transform it
-        back into your preferred form for modification.</p> 
+            <p>The Schwartzian transform is this pipeline of
+            <code>map</code>-<code>sort</code>-<code>map</code> where you transform a
+            data structure into another form easier for sorting and then transform it
+            back into your preferred form for modification.</p>
 
-        <p>In this case the transformation is relatively simple. Consider the case
-        where calculating the right value to sort is expensive in time or memory,
-        such as calculating a cryptographic hash for a large file. In that case,
-        the Schwartzian transform is also useful because you can perform those
-        expensive operations once (in the rightmost <code>map</code>), compare them
-        repeatedly from a de-facto cache in the <code>sort</code>, and then remove
-        them in the leftmost <code>map</code>.</p> 
+            <p>In this case the transformation is relatively simple. Consider the case
+            where calculating the right value to sort is expensive in time or memory,
+            such as calculating a cryptographic hash for a large file. In that case,
+            the Schwartzian transform is also useful because you can perform those
+            expensive operations once (in the rightmost <code>map</code>), compare them
+            repeatedly from a de-facto cache in the <code>sort</code>, and then remove
+            them in the leftmost <code>map</code>.</p>
 
-        <p>The original example in the comp.lang.perl.misc shows an effective use
-        of the transform, and a good programming technique in general. When the
-        data you have isn't in the optimal form for what you want to do with it,
-        first transform it into that optimal form, then manipulate it.</p> 
+            <p>The original example in the comp.lang.perl.misc shows an effective use
+            of the transform, and a good programming technique in general. When the
+            data you have isn't in the optimal form for what you want to do with it,
+            first transform it into that optimal form, then manipulate it.</p>
 
-        <p>Phrased that way, the technique is so obvious as to seem trivial... but
-        what is an idiom but a brilliant idea made vulgar by its ubiquity?</p> 
-        
+            <p>Phrased that way, the technique is so obvious as to seem trivial... but
+            what is an idiom but a brilliant idea made vulgar by its ubiquity?</p>
+
+  </div>
+</div>

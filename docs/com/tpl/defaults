@@ -1,20 +1,13 @@
-[%-  page = {
-            title = template.title,
-            style = template.style or 'leo.html',
-	    site  = "Perl.com"
-    };
-
-    # don't include any whitespace from here...
- #   RETURN;
--%]
+[%-  page.style = template.style or 'perlweb_bootstrap.html' -%]
 [%-
     # Configuration for this site
     SET site = {
         name            => 'www.perl.com',
-        tag_line        => 'Perl, modern programming',
+        tag_line        => 'Perl.com',
         crum            => '<a href="/">Home</a>',
+        logo            => '_com',
         brand          => 'com',
-    }; 
+    };
     PROCESS tpl/stats.html;
 
     page.import({
@@ -25,7 +18,7 @@
             '<a href="http://blogs.perl.org/">Perl Blogs</a>',
         ],
     });
- 
+
     SET section_data = {
         quick_links_2_title => 'Technical Showcases',
         quick_links_2_list => [

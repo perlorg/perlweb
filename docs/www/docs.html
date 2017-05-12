@@ -1,130 +1,102 @@
 [%-
-    page.import({
-        title    => 'Online Perl Documentation',
-        section  => 'docs',
-        description
-            => 'Online Perl documentation',
-    });
+  page.import({
+      title    => 'Docs',
+      section  => 'docs',
+      description
+          => 'All you need to know to get started.',
+  });
 
 -%]
+<div class="row row-height">
+  <div class="col-xs-12 col-sm-4">
+    <h3>Official Docs</h3>
+    <p>The <a href="http://perldoc.perl.org">perldoc.perl.org</a> contains the official documentation from the Perl distribution(s). Here are some direct links which may be of interest.</p>
+    <ul class="list-unstyled">
+        <li>
+            <a href="http://perldoc.perl.org/perl.html">Manual Pages</a>
+        </li>
+        <li>
+            <a href="http://perldoc.perl.org/index-modules-A.html">Core Modules</a>
+        </li>
+        <li>
+            <a href="http://perldoc.perl.org/index-tutorials.html">Tutorials</a>
+        </li>
+    </ul>
+  </div>
+  <div class="col-xs-12 col-sm-4">
+    <h3>Module Docs</h3>
+    <p>Perl modules come with their own documentation. This includes modules installed from <a href="/cpan.html">CPAN</a>. On Unix-like (including Linux and Mac OS X) systems, you can access the documentation (for installed modules) with the <code>perldoc</code> command.</p>
+    <p>
+        For example, to get the documentation for <a href="https://metacpan.org/module/IO::File ">IO::File</a>, enter<br />
+        <code>perldoc IO::File</code> from your command prompt. Module documentation is also available on <a href="https://metacpan.org/">metacpan.org</a>
+    </p>
+  </div>
+  <div class="col-xs-12 col-sm-4">
+    <h3>The Perl FAQ</h3>
+    <p>Perl FAQs are available as part of your Perl distribution with the<br />
+    <code>perldoc perlfaq</code> command. Read FAQs online at <a href="http://learn.perl.org/faq/">http://learn.perl.org/faq/</a></p>
+  </div>
+  <div class="col-xs-12 col-sm-4">
+    <h3>Mailing List Archives</h3>
+    <p>Perl-related mail lists are archived in several places.</p>
+    <ul class="list-unstyled">
+        <li>
+            <a href="http://www.nntp.perl.org">perl.org archives</a> <small><a href="nntp://nntp.perl.org">(via NNTP)</a></small>
+        </li>
+        <li>
+            <a href="http://perl.markmail.org">Perl lists on MarkMail</a>
+        </li>
+        <li>
+            <a href="http://groups.google.com/groups/dir?q=perl">Google Groups</a> - Perl newsgroups
+        </li>
+        <li>
+            <a href="http://lists.perl.org/">Perl Mailing Lists</a> - a list of lists
+        </li>
+    </ul>
+  </div>
+  <div class="col-xs-12 col-sm-4">
+    <h3>Translations</h3>
+    <ul class="list-unstyled">
+        <li>
+            <a href="http://perldoc.jp">perldoc.jp</a>
+        </li>
+        <li>
+            <a href="http://www.perl.it/documenti/index.html">Italian</a> (Also <a href="http://pod2it.sourceforge.net/">pod2it</a>)
+        </li>
+        <li>
+            <a href="http://perl.enstimac.fr/DocFr.html">French</a>
+        </li>
+    </ul>
+  </div>
+</div>
 
+<div class="row space-top-large text-center">
+  <div class="col-xs-12">
+    [%
+        asins = [
+            '1430223650',  # The Definitive Guide to Catalyst
+            '1558607013',  # Higher-Order Perl
+            '1884777791',  # Object Oriented Perl
+            '0596004761',  # Template Toolkit
+            '0596001738',  # Perl Best Practices        '0596520107',  # Learning Perl
+            '1565922433',  # Perl Cookbook
+            '1930110006',  # Data Munging
+            '0596100922',  # Perl Testing
+        ];
+    %]
 
-<table class="content_table">
-    <tr>
-        <td>
-            <h4>
-                Perl Documentation
-            </h4>
-
-            <p>
-                The <a href="http://perldoc.perl.org">perldoc.perl.org</a> contains the official documentation from the Perl distribution(s). Here are some direct links which may be of interest.
-            </p>
-            <ul>
-                <li>
-                    <a href="http://perldoc.perl.org/perl.html">Manual Pages</a>
-                </li>
-                <li>
-                    <a href="http://perldoc.perl.org/index-modules-A.html">Core Modules</a>
-                </li>
-                <li>
-                    <a href="http://perldoc.perl.org/index-tutorials.html">Tutorials</a>
-                </li>
-            </ul>
-            <h4>
-                Module Documentation
-            </h4>
-            <p>
-                Perl modules come with their own documentation. This includes modules installed from <a href="/cpan.html">CPAN</a>. On Unix-like (including Linux and Mac OS X) systems, you can access the documentation (for installed modules) with the <code>perldoc</code> command.
-            </p>
-            <p>
-                For example, to get the documentation for <a href="https://metacpan.org/module/IO::File ">IO::File</a>, enter<br />
-                <code>perldoc IO::File</code> from your command prompt.
-            </p>
-            <ul>
-                <li>Module documentation is also available on <a href="https://metacpan.org/">metacpan.org</a>
-                </li>
-            </ul>
-
-        </td>
-        <td>
-            <h4>
-                The Perl FAQ
-            </h4>
-            <p>
-                Perl FAQs are available as part of your Perl distribution with the<br />
-                <code>perldoc perlfaq</code> command.
-            </p>
-            <ul>
-                <li>Read FAQs online at <a href="http://learn.perl.org/faq/">http://learn.perl.org/faq/</a>
-                </li>
-            </ul>
-            <h4>
-                Mailing List Archives
-            </h4>
-            <p>
-                Perl-related mail lists are archived in several places.
-            </p>
-            <ul>
-                <li>
-                    <a href="http://www.nntp.perl.org">perl.org archives</a> <small><a href="nntp://nntp.perl.org">(via NNTP)</a></small>
-                </li>
-                <li>
-                    <a href="http://perl.markmail.org">Perl lists on MarkMail</a>
-                </li>
-                <li>
-                    <a href="http://groups.google.com/groups/dir?q=perl">Google Groups</a> - Perl newsgroups
-                </li>
-                <li>
-                    <a href="http://lists.perl.org/">Perl Mailing Lists</a> - a list of lists
-                </li>
-            </ul>
-
-            <h4>
-                Translations
-            </h4>
-            <ul>
-                <li>
-                    <a href="http://perldoc.jp">perldoc.jp</a>
-                </li>
-                <li>
-                    <a href="http://www.perl.it/documenti/index.html">Italian</a> (Also <a href="http://pod2it.sourceforge.net/">pod2it</a>)
-                </li>
-                <li>
-                    <a href="http://perl.enstimac.fr/DocFr.html">French</a>
-                </li>
-            </ul>
-        </td>
-    </tr>
-</table>
-
-
-[%
-    asins = [
-        '1430223650',  # The Definitive Guide to Catalyst
-        '1558607013',  # Higher-Order Perl
-        '1884777791',  # Object Oriented Perl
-        '0596004761',  # Template Toolkit
-        '0596001738',  # Perl Best Practices        '0596520107',  # Learning Perl
-        '1565922433',  # Perl Cookbook
-        '1930110006',  # Data Munging
-        '0596100922',  # Perl Testing
-    ];
-%]
-
-<script type='text/javascript'>
-var amzn_wdgt={widget:'Carousel'};
-amzn_wdgt.tag='develooper';
-amzn_wdgt.widgetType='ASINList';
-amzn_wdgt.title='Reference and other Perl books';
-amzn_wdgt.width='600';
-amzn_wdgt.height='200';
-amzn_wdgt.ASIN='[% asins.join(',') %]';
-amzn_wdgt.shuffleProducts='True';
-amzn_wdgt.marketPlace='US';
-</script>
-<script type='text/javascript' src='//wms.assoc-amazon.com/20070822/US/js/swfobject_1_5.js'>
-</script>
-
-
-
-
+    <script type='text/javascript'>
+    var amzn_wdgt={widget:'Carousel'};
+    amzn_wdgt.tag='develooper';
+    amzn_wdgt.widgetType='ASINList';
+    amzn_wdgt.title='Reference and other Perl books';
+    amzn_wdgt.width='600';
+    amzn_wdgt.height='200';
+    amzn_wdgt.ASIN='[% asins.join(',') %]';
+    amzn_wdgt.shuffleProducts='True';
+    amzn_wdgt.marketPlace='US';
+    </script>
+    <script type='text/javascript' src='//wms.assoc-amazon.com/20070822/US/js/swfobject_1_5.js'>
+    </script>
+  </div>
+</div>

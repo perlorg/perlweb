@@ -1,166 +1,82 @@
 [%
-    page.import({
-        title    => 'The Perl Programming Language',
-        section  => 'home',
-        description
-            => 'The Perl Programming Language at Perl.org. Links and '
-            _ 'other helpful resources for new and experienced Perl programmers.',
-        include_sponsor => 1,
-        quick_links_1_title => 'Current Perl version',
-        quick_links_1_list => [
-            "<a href=\"/get.html\">${perl_stats.perl_version} - download now</a>",
-        ],
-        quick_links_2_title => 'Find out more',
-        quick_links_2_list => [
-        '<a href="/learn.html">Learn</a>',
-        '<a href="/docs.html">Documentation</a>',
-        '<a href="/community.html">Community</a>',
-        '<a href="/events.html">Events</a>',
-        ],
-    });
+  page.import({
+      title           => 'The Perl Programming Language',
+      section         => 'home',
+      description     => 'The Perl Programming Language at Perl.org. Links and '
+                      _ 'other helpful resources for new and experienced Perl programmers.',
+      include_sponsor => 1,
+  });
+
+  # Random messages
+  cpan_msg = perl_stats.cpan_dists _ ' extensions on CPAN';
+  headlines = [
+      'Flexible &amp; Powerful',
+      cpan_msg,
+  ];
+  rand_num = headlines.size.rand;
+  headline = headlines.$rand_num;
 %]
 
-[%
-    # Setup random messages
-    cpan_msg = perl_stats.cpan_dists _ ' extensions on CPAN';
-    headlines = [
-        'Flexible &amp; Powerful',
-        cpan_msg,
-    ];
-
-    rand_num = headlines.size.rand;
-    headline = headlines.$rand_num;
-
-%]
-
-<div class="masthead">
-	<p class="headline">[% headline %]</p>
-
-	<p class="strap">That's why we love Perl 5</p>
-
-
-	<p class="button"><a href="/get.html" class="download">Download Perl</a></p>
-
-
-	<p class="cta"><a href="/get.html">Get started</a></p>
-
+<div class="row row-height">
+  <div class="col-xs-12 col-sm-4">
+    <a href="/learn.html" class="highlight-module">
+      <h3 class="alternate">Learning</h3>
+      <img src="[% combust.static_url("/images/icons/ic_highlight_pencil.svg") %]" class="ic-highlight">
+      <p>With free online books, over [% perl_stats.cpan_dists %] extension modules, and a large developer community, there are many ways to learn Perl 5.</p>
+    </a>
+  </div>
+  <div class="col-xs-12 col-sm-4">
+    <a href="/community.html" class="highlight-module">
+      <h3 class="alternate">Community</h3>
+      <img src="[% combust.static_url("/images/icons/ic_highlight_user.svg") %]" class="ic-highlight">
+      <p>Perl has an active world wide community with over [% perl_stats.monger_groups %] local groups, mailing lists and support/discussion websites.</p>
+    </a>
+  </div>
+  <div class="col-xs-12 col-sm-4">
+    <a href="/docs.html" class="highlight-module">
+      <h3 class="alternate">Docs</h3>
+      <img src="[% combust.static_url("/images/icons/ic_highlight_docs.svg") %]" class="ic-highlight">
+      <p>Core documentation, FAQs and translations.</p>
+    </a>
+  </div>
+  <div class="col-xs-12 col-sm-4">
+    <a href="/contribute.html" class="highlight-module">
+      <h3 class="alternate">Contribute</h3>
+      <img src="[% combust.static_url("/images/icons/ic_highlight_contribute.svg") %]" class="ic-highlight">
+      <p>Perl is being actively developed. There are many ways to get involved</p>
+    </a>
+  </div>
+  <div class="col-xs-12 col-sm-4">
+    <a href="/cpan.html" class="highlight-module">
+      <h3 class="alternate">CPAN</h3>
+      <img src="[% combust.static_url("/images/icons/ic_highlight_cpan.svg") %]" class="ic-highlight">
+      <p>The Comprehensive Perl Archive Network (CPAN) has over [% perl_stats.cpan_dists %] open source distributions available for download.</p>
+    </a>
+  </div>
+  <div class="col-xs-12 col-sm-4">
+    <a href="/events.html" class="highlight-module">
+      <h3 class="alternate">Events</h3>
+      <img src="[% combust.static_url("/images/icons/ic_highlight_calendar.svg") %]" class="ic-highlight">
+      <p>Events, conferences, social and technical events around the world offer lots of networking and learning opportunities.</p>
+    </a>
+  </div>
 </div>
-
-<p class="intro">Perl 5 is a highly capable, feature-rich programming language with over [% perl_stats.perl_age %] years of development. <a href="/about.html">More about why we love Perl...</a></p>
-
-<table class="content_table">
-
-    <tr>
-        <td>
-            <div class="module">
-                <a href="/learn.html"><img alt="" src="[% combust.static_url("/images/icons/learn.png") %]" width="45" height="45" /></a>
-                <h4>
-                    <a href="/learn.html">Learning Perl 5</a>
-                </h4>
-                <p>
-                    With free online books, over [% perl_stats.cpan_dists %] extension modules, and a large developer community, there are many ways to learn Perl 5.
-                </p>
-            </div>
-        </td>
-        <td>
-            <div class="module">
-                <a href="/community.html"><img alt="" src="[% combust.static_url("/images/icons/community.png") %]" width="45" height="45" /></a>
-                <h4>
-                    <a href="/community.html">The Perl Community</a>
-                </h4>
-                <p>
-                    Perl has an active world wide community with over [% perl_stats.monger_groups %] local groups, mailing lists and support/discussion websites.
-                </p>
-            </div>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <div class="module">
-                <a href="/docs.html"><img alt="" src="[% combust.static_url("/images/icons/docs.png") %]" width="45" height="45" /></a>
-                <h4>
-                    <a href="/docs.html">Documentation</a>
-                </h4>
-                <p>
-                    Core documentation, FAQs and translations.
-                </p>
-            </div>
-        </td>
-        <td>
-            <div class="module">
-                <a href="/contribute.html"><img alt="" src="[% combust.static_url("/images/icons/cog.png") %]" width="45" height="45" /></a>
-                <h4>
-                    <a href="/contribute.html">Contribute to Perl</a>
-                </h4>
-                <p>
-                    Perl is being <a href="/dev.html">actively developed</a>. There are many ways to <a href="/contribute.html">get involved</a>.
-                </p>
-            </div>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <div class="module">
-                <a href="/cpan.html"><img alt="" src="[% combust.static_url("/images/icons/cpan.png") %]" width="45" height="45" /></a>
-                <h4>
-                    <a href="/cpan.html">CPAN</a>
-                </h4>
-                <p>
-                    The Comprehensive Perl Archive Network (CPAN) has over [% perl_stats.cpan_dists %] open source distributions available for download.
-                </p>
-            </div>
-        </td>
-        <td>
-            <div class="module">
-                <a href="/events.html"><img alt="" src="[% combust.static_url("/images/icons/cal.png") %]" width="45" height="45" /></a>
-                <h4>
-                    <a href="/events.html">Events and Conferences</a>
-                </h4>
-                <p>
-                    Conferences, social and technical events around the world offer lots of networking and learning opportunities.
-                </p>
-            </div>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <div class="module">
-                <a href="http://www.perl6.org/"><img alt="" src="[% combust.static_url("/images/icons/perl6.png") %]" width="45" height="45" /></a>
-                <h4>
-                    <a href="http://www.perl6.org/">Perl 6</a>
-                </h4>
-                <p>
-                    Perl 6 is a sister language, part of the Perl family,
-                    not intended as a replacement for Perl 5,
-                    but as its own thing - libraries exist to allow you
-                    to call Perl 5 code from Perl 6 programs and vice versa.
-                </p>
-            </div>
-        </td>
-        <td>
-            <div class="module">
-                <a href="http://www.perlfoundation.org/"><img alt="" src="[% combust.static_url("/images/icons/onion.png") %]" width="45" height="45" /></a>
-                <h4>
-                    <a href="http://www.perlfoundation.org/">The Perl Foundation</a>
-                </h4>
-                <p>
-                    The Perl Foundation is dedicated to the advancement of the Perl programming language through open discussion, collaboration, design, and code.
-                </p>
-            </div>
-        </td>
-    </tr>
-</table>
-
-<div class="bar">&nbsp; &nbsp; &nbsp; &nbsp;</div>
-
-<table class="content_table">
-  <tr>
-    <td>
-        [% quicknews ("cpanrecent", 'Latest Uploads to <a href="http://www.cpan.org/">CPAN</a>', 10) %]
-    </td>
-    <td>
-        [% quicknews ("perlnews", '<a href="http://perlnews.org/">Perl News</a>', 5) %]
-    </td>
-  </tr>
-</table>
-
+<div class="row">
+  <div class="col-xs-12 col-sm-4 text-center">
+    <h3>Perl 6</h3>
+    <p>Perl 6 is a sister language, part of the Perl family,
+    not intended as a replacement for Perl 5,
+    but as its own thing - libraries exist to allow you
+    to call Perl 5 code from Perl 6 programs and vice versa.</p>
+    <p><a class="btn btn-xs btn-success" href="http://www.perl6.org" role="button">View details &raquo;</a></p>
+  </div>
+  <div class="col-xs-12 col-sm-4 text-center">
+    <h3>The Perl Foundation</h3>
+    <p>The Perl Foundation is dedicated to the advancement of the Perl programming language through open discussion, collaboration, design, and code.</p>
+    <p><a class="btn btn-xs btn-success" href="http://www.perlfoundation.org/" role="button">View details &raquo;</a></p>
+ </div>
+  <div class="col-xs-12 col-sm-4 text-center">
+    <h3>Sponsor</h3>
+    <p>[% INCLUDE tpl/sponsor.html %]</p>
+  </div>
+</div>

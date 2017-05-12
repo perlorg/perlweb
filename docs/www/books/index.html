@@ -1,69 +1,61 @@
-[% 
-    page.import({
-        title    = 'Perl Books',
-        section  = 'learn',
-        description 
-        = 'Perl.org Perl books (including free Perl books)',
-    });
-
-%]
-
-<table class="content_table">
-    <tr>
-        <td>
-            <h4>
-                Free Perl Books
-            </h4>
-            <p>
-                <a href="/books/library.html">Free Perl books</a> - you can view 
-                or download many Perl books for free from our online Perl library.
-            </p>
-        </td>
-        <td>
-            <h4>
-                Books to learn the basics from
-            </h4>
-            <p>
-                <a href="http://learn.perl.org/books/">http://learn.perl.org/books/</a>
-            </p>
-            <ul>
-                <li>Read FAQs online at <a href="http://learn.perl.org/faq/">http://learn.perl.org/faq/</a>
-                </li>
-            </ul>
-        </td>
-    </tr>
-</table>
-
-
 [%
-    asins = [
-        '1430223650',  # The Definitive Guide to Catalyst
-        '1558607013',  # Higher-Order Perl
-        '1884777791',  # Object Oriented Perl
-        '0596004761',  # Template Toolkit
-        '0596001738',  # Perl Best Practices        '0596520107',  # Learning Perl
-        '1565922433',  # Perl Cookbook
-        '1930110006',  # Data Munging
-        '0596100922',  # Perl Testing
-    ];
+  page.import({
+      title    = 'Perl Books',
+      section  = 'learn',
+      description
+      = 'Perl.org Perl books (including free Perl books)',
+  });
+
 %]
 
-<script type='text/javascript'>
-var amzn_wdgt={widget:'Carousel'};
-amzn_wdgt.tag='develooper';
-amzn_wdgt.widgetType='ASINList';
-amzn_wdgt.title='Reference and other Perl books';
-amzn_wdgt.width='600';
-amzn_wdgt.height='200';
-amzn_wdgt.ASIN='[% asins.join(',') %]';
-amzn_wdgt.shuffleProducts='True';
-amzn_wdgt.marketPlace='US';
-</script>
-<script type='text/javascript' src='//wms.assoc-amazon.com/20070822/US/js/swfobject_1_5.js'>
-</script>
+<div class="row">
+  <div class="col-xs-12 col-sm-6">
+    <h3>
+        Free Perl Books
+    </h3>
+    <p>
+        <a href="/books/library.html">Free Perl books</a> - you can view
+        or download many Perl books for free from our online Perl library.
+    </p>
+  </div>
+  <div class="col-xs-12 col-sm-6">
+    <h3>
+        Books to learn the basics from
+    </h3>
+    <p>
+        <a href="http://learn.perl.org/books/">http://learn.perl.org/books/</a>
+    </p>
+    <ul>
+        <li>Read FAQs online at <a href="http://learn.perl.org/faq/">http://learn.perl.org/faq/</a>
+        </li>
+    </ul>
+  </div>
+  <div class="col-xs-12">
+    [%
+      asins = [
+          '1430223650',  # The Definitive Guide to Catalyst
+          '1558607013',  # Higher-Order Perl
+          '1884777791',  # Object Oriented Perl
+          '0596004761',  # Template Toolkit
+          '0596001738',  # Perl Best Practices        '0596520107',  # Learning Perl
+          '1565922433',  # Perl Cookbook
+          '1930110006',  # Data Munging
+          '0596100922',  # Perl Testing
+      ];
+    %]
 
-
-
-
-
-
+    <script type='text/javascript'>
+    var amzn_wdgt={widget:'Carousel'};
+    amzn_wdgt.tag='develooper';
+    amzn_wdgt.widgetType='ASINList';
+    amzn_wdgt.title='Reference and other Perl books';
+    amzn_wdgt.width='600';
+    amzn_wdgt.height='200';
+    amzn_wdgt.ASIN='[% asins.join(',') %]';
+    amzn_wdgt.shuffleProducts='True';
+    amzn_wdgt.marketPlace='US';
+    </script>
+    <script type='text/javascript' src='//wms.assoc-amazon.com/20070822/US/js/swfobject_1_5.js'>
+    </script>
+  </div>
+</div>

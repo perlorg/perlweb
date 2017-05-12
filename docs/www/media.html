@@ -1,106 +1,103 @@
-[% 
-    page.import({
-        title    = 'Books and More',
-        section  = 'learn',
-        description 
-            = 'Perl Books links, Perl Blog links, Perl presentations',
-    });
-%]
-<table class="content_table">
-    <tr>
-        <td>
-            <h4>
-                Books
-            </h4>
-            <ul>
-                <li>
-                    <a href="/books/library.html">The Perl.org Free Online Book Library</a>
-                </li>
-                <li>
-                    <a href="//www.amazon.com/gp/search?ie=UTF8&amp;keywords=perl&amp;tag=develooper&amp;index=books&amp;linkCode=ur2&amp;camp=1789&amp;creative=9325">Perl Books on Amazon.com</a>
-                </li>
-            </ul>
-            <h4>
-                Videos
-            </h4>
-            <ul>
-                <li>
-                    <a href="http://yapc.tv/">Talks from YAPC and other conferences</a>
-                </li>
-                <li>
-                    <a href="http://blip.tv/search?q=perl">More videos of talks</a>
-                </li>
-            </ul>
-            <h4>
-                Audio
-            </h4>
-            <ul>
-                <li>
-                    <a href="http://perlcast.com/">PerlCast</a> - a Perl podCast
-                </li>
-            </ul>
-        </td>
-        <td>
-            <h4>
-                Presentations (slides)
-            </h4>
-            <ul>
-                <li>
-                    <a href="http://www.slideshare.net/tag/perl">Slideshare</a>
-                </li>
-            </ul>
-            <h4>
-                Blogs, articles and magazines
-            </h4>
-            <ul>
-                <li>
-                    <a href="http://perlsphere.net/">Perlsphere</a> - Perl blog aggregator
-                </li>
-                <li>
-                    <a href="http://ironman.enlightenedperl.org/">Planet Perl Iron Man</a> - Perl blog aggregator, and competition.
-                </li>
-                <li>
-                    <a href="http://www.theperlreview.com">The Perl Review</a> - a Perl magazine
-                </li>
-                <li>
-                    <a href="http://www.perl-magazin.de">$foo</a> - a German Perl magazine
-                </li>
-                <li>
-                    <a href="http://www.stonehenge.com/merlyn/columns.html">Randal Schwartz' Articles</a>
-                </li>
-                <li>
-                    <a href="http://www.perl.com">Perl.com</a> - articles on a variety of Perl-related topics
-                </li>
-            </ul>
-        </td>
-    </tr>
-</table>
-
-
 [%
-    asins = [
-        '1430223650',  # The Definitive Guide to Catalyst
-        '1558607013',  # Higher-Order Perl
-        '1884777791',  # Object Oriented Perl
-        '0596004761',  # Template Toolkit
-        '0596001738',  # Perl Best Practices        '0596520107',  # Learning Perl
-        '1565922433',  # Perl Cookbook
-        '1930110006',  # Data Munging
-    ];
+  page.import({
+      title    = 'Books and More',
+      section  = 'learn',
+      description
+          = 'Perl Books links, Perl Blog links, Perl presentations',
+  });
 %]
+<div class="row row-height">
+    <div class="col-xs-12 col-sm-4">
+      <h3>
+        Books
+    </h4>
+    <ul>
+        <li>
+            <a href="/books/library.html">The Perl.org Free Online Book Library</a>
+        </li>
+        <li>
+            <a href="//www.amazon.com/gp/search?ie=UTF8&amp;keywords=perl&amp;tag=develooper&amp;index=books&amp;linkCode=ur2&amp;camp=1789&amp;creative=9325">Perl Books on Amazon.com</a>
+        </li>
+    </ul>
+    </div><div class="col-xs-12 col-sm-4"><h3>
+        Videos
+    </h4>
+    <ul>
+        <li>
+            <a href="http://yapc.tv/">Talks from YAPC and other conferences</a>
+        </li>
+        <li>
+            <a href="http://blip.tv/search?q=perl">More videos of talks</a>
+        </li>
+    </ul>
+    </div><div class="col-xs-12 col-sm-4"><h3>
+        Audio
+    </h4>
+    <ul>
+        <li>
+            <a href="http://perlcast.com/">PerlCast</a> - a Perl podCast
+        </li>
+    </ul>
+</td>
+<td>
+    </div><div class="col-xs-12 col-sm-4"><h3>
+        Presentations (slides)
+    </h4>
+    <ul>
+        <li>
+            <a href="http://www.slideshare.net/tag/perl">Slideshare</a>
+        </li>
+    </ul>
+    </div><div class="col-xs-12 col-sm-4"><h3>
+        Blogs, articles and magazines
+    </h4>
+    <ul>
+        <li>
+            <a href="http://perlsphere.net/">Perlsphere</a> - Perl blog aggregator
+        </li>
+        <li>
+            <a href="http://ironman.enlightenedperl.org/">Planet Perl Iron Man</a> - Perl blog aggregator, and competition.
+        </li>
+        <li>
+            <a href="http://www.theperlreview.com">The Perl Review</a> - a Perl magazine
+        </li>
+        <li>
+            <a href="http://www.perl-magazin.de">$foo</a> - a German Perl magazine
+        </li>
+        <li>
+            <a href="http://www.stonehenge.com/merlyn/columns.html">Randal Schwartz' Articles</a>
+        </li>
+        <li>
+            <a href="http://www.perl.com">Perl.com</a> - articles on a variety of Perl-related topics
+        </li>
+    </ul>
+  </div>
+  <div class="col-xs-12 space-top-large">
 
-<script type='text/javascript'>
-var amzn_wdgt={widget:'Carousel'};
-amzn_wdgt.tag='develooper';
-amzn_wdgt.widgetType='ASINList';
-amzn_wdgt.title='Reference and other Perl books';
-amzn_wdgt.width='600';
-amzn_wdgt.height='200';
-amzn_wdgt.ASIN='[% asins.join(',') %]';
-amzn_wdgt.shuffleProducts='True';
-amzn_wdgt.marketPlace='US';
-</script>
-<script type='text/javascript' src='//wms.assoc-amazon.com/20070822/US/js/swfobject_1_5.js'>
-</script>
+    [%
+        asins = [
+            '1430223650',  # The Definitive Guide to Catalyst
+            '1558607013',  # Higher-Order Perl
+            '1884777791',  # Object Oriented Perl
+            '0596004761',  # Template Toolkit
+            '0596001738',  # Perl Best Practices        '0596520107',  # Learning Perl
+            '1565922433',  # Perl Cookbook
+            '1930110006',  # Data Munging
+        ];
+    %]
 
-
+    <script type='text/javascript'>
+    var amzn_wdgt={widget:'Carousel'};
+    amzn_wdgt.tag='develooper';
+    amzn_wdgt.widgetType='ASINList';
+    amzn_wdgt.title='Reference and other Perl books';
+    amzn_wdgt.width='600';
+    amzn_wdgt.height='200';
+    amzn_wdgt.ASIN='[% asins.join(',') %]';
+    amzn_wdgt.shuffleProducts='True';
+    amzn_wdgt.marketPlace='US';
+    </script>
+    <script type='text/javascript' src='//wms.assoc-amazon.com/20070822/US/js/swfobject_1_5.js'>
+    </script>
+  </div>
+</div>

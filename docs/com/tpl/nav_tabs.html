@@ -1,15 +1,11 @@
-<ul>
-    <li[% ' class="selected"' IF page.section == 'home' %]>
-        <a href="/">Home</a>
-    </li>
-    <li class="[% ' selected' IF page.section == 'download' %]">
+<ul class="list-inline text-center nav navbar-nav navbar-right">
+    <li class="sub[% ' selected' IF page.section == 'download' %]">
         <a href="/download/">Download</a>
     </li>
-    <li class="[% ' selected' IF page.section == 'events' %]">
+    <li class="sub[% ' selected' IF page.section == 'events' %]">
         <a href="/events.html">Events</a>
     </li>
-    <li class="[% ' selected' IF page.section == 'articles' %]">
+    <li class="sub[% ' selected' IF page.section == 'articles' %]">
         <a href="/articles/">Articles</a>
     </li>
-
 </ul>

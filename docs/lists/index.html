@@ -3,18 +3,9 @@
         title    => 'Perl Mailing Lists',
         section  => 'home',
         description
-            => 'Perl Mailing Lists',
+            => 'Join a list to discuss these Perl related topics',
     });
 %]
-
-<div class="masthead">
-    <p class="headline">Perl Mailing Lists</p>
-    <p class="strap">Join a list to discuss these Perl related topics</p>
-</div>
-
-<h4>
-    Mailing Lists
-</h4>
 <p>
     We have a database of over [% lists.size - (lists.size % 10) %]
     <a href="all.html">Perl related mailing lists</a>, choose by
@@ -36,22 +27,19 @@
 </select>
 </form>
 
-<p></p>
-<p>By tag...</p>
+<h3 class="space-top-large">By tag...</h3>
 [% tagcloud %]
 
-<p></p>
-<p>Or by first letter...</p>
+<h3 class="space-top-large">Or by first letter...</h3>
 <p>
 [% FOR c = [ 'A' .. 'Z' ] %]
 <a href="all.html#[% c | lower %]">[% c %]</a>&nbsp;
 [% END %]
 </p>
 
-<br /><br /><br />
-<h4>
+<h3 class="space-top-large">
     Help Needed!
-</h4>
+</h3>
 <p>
   Welcome to the new <big><tt>lists.perl.org</tt></big>!
 </p>

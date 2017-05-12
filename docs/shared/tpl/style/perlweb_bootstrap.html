@@ -1,0 +1,165 @@
+[%-
+   TRY;
+      PROCESS "tpl/sections/${page.section}_config.html";
+   CATCH;
+     do_something_so_no_return_character = 1;
+   END;
+-%]
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    [% IF page.description %]<meta name="description" content="[% page.description %]" />[% END %]
+    [% IF page.keywords %]<meta name="keywords" content="[% page.keywords %]" />[% END %]
+    <link rel="shortcut icon" href="[% combust.static_url(page.favicon || "/favicon.ico") %]" />
+
+    <title>[% page.title %] - [% site.name %]</title>
+
+    [% IF site.syntaxhighlight %]
+    <link rel="stylesheet" title="perl" type="text/css" href="[% combust.static_url("/css/shCore.css") %]" media="all" />
+    <link rel="stylesheet" title="perl" type="text/css" href="[% combust.static_url("/css/shThemeDefault.css") %]" media="all" />
+    [% END %]
+
+    [%
+        page.css.push("css/perlweb_bootstrap.min.css");
+        PROCESS tpl/common/css_include.html;
+    %]
+
+    <!-- Fonts -->
+    <link href='https://fonts.googleapis.com/css?family=Lato:400,100,300,700,900' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    [% IF combust.site == "www" %]
+    <link rel="canonical" href="https://www.perl.org[% combust.request.path | html %]" />
+    [% END %]
+
+    [% page.morehead %]
+  </head>
+  <body class="page-[% combust.site %][% ' section_' _ page.section IF page.section %]">
+    <nav class="navbar navbar-inverse" data-height="120">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">
+            [% logo = '/images/logo' _ site.logo _ '.svg' %]
+            <img src="[% combust.static_url(logo) %]" alt="[% page.title %] | [% site.tag_line || 'Perl programming' %]" class="page-logo">
+          </a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+          [% INCLUDE nav_tabs %]
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    [% IF page.section == 'home' %]
+    <div class="jumbotron">
+      <div class="container text-center">
+        <img src="[% combust.static_url("/images/icons/header_camel.png") %]" class="img-camel" alt="Perl5 Camel">
+        <div class="over-image">
+          <h2>[% combust.site == 'www' ? 'That\'s why we love Perl 5' : page.title %]</h2>
+          <h1>[% headline || site.tag_line %]</h1>
+          <p>[% combust.site == 'www' ? 'Perl 5 is a highly capable, feature-rich programming language with over ' _  perl_stats.perl_age _ ' years of development.' : page.description %]</p>
+          <p>
+            <a class="btn btn-success" href="[% site.url || 'http://www.perl.org/get.html' %]" role="button">
+              [% IF combust.site == 'www' || combust.site == 'learn' %]<img src="[% combust.static_url("/images/icons/ic_download.svg") %]" class="btn-ic hidden-xs">[% END %]<span class="hidden-xs">[% site.link || 'Download and Get Started' %]</span><span class="visible-xs">Learn more »</span></a>
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+    [% ELSE %]
+    <div class="jumbotron jumbotron-internal">
+      <div class="container text-center">
+          <h1>[% page.title %]</h1>
+          <p>[% page.description %]</p>
+      </div>
+    </div>
+    [% END %]
+
+    <div class="container">
+    [% content %]
+    </div>
+
+    [% IF (page.quick_links_1_title
+        || page.quick_links_2_title
+        || page.quick_links_3_title
+        || section_data.quick_links_1_title
+        || section_data.quick_links_2_title
+        || section_data.quick_links_3_title)
+    %]
+    <div class="container space-top-large">
+      <div class="row">
+        <div class="quicklinks">
+          [% INCLUDE tpl/quick_links_1 %]
+          [% INCLUDE tpl/quick_links_2 %]
+          [% INCLUDE tpl/quick_links_3 %]
+        </div>
+      </div>
+    </div>
+    [% END %]
+
+    <div class="container-fluid[% ' space-top-xl' IF combust.site != 'www' %]">
+      <footer class="row">
+        [% INCLUDE tpl/tip IF combust.site == 'www' %]
+        <div class="footer">
+
+        [% IF combust.site == 'www' %]
+          <ul class="col-xs-12 col-sm-4 list-unstyled">
+            [% quicknews ("cpanrecent", '<h4>Latest Uploads to CPAN</h4>', 10) %]
+          </ul>
+          <ul class="col-xs-12 col-sm-4 list-unstyled">
+            [% quicknews ("perlnews", '<h4>Perl News</h4>', 5) %]
+          </ul>
+        [% END %]
+          <ul class="col-xs-12 col-sm-2 list-unstyled">
+            <li><h4>Perl.org</h4></li>
+            <li><a href="http://www.perl.org/">www</a></li>
+            <li><a href="http://blogs.perl.org/">blogs</a></li>
+            <li><a href="http://jobs.perl.org/">jobs</a></li>
+            <li><a href="http://learn.perl.org/">learn</a></li>
+            <li><a href="http://dev.perl.org/">dev</a></li>
+          </ul>
+          <ul class="col-xs-12 col-sm-2 list-unstyled">
+            <li><h4>Connect</h4></li>
+            <li><a href="/siteinfo.html">Site Info</a></li>
+            <!--li><a href="#" class="links">Facebook</a></li>
+            <li><a href="#" class="links">Twitter</a></li-->
+          </ul>
+          <div class="col-xs-12 footer-info">
+            <p class="copyright">
+                <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/us/"><img alt="Creative Commons License" style="border-width:0" src="[% combust.static_url('/images/icons/creativecommons-by-nc-nd-3.0-us-80x15.png') %]" /></a> © 2002-[% USE date; date.format(date.now, '%Y') %] Perl.org
+            </p>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    [%-
+       PROCESS "tpl/googleanalytics.html";
+
+       page.js.unshift("perlweb_bootstrap.min.js");
+       PROCESS tpl/js_includes.html(js_files = page.js);
+    %]
+
+    [% IF site.syntaxhighlight %]
+        <script type="text/javascript" charset="utf-8" src="[% combust.static_url("/js/shCore.js") %]"></script>
+        <script type="text/javascript" charset="utf-8" src="[% combust.static_url("/js/shBrushPerl.js") %]"></script>
+        <script type="text/javascript" charset="utf-8">
+            SyntaxHighlighter.all();
+        </script>
+    [% END %]
+  </body>
+</html>

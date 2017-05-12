@@ -1,67 +1,60 @@
 [%-
-    page.import({
-        title    => 'Perl events',
-        section  => 'events',
-        description
-            => 'Perl events around the world',
-    });
+  page.import({
+      title    => 'Perl events',
+      section  => 'events',
+      description
+          => 'Perl events around the world',
+  });
 -%]
-
-<table class="content_table">
-    <tr>
-        <td>
-            <h4>
-                <a href="http://www.pm.org">Local Perl Mongers meetings</a>
-            </h4>
-            <ul>
-                <li>Over [% perl_stats.monger_groups %] local Perl Monger groups spread over six continents.
-                </li>
-                <li>Technical and social meetings.
-                </li>
-                <li>Organizational support from The Perl Foundation.
-                </li>
-                <li>
-                    <a href="http://www.pm.org/">Find a group near you!</a>
-                </li>
-            </ul>
-            <h4>
-                <a href="http://www.yapc.org/">Yet Another Perl Conference (YAPC)</a>
-            </h4>
-            <ul>
-                <li>A series of popular annual conferences with roots in the Perl user community.
-                </li>
-                <li>Annual conferences in <a href="http://www.yapc.org/America/">North America</a> and and <a href="http://www.yapc.org/Europe/">Europe</a> (and other continents, see the <a href="http://www.yapc.org/">YAPC site</a> for more).
-                </li>
-                <li>An inexpensive alternative to other conferences.
-                </li>
-                <li>Registration fees average less than $100.
-                </li>
-                <li>A friendly venue for sharing research, learning new techniques, and talking with leading developers.</li>
-                <li><a href="http://yapc-surveys.org/">YAPC Survey results</a> - see the breakdown of attendees and feedback about their experiences at YAPC conferences</li>
-            </ul>
-            <h4>
-                <a href="http://conferences.oreillynet.com/oscon/">The Perl Conference</a>
-            </h4>
-            <ul>
-                <li>An annual event since 1997.
-                </li>
-                <li>Now part of the <a href="http://conferences.oreillynet.com/oscon/">O'Reilly Open Source Convention</a>.
-                </li>
-                <li>Tutorials, technical presentations, social events, and more.
-                </li>
-            </ul>
-        </td>
-        <td>
-<iframe src="https://www.google.com/calendar/embed?showDate=0&amp;showPrint=0&amp;showTabs=0&amp;showCalendars=0&amp;showTz=0&amp;mode=AGENDA&amp;height=400&amp;wkst=1&amp;bgcolor=%23FFFFFF&amp;src=jfhefset4pbvu5vd7tu7i17ric7fe5p1%40import.calendar.google.com&amp;color=%23AB8B00&amp;ctz=Europe%2FLondon" style=" border-width:0 " width="220" height="400" frameborder="0" scrolling="no"></iframe>
-<!--
-    This google calendar sources data from: http://www.yapceurope.org/ical/conferences.ics
-    which is managed via https://github.com/yapceurope/perl-events
- -->
-        </td>
-    </tr>
-</table>
-<p>
-    <iframe src="https://www.google.com/calendar/embed?src=ngctmrd1cac35061mrjt3hpgng%40group.calendar.google.com&amp;chrome=NONE&amp;mode=AGENDA&amp;height=220&amp;" style=" border-withh:0" width="600" frameborder="0" height="220"></iframe><br />
-    (from <a href="http://www.theperlreview.com">The Perl Review</a>)
-</p>
-
+<div class="row row-height">
+  <div class="col-xs-12 col-sm-4">
+    <h3>Local meetings</h3>
+    <ul class="list-unstyled">
+        <li>Over [% perl_stats.monger_groups %] local Perl Monger groups spread over six continents.
+        </li>
+        <li>Technical and social meetings.
+        </li>
+        <li>Organizational support from The Perl Foundation.
+        </li>
+        <li>
+            <a href="http://www.pm.org/">Find a group near you!</a>
+        </li>
+    </ul>
+  </div>
+  <div class="col-xs-12 col-sm-4">
+    <h3>YAPC</h3>
+    <ul class="list-unstyled">
+        <li>Yet Another Perl Conference (YAPC) is a series of popular annual conferences with roots in the Perl user community.
+        </li>
+        <li>Annual conferences in <a href="http://www.yapc.org/America/">North America</a> and and <a href="http://www.yapc.org/Europe/">Europe</a> (and other continents, see the <a href="http://www.yapc.org/">YAPC site</a> for more).
+        </li>
+        <li>An inexpensive alternative to other conferences.
+        </li>
+        <li>Registration fees average less than $100.
+        </li>
+        <li>A friendly venue for sharing research, learning new techniques, and talking with leading developers.</li>
+        <li><a href="http://yapc-surveys.org/">YAPC Survey results</a> - see the breakdown of attendees and feedback about their experiences at YAPC conferences</li>
+    </ul>
+  </div>
+  <div class="col-xs-12 col-sm-4">
+    <h3>The Perl Conference</h3>
+    <ul class="list-unstyled">
+        <li>An annual event since 1997.
+        </li>
+        <li>Now part of the <a href="http://conferences.oreillynet.com/oscon/">O'Reilly Open Source Convention</a>.
+        </li>
+        <li>Tutorials, technical presentations, social events, and more.
+        </li>
+    </ul>
+  </div>
+  <div class="col-xs-12 space-top-large">
+    <!--
+        This google calendar sources data from: http://www.yapceurope.org/ical/conferences.ics
+        which is managed via https://github.com/yapceurope/perl-events
+     -->
+    <iframe src="https://www.google.com/calendar/embed?showDate=0&amp;showPrint=0&amp;showTabs=0&amp;showCalendars=0&amp;showTz=0&amp;mode=AGENDA&amp;height=400&amp;wkst=1&amp;bgcolor=%23FFFFFF&amp;src=jfhefset4pbvu5vd7tu7i17ric7fe5p1%40import.calendar.google.com&amp;color=%23AB8B00&amp;ctz=Europe%2FLondon" style=" border-width:0 " width="100%" height="400" frameborder="0" scrolling="no"></iframe>
+  </div>
+  <div class="col-xs-12 space-top-large">
+    <iframe src="https://www.google.com/calendar/embed?src=ngctmrd1cac35061mrjt3hpgng%40group.calendar.google.com&amp;chrome=NONE&amp;mode=AGENDA&amp;height=220&amp;" style=" border-withh:0" width="100%" frameborder="0" height="220"></iframe>
+  </div>
+</div>

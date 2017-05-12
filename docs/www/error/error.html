@@ -1,7 +1,6 @@
 [% page.title = "Error " _ error %]
+[% page.section = 'error' %]
 [% shortfooter = 1 %]
-[% page.style = "default.html" %]
-<h4>[% error %] - [% error_header %]</h4>
 
 <p>
 [% IF error == 404 %]
@@ -21,7 +20,8 @@ error_uri | uri %]</tt>. </P>
   var GOOG_FIXURL_LANG = 'en';
   var GOOG_FIXURL_SITE = 'http://www.perl.org/';
 </script>
-<script type="text/javascript" 
+
+<script type="text/javascript"
     src="https://linkhelp.clients.google.com/tbproxy/lh/wm/fixurl.js"></script>
 
 <P>Go to <a href="/">the front page</a> or send mail to the staff at <tt>webmaster at perl.org</tt></P>
@@ -32,15 +32,14 @@ error_uri | uri %]</tt>. </P>
 <i>[% error_text %]</i></p><p>
 [% END %]
 
-Ouch!  The server made a boo-boo.  In other words: We messed up!
+Ouch!  The server made a boo-boo.  In other words: We messed up!<br><br>
 Sincere apologies all around.  The server has already sent angry mails
 to the staff, so please be kind if you also choose to contact us by email <tt>webmaster at perl.org</tt>.
 
 [% ELSE %]
 
-It's a bird!  It's a plane!  No, it's a flying camel!  Unhandled error!  
+It's a bird!  It's a plane!  No, it's a flying camel!  Unhandled error!
 UFO's in the sky?  Call the X-Files!  Or send a mail to <tt>webmaster at perl.org</tt>.
 
 [% END %]
 </p>
-

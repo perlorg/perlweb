@@ -1,4 +1,4 @@
-[%-  page.style = 'leo.html';
+[%-  page.style = 'perlweb_bootstrap.html';
 
     IF combust.request.path.match("^/phalanx/") ;
      page.section = "phalanx";
@@ -7,8 +7,12 @@
     # Configuration for this site
     SET site = {
         name            => 'qa.perl.org',
+        logo            => '_qa',
+        tag_line        => 'Testing and improving Perl code',
+        link            => 'Get started',
+        url             => '/testing/',
     };
-     
+
     PROCESS tpl/stats.html;
 
    # don't include any whitespace from here...

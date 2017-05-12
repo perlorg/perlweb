@@ -1,132 +1,140 @@
 [%
-    page.import({
-        title    = 'Application Programming',
-        section  = 'about',
-        description
-            = 'Perl has many tools for programming applications',
-    });
+  page.import({
+      title    = 'Application Programming',
+      section  = 'about',
+      description
+          = 'Perl has many tools for programming applications',
+  });
 %]
 
-<p>
-    Perl has a large number of modules ([% perl_stats.cpan_dists %]+) designed to help you in developing your application(s), these are hosted on <a href="/cpan.html">CPAN</a>.
-There are also many other Perl related projects which have their own sites, here are a few of them.
-</p>
-<p>
-    If you are looking for a list of recommended modules, look at <a href="https://metacpan.org/module/Task::Kensho">Task::Kensho</a>.
-</p>
-<table class="content_table">
-    <tr>
-        <td>
-            <h4>
-                CGI/Web Programming and Administration
-            </h4>
-            <ul>
-                <li>
-                    <a href="http://www.perl.com/pub/a/2002/08/20/perlandlwp.html">Basics with LWP</a> - an article by Sean Burke
-                </li>
-                <li>
-                    <a href="https://metacpan.org/module/CGI">CGI.pm</a> - a core module for web forms
-                </li>
-                <li>
-                    <a href="http://perl.apache.org/">Development with mod_perl and Apache</a> - persistent, embedded Perl interpreter
-                </li>
-                <li>
-                    <a href="http://nms-cgi.sourceforge.net/">NMS</a> - Web scripts written by experts
-                </li>
-                <li>
-                    <a href="http://perl.apache.org/embperl/">embperl</a> - a framework for building websites with Perl.
-                </li>
-                <li>
-                    <a href="http://catalyst.perl.org/">Catalyst</a> - MVC Web Framework similar to Ruby on Rails and Spring
-                </li>
-                <li>
-                    <a href="http://cgi-app.org/">CGI::Application</a> - Another MVC Web Framework
-                </li>
-                <li>
-                    <a href="http://www.template-toolkit.org/">Template Toolkit</a> - General Purpose Templating System
-                </li>
-            </ul>
-            <h4>
-                Science Related Programming
-            </h4>
-            <ul>
-                <li>
-                    <a href="http://bioperl.org/">BioPerl</a> for Bioinformatics, Genomics, and the Life Science
-                </li>
-                <li>
-                    <a href="http://pdl.perl.org">The Perl Data Language</a> for Scientific Computing
-                </li>
-                <li>
-                    <a href="http://perl4lib.perl.org/">perl4lib</a> for library and information science
-                </li>
-            </ul>
-        </td>
-        <td valign="top">
-            <h4>
-                Database Programming
-            </h4>
-            <ul>
-                <li>
-                    <a href="http://dbi.perl.org/">DBI.pm</a> - the Perl Database Interface
-                </li>
-                <li>
-                    <a href="https://metacpan.org/module/DBIx::Class">DBIx::Class</a> - Database ORM
-                </li>
-            </ul>
-            <h4>
-                Object Oriented Programming
-            </h4>
-            <ul>
-                <li>
-                    <a href="http://moose.perl.org/">Moose</a> - a postmodern object system for Perl 5
-                </li>
-                <li>
-                    <a href="https://metacpan.org/search?q=MooseX%3A%3A">MooseX::</a> modules are Moose eXtensions
-                </li>
-            </ul>
-
-
-
-            <h4>
-                General Programming
-            </h4>
-            <ul>
-                <li>
-                    <a href="http://datetime.perl.org">The Perl DateTime Project</a>
-                </li>
-                <li>
-                    <a href="http://emailproject.perl.org">The Perl Email Project</a>
-                </li>
-                <li>
-                    <a href="http://poe.perl.org">POE</a> - a cooperative threading framework
-                </li>
-                <li>
-                    <a href="http://par.perl.org/">PAR</a> - Cross-platform packaging and deployment tool; turns Perl programs into stand-alone executables
-                </li>
-            </ul>
-            <h4>
-                GUI Toolkits
-            </h4>
-            <ul>
-                <li>
-                    <a href="http://perlqt.sf.net">PerlQT</a> - Perl bindings for <a href="http://qt.nokia.com/">QT</a>
-                </li>
-                <li>
-                    <a href="http://gtk2-perl.sourceforge.net">gtk2-perl</a> - Perl bindings for <a href="http://www.gtk.org">GTK+</a>
-                </li>
-                <li>
-                    <a href="http://wxperl.sf.net">WxPerl</a> - Perl bindings for the <a href="http://www.wxwidgets.org">WxWidgets</a> cross platform toolkit
-                </li>
-            </ul>
-            <h4>
-                Graphics Programming
-            </h4>
-            <ul>
-                <li>
-                    <a href="https://metacpan.org/module/GD">GD.pm</a> - graphic programming library
-                </li>
-            </ul>
-        </td>
-    </tr>
-</table>
-
+<div class="row">
+  <div class="col-xs-12">
+    <p>
+        Perl has a large number of modules ([% perl_stats.cpan_dists %]+) designed to help you in developing your application(s), these are hosted on <a href="/cpan.html">CPAN</a>.
+    There are also many other Perl related projects which have their own sites, here are a few of them.
+    </p>
+    <p>
+        If you are looking for a list of recommended modules, look at <a href="https://metacpan.org/module/Task::Kensho">Task::Kensho</a>.
+    </p>
+  </div>
+</div>
+<div class="row row-height">
+  <div class="col-xs-12 col-sm-6">
+    <h3>
+        CGI/Web Programming and Administration
+    </h3>
+    <ul>
+        <li>
+            <a href="http://www.perl.com/pub/a/2002/08/20/perlandlwp.html">Basics with LWP</a> - an article by Sean Burke
+        </li>
+        <li>
+            <a href="https://metacpan.org/module/CGI">CGI.pm</a> - a core module for web forms
+        </li>
+        <li>
+            <a href="http://perl.apache.org/">Development with mod_perl and Apache</a> - persistent, embedded Perl interpreter
+        </li>
+        <li>
+            <a href="http://nms-cgi.sourceforge.net/">NMS</a> - Web scripts written by experts
+        </li>
+        <li>
+            <a href="http://perl.apache.org/embperl/">embperl</a> - a framework for building websites with Perl.
+        </li>
+        <li>
+            <a href="http://catalyst.perl.org/">Catalyst</a> - MVC Web Framework similar to Ruby on Rails and Spring
+        </li>
+        <li>
+            <a href="http://cgi-app.org/">CGI::Application</a> - Another MVC Web Framework
+        </li>
+        <li>
+            <a href="http://www.template-toolkit.org/">Template Toolkit</a> - General Purpose Templating System
+        </li>
+    </ul>
+  </div>
+  <div class="col-xs-12 col-sm-6">
+    <h3>
+        Science Related Programming
+    </h3>
+    <ul>
+        <li>
+            <a href="http://bioperl.org/">BioPerl</a> for Bioinformatics, Genomics, and the Life Science
+        </li>
+        <li>
+            <a href="http://pdl.perl.org">The Perl Data Language</a> for Scientific Computing
+        </li>
+        <li>
+            <a href="http://perl4lib.perl.org/">perl4lib</a> for library and information science
+        </li>
+    </ul>
+</div>
+<div class="col-xs-12 col-sm-6">
+    <h3>
+        Database Programming
+    </h3>
+    <ul>
+        <li>
+            <a href="http://dbi.perl.org/">DBI.pm</a> - the Perl Database Interface
+        </li>
+        <li>
+            <a href="https://metacpan.org/module/DBIx::Class">DBIx::Class</a> - Database ORM
+        </li>
+    </ul>
+  </div>
+  <div class="col-xs-12 col-sm-6">
+    <h3>
+        Object Oriented Programming
+    </h3>
+    <ul>
+        <li>
+            <a href="http://moose.perl.org/">Moose</a> - a postmodern object system for Perl 5
+        </li>
+        <li>
+            <a href="https://metacpan.org/search?q=MooseX%3A%3A">MooseX::</a> modules are Moose eXtensions
+        </li>
+    </ul>
+  </div>
+  <div class="col-xs-12 col-sm-6">
+    <h3>
+        General Programming
+    </h3>
+    <ul>
+        <li>
+            <a href="http://datetime.perl.org">The Perl DateTime Project</a>
+        </li>
+        <li>
+            <a href="http://emailproject.perl.org">The Perl Email Project</a>
+        </li>
+        <li>
+            <a href="http://poe.perl.org">POE</a> - a cooperative threading framework
+        </li>
+        <li>
+            <a href="http://par.perl.org/">PAR</a> - Cross-platform packaging and deployment tool; turns Perl programs into stand-alone executables
+        </li>
+    </ul>
+  </div>
+  <div class="col-xs-12 col-sm-6">
+    <h3>
+        GUI Toolkits
+    </h3>
+    <ul>
+        <li>
+            <a href="http://perlqt.sf.net">PerlQT</a> - Perl bindings for <a href="http://qt.nokia.com/">QT</a>
+        </li>
+        <li>
+            <a href="http://gtk2-perl.sourceforge.net">gtk2-perl</a> - Perl bindings for <a href="http://www.gtk.org">GTK+</a>
+        </li>
+        <li>
+            <a href="http://wxperl.sf.net">WxPerl</a> - Perl bindings for the <a href="http://www.wxwidgets.org">WxWidgets</a> cross platform toolkit
+        </li>
+    </ul>
+  </div>
+  <div class="col-xs-12 col-sm-6">
+      <h3>
+          Graphics Programming
+      </h3>
+      <ul>
+          <li>
+              <a href="https://metacpan.org/module/GD">GD.pm</a> - graphic programming library
+          </li>
+      </ul>
+  </div>
+</div>

@@ -1,26 +1,17 @@
-[% 
+[%
     page.import({
         title    => 'Infrastructure Wishlist',
         section  => 'about',
-        description 
+        description
             => 'Perl.org Infrastructure Wishlist',
     });
-    
+
 %]
-<p>
-    <a name="wishlist" id="wishlist"></a>
-</p>
-<h4>
-    Wishlist
-</h4>
 <ul>
     <li>1U or 2U servers, preferably i386 or AMD64 for our <a href="http://noc.perl.org/">various services</a> (web, email, revision control, ...). At least 8GB ram and room for two or more disks (we have all our system disks mirrored).
     </li>
     <li>Sometimes large SATA disks
-    </li><!--
-<li>1U or 2U servers, in particular non-i386 ones (Alpha, Opteron,
-...) for setting up smoke testing of perl5 and parrot.
--->
+    </li>
     <li>Servers in Asia for mirroring search.cpan.org, perldoc.perl.org and related services (we're well covered in North America and have a server in London, too). Can be virtual or real hardware, but needs to run RHEL (we can provide media and license) and have 4GB ram or more.
     </li>
     <li>Managed Gigabit Switch (~24 ports). We have an old Dell one, but if someone has a spare HP or Cisco quality one...
