@@ -5,17 +5,18 @@
 
 [% WRAPPER code_chunk -%]
 [% INCLUDE "examples/script_head.html" -%]
-use Path::Class;
+use Path::Tiny;
 
-my $dir = dir('foo','bar'); # foo/bar
+my $dir = path('foo','bar'); # foo/bar
 
 # Iterate over the content of foo/bar
-while (my $file = $dir->next) {
+my $iter = $dir->iterator;
+while (my $file = $iter->next) {
     
     # See if it is a directory and skip
     next if $file->is_dir();
     
     # Print out the file name and path
-    print $file->stringify . "\n";
+    print "$file\n";
 }
 [%- END %]
