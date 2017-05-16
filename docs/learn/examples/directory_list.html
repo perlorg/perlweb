@@ -11,7 +11,7 @@ my $dir = path('foo','bar'); # foo/bar
 
 # Iterate over the content of foo/bar
 my $iter = $dir->iterator;
-while (my $file = $iter->next) {
+while (my $file = $iter->()) {
     
     # See if it is a directory and skip
     next if $file->is_dir();
