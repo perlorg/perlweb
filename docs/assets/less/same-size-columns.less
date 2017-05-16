@@ -9,3 +9,10 @@
   display: flex;
   flex-direction: column;
 }
+
+.row-height.container:before,
+.row-height.container:after,
+.row-height.row:before,
+.row-height.row:after {
+   content: normal; // IE doesn't support `initial`
+}
