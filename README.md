@@ -56,6 +56,19 @@ Then run:
 To setup the database schemas.  When the schemas change, you can run
 the `database_update` command again to get updated.
 
+## Static header config
+
+Static headers can be configured in combust.conf, either globally or
+per-site.
+
+```
+[headers-global]
+X-Frame-Options = deny
+
+[headers-www]
+X-Frame-Options = sameorigin
+```
+
 ## Start httpd
 
 ```sh
