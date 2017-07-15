@@ -6,14 +6,14 @@
 [% END %]
 
 [% IF no_more %]
-<a href="http://search.cpan.org/dist/[% review.distribution | uri %]/">
+<a href="https://metacpan.org/release/[% review.distribution | uri %]/">
 [% ELSE %]
 <a href="/dist/[% review.distribution | uri %]">
 [% END %]
 
 [% review.distribution | html %]</a>
 [% IF review.version_reviewed AND !no_more%]
-   (<a href="http://search.cpan.org/dist/[% review.distribution | uri %]/">[% review.version_reviewed | html %]</a>)
+   (<a href="https://metacpan.org/release/[% review.distribution | uri %]/">[% review.version_reviewed | html %]</a>)
 [% ELSIF review.version_reviewed %]
 ([% review.version_reviewed | html %])
 [% END %]
