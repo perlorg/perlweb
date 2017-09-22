@@ -32,6 +32,7 @@ RUN addgroup perlweb && adduser -D -G perlweb perlweb
 RUN chown perlweb:perlweb /perlweb
 
 ADD docker/container-run.sh /usr/bin/run
+ADD docker/kube-run.sh /usr/bin/kube-run
 
 USER perlweb
 
