@@ -1,4 +1,4 @@
-FROM quay.io/ntppool/base-os:v2.2
+FROM quay.io/ntppool/base-os:v2.3
 
 # Cache buster for occasionally resetting the cached images for the yum commands
 ENV LAST_UPDATED 2017-05-30
