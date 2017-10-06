@@ -37,6 +37,8 @@ EXPOSE 8235
 RUN addgroup perlweb && adduser -D -G perlweb perlweb
 RUN chown perlweb:perlweb /perlweb
 
+RUN mkdir /var/tmp/perlweb; chown perlweb:perlweb /var/tmp/perlweb; chmod 700 /var/tmp/perlweb
+
 ADD docker/container-run.sh /usr/bin/run
 ADD docker/kube-run.sh /usr/bin/kube-run
 
