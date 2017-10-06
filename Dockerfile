@@ -1,7 +1,13 @@
-FROM quay.io/ntppool/base-os:v2.3
+FROM quay.io/perl/base-os:v3.0.1
 
-# Cache buster for occasionally resetting the cached images for the yum commands
-ENV LAST_UPDATED 2017-05-30
+# Note that this only builds dependencies and such, it doesn't
+# actually include the site code etc itself. The site code
+# includes the documents which are updated more often and we
+# don't want to rebuild and restart the container each time.
+
+# Cache buster for occasionally resetting the cached images even if
+# the base doesn't cahnge.
+ENV LAST_UPDATED 2017-10-03
 
 USER root
 

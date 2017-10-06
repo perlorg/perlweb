@@ -2,4 +2,5 @@
 #
 # Start a pre-built docker container. /usr/bin/run is 'container-run.sh' script from docker.
 #
-docker run --rm -P -p 8235:8235 -t -i -v `pwd`:/perlweb quay.io/abh/perlweb:v1  /usr/bin/run
+IMAGE=quay.io/perl/perlweb:latest
+docker run --rm -P -p 8235:8235 -t -i -v `pwd`:/perlweb $IMAGE  /usr/bin/run
