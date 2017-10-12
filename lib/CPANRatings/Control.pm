@@ -28,11 +28,13 @@ my $ctemplate;
 
 sub tt {
     my $self = shift;
-    return $ctemplate ||= Combust::Template->new(
+    $ctemplate ||= Combust::Template->new(
         filters =>
           {'navigation_class' => [\&PerlOrg::Template::Filters::navigation_filter_factory, 1],},
         @_
-    ) or die "Could not initialize Combust::Template object: $Template::ERROR";
+    );
+    return $ctemplate
+      or die "Could not initialize Combust::Template object: $Template::ERROR";
 }
 
 sub init {
