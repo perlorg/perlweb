@@ -1,4 +1,4 @@
-FROM quay.io/perl/base-os:v3.0.3
+FROM quay.io/perl/base-os:v3.2
 
 # Note that this only builds dependencies and such, it doesn't
 # actually include the site code etc itself. The site code
@@ -6,13 +6,14 @@ FROM quay.io/perl/base-os:v3.0.3
 # don't want to rebuild and restart the container each time.
 
 # Cache buster for occasionally resetting the cached images even if
-# the base doesn't cahnge.
-ENV LAST_UPDATED 2017-10-03
+# the base doesn't change.
+ENV LAST_UPDATED 2017-12-19
 
 USER root
 
 RUN apk update; apk upgrade ; apk add curl git \
   perl-dev wget make \
+  inotify-tools \
   expat-dev zlib-dev libressl-dev libressl \
   mariadb-client mariadb-client-libs mariadb-dev build-base
 
