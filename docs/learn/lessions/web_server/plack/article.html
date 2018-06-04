@@ -8,7 +8,7 @@ Plack is Perl superglue for web frameworks and web servers. Plack sits between y
 </p><p>
 You should already have followed the <a href="/installing/">installing Perl</a> instructions.
 </p><p>
-    
+
 <h2>Setting up Plack</h2>
 <pre>
 cpanm Plack
@@ -18,7 +18,7 @@ cpanm Plack::App::TemplateToolkit
 
 <h2>First test</h2>
 <p>
-The next step is to create a .psgi configuration file which will allow us to 
+The next step is to create a .psgi configuration file which will allow us to
 return a web page.
 </p>
 
@@ -52,7 +52,7 @@ return builder {
 </pre>
 <p>
 
-Save <a href="psgi_examples/1.psgi">this</a> to a file, called 1.psgi, then use the <a href="https://metacpan.org/release/Plack/scripts/plackup">plackup</a> command to start your web server from the command line as follows: 
+Save <a href="psgi_examples/1.psgi">this</a> to a file, called 1.psgi, then use the <a href="https://metacpan.org/release/Plack/scripts/plackup">plackup</a> command to start your web server from the command line as follows:
 <pre>
 plackup 1.psgi
 </pre>
@@ -102,7 +102,7 @@ show you the documentation. The most used is '-r' or '--reload' this tells plack
 </p>
 <p>
     <a href="psgi_examples/2.psgi">2.psgi</a>
-    
+
 <pre>
 use lib "$ENV{HOME}/perl5/lib/perl5";
 
@@ -146,7 +146,7 @@ the default_app which we built.
 
 <h2>More Middleware and Apps</h2>
 <p>
-    There are many <a href="http://search.cpan.org/search?query=Plack::App&mode=module">Plack::Apps</a> and <a href="http://search.cpan.org/search?query=Plack::Middleware&mode=module">Plack::Middleware</a> modules available to 
+    There are many <a href="http://search.cpan.org/search?query=Plack::App&mode=module">Plack::Apps</a> and <a href="http://search.cpan.org/search?query=Plack::Middleware&mode=module">Plack::Middleware</a> modules available to
 help with common tasks. We are going to look at <a href="https://metacpan.org/release/Plack-App-TemplateToolkit/">
 Plack::App::TemplateToolkit</a>, which parses files through the templating engine <a href="https://metacpan.org/release/">Template-Toolkit</a> (TT). Images and other static content should not
 go through TT, so we are going to configure <a href="https://metacpan.org/release/Plack/lib/Plack/Middleware/Static.pm">Plack::Middleware::Static</a> to directly
@@ -154,7 +154,7 @@ serve files with specific extensions. On top of this we want to have a nice look
 All the code we need to add is as follows:
 
 <pre>
-    
+
 # A link to your htdocs root folder
 my $root = '/path/to/htdocs/';
 
@@ -178,7 +178,7 @@ return builder {
     # Our application
     $default_app;
 }
-    
+
 </pre>
 
 At this stage it is probably worth investigating one of the many
@@ -192,7 +192,7 @@ Have a look at <a href="http://www.catalystframework.org/">Catalyst</a>,
 <h2>Further resources</h2>
 <p>
 Perl has a vast number of modules available for use on
-<a href="http://search.cpan.org/">CPAN</a>. The only real problem
+<a href="http://www.cpan.org/">CPAN</a>. The only real problem
 being to work out which are best to use. A good place to start is
  <a href="https://metacpan.org/release/Task-Kensho/">Task::Kensho</a>
  which recommends current best practices.
