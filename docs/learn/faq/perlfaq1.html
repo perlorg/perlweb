@@ -8,7 +8,7 @@
                 => "Perl Frequently Asked Questions, Perl FAQ",
             keywords => "perl, perl faq, perlfaq"
         });
-        perlfaq_version = 5.021011;
+        perlfaq_version = 5.20180605;
     -%]
     <div class="pod">
 
@@ -36,19 +36,19 @@
   <li><a href="#AUTHOR-AND-COPYRIGHT">AUTHOR AND COPYRIGHT</a></li>
 </ul>
 
-<h2 id="NAME">NAME</h2>
+<h1 id="NAME">NAME</h1>
 
 <p>perlfaq1 - General Questions About Perl</p>
 
-<h2 id="VERSION">VERSION</h2>
+<h1 id="VERSION">VERSION</h1>
 
-<p>version 5.021011</p>
+<p>version 5.20180605</p>
 
-<h2 id="DESCRIPTION">DESCRIPTION</h2>
+<h1 id="DESCRIPTION">DESCRIPTION</h1>
 
 <p>This section of the FAQ answers very general, high-level questions about Perl.</p>
 
-<h3 id="What-is-Perl">What is Perl?</h3>
+<h2 id="What-is-Perl">What is Perl?</h2>
 
 <p>Perl is a high-level programming language with an eclectic heritage written by Larry Wall and a cast of thousands.</p>
 
@@ -58,21 +58,21 @@
 
 <p>These strengths make it especially popular with web developers and system administrators. Mathematicians, geneticists, journalists, managers and many other people also use Perl.</p>
 
-<h3 id="Who-supports-Perl-Who-develops-it-Why-is-it-free">Who supports Perl? Who develops it? Why is it free?</h3>
+<h2 id="Who-supports-Perl-Who-develops-it-Why-is-it-free">Who supports Perl? Who develops it? Why is it free?</h2>
 
 <p>The original culture of the pre-populist Internet and the deeply-held beliefs of Perl&#39;s author, Larry Wall, gave rise to the free and open distribution policy of Perl. Perl is supported by its users. The core, the standard Perl library, the optional modules, and the documentation you&#39;re reading now were all written by volunteers.</p>
 
-<p>The core development team (known as the Perl Porters) are a group of highly altruistic individuals committed to producing better software for free than you could hope to purchase for money. You may snoop on pending developments via the <a href="http://www.nntp.perl.org/group/perl.perl5.porters/">archives</a> or read the <a href="http://dev.perl.org/perl5/docs/p5p-faq.html">faq</a>, or you can subscribe to the mailing list by sending perl5-porters-subscribe@perl.org a subscription request (an empty message with no subject is fine).</p>
+<p>The core development team (known as the Perl Porters) are a group of highly altruistic individuals committed to producing better software for free than you could hope to purchase for money. You may snoop on pending developments via the <a href="http://www.nntp.perl.org/group/perl.perl5.porters/">archives</a> or you can subscribe to the mailing list by sending perl5-porters-subscribe@perl.org a subscription request (an empty message with no subject is fine).</p>
 
 <p>While the GNU project includes Perl in its distributions, there&#39;s no such thing as &quot;GNU Perl&quot;. Perl is not produced nor maintained by the Free Software Foundation. Perl&#39;s licensing terms are also more open than GNU software&#39;s tend to be.</p>
 
 <p>You can get commercial support of Perl if you wish, although for most users the informal support will more than suffice. See the answer to &quot;Where can I buy a commercial version of Perl?&quot; for more information.</p>
 
-<h3 id="Which-version-of-Perl-should-I-use">Which version of Perl should I use?</h3>
+<h2 id="Which-version-of-Perl-should-I-use">Which version of Perl should I use?</h2>
 
-<p>(contributed by brian d foy)</p>
+<p>(contributed by brian d foy with updates from others)</p>
 
-<p>There is often a matter of opinion and taste, and there isn&#39;t any one answer that fits everyone. In general, you want to use either the current stable release, or the stable release immediately prior to that one. Currently, those are perl5.18.x and perl5.16.x, respectively.</p>
+<p>There is often a matter of opinion and taste, and there isn&#39;t any one answer that fits everyone. In general, you want to use either the current stable release, or the stable release immediately prior to that one.</p>
 
 <p>Beyond that, you have to consider several things and decide which is best for you.</p>
 
@@ -84,27 +84,30 @@
 <li><p>The latest versions of perl have more bug fixes.</p>
 
 </li>
+<li><p>The latest versions of perl may contain performance improvements and features not present in older versions. There have been many changes in perl since perl5 was first introduced.</p>
+
+</li>
 <li><p>The Perl community is geared toward supporting the most recent releases, so you&#39;ll have an easier time finding help for those.</p>
 
 </li>
-<li><p>Versions prior to perl5.004 had serious security problems with buffer overflows, and in some cases have CERT advisories (for instance, <a href="http://www.cert.org/advisories/CA-1997-17.html">http://www.cert.org/advisories/CA-1997-17.html</a> ).</p>
+<li><p>Older versions of perl may have security vulnerabilities, some of which are serious (see <a href="https://metacpan.org/module/perlsec">perlsec</a> and search <a href="https://cve.mitre.org/cgi-bin/cvekey.cgi?keyword=Perl">CVEs</a> for more information).</p>
 
 </li>
 <li><p>The latest versions are probably the least deployed and widely tested, so you may want to wait a few months after their release and see what problems others have if you are risk averse.</p>
 
 </li>
-<li><p>The immediate, previous releases (i.e. perl5.14.x ) are usually maintained for a while, although not at the same level as the current releases.</p>
+<li><p>The immediate, in addition to the current stable release, the previous stable release is maintained. See <a href="https://metacpan.org/module/perlpolicy#MAINTENANCE-AND-SUPPORT">&quot;MAINTENANCE AND SUPPORT&quot; in perlpolicy</a> for more information.</p>
 
 </li>
-<li><p>No one is actively supporting Perl 4. Ten years ago it was a dead camel carcass (according to this document). Now it&#39;s barely a skeleton as its whitewashed bones have fractured or eroded.</p>
+<li><p>There are really two tracks of perl development: a maintenance version and an experimental version. The maintenance versions are stable, and have an even number as the minor release (i.e. perl5.24.x, where 24 is the minor release). The experimental versions may include features that don&#39;t make it into the stable versions, and have an odd number as the minor release (i.e. perl5.25.x, where 25 is the minor release).</p>
 
 </li>
-<li><p>There are really two tracks of perl development: a maintenance version and an experimental version. The maintenance versions are stable, and have an even number as the minor release (i.e. perl5.18.x, where 18 is the minor release). The experimental versions may include features that don&#39;t make it into the stable versions, and have an odd number as the minor release (i.e. perl5.19.x, where 19 is the minor release).</p>
+<li><p>You can consult <a href="http://dev.perl.org/perl5">releases</a> to determine the current stable release of Perl.</p>
 
 </li>
 </ul>
 
-<h3 id="What-are-Perl-4-Perl-5-or-Perl-6">What are Perl 4, Perl 5, or Perl 6?</h3>
+<h2 id="What-are-Perl-4-Perl-5-or-Perl-6">What are Perl 4, Perl 5, or Perl 6?</h2>
 
 <p>In short, Perl 4 is the parent to both Perl 5 and Perl 6. Perl 5 is the older sibling, and though they are different languages, someone who knows one will spot many similarities in the other.</p>
 
@@ -116,7 +119,7 @@
 
 <p>See <a href="https://metacpan.org/module/perlhist">perlhist</a> for a history of Perl revisions.</p>
 
-<h3 id="What-is-Perl-6">What is Perl 6?</h3>
+<h2 id="What-is-Perl-6">What is Perl 6?</h2>
 
 <p>Perl 6 was <i>originally</i> described as the community&#39;s rewrite of Perl 5, however as the language evolved, it became clear that it is a separate language, but in the same language family as Perl 5.</p>
 
@@ -128,13 +131,13 @@
 
 <p>&quot;We&#39;re really serious about reinventing everything that needs reinventing.&quot; --Larry Wall</p>
 
-<h3 id="How-stable-is-Perl">How stable is Perl?</h3>
+<h2 id="How-stable-is-Perl">How stable is Perl?</h2>
 
 <p>Production releases, which incorporate bug fixes and new functionality, are widely tested before release. Since the 5.000 release, we have averaged about one production release per year.</p>
 
 <p>The Perl development team occasionally make changes to the internal core of the language, but all possible efforts are made toward backward compatibility.</p>
 
-<h3 id="How-often-are-new-versions-of-Perl-released">How often are new versions of Perl released?</h3>
+<h2 id="How-often-are-new-versions-of-Perl-released">How often are new versions of Perl released?</h2>
 
 <p>Recently, the plan has been to release a new version of Perl roughly every April, but getting the release right is more important than sticking rigidly to a calendar date, so the release date is somewhat flexible. The historical release dates can be viewed at <a href="http://www.cpan.org/src/README.html">http://www.cpan.org/src/README.html</a>.</p>
 
@@ -142,7 +145,7 @@
 
 <p>The Perl development team are called Perl 5 Porters, and their organization is described at <a href="http://perldoc.perl.org/perlpolicy.html">http://perldoc.perl.org/perlpolicy.html</a>. The organizational rules really just boil down to one: Larry is always right, even when he was wrong.</p>
 
-<h3 id="Is-Perl-difficult-to-learn">Is Perl difficult to learn?</h3>
+<h2 id="Is-Perl-difficult-to-learn">Is Perl difficult to learn?</h2>
 
 <p>No, Perl is easy to start <a href="http://learn.perl.org/">learning</a> --and easy to keep learning. It looks like most programming languages you&#39;re likely to have experience with, so if you&#39;ve ever written a C program, an awk script, a shell script, or even a BASIC program, you&#39;re already partway there.</p>
 
@@ -152,7 +155,7 @@
 
 <p>Things that make Perl easier to learn: Unix experience, almost any kind of programming experience, an understanding of regular expressions, and the ability to understand other people&#39;s code. If there&#39;s something you need to do, then it&#39;s probably already been done, and a working example is usually available for free. Don&#39;t forget Perl modules, either. They&#39;re discussed in Part 3 of this FAQ, along with <a href="http://www.cpan.org/">CPAN</a>, which is discussed in Part 2.</p>
 
-<h3 id="How-does-Perl-compare-with-other-languages-like-Java-Python-REXX-Scheme-or-Tcl">How does Perl compare with other languages like Java, Python, REXX, Scheme, or Tcl?</h3>
+<h2 id="How-does-Perl-compare-with-other-languages-like-Java-Python-REXX-Scheme-or-Tcl">How does Perl compare with other languages like Java, Python, REXX, Scheme, or Tcl?</h2>
 
 <p>Perl can be used for almost any coding problem, even ones which require integrating specialist C code for extra speed. As with any tool it can be used well or badly. Perl has many strengths, and a few weaknesses, precisely which areas are good and bad is often a personal choice.</p>
 
@@ -160,7 +163,7 @@
 
 <p>For comparisons to a specific language it is often best to create a small project in both languages and compare the results, make sure to use all the <a href="http://www.cpan.org/">resources</a> of each language, as a language is far more than just it&#39;s syntax.</p>
 
-<h3 id="Can-I-do-task-in-Perl">Can I do [task] in Perl?</h3>
+<h2 id="Can-I-do-task-in-Perl">Can I do [task] in Perl?</h2>
 
 <p>Perl is flexible and extensible enough for you to use on virtually any task, from one-line file-processing tasks to large, elaborate systems.</p>
 
@@ -170,19 +173,19 @@
 
 <p>That said, there will always be small, focused, special-purpose languages dedicated to a specific problem domain that are simply more convenient for certain kinds of problems. Perl tries to be all things to all people, but nothing special to anyone. Examples of specialized languages that come to mind include prolog and matlab.</p>
 
-<h3 id="When-shouldnt-I-program-in-Perl">When shouldn&#39;t I program in Perl?</h3>
+<h2 id="When-shouldnt-I-program-in-Perl">When shouldn&#39;t I program in Perl?</h2>
 
 <p>One good reason is when you already have an existing application written in another language that&#39;s all done (and done well), or you have an application language specifically designed for a certain task (e.g. prolog, make).</p>
 
 <p>If you find that you need to speed up a specific part of a Perl application (not something you often need) you may want to use C, but you can access this from your Perl code with <a href="https://metacpan.org/module/perlxs">perlxs</a>.</p>
 
-<h3 id="Whats-the-difference-between-perl-and-Perl">What&#39;s the difference between &quot;perl&quot; and &quot;Perl&quot;?</h3>
+<h2 id="Whats-the-difference-between-perl-and-Perl">What&#39;s the difference between &quot;perl&quot; and &quot;Perl&quot;?</h2>
 
 <p>&quot;Perl&quot; is the name of the language. Only the &quot;P&quot; is capitalized. The name of the interpreter (the program which runs the Perl script) is &quot;perl&quot; with a lowercase &quot;p&quot;.</p>
 
 <p>You may or may not choose to follow this usage. But never write &quot;PERL&quot;, because perl is not an acronym.</p>
 
-<h3 id="What-is-a-JAPH">What is a JAPH?</h3>
+<h2 id="What-is-a-JAPH">What is a JAPH?</h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -194,7 +197,7 @@
 
 <p>CPAN has several JAPH programs at <a href="http://www.cpan.org/misc/japh">http://www.cpan.org/misc/japh</a>.</p>
 
-<h3 id="How-can-I-convince-others-to-use-Perl">How can I convince others to use Perl?</h3>
+<h2 id="How-can-I-convince-others-to-use-Perl">How can I convince others to use Perl?</h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -218,7 +221,7 @@
 </li>
 </ul>
 
-<h2 id="AUTHOR-AND-COPYRIGHT">AUTHOR AND COPYRIGHT</h2>
+<h1 id="AUTHOR-AND-COPYRIGHT">AUTHOR AND COPYRIGHT</h1>
 
 <p>Copyright (c) 1997-2010 Tom Christiansen, Nathan Torkington, and other authors as noted. All rights reserved.</p>
 
@@ -226,5 +229,5 @@
 
 <p>Irrespective of its distribution, all code examples here are in the public domain. You are permitted and encouraged to use this code and any derivatives thereof in your own programs for fun or for profit as you see fit. A simple comment in the code giving credit to the FAQ would be courteous but is not required.</p>
 
-<p><em>Version: 5.021011</em></p></div>
+<p><em>Version: 5.20180605</em></p></div>
 

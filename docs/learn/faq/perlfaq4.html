@@ -8,7 +8,7 @@
                 => "Perl Frequently Asked Questions, Perl FAQ",
             keywords => "perl, perl faq, perlfaq"
         });
-        perlfaq_version = 5.021011;
+        perlfaq_version = 5.20180605;
     -%]
     <div class="pod">
 
@@ -122,21 +122,21 @@
   <li><a href="#AUTHOR-AND-COPYRIGHT">AUTHOR AND COPYRIGHT</a></li>
 </ul>
 
-<h2 id="NAME">NAME</h2>
+<h1 id="NAME">NAME</h1>
 
 <p>perlfaq4 - Data Manipulation</p>
 
-<h2 id="VERSION">VERSION</h2>
+<h1 id="VERSION">VERSION</h1>
 
-<p>version 5.021011</p>
+<p>version 5.20180605</p>
 
-<h2 id="DESCRIPTION">DESCRIPTION</h2>
+<h1 id="DESCRIPTION">DESCRIPTION</h1>
 
 <p>This section of the FAQ answers questions related to manipulating numbers, dates, strings, arrays, hashes, and miscellaneous data issues.</p>
 
-<h2 id="Data:-Numbers">Data: Numbers</h2>
+<h1 id="Data:-Numbers">Data: Numbers</h1>
 
-<h3 id="Why-am-I-getting-long-decimals-eg-19.9499999999999-instead-of-the-numbers-I-should-be-getting-eg-19.95">Why am I getting long decimals (eg, 19.9499999999999) instead of the numbers I should be getting (eg, 19.95)?</h3>
+<h2 id="Why-am-I-getting-long-decimals-eg-19.9499999999999-instead-of-the-numbers-I-should-be-getting-eg-19.95">Why am I getting long decimals (eg, 19.9499999999999) instead of the numbers I should be getting (eg, 19.95)?</h2>
 
 <p>For the long explanation, see David Goldberg&#39;s &quot;What Every Computer Scientist Should Know About Floating-Point Arithmetic&quot; (<a href="http://web.cse.msu.edu/~cse320/Documents/FloatingPoint.pdf">http://web.cse.msu.edu/~cse320/Documents/FloatingPoint.pdf</a>).</p>
 
@@ -150,7 +150,7 @@
 
     my $number = sprintf &quot;%.2f&quot;, 10/3;</pre>
 
-<h3 id="Why-is-int-broken">Why is int() broken?</h3>
+<h2 id="Why-is-int-broken">Why is int() broken?</h2>
 
 <p>Your <code>int()</code> is most probably working just fine. It&#39;s the numbers that aren&#39;t quite what you think.</p>
 
@@ -162,7 +162,7 @@
 
 <p>will in most computers print 0, not 1, because even such simple numbers as 0.6 and 0.2 cannot be presented exactly by floating-point numbers. What you think in the above as &#39;three&#39; is really more like 2.9999999999999995559.</p>
 
-<h3 id="Why-isnt-my-octal-data-interpreted-correctly">Why isn&#39;t my octal data interpreted correctly?</h3>
+<h2 id="Why-isnt-my-octal-data-interpreted-correctly">Why isn&#39;t my octal data interpreted correctly?</h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -193,7 +193,7 @@
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    printf &quot;0%o %d&quot;, $number, $number;</pre>
 
-<h3 id="Does-Perl-have-a-round-function-What-about-ceil-and-floor-Trig-functions">Does Perl have a round() function? What about ceil() and floor()? Trig functions?</h3>
+<h2 id="Does-Perl-have-a-round-function-What-about-ceil-and-floor-Trig-functions">Does Perl have a round() function? What about ceil() and floor()? Trig functions?</h2>
 
 <p>Remember that <code>int()</code> merely truncates toward 0. For rounding to a certain number of digits, <code>sprintf()</code> or <code>printf()</code> is usually the easiest route.</p>
 
@@ -211,14 +211,13 @@
 
 <p>To see why, notice how you&#39;ll still have an issue on half-way-point alternation:</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    for (my $i = 0; $i &lt; 1.01; $i += 0.05) { printf &quot;%.1f &quot;,$i}
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    for (my $i = -5; $i &lt;= 5; $i += 0.5) { printf &quot;%.0f &quot;,$i }
 
-    0.0 0.1 0.1 0.2 0.2 0.2 0.3 0.3 0.4 0.4 0.5 0.5 0.6 0.7 0.7
-    0.8 0.8 0.9 0.9 1.0 1.0</pre>
+    -5 -4 -4 -4 -3 -2 -2 -2 -1 -0 0 0 1 2 2 2 3 4 4 4 5</pre>
 
 <p>Don&#39;t blame Perl. It&#39;s the same as in C. IEEE says we have to do this. Perl numbers whose absolute values are integers under 2**31 (on 32-bit machines) will work pretty much like mathematical integers. Other numbers are not guaranteed.</p>
 
-<h3 id="How-do-I-convert-between-numeric-representations-bases-radixes">How do I convert between numeric representations/bases/radixes?</h3>
+<h2 id="How-do-I-convert-between-numeric-representations-bases-radixes">How do I convert between numeric representations/bases/radixes?</h2>
 
 <p>As always with Perl there is more than one way to do it. Below are a few examples of approaches to making common conversions between number representations. This is intended to be representational rather than exhaustive.</p>
 
@@ -359,7 +358,7 @@
 </dd>
 </dl>
 
-<h3 id="Why-doesnt-work-the-way-I-want-it-to">Why doesn&#39;t &amp; work the way I want it to?</h3>
+<h2 id="Why-doesnt-work-the-way-I-want-it-to">Why doesn&#39;t &amp; work the way I want it to?</h2>
 
 <p>The behavior of binary arithmetic operators depends on whether they&#39;re used on numbers or strings. The operators treat a string as a series of bits and work with that (the string <code>&quot;3&quot;</code> is the bit pattern <code>00110011</code>). The operators work with the binary form of a number (the number <code>3</code> is treated as the bit pattern <code>00000011</code>).</p>
 
@@ -377,11 +376,11 @@
         # ...
     }</pre>
 
-<h3 id="How-do-I-multiply-matrices">How do I multiply matrices?</h3>
+<h2 id="How-do-I-multiply-matrices">How do I multiply matrices?</h2>
 
 <p>Use the <a href="https://metacpan.org/module/Math::Matrix">Math::Matrix</a> or <a href="https://metacpan.org/module/Math::MatrixReal">Math::MatrixReal</a> modules (available from CPAN) or the <a href="https://metacpan.org/module/PDL">PDL</a> extension (also available from CPAN).</p>
 
-<h3 id="How-do-I-perform-an-operation-on-a-series-of-integers">How do I perform an operation on a series of integers?</h3>
+<h2 id="How-do-I-perform-an-operation-on-a-series-of-integers">How do I perform an operation on a series of integers?</h2>
 
 <p>To call a function on each element in an array, and collect the results, use:</p>
 
@@ -414,11 +413,11 @@
 
 <p>will not create an intermediate list of 500,000 integers.</p>
 
-<h3 id="How-can-I-output-Roman-numerals">How can I output Roman numerals?</h3>
+<h2 id="How-can-I-output-Roman-numerals">How can I output Roman numerals?</h2>
 
 <p>Get the <a href="http://www.cpan.org/modules/by-module/Roman">http://www.cpan.org/modules/by-module/Roman</a> module.</p>
 
-<h3 id="Why-arent-my-random-numbers-random">Why aren&#39;t my random numbers random?</h3>
+<h2 id="Why-arent-my-random-numbers-random">Why aren&#39;t my random numbers random?</h2>
 
 <p>If you&#39;re using a version of Perl before 5.004, you must call <code>srand</code> once at the start of your program to seed the random number generator.</p>
 
@@ -430,7 +429,7 @@
 
 <p>Perl relies on the underlying system for the implementation of <code>rand</code> and <code>srand</code>; on some systems, the generated numbers are not random enough (especially on Windows : see <a href="http://www.perlmonks.org/?node_id=803632">http://www.perlmonks.org/?node_id=803632</a>). Several CPAN modules in the <code>Math</code> namespace implement better pseudorandom generators; see for example <a href="https://metacpan.org/module/Math::Random::MT">Math::Random::MT</a> (&quot;Mersenne Twister&quot;, fast), or <a href="https://metacpan.org/module/Math::TrulyRandom">Math::TrulyRandom</a> (uses the imperfections in the system&#39;s timer to generate random numbers, which is rather slow). More algorithms for random numbers are described in &quot;Numerical Recipes in C&quot; at <a href="http://www.nr.com/">http://www.nr.com/</a></p>
 
-<h3 id="How-do-I-get-a-random-number-between-X-and-Y">How do I get a random number between X and Y?</h3>
+<h2 id="How-do-I-get-a-random-number-between-X-and-Y">How do I get a random number between X and Y?</h2>
 
 <p>To get a random number between two values, you can use the <code>rand()</code> built-in to get a random number between 0 and 1. From there, you shift that into the range that you want.</p>
 
@@ -450,9 +449,9 @@
         return $min + int rand(1 + $max - $min);
     }</pre>
 
-<h2 id="Data:-Dates">Data: Dates</h2>
+<h1 id="Data:-Dates">Data: Dates</h1>
 
-<h3 id="How-do-I-find-the-day-or-week-of-the-year">How do I find the day or week of the year?</h3>
+<h2 id="How-do-I-find-the-day-or-week-of-the-year">How do I find the day or week of the year?</h2>
 
 <p>The day of the year is in the list returned by the <code>localtime</code> function. Without an argument <code>localtime</code> uses the current time.</p>
 
@@ -482,7 +481,7 @@
     my $day_of_year  = Day_of_Year(  1987, 12, 18 );
     my $week_of_year = Week_of_Year( 1987, 12, 18 );</pre>
 
-<h3 id="How-do-I-find-the-current-century-or-millennium">How do I find the current century or millennium?</h3>
+<h2 id="How-do-I-find-the-current-century-or-millennium">How do I find the current century or millennium?</h2>
 
 <p>Use the following simple functions:</p>
 
@@ -496,7 +495,7 @@
 
 <p>On some systems, the <a href="https://metacpan.org/module/POSIX">POSIX</a> module&#39;s <code>strftime()</code> function has been extended in a non-standard way to use a <code>%C</code> format, which they sometimes claim is the &quot;century&quot;. It isn&#39;t, because on most such systems, this is only the first two digits of the four-digit year, and thus cannot be used to determine reliably the current century or millennium.</p>
 
-<h3 id="How-can-I-compare-two-dates-and-find-the-difference">How can I compare two dates and find the difference?</h3>
+<h2 id="How-can-I-compare-two-dates-and-find-the-difference">How can I compare two dates and find the difference?</h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -519,11 +518,11 @@
 
 <p>If you want to work with formatted dates, the <a href="https://metacpan.org/module/Date::Manip">Date::Manip</a>, <a href="https://metacpan.org/module/Date::Calc">Date::Calc</a>, or <a href="https://metacpan.org/module/DateTime">DateTime</a> modules can help you.</p>
 
-<h3 id="How-can-I-take-a-string-and-turn-it-into-epoch-seconds">How can I take a string and turn it into epoch seconds?</h3>
+<h2 id="How-can-I-take-a-string-and-turn-it-into-epoch-seconds">How can I take a string and turn it into epoch seconds?</h2>
 
 <p>If it&#39;s a regular enough string that it always has the same format, you can split it up and pass the parts to <code>timelocal</code> in the standard <a href="https://metacpan.org/module/Time::Local">Time::Local</a> module. Otherwise, you should look into the <a href="https://metacpan.org/module/Date::Calc">Date::Calc</a>, <a href="https://metacpan.org/module/Date::Parse">Date::Parse</a>, and <a href="https://metacpan.org/module/Date::Manip">Date::Manip</a> modules from CPAN.</p>
 
-<h3 id="How-can-I-find-the-Julian-Day">How can I find the Julian Day?</h3>
+<h2 id="How-can-I-find-the-Julian-Day">How can I find the Julian Day?</h2>
 
 <p>(contributed by brian d foy and Dave Cross)</p>
 
@@ -556,7 +555,7 @@
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    $  perl -MTime::JulianDay -le &#39;print local_julian_day( time )&#39;
     55608</pre>
 
-<h3 id="How-do-I-find-yesterdays-date">How do I find yesterday&#39;s date?          </h3>
+<h2 id="How-do-I-find-yesterdays-date">How do I find yesterday&#39;s date?          </h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -596,7 +595,7 @@
      my ($d, $m, $y) = ( localtime $today-86400 )[3..5]; # WRONG
      printf &quot;Yesterday: %d-%02d-%02d\n&quot;, $y+1900, $m+1, $d;</pre>
 
-<h3 id="Does-Perl-have-a-Year-2000-or-2038-problem-Is-Perl-Y2K-compliant">Does Perl have a Year 2000 or 2038 problem? Is Perl Y2K compliant?</h3>
+<h2 id="Does-Perl-have-a-Year-2000-or-2038-problem-Is-Perl-Y2K-compliant">Does Perl have a Year 2000 or 2038 problem? Is Perl Y2K compliant?</h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -615,9 +614,9 @@
 
 <p>You&#39;re still out of luck if you need to keep track of decaying protons though.</p>
 
-<h2 id="Data:-Strings">Data: Strings</h2>
+<h1 id="Data:-Strings">Data: Strings</h1>
 
-<h3 id="How-do-I-validate-input">How do I validate input?</h3>
+<h2 id="How-do-I-validate-input">How do I validate input?</h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -625,7 +624,7 @@
 
 <p>Some modules have validation for particular types of input, such as <a href="https://metacpan.org/module/Business::ISBN">Business::ISBN</a>, <a href="https://metacpan.org/module/Business::CreditCard">Business::CreditCard</a>, <a href="https://metacpan.org/module/Email::Valid">Email::Valid</a>, and <a href="https://metacpan.org/module/Data::Validate::IP">Data::Validate::IP</a>.</p>
 
-<h3 id="How-do-I-unescape-a-string">How do I unescape a string?</h3>
+<h2 id="How-do-I-unescape-a-string">How do I unescape a string?</h2>
 
 <p>It depends just what you mean by &quot;escape&quot;. URL escapes are dealt with in <a href="perlfaq9.html">perlfaq9</a>. Shell escapes with the backslash (<code>\</code>) character are removed with</p>
 
@@ -633,7 +632,7 @@
 
 <p>This won&#39;t expand <code>&quot;\n&quot;</code> or <code>&quot;\t&quot;</code> or any other special escapes.</p>
 
-<h3 id="How-do-I-remove-consecutive-pairs-of-characters">How do I remove consecutive pairs of characters?</h3>
+<h2 id="How-do-I-remove-consecutive-pairs-of-characters">How do I remove consecutive pairs of characters?</h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -646,7 +645,7 @@
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    my $str = &#39;Haarlem&#39;;   # in the Netherlands
     $str =~ tr///cs;       # Now Harlem, like in New York</pre>
 
-<h3 id="How-do-I-expand-function-calls-in-a-string">How do I expand function calls in a string?</h3>
+<h2 id="How-do-I-expand-function-calls-in-a-string">How do I expand function calls in a string?</h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -675,19 +674,19 @@
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    print &quot;The time is &quot; . localtime() . &quot;.\n&quot;;</pre>
 
-<h3 id="How-do-I-find-matching-nesting-anything">How do I find matching/nesting anything?</h3>
+<h2 id="How-do-I-find-matching-nesting-anything">How do I find matching/nesting anything?</h2>
 
 <p>To find something between two single characters, a pattern like <code>/x([^x]*)x/</code> will get the intervening bits in $1. For multiple ones, then something more like <code>/alpha(.*?)omega/</code> would be needed. For nested patterns and/or balanced expressions, see the so-called <a href="https://metacpan.org/module/perlre#PARNO--PARNO-PARNO-R-0">(?PARNO)</a> construct (available since perl 5.10). The CPAN module <a href="https://metacpan.org/module/Regexp::Common">Regexp::Common</a> can help to build such regular expressions (see in particular <a href="https://metacpan.org/module/Regexp::Common::balanced">Regexp::Common::balanced</a> and <a href="https://metacpan.org/module/Regexp::Common::delimited">Regexp::Common::delimited</a>).</p>
 
 <p>More complex cases will require to write a parser, probably using a parsing module from CPAN, like <a href="https://metacpan.org/module/Regexp::Grammars">Regexp::Grammars</a>, <a href="https://metacpan.org/module/Parse::RecDescent">Parse::RecDescent</a>, <a href="https://metacpan.org/module/Parse::Yapp">Parse::Yapp</a>, <a href="https://metacpan.org/module/Text::Balanced">Text::Balanced</a>, or <a href="https://metacpan.org/module/Marpa::R2">Marpa::R2</a>.</p>
 
-<h3 id="How-do-I-reverse-a-string">How do I reverse a string?</h3>
+<h2 id="How-do-I-reverse-a-string">How do I reverse a string?</h2>
 
 <p>Use <code>reverse()</code> in scalar context, as documented in <a href="https://metacpan.org/module/perlfunc#reverse">&quot;reverse&quot; in perlfunc</a>.</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    my $reversed = reverse $string;</pre>
 
-<h3 id="How-do-I-expand-tabs-in-a-string">How do I expand tabs in a string?</h3>
+<h2 id="How-do-I-expand-tabs-in-a-string">How do I expand tabs in a string?</h2>
 
 <p>You can do it yourself:</p>
 
@@ -698,7 +697,7 @@
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use Text::Tabs;
     my @expanded_lines = expand(@lines_with_tabs);</pre>
 
-<h3 id="How-do-I-reformat-a-paragraph">How do I reformat a paragraph?</h3>
+<h2 id="How-do-I-reformat-a-paragraph">How do I reformat a paragraph?</h2>
 
 <p>Use <a href="https://metacpan.org/module/Text::Wrap">Text::Wrap</a> (part of the standard Perl distribution):</p>
 
@@ -714,7 +713,7 @@
 
 <p>See the documentation for <a href="https://metacpan.org/module/Text::Autoformat">Text::Autoformat</a> to appreciate its many capabilities.</p>
 
-<h3 id="How-can-I-access-or-change-N-characters-of-a-string">How can I access or change N characters of a string?</h3>
+<h2 id="How-can-I-access-or-change-N-characters-of-a-string">How can I access or change N characters of a string?</h2>
 
 <p>You can access the first characters of a string with substr(). To get the first character, for example, start at position 0 and grab the string of length 1.</p>
 
@@ -729,7 +728,7 @@
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    substr( $string, 13, 4 ) =  &quot;Perl 5.8.0&quot;;</pre>
 
-<h3 id="How-do-I-change-the-Nth-occurrence-of-something">How do I change the Nth occurrence of something?</h3>
+<h2 id="How-do-I-change-the-Nth-occurrence-of-something">How do I change the Nth occurrence of something?</h2>
 
 <p>You have to keep track of N yourself. For example, let&#39;s say you want to change the fifth occurrence of <code>&quot;whoever&quot;</code> or <code>&quot;whomever&quot;</code> into <code>&quot;whosoever&quot;</code> or <code>&quot;whomsoever&quot;</code>, case insensitively. These all assume that $_ contains the string to be altered.</p>
 
@@ -755,7 +754,7 @@
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    /(?:\w+\s+fish\s+){2}(\w+)\s+fish/i;</pre>
 
-<h3 id="How-can-I-count-the-number-of-occurrences-of-a-substring-within-a-string">How can I count the number of occurrences of a substring within a string?</h3>
+<h2 id="How-can-I-count-the-number-of-occurrences-of-a-substring-within-a-string">How can I count the number of occurrences of a substring within a string?</h2>
 
 <p>There are a number of ways, with varying efficiency. If you want a count of a certain single character (X) within a string, you can use the <code>tr///</code> function like so:</p>
 
@@ -774,7 +773,7 @@
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    my $count = () = $string =~ /-\d+/g;</pre>
 
-<h3 id="How-do-I-capitalize-all-the-words-on-one-line">How do I capitalize all the words on one line?    </h3>
+<h2 id="How-do-I-capitalize-all-the-words-on-one-line">How do I capitalize all the words on one line?    </h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -808,7 +807,7 @@
 
 <p>Now, what if you don&#39;t want to capitalize that &quot;and&quot;? Just use <a href="https://metacpan.org/module/Text::Autoformat">Text::Autoformat</a> and get on with the next problem. :)</p>
 
-<h3 id="How-can-I-split-a-character--delimited-string-except-when-inside-character">How can I split a [character]-delimited string except when inside [character]?</h3>
+<h2 id="How-can-I-split-a-character--delimited-string-except-when-inside-character">How can I split a [character]-delimited string except when inside [character]?</h2>
 
 <p>Several modules can handle this sort of parsing--<a href="https://metacpan.org/module/Text::Balanced">Text::Balanced</a>, <a href="https://metacpan.org/module/Text::CSV">Text::CSV</a>, <a href="https://metacpan.org/module/Text::CSV_XS">Text::CSV_XS</a>, and <a href="https://metacpan.org/module/Text::ParseWords">Text::ParseWords</a>, among others.</p>
 
@@ -835,7 +834,7 @@
 
 <p>For parsing or generating CSV, though, using <a href="https://metacpan.org/module/Text::CSV">Text::CSV</a> rather than implementing it yourself is highly recommended; you&#39;ll save yourself odd bugs popping up later by just using code which has already been tried and tested in production for years.</p>
 
-<h3 id="How-do-I-strip-blank-space-from-the-beginning-end-of-a-string">How do I strip blank space from the beginning/end of a string?</h3>
+<h2 id="How-do-I-strip-blank-space-from-the-beginning-end-of-a-string">How do I strip blank space from the beginning/end of a string?</h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -863,7 +862,7 @@
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    $string =~ s/^[\t\f ]+|[\t\f ]+$//mg;</pre>
 
-<h3 id="How-do-I-pad-a-string-with-blanks-or-pad-a-number-with-zeroes">How do I pad a string with blanks or pad a number with zeroes?</h3>
+<h2 id="How-do-I-pad-a-string-with-blanks-or-pad-a-number-with-zeroes">How do I pad a string with blanks or pad a number with zeroes?</h2>
 
 <p>In the following examples, <code>$pad_len</code> is the length to which you wish to pad the string, <code>$text</code> or <code>$num</code> contains the string to be padded, and <code>$pad_char</code> contains the padding character. You can use a single character string constant instead of the <code>$pad_char</code> variable if you know what it is in advance. And in the same way you can use an integer in place of <code>$pad_len</code> if you know the pad length in advance.</p>
 
@@ -896,7 +895,7 @@
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    substr( $text, 0, 0 ) = $pad_char x ( $pad_len - length( $text ) );
     $text .= $pad_char x ( $pad_len - length( $text ) );</pre>
 
-<h3 id="How-do-I-extract-selected-columns-from-a-string">How do I extract selected columns from a string?</h3>
+<h2 id="How-do-I-extract-selected-columns-from-a-string">How do I extract selected columns from a string?</h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -922,13 +921,13 @@
 
 <p>Note that spaces in the format argument to <code>unpack</code> do not denote literal spaces. If you have space separated data, you may want <code>split</code> instead.</p>
 
-<h3 id="How-do-I-find-the-soundex-value-of-a-string">How do I find the soundex value of a string?</h3>
+<h2 id="How-do-I-find-the-soundex-value-of-a-string">How do I find the soundex value of a string?</h2>
 
 <p>(contributed by brian d foy)</p>
 
 <p>You can use the <code>Text::Soundex</code> module. If you want to do fuzzy or close matching, you might also try the <a href="https://metacpan.org/module/String::Approx">String::Approx</a>, and <a href="https://metacpan.org/module/Text::Metaphone">Text::Metaphone</a>, and <a href="https://metacpan.org/module/Text::DoubleMetaphone">Text::DoubleMetaphone</a> modules.</p>
 
-<h3 id="How-can-I-expand-variables-in-text-strings">How can I expand variables in text strings?</h3>
+<h2 id="How-can-I-expand-variables-in-text-strings">How can I expand variables in text strings?</h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -963,7 +962,7 @@
 
     print $string;</pre>
 
-<h3 id="Whats-wrong-with-always-quoting-vars">What&#39;s wrong with always quoting &quot;$vars&quot;?</h3>
+<h2 id="Whats-wrong-with-always-quoting-vars">What&#39;s wrong with always quoting &quot;$vars&quot;?</h2>
 
 <p>The problem is that those double-quotes force stringification--coercing numbers and references into strings--even when you don&#39;t want them to be strings. Think of it this way: double-quote expansion is used to produce new strings. If you already have a string, why do you need more?</p>
 
@@ -995,7 +994,7 @@
     print &quot;@lines&quot;;     # WRONG - extra blanks
     print @lines;       # right</pre>
 
-<h3 id="Why-dont-my-HERE-documents-work">Why don&#39;t my &lt;&lt;HERE documents work?</h3>
+<h2 id="Why-dont-my-HERE-documents-work">Why don&#39;t my &lt;&lt;HERE documents work?</h2>
 
 <p>Here documents are found in <a href="https://metacpan.org/module/perlop">perlop</a>. Check for these three things:</p>
 
@@ -1076,9 +1075,9 @@
         --Bilbo in /usr/src/perl/pp_ctl.c
     EVER_ON_AND_ON</pre>
 
-<h2 id="Data:-Arrays">Data: Arrays</h2>
+<h1 id="Data:-Arrays">Data: Arrays</h1>
 
-<h3 id="What-is-the-difference-between-a-list-and-an-array">What is the difference between a list and an array?</h3>
+<h2 id="What-is-the-difference-between-a-list-and-an-array">What is the difference between a list and an array?</h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -1133,7 +1132,7 @@
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    my $scalar = ( 1, 2, 3 );  # $scalar gets 3, accidentally</pre>
 
-<h3 id="What-is-the-difference-between-array-1-and-array-1">What is the difference between $array[1] and @array[1]?</h3>
+<h2 id="What-is-the-difference-between-array-1-and-array-1">What is the difference between $array[1] and @array[1]?</h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -1155,7 +1154,7 @@
 
 <p>Either the <code>use warnings</code> pragma or the <b>-w</b> flag will warn you when you use an array slice with a single index.</p>
 
-<h3 id="How-can-I-remove-duplicate-elements-from-a-list-or-array">How can I remove duplicate elements from a list or array?</h3>
+<h2 id="How-can-I-remove-duplicate-elements-from-a-list-or-array">How can I remove duplicate elements from a list or array?</h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -1191,7 +1190,7 @@
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    my %seen = ();
     my @unique = grep { ! $seen{ $_ }++ } @array;</pre>
 
-<h3 id="How-can-I-tell-whether-a-certain-element-is-contained-in-a-list-or-array">How can I tell whether a certain element is contained in a list or array?</h3>
+<h2 id="How-can-I-tell-whether-a-certain-element-is-contained-in-a-list-or-array">How can I tell whether a certain element is contained in a list or array?</h2>
 
 <p>(portions of this answer contributed by Anno Siegel and brian d foy)</p>
 
@@ -1254,7 +1253,7 @@
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    my @matches = grep $_ eq $whatever, @array;</pre>
 
-<h3 id="How-do-I-compute-the-difference-of-two-arrays-How-do-I-compute-the-intersection-of-two-arrays">How do I compute the difference of two arrays? How do I compute the intersection of two arrays?</h3>
+<h2 id="How-do-I-compute-the-difference-of-two-arrays-How-do-I-compute-the-intersection-of-two-arrays">How do I compute the difference of two arrays? How do I compute the intersection of two arrays?</h2>
 
 <p>Use a hash. Here&#39;s code to do both and more. It assumes that each element is unique in a given array:</p>
 
@@ -1268,7 +1267,7 @@
 
 <p>Note that this is the <i>symmetric difference</i>, that is, all elements in either A or in B but not in both. Think of it as an xor operation.</p>
 
-<h3 id="How-do-I-test-whether-two-arrays-or-hashes-are-equal">How do I test whether two arrays or hashes are equal?</h3>
+<h2 id="How-do-I-test-whether-two-arrays-or-hashes-are-equal">How do I test whether two arrays or hashes are equal?</h2>
 
 <p>With Perl 5.10 and later, the smart match operator can give you the answer with the least amount of work:</p>
 
@@ -1278,7 +1277,7 @@
         say &quot;The arrays are the same&quot;;
     }
 
-    if( %hash2 ~~ %hash3 ) # doesn&#39;t check values!  {
+    if( %hash1 ~~ %hash2 ) # doesn&#39;t check values!  {
         say &quot;The hash keys are the same&quot;;
     }</pre>
 
@@ -1322,7 +1321,7 @@
 
 <p>The first reports that both those the hashes contain the same data, while the second reports that they do not. Which you prefer is left as an exercise to the reader.</p>
 
-<h3 id="How-do-I-find-the-first-array-element-for-which-a-condition-is-true">How do I find the first array element for which a condition is true?</h3>
+<h2 id="How-do-I-find-the-first-array-element-for-which-a-condition-is-true">How do I find the first array element for which a condition is true?</h2>
 
 <p>To find the first array element which satisfies a condition, you can use the <code>first()</code> function in the <a href="https://metacpan.org/module/List::Util">List::Util</a> module, which comes with Perl 5.8. This example finds the first element that contains &quot;Perl&quot;.</p>
 
@@ -1353,7 +1352,7 @@
         }
     }</pre>
 
-<h3 id="How-do-I-handle-linked-lists">How do I handle linked lists?</h3>
+<h2 id="How-do-I-handle-linked-lists">How do I handle linked lists?</h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -1363,7 +1362,7 @@
 
 <p>Steve Lembark goes through the details in his YAPC::NA 2009 talk &quot;Perly Linked Lists&quot; ( <a href="http://www.slideshare.net/lembark/perly-linked-lists">http://www.slideshare.net/lembark/perly-linked-lists</a> ), although you can just use his <a href="https://metacpan.org/module/LinkedList::Single">LinkedList::Single</a> module.</p>
 
-<h3 id="How-do-I-handle-circular-lists">How do I handle circular lists?      </h3>
+<h2 id="How-do-I-handle-circular-lists">How do I handle circular lists?      </h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -1399,7 +1398,7 @@
         print $color_iterator-&gt;next, &quot;\n&quot;;
     }</pre>
 
-<h3 id="How-do-I-shuffle-an-array-randomly">How do I shuffle an array randomly?</h3>
+<h2 id="How-do-I-shuffle-an-array-randomly">How do I shuffle an array randomly?</h2>
 
 <p>If you either have Perl 5.8.0 or later installed, or if you have Scalar-List-Utils 1.03 or later installed, you can say:</p>
 
@@ -1439,7 +1438,7 @@
 
 <p>This is bad because splice is already O(N), and since you do it N times, you just invented a quadratic algorithm; that is, O(N**2). This does not scale, although Perl is so efficient that you probably won&#39;t notice this until you have rather largish arrays.</p>
 
-<h3 id="How-do-I-process-modify-each-element-of-an-array">How do I process/modify each element of an array?</h3>
+<h2 id="How-do-I-process-modify-each-element-of-an-array">How do I process/modify each element of an array?</h2>
 
 <p>Use <code>for</code>/<code>foreach</code>:</p>
 
@@ -1468,7 +1467,7 @@
 
 <p>Prior to perl 5.6 <code>values</code> returned copies of the values, so older perl code often contains constructions such as <code>@orbits{keys %orbits}</code> instead of <code>values %orbits</code> where the hash is to be modified.</p>
 
-<h3 id="How-do-I-select-a-random-element-from-an-array">How do I select a random element from an array?</h3>
+<h2 id="How-do-I-select-a-random-element-from-an-array">How do I select a random element from an array?</h2>
 
 <p>Use the <code>rand()</code> function (see <a href="https://metacpan.org/module/perlfunc#rand">&quot;rand&quot; in perlfunc</a>):</p>
 
@@ -1479,7 +1478,7 @@
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    my $element = $array[ rand @array ];</pre>
 
-<h3 id="How-do-I-permute-N-elements-of-a-list">How do I permute N elements of a list?      </h3>
+<h2 id="How-do-I-permute-N-elements-of-a-list">How do I permute N elements of a list?      </h2>
 
 <p>Use the <a href="https://metacpan.org/module/List::Permutor">List::Permutor</a> module on CPAN. If the list is actually an array, try the <a href="https://metacpan.org/module/Algorithm::Permute">Algorithm::Permute</a> module (also on CPAN). It&#39;s written in XS code and is very efficient:</p>
 
@@ -1531,7 +1530,7 @@
     my @list= 0..9;
     do { print &quot;@list\n&quot; } while NextPermuteNum @list;</pre>
 
-<h3 id="How-do-I-sort-an-array-by-anything">How do I sort an array by (anything)?</h3>
+<h2 id="How-do-I-sort-an-array-by-anything">How do I sort an array by (anything)?</h2>
 
 <p>Supply a comparison function to sort() (described in <a href="https://metacpan.org/module/perlfunc#sort">&quot;sort&quot; in perlfunc</a>):</p>
 
@@ -1569,7 +1568,7 @@
 
 <p>See also the question later in <a href="perlfaq4.html">perlfaq4</a> on sorting hashes.</p>
 
-<h3 id="How-do-I-manipulate-arrays-of-bits">How do I manipulate arrays of bits?</h3>
+<h2 id="How-do-I-manipulate-arrays-of-bits">How do I manipulate arrays of bits?</h2>
 
 <p>Use <code>pack()</code> and <code>unpack()</code>, or else <code>vec()</code> and the bitwise operations.</p>
 
@@ -1676,13 +1675,13 @@
         print &quot;bits are: @bytes\n\n&quot;;
     }</pre>
 
-<h3 id="Why-does-defined-return-true-on-empty-arrays-and-hashes">Why does defined() return true on empty arrays and hashes?</h3>
+<h2 id="Why-does-defined-return-true-on-empty-arrays-and-hashes">Why does defined() return true on empty arrays and hashes?</h2>
 
 <p>The short story is that you should probably only use defined on scalars or functions, not on aggregates (arrays and hashes). See <a href="https://metacpan.org/module/perlfunc#defined">&quot;defined&quot; in perlfunc</a> in the 5.004 release or later of Perl for more detail.</p>
 
-<h2 id="Data:-Hashes-Associative-Arrays">Data: Hashes (Associative Arrays)</h2>
+<h1 id="Data:-Hashes-Associative-Arrays">Data: Hashes (Associative Arrays)</h1>
 
-<h3 id="How-do-I-process-an-entire-hash">How do I process an entire hash?</h3>
+<h2 id="How-do-I-process-an-entire-hash">How do I process an entire hash?</h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -1719,17 +1718,17 @@
 
 <p>The <code>each()</code> operator can be a bit tricky though. You can&#39;t add or delete keys of the hash while you&#39;re using it without possibly skipping or re-processing some pairs after Perl internally rehashes all of the elements. Additionally, a hash has only one iterator, so if you mix <code>keys</code>, <code>values</code>, or <code>each</code> on the same hash, you risk resetting the iterator and messing up your processing. See the <code>each</code> entry in <a href="https://metacpan.org/module/perlfunc">perlfunc</a> for more details.</p>
 
-<h3 id="How-do-I-merge-two-hashes">How do I merge two hashes?   </h3>
+<h2 id="How-do-I-merge-two-hashes">How do I merge two hashes?   </h2>
 
 <p>(contributed by brian d foy)</p>
 
 <p>Before you decide to merge two hashes, you have to decide what to do if both hashes contain keys that are the same and if you want to leave the original hashes as they were.</p>
 
-<p>If you want to preserve the original hashes, copy one hash (<code>%hash2</code>) to a new hash (<code>%new_hash</code>), then add the keys from the other hash (<code>%hash3</code> to the new hash. Checking that the key already exists in <code>%new_hash</code> gives you a chance to decide what to do with the duplicates:</p>
+<p>If you want to preserve the original hashes, copy one hash (<code>%hash1</code>) to a new hash (<code>%new_hash</code>), then add the keys from the other hash (<code>%hash2</code> to the new hash. Checking that the key already exists in <code>%new_hash</code> gives you a chance to decide what to do with the duplicates:</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    my %new_hash = %hash2; # make a copy; leave %hash2 alone
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    my %new_hash = %hash1; # make a copy; leave %hash1 alone
 
-    foreach my $key2 ( keys %hash3 ) {
+    foreach my $key2 ( keys %hash2 ) {
         if( exists $new_hash{$key2} ) {
             warn &quot;Key [$key2] is in both hashes!&quot;;
             # handle the duplicate (perhaps only warning)
@@ -1737,29 +1736,29 @@
             next;
         }
         else {
-            $new_hash{$key2} = $hash3{$key2};
+            $new_hash{$key2} = $hash2{$key2};
         }
     }</pre>
 
-<p>If you don&#39;t want to create a new hash, you can still use this looping technique; just change the <code>%new_hash</code> to <code>%hash2</code>.</p>
+<p>If you don&#39;t want to create a new hash, you can still use this looping technique; just change the <code>%new_hash</code> to <code>%hash1</code>.</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    foreach my $key2 ( keys %hash3 ) {
-        if( exists $hash2{$key2} ) {
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    foreach my $key2 ( keys %hash2 ) {
+        if( exists $hash1{$key2} ) {
             warn &quot;Key [$key2] is in both hashes!&quot;;
             # handle the duplicate (perhaps only warning)
             ...
             next;
         }
         else {
-            $hash2{$key2} = $hash3{$key2};
+            $hash1{$key2} = $hash2{$key2};
         }
       }</pre>
 
-<p>If you don&#39;t care that one hash overwrites keys and values from the other, you could just use a hash slice to add one hash to another. In this case, values from <code>%hash3</code> replace values from <code>%hash2</code> when they have keys in common:</p>
+<p>If you don&#39;t care that one hash overwrites keys and values from the other, you could just use a hash slice to add one hash to another. In this case, values from <code>%hash2</code> replace values from <code>%hash1</code> when they have keys in common:</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    @hash2{ keys %hash3 } = values %hash3;</pre>
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    @hash1{ keys %hash2 } = values %hash2;</pre>
 
-<h3 id="What-happens-if-I-add-or-remove-keys-from-a-hash-while-iterating-over-it">What happens if I add or remove keys from a hash while iterating over it?</h3>
+<h2 id="What-happens-if-I-add-or-remove-keys-from-a-hash-while-iterating-over-it">What happens if I add or remove keys from a hash while iterating over it?</h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -1767,7 +1766,7 @@
 
 <p>If you iterate through the hash with each(), you can delete the key most recently returned without worrying about it. If you delete or add other keys, the iterator may skip or double up on them since perl may rearrange the hash table. See the entry for <code>each()</code> in <a href="https://metacpan.org/module/perlfunc">perlfunc</a>.</p>
 
-<h3 id="How-do-I-look-up-a-hash-element-by-value">How do I look up a hash element by value?</h3>
+<h2 id="How-do-I-look-up-a-hash-element-by-value">How do I look up a hash element by value?</h2>
 
 <p>Create a reverse hash:</p>
 
@@ -1786,7 +1785,7 @@
          push @{$key_list_by_value{$value}}, $key;
     }</pre>
 
-<h3 id="How-can-I-know-how-many-entries-are-in-a-hash">How can I know how many entries are in a hash?</h3>
+<h2 id="How-can-I-know-how-many-entries-are-in-a-hash">How can I know how many entries are in a hash?</h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -1810,7 +1809,7 @@
 
 <p>The <code>keys()</code> function also resets the iterator, which means that you may see strange results if you use this between uses of other hash operators such as <code>each()</code>.</p>
 
-<h3 id="How-do-I-sort-a-hash-optionally-by-value-instead-of-key">How do I sort a hash (optionally by value instead of key)?</h3>
+<h2 id="How-do-I-sort-a-hash-optionally-by-value-instead-of-key">How do I sort a hash (optionally by value instead of key)?</h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -1842,11 +1841,11 @@
         &quot;\L$a&quot; cmp &quot;\L$b&quot;
     } keys %hash;</pre>
 
-<h3 id="How-can-I-always-keep-my-hash-sorted">How can I always keep my hash sorted? </h3>
+<h2 id="How-can-I-always-keep-my-hash-sorted">How can I always keep my hash sorted? </h2>
 
 <p>You can look into using the <code>DB_File</code> module and <code>tie()</code> using the <code>$DB_BTREE</code> hash bindings as documented in <a href="https://metacpan.org/module/DB_File#In-Memory-Databases">&quot;In Memory Databases&quot; in DB_File</a>. The <a href="https://metacpan.org/module/Tie::IxHash">Tie::IxHash</a> module from CPAN might also be instructive. Although this does keep your hash sorted, you might not like the slowdown you suffer from the tie interface. Are you sure you need to do this? :)</p>
 
-<h3 id="Whats-the-difference-between-delete-and-undef-with-hashes">What&#39;s the difference between &quot;delete&quot; and &quot;undef&quot; with hashes?</h3>
+<h2 id="Whats-the-difference-between-delete-and-undef-with-hashes">What&#39;s the difference between &quot;delete&quot; and &quot;undef&quot; with hashes?</h2>
 
 <p>Hashes contain pairs of scalars: the first is the key, the second is the value. The key will be coerced to a string, although the value can be any kind of scalar: string, number, or reference. If a key <code>$key</code> is present in %hash, <code>exists($hash{$key})</code> will return true. The value for a given key can be <code>undef</code>, in which case <code>$hash{$key}</code> will be <code>undef</code> while <code>exists $hash{$key}</code> will return true. This corresponds to (<code>$key</code>, <code>undef</code>) being in the hash.</p>
 
@@ -1918,11 +1917,11 @@
 
 <p>See, the whole entry is gone!</p>
 
-<h3 id="Why-dont-my-tied-hashes-make-the-defined-exists-distinction">Why don&#39;t my tied hashes make the defined/exists distinction?</h3>
+<h2 id="Why-dont-my-tied-hashes-make-the-defined-exists-distinction">Why don&#39;t my tied hashes make the defined/exists distinction?</h2>
 
 <p>This depends on the tied hash&#39;s implementation of EXISTS(). For example, there isn&#39;t the concept of undef with hashes that are tied to DBM* files. It also means that exists() and defined() do the same thing with a DBM* file, and what they end up doing is not what they do with ordinary hashes.</p>
 
-<h3 id="How-do-I-reset-an-each-operation-part-way-through">How do I reset an each() operation part-way through?</h3>
+<h2 id="How-do-I-reset-an-each-operation-part-way-through">How do I reset an each() operation part-way through?</h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -1933,7 +1932,7 @@
 
 <p>See the documentation for <code>each</code> in <a href="https://metacpan.org/module/perlfunc">perlfunc</a>.</p>
 
-<h3 id="How-can-I-get-the-unique-keys-from-two-hashes">How can I get the unique keys from two hashes?</h3>
+<h2 id="How-can-I-get-the-unique-keys-from-two-hashes">How can I get the unique keys from two hashes?</h2>
 
 <p>First you extract the keys from the hashes into lists, then solve the &quot;removing duplicates&quot; problem described above. For example:</p>
 
@@ -1958,11 +1957,11 @@
     }
     my @uniq = keys %seen;</pre>
 
-<h3 id="How-can-I-store-a-multidimensional-array-in-a-DBM-file">How can I store a multidimensional array in a DBM file?</h3>
+<h2 id="How-can-I-store-a-multidimensional-array-in-a-DBM-file">How can I store a multidimensional array in a DBM file?</h2>
 
 <p>Either stringify the structure yourself (no fun), or else get the MLDBM (which uses Data::Dumper) module from CPAN and layer it on top of either DB_File or GDBM_File. You might also try DBM::Deep, but it can be a bit slow.</p>
 
-<h3 id="How-can-I-make-my-hash-remember-the-order-I-put-elements-into-it">How can I make my hash remember the order I put elements into it?</h3>
+<h2 id="How-can-I-make-my-hash-remember-the-order-I-put-elements-into-it">How can I make my hash remember the order I put elements into it?</h2>
 
 <p>Use the <a href="https://metacpan.org/module/Tie::IxHash">Tie::IxHash</a> from CPAN.</p>
 
@@ -1977,7 +1976,7 @@
     my @keys = keys %myhash;
     # @keys = (0,1,2,3,...)</pre>
 
-<h3 id="Why-does-passing-a-subroutine-an-undefined-element-in-a-hash-create-it">Why does passing a subroutine an undefined element in a hash create it?</h3>
+<h2 id="Why-does-passing-a-subroutine-an-undefined-element-in-a-hash-create-it">Why does passing a subroutine an undefined element in a hash create it?</h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -2012,7 +2011,7 @@
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    my_sub( @hash{ qw/foo/ } );</pre>
 
-<h3 id="How-can-I-make-the-Perl-equivalent-of-a-C-structure-C-class-hash-or-array-of-hashes-or-arrays">How can I make the Perl equivalent of a C structure/C++ class/hash or array of hashes or arrays?</h3>
+<h2 id="How-can-I-make-the-Perl-equivalent-of-a-C-structure-C-class-hash-or-array-of-hashes-or-arrays">How can I make the Perl equivalent of a C structure/C++ class/hash or array of hashes or arrays?</h2>
 
 <p>Usually a hash ref, perhaps like this:</p>
 
@@ -2027,7 +2026,7 @@
 
 <p>References are documented in <a href="https://metacpan.org/module/perlref">perlref</a> and <a href="https://metacpan.org/module/perlreftut">perlreftut</a>. Examples of complex data structures are given in <a href="https://metacpan.org/module/perldsc">perldsc</a> and <a href="https://metacpan.org/module/perllol">perllol</a>. Examples of structures and object-oriented classes are in <a href="https://metacpan.org/module/perlootut">perlootut</a>.</p>
 
-<h3 id="How-can-I-use-a-reference-as-a-hash-key">How can I use a reference as a hash key?</h3>
+<h2 id="How-can-I-use-a-reference-as-a-hash-key">How can I use a reference as a hash key?</h2>
 
 <p>(contributed by brian d foy and Ben Morrow)</p>
 
@@ -2039,7 +2038,7 @@
 
 <p>If you actually need to be able to get a real reference back from each hash entry, you can use the Tie::RefHash module, which does the required work for you.</p>
 
-<h3 id="How-can-I-check-if-a-key-exists-in-a-multilevel-hash">How can I check if a key exists in a multilevel hash?</h3>
+<h2 id="How-can-I-check-if-a-key-exists-in-a-multilevel-hash">How can I check if a key exists in a multilevel hash?</h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -2099,13 +2098,13 @@
        return 1;
     }</pre>
 
-<h3 id="How-can-I-prevent-addition-of-unwanted-keys-into-a-hash">How can I prevent addition of unwanted keys into a hash?</h3>
+<h2 id="How-can-I-prevent-addition-of-unwanted-keys-into-a-hash">How can I prevent addition of unwanted keys into a hash?</h2>
 
 <p>Since version 5.8.0, hashes can be <i>restricted</i> to a fixed number of given keys. Methods for creating and dealing with restricted hashes are exported by the <a href="https://metacpan.org/module/Hash::Util">Hash::Util</a> module.</p>
 
-<h2 id="Data:-Misc">Data: Misc</h2>
+<h1 id="Data:-Misc">Data: Misc</h1>
 
-<h3 id="How-do-I-handle-binary-data-correctly">How do I handle binary data correctly?</h3>
+<h2 id="How-do-I-handle-binary-data-correctly">How do I handle binary data correctly?</h2>
 
 <p>Perl is binary-clean, so it can handle binary data just fine. On Windows or DOS, however, you have to use <code>binmode</code> for binary files to avoid conversions for line endings. In general, you should use <code>binmode</code> any time you want to work with binary data.</p>
 
@@ -2113,7 +2112,7 @@
 
 <p>If you&#39;re concerned about 8-bit textual data then see <a href="https://metacpan.org/module/perllocale">perllocale</a>. If you want to deal with multibyte characters, however, there are some gotchas. See the section on Regular Expressions.</p>
 
-<h3 id="How-do-I-determine-whether-a-scalar-is-a-number-whole-integer-float">How do I determine whether a scalar is a number/whole/integer/float?</h3>
+<h2 id="How-do-I-determine-whether-a-scalar-is-a-number-whole-integer-float">How do I determine whether a scalar is a number/whole/integer/float?</h2>
 
 <p>Assuming that you don&#39;t care about IEEE notations like &quot;NaN&quot; or &quot;Infinity&quot;, you probably just want to use a regular expression (see also <a href="https://metacpan.org/module/perlretut">perlretut</a> and <a href="https://metacpan.org/module/perlre">perlre</a>):</p>
 
@@ -2155,7 +2154,7 @@
 
 <p>Or you could check out the <a href="https://metacpan.org/module/String::Scanf">String::Scanf</a> module on the CPAN instead.</p>
 
-<h3 id="How-do-I-keep-persistent-data-across-program-calls">How do I keep persistent data across program calls?</h3>
+<h2 id="How-do-I-keep-persistent-data-across-program-calls">How do I keep persistent data across program calls?</h2>
 
 <p>For some specific applications, you can use one of the DBM modules. See <a href="https://metacpan.org/module/AnyDBM_File">AnyDBM_File</a>. More generically, you should consult the <a href="https://metacpan.org/module/FreezeThaw">FreezeThaw</a> or <a href="https://metacpan.org/module/Storable">Storable</a> modules from CPAN. Starting from Perl 5.8, <a href="https://metacpan.org/module/Storable">Storable</a> is part of the standard distribution. Here&#39;s one example using <a href="https://metacpan.org/module/Storable">Storable</a>&#39;s <code>store</code> and <code>retrieve</code> functions:</p>
 
@@ -2166,7 +2165,7 @@
     $href = retrieve(&quot;filename&quot;);        # by ref
     %hash = %{ retrieve(&quot;filename&quot;) };   # direct to hash</pre>
 
-<h3 id="How-do-I-print-out-or-copy-a-recursive-data-structure">How do I print out or copy a recursive data structure?</h3>
+<h2 id="How-do-I-print-out-or-copy-a-recursive-data-structure">How do I print out or copy a recursive data structure?</h2>
 
 <p>The <a href="https://metacpan.org/module/Data::Dumper">Data::Dumper</a> module on CPAN (or the 5.005 release of Perl) is great for printing out data structures. The <a href="https://metacpan.org/module/Storable">Storable</a> module on CPAN (or the 5.8 release of Perl), provides a function called <code>dclone</code> that recursively copies its argument.</p>
 
@@ -2177,23 +2176,23 @@
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    %newhash = %{ dclone(\%oldhash) };</pre>
 
-<h3 id="How-do-I-define-methods-for-every-class-object">How do I define methods for every class/object?</h3>
+<h2 id="How-do-I-define-methods-for-every-class-object">How do I define methods for every class/object?</h2>
 
 <p>(contributed by Ben Morrow)</p>
 
 <p>You can use the <code>UNIVERSAL</code> class (see <a href="https://metacpan.org/module/UNIVERSAL">UNIVERSAL</a>). However, please be very careful to consider the consequences of doing this: adding methods to every object is very likely to have unintended consequences. If possible, it would be better to have all your object inherit from some common base class, or to use an object system like Moose that supports roles.</p>
 
-<h3 id="How-do-I-verify-a-credit-card-checksum">How do I verify a credit card checksum?</h3>
+<h2 id="How-do-I-verify-a-credit-card-checksum">How do I verify a credit card checksum?</h2>
 
 <p>Get the <a href="https://metacpan.org/module/Business::CreditCard">Business::CreditCard</a> module from CPAN.</p>
 
-<h3 id="How-do-I-pack-arrays-of-doubles-or-floats-for-XS-code">How do I pack arrays of doubles or floats for XS code?</h3>
+<h2 id="How-do-I-pack-arrays-of-doubles-or-floats-for-XS-code">How do I pack arrays of doubles or floats for XS code?</h2>
 
 <p>The arrays.h/arrays.c code in the <a href="https://metacpan.org/module/PGPLOT">PGPLOT</a> module on CPAN does just this. If you&#39;re doing a lot of float or double processing, consider using the <a href="https://metacpan.org/module/PDL">PDL</a> module from CPAN instead--it makes number-crunching easy.</p>
 
-<p>See <a href="http://search.cpan.org/dist/PGPLOT">http://search.cpan.org/dist/PGPLOT</a> for the code.</p>
+<p>See <a href="https://metacpan.org/release/PGPLOT">https://metacpan.org/release/PGPLOT</a> for the code.</p>
 
-<h2 id="AUTHOR-AND-COPYRIGHT">AUTHOR AND COPYRIGHT</h2>
+<h1 id="AUTHOR-AND-COPYRIGHT">AUTHOR AND COPYRIGHT</h1>
 
 <p>Copyright (c) 1997-2010 Tom Christiansen, Nathan Torkington, and other authors as noted. All rights reserved.</p>
 
@@ -2201,5 +2200,5 @@
 
 <p>Irrespective of its distribution, all code examples in this file are hereby placed into the public domain. You are permitted and encouraged to use this code in your own programs for fun or for profit as you see fit. A simple comment in the code giving credit would be courteous but is not required.</p>
 
-<p><em>Version: 5.021011</em></p></div>
+<p><em>Version: 5.20180605</em></p></div>
 
