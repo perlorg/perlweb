@@ -8,7 +8,7 @@
                 => "Perl Frequently Asked Questions, Perl FAQ",
             keywords => "perl, perl faq, perlfaq"
         });
-        perlfaq_version = 5.021011;
+        perlfaq_version = 5.20180605;
     -%]
     <div class="pod">
 
@@ -43,25 +43,25 @@
   <li><a href="#AUTHOR-AND-COPYRIGHT">AUTHOR AND COPYRIGHT</a></li>
 </ul>
 
-<h2 id="NAME">NAME</h2>
+<h1 id="NAME">NAME</h1>
 
 <p>perlfaq9 - Web, Email and Networking</p>
 
-<h2 id="VERSION">VERSION</h2>
+<h1 id="VERSION">VERSION</h1>
 
-<p>version 5.021011</p>
+<p>version 5.20180605</p>
 
-<h2 id="DESCRIPTION">DESCRIPTION</h2>
+<h1 id="DESCRIPTION">DESCRIPTION</h1>
 
 <p>This section deals with questions related to running web sites, sending and receiving email as well as general networking.</p>
 
-<h3 id="Should-I-use-a-web-framework">Should I use a web framework?</h3>
+<h2 id="Should-I-use-a-web-framework">Should I use a web framework?</h2>
 
 <p>Yes. If you are building a web site with any level of interactivity (forms / users / databases), you will want to use a framework to make handling requests and responses easier.</p>
 
 <p>If there is no interactivity then you may still want to look at using something like <a href="https://metacpan.org/module/Template">Template Toolkit</a> or <a href="https://metacpan.org/module/Plack::Middleware::TemplateToolkit">Plack::Middleware::TemplateToolkit</a> so maintenance of your HTML files (and other assets) is easier.</p>
 
-<h3 id="Which-web-framework-should-I-use">Which web framework should I use?     </h3>
+<h2 id="Which-web-framework-should-I-use">Which web framework should I use?     </h2>
 
 <p>There is no simple answer to this question. Perl frameworks can run everything from basic file servers and small scale intranets to massive multinational multilingual websites that are the core to international businesses.</p>
 
@@ -97,7 +97,7 @@
 
 <p>All of these interact with or use <a href="https://metacpan.org/module/Plack">Plack</a> which is worth understanding the basics of when building a website in Perl (there is a lot of useful <a href="https://metacpan.org/search?q=plack%3A%3Amiddleware">Plack::Middleware</a>).</p>
 
-<h3 id="What-is-Plack-and-PSGI">What is Plack and PSGI?</h3>
+<h2 id="What-is-Plack-and-PSGI">What is Plack and PSGI?</h2>
 
 <p><a href="https://metacpan.org/module/PSGI">PSGI</a> is the Perl Web Server Gateway Interface Specification, it is a standard that many Perl web frameworks use, you should not need to understand it to build a web site, the part you might want to use is <a href="https://metacpan.org/module/Plack">Plack</a>.</p>
 
@@ -105,17 +105,17 @@
 
 <p>You could build a web site using <a href="https://metacpan.org/module/Plack">Plack</a> and your own code, but for anything other than a very basic web site, using a web framework (that uses <a href="https://metacpan.org/module/Plack">Plack</a>) is a better option.</p>
 
-<h3 id="How-do-I-remove-HTML-from-a-string">How do I remove HTML from a string?</h3>
+<h2 id="How-do-I-remove-HTML-from-a-string">How do I remove HTML from a string?</h2>
 
 <p>Use <a href="https://metacpan.org/module/HTML::Strip">HTML::Strip</a>, or <a href="https://metacpan.org/module/HTML::FormatText">HTML::FormatText</a> which not only removes HTML but also attempts to do a little simple formatting of the resulting plain text.</p>
 
-<h3 id="How-do-I-extract-URLs">How do I extract URLs?</h3>
+<h2 id="How-do-I-extract-URLs">How do I extract URLs?</h2>
 
 <p><a href="https://metacpan.org/module/HTML::SimpleLinkExtor">HTML::SimpleLinkExtor</a> will extract URLs from HTML, it handles anchors, images, objects, frames, and many other tags that can contain a URL. If you need anything more complex, you can create your own subclass of <a href="https://metacpan.org/module/HTML::LinkExtor">HTML::LinkExtor</a> or <a href="https://metacpan.org/module/HTML::Parser">HTML::Parser</a>. You might even use <a href="https://metacpan.org/module/HTML::SimpleLinkExtor">HTML::SimpleLinkExtor</a> as an example for something specifically suited to your needs.</p>
 
 <p>You can use <a href="https://metacpan.org/module/URI::Find">URI::Find</a> to extract URLs from an arbitrary text document.</p>
 
-<h3 id="How-do-I-fetch-an-HTML-file">How do I fetch an HTML file?</h3>
+<h2 id="How-do-I-fetch-an-HTML-file">How do I fetch an HTML file?</h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -133,7 +133,7 @@
 
 <p>If you need to do something more complicated, you can use <a href="https://metacpan.org/module/LWP::UserAgent">LWP::UserAgent</a> module to create your own user-agent (e.g. browser) to get the job done. If you want to simulate an interactive web browser, you can use the <a href="https://metacpan.org/module/WWW::Mechanize">WWW::Mechanize</a> module.</p>
 
-<h3 id="How-do-I-automate-an-HTML-form-submission">How do I automate an HTML form submission?</h3>
+<h2 id="How-do-I-automate-an-HTML-form-submission">How do I automate an HTML form submission?</h2>
 
 <p>If you are doing something complex, such as moving through many pages and forms or a web site, you can use <a href="https://metacpan.org/module/WWW::Mechanize">WWW::Mechanize</a>. See its documentation for all the details.</p>
 
@@ -156,7 +156,7 @@
                    [ module =&gt; &#39;DB_File&#39;, readme =&gt; 1 ];
     my $content = $ua-&gt;request($req)-&gt;as_string;</pre>
 
-<h3 id="How-do-I-decode-or-create-those--encodings-on-the-web">How do I decode or create those %-encodings on the web?   </h3>
+<h2 id="How-do-I-decode-or-create-those--encodings-on-the-web">How do I decode or create those %-encodings on the web?   </h2>
 
 <p>Most of the time you should not need to do this as your web framework, or if you are making a request, the <a href="https://metacpan.org/module/LWP">LWP</a> or other module would handle it for you.</p>
 
@@ -176,7 +176,7 @@
 
 <p>Remember not to encode a full URI, you need to escape each component separately and then join them together.</p>
 
-<h3 id="How-do-I-redirect-to-another-page">How do I redirect to another page?</h3>
+<h2 id="How-do-I-redirect-to-another-page">How do I redirect to another page?</h2>
 
 <p>Most Perl Web Frameworks will have a mechanism for doing this, using the <a href="https://metacpan.org/module/Catalyst">Catalyst</a> framework it would be:</p>
 
@@ -185,13 +185,13 @@
 
 <p>If you are using Plack (which most frameworks do), then <a href="https://metacpan.org/module/Plack::Middleware::Rewrite">Plack::Middleware::Rewrite</a> is worth looking at if you are migrating from Apache or have URL&#39;s you want to always redirect.</p>
 
-<h3 id="How-do-I-put-a-password-on-my-web-pages">How do I put a password on my web pages?</h3>
+<h2 id="How-do-I-put-a-password-on-my-web-pages">How do I put a password on my web pages?</h2>
 
 <p>See if the web framework you are using has an authentication system and if that fits your needs.</p>
 
 <p>Alternativly look at <a href="https://metacpan.org/module/Plack::Middleware::Auth::Basic">Plack::Middleware::Auth::Basic</a>, or one of the other <a href="https://metacpan.org/search?q=plack+auth">Plack authentication</a> options.</p>
 
-<h3 id="How-do-I-make-sure-users-cant-enter-values-into-a-form-that-causes-my-CGI-script-to-do-bad-things">How do I make sure users can&#39;t enter values into a form that causes my CGI script to do bad things?</h3>
+<h2 id="How-do-I-make-sure-users-cant-enter-values-into-a-form-that-causes-my-CGI-script-to-do-bad-things">How do I make sure users can&#39;t enter values into a form that causes my CGI script to do bad things?</h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -199,7 +199,7 @@
 
 <p>The <a href="https://metacpan.org/module/perlsec">perlsec</a> documentation has general advice about data security. If you are using the <a href="https://metacpan.org/module/DBI">DBI</a> module, use placeholder to fill in data. If you are running external programs with <code>system</code> or <code>exec</code>, use the list forms. There are many other precautions that you should take, too many to list here, and most of them fall under the category of not using any data that you don&#39;t intend to use. Trust no one.</p>
 
-<h3 id="How-do-I-parse-a-mail-header">How do I parse a mail header?</h3>
+<h2 id="How-do-I-parse-a-mail-header">How do I parse a mail header?</h2>
 
 <p>Use the <a href="https://metacpan.org/module/Email::MIME">Email::MIME</a> module. It&#39;s well-tested and supports all the craziness that you&#39;ll see in the real world (comment-folding whitespace, encodings, comments, etc.).</p>
 
@@ -211,11 +211,10 @@
 
 <p>If you&#39;ve already got some other kind of email object, consider passing it to <a href="https://metacpan.org/module/Email::Abstract">Email::Abstract</a> and then using its cast method to get an <a href="https://metacpan.org/module/Email::MIME">Email::MIME</a> object:</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">  my $mail_message_object = read_message();
-  my $abstract = Email::Abstract-&gt;new($mail_message_object);
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">  my $abstract = Email::Abstract-&gt;new($mail_message_object);
   my $email_mime_object = $abstract-&gt;cast(&#39;Email::MIME&#39;);</pre>
 
-<h3 id="How-do-I-check-a-valid-mail-address">How do I check a valid mail address?</h3>
+<h2 id="How-do-I-check-a-valid-mail-address">How do I check a valid mail address?</h2>
 
 <p>(partly contributed by Aaron Sherman)</p>
 
@@ -231,7 +230,7 @@
 
 <p>A related strategy that&#39;s less open to forgery is to give them a PIN (personal ID number). Record the address and PIN (best that it be a random one) for later processing. In the mail you send, include a link to your site with the PIN included. If the mail bounces, you know it&#39;s not valid. If they don&#39;t click on the link, either they forged the address or (assuming they got the message) following through wasn&#39;t important so you don&#39;t need to worry about it.</p>
 
-<h3 id="How-do-I-decode-a-MIME-BASE64-string">How do I decode a MIME/BASE64 string?</h3>
+<h2 id="How-do-I-decode-a-MIME-BASE64-string">How do I decode a MIME/BASE64 string?</h2>
 
 <p>The <a href="https://metacpan.org/module/MIME::Base64">MIME::Base64</a> package handles this as well as the MIME/QP encoding. Decoding base 64 becomes as simple as:</p>
 
@@ -240,7 +239,7 @@
 
 <p>The <a href="https://metacpan.org/module/Email::MIME">Email::MIME</a> module can decode base 64-encoded email message parts transparently so the developer doesn&#39;t need to worry about it.</p>
 
-<h3 id="How-do-I-find-the-users-mail-address">How do I find the user&#39;s mail address?</h3>
+<h2 id="How-do-I-find-the-users-mail-address">How do I find the user&#39;s mail address?</h2>
 
 <p>Ask them for it. There are so many email providers available that it&#39;s unlikely the local system has any idea how to determine a user&#39;s email address.</p>
 
@@ -250,7 +249,7 @@
 
 <p>But you still cannot make assumptions about whether this is correct, unless your policy says it is. You really are best off asking the user.</p>
 
-<h3 id="How-do-I-send-email">How do I send email?</h3>
+<h2 id="How-do-I-send-email">How do I send email?</h2>
 
 <p>Use the <a href="https://metacpan.org/module/Email::MIME">Email::MIME</a> and <a href="https://metacpan.org/module/Email::Sender::Simple">Email::Sender::Simple</a> modules, like so:</p>
 
@@ -284,13 +283,7 @@
 <dt><a href="https://metacpan.org/module/Email::Sender::Transport::SMTP">Email::Sender::Transport::SMTP</a></dt>
 <dd>
 
-<p>This transport contacts a remote SMTP server over TCP. It optionally uses SSL and can authenticate to the server via SASL.</p>
-
-</dd>
-<dt><a href="https://metacpan.org/module/Email::Sender::Transport::SMTP::TLS">Email::Sender::Transport::SMTP::TLS</a></dt>
-<dd>
-
-<p>This is like the SMTP transport, but uses TLS security. You can authenticate with this module as well, using any mechanisms your server supports after STARTTLS.</p>
+<p>This transport contacts a remote SMTP server over TCP. It optionally uses TLS or SSL and can authenticate to the server via SASL.</p>
 
 </dd>
 </dl>
@@ -304,11 +297,11 @@
     }
   );</pre>
 
-<h3 id="How-do-I-use-MIME-to-make-an-attachment-to-a-mail-message">How do I use MIME to make an attachment to a mail message?</h3>
+<h2 id="How-do-I-use-MIME-to-make-an-attachment-to-a-mail-message">How do I use MIME to make an attachment to a mail message?</h2>
 
 <p><a href="https://metacpan.org/module/Email::MIME">Email::MIME</a> directly supports multipart messages. <a href="https://metacpan.org/module/Email::MIME">Email::MIME</a> objects themselves are parts and can be attached to other <a href="https://metacpan.org/module/Email::MIME">Email::MIME</a> objects. Consult the <a href="https://metacpan.org/module/Email::MIME">Email::MIME</a> documentation for more information, including all of the supported methods and examples of their use.</p>
 
-<h3 id="How-do-I-read-email">How do I read email?</h3>
+<h2 id="How-do-I-read-email">How do I read email?</h2>
 
 <p>Use the <a href="https://metacpan.org/module/Email::Folder">Email::Folder</a> module, like so:</p>
 
@@ -323,7 +316,7 @@
 
 <p>There are different classes in the <a href="https://metacpan.org/module/Email::Folder">Email::Folder</a> namespace for supporting various mailbox types. Note that these modules are generally rather limited and only support <b>reading</b> rather than writing.</p>
 
-<h3 id="How-do-I-find-out-my-hostname-domainname-or-IP-address">How do I find out my hostname, domainname, or IP address? </h3>
+<h2 id="How-do-I-find-out-my-hostname-domainname-or-IP-address">How do I find out my hostname, domainname, or IP address? </h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -353,15 +346,15 @@
         scalar gethostbyname( $host || &#39;localhost&#39; )
     );</pre>
 
-<h3 id="How-do-I-fetch-put-an-S-FTP-file">How do I fetch/put an (S)FTP file?</h3>
+<h2 id="How-do-I-fetch-put-an-S-FTP-file">How do I fetch/put an (S)FTP file?</h2>
 
 <p><a href="https://metacpan.org/module/Net::FTP">Net::FTP</a>, and <a href="https://metacpan.org/module/Net::SFTP">Net::SFTP</a> allow you to interact with FTP and SFTP (Secure FTP) servers.</p>
 
-<h3 id="How-can-I-do-RPC-in-Perl">How can I do RPC in Perl?</h3>
+<h2 id="How-can-I-do-RPC-in-Perl">How can I do RPC in Perl?</h2>
 
 <p>Use one of the RPC modules( <a href="https://metacpan.org/search?q=RPC">https://metacpan.org/search?q=RPC</a> ).</p>
 
-<h2 id="AUTHOR-AND-COPYRIGHT">AUTHOR AND COPYRIGHT</h2>
+<h1 id="AUTHOR-AND-COPYRIGHT">AUTHOR AND COPYRIGHT</h1>
 
 <p>Copyright (c) 1997-2010 Tom Christiansen, Nathan Torkington, and other authors as noted. All rights reserved.</p>
 
@@ -369,5 +362,5 @@
 
 <p>Irrespective of its distribution, all code examples in this file are hereby placed into the public domain. You are permitted and encouraged to use this code in your own programs for fun or for profit as you see fit. A simple comment in the code giving credit would be courteous but is not required.</p>
 
-<p><em>Version: 5.021011</em></p></div>
+<p><em>Version: 5.20180605</em></p></div>
 

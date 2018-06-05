@@ -8,7 +8,7 @@
                 => "Perl Frequently Asked Questions, Perl FAQ",
             keywords => "perl, perl faq, perlfaq"
         });
-        perlfaq_version = 5.021011;
+        perlfaq_version = 5.20180605;
     -%]
     <div class="pod">
 
@@ -37,19 +37,19 @@
   <li><a href="#AUTHOR-AND-COPYRIGHT">AUTHOR AND COPYRIGHT</a></li>
 </ul>
 
-<h2 id="NAME">NAME</h2>
+<h1 id="NAME">NAME</h1>
 
 <p>perlfaq2 - Obtaining and Learning about Perl</p>
 
-<h2 id="VERSION">VERSION</h2>
+<h1 id="VERSION">VERSION</h1>
 
-<p>version 5.021011</p>
+<p>version 5.20180605</p>
 
-<h2 id="DESCRIPTION">DESCRIPTION</h2>
+<h1 id="DESCRIPTION">DESCRIPTION</h1>
 
 <p>This section of the FAQ answers questions about where to find source and documentation for Perl, support, and related matters.</p>
 
-<h3 id="What-machines-support-Perl-Where-do-I-get-it">What machines support Perl? Where do I get it?</h3>
+<h2 id="What-machines-support-Perl-Where-do-I-get-it">What machines support Perl? Where do I get it?</h2>
 
 <p>The standard release of Perl (the one maintained by the Perl development team) is distributed only in source code form. You can find the latest releases at <a href="http://www.cpan.org/src/">http://www.cpan.org/src/</a>.</p>
 
@@ -57,17 +57,17 @@
 
 <p>Binary distributions for some proprietary platforms can be found <a href="http://www.cpan.org/ports/">http://www.cpan.org/ports/</a> directory. Because these are not part of the standard distribution, they may and in fact do differ from the base perl port in a variety of ways. You&#39;ll have to check their respective release notes to see just what the differences are. These differences can be either positive (e.g. extensions for the features of the particular platform that are not supported in the source release of perl) or negative (e.g. might be based upon a less current source release of perl).</p>
 
-<h3 id="How-can-I-get-a-binary-version-of-Perl">How can I get a binary version of Perl?</h3>
+<h2 id="How-can-I-get-a-binary-version-of-Perl">How can I get a binary version of Perl?</h2>
 
 <p>See <a href="http://www.cpan.org/ports/">CPAN Ports</a></p>
 
-<h3 id="I-dont-have-a-C-compiler.-How-can-I-build-my-own-Perl-interpreter">I don&#39;t have a C compiler. How can I build my own Perl interpreter?</h3>
+<h2 id="I-dont-have-a-C-compiler.-How-can-I-build-my-own-Perl-interpreter">I don&#39;t have a C compiler. How can I build my own Perl interpreter?</h2>
 
 <p>For Windows, use a binary version of Perl, <a href="http://strawberryperl.com/">Strawberry Perl</a> and <a href="http://www.activestate.com/activeperl">ActivePerl</a> come with a bundled C compiler.</p>
 
 <p>Otherwise if you really do want to build Perl, you need to get a binary version of <code>gcc</code> for your system first. Use a search engine to find out how to do this for your operating system.</p>
 
-<h3 id="I-copied-the-Perl-binary-from-one-machine-to-another-but-scripts-dont-work">I copied the Perl binary from one machine to another, but scripts don&#39;t work.</h3>
+<h2 id="I-copied-the-Perl-binary-from-one-machine-to-another-but-scripts-dont-work">I copied the Perl binary from one machine to another, but scripts don&#39;t work.</h2>
 
 <p>That&#39;s probably because you forgot libraries, or library paths differ. You really should build the whole distribution on the machine it will eventually live on, and then type <code>make install</code>. Most other approaches are doomed to failure.</p>
 
@@ -81,15 +81,15 @@
 
 <p>You might also want to check out <a href="perlfaq8.html#How-do-I-keep-my-own-module-library-directory">&quot;How do I keep my own module/library directory?&quot; in perlfaq8</a>.</p>
 
-<h3 id="I-grabbed-the-sources-and-tried-to-compile-but-gdbm-dynamic-loading-malloc-linking-...-failed.-How-do-I-make-it-work">I grabbed the sources and tried to compile but gdbm/dynamic loading/malloc/linking/... failed. How do I make it work?</h3>
+<h2 id="I-grabbed-the-sources-and-tried-to-compile-but-gdbm-dynamic-loading-malloc-linking-...-failed.-How-do-I-make-it-work">I grabbed the sources and tried to compile but gdbm/dynamic loading/malloc/linking/... failed. How do I make it work?</h2>
 
 <p>Read the <i>INSTALL</i> file, which is part of the source distribution. It describes in detail how to cope with most idiosyncrasies that the <code>Configure</code> script can&#39;t work around for any given system or architecture.</p>
 
-<h3 id="What-modules-and-extensions-are-available-for-Perl-What-is-CPAN">What modules and extensions are available for Perl? What is CPAN?</h3>
+<h2 id="What-modules-and-extensions-are-available-for-Perl-What-is-CPAN">What modules and extensions are available for Perl? What is CPAN?</h2>
 
 <p>CPAN stands for Comprehensive Perl Archive Network, a multi-gigabyte archive replicated on hundreds of machines all over the world. CPAN contains tens of thousands of modules and extensions, source code and documentation, designed for <i>everything</i> from commercial database interfaces to keyboard/screen control and running large web sites.</p>
 
-<p>You can search CPAN on <a href="http://metacpan.org">http://metacpan.org</a> or <a href="http://search.cpan.org/">http://search.cpan.org/</a>.</p>
+<p>You can search CPAN on <a href="http://metacpan.org">http://metacpan.org</a>.</p>
 
 <p>The master web site for CPAN is <a href="http://www.cpan.org/">http://www.cpan.org/</a>, <a href="http://www.cpan.org/SITES.html">http://www.cpan.org/SITES.html</a> lists all mirrors.</p>
 
@@ -97,7 +97,7 @@
 
 <p>The <a href="https://metacpan.org/module/Task::Kensho">Task::Kensho</a> module has a list of recommended modules which you should review as a good starting point.</p>
 
-<h3 id="Where-can-I-get-information-on-Perl">Where can I get information on Perl?</h3>
+<h2 id="Where-can-I-get-information-on-Perl">Where can I get information on Perl?</h2>
 
 <ul>
 
@@ -118,7 +118,7 @@
 
 <p>Many good books have been written about Perl--see the section later in <a href="perlfaq2.html">perlfaq2</a> for more details.</p>
 
-<h3 id="What-is-perl.com-Perl-Mongers-pm.org-perl.org-cpan.org">What is perl.com? Perl Mongers? pm.org? perl.org? cpan.org?</h3>
+<h2 id="What-is-perl.com-Perl-Mongers-pm.org-perl.org-cpan.org">What is perl.com? Perl Mongers? pm.org? perl.org? cpan.org?</h2>
 
 <p><a href="http://www.perl.com/">Perl.com</a> used to be part of the O&#39;Reilly Network, a subsidiary of O&#39;Reilly Media. Although it retains most of the original content from its O&#39;Reilly Network, it is now hosted by <a href="http://www.perlfoundation.org/">The Perl Foundation</a>.</p>
 
@@ -144,39 +144,39 @@
 
 <p>CPAN, or the Comprehensive Perl Archive Network <a href="http://www.cpan.org/">http://www.cpan.org/</a>, is a replicated, worldwide repository of Perl software. See <a href="#What-modules-and-extensions-are-available-for-Perl-What-is-CPAN">What is CPAN?</a>.</p>
 
-<h3 id="Where-can-I-post-questions">Where can I post questions?</h3>
+<h2 id="Where-can-I-post-questions">Where can I post questions?</h2>
 
 <p>There are many Perl <a href="https://metacpan.org/module/lists.perl.org">mailing lists</a> for various topics, specifically the <a href="http://lists.perl.org/list/beginners.html">beginners list</a> may be of use.</p>
 
 <p>Other places to ask questions are on the <a href="http://www.perlmonks.org/">PerlMonks site</a> or <a href="http://stackoverflow.com/questions/tagged/perl">stackoverflow</a>.</p>
 
-<h3 id="Perl-Books">Perl Books</h3>
+<h2 id="Perl-Books">Perl Books</h2>
 
 <p>There are many good <a href="http://www.perl.org/books/library.html">books on Perl</a>.</p>
 
-<h3 id="Which-magazines-have-Perl-content">Which magazines have Perl content?</h3>
+<h2 id="Which-magazines-have-Perl-content">Which magazines have Perl content?</h2>
 
 <p>There&#39;s also <i>$foo Magazin</i>, a German magazine dedicated to Perl, at ( <a href="http://www.foo-magazin.de">http://www.foo-magazin.de</a> ). The <i>Perl-Zeitung</i> is another German-speaking magazine for Perl beginners (see <a href="http://perl-zeitung.at.tf">http://perl-zeitung.at.tf</a> ).</p>
 
 <p>Several Unix/Linux related magazines frequently include articles on Perl.</p>
 
-<h3 id="Which-Perl-blogs-should-I-read">Which Perl blogs should I read?</h3>
+<h2 id="Which-Perl-blogs-should-I-read">Which Perl blogs should I read?</h2>
 
 <p><a href="http://perlnews.org/">Perl News</a> covers some of the major events in the Perl world, <a href="http://perlweekly.com/">Perl Weekly</a> is a weekly e-mail (and RSS feed) of hand-picked Perl articles.</p>
 
 <p><a href="http://blogs.perl.org/">http://blogs.perl.org/</a> hosts many Perl blogs, there are also several blog aggregators: <a href="http://perlsphere.net/">Perlsphere</a> and <a href="http://ironman.enlightenedperl.org/">IronMan</a> are two of them.</p>
 
-<h3 id="What-mailing-lists-are-there-for-Perl">What mailing lists are there for Perl?</h3>
+<h2 id="What-mailing-lists-are-there-for-Perl">What mailing lists are there for Perl?</h2>
 
 <p>A comprehensive list of Perl-related mailing lists can be found at <a href="http://lists.perl.org/">http://lists.perl.org/</a></p>
 
-<h3 id="Where-can-I-buy-a-commercial-version-of-Perl">Where can I buy a commercial version of Perl?</h3>
+<h2 id="Where-can-I-buy-a-commercial-version-of-Perl">Where can I buy a commercial version of Perl?</h2>
 
 <p>Perl already <i>is</i> commercial software: it has a license that you can grab and carefully read to your manager. It is distributed in releases and comes in well-defined packages. There is a very large and supportive user community and an extensive literature.</p>
 
 <p>If you still need commercial support <a href="http://www.activestate.com/activeperl">ActiveState</a> offers this.</p>
 
-<h3 id="Where-do-I-send-bug-reports">Where do I send bug reports?</h3>
+<h2 id="Where-do-I-send-bug-reports">Where do I send bug reports?</h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -190,7 +190,7 @@
 
 <p>Some modules might have special reporting requirements, such as a Github or Google Code tracking system, so you should check the module documentation too.</p>
 
-<h2 id="AUTHOR-AND-COPYRIGHT">AUTHOR AND COPYRIGHT</h2>
+<h1 id="AUTHOR-AND-COPYRIGHT">AUTHOR AND COPYRIGHT</h1>
 
 <p>Copyright (c) 1997-2010 Tom Christiansen, Nathan Torkington, and other authors as noted. All rights reserved.</p>
 
@@ -198,5 +198,5 @@
 
 <p>Irrespective of its distribution, all code examples here are in the public domain. You are permitted and encouraged to use this code and any derivatives thereof in your own programs for fun or for profit as you see fit. A simple comment in the code giving credit to the FAQ would be courteous but is not required.</p>
 
-<p><em>Version: 5.021011</em></p></div>
+<p><em>Version: 5.20180605</em></p></div>
 

@@ -8,7 +8,7 @@
                 => "Perl Frequently Asked Questions, Perl FAQ",
             keywords => "perl, perl faq, perlfaq"
         });
-        perlfaq_version = 5.021011;
+        perlfaq_version = 5.20180605;
     -%]
     <div class="pod">
 
@@ -27,14 +27,14 @@
       <li><a href="#How-can-I-manipulate-fixed-record-length-files">How can I manipulate fixed-record-length files?  </a></li>
       <li><a href="#How-can-I-make-a-filehandle-local-to-a-subroutine-How-do-I-pass-filehandles-between-subroutines-How-do-I-make-an-array-of-filehandles">How can I make a filehandle local to a subroutine? How do I pass filehandles between subroutines? How do I make an array of filehandles?   </a></li>
       <li><a href="#How-can-I-use-a-filehandle-indirectly">How can I use a filehandle indirectly? </a></li>
+      <li><a href="#How-can-I-open-a-filehandle-to-a-string">How can I open a filehandle to a string?    </a></li>
       <li><a href="#How-can-I-set-up-a-footer-format-to-be-used-with-write">How can I set up a footer format to be used with write()? </a></li>
       <li><a href="#How-can-I-write-into-a-string">How can I write() into a string? </a></li>
-      <li><a href="#How-can-I-open-a-filehandle-to-a-string">How can I open a filehandle to a string?    </a></li>
       <li><a href="#How-can-I-output-my-numbers-with-commas-added">How can I output my numbers with commas added? </a></li>
       <li><a href="#How-can-I-translate-tildes-in-a-filename">How can I translate tildes (~) in a filename?  </a></li>
       <li><a href="#How-come-when-I-open-a-file-read-write-it-wipes-it-out">How come when I open a file read-write it wipes it out?     </a></li>
       <li><a href="#Why-do-I-sometimes-get-an-Argument-list-too-long-when-I-use">Why do I sometimes get an &quot;Argument list too long&quot; when I use &lt;*&gt;? </a></li>
-      <li><a href="#How-can-I-open-a-file-with-a-leading-or-trailing-blanks">How can I open a file with a leading &quot;&gt;&quot; or trailing blanks? </a></li>
+      <li><a href="#How-can-I-open-a-file-named-with-a-leading-or-trailing-blanks">How can I open a file named with a leading &quot;&gt;&quot; or trailing blanks? </a></li>
       <li><a href="#How-can-I-reliably-rename-a-file">How can I reliably rename a file?    </a></li>
       <li><a href="#How-can-I-lock-a-file">How can I lock a file?   </a></li>
       <li><a href="#Why-cant-I-just-open-FH-file.lock">Why can&#39;t I just open(FH, &quot;&gt;file.lock&quot;)? </a></li>
@@ -64,19 +64,19 @@
   <li><a href="#AUTHOR-AND-COPYRIGHT">AUTHOR AND COPYRIGHT</a></li>
 </ul>
 
-<h2 id="NAME">NAME</h2>
+<h1 id="NAME">NAME</h1>
 
 <p>perlfaq5 - Files and Formats</p>
 
-<h2 id="VERSION">VERSION</h2>
+<h1 id="VERSION">VERSION</h1>
 
-<p>version 5.021011</p>
+<p>version 5.20180605</p>
 
-<h2 id="DESCRIPTION">DESCRIPTION</h2>
+<h1 id="DESCRIPTION">DESCRIPTION</h1>
 
 <p>This section deals with I/O and the &quot;f&quot; issues: filehandles, flushing, formats, and footers.</p>
 
-<h3 id="How-do-I-flush-unbuffer-an-output-filehandle-Why-must-I-do-this">How do I flush/unbuffer an output filehandle? Why must I do this?    </h3>
+<h2 id="How-do-I-flush-unbuffer-an-output-filehandle-Why-must-I-do-this">How do I flush/unbuffer an output filehandle? Why must I do this?    </h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -144,7 +144,7 @@
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    $io_fh-&gt;flush;</pre>
 
-<h3 id="How-do-I-change-delete-or-insert-a-line-in-a-file-or-append-to-the-beginning-of-a-file">How do I change, delete, or insert a line in a file, or append to the beginning of a file? </h3>
+<h2 id="How-do-I-change-delete-or-insert-a-line-in-a-file-or-append-to-the-beginning-of-a-file">How do I change, delete, or insert a line in a file, or append to the beginning of a file? </h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -261,7 +261,7 @@
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    perl -ni -e &#39;print if /d/&#39; inFile.txt</pre>
 
-<h3 id="How-do-I-count-the-number-of-lines-in-a-file">How do I count the number of lines in a file?   </h3>
+<h2 id="How-do-I-count-the-number-of-lines-in-a-file">How do I count the number of lines in a file?   </h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -311,7 +311,7 @@
         chomp $lines;
     }</pre>
 
-<h3 id="How-do-I-delete-the-last-N-lines-from-a-file">How do I delete the last N lines from a file?  </h3>
+<h2 id="How-do-I-delete-the-last-N-lines-from-a-file">How do I delete the last N lines from a file?  </h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -341,7 +341,7 @@
 
 <p>You can also use the <a href="https://metacpan.org/module/Tie::File">Tie::File</a> module which lets you access the lines through a tied array. You can use normal array operations to modify your file, including setting the last index and using <code>splice</code>.</p>
 
-<h3 id="How-can-I-use-Perls--i-option-from-within-a-program">How can I use Perl&#39;s <code>-i</code> option from within a program?  </h3>
+<h2 id="How-can-I-use-Perls--i-option-from-within-a-program">How can I use Perl&#39;s <code>-i</code> option from within a program?  </h2>
 
 <p><code>-i</code> sets the value of Perl&#39;s <code>$^I</code> variable, which in turn affects the behavior of <code>&lt;&gt;</code>; see <a href="https://metacpan.org/module/perlrun">perlrun</a> for more details. By modifying the appropriate variables directly, you can get the same behavior within a larger program. For example:</p>
 
@@ -361,7 +361,7 @@
 
 <p>This block modifies all the <code>.c</code> files in the current directory, leaving a backup of the original data from each file in a new <code>.c.orig</code> file.</p>
 
-<h3 id="How-can-I-copy-a-file">How can I copy a file?   </h3>
+<h2 id="How-can-I-copy-a-file">How can I copy a file?   </h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -373,7 +373,7 @@
 
 <p>If you can&#39;t use <a href="https://metacpan.org/module/File::Copy">File::Copy</a>, you&#39;ll have to do the work yourself: open the original file, open the destination file, then print to the destination file as you read the original. You also have to remember to copy the permissions, owner, and group to the new file.</p>
 
-<h3 id="How-do-I-make-a-temporary-file-name">How do I make a temporary file name? </h3>
+<h2 id="How-do-I-make-a-temporary-file-name">How do I make a temporary file name? </h2>
 
 <p>If you don&#39;t need to know the name of the file, you can use <code>open()</code> with <code>undef</code> in place of the file name. In Perl 5.8 or later, the <code>open()</code> function creates an anonymous temporary file:</p>
 
@@ -423,7 +423,7 @@
         }
     }</pre>
 
-<h3 id="How-can-I-manipulate-fixed-record-length-files">How can I manipulate fixed-record-length files?  </h3>
+<h2 id="How-can-I-manipulate-fixed-record-length-files">How can I manipulate fixed-record-length files?  </h2>
 
 <p>The most efficient way is using <a href="https://metacpan.org/module/perlfunc#pack">pack()</a> and <a href="https://metacpan.org/module/perlfunc#unpack">unpack()</a>. This is faster than using <a href="https://metacpan.org/module/perlfunc#substr">substr()</a> when taking many, many strings. It is slower for just a few.</p>
 
@@ -446,7 +446,7 @@
 
 <p>We&#39;ve used a hash slice in order to easily handle the fields of each row. Storing the keys in an array makes it easy to operate on them as a group or loop over them with <code>for</code>. It also avoids polluting the program with global variables and using symbolic references.</p>
 
-<h3 id="How-can-I-make-a-filehandle-local-to-a-subroutine-How-do-I-pass-filehandles-between-subroutines-How-do-I-make-an-array-of-filehandles">How can I make a filehandle local to a subroutine? How do I pass filehandles between subroutines? How do I make an array of filehandles?   </h3>
+<h2 id="How-can-I-make-a-filehandle-local-to-a-subroutine-How-do-I-pass-filehandles-between-subroutines-How-do-I-make-an-array-of-filehandles">How can I make a filehandle local to a subroutine? How do I pass filehandles between subroutines? How do I make an array of filehandles?   </h2>
 
 <p>As of perl5.6, open() autovivifies file and directory handles as references if you pass it an uninitialized scalar variable. You can then pass these references just like any other scalar, and use them in the place of named handles.</p>
 
@@ -460,7 +460,7 @@
 
 <p>If you like, you can store these filehandles in an array or a hash. If you access them directly, they aren&#39;t simple scalars and you need to give <code>print</code> a little help by placing the filehandle reference in braces. Perl can only figure it out on its own when the filehandle reference is a simple scalar.</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    my @fhs = ( $fh2, $fh3, $fh3 );
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    my @fhs = ( $fh1, $fh2, $fh3 );
 
     for( $i = 0; $i &lt;= $#fhs; $i++ ) {
         print {$fhs[$i]} &quot;just another Perl answer, \n&quot;;
@@ -477,7 +477,7 @@
 
 <p>If you want to create many anonymous handles, you should check out the Symbol or IO::Handle modules.</p>
 
-<h3 id="How-can-I-use-a-filehandle-indirectly">How can I use a filehandle indirectly? </h3>
+<h2 id="How-can-I-use-a-filehandle-indirectly">How can I use a filehandle indirectly? </h2>
 
 <p>An indirect filehandle is the use of something other than a symbol in a place that a filehandle is expected. Here are ways to get indirect filehandles:</p>
 
@@ -543,11 +543,26 @@
 
 <p>Let it be noted that the flakiness of indirect filehandles is not related to whether they&#39;re strings, typeglobs, objects, or anything else. It&#39;s the syntax of the fundamental operators. Playing the object game doesn&#39;t help you at all here.</p>
 
-<h3 id="How-can-I-set-up-a-footer-format-to-be-used-with-write">How can I set up a footer format to be used with write()? </h3>
+<h2 id="How-can-I-open-a-filehandle-to-a-string">How can I open a filehandle to a string?    </h2>
+
+<p>(contributed by Peter J. Holzer, hjp-usenet2@hjp.at)</p>
+
+<p>Since Perl 5.8.0 a file handle referring to a string can be created by calling open with a reference to that string instead of the filename. This file handle can then be used to read from or write to the string:</p>
+
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    open(my $fh, &#39;&gt;&#39;, \$string) or die &quot;Could not open string for writing&quot;;
+    print $fh &quot;foo\n&quot;;
+    print $fh &quot;bar\n&quot;;    # $string now contains &quot;foo\nbar\n&quot;
+
+    open(my $fh, &#39;&lt;&#39;, \$string) or die &quot;Could not open string for reading&quot;;
+    my $x = &lt;$fh&gt;;    # $x now contains &quot;foo\n&quot;</pre>
+
+<p>With older versions of Perl, the <a href="https://metacpan.org/module/IO::String">IO::String</a> module provides similar functionality.</p>
+
+<h2 id="How-can-I-set-up-a-footer-format-to-be-used-with-write">How can I set up a footer format to be used with write()? </h2>
 
 <p>There&#39;s no builtin way to do this, but <a href="https://metacpan.org/module/perlform">perlform</a> has a couple of techniques to make it possible for the intrepid hacker.</p>
 
-<h3 id="How-can-I-write-into-a-string">How can I write() into a string? </h3>
+<h2 id="How-can-I-write-into-a-string">How can I write() into a string? </h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -587,22 +602,7 @@
 
 <p>There are also some tricks that you can play with <code>formline</code> and the accumulator variable <code>$^A</code>, but you lose a lot of the value of formats since <code>formline</code> won&#39;t handle paging and so on. You end up reimplementing formats when you use them.</p>
 
-<h3 id="How-can-I-open-a-filehandle-to-a-string">How can I open a filehandle to a string?    </h3>
-
-<p>(contributed by Peter J. Holzer, hjp-usenet2@hjp.at)</p>
-
-<p>Since Perl 5.8.0 a file handle referring to a string can be created by calling open with a reference to that string instead of the filename. This file handle can then be used to read from or write to the string:</p>
-
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    open(my $fh, &#39;&gt;&#39;, \$string) or die &quot;Could not open string for writing&quot;;
-    print $fh &quot;foo\n&quot;;
-    print $fh &quot;bar\n&quot;;    # $string now contains &quot;foo\nbar\n&quot;
-
-    open(my $fh, &#39;&lt;&#39;, \$string) or die &quot;Could not open string for reading&quot;;
-    my $x = &lt;$fh&gt;;    # $x now contains &quot;foo\n&quot;</pre>
-
-<p>With older versions of Perl, the <a href="https://metacpan.org/module/IO::String">IO::String</a> module provides similar functionality.</p>
-
-<h3 id="How-can-I-output-my-numbers-with-commas-added">How can I output my numbers with commas added? </h3>
+<h2 id="How-can-I-output-my-numbers-with-commas-added">How can I output my numbers with commas added? </h2>
 
 <p>(contributed by brian d foy and Benjamin Goldberg)</p>
 
@@ -634,7 +634,7 @@
         (?=\d)             # but they have to have more digits after them.
     )/$1,/xg;</pre>
 
-<h3 id="How-can-I-translate-tildes-in-a-filename">How can I translate tildes (~) in a filename?  </h3>
+<h2 id="How-can-I-translate-tildes-in-a-filename">How can I translate tildes (~) in a filename?  </h2>
 
 <p>Use the &lt;&gt; (<code>glob()</code>) operator, documented in <a href="https://metacpan.org/module/perlfunc">perlfunc</a>. Versions of Perl older than 5.6 require that you have a shell installed that groks tildes. Later versions of Perl have this feature built in. The <a href="https://metacpan.org/module/File::KGlob">File::KGlob</a> module (available from CPAN) gives more portable glob functionality.</p>
 
@@ -652,7 +652,7 @@
           : ( $ENV{HOME} || $ENV{LOGDIR} )
     }ex;</pre>
 
-<h3 id="How-come-when-I-open-a-file-read-write-it-wipes-it-out">How come when I open a file read-write it wipes it out?     </h3>
+<h2 id="How-come-when-I-open-a-file-read-write-it-wipes-it-out">How come when I open a file read-write it wipes it out?     </h2>
 
 <p>Because you&#39;re using something like this, which truncates the file <i>then</i> gives you read-write access:</p>
 
@@ -718,13 +718,13 @@
 
 <p>See also <a href="https://metacpan.org/module/perlopentut">perlopentut</a>.</p>
 
-<h3 id="Why-do-I-sometimes-get-an-Argument-list-too-long-when-I-use">Why do I sometimes get an &quot;Argument list too long&quot; when I use &lt;*&gt;? </h3>
+<h2 id="Why-do-I-sometimes-get-an-Argument-list-too-long-when-I-use">Why do I sometimes get an &quot;Argument list too long&quot; when I use &lt;*&gt;? </h2>
 
 <p>The <code>&lt;&gt;</code> operator performs a globbing operation (see above). In Perl versions earlier than v5.6.0, the internal glob() operator forks csh(1) to do the actual glob expansion, but csh can&#39;t handle more than 127 items and so gives the error message <code>Argument list too long</code>. People who installed tcsh as csh won&#39;t have this problem, but their users may be surprised by it.</p>
 
 <p>To get around this, either upgrade to Perl v5.6.0 or later, do the glob yourself with readdir() and patterns, or use a module like <a href="https://metacpan.org/module/File::Glob">File::Glob</a>, one that doesn&#39;t use the shell to do globbing.</p>
 
-<h3 id="How-can-I-open-a-file-with-a-leading-or-trailing-blanks">How can I open a file with a leading &quot;&gt;&quot; or trailing blanks? </h3>
+<h2 id="How-can-I-open-a-file-named-with-a-leading-or-trailing-blanks">How can I open a file named with a leading &quot;&gt;&quot; or trailing blanks? </h2>
 
 <p>(contributed by Brian McCauley)</p>
 
@@ -735,7 +735,7 @@
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    open my $fh, &quot;&lt;&quot;, &quot;  file  &quot;;  # filename is &quot;   file   &quot;
     open my $fh, &quot;&gt;&quot;, &quot;&gt;file&quot;;     # filename is &quot;&gt;file&quot;</pre>
 
-<h3 id="How-can-I-reliably-rename-a-file">How can I reliably rename a file?    </h3>
+<h2 id="How-can-I-reliably-rename-a-file">How can I reliably rename a file?    </h2>
 
 <p>If your operating system supports a proper mv(1) utility or its functional equivalent, this works:</p>
 
@@ -743,7 +743,7 @@
 
 <p>It may be more portable to use the <a href="https://metacpan.org/module/File::Copy">File::Copy</a> module instead. You just copy to the new file to the new name (checking return values), then delete the old one. This isn&#39;t really the same semantically as a <code>rename()</code>, which preserves meta-information like permissions, timestamps, inode info, etc.</p>
 
-<h3 id="How-can-I-lock-a-file">How can I lock a file?   </h3>
+<h2 id="How-can-I-lock-a-file">How can I lock a file?   </h2>
 
 <p>Perl&#39;s builtin flock() function (see <a href="https://metacpan.org/module/perlfunc">perlfunc</a> for details) will call flock(2) if that exists, fcntl(2) if it doesn&#39;t (on perl version 5.004 and later), and lockf(3) if neither of the two previous system calls exists. On some systems, it may even use a different form of native locking. Here are some gotchas with Perl&#39;s flock():</p>
 
@@ -764,7 +764,7 @@
 </li>
 </ol>
 
-<h3 id="Why-cant-I-just-open-FH-file.lock">Why can&#39;t I just open(FH, &quot;&gt;file.lock&quot;)? </h3>
+<h2 id="Why-cant-I-just-open-FH-file.lock">Why can&#39;t I just open(FH, &quot;&gt;file.lock&quot;)? </h2>
 
 <p>A common bit of code <b>NOT TO USE</b> is this:</p>
 
@@ -778,7 +778,7 @@
 
 <p>except that lamentably, file creation (and deletion) is not atomic over NFS, so this won&#39;t work (at least, not every time) over the net. Various schemes involving link() have been suggested, but these tend to involve busy-wait, which is also less than desirable.</p>
 
-<h3 id="I-still-dont-get-locking.-I-just-want-to-increment-the-number-in-the-file.-How-can-I-do-this">I still don&#39;t get locking. I just want to increment the number in the file. How can I do this?  </h3>
+<h2 id="I-still-dont-get-locking.-I-just-want-to-increment-the-number-in-the-file.-How-can-I-do-this">I still don&#39;t get locking. I just want to increment the number in the file. How can I do this?  </h2>
 
 <p>Didn&#39;t anyone ever tell you web-page hit counters were useless? They don&#39;t count number of hits, they&#39;re a waste of time, and they serve only to stroke the writer&#39;s vanity. It&#39;s better to pick a random number; they&#39;re more realistic.</p>
 
@@ -799,7 +799,7 @@
 
 <p>If the count doesn&#39;t impress your friends, then the code might. :-)</p>
 
-<h3 id="All-I-want-to-do-is-append-a-small-amount-of-text-to-the-end-of-a-file.-Do-I-still-have-to-use-locking">All I want to do is append a small amount of text to the end of a file. Do I still have to use locking?  </h3>
+<h2 id="All-I-want-to-do-is-append-a-small-amount-of-text-to-the-end-of-a-file.-Do-I-still-have-to-use-locking">All I want to do is append a small amount of text to the end of a file. Do I still have to use locking?  </h2>
 
 <p>If you are on a system that correctly implements <code>flock</code> and you use the example appending code from &quot;perldoc -f flock&quot; everything will be OK even if the OS you are on doesn&#39;t implement append mode correctly (if such a system exists). So if you are happy to restrict yourself to OSs that implement <code>flock</code> (and that&#39;s not really much of a restriction) then that is what you should do.</p>
 
@@ -809,7 +809,7 @@
 
 <p>There is still a small theoretical chance that a signal will interrupt the system-level <code>write()</code> operation before completion. There is also a possibility that some STDIO implementations may call multiple system level <code>write()</code>s even if the buffer was empty to start. There may be some systems where this probability is reduced to zero, and this is not a concern when using <code>:perlio</code> instead of your system&#39;s STDIO.</p>
 
-<h3 id="How-do-I-randomly-update-a-binary-file">How do I randomly update a binary file? </h3>
+<h2 id="How-do-I-randomly-update-a-binary-file">How do I randomly update a binary file? </h2>
 
 <p>If you&#39;re just trying to patch a binary, in many cases something as simple as this works:</p>
 
@@ -829,7 +829,7 @@
 
 <p>Locking and error checking are left as an exercise for the reader. Don&#39;t forget them or you&#39;ll be quite sorry.</p>
 
-<h3 id="How-do-I-get-a-files-timestamp-in-perl">How do I get a file&#39;s timestamp in perl?  </h3>
+<h2 id="How-do-I-get-a-files-timestamp-in-perl">How do I get a file&#39;s timestamp in perl?  </h2>
 
 <p>If you want to retrieve the time at which the file was last read, written, or had its meta-data (owner, etc) changed, you use the <b>-A</b>, <b>-M</b>, or <b>-C</b> file test operations as documented in <a href="https://metacpan.org/module/perlfunc">perlfunc</a>. These retrieve the age of the file (measured against the start-time of your program) in days as a floating point number. Some platforms may not have all of these times. See <a href="https://metacpan.org/module/perlport">perlport</a> for details. To retrieve the &quot;raw&quot; time in seconds since the epoch, you would call the stat function, then use <code>localtime()</code>, <code>gmtime()</code>, or <code>POSIX::strftime()</code> to convert this into human-readable form.</p>
 
@@ -849,7 +849,7 @@
 
 <p>The POSIX::strftime() approach has the benefit of being, in theory, independent of the current locale. See <a href="https://metacpan.org/module/perllocale">perllocale</a> for details.</p>
 
-<h3 id="How-do-I-set-a-files-timestamp-in-perl">How do I set a file&#39;s timestamp in perl?  </h3>
+<h2 id="How-do-I-set-a-files-timestamp-in-perl">How do I set a file&#39;s timestamp in perl?  </h2>
 
 <p>You use the utime() function documented in <a href="https://metacpan.org/module/perlfunc#utime">&quot;utime&quot; in perlfunc</a>. By way of example, here&#39;s a little program that copies the read and write times from its first argument to all the rest of them.</p>
 
@@ -866,15 +866,15 @@
 
 <p>Certain file systems have a limited ability to store the times on a file at the expected level of precision. For example, the FAT and HPFS filesystem are unable to create dates on files with a finer granularity than two seconds. This is a limitation of the filesystems, not of utime().</p>
 
-<h3 id="How-do-I-print-to-more-than-one-file-at-once">How do I print to more than one file at once? </h3>
+<h2 id="How-do-I-print-to-more-than-one-file-at-once">How do I print to more than one file at once? </h2>
 
 <p>To connect one filehandle to several output filehandles, you can use the <a href="https://metacpan.org/module/IO::Tee">IO::Tee</a> or <a href="https://metacpan.org/module/Tie::FileHandle::Multiplex">Tie::FileHandle::Multiplex</a> modules.</p>
 
 <p>If you only have to do this once, you can print individually to each filehandle.</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    for my $fh ($fh2, $fh3, $fh3) { print $fh &quot;whatever\n&quot; }</pre>
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    for my $fh ($fh1, $fh2, $fh3) { print $fh &quot;whatever\n&quot; }</pre>
 
-<h3 id="How-can-I-read-in-an-entire-file-all-at-once">How can I read in an entire file all at once?  </h3>
+<h2 id="How-can-I-read-in-an-entire-file-all-at-once">How can I read in an entire file all at once?  </h2>
 
 <p>The customary Perl approach for processing all the lines in a file is to do so one line at a time:</p>
 
@@ -931,13 +931,13 @@
 
 <p>That third argument tests the byte size of the data on the <code>$fh</code> filehandle and reads that many bytes into the buffer <code>$var</code>.</p>
 
-<h3 id="How-can-I-read-in-a-file-by-paragraphs">How can I read in a file by paragraphs? </h3>
+<h2 id="How-can-I-read-in-a-file-by-paragraphs">How can I read in a file by paragraphs? </h2>
 
 <p>Use the <code>$/</code> variable (see <a href="https://metacpan.org/module/perlvar">perlvar</a> for details). You can either set it to <code>&quot;&quot;</code> to eliminate empty paragraphs (<code>&quot;abc\n\n\n\ndef&quot;</code>, for instance, gets treated as two paragraphs and not three), or <code>&quot;\n\n&quot;</code> to accept empty paragraphs.</p>
 
 <p>Note that a blank line must have no blanks in it. Thus <span style="white-space: nowrap;"><code>&quot;fred\n \nstuff\n\n&quot;</code></span> is one paragraph, but <code>&quot;fred\n\nstuff\n\n&quot;</code> is two.</p>
 
-<h3 id="How-can-I-read-a-single-character-from-a-file-From-the-keyboard">How can I read a single character from a file? From the keyboard?  </h3>
+<h2 id="How-can-I-read-a-single-character-from-a-file-From-the-keyboard">How can I read a single character from a file? From the keyboard?  </h2>
 
 <p>You can use the builtin <code>getc()</code> function for most filehandles, but it won&#39;t (easily) work on a terminal device. For STDIN, either use the Term::ReadKey module from CPAN or use the sample code in <a href="https://metacpan.org/module/perlfunc#getc">&quot;getc&quot; in perlfunc</a>.</p>
 
@@ -1001,7 +1001,7 @@
     printf &quot;\nYou said %s, char number %03d\n&quot;,
         $key, ord $key;</pre>
 
-<h3 id="How-can-I-tell-whether-theres-a-character-waiting-on-a-filehandle">How can I tell whether there&#39;s a character waiting on a filehandle?</h3>
+<h2 id="How-can-I-tell-whether-theres-a-character-waiting-on-a-filehandle">How can I tell whether there&#39;s a character waiting on a filehandle?</h2>
 
 <p>The very first thing you should do is look into getting the Term::ReadKey extension from CPAN. As we mentioned earlier, it now even has limited support for non-portable (read: not open systems, closed, proprietary, not POSIX, not Unix, etc.) systems.</p>
 
@@ -1013,7 +1013,7 @@
         return $nfd = select($rin,undef,undef,0);
     }</pre>
 
-<p>If you want to find out how many characters are waiting, there&#39;s also the FIONREAD ioctl call to be looked at. The <i>h3ph</i> tool that comes with Perl tries to convert C include files to Perl code, which can be <code>require</code>d. FIONREAD ends up defined as a function in the <i>sys/ioctl.ph</i> file:</p>
+<p>If you want to find out how many characters are waiting, there&#39;s also the FIONREAD ioctl call to be looked at. The <i>h2ph</i> tool that comes with Perl tries to convert C include files to Perl code, which can be <code>require</code>d. FIONREAD ends up defined as a function in the <i>sys/ioctl.ph</i> file:</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    require &#39;sys/ioctl.ph&#39;;
 
@@ -1021,7 +1021,7 @@
     ioctl(FH, FIONREAD(), $size)    or die &quot;Couldn&#39;t call ioctl: $!\n&quot;;
     $size = unpack(&quot;L&quot;, $size);</pre>
 
-<p>If <i>h3ph</i> wasn&#39;t installed or doesn&#39;t work for you, you can <i>grep</i> the include files by hand:</p>
+<p>If <i>h2ph</i> wasn&#39;t installed or doesn&#39;t work for you, you can <i>grep</i> the include files by hand:</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    % grep FIONREAD /usr/include/*/*
     /usr/include/asm/ioctls.h:#define FIONREAD      0x541B</pre>
@@ -1048,7 +1048,7 @@
 
 <p>FIONREAD requires a filehandle connected to a stream, meaning that sockets, pipes, and tty devices work, but <i>not</i> files.</p>
 
-<h3 id="How-do-I-do-a-tail--f-in-perl">How do I do a <code>tail -f</code> in perl?    </h3>
+<h2 id="How-do-I-do-a-tail--f-in-perl">How do I do a <code>tail -f</code> in perl?    </h2>
 
 <p>First try</p>
 
@@ -1070,7 +1070,7 @@
 
 <p>There&#39;s also a <a href="https://metacpan.org/module/File::Tail">File::Tail</a> module from CPAN.</p>
 
-<h3 id="How-do-I-dup-a-filehandle-in-Perl">How do I dup() a filehandle in Perl? </h3>
+<h2 id="How-do-I-dup-a-filehandle-in-Perl">How do I dup() a filehandle in Perl? </h2>
 
 <p>If you check <a href="https://metacpan.org/module/perlfunc#open">&quot;open&quot; in perlfunc</a>, you&#39;ll see that several of the ways to call open() should do the trick. For example:</p>
 
@@ -1086,7 +1086,7 @@
 
 <p>Error checking, as always, has been left as an exercise for the reader.</p>
 
-<h3 id="How-do-I-close-a-file-descriptor-by-number">How do I close a file descriptor by number?   </h3>
+<h2 id="How-do-I-close-a-file-descriptor-by-number">How do I close a file descriptor by number?   </h2>
 
 <p>If, for some reason, you have a file descriptor instead of a filehandle (perhaps you used <code>POSIX::open</code>), you can use the <code>close()</code> function from the <a href="https://metacpan.org/module/POSIX">POSIX</a> module:</p>
 
@@ -1107,23 +1107,23 @@
         close $fh;
     }</pre>
 
-<h3 id="Why-cant-I-use-C:-temp-foo-in-DOS-paths-Why-doesnt-C:-temp-foo.exe-work">Why can&#39;t I use &quot;C:\temp\foo&quot; in DOS paths? Why doesn&#39;t `C:\temp\foo.exe` work? </h3>
+<h2 id="Why-cant-I-use-C:-temp-foo-in-DOS-paths-Why-doesnt-C:-temp-foo.exe-work">Why can&#39;t I use &quot;C:\temp\foo&quot; in DOS paths? Why doesn&#39;t `C:\temp\foo.exe` work? </h2>
 
 <p>Whoops! You just put a tab and a formfeed into that filename! Remember that within double quoted strings (&quot;like\this&quot;), the backslash is an escape character. The full list of these is in <a href="https://metacpan.org/module/perlop#Quote-and-Quote-like-Operators">&quot;Quote and Quote-like Operators&quot; in perlop</a>. Unsurprisingly, you don&#39;t have a file called &quot;c:(tab)emp(formfeed)oo&quot; or &quot;c:(tab)emp(formfeed)oo.exe&quot; on your legacy DOS filesystem.</p>
 
 <p>Either single-quote your strings, or (preferably) use forward slashes. Since all DOS and Windows versions since something like MS-DOS 2.0 or so have treated <code>/</code> and <code>\</code> the same in a path, you might as well use the one that doesn&#39;t clash with Perl--or the POSIX shell, ANSI C and C++, awk, Tcl, Java, or Python, just to mention a few. POSIX paths are more portable, too.</p>
 
-<h3 id="Why-doesnt-glob-.-get-all-the-files">Why doesn&#39;t glob(&quot;*.*&quot;) get all the files? </h3>
+<h2 id="Why-doesnt-glob-.-get-all-the-files">Why doesn&#39;t glob(&quot;*.*&quot;) get all the files? </h2>
 
 <p>Because even on non-Unix ports, Perl&#39;s glob function follows standard Unix globbing semantics. You&#39;ll need <code>glob(&quot;*&quot;)</code> to get all (non-hidden) files. This makes glob() portable even to legacy systems. Your port may include proprietary globbing functions as well. Check its documentation for details.</p>
 
-<h3 id="Why-does-Perl-let-me-delete-read-only-files-Why-does--i-clobber-protected-files-Isnt-this-a-bug-in-Perl">Why does Perl let me delete read-only files? Why does <code>-i</code> clobber protected files? Isn&#39;t this a bug in Perl?</h3>
+<h2 id="Why-does-Perl-let-me-delete-read-only-files-Why-does--i-clobber-protected-files-Isnt-this-a-bug-in-Perl">Why does Perl let me delete read-only files? Why does <code>-i</code> clobber protected files? Isn&#39;t this a bug in Perl?</h2>
 
 <p>This is elaborately and painstakingly described in the <i>file-dir-perms</i> article in the &quot;Far More Than You Ever Wanted To Know&quot; collection in <a href="http://www.cpan.org/misc/olddoc/FMTEYEWTK.tgz">http://www.cpan.org/misc/olddoc/FMTEYEWTK.tgz</a> .</p>
 
 <p>The executive summary: learn how your filesystem works. The permissions on a file say what can happen to the data in that file. The permissions on a directory say what can happen to the list of files in that directory. If you delete a file, you&#39;re removing its name from the directory (so the operation depends on the permissions of the directory, not of the file). If you try to write to the file, the permissions of the file govern whether you&#39;re allowed to.</p>
 
-<h3 id="How-do-I-select-a-random-line-from-a-file">How do I select a random line from a file? </h3>
+<h2 id="How-do-I-select-a-random-line-from-a-file">How do I select a random line from a file? </h2>
 
 <p>Short of loading the file into a database or pre-indexing the lines in the file, there are a couple of things that you can do.</p>
 
@@ -1141,7 +1141,7 @@
 
 <p>Another way is to use the <a href="https://metacpan.org/module/Tie::File">Tie::File</a> module, which treats the entire file as an array. Simply access a random array element.</p>
 
-<h3 id="Why-do-I-get-weird-spaces-when-I-print-an-array-of-lines">Why do I get weird spaces when I print an array of lines?</h3>
+<h2 id="Why-do-I-get-weird-spaces-when-I-print-an-array-of-lines">Why do I get weird spaces when I print an array of lines?</h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -1173,7 +1173,7 @@
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    print @lines;</pre>
 
-<h3 id="How-do-I-traverse-a-directory-tree">How do I traverse a directory tree?</h3>
+<h2 id="How-do-I-traverse-a-directory-tree">How do I traverse a directory tree?</h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -1208,7 +1208,7 @@
                              -&gt;name( &#39;*.pm&#39; )
                              -&gt;in( @INC );</pre>
 
-<h3 id="How-do-I-delete-a-directory-tree">How do I delete a directory tree?</h3>
+<h2 id="How-do-I-delete-a-directory-tree">How do I delete a directory tree?</h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -1222,13 +1222,13 @@
 
 <p>The <a href="https://metacpan.org/module/File::Path">File::Path</a> module also has a legacy interface to the older <code>rmtree</code> subroutine.</p>
 
-<h3 id="How-do-I-copy-an-entire-directory">How do I copy an entire directory?</h3>
+<h2 id="How-do-I-copy-an-entire-directory">How do I copy an entire directory?</h2>
 
 <p>(contributed by Shlomi Fish)</p>
 
 <p>To do the equivalent of <code>cp -R</code> (i.e. copy an entire directory tree recursively) in portable Perl, you&#39;ll either need to write something yourself or find a good CPAN module such as <a href="https://metacpan.org/module/File::Copy::Recursive">File::Copy::Recursive</a>.</p>
 
-<h2 id="AUTHOR-AND-COPYRIGHT">AUTHOR AND COPYRIGHT</h2>
+<h1 id="AUTHOR-AND-COPYRIGHT">AUTHOR AND COPYRIGHT</h1>
 
 <p>Copyright (c) 1997-2010 Tom Christiansen, Nathan Torkington, and other authors as noted. All rights reserved.</p>
 
@@ -1236,5 +1236,5 @@
 
 <p>Irrespective of its distribution, all code examples here are in the public domain. You are permitted and encouraged to use this code and any derivatives thereof in your own programs for fun or for profit as you see fit. A simple comment in the code giving credit to the FAQ would be courteous but is not required.</p>
 
-<p><em>Version: 5.021011</em></p></div>
+<p><em>Version: 5.20180605</em></p></div>
 

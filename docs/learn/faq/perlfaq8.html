@@ -8,7 +8,7 @@
                 => "Perl Frequently Asked Questions, Perl FAQ",
             keywords => "perl, perl faq, perlfaq"
         });
-        perlfaq_version = 5.021011;
+        perlfaq_version = 5.20180605;
     -%]
     <div class="pod">
 
@@ -73,25 +73,25 @@
   <li><a href="#AUTHOR-AND-COPYRIGHT">AUTHOR AND COPYRIGHT</a></li>
 </ul>
 
-<h2 id="NAME">NAME</h2>
+<h1 id="NAME">NAME</h1>
 
 <p>perlfaq8 - System Interaction</p>
 
-<h2 id="VERSION">VERSION</h2>
+<h1 id="VERSION">VERSION</h1>
 
-<p>version 5.021011</p>
+<p>version 5.20180605</p>
 
-<h2 id="DESCRIPTION">DESCRIPTION</h2>
+<h1 id="DESCRIPTION">DESCRIPTION</h1>
 
 <p>This section of the Perl FAQ covers questions involving operating system interaction. Topics include interprocess communication (IPC), control over the user-interface (keyboard, screen and pointing devices), and most anything else not related to data manipulation.</p>
 
 <p>Read the FAQs and documentation specific to the port of perl to your operating system (eg, <a href="https://metacpan.org/module/perlvms">perlvms</a>, <a href="https://metacpan.org/module/perlplan9">perlplan9</a>, ...). These should contain more detailed information on the vagaries of your perl.</p>
 
-<h3 id="How-do-I-find-out-which-operating-system-Im-running-under">How do I find out which operating system I&#39;m running under?</h3>
+<h2 id="How-do-I-find-out-which-operating-system-Im-running-under">How do I find out which operating system I&#39;m running under?</h2>
 
 <p>The <code>$^O</code> variable (<code>$OSNAME</code> if you use <code>English</code>) contains an indication of the name of the operating system (not its release number) that your perl binary was built for.</p>
 
-<h3 id="How-come-exec-doesnt-return">How come exec() doesn&#39;t return?     </h3>
+<h2 id="How-come-exec-doesnt-return">How come exec() doesn&#39;t return?     </h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -99,7 +99,7 @@
 
 <p>If you want to run an external command and still keep your Perl process going, look at a piped <code>open</code>, <code>fork</code>, or <code>system</code>.</p>
 
-<h3 id="How-do-I-do-fancy-stuff-with-the-keyboard-screen-mouse">How do I do fancy stuff with the keyboard/screen/mouse?</h3>
+<h2 id="How-do-I-do-fancy-stuff-with-the-keyboard-screen-mouse">How do I do fancy stuff with the keyboard/screen/mouse?</h2>
 
 <p>How you access/control keyboards, screens, and pointing devices (&quot;mice&quot;) is system-dependent. Try the following modules:</p>
 
@@ -136,7 +136,7 @@
 
 <p>Some of these specific cases are shown as examples in other answers in this section of the perlfaq.</p>
 
-<h3 id="How-do-I-print-something-out-in-color">How do I print something out in color?</h3>
+<h2 id="How-do-I-print-something-out-in-color">How do I print something out in color?</h2>
 
 <p>In general, you don&#39;t, because you don&#39;t know whether the recipient has a color-aware display device. If you know that they have an ANSI terminal that understands color, you can use the <a href="https://metacpan.org/module/Term::ANSIColor">Term::ANSIColor</a> module from CPAN:</p>
 
@@ -150,7 +150,7 @@
     print RED, &quot;Stop!\n&quot;, RESET;
     print GREEN, &quot;Go!\n&quot;, RESET;</pre>
 
-<h3 id="How-do-I-read-just-one-key-without-waiting-for-a-return-key">How do I read just one key without waiting for a return key?</h3>
+<h2 id="How-do-I-read-just-one-key-without-waiting-for-a-return-key">How do I read just one key without waiting for a return key?</h2>
 
 <p>Controlling input buffering is a remarkably system-dependent matter. On many systems, you can just use the <b>stty</b> command as shown in <a href="https://metacpan.org/module/perlfunc#getc">&quot;getc&quot; in perlfunc</a>, but as you see, that&#39;s already getting you into portability snags.</p>
 
@@ -219,7 +219,7 @@
 
     1;</pre>
 
-<h3 id="How-do-I-check-whether-input-is-ready-on-the-keyboard">How do I check whether input is ready on the keyboard?</h3>
+<h2 id="How-do-I-check-whether-input-is-ready-on-the-keyboard">How do I check whether input is ready on the keyboard?</h2>
 
 <p>The easiest way to do this is to read a key in nonblocking mode with the <a href="https://metacpan.org/module/Term::ReadKey">Term::ReadKey</a> module from CPAN, passing it an argument of -1 to indicate not to block:</p>
 
@@ -235,7 +235,7 @@
 
     ReadMode(&#39;normal&#39;);                  # restore normal tty settings</pre>
 
-<h3 id="How-do-I-clear-the-screen">How do I clear the screen?</h3>
+<h2 id="How-do-I-clear-the-screen">How do I clear the screen?</h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -272,7 +272,7 @@
 
     print $clear_string;</pre>
 
-<h3 id="How-do-I-get-the-screen-size">How do I get the screen size?</h3>
+<h2 id="How-do-I-get-the-screen-size">How do I get the screen size?</h2>
 
 <p>If you have <a href="https://metacpan.org/module/Term::ReadKey">Term::ReadKey</a> module installed from CPAN, you can use it to fetch the width and height in characters and in pixels:</p>
 
@@ -292,7 +292,7 @@
     print &quot;  (xpixel,ypixel) = ($xpixel,$ypixel)&quot; if $xpixel || $ypixel;
     print &quot;\n&quot;;</pre>
 
-<h3 id="How-do-I-ask-the-user-for-a-password">How do I ask the user for a password?</h3>
+<h2 id="How-do-I-ask-the-user-for-a-password">How do I ask the user for a password?</h2>
 
 <p>(This question has nothing to do with the web. See a different FAQ for that.)</p>
 
@@ -305,7 +305,7 @@
     ReadMode(&#39;noecho&#39;);
     my $password = ReadLine(0);</pre>
 
-<h3 id="How-do-I-read-and-write-the-serial-port">How do I read and write the serial port?</h3>
+<h2 id="How-do-I-read-and-write-the-serial-port">How do I read and write the serial port?</h2>
 
 <p>This depends on which operating system your program is running on. In the case of Unix, the serial ports will be accessible through files in <code>/dev</code>; on other systems, device names will doubtless differ. Several problem areas common to all device interaction are the following:</p>
 
@@ -379,7 +379,7 @@
         }
     }</pre>
 
-<h3 id="How-do-I-decode-encrypted-password-files">How do I decode encrypted password files?</h3>
+<h2 id="How-do-I-decode-encrypted-password-files">How do I decode encrypted password files?</h2>
 
 <p>You spend lots and lots of money on dedicated hardware, but this is bound to get you talked about.</p>
 
@@ -387,7 +387,7 @@
 
 <p>If you&#39;re worried about users selecting bad passwords, you should proactively check when they try to change their password (by modifying <a href="http://man.he.net/man1/passwd">passwd(1)</a>, for example).</p>
 
-<h3 id="How-do-I-start-a-process-in-the-background">How do I start a process in the background?</h3>
+<h2 id="How-do-I-start-a-process-in-the-background">How do I start a process in the background?</h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -440,7 +440,7 @@
 </dd>
 </dl>
 
-<h3 id="How-do-I-trap-control-characters-signals">How do I trap control characters/signals?</h3>
+<h2 id="How-do-I-trap-control-characters-signals">How do I trap control characters/signals?</h2>
 
 <p>You don&#39;t actually &quot;trap&quot; a control character. Instead, that character generates a signal which is sent to your terminal&#39;s currently foregrounded process group, which you then trap in your process. Signals are documented in <a href="https://metacpan.org/module/perlipc#Signals">&quot;Signals&quot; in perlipc</a> and the section on &quot;Signals&quot; in the Camel.</p>
 
@@ -460,11 +460,11 @@
 
 <p>Perl versions before 5.8 had in its C source code signal handlers which would catch the signal and possibly run a Perl function that you had set in <code>%SIG</code>. This violated the rules of signal handling at that level causing perl to dump core. Since version 5.8.0, perl looks at <code>%SIG</code> <b>after</b> the signal has been caught, rather than while it is being caught. Previous versions of this answer were incorrect.</p>
 
-<h3 id="How-do-I-modify-the-shadow-password-file-on-a-Unix-system">How do I modify the shadow password file on a Unix system?</h3>
+<h2 id="How-do-I-modify-the-shadow-password-file-on-a-Unix-system">How do I modify the shadow password file on a Unix system?</h2>
 
 <p>If perl was installed correctly and your shadow library was written properly, the <code>getpw*()</code> functions described in <a href="https://metacpan.org/module/perlfunc">perlfunc</a> should in theory provide (read-only) access to entries in the shadow password file. To change the file, make a new shadow password file (the format varies from system to system--see <a href="http://man.he.net/man1/passwd">passwd(1)</a> for specifics) and use <code>pwd_mkdb(8)</code> to install it (see <a href="http://man.he.net/man8/pwd_mkdb">pwd_mkdb(8)</a> for more details).</p>
 
-<h3 id="How-do-I-set-the-time-and-date">How do I set the time and date?</h3>
+<h2 id="How-do-I-set-the-time-and-date">How do I set the time and date?</h2>
 
 <p>Assuming you&#39;re running under sufficient permissions, you should be able to set the system-wide date and time by running the <code>date(1)</code> program. (There is no way to set the time and date on a per-process basis.) This mechanism will work for Unix, MS-DOS, Windows, and NT; the VMS equivalent is <code>set time</code>.</p>
 
@@ -474,17 +474,17 @@
     $ENV{&#39;SYS$TIMEZONE_DIFFERENTIAL&#39;}=&quot;-5&quot; # vms
     system(&#39;trn&#39;, &#39;comp.lang.perl.misc&#39;);</pre>
 
-<h3 id="How-can-I-sleep-or-alarm-for-under-a-second">How can I sleep() or alarm() for under a second?    </h3>
+<h2 id="How-can-I-sleep-or-alarm-for-under-a-second">How can I sleep() or alarm() for under a second?    </h2>
 
 <p>If you want finer granularity than the 1 second that the <code>sleep()</code> function provides, the easiest way is to use the <code>select()</code> function as documented in <a href="https://metacpan.org/module/perlfunc#select">&quot;select&quot; in perlfunc</a>. Try the <a href="https://metacpan.org/module/Time::HiRes">Time::HiRes</a> and the <a href="https://metacpan.org/module/BSD::Itimer">BSD::Itimer</a> modules (available from CPAN, and starting from Perl 5.8 <a href="https://metacpan.org/module/Time::HiRes">Time::HiRes</a> is part of the standard distribution).</p>
 
-<h3 id="How-can-I-measure-time-under-a-second">How can I measure time under a second?    </h3>
+<h2 id="How-can-I-measure-time-under-a-second">How can I measure time under a second?    </h2>
 
 <p>(contributed by brian d foy)</p>
 
 <p>The <a href="https://metacpan.org/module/Time::HiRes">Time::HiRes</a> module (part of the standard distribution as of Perl 5.8) measures time with the <code>gettimeofday()</code> system call, which returns the time in microseconds since the epoch. If you can&#39;t install <a href="https://metacpan.org/module/Time::HiRes">Time::HiRes</a> for older Perls and you are on a Unixish system, you may be able to call <code>gettimeofday(2)</code> directly. See <a href="https://metacpan.org/module/perlfunc#syscall">&quot;syscall&quot; in perlfunc</a>.</p>
 
-<h3 id="How-can-I-do-an-atexit-or-setjmp-longjmp-Exception-handling">How can I do an atexit() or setjmp()/longjmp()? (Exception handling)</h3>
+<h2 id="How-can-I-do-an-atexit-or-setjmp-longjmp-Exception-handling">How can I do an atexit() or setjmp()/longjmp()? (Exception handling)</h2>
 
 <p>You can use the <code>END</code> block to simulate <code>atexit()</code>. Each package&#39;s <code>END</code> block is called when the program or thread ends. See the <a href="https://metacpan.org/module/perlmod">perlmod</a> manpage for more details about <code>END</code> blocks.</p>
 
@@ -504,48 +504,48 @@
 
 <p>If you want the <code>atexit()</code> syntax (and an <code>rmexit()</code> as well), try the <code>AtExit</code> module available from CPAN.</p>
 
-<h3 id="Why-doesnt-my-sockets-program-work-under-System-V-Solaris-What-does-the-error-message-Protocol-not-supported-mean">Why doesn&#39;t my sockets program work under System V (Solaris)? What does the error message &quot;Protocol not supported&quot; mean?</h3>
+<h2 id="Why-doesnt-my-sockets-program-work-under-System-V-Solaris-What-does-the-error-message-Protocol-not-supported-mean">Why doesn&#39;t my sockets program work under System V (Solaris)? What does the error message &quot;Protocol not supported&quot; mean?</h2>
 
 <p>Some Sys-V based systems, notably Solaris 2.X, redefined some of the standard socket constants. Since these were constant across all architectures, they were often hardwired into perl code. The proper way to deal with this is to &quot;use Socket&quot; to get the correct values.</p>
 
 <p>Note that even though SunOS and Solaris are binary compatible, these values are different. Go figure.</p>
 
-<h3 id="How-can-I-call-my-systems-unique-C-functions-from-Perl">How can I call my system&#39;s unique C functions from Perl?</h3>
+<h2 id="How-can-I-call-my-systems-unique-C-functions-from-Perl">How can I call my system&#39;s unique C functions from Perl?</h2>
 
-<p>In most cases, you write an external module to do it--see the answer to &quot;Where can I learn about linking C with Perl? [h3xs, xsubpp]&quot;. However, if the function is a system call, and your system supports <code>syscall()</code>, you can use the <code>syscall</code> function (documented in <a href="https://metacpan.org/module/perlfunc">perlfunc</a>).</p>
+<p>In most cases, you write an external module to do it--see the answer to &quot;Where can I learn about linking C with Perl? [h2xs, xsubpp]&quot;. However, if the function is a system call, and your system supports <code>syscall()</code>, you can use the <code>syscall</code> function (documented in <a href="https://metacpan.org/module/perlfunc">perlfunc</a>).</p>
 
 <p>Remember to check the modules that came with your distribution, and CPAN as well--someone may already have written a module to do it. On Windows, try <a href="https://metacpan.org/module/Win32::API">Win32::API</a>. On Macs, try <a href="https://metacpan.org/module/Mac::Carbon">Mac::Carbon</a>. If no module has an interface to the C function, you can inline a bit of C in your Perl source with <a href="https://metacpan.org/module/Inline::C">Inline::C</a>.</p>
 
-<h3 id="Where-do-I-get-the-include-files-to-do-ioctl-or-syscall">Where do I get the include files to do ioctl() or syscall()?</h3>
+<h2 id="Where-do-I-get-the-include-files-to-do-ioctl-or-syscall">Where do I get the include files to do ioctl() or syscall()?</h2>
 
-<p>Historically, these would be generated by the <a href="https://metacpan.org/module/h3ph">h3ph</a> tool, part of the standard perl distribution. This program converts <code>cpp(1)</code> directives in C header files to files containing subroutine definitions, like <code>SYS_getitimer()</code>, which you can use as arguments to your functions. It doesn&#39;t work perfectly, but it usually gets most of the job done. Simple files like <i>errno.h</i>, <i>syscall.h</i>, and <i>socket.h</i> were fine, but the hard ones like <i>ioctl.h</i> nearly always need to be hand-edited. Here&#39;s how to install the *.ph files:</p>
+<p>Historically, these would be generated by the <a href="https://metacpan.org/module/h2ph">h2ph</a> tool, part of the standard perl distribution. This program converts <code>cpp(1)</code> directives in C header files to files containing subroutine definitions, like <code>SYS_getitimer()</code>, which you can use as arguments to your functions. It doesn&#39;t work perfectly, but it usually gets most of the job done. Simple files like <i>errno.h</i>, <i>syscall.h</i>, and <i>socket.h</i> were fine, but the hard ones like <i>ioctl.h</i> nearly always need to be hand-edited. Here&#39;s how to install the *.ph files:</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    1. Become the super-user
     2. cd /usr/include
-    3. h3ph *.h */*.h</pre>
+    3. h2ph *.h */*.h</pre>
 
-<p>If your system supports dynamic loading, for reasons of portability and sanity you probably ought to use <a href="https://metacpan.org/module/h3xs">h3xs</a> (also part of the standard perl distribution). This tool converts C header files to Perl extensions. See <a href="https://metacpan.org/module/perlxstut">perlxstut</a> for how to get started with <a href="https://metacpan.org/module/h3xs">h3xs</a>.</p>
+<p>If your system supports dynamic loading, for reasons of portability and sanity you probably ought to use <a href="https://metacpan.org/module/h2xs">h2xs</a> (also part of the standard perl distribution). This tool converts C header files to Perl extensions. See <a href="https://metacpan.org/module/perlxstut">perlxstut</a> for how to get started with <a href="https://metacpan.org/module/h2xs">h2xs</a>.</p>
 
-<p>If your system doesn&#39;t support dynamic loading, you still probably ought to use <a href="https://metacpan.org/module/h3xs">h3xs</a>. See <a href="https://metacpan.org/module/perlxstut">perlxstut</a> and <a href="https://metacpan.org/module/ExtUtils::MakeMaker">ExtUtils::MakeMaker</a> for more information (in brief, just use <b>make perl</b> instead of a plain <b>make</b> to rebuild perl with a new static extension).</p>
+<p>If your system doesn&#39;t support dynamic loading, you still probably ought to use <a href="https://metacpan.org/module/h2xs">h2xs</a>. See <a href="https://metacpan.org/module/perlxstut">perlxstut</a> and <a href="https://metacpan.org/module/ExtUtils::MakeMaker">ExtUtils::MakeMaker</a> for more information (in brief, just use <b>make perl</b> instead of a plain <b>make</b> to rebuild perl with a new static extension).</p>
 
-<h3 id="Why-do-setuid-perl-scripts-complain-about-kernel-problems">Why do setuid perl scripts complain about kernel problems?</h3>
+<h2 id="Why-do-setuid-perl-scripts-complain-about-kernel-problems">Why do setuid perl scripts complain about kernel problems?</h2>
 
 <p>Some operating systems have bugs in the kernel that make setuid scripts inherently insecure. Perl gives you a number of options (described in <a href="https://metacpan.org/module/perlsec">perlsec</a>) to work around such systems.</p>
 
-<h3 id="How-can-I-open-a-pipe-both-to-and-from-a-command">How can I open a pipe both to and from a command?</h3>
+<h2 id="How-can-I-open-a-pipe-both-to-and-from-a-command">How can I open a pipe both to and from a command?</h2>
 
 <p>The <a href="https://metacpan.org/module/IPC::Open2">IPC::Open2</a> module (part of the standard perl distribution) is an easy-to-use approach that internally uses <code>pipe()</code>, <code>fork()</code>, and <code>exec()</code> to do the job. Make sure you read the deadlock warnings in its documentation, though (see <a href="https://metacpan.org/module/IPC::Open2">IPC::Open2</a>). See <a href="https://metacpan.org/module/perlipc#Bidirectional-Communication-with-Another-Process">&quot;Bidirectional Communication with Another Process&quot; in perlipc</a> and <a href="https://metacpan.org/module/perlipc#Bidirectional-Communication-with-Yourself">&quot;Bidirectional Communication with Yourself&quot; in perlipc</a></p>
 
 <p>You may also use the <a href="https://metacpan.org/module/IPC::Open3">IPC::Open3</a> module (part of the standard perl distribution), but be warned that it has a different order of arguments from <a href="https://metacpan.org/module/IPC::Open2">IPC::Open2</a> (see <a href="https://metacpan.org/module/IPC::Open3">IPC::Open3</a>).</p>
 
-<h3 id="Why-cant-I-get-the-output-of-a-command-with-system">Why can&#39;t I get the output of a command with system()?</h3>
+<h2 id="Why-cant-I-get-the-output-of-a-command-with-system">Why can&#39;t I get the output of a command with system()?</h2>
 
 <p>You&#39;re confusing the purpose of <code>system()</code> and backticks (``). <code>system()</code> runs a command and returns exit status information (as a 16 bit value: the low 7 bits are the signal the process died from, if any, and the high 8 bits are the actual exit value). Backticks (``) run a command and return what it sent to STDOUT.</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    my $exit_status   = system(&quot;mail-users&quot;);
     my $output_string = `ls`;</pre>
 
-<h3 id="How-can-I-capture-STDERR-from-an-external-command">How can I capture STDERR from an external command?</h3>
+<h2 id="How-can-I-capture-STDERR-from-an-external-command">How can I capture STDERR from an external command?</h2>
 
 <p>There are three basic ways of running external commands:</p>
 
@@ -669,13 +669,13 @@
 
 <p>The first command sends both standard out and standard error to the temporary file. The second command sends only the old standard output there, and the old standard error shows up on the old standard out.</p>
 
-<h3 id="Why-doesnt-open-return-an-error-when-a-pipe-open-fails">Why doesn&#39;t open() return an error when a pipe open fails?</h3>
+<h2 id="Why-doesnt-open-return-an-error-when-a-pipe-open-fails">Why doesn&#39;t open() return an error when a pipe open fails?</h2>
 
 <p>If the second argument to a piped <code>open()</code> contains shell metacharacters, perl <code>fork()</code>s, then <code>exec()</code>s a shell to decode the metacharacters and eventually run the desired program. If the program couldn&#39;t be run, it&#39;s the shell that gets the message, not Perl. All your Perl program can find out is whether the shell itself could be successfully started. You can still capture the shell&#39;s STDERR and check it for error messages. See <a href="#How-can-I-capture-STDERR-from-an-external-command">&quot;How can I capture STDERR from an external command?&quot;</a> elsewhere in this document, or use the <a href="https://metacpan.org/module/IPC::Open3">IPC::Open3</a> module.</p>
 
 <p>If there are no shell metacharacters in the argument of <code>open()</code>, Perl runs the command directly, without using the shell, and can correctly report whether the command started.</p>
 
-<h3 id="Whats-wrong-with-using-backticks-in-a-void-context">What&#39;s wrong with using backticks in a void context?</h3>
+<h2 id="Whats-wrong-with-using-backticks-in-a-void-context">What&#39;s wrong with using backticks in a void context?</h2>
 
 <p>Strictly speaking, nothing. Stylistically speaking, it&#39;s not a good way to write maintainable code. Perl has several operators for running external commands. Backticks are one; they collect the output from the command for use in your program. The <code>system</code> function is another; it doesn&#39;t do this.</p>
 
@@ -698,7 +698,7 @@
 
 <p><code>system</code> also provides direct control over whether shell wildcard processing may take place, whereas backticks do not.</p>
 
-<h3 id="How-can-I-call-backticks-without-shell-processing">How can I call backticks without shell processing?</h3>
+<h2 id="How-can-I-call-backticks-without-shell-processing">How can I call backticks without shell processing?</h2>
 
 <p>This is a bit tricky. You can&#39;t simply write the command like this:</p>
 
@@ -727,7 +727,7 @@
 
 <p>Note that if you&#39;re using Windows, no solution to this vexing issue is even possible. Even though Perl emulates <code>fork()</code>, you&#39;ll still be stuck, because Windows does not have an argc/argv-style API.</p>
 
-<h3 id="Why-cant-my-script-read-from-STDIN-after-I-gave-it-EOF-D-on-Unix-Z-on-MS-DOS">Why can&#39;t my script read from STDIN after I gave it EOF (^D on Unix, ^Z on MS-DOS)?</h3>
+<h2 id="Why-cant-my-script-read-from-STDIN-after-I-gave-it-EOF-D-on-Unix-Z-on-MS-DOS">Why can&#39;t my script read from STDIN after I gave it EOF (^D on Unix, ^Z on MS-DOS)?</h2>
 
 <p>This happens only if your perl is compiled to use stdio instead of perlio, which is the default. Some (maybe all?) stdios set error and eof flags that you may need to clear. The <a href="https://metacpan.org/module/POSIX">POSIX</a> module defines <code>clearerr()</code> that you can use. That is the technically correct way to do it. Here are some less reliable workarounds:</p>
 
@@ -750,11 +750,11 @@
 </li>
 </ol>
 
-<h3 id="How-can-I-convert-my-shell-script-to-perl">How can I convert my shell script to perl?</h3>
+<h2 id="How-can-I-convert-my-shell-script-to-perl">How can I convert my shell script to perl?</h2>
 
 <p>Learn Perl and rewrite it. Seriously, there&#39;s no simple converter. Things that are awkward to do in the shell are easy to do in Perl, and this very awkwardness is what would make a shell-&gt;perl converter nigh-on impossible to write. By rewriting it, you&#39;ll think about what you&#39;re really trying to do, and hopefully will escape the shell&#39;s pipeline datastream paradigm, which while convenient for some matters, causes many inefficiencies.</p>
 
-<h3 id="Can-I-use-perl-to-run-a-telnet-or-ftp-session">Can I use perl to run a telnet or ftp session?</h3>
+<h2 id="Can-I-use-perl-to-run-a-telnet-or-ftp-session">Can I use perl to run a telnet or ftp session?</h2>
 
 <p>Try the <a href="https://metacpan.org/module/Net::FTP">Net::FTP</a>, <a href="https://metacpan.org/module/TCP::Client">TCP::Client</a>, and <a href="https://metacpan.org/module/Net::Telnet">Net::Telnet</a> modules (available from CPAN). <a href="http://www.cpan.org/scripts/netstuff/telnet.emul.shar">http://www.cpan.org/scripts/netstuff/telnet.emul.shar</a> will also help for emulating the telnet protocol, but <a href="https://metacpan.org/module/Net::Telnet">Net::Telnet</a> is quite probably easier to use.</p>
 
@@ -773,11 +773,11 @@
     close $handle;
     exit;</pre>
 
-<h3 id="How-can-I-write-expect-in-Perl">How can I write expect in Perl?</h3>
+<h2 id="How-can-I-write-expect-in-Perl">How can I write expect in Perl?</h2>
 
 <p>Once upon a time, there was a library called <i>chat2.pl</i> (part of the standard perl distribution), which never really got finished. If you find it somewhere, <i>don&#39;t use it</i>. These days, your best bet is to look at the <a href="https://metacpan.org/module/Expect">Expect</a> module available from CPAN, which also requires two other modules from CPAN, <a href="https://metacpan.org/module/IO::Pty">IO::Pty</a> and <a href="https://metacpan.org/module/IO::Stty">IO::Stty</a>.</p>
 
-<h3 id="Is-there-a-way-to-hide-perls-command-line-from-programs-such-as-ps">Is there a way to hide perl&#39;s command line from programs such as &quot;ps&quot;?</h3>
+<h2 id="Is-there-a-way-to-hide-perls-command-line-from-programs-such-as-ps">Is there a way to hide perl&#39;s command line from programs such as &quot;ps&quot;?</h2>
 
 <p>First of all note that if you&#39;re doing this for security reasons (to avoid people seeing passwords, for example) then you should rewrite your program so that critical information is never given as an argument. Hiding the arguments won&#39;t make your program completely secure.</p>
 
@@ -785,7 +785,7 @@
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    $0 = &quot;orcus [accepting connections]&quot;;</pre>
 
-<h3 id="I-changed-directory-modified-my-environment-in-a-perl-script.-How-come-the-change-disappeared-when-I-exited-the-script-How-do-I-get-my-changes-to-be-visible">I {changed directory, modified my environment} in a perl script. How come the change disappeared when I exited the script? How do I get my changes to be visible?</h3>
+<h2 id="I-changed-directory-modified-my-environment-in-a-perl-script.-How-come-the-change-disappeared-when-I-exited-the-script-How-do-I-get-my-changes-to-be-visible">I {changed directory, modified my environment} in a perl script. How come the change disappeared when I exited the script? How do I get my changes to be visible?</h2>
 
 <dl>
 
@@ -797,11 +797,11 @@
 </dd>
 </dl>
 
-<h3 id="How-do-I-close-a-processs-filehandle-without-waiting-for-it-to-complete">How do I close a process&#39;s filehandle without waiting for it to complete?</h3>
+<h2 id="How-do-I-close-a-processs-filehandle-without-waiting-for-it-to-complete">How do I close a process&#39;s filehandle without waiting for it to complete?</h2>
 
 <p>Assuming your system supports such things, just send an appropriate signal to the process (see <a href="https://metacpan.org/module/perlfunc#kill">&quot;kill&quot; in perlfunc</a>). It&#39;s common to first send a TERM signal, wait a little bit, and then send a KILL signal to finish it off.</p>
 
-<h3 id="How-do-I-fork-a-daemon-process">How do I fork a daemon process?</h3>
+<h2 id="How-do-I-fork-a-daemon-process">How do I fork a daemon process?</h2>
 
 <p>If by daemon process you mean one that&#39;s detached (disassociated from its tty), then the following process is reported to work on most Unixish systems. Non-Unix users should check their Your_OS::Process module for other solutions.</p>
 
@@ -825,7 +825,7 @@
 
 <p>The <a href="https://metacpan.org/module/Proc::Daemon">Proc::Daemon</a> module, available from CPAN, provides a function to perform these actions for you.</p>
 
-<h3 id="How-do-I-find-out-if-Im-running-interactively-or-not">How do I find out if I&#39;m running interactively or not?</h3>
+<h2 id="How-do-I-find-out-if-Im-running-interactively-or-not">How do I find out if I&#39;m running interactively or not?</h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -853,13 +853,13 @@
         print &quot;Hello interactive tester!\n&quot;;
     }</pre>
 
-<h3 id="How-do-I-timeout-a-slow-event">How do I timeout a slow event?</h3>
+<h2 id="How-do-I-timeout-a-slow-event">How do I timeout a slow event?</h2>
 
 <p>Use the <code>alarm()</code> function, probably in conjunction with a signal handler, as documented in <a href="https://metacpan.org/module/perlipc#Signals">&quot;Signals&quot; in perlipc</a> and the section on &quot;Signals&quot; in the Camel. You may instead use the more flexible <a href="https://metacpan.org/module/Sys::AlarmCall">Sys::AlarmCall</a> module available from CPAN.</p>
 
 <p>The <code>alarm()</code> function is not implemented on all versions of Windows. Check the documentation for your specific version of Perl.</p>
 
-<h3 id="How-do-I-set-CPU-limits">How do I set CPU limits?   </h3>
+<h2 id="How-do-I-set-CPU-limits">How do I set CPU limits?   </h2>
 
 <p>(contributed by Xho)</p>
 
@@ -872,24 +872,24 @@
 
 <p>See the <a href="https://metacpan.org/module/BSD::Resource">BSD::Resource</a> and your systems documentation for the gory details.</p>
 
-<h3 id="How-do-I-avoid-zombies-on-a-Unix-system">How do I avoid zombies on a Unix system?</h3>
+<h2 id="How-do-I-avoid-zombies-on-a-Unix-system">How do I avoid zombies on a Unix system?</h2>
 
 <p>Use the reaper code from <a href="https://metacpan.org/module/perlipc#Signals">&quot;Signals&quot; in perlipc</a> to call <code>wait()</code> when a SIGCHLD is received, or else use the double-fork technique described in <a href="perlfaq8.html#How-do-I-start-a-process-in-the-background">&quot;How do I start a process in the background?&quot; in perlfaq8</a>.</p>
 
-<h3 id="How-do-I-use-an-SQL-database">How do I use an SQL database?</h3>
+<h2 id="How-do-I-use-an-SQL-database">How do I use an SQL database?</h2>
 
 <p>The <a href="https://metacpan.org/module/DBI">DBI</a> module provides an abstract interface to most database servers and types, including Oracle, DB2, Sybase, mysql, Postgresql, ODBC, and flat files. The DBI module accesses each database type through a database driver, or DBD. You can see a complete list of available drivers on CPAN: <a href="http://www.cpan.org/modules/by-module/DBD/">http://www.cpan.org/modules/by-module/DBD/</a> . You can read more about DBI on <a href="http://dbi.perl.org/">http://dbi.perl.org/</a> .</p>
 
-<p>Other modules provide more specific access: <a href="https://metacpan.org/module/Win32::ODBC">Win32::ODBC</a>, <a href="https://metacpan.org/module/Alzabo">Alzabo</a>, <code>iodbc</code>, and others found on CPAN Search: <a href="http://search.cpan.org/">http://search.cpan.org/</a> .</p>
+<p>Other modules provide more specific access: <a href="https://metacpan.org/module/Win32::ODBC">Win32::ODBC</a>, <a href="https://metacpan.org/module/Alzabo">Alzabo</a>, <code>iodbc</code>, and others found on CPAN Search: <a href="https://metacpan.org/">https://metacpan.org/</a> .</p>
 
-<h3 id="How-do-I-make-a-system-exit-on-control-C">How do I make a system() exit on control-C?</h3>
+<h2 id="How-do-I-make-a-system-exit-on-control-C">How do I make a system() exit on control-C?</h2>
 
 <p>You can&#39;t. You need to imitate the <code>system()</code> call (see <a href="https://metacpan.org/module/perlipc">perlipc</a> for sample code) and then have a signal handler for the INT signal that passes the signal on to the subprocess. Or you can check for it:</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    $rc = system($cmd);
     if ($rc &amp; 127) { die &quot;signal death&quot; }</pre>
 
-<h3 id="How-do-I-open-a-file-without-blocking">How do I open a file without blocking?</h3>
+<h2 id="How-do-I-open-a-file-without-blocking">How do I open a file without blocking?</h2>
 
 <p>If you&#39;re lucky enough to be using a system that supports non-blocking reads (most Unixish systems do), you need only to use the <code>O_NDELAY</code> or <code>O_NONBLOCK</code> flag from the <code>Fcntl</code> module in conjunction with <code>sysopen()</code>:</p>
 
@@ -897,7 +897,7 @@
     sysopen(my $fh, &quot;/foo/somefile&quot;, O_WRONLY|O_NDELAY|O_CREAT, 0644)
         or die &quot;can&#39;t open /foo/somefile: $!&quot;:</pre>
 
-<h3 id="How-do-I-tell-the-difference-between-errors-from-the-shell-and-perl">How do I tell the difference between errors from the shell and perl?</h3>
+<h2 id="How-do-I-tell-the-difference-between-errors-from-the-shell-and-perl">How do I tell the difference between errors from the shell and perl?</h2>
 
 <p>(answer contributed by brian d foy)</p>
 
@@ -949,7 +949,7 @@
 
 <p>If you don&#39;t get a paragraph or two of expanded discussion, it might not be perl&#39;s message.</p>
 
-<h3 id="How-do-I-install-a-module-from-CPAN">How do I install a module from CPAN?</h3>
+<h2 id="How-do-I-install-a-module-from-CPAN">How do I install a module from CPAN?</h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -982,7 +982,7 @@
 
 <p>Some distributions may need to link to libraries or other third-party code and their build and installation sequences may be more complicated. Check any <i>README</i> or <i>INSTALL</i> files that you may find.</p>
 
-<h3 id="Whats-the-difference-between-require-and-use">What&#39;s the difference between require and use?</h3>
+<h2 id="Whats-the-difference-between-require-and-use">What&#39;s the difference between require and use?</h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -1009,7 +1009,7 @@
 
 <p>See the entry for <code>use</code> in <a href="https://metacpan.org/module/perlfunc">perlfunc</a> for more details.</p>
 
-<h3 id="How-do-I-keep-my-own-module-library-directory">How do I keep my own module/library directory?</h3>
+<h2 id="How-do-I-keep-my-own-module-library-directory">How do I keep my own module/library directory?</h2>
 
 <p>When you build modules, tell Perl where to install the modules.</p>
 
@@ -1041,7 +1041,7 @@
 
 <p>There is one caveat with INSTALL_BASE, though, since it acts differently from the PREFIX and LIB settings that older versions of <a href="https://metacpan.org/module/ExtUtils::MakeMaker">ExtUtils::MakeMaker</a> advocated. INSTALL_BASE does not support installing modules for multiple versions of Perl or different architectures under the same directory. You should consider whether you really want that and, if you do, use the older PREFIX and LIB settings. See the <a href="https://metacpan.org/module/ExtUtils::Makemaker">ExtUtils::Makemaker</a> documentation for more details.</p>
 
-<h3 id="How-do-I-add-the-directory-my-program-lives-in-to-the-module-library-search-path">How do I add the directory my program lives in to the module/library search path?</h3>
+<h2 id="How-do-I-add-the-directory-my-program-lives-in-to-the-module-library-search-path">How do I add the directory my program lives in to the module/library search path?</h2>
 
 <p>(contributed by brian d foy)</p>
 
@@ -1080,7 +1080,7 @@
 
 <p>See the <a href="https://metacpan.org/module/local::lib">local::lib</a> documentation for more details.</p>
 
-<h3 id="How-do-I-add-a-directory-to-my-include-path-INC-at-runtime">How do I add a directory to my include path (@INC) at runtime?</h3>
+<h2 id="How-do-I-add-a-directory-to-my-include-path-INC-at-runtime">How do I add a directory to my include path (@INC) at runtime?</h2>
 
 <p>Here are the suggested ways of modifying your include path, including environment variables, run-time switches, and in-code statements:</p>
 
@@ -1124,7 +1124,7 @@
 
 <p>The last is particularly useful because it knows about machine-dependent architectures. The <code>lib.pm</code> pragmatic module was first included with the 5.002 release of Perl.</p>
 
-<h3 id="Where-are-modules-installed">Where are modules installed?</h3>
+<h2 id="Where-are-modules-installed">Where are modules installed?</h2>
 
 <p>Modules are installed on a case-by-case basis (as provided by the methods described in the previous section), and in the operating system. All of these paths are stored in @INC, which you can display with the one-liner</p>
 
@@ -1140,11 +1140,11 @@
 
 <p>to display the path to the module. In some cases (for example, the <code>AutoLoader</code> module), this command will show the path to a separate <code>pod</code> file; the module itself should be in the same directory, with a &#39;pm&#39; file extension.</p>
 
-<h3 id="What-is-socket.ph-and-where-do-I-get-it">What is socket.ph and where do I get it?</h3>
+<h2 id="What-is-socket.ph-and-where-do-I-get-it">What is socket.ph and where do I get it?</h2>
 
-<p>It&#39;s a Perl 4 style file defining values for system networking constants. Sometimes it is built using <a href="https://metacpan.org/module/h3ph">h3ph</a> when Perl is installed, but other times it is not. Modern programs should use <code>use Socket;</code> instead.</p>
+<p>It&#39;s a Perl 4 style file defining values for system networking constants. Sometimes it is built using <a href="https://metacpan.org/module/h2ph">h2ph</a> when Perl is installed, but other times it is not. Modern programs should use <code>use Socket;</code> instead.</p>
 
-<h2 id="AUTHOR-AND-COPYRIGHT">AUTHOR AND COPYRIGHT</h2>
+<h1 id="AUTHOR-AND-COPYRIGHT">AUTHOR AND COPYRIGHT</h1>
 
 <p>Copyright (c) 1997-2010 Tom Christiansen, Nathan Torkington, and other authors as noted. All rights reserved.</p>
 
@@ -1152,5 +1152,5 @@
 
 <p>Irrespective of its distribution, all code examples in this file are hereby placed into the public domain. You are permitted and encouraged to use this code in your own programs for fun or for profit as you see fit. A simple comment in the code giving credit would be courteous but is not required.</p>
 
-<p><em>Version: 5.021011</em></p></div>
+<p><em>Version: 5.20180605</em></p></div>
 
