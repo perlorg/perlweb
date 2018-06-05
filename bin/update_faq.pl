@@ -157,7 +157,7 @@ sub fetch_latest_perlfaq {
     } else {
         my $json = JSON->new();
 
-        my $latest_meta_source = get('http://api.metacpan.org/release/perlfaq');
+        my $latest_meta_source = get('https://fastapi.metacpan.org/v1/release/perlfaq');
         my $latest_meta        = $json->decode($latest_meta_source);
         my $download_url       = $latest_meta->{download_url};
 warn $download_url;
