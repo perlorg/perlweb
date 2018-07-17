@@ -1,0 +1,16 @@
+#!/bin/sh
+set -ex
+
+# inotifywait -m --exclude rev\* /git --exclude .git
+
+cd /perlweb
+
+while `true`; do
+
+  # download RSS files etc
+  ./bin/cron_hourly
+
+  sleep 1800
+
+done
+
