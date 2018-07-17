@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# we have to start the image as root just to make
+# this possible. An alternative would be to make it
+# into the image and use /git/perlweb when running
+# the image just under docker for testing ...
+rmdir /perlweb
+ln -s /git/perlweb /perlweb
+
+# use this as 'entrypoint' / command in the kubernetes container
+while [ ! -f $1 ]
+do
+  echo Waiting for $1 ...
+  sleep 2
+done
+exec $@

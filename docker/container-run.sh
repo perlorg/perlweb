@@ -1,4 +1,7 @@
 #!/bin/sh
+
+# for running under docker for testing
+
 cd /perlweb
 ls -latr
 if [ -e .git ]; then

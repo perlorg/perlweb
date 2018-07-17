@@ -7,7 +7,7 @@ FROM quay.io/perl/base-os:v3.3
 
 # Cache buster for occasionally resetting the cached images even if
 # the base doesn't change.
-ENV LAST_UPDATED 2017-12-19
+ENV LAST_UPDATED 2018-07-17
 
 USER root
 
@@ -41,7 +41,7 @@ RUN chown perlweb:perlweb /perlweb
 RUN mkdir /var/tmp/perlweb; chown perlweb:perlweb /var/tmp/perlweb; chmod 700 /var/tmp/perlweb
 
 ADD docker/container-run.sh /usr/bin/run
-ADD docker/kube-run.sh /usr/bin/kube-run
+ADD docker/kube-start /usr/bin/kube-start
 
 USER perlweb
 
