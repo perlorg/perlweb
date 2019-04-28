@@ -3,7 +3,12 @@ set -ex
 
 cd /perlweb
 
-# download RSS files etc on restarts
-gosu perlweb ./bin/cron_hourly &
+GOSU=""
+if [ "`id -u`" -eq 0 ]; then
+  GOSU="gosu perlweb"
+fi
 
-gosu perlweb ./combust/bin/httpd
+# download RSS files etc on restarts
+$GOSU ./bin/cron_hourly &
+
+$GOSU ./combust/bin/httpd
