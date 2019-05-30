@@ -13,7 +13,7 @@
     ##################
 
 %]
-[% base = "http://blob.perl.org/books/beginning-perl/" %]
+[% base = "https://blob.perl.org/books/beginning-perl/" %]
 
 [% MACRO chapter(pdf,title) BLOCK %]
 <p><a href="[% UNLESS nogviewer %]http://docs.google.com/viewer?url=[% base _ pdf | uri %][% ELSE %][% base %][% pdf %][% END %]">[% title %]</a>&nbsp;<a href="[% base %][% pdf %]"><b>&#8681;</b></a></p>
