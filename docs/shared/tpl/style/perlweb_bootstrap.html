@@ -69,9 +69,9 @@
       <div class="container text-center">
         <img src="[% combust.static_url("/images/icons/header_camel.png") %]" class="img-camel" alt="Perl5 Camel">
         <div class="over-image">
-          <h2>[% combust.site == 'www' ? 'That\'s why we love Perl 5' : page.title %]</h2>
+          <h2>[% combust.site == 'www' ? 'That\'s why we love Perl' : page.title %]</h2>
           <h1>[% headline || site.tag_line %]</h1>
-          <p>[% combust.site == 'www' ? 'Perl 5 is a highly capable, feature-rich programming language with over ' _  perl_stats.perl_age _ ' years of development.' : page.description %]</p>
+          <p>[% combust.site == 'www' ? 'Perl is a highly capable, feature-rich programming language with over ' _  perl_stats.perl_age _ ' years of development.' : page.description %]</p>
           <p>
             <a class="btn btn-success" href="[% site.url || 'http://www.perl.org/get.html' %]" role="button">
               [% IF combust.site == 'www' || combust.site == 'learn' %]<img src="[% combust.static_url("/images/icons/ic_download.svg") %]" class="btn-ic hidden-xs">[% END %]<span class="hidden-xs">[% site.link || 'Download and Get Started' %]</span><span class="visible-xs">Learn more »</span></a>
