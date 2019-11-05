@@ -2,7 +2,7 @@
 
 # for running under docker for testing
 
-cd /perlweb
+cd /git/perlweb
 ls -latr
 if [ -e .git ]; then
 	echo Already has a git checkout

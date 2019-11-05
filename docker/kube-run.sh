@@ -1,14 +1,14 @@
 #!/bin/sh
 set -ex
 
-cd /perlweb
+cd /git/perlweb
 
-GOSU=""
+SU=""
 if [ "`id -u`" -eq 0 ]; then
-  GOSU="gosu perlweb"
+  SU="su-exec perlweb"
 fi
 
 # download RSS files etc on restarts
-$GOSU ./bin/cron_hourly &
+$SU ./bin/cron_hourly &
 
-$GOSU ./combust/bin/httpd
+$SU ./combust/bin/httpd
