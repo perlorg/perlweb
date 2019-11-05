@@ -1,4 +1,5 @@
-FROM quay.io/perl/base-os:v3.3
+#FROM quay.io/perl/base-os:v3.10-2
+FROM quay.io/perl/base-os:master
 
 # Note that this only builds dependencies and such, it doesn't
 # actually include the site code etc itself. The site code
@@ -7,7 +8,7 @@ FROM quay.io/perl/base-os:v3.3
 
 # Cache buster for occasionally resetting the cached images even if
 # the base doesn't change.
-ENV LAST_UPDATED 2018-07-17
+ENV LAST_UPDATED 2019-11-04
 
 USER root
 
@@ -15,7 +16,7 @@ RUN apk update; apk upgrade ; apk add curl git \
   perl-dev wget make \
   inotify-tools \
   expat-dev zlib-dev libressl-dev libressl \
-  mariadb-client mariadb-client-libs mariadb-dev build-base
+  mariadb-client mariadb-dev build-base
 
 ADD .modules /tmp/modules.txt
 ADD combust/.modules /tmp/combust-modules.txt
@@ -25,18 +26,18 @@ RUN curl -sfLo /usr/bin/cpanm https://raw.githubusercontent.com/miyagawa/cpanmin
 RUN grep -hv '^#' /tmp/combust-modules.txt /tmp/modules.txt | \
   cpanm -n; rm -fr ~/.cpanm; rm -f /tmp/modules /tmp/combust-modules.txt
 
-ENV CBROOTLOCAL=/perlweb/
-ENV CBROOT=/perlweb/combust
-ENV CBCONFIG=/perlweb/combust.docker.conf
+ENV CBROOTLOCAL=/git/perlweb/
+ENV CBROOT=/git/perlweb/combust
+ENV CBCONFIG=/git/perlweb/combust.docker.conf
 
 # optional; in production we load the data into the container
 #VOLUME /perlweb
 
-WORKDIR /perlweb
+WORKDIR /git/perlweb
 EXPOSE 8235
 
 RUN addgroup perlweb && adduser -D -G perlweb perlweb
-RUN chown perlweb:perlweb /perlweb
+RUN chown perlweb:perlweb /git/perlweb
 
 RUN mkdir /var/tmp/perlweb; chown perlweb:perlweb /var/tmp/perlweb; chmod 700 /var/tmp/perlweb
 
