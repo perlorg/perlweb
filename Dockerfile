@@ -32,11 +32,10 @@ ENV CBCONFIG=/git/perlweb/combust.docker.conf
 # optional; in production we load the data into the container
 #VOLUME /perlweb
 
-WORKDIR /git/perlweb
+WORKDIR /
 EXPOSE 8235
 
 RUN addgroup perlweb && adduser -D -G perlweb perlweb
-RUN chown perlweb:perlweb /git/perlweb
 
 RUN mkdir /var/tmp/perlweb; chown perlweb:perlweb /var/tmp/perlweb; chmod 700 /var/tmp/perlweb
 RUN ln -s /git/perlweb /perlweb
