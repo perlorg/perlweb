@@ -15,6 +15,7 @@ use strict;
 my $data  = from_json(slurp("lists.json"));
 
 for my $list (@ARGV) {
+  $list =~ s/^perl-//;
   if (exists $data->{$list}) {
     $data->{$list}{defunct} = "1";
   } elsif (exists $data->{"perl-$list"}) {
