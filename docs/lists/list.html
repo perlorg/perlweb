@@ -95,6 +95,7 @@ function showAdvanced() {
     <p>[% link(list, list.url) %]</p>
     [% END %]
 
+    [% IF NOT list.defunct %]
     <h3>Subscribing and help</h3>
     [% listaddr = list.sub.match('mailto: (\S+)-subscribe@perl.org');
        IF listaddr;
@@ -108,6 +109,7 @@ function showAdvanced() {
         [% END;
            END %]
       </dl>
+    [% END %]
     [% END %]
 
     <h3>Feeds and archives</h3>
