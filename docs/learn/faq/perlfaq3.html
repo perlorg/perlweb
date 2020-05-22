@@ -8,7 +8,7 @@
                 => "Perl Frequently Asked Questions, Perl FAQ",
             keywords => "perl, perl faq, perlfaq"
         });
-        perlfaq_version = 5.20180605;
+        perlfaq_version = 5.20200523;
     -%]
     <div class="pod">
 
@@ -56,7 +56,7 @@
 
 <h1 id="VERSION">VERSION</h1>
 
-<p>version 5.20180605</p>
+<p>version 5.20200523</p>
 
 <h1 id="DESCRIPTION">DESCRIPTION</h1>
 
@@ -376,7 +376,7 @@
 
 <p><a href="https://metacpan.org/module/perldebguts">perldebguts</a> documents creating a custom debugger if you need to create a special sort of profiler. brian d foy describes the process in <i>The Perl Journal</i>, &quot;Creating a Perl Debugger&quot;, <a href="http://www.ddj.com/184404522">http://www.ddj.com/184404522</a> , and &quot;Profiling in Perl&quot; <a href="http://www.ddj.com/184404580">http://www.ddj.com/184404580</a> .</p>
 
-<p>Perl.com has two interesting articles on profiling: &quot;Profiling Perl&quot;, by Simon Cozens, <a href="http://www.perl.com/lpt/a/850">http://www.perl.com/lpt/a/850</a> and &quot;Debugging and Profiling mod_perl Applications&quot;, by Frank Wiles, <a href="http://www.perl.com/pub/a/2006/02/09/debug_mod_perl.html">http://www.perl.com/pub/a/2006/02/09/debug_mod_perl.html</a> .</p>
+<p>Perl.com has two interesting articles on profiling: &quot;Profiling Perl&quot;, by Simon Cozens, <a href="https://www.perl.com/pub/2004/06/25/profiling.html/">https://www.perl.com/pub/2004/06/25/profiling.html/</a> and &quot;Debugging and Profiling mod_perl Applications&quot;, by Frank Wiles, <a href="http://www.perl.com/pub/a/2006/02/09/debug_mod_perl.html">http://www.perl.com/pub/a/2006/02/09/debug_mod_perl.html</a> .</p>
 
 <p>Randal L. Schwartz writes about profiling in &quot;Speeding up Your Perl Programs&quot; for <i>Unix Review</i>, <a href="http://www.stonehenge.com/merlyn/UnixReview/col49.html">http://www.stonehenge.com/merlyn/UnixReview/col49.html</a> , and &quot;Profiling in Template Toolkit via Overriding&quot; for <i>Linux Magazine</i>, <a href="http://www.stonehenge.com/merlyn/LinuxMag/col75.html">http://www.stonehenge.com/merlyn/LinuxMag/col75.html</a> .</p>
 
@@ -395,7 +395,7 @@
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    set ai sw=4
     map! ^O {^M}^[O^T</pre>
 
-<p>Put that in your <i>.exrc</i> file (replacing the caret characters with control characters) and away you go. In insert mode, ^T is for indenting, ^D is for undenting, and ^O is for blockdenting--as it were. A more complete example, with comments, can be found at <a href="http://www.cpan.org/authors/id/TOMC/scripts/toms.exrc.gz">http://www.cpan.org/authors/id/TOMC/scripts/toms.exrc.gz</a></p>
+<p>Put that in your <i>.exrc</i> file (replacing the caret characters with control characters) and away you go. In insert mode, ^T is for indenting, ^D is for undenting, and ^O is for blockdenting--as it were. A more complete example, with comments, can be found at <a href="http://www.cpan.org/authors/id/T/TO/TOMC/scripts/toms.exrc.gz">http://www.cpan.org/authors/id/T/TO/TOMC/scripts/toms.exrc.gz</a></p>
 
 <h2 id="Is-there-an-IDE-or-Windows-Perl-Editor">Is there an IDE or Windows Perl Editor?</h2>
 
@@ -558,7 +558,7 @@
 <dt>Vile</dt>
 <dd>
 
-<p><a href="http://dickey.his.com/vile/vile.html">http://dickey.his.com/vile/vile.html</a></p>
+<p><a href="http://invisible-island.net/vile/vile.html">http://invisible-island.net/vile/vile.html</a></p>
 
 </dd>
 </dl>
@@ -621,7 +621,7 @@
 
 <h2 id="Where-can-I-get-Perl-macros-for-vi">Where can I get Perl macros for vi?</h2>
 
-<p>For a complete version of Tom Christiansen&#39;s vi configuration file, see <a href="http://www.cpan.org/authors/Tom_Christiansen/scripts/toms.exrc.gz">http://www.cpan.org/authors/Tom_Christiansen/scripts/toms.exrc.gz</a> , the standard benchmark file for vi emulators. The file runs best with nvi, the current version of vi out of Berkeley, which incidentally can be built with an embedded Perl interpreter--see <a href="http://www.cpan.org/src/misc/">http://www.cpan.org/src/misc/</a> .</p>
+<p>For a complete version of Tom Christiansen&#39;s vi configuration file, see <a href="http://www.cpan.org/authors/id/T/TO/TOMC/scripts/toms.exrc.gz">http://www.cpan.org/authors/id/T/TO/TOMC/scripts/toms.exrc.gz</a> , the standard benchmark file for vi emulators. The file runs best with nvi, the current version of vi out of Berkeley, which incidentally can be built with an embedded Perl interpreter--see <a href="http://www.cpan.org/src/misc/">http://www.cpan.org/src/misc/</a> .</p>
 
 <h2 id="Where-can-I-get-perl-mode-or-cperl-mode-for-emacs">Where can I get perl-mode or cperl-mode for emacs? </h2>
 
@@ -633,7 +633,7 @@
 
 <h2 id="How-can-I-use-curses-with-Perl">How can I use curses with Perl?</h2>
 
-<p>The Curses module from CPAN provides a dynamically loadable object module interface to a curses library. A small demo can be found at the directory <a href="http://www.cpan.org/authors/Tom_Christiansen/scripts/rep.gz">http://www.cpan.org/authors/Tom_Christiansen/scripts/rep.gz</a> ; this program repeats a command and updates the screen as needed, rendering <b>rep ps axu</b> similar to <b>top</b>.</p>
+<p>The Curses module from CPAN provides a dynamically loadable object module interface to a curses library. A small demo can be found at the directory <a href="http://www.cpan.org/authors/id/T/TO/TOMC/scripts/rep.gz">http://www.cpan.org/authors/id/T/TO/TOMC/scripts/rep.gz</a> ; this program repeats a command and updates the screen as needed, rendering <b>rep ps axu</b> similar to <b>top</b>.</p>
 
 <h2 id="How-can-I-write-a-GUI-X-Tk-Gtk-etc.-in-Perl">How can I write a GUI (X, Tk, Gtk, etc.) in Perl?        </h2>
 
@@ -946,7 +946,7 @@
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    L&lt;http://www.perl.org/CGI_MetaFAQ.html&gt;</pre>
 
-<p>Looking in to <a href="https://metacpan.org/module/Plack">Plack</a> and modern Perl web frameworks is highly recommended, though; web programming in Perl has evolved a long way from the old days of simple CGI scripts.</p>
+<p>Looking into <a href="https://plackperl.org">https://plackperl.org</a> and modern Perl web frameworks is highly recommended, though; web programming in Perl has evolved a long way from the old days of simple CGI scripts.</p>
 
 <h2 id="Where-can-I-learn-about-object-oriented-Perl-programming">Where can I learn about object-oriented Perl programming?</h2>
 
@@ -962,7 +962,7 @@
 
 <h2 id="Ive-read-perlembed-perlguts-etc.-but-I-cant-embed-perl-in-my-C-program-what-am-I-doing-wrong">I&#39;ve read perlembed, perlguts, etc., but I can&#39;t embed perl in my C program; what am I doing wrong?</h2>
 
-<p>Download the ExtUtils::Embed kit from CPAN and run `make test&#39;. If the tests pass, read the pods again and again and again. If they fail, see <a href="https://metacpan.org/module/perlbug">perlbug</a> and send a bug report with the output of <code>make test TEST_VERBOSE=1</code> along with <code>perl -V</code>.</p>
+<p>Download the ExtUtils::Embed kit from CPAN and run `make test&#39;. If the tests pass, read the pods again and again and again. If they fail, submit a bug report to <a href="https://github.com/Perl/perl5/issues">https://github.com/Perl/perl5/issues</a> with the output of <code>make test TEST_VERBOSE=1</code> along with <code>perl -V</code>.</p>
 
 <h2 id="When-I-tried-to-run-my-script-I-got-this-message.-What-does-it-mean">When I tried to run my script, I got this message. What does it mean?</h2>
 
@@ -993,5 +993,5 @@
 
 <p>Irrespective of its distribution, all code examples here are in the public domain. You are permitted and encouraged to use this code and any derivatives thereof in your own programs for fun or for profit as you see fit. A simple comment in the code giving credit to the FAQ would be courteous but is not required.</p>
 
-<p><em>Version: 5.20180605</em></p></div>
+<p><em>Version: 5.20200523</em></p></div>
 

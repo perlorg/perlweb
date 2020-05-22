@@ -8,7 +8,7 @@
                 => "Perl Frequently Asked Questions, Perl FAQ",
             keywords => "perl, perl faq, perlfaq"
         });
-        perlfaq_version = 5.20180605;
+        perlfaq_version = 5.20200523;
     -%]
     <div class="pod">
 
@@ -79,7 +79,7 @@
 
 <h1 id="VERSION">VERSION</h1>
 
-<p>version 5.20180605</p>
+<p>version 5.20200523</p>
 
 <h1 id="DESCRIPTION">DESCRIPTION</h1>
 
@@ -281,7 +281,7 @@
 
 <p>This is more portable than the raw <code>ioctl</code>, but not as illustrative:</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    require &#39;sys/ioctl.ph&#39;;
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    require &#39;./sys/ioctl.ph&#39;;
     die &quot;no TIOCGWINSZ &quot; unless defined &amp;TIOCGWINSZ;
     open(my $tty_fh, &quot;+&lt;/dev/tty&quot;)                     or die &quot;No tty: $!&quot;;
     unless (ioctl($tty_fh, &amp;TIOCGWINSZ, $winsize=&#39;&#39;)) {
@@ -296,7 +296,7 @@
 
 <p>(This question has nothing to do with the web. See a different FAQ for that.)</p>
 
-<p>There&#39;s an example of this in <a href="https://metacpan.org/module/perlfunc#crypt">&quot;crypt&quot; in perlfunc</a>). First, you put the terminal into &quot;no echo&quot; mode, then just read the password normally. You may do this with an old-style <code>ioctl()</code> function, POSIX terminal control (see <a href="https://metacpan.org/module/POSIX">POSIX</a> or its documentation the Camel Book), or a call to the <b>stty</b> program, with varying degrees of portability.</p>
+<p>There&#39;s an example of this in <a href="https://metacpan.org/module/perlfunc#crypt">&quot;crypt&quot; in perlfunc</a>. First, you put the terminal into &quot;no echo&quot; mode, then just read the password normally. You may do this with an old-style <code>ioctl()</code> function, POSIX terminal control (see <a href="https://metacpan.org/module/POSIX">POSIX</a> or its documentation the Camel Book), or a call to the <b>stty</b> program, with varying degrees of portability.</p>
 
 <p>You can also do this for most systems using the <a href="https://metacpan.org/module/Term::ReadKey">Term::ReadKey</a> module from CPAN, which is easier to use and in theory more portable.</p>
 
@@ -1045,7 +1045,7 @@
 
 <p>(contributed by brian d foy)</p>
 
-<p>If you know the directory already, you can add it to <code>@INC</code> as you would for any other directory. You might &lt;use lib&gt; if you know the directory at compile time:</p>
+<p>If you know the directory already, you can add it to <code>@INC</code> as you would for any other directory. You might <code>use lib</code> if you know the directory at compile time:</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use lib $directory;</pre>
 
@@ -1122,8 +1122,6 @@
 </dd>
 </dl>
 
-<p>The last is particularly useful because it knows about machine-dependent architectures. The <code>lib.pm</code> pragmatic module was first included with the 5.002 release of Perl.</p>
-
 <h2 id="Where-are-modules-installed">Where are modules installed?</h2>
 
 <p>Modules are installed on a case-by-case basis (as provided by the methods described in the previous section), and in the operating system. All of these paths are stored in @INC, which you can display with the one-liner</p>
@@ -1152,5 +1150,5 @@
 
 <p>Irrespective of its distribution, all code examples in this file are hereby placed into the public domain. You are permitted and encouraged to use this code in your own programs for fun or for profit as you see fit. A simple comment in the code giving credit would be courteous but is not required.</p>
 
-<p><em>Version: 5.20180605</em></p></div>
+<p><em>Version: 5.20200523</em></p></div>
 

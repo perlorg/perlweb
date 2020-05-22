@@ -8,7 +8,7 @@
                 => "Perl Frequently Asked Questions, Perl FAQ",
             keywords => "perl, perl faq, perlfaq"
         });
-        perlfaq_version = 5.20180605;
+        perlfaq_version = 5.20200523;
     -%]
     <div class="pod">
 
@@ -128,7 +128,7 @@
 
 <h1 id="VERSION">VERSION</h1>
 
-<p>version 5.20180605</p>
+<p>version 5.20200523</p>
 
 <h1 id="DESCRIPTION">DESCRIPTION</h1>
 
@@ -1075,6 +1075,8 @@
         --Bilbo in /usr/src/perl/pp_ctl.c
     EVER_ON_AND_ON</pre>
 
+<p>Beginning with Perl version 5.26, a much simpler and cleaner way to write indented here documents has been added to the language: the tilde (~) modifier. See <a href="https://metacpan.org/module/perlop#Indented-Here-docs">&quot;Indented Here-docs&quot; in perlop</a> for details.</p>
+
 <h1 id="Data:-Arrays">Data: Arrays</h1>
 
 <h2 id="What-is-the-difference-between-a-list-and-an-array">What is the difference between a list and an array?</h2>
@@ -1196,19 +1198,7 @@
 
 <p>Hearing the word &quot;in&quot; is an <i>in</i>dication that you probably should have used a hash, not a list or array, to store your data. Hashes are designed to answer this question quickly and efficiently. Arrays aren&#39;t.</p>
 
-<p>That being said, there are several ways to approach this. In Perl 5.10 and later, you can use the smart match operator to check that an item is contained in an array or a hash:</p>
-
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use 5.010;
-
-    if( $item ~~ @array ) {
-        say &quot;The array contains $item&quot;
-    }
-
-    if( $item ~~ %hash ) {
-        say &quot;The hash contains $item&quot;
-    }</pre>
-
-<p>With earlier versions of Perl, you have to do a bit more work. If you are going to make this query many times over arbitrary string values, the fastest way is probably to invert the original array and maintain a hash whose keys are the first array&#39;s values:</p>
+<p>That being said, there are several ways to approach this. If you are going to make this query many times over arbitrary string values, the fastest way is probably to invert the original array and maintain a hash whose keys are the first array&#39;s values:</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    my @blues = qw/azure cerulean teal turquoise lapis-lazuli/;
     my %is_blue = ();
@@ -1235,14 +1225,14 @@
 
 <p>These methods guarantee fast individual tests but require a re-organization of the original list or array. They only pay off if you have to test multiple values against the same array.</p>
 
-<p>If you are testing only once, the standard module <a href="https://metacpan.org/module/List::Util">List::Util</a> exports the function <code>first</code> for this purpose. It works by stopping once it finds the element. It&#39;s written in C for speed, and its Perl equivalent looks like this subroutine:</p>
+<p>If you are testing only once, the standard module <a href="https://metacpan.org/module/List::Util">List::Util</a> exports the function <code>any</code> for this purpose. It works by stopping once it finds the element. It&#39;s written in C for speed, and its Perl equivalent looks like this subroutine:</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    sub first (&amp;@) {
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    sub any (&amp;@) {
         my $code = shift;
         foreach (@_) {
-            return $_ if &amp;{$code}();
+            return 1 if $code-&gt;();
         }
-        undef;
+        return 0;
     }</pre>
 
 <p>If speed is of little concern, the common idiom uses grep in scalar context (which returns the number of items that passed its condition) to traverse the entire list. This does have the benefit of telling you how many matches it found, though.</p>
@@ -1268,18 +1258,6 @@
 <p>Note that this is the <i>symmetric difference</i>, that is, all elements in either A or in B but not in both. Think of it as an xor operation.</p>
 
 <h2 id="How-do-I-test-whether-two-arrays-or-hashes-are-equal">How do I test whether two arrays or hashes are equal?</h2>
-
-<p>With Perl 5.10 and later, the smart match operator can give you the answer with the least amount of work:</p>
-
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use 5.010;
-
-    if( @array1 ~~ @array2 ) {
-        say &quot;The arrays are the same&quot;;
-    }
-
-    if( %hash1 ~~ %hash2 ) # doesn&#39;t check values!  {
-        say &quot;The hash keys are the same&quot;;
-    }</pre>
 
 <p>The following code works for single-level arrays. It uses a stringwise comparison, and does not distinguish defined versus undefined empty strings. Modify if you have other needs.</p>
 
@@ -2200,5 +2178,5 @@
 
 <p>Irrespective of its distribution, all code examples in this file are hereby placed into the public domain. You are permitted and encouraged to use this code in your own programs for fun or for profit as you see fit. A simple comment in the code giving credit would be courteous but is not required.</p>
 
-<p><em>Version: 5.20180605</em></p></div>
+<p><em>Version: 5.20200523</em></p></div>
 

@@ -8,7 +8,7 @@
                 => "Perl Frequently Asked Questions, Perl FAQ",
             keywords => "perl, perl faq, perlfaq"
         });
-        perlfaq_version = 5.20180605;
+        perlfaq_version = 5.20200523;
     -%]
     <div class="pod">
 
@@ -49,7 +49,7 @@
 
 <h1 id="VERSION">VERSION</h1>
 
-<p>version 5.20180605</p>
+<p>version 5.20200523</p>
 
 <h1 id="DESCRIPTION">DESCRIPTION</h1>
 
@@ -75,22 +75,22 @@
 <p>Strongly object-oriented and fully-featured with a long development history and a large community and addon ecosystem. It is excellent for large and complex applications, where you have full control over the server.</p>
 
 </dd>
-<dt><a href="https://metacpan.org/module/Dancer">Dancer</a></dt>
+<dt><a href="https://metacpan.org/module/Dancer2">Dancer2</a></dt>
 <dd>
 
-<p>Young and free of legacy weight, providing a lightweight and easy to learn API. Has a growing addon ecosystem. It is best used for smaller projects and very easy to learn for beginners.</p>
+<p>Free of legacy weight, providing a lightweight and easy to learn API. Has a growing addon ecosystem. It is best used for smaller projects and very easy to learn for beginners.</p>
 
 </dd>
 <dt><a href="https://metacpan.org/module/Mojolicious">Mojolicious</a></dt>
 <dd>
 
-<p>Fairly young with a focus on HTML5 and real-time web technologies such as WebSockets.</p>
+<p>Self-contained and powerful for both small and larger projects, with a focus on HTML5 and real-time web technologies such as WebSockets.</p>
 
 </dd>
 <dt><a href="https://metacpan.org/module/Web::Simple">Web::Simple</a></dt>
 <dd>
 
-<p>Currently experimental, strongly object-oriented, built for speed and intended as a toolkit for building micro web apps, custom frameworks or for tieing together existing Plack-compatible web applications with one central dispatcher.</p>
+<p>Strongly object-oriented and minimal, built for speed and intended as a toolkit for building micro web apps, custom frameworks or for tieing together existing Plack-compatible web applications with one central dispatcher.</p>
 
 </dd>
 </dl>
@@ -103,7 +103,7 @@
 
 <p><a href="https://metacpan.org/module/Plack">Plack</a> is a set of tools for using the PSGI stack. It contains <a href="https://metacpan.org/search?q=plack%3A%3Amiddleware">middleware</a> components, a reference server and utilities for Web application frameworks. Plack is like Ruby&#39;s Rack or Python&#39;s Paste for WSGI.</p>
 
-<p>You could build a web site using <a href="https://metacpan.org/module/Plack">Plack</a> and your own code, but for anything other than a very basic web site, using a web framework (that uses <a href="https://metacpan.org/module/Plack">Plack</a>) is a better option.</p>
+<p>You could build a web site using <a href="https://metacpan.org/module/Plack">Plack</a> and your own code, but for anything other than a very basic web site, using a web framework (that uses <a href="https://plackperl.org">https://plackperl.org</a>) is a better option.</p>
 
 <h2 id="How-do-I-remove-HTML-from-a-string">How do I remove HTML from a string?</h2>
 
@@ -113,48 +113,48 @@
 
 <p><a href="https://metacpan.org/module/HTML::SimpleLinkExtor">HTML::SimpleLinkExtor</a> will extract URLs from HTML, it handles anchors, images, objects, frames, and many other tags that can contain a URL. If you need anything more complex, you can create your own subclass of <a href="https://metacpan.org/module/HTML::LinkExtor">HTML::LinkExtor</a> or <a href="https://metacpan.org/module/HTML::Parser">HTML::Parser</a>. You might even use <a href="https://metacpan.org/module/HTML::SimpleLinkExtor">HTML::SimpleLinkExtor</a> as an example for something specifically suited to your needs.</p>
 
-<p>You can use <a href="https://metacpan.org/module/URI::Find">URI::Find</a> to extract URLs from an arbitrary text document.</p>
+<p>You can use <a href="https://metacpan.org/module/URI::Find">URI::Find</a> or <a href="https://metacpan.org/module/URL::Search">URL::Search</a> to extract URLs from an arbitrary text document.</p>
 
 <h2 id="How-do-I-fetch-an-HTML-file">How do I fetch an HTML file?</h2>
 
 <p>(contributed by brian d foy)</p>
 
-<p>Use the libwww-perl distribution. The <a href="https://metacpan.org/module/LWP::Simple">LWP::Simple</a> module can fetch web resources and give their content back to you as a string:</p>
+<p>The core <a href="https://metacpan.org/module/HTTP::Tiny">HTTP::Tiny</a> module can fetch web resources and give their content back to you as a string:</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use LWP::Simple qw(get);
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use HTTP::Tiny;
 
-    my $html = get( &quot;http://www.example.com/index.html&quot; );</pre>
+    my $ua = HTTP::Tiny-&gt;new;
+    my $html = $ua-&gt;get( &quot;http://www.example.com/index.html&quot; )-&gt;{content};</pre>
 
 <p>It can also store the resource directly in a file:</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use LWP::Simple qw(getstore);
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    $ua-&gt;mirror( &quot;http://www.example.com/index.html&quot;, &quot;foo.html&quot; );</pre>
 
-    getstore( &quot;http://www.example.com/index.html&quot;, &quot;foo.html&quot; );</pre>
-
-<p>If you need to do something more complicated, you can use <a href="https://metacpan.org/module/LWP::UserAgent">LWP::UserAgent</a> module to create your own user-agent (e.g. browser) to get the job done. If you want to simulate an interactive web browser, you can use the <a href="https://metacpan.org/module/WWW::Mechanize">WWW::Mechanize</a> module.</p>
+<p>If you need to do something more complicated, the <a href="https://metacpan.org/module/HTTP::Tiny">HTTP::Tiny</a> object can be customized by setting attributes, or you can use <a href="https://metacpan.org/module/LWP::UserAgent">LWP::UserAgent</a> from the libwww-perl distribution or <a href="https://metacpan.org/module/Mojo::UserAgent">Mojo::UserAgent</a> from the Mojolicious distribution to make common tasks easier. If you want to simulate an interactive web browser, you can use the <a href="https://metacpan.org/module/WWW::Mechanize">WWW::Mechanize</a> module.</p>
 
 <h2 id="How-do-I-automate-an-HTML-form-submission">How do I automate an HTML form submission?</h2>
 
 <p>If you are doing something complex, such as moving through many pages and forms or a web site, you can use <a href="https://metacpan.org/module/WWW::Mechanize">WWW::Mechanize</a>. See its documentation for all the details.</p>
 
-<p>If you&#39;re submitting values using the GET method, create a URL and encode the form using the <code>query_form</code> method:</p>
+<p>If you&#39;re submitting values using the GET method, create a URL and encode the form using the <code>www_form_urlencode</code> method from <a href="https://metacpan.org/module/HTTP::Tiny">HTTP::Tiny</a>:</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use LWP::Simple;
-    use URI::URL;
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use HTTP::Tiny;
 
-    my $url = url(&#39;L&lt;http://www.perl.com/cgi-bin/cpan_mod&#39;)&gt;;
-    $url-&gt;query_form(module =&gt; &#39;DB_File&#39;, readme =&gt; 1);
-    $content = get($url);</pre>
+    my $ua = HTTP::Tiny-&gt;new;
 
-<p>If you&#39;re using the POST method, create your own user agent and encode the content appropriately.</p>
+    my $query = $ua-&gt;www_form_urlencode([ q =&gt; &#39;DB_File&#39;, lucky =&gt; 1 ]);
+    my $url = &quot;https://metacpan.org/search?$query&quot;;
+    my $content = $ua-&gt;get($url)-&gt;{content};</pre>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use HTTP::Request::Common qw(POST);
-    use LWP::UserAgent;
+<p>If you&#39;re using the POST method, the <code>post_form</code> method will encode the content appropriately.</p>
 
-    my $ua = LWP::UserAgent-&gt;new();
-    my $req = POST &#39;L&lt;http://www.perl.com/cgi-bin/cpan_mod&#39;&gt;,
-                   [ module =&gt; &#39;DB_File&#39;, readme =&gt; 1 ];
-    my $content = $ua-&gt;request($req)-&gt;as_string;</pre>
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">    use HTTP::Tiny;
+
+    my $ua = HTTP::Tiny-&gt;new;
+
+    my $url = &#39;https://metacpan.org/search&#39;;
+    my $form = [ q =&gt; &#39;DB_File&#39;, lucky =&gt; 1 ];
+    my $content = $ua-&gt;post_form($url, $form)-&gt;{content};</pre>
 
 <h2 id="How-do-I-decode-or-create-those--encodings-on-the-web">How do I decode or create those %-encodings on the web?   </h2>
 
@@ -251,26 +251,17 @@
 
 <h2 id="How-do-I-send-email">How do I send email?</h2>
 
-<p>Use the <a href="https://metacpan.org/module/Email::MIME">Email::MIME</a> and <a href="https://metacpan.org/module/Email::Sender::Simple">Email::Sender::Simple</a> modules, like so:</p>
+<p>Use the <a href="https://metacpan.org/module/Email::Stuffer">Email::Stuffer</a> module, like so:</p>
 
 <pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">  # first, create your message
-  my $message = Email::MIME-&gt;create(
-    header_str =&gt; [
-      From    =&gt; &#39;you@example.com&#39;,
-      To      =&gt; &#39;friend@example.com&#39;,
-      Subject =&gt; &#39;Happy birthday!&#39;,
-    ],
-    attributes =&gt; {
-      encoding =&gt; &#39;quoted-printable&#39;,
-      charset  =&gt; &#39;utf-8&#39;,
-    },
-    body_str =&gt; &quot;Happy birthday to you!\n&quot;,
-  );
+  my $message = Email::Stuffer-&gt;from(&#39;you@example.com&#39;)
+                              -&gt;to(&#39;friend@example.com&#39;)
+                              -&gt;subject(&#39;Happy birthday!&#39;)
+                              -&gt;text_body(&quot;Happy birthday to you!\n&quot;);
 
-  use Email::Sender::Simple qw(sendmail);
-  sendmail($message);</pre>
+  $message-&gt;send_or_die;</pre>
 
-<p>By default, <a href="https://metacpan.org/module/Email::Sender::Simple">Email::Sender::Simple</a> will try `sendmail` first, if it exists in your $PATH. This generally isn&#39;t the case. If there&#39;s a remote mail server you use to send mail, consider investigating one of the Transport classes. At time of writing, the available transports include:</p>
+<p>By default, <a href="https://metacpan.org/module/Email::Sender::Simple">Email::Sender::Simple</a> (the <code>send</code> and <code>send_or_die</code> methods use this under the hood) will try <code>sendmail</code> first, if it exists in your $PATH. This generally isn&#39;t the case. If there&#39;s a remote mail server you use to send mail, consider investigating one of the Transport classes. At time of writing, the available transports include:</p>
 
 <dl>
 
@@ -288,18 +279,20 @@
 </dd>
 </dl>
 
-<p>Telling <a href="https://metacpan.org/module/Email::Sender::Simple">Email::Sender::Simple</a> to use your transport is straightforward.</p>
+<p>Telling <a href="https://metacpan.org/module/Email::Stuffer">Email::Stuffer</a> to use your transport is straightforward.</p>
 
-<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">  sendmail(
-    $message,
-    {
-      transport =&gt; $email_sender_transport_object,
-    }
-  );</pre>
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">  $message-&gt;transport($email_sender_transport_object)-&gt;send_or_die;</pre>
 
 <h2 id="How-do-I-use-MIME-to-make-an-attachment-to-a-mail-message">How do I use MIME to make an attachment to a mail message?</h2>
 
 <p><a href="https://metacpan.org/module/Email::MIME">Email::MIME</a> directly supports multipart messages. <a href="https://metacpan.org/module/Email::MIME">Email::MIME</a> objects themselves are parts and can be attached to other <a href="https://metacpan.org/module/Email::MIME">Email::MIME</a> objects. Consult the <a href="https://metacpan.org/module/Email::MIME">Email::MIME</a> documentation for more information, including all of the supported methods and examples of their use.</p>
+
+<p><a href="https://metacpan.org/module/Email::Stuffer">Email::Stuffer</a> uses <a href="https://metacpan.org/module/Email::MIME">Email::MIME</a> under the hood to construct messages, and wraps the most common attachment tasks with the simple <code>attach</code> and <code>attach_file</code> methods.</p>
+
+<pre class="brush: pl; class-name: 'highlight'; toolbar: false; gutter: false">  Email::Stuffer-&gt;to(&#39;friend@example.com&#39;)
+                -&gt;subject(&#39;The file&#39;)
+                -&gt;attach_file(&#39;stuff.csv&#39;)
+                -&gt;send_or_die;</pre>
 
 <h2 id="How-do-I-read-email">How do I read email?</h2>
 
@@ -362,5 +355,5 @@
 
 <p>Irrespective of its distribution, all code examples in this file are hereby placed into the public domain. You are permitted and encouraged to use this code in your own programs for fun or for profit as you see fit. A simple comment in the code giving credit would be courteous but is not required.</p>
 
-<p><em>Version: 5.20180605</em></p></div>
+<p><em>Version: 5.20200523</em></p></div>
 
