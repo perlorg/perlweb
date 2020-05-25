@@ -1,4 +1,4 @@
-FROM quay.io/perl/base-os:v3.10-2
+FROM quay.io/perl/base-os:v3.11.6
 
 # Note that this only builds dependencies and such, it doesn't
 # actually include the site code etc itself. The site code
