@@ -3,6 +3,12 @@ type: kubernetes
 name: default
 
 steps:
+- name: submodules
+  image: alpine/git
+  commands:
+  - git submodule init
+  - git submodule update --recursive --remote
+
 - name: docker  
   image: banzaicloud/drone-kaniko
   settings:
