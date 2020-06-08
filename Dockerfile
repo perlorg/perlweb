@@ -1,4 +1,4 @@
-FROM quay.io/perl/base-os:v3.10-2
+FROM quay.io/perl/base-os:v3.11.6
 
 # Note that this only builds dependencies and such, it doesn't
 # actually include the site code etc itself. The site code
@@ -7,7 +7,7 @@ FROM quay.io/perl/base-os:v3.10-2
 
 # Cache buster for occasionally resetting the cached images even if
 # the base doesn't change.
-ENV LAST_UPDATED 2019-11-04
+ENV LAST_UPDATED 2020-06-07
 
 USER root
 
