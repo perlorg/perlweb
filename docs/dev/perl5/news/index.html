@@ -1,173 +1,24 @@
-[% page.title ="News" %]
+[% page.title ="Perl Releases" %]
 
-[%# TODO -- figure out how to do this with a macroish thing
-    Leo: This should just be an RSS feed really (would make maintenance easier)
-#%]
+[%-
+    MACRO expandrss(shortname) BLOCK;
+        TRY; %]
+            [%- USE news = XML.RSS(combust.config.work_path _ "/rss/${shortname}.rss") %]
+            [% FOREACH item = news.items %]
+                <li>
+                  <a href="[% item.link | html %]">[% item.title
+                    %]</a>
+                  ([% item.dc.date %])
+                </li>
+                [% count = count - 1 %]
+                [% LAST IF count == 0 %]
+            [% END %]
+        [%- CATCH %]
+                <li>RSS config broken</li>
+                [%- FILTER stderr %][% error.info %][% END %]
+        [%- END %]
+     [%- END;
 
-<h3>Latest Perl 5 news</h2>
-<ul>
-    <li>
-        <a href="2017/perl-5.24.1.html">Perl 5.24.1 Released</a> -- (Jan 14, 2017)<br>
-    </li>
+-%]
 
-
-    <li>
-        <a href="2016/perl-5.24.0.html">Perl 5.24.0 Released</a> -- (May 9, 2016)<br>
-    </li>
-
-
-    <li>
-        <a href="2017/perl-5.22.3.html">Perl 5.22.3 Released</a> -- (Jan 14, 2017)<br>
-    </li>
-
-
-    <li>
-        <a href="2016/perl-5.22.2.html">Perl 5.22.2 Released</a> -- (Apr 29, 2016)<br>
-    </li>
-
-
-    <li>
-        <a href="2015/perl-5.22.1.html">Perl 5.22.1 Released</a> -- (Dec 13, 2015)<br>
-    </li>
-
-
-    <li>
-        <a href="2015/perl-5.22.0.html">Perl 5.22.0 Released</a> -- (Jun 1, 2015)<br>
-    </li>
-
-
-    <li>
-        <a href="2015/perl-5.20.3.html">Perl 5.20.3 Released</a> -- (Sep 12, 2015)<br>
-    </li>
-
-
-    <li>
-        <a href="2015/perl-5.20.2.html">Perl 5.20.2 Released</a> -- (Feb 14, 2015)<br>
-    </li>
-
-
-    <li>
-        <a href="2014/perl-5.20.1.html">Perl 5.20.1 Released</a> -- (Sep 14, 2014)<br>
-    </li>
-
-
-    <li>
-        <a href="2014/perl-5.20.0.html">Perl 5.20.0 Released</a> -- (May 26, 2014)<br>
-    </li>
-
-
-    <li>
-        <a href="2014/perl-5.18.4.html">Perl 5.18.4 Released</a> -- (Oct 1, 2014)<br>
-    </li>
-
-
-    <li>
-        <a href="2014/perl-5.18.2.html">Perl 5.18.2 Released</a> -- (Jan 7, 2014)<br>
-    </li>
-
-
-    <li>
-        <a href="2013/perl-5.18.1.html">Perl 5.18.1 Released</a> -- (Aug 12, 2013)<br>
-    </li>
-
-
-    <li>
-        <a href="2013/perl-5.18.0.html">Perl 5.18.0 Released</a> -- (May 18, 2013)<br>
-    </li>
-
-
-    <li>
-        <a href="2013/perl-5.16.3.html">Perl 5.16.3 Released</a> -- (Mar 11, 2013)<br>
-    </li>
-
-
-    <li>
-        <a href="2012/perl-5.16.2.html">Perl 5.16.2 Released</a> -- (Nov 1, 2012)<br>
-    </li>
-
-    <li>
-        <a href="2012/perl-5.16.1.html">Perl 5.16.1 Released</a> -- (Aug 8, 2012)<br>
-    </li>
-
-    <li>
-        <a href="2012/perl-5.16.0.html">Perl 5.16.0 Released</a> -- (May 20, 2012)<br>
-    </li>
-
-    <li>
-        <a href="2011/perl-5.14.2.html">Perl 5.14.2 Released</a> -- (Sep 26, 2011)<br>
-    </li>
-    <li>
-        <a href="2011/perl-5.14.1.html">Perl 5.14.1 Released</a> -- (Jun 17, 2011)<br>
-    </li>
-    <li>
-        <a href="2011/perl-5.14.0.html">Perl 5.14.0 Released</a> -- (May 14, 2011)<br>
-    </li>
-    <li>
-        <a href="2010/perl-5.12.2.html">Perl 5.12.2 Released</a> -- (September 6, 2010)<br>
-    </li>
-    <li>
-        <a href="2010/perl-5.12.0.html">Perl 5.12.0 Released</a> -- (April 12, 2010)<br>
-    </li>
-    <li>
-        <a href="2009/perl-5.10.1.html">Perl 5.10.1 Released</a> -- (August 23, 2009)<br>
-    </li>
-    <li>
-        <a href="2008/perl-5.8.9.html">Perl 5.8.9 Released</a> -- (December 16, 2008)<br>
-    </li>
-    <li>
-        <a href="2006/perl-5.8.8.html">Perl 5.8.8 Released</a> -- (February 2, 2006)<br>
-    </li>
-    <li>
-        <a href="2005/perl_patches_fix_sprintf_buffer.html">Perl Patches Fix sprintf Buffer Overflow</a><br>
-    </li>
-    <li>
-        <a href="2005/perl-5.8.7.html">Perl 5.8.7 Released</a> -- (June 3, 2005)<br>
-    </li>
-    <li>
-        <a href="2004/perl-5.8.6.html">Perl 5.8.6 Released</a> -- (November 30, 2004)<br>
-        <small>Perl 5.8.6 is the sixth minor upgrade and bug-fix release to the 5.8 series of perl.</small><br>
-        <br>
-    </li>
-    <li>
-        <a href="2004/perl-5.8.5.html">Perl 5.8.5 Released</a> -- (July 21, 2004)<br>
-        <small>Perl 5.8.5 is the fifth minor upgrade and bug-fix release to the 5.8 series of perl.</small><br>
-        <br>
-    </li>
-    <li>
-        <a href="2004/perl-5.8.4.html">Perl 5.8.4 Released</a> -- (March 23, 2004)<br>
-        <small>Perl 5.8.4 is the fourth minor upgrade and bug-fix release to the 5.8 series of perl.</small><br>
-        <br>
-    </li>
-    <li>
-        <a href="2004/perl-5.9.1.html">Perl 5.9.1 Released</a> -- (March 17, 2004)<br>
-        <small>Perl 5.9.1 is the second development release leading up to 5.10.</small><br>
-        <br>
-    </li>
-    <li>
-        <a href="2004/perl-5.8.3.html">Perl 5.8.3 Released</a> -- (January 1, 2004)<br>
-        <small>Perl 5.8.3 is the third minor upgrade and bug-fix release to the 5.8 series of perl.</small><br>
-        <br>
-    </li>
-    <li>
-        <a href="2003/perl-5.6.2.html">Perl 5.6.2 Released</a> -- (November 16, 2003)<br>
-        <small>Perl 5.6.2 is a release to fix build issues with modern operating systems and compilers.</small><br>
-        <br>
-    </li>
-    <li>
-        <a href="2003/perl-5.8.2.html">Perl 5.8.2 Released</a> -- (November 5, 2003)<br>
-        <small>Perl 5.8.2 is the second minor upgrade and bug-fix release to the 5.8 series of perl. (Use this instead of 5.8.1)</small><br>
-        <br>
-    </li>
-    <li>
-        <a href="2003/perl-5.8.1.html">Perl 5.8.1 Released</a> -- (September 25, 2003)<br>
-        <small>Perl 5.8.1 is a minor upgrade and bug-fix release to the 5.8 series of perl.</small><br>
-        <br>
-    </li>
-    <li>
-        <a href="2002/07/18/580ann/">Perl 5.8.0 Released</a> -- (July 18, 2002)<br>
-        <small>Perl 5.8.0 is a major new release of the Perl 5 language. It incorporates all development and maintenance changes since the last major release, 5.6.0, including all the changes of the maintenance release, 5.6.1.</small>
-    </li>
-    <li style="list-style: none">
-        <br>
-    </li>
-</ul>
+[% expandrss ("perl-releases") %]

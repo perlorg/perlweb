@@ -35,6 +35,7 @@ getrss "tpfblog"    "http://news.perlfoundation.org/index.xml"
 getrss "noc"        "http://log.perl.org/feeds/posts/default?alt=rss"
 getrss "jobs"       "https://jobs.perl.org/rss/standard.rss?limit=5"
 getrss "perlnews"   "https://www.perl.com/article/index.xml"
+getrss "perl-releases" "https://metacpan.org/feed/distribution/perl"
 
 function getcpanstats () {
     curl -LA 'www.perl.org/cron_hourly' \
