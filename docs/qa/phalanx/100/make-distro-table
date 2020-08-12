@@ -24,7 +24,6 @@ while ( <> ) {
             td( a( { href => "http://search.cpan.org/~$author" } ), $author ),
             td( join( "\n|\n",
                 a( { href => "http://search.cpan.org/dist/$dist" }, "Docs" ),
-                a( { href => "http://annocpan.org/dist/$dist" }, "AnnoCPAN" ),
                 a( { href => "http://rt.cpan.org/NoAuth/Bugs.html?Dist=$dist" }, "Bugs" ),
                 a( { href => "http://testers.cpan.org/show/$dist.html" }, "Testers" ),
                 a( { href => "http://cpanratings.perl.org/d/$dist" }, "Ratings" ),
