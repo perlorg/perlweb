@@ -33,7 +33,8 @@
 /advocacy/white_camels.shtml /advocacy/white_camel/  perm
 /CPAN/?           https://www.cpan.org/   perm
 /cpan/?           https://www.cpan.org/   perm
-/CPAN/(.*)        https://www.cpan.org/$1 perm
+# CPAN.pm uses this to bootstrap the mirror list, so can't be https.
+/CPAN/(.*)        http://www.cpan.org/$1 perm
 /cpan/(.*)        https://www.cpan.org/$1 perm
 /friends.shtml   /siteinfo.html         intern
 /headlines.shtml /news.html             perm
