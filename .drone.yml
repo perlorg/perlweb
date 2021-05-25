@@ -1,0 +1,24 @@
+kind: pipeline
+type: kubernetes
+name: default
+
+steps:
+- name: submodules
+  image: alpine/git
+  commands:
+  - git submodule init
+  - git submodule update --recursive --remote
+
+- name: docker
+  image: harbor.ntppool.org/ntppool/drone-kaniko:main
+  pull: always
+  settings:
+    repo: perl/perlweb
+    registry: harbor.ntppool.org
+    auto_tag: true
+    tags: SHA7,${DRONE_SOURCE_BRANCH}
+    cache: true
+    username:
+      from_secret: harbor_username
+    password:
+      from_secret: harbor_password
