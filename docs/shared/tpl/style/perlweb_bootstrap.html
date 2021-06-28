@@ -116,7 +116,7 @@
         [% INCLUDE tpl/tip IF combust.site == 'www' %]
         <div class="footer">
 
-        [% IF combust.site == 'www' %]
+        [% IF combust.site == 'www' && error == '' %]
           <ul class="col-xs-12 col-sm-4 list-unstyled">
             [% quicknews ("cpanrecent", '<h4>Latest Uploads to CPAN</h4>', 10) %]
           </ul>
