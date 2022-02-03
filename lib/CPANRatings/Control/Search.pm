@@ -5,30 +5,11 @@ use CPANRatings::Model::SearchCPAN;
 use Combust::Constant qw(OK);
 
 sub render {
-  my $self = shift;
-
-  my $template = 'search/search_results.html';
-
-  my $search = CPANRatings::Model::SearchCPAN->new();
-  
-  my $query = $self->req_param('q');
-
-  my $results;
-  $results = $search->search_distribution($query);
-
-  for my $r (@$results) {
-      my $dist_name = $r->{distribution}->{name};
-      my $reviews_count = $self->schema->review->count({ distribution => $dist_name }); 
-      $r->{distribution}->{reviews_count} = $reviews_count;
-  }
-
-  $self->tpl_param('search' => { query   => $query,
-				 results => $results,
-			       });
-
-  return OK, $self->evaluate_template($template);
+    my $self     = shift;
+    my $query    = $self->req_param('q');
+    my $metacpan = URI->new('https://metacpan.org/search');
+    $metacpan->query_form(q => $query);
+    return $self->redirect($metacpan->as_string, 1);
 }
 
 1;
-
-

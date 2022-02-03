@@ -5,14 +5,8 @@ use Combust::Constant qw(OK);
 
 sub render {
     my $self = shift;
-
-    $self->tpl_param('header', 'Recent reviews');
-
-    my $reviews = $self->schema->review->recent;
-    my $output = $self->as_rss($reviews);
-    return OK, $output, 'application/rdf+xml';
+    return $self->redirect('https://metacpan.org/recent.rss?f=l', 1);
 }
- 
 
 
 1;
