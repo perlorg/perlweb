@@ -3,14 +3,13 @@ use strict;
 use base qw(CPANRatings::Control Combust::Control::Basic);
 
 sub render {
-  my $self = shift;
+    my $self = shift;
 
-  if ($self->request->uri =~ m!^/(index\.html)?$!) {
-      $self->tpl_param('reviews', scalar $self->schema->review->recent );
-  }
+    if ($self->request->uri =~ m!^/(index\.html)?$!) {
+        return $self->redirect('https://metacpan.org/', 1);
+    }
 
-  $self->SUPER::render(@_);
+    $self->SUPER::render(@_);
 }
-
 
 1;

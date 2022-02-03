@@ -9,16 +9,6 @@
        PerlHandler CPANRatings::Control::Basic->super
     </Location>
 
-    <Location /logout>
-       SetHandler perl-script
-       PerlHandler CPANRatings::Control::Logout->super
-    </Location>
-
-    <Location /rate>
-       SetHandler perl-script
-       PerlHandler CPANRatings::Control::Rate->super
-    </Location>
-
     <Location /search>
        SetHandler perl-script
        PerlHandler CPANRatings::Control::Search->super
@@ -34,19 +24,9 @@
 
     [% END %]
 
-    <Location /csv/all_ratings.csv>
-       SetHandler perl-script
-       PerlHandler CPANRatings::Control::ShowAll->super
-    </Location>
-
     <Location /index.rss>
        SetHandler perl-script
        PerlHandler CPANRatings::Control::RecentRSS->super
-    </Location>
-
-    <Location /api>
-       SetHandler perl-script
-       PerlHandler CPANRatings::Control::API->super
     </Location>
 
     <Location /static/>

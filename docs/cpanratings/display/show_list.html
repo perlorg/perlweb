@@ -1,7 +1,0 @@
-
-[% WHILE (review = reviews.next) %]
-[% PROCESS display/short_review.html, 
-             review => review,
-             no_more => (mode == 'distribution')
-%]
-[% END %]
