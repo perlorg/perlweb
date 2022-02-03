@@ -1,7 +1,6 @@
 package CPANRatings::Control::Search;
 use strict;
 use base qw(CPANRatings::Control);
-use CPANRatings::Model::SearchCPAN;
 use Combust::Constant qw(OK);
 
 sub render {

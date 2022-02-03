@@ -1,7 +1,6 @@
 package CPANRatings::Control::Show;
 use strict;
 use base qw(CPANRatings::Control);
-use CPANRatings::Model::SearchCPAN qw();
 use Combust::Constant qw(OK NOT_FOUND);
 use URI::Escape qw(uri_escape);
 
@@ -17,9 +16,6 @@ sub render {
 
     return NOT_FOUND
       unless ($mode eq 'dist' or $mode eq 'd');
-
-    return NOT_FOUND
-      unless (CPANRatings::Model::SearchCPAN->valid_distribution($id));
 
     my $metacpan = 'https://metacpan.org/release/' . uri_escape($id);
 
