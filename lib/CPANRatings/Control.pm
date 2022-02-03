@@ -1,8 +1,7 @@
 package CPANRatings::Control;
 use Moose;
-extends qw(Combust::Control Combust::Control::Bitcard::DBIC Combust::Control::StaticFiles);
+extends qw(Combust::Control Combust::Control::StaticFiles);
 use LWP::Simple qw(get);
-use CPANRatings::Model::SearchCPAN;
 use Combust::Constant qw(OK);
 use PerlOrg::Template::Filters;
 
