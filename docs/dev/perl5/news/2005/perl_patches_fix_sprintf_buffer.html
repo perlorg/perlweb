@@ -10,14 +10,16 @@
 
 <p>
   Dyad Security recently released
-  <a href="/!dl/http://dyadsecurity.com/perl-0002.html">a security advisory</a>
+  <a href="https://web.archive.org/web/20060218201441/http://dyadsecurity.com/perl-0002.html">a security advisory</a> 
+  (<a href="https://nvd.nist.gov/vuln/detail/CVE-2005-3962">CVE-2005-3962</a> and
+  <a href="https://nvd.nist.gov/vuln/detail/CVE-2005-3912">CVE-2005-3912</a>)
   explaining how in certain cases, a carefully crafted format string
   passed to <tt>sprintf</tt> can cause a buffer overflow.  This buffer
   overflow can then be used by an attacker to execute code on the machine.
   This was discovered in the context of a design problem with the Webmin
   administration package that allowed a malicious user to pass unchecked
   data into <tt>sprintf</tt>.  A related fix for Sys::Syslog
-  <a href="http://www.perlfoundation.org/news/2005/webmin_flaw_alleviated.html"
+  <a href="https://news.perlfoundation.org/post/perl_patches_fix_sprintf_buffe"
   >has already been released</A>.
 </p>
 
