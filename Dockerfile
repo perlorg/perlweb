@@ -1,13 +1,9 @@
-FROM harbor.ntppool.org/perlorg/base-os:3.15.0-1
+FROM harbor.ntppool.org/perlorg/base-os:3.17.3
 
 # Note that this only builds dependencies and such, it doesn't
 # actually include the site code etc itself. The site code
 # includes the documents which are updated more often and we
 # don't want to rebuild and restart the container each time.
-
-# Cache buster for occasionally resetting the cached images even if
-# the base doesn't change.
-ENV LAST_UPDATED 2021-08-24
 
 USER root
 
