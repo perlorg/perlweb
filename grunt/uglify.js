@@ -13,7 +13,7 @@ uglify = {
   },
   main: {
     src: [
-      'docs/assets/js/libs/jquery-1.12.3.min.js',
+      'docs/assets/js/libs/jquery-3.7.0.min.js',
       'docs/assets/js/libs/bootstrap.min.js',
       'docs/assets/js/main.js',
     ],
