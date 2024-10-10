@@ -1,7 +1,9 @@
 [% BLOCK book_block %]
 <div class="book">
     [% IF isbn %]
-        <iframe class="amazon" src="//rcm-na.amazon-adsystem.com/e/cm?lt1=_blank&amp;bc1=FFFFFF&amp;IS2=1&amp;bg1=FFFFFF&amp;fc1=000000&amp;lc1=0000FF&amp;t=develooper&amp;o=1&amp;p=8&amp;l=as1&amp;m=amazon&amp;f=ifr&amp;asins=[% isbn %]" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>[% END %]
+      <img src="https://images.amazon.com/images/P/[% isbn %].01._SCLZZZZZZZ_.jpg"
+      style="height:240px; margin:0 auto;">
+[% END %]
     <b><a name="[% name %]" class="title"[% IF link %] href="[% link %]"[% END %]>[% title %]</a></b> <br />
     <span class="author">[% author %]</span><br />
     <p class="description">
