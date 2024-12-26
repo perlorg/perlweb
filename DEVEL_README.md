@@ -28,20 +28,24 @@ Edit `combust.devel.conf` (if needed)
 docker build --tag perlweb-dev -f Devel.Dockerfile .
 ```
 
-### Run development container and connect
+### Run development container, connect and start service
 ```
 docker run -it -p 8230:8230 -v `pwd`:/git/perlweb perlweb-dev  /bin/sh
-```
-
-
-### Start service
-```
 cd /git/perlweb
 ./combust/bin/httpd
 ```
 
-### Connect
+### View in browse
 
 http://wwwperl.local:8230/
 http://qaperl.local:8230/
 ..
+
+## Updating CSS/JS
+
+On host, not in container...
+```sh
+npm install
+npx grunt
+```
+(You can use `npx grunt watch` for it to auto build when you make changes)
