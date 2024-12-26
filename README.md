@@ -2,6 +2,12 @@
 
 Code for various perl.org sites hosted in the main perl.org infrastructure.
 
+## Docker based basic web local development
+
+See: DEVEL_README.md
+
+Or...
+
 ## Clone the source
 
 ```sh
