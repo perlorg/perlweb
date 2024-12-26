@@ -173,16 +173,15 @@ ul li {
 .over-image {
   z-index: 999;
   position: relative;
-  max-width: 64%;
   margin: auto;
 }
 .jumbotron-internal {
   padding: @jumbotron-padding/2;
 }
 .jumbotron .img-camel {
-  position:absolute;
-  right: 0;
-  top: 20px;
+  position: relative;
+  float: right;
+  margin: auto 0;
 }
 .jumbotron p {
   font-weight: 400;
@@ -336,10 +335,7 @@ span.highlight {
     padding-right: @padding-xs-horizontal;
   }
   .jumbotron .img-camel {
-    right: -60px;
-  }
-  .over-image {
-    max-width: 60%;
+    width: 200px;
   }
 }
 
@@ -350,12 +346,6 @@ span.highlight {
   }
   .page-www .navbar-brand {
     padding: 8px 15px;
-  }
-  .section_home .jumbotron {
-    background: none;
-  }
-  .over-image {
-    max-width: 90%;
   }
   .footer {
     text-align: center;
@@ -376,10 +366,10 @@ span.highlight {
     margin-top: 30px;
   }
   .jumbotron .img-camel {
-    position: absolute;
+    position: relative;
     right: 0;
-    top: auto;
-    bottom: -200px;
+    padding: 10px;
+    width: 150px;
   }
   .sidebar {
     position: absolute;
