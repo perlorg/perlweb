@@ -30,15 +30,15 @@ docker build --tag perlweb-dev -f Devel.Dockerfile .
 
 ### Run development container, connect and start service
 ```
-docker run -it -p 8230:8230 -v `pwd`:/git/perlweb perlweb-dev  /bin/sh
+docker run -it -p 8235:8235 -v $(pwd):/git/perlweb perlweb-dev  /bin/sh
 cd /git/perlweb
 ./combust/bin/httpd
 ```
 
 ### View in browse
 
-http://wwwperl.local:8230/
-http://qaperl.local:8230/
+http://wwwperl.local:8235/
+http://qaperl.local:8235/
 ..
 
 ## Updating CSS/JS

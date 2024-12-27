@@ -20,7 +20,7 @@ RUN grep -hv '^#' /tmp/combust-modules.txt /tmp/modules.txt | \
   cpanm -n; rm -fr ~/.cpanm; rm -f /tmp/modules /tmp/combust-modules.txt
 
 WORKDIR /
-EXPOSE 8230
+EXPOSE 8235
 
 RUN addgroup perlweb && adduser -D -G perlweb perlweb
 
