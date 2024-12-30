@@ -23,26 +23,19 @@ root directory.  You can start with the `combust.conf.sample` file and
 then add
 
 ```
-[cpanratings]
-servername = cpanratings.local
 
 [www]
 servername = wwwperl.local
 
 ```
 
-... etc.  Add wwwperl.local and cpanratings.local to your /etc/hosts
+... etc.  Add wwwperl.local to your /etc/hosts
 file so they point to 127.0.0.1.
 
 ## Database setup
 
 For some sites you also need to configure a (MySQL) database server.
-Setup the `[database-combust]` section in the `combust.conf` file and add a section for cpanratings like:
-
-```
-[database-cpanratings]
-alias = combust
-```
+Setup the `[database-combust]` section in the `combust.conf` file.
 
 Then run:
 
@@ -50,7 +43,6 @@ Then run:
    export CBROOTLOCAL=`pwd`
    export CBROOT=$CBROOTLOCAL/combust
    ./combust/bin/database_update combust
-   ./combust/bin/database_update cpanratings
 ```
 
 To setup the database schemas.  When the schemas change, you can run
