@@ -1,8 +1,10 @@
-# perlweb
+# perlweb development
 
 Code for various perl.org sites hosted in the main perl.org infrastructure.
 
-## Clone the source
+N.b Development requires docker to make things simple..
+
+## Setup
 
 ```sh
    git clone git://github.com/perlorg/perlweb.git
@@ -10,45 +12,47 @@ Code for various perl.org sites hosted in the main perl.org infrastructure.
    git submodule update --init
 ```
 
-## Install dependencies
+## Developing:
 
-If you have Dist::Zilla and App::cpanminus installed you can just run:
-
-   `((cd combust; dzil listdeps); dzil listdeps) | sort -u | cpanm`
-
-## Configure combust.conf
-
-The application expects a file called `combust.conf` to exist in the
-root directory.  You can start with the `combust.conf.sample` file and
-then add
-
+### Edit your local /etc/hosts file, add:
+```
+127.0.0.1  wwwperl.local
+127.0.0.1  qaperl.local
+127.0.0.1  nocperl.local
+127.0.0.1  devperl.local
+127.0.0.1  dbiperl.local
+127.0.0.1  perl4libperl.local
+127.0.0.1  debuggerperl.local
+127.0.0.1  learnperl.local
+127.0.0.1  listsperl.local
 ```
 
-[www]
-servername = wwwperl.local
-
-```
-
-... etc.  Add wwwperl.local to your /etc/hosts
-file so they point to 127.0.0.1.
-
-## Database setup
-
-For some sites you also need to configure a (MySQL) database server.
-Setup the `[database-combust]` section in the `combust.conf` file.
-
-Then run:
+### Container: build and run
 
 ```sh
-   export CBROOTLOCAL=`pwd`
-   export CBROOT=$CBROOTLOCAL/combust
-   ./combust/bin/database_update combust
+docker build --tag perlweb-dev .
+docker run -it -p 8235:8235 -v $(pwd):/git/perlweb perlweb-dev  /bin/bash
+cd /git/perlweb
+./combust/bin/httpd
 ```
 
-To setup the database schemas.  When the schemas change, you can run
-the `database_update` command again to get updated.
+You should now be able to access http://wwwperl.local:8235/
 
-## Static header config
+### CSS/JS: rebuilding
+(On your _host_, not in the docker container)
+
+```
+npx grunt
+```
+
+(You can use `npx grunt watch` for it to auto build when you make changes)
+
+
+
+
+## Misc
+
+### Static header config
 
 Static headers can be configured in combust.conf, either globally or
 per-site.
@@ -61,17 +65,7 @@ X-Frame-Options = deny
 X-Frame-Options = sameorigin
 ```
 
-## Start httpd
 
-```sh
-   export CBROOTLOCAL=`pwd`
-   export CBROOT=$CBROOTLOCAL/combust
-   ./combust/bin/httpd
-```
-
-You should now be able to access http://wwwperl.local:8225/
-
-
-## Copyright
+### Copyright
 
 `perlweb` is Copyright 2003-2012 Ask Bjørn Hansen.  See the LICENSE file.
