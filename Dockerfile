@@ -1,4 +1,4 @@
-FROM harbor.ntppool.org/perlorg/base-os:3.22.1
+FROM harbor.ntppool.org/perlorg/base-os:3.23.3
 
 # Note that this only builds dependencies and such, it doesn't
 # actually include the site code etc itself. The site code
