@@ -42,10 +42,10 @@ You should now be able to access http://wwwperl.local:8235/
 (On your _host_, not in the docker container)
 
 ```
-npx grunt
+npm run build
 ```
 
-(You can use `npx grunt watch` for it to auto build when you make changes)
+(You can use `npm run watch` for it to auto build when you make changes)
 
 
 
