@@ -17,7 +17,7 @@ const paths = {
   },
   js: {
     src: [
-      'docs/assets/js/libs/jquery-3.7.0.min.js',
+      'node_modules/jquery/dist/jquery.slim.min.js',
       'node_modules/bootstrap/js/transition.js',
       'node_modules/bootstrap/js/collapse.js',
       'node_modules/bootstrap/js/tooltip.js',
