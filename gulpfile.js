@@ -18,7 +18,9 @@ const paths = {
   js: {
     src: [
       'docs/assets/js/libs/jquery-3.7.0.min.js',
-      'docs/assets/js/libs/bootstrap.min.js',
+      'node_modules/bootstrap/js/transition.js',
+      'node_modules/bootstrap/js/collapse.js',
+      'node_modules/bootstrap/js/tooltip.js',
       'docs/assets/js/main.js'
     ],
     dest: 'docs/static/js/',
