@@ -5,6 +5,7 @@ const concat = require('gulp-concat');
 const cleanCSS = require('gulp-clean-css');
 const header = require('gulp-header');
 const gulpIf = require('gulp-if');
+const purgecss = require('gulp-purgecss');
 
 const banner = '/* Perl.org - http://www.perl.org */\n';
 
@@ -28,6 +29,9 @@ const paths = {
 function styles() {
   return gulp.src(paths.less.src)
     .pipe(less())
+    .pipe(purgecss({
+      content: ['**/*.html', '**/*.tpl', '**/*.pod', '!node_modules/**']
+    }))
     .pipe(cleanCSS())
     .pipe(concat('perlweb_bootstrap.min.css'))
     .pipe(header(banner))
