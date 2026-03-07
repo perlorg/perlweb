@@ -1,8 +1,5 @@
 .row-height {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display:         flex;
+  display: flex;
   flex-wrap: wrap;
 }
 .row-height > [class*='col-'] {
@@ -14,5 +11,5 @@
 .row-height.container:after,
 .row-height.row:before,
 .row-height.row:after {
-   content: normal; // IE doesn't support `initial`
+   content: normal;
 }

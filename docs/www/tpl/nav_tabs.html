@@ -1,40 +1,40 @@
-<ul class="list-inline text-center nav navbar-nav navbar-right">
-    <li class="sub[% ' selected' IF page.section == 'about' %]">
-        <a href="/about.html">
+<ul class="navbar-nav ms-auto text-center">
+    <li class="nav-item sub[% ' selected' IF page.section == 'about' %]">
+        <a class="nav-link" href="/about.html">
           <img src="[% combust.static_url("/images/icons/ic_header_about.svg") %]" class="header-img-nav">
           About
         </a>
     </li>
-    <li class="sub[% ' selected' IF page.section == 'download' %]">
-        <a href="/get.html">
+    <li class="nav-item sub[% ' selected' IF page.section == 'download' %]">
+        <a class="nav-link" href="/get.html">
           <img src="[% combust.static_url("/images/icons/ic_header_download.svg") %]" class="header-img-nav">
-          <div class="perl-version hidden-xs">
+          <div class="perl-version d-none d-sm-block">
             <span class="version-highlight">[% perl_stats.perl_version %]</span>
           </div>
           Download
         </a>
     </li>
-    <li class="sub[% ' selected' IF page.section == 'learn' %]">
-        <a href="/learn.html">
+    <li class="nav-item sub[% ' selected' IF page.section == 'learn' %]">
+        <a class="nav-link" href="/learn.html">
           <img src="[% combust.static_url("/images/icons/ic_header_learn.svg") %]" class="header-img-nav">
           Learn
         </a>
     </li>
-    <li class="sub[% ' selected' IF page.section == 'docs' %]">
-        <a href="/docs.html">
+    <li class="nav-item sub[% ' selected' IF page.section == 'docs' %]">
+        <a class="nav-link" href="/docs.html">
           <img src="[% combust.static_url("/images/icons/ic_header_docs.svg") %]" class="header-img-nav">
           Docs
         </a>
     </li>
-    <li class="sub[% ' selected' IF page.section == 'cpan' %]">
-        <a href="/cpan.html">
+    <li class="nav-item sub[% ' selected' IF page.section == 'cpan' %]">
+        <a class="nav-link" href="/cpan.html">
           <img src="[% combust.static_url("/images/icons/ic_header_cpan.svg") %]" class="header-img-nav">
           CPAN
         </a>
     </li>
-    <li class="sub[% ' selected' IF page.section == 'community'
+    <li class="nav-item sub[% ' selected' IF page.section == 'community'
                                 || page.section == 'events' %]">
-        <a href="/community.html">
+        <a class="nav-link" href="/community.html">
           <img src="[% combust.static_url("/images/icons/ic_header_community.svg") %]" class="header-img-nav">
           Community
         </a>

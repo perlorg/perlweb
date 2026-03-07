@@ -61,7 +61,7 @@
 <td id="NAV" class="sideNAV" width="180" height="[% $isindex ? 350 : 500 %]">
 <div class="SIDE">
 
-[% IF (!isindex OR page.forcenavigation) AND !page.nonavigation %] 
+[% IF (!isindex OR page.forcenavigation) AND !page.nonavigation %]
 
 [% TRY %]
   [% PROCESS tpl/navigation.html %]
@@ -95,13 +95,7 @@
 
 <tr>
   <td class="CR">
-  <a href="http://www.perlfoundation.org">
-  <img style="float:right; position: relative; top: 4px"
-       height="30" width="30"
-       alt="The Perl Onion"
-       border="0"
-       src="[% combust.static_url("images/onion/onion-30x30a.gif") %]"></a>
-   &#169; Copyright 2002-[% USE date; year = date.format(date.now, '%Y'); year %] <a href="http://www.perlfoundation.org/">The&nbsp;Perl&nbsp;Foundation</a><br>
+   &#169; Copyright 2002-[% USE date; year = date.format(date.now, '%Y'); year %] Perl.org<br>
    <a href="[% page.siteinfo || "http://www.perl.org/siteinfo.html" %]"
     >Site Information and Contacts</a> [% page.morecontacts %]
 </td>

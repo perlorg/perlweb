@@ -1,0 +1,10 @@
+#htmltagcloud {
+  text-align:  center;
+  line-height: 1;
+}
+@for $i from 0 through 24 {
+  span.tagcloud#{$i} { 
+    font-size: 12px + $i;
+    a { text-decoration: none; }
+  }
+}
