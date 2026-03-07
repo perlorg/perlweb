@@ -17,7 +17,6 @@ const paths = {
   },
   js: {
     src: [
-      'node_modules/jquery/dist/jquery.slim.min.js',
       'node_modules/@popperjs/core/dist/umd/popper.min.js',
       'node_modules/bootstrap/dist/js/bootstrap.min.js',
       'docs/assets/js/main.js'
