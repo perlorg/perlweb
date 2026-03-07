@@ -5,19 +5,19 @@
 }) -%]
 
 <div class="row">
-  <p class="col-xs-12">
+  <p class="col-12">
   These are just a few simple examples of what you can do with Perl <a href="/modules/">modules</a>. </p>
 
   [% PROCESS "examples/example_list.html"; %]
 
-  <ul class="list-unstyled col-xs-12 col-sm-4">
+  <ul class="list-unstyled col-12 col-sm-4">
       <h3>Email</h3>
       [% FOREACH example = example_email_list %]
       <li>[% example %]</li>
       [% END %]
 
   </ul>
-  <ul class="list-unstyled  col-xs-12 col-sm-4">
+  <ul class="list-unstyled  col-12 col-sm-4">
       <h3>Files </h3>
       [% FOREACH example = example_files_list %]
       <li>[% example %]</li>
@@ -25,14 +25,14 @@
 
   </ul>
 
-  <ul class="list-unstyled  col-xs-12 col-sm-4">
+  <ul class="list-unstyled  col-12 col-sm-4">
       <h3>Various</h3>
       [% FOREACH example = example_misc_list %]
       <li>[% example %]</li>
       [% END %]
   </ul>
 
-  <p class="col-xs-12 space-top-large">
+  <p class="col-12 space-top-large">
       If you are looking for other recommended modules have a look at
        <a href="https://metacpan.org/release/Task-Kensho">Task::Kensho</a>
   </p>

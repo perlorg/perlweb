@@ -1,5 +1,5 @@
 const gulp = require('gulp');
-const less = require('gulp-less');
+const sass = require('gulp-sass')(require('sass'));
 const terser = require('gulp-terser');
 const concat = require('gulp-concat');
 const cleanCSS = require('gulp-clean-css');
@@ -10,17 +10,16 @@ const purgecss = require('gulp-purgecss');
 const banner = '/* Perl.org - http://www.perl.org */\n';
 
 const paths = {
-  less: {
-    src: 'docs/assets/less/main.less',
+  scss: {
+    src: 'docs/assets/scss/main.scss',
     dest: 'docs/static/css/',
-    watch: 'docs/assets/less/**/*.less'
+    watch: 'docs/assets/scss/**/*.scss'
   },
   js: {
     src: [
       'node_modules/jquery/dist/jquery.slim.min.js',
-      'node_modules/bootstrap/js/transition.js',
-      'node_modules/bootstrap/js/collapse.js',
-      'node_modules/bootstrap/js/tooltip.js',
+      'node_modules/@popperjs/core/dist/umd/popper.min.js',
+      'node_modules/bootstrap/dist/js/bootstrap.min.js',
       'docs/assets/js/main.js'
     ],
     dest: 'docs/static/js/',
@@ -29,15 +28,21 @@ const paths = {
 };
 
 function styles() {
-  return gulp.src(paths.less.src)
-    .pipe(less())
+  return gulp.src(paths.scss.src)
+    .pipe(sass({
+      includePaths: ['node_modules'],
+      quietDeps: true
+    }).on('error', sass.logError))
     .pipe(purgecss({
-      content: ['**/*.html', '**/*.tpl', '**/*.pod', '!node_modules/**']
+      content: ['**/*.html', '**/*.tpl', '**/*.pod', '!node_modules/**'],
+      safelist: {
+        standard: [/^nav-/, /^navbar-/, /^dropdown-/, /^collapse/, /^show/, /^btn-/, /^col-/, /^d-/, /^tagcloud/, /^sub/, /^selected/]
+      }
     }))
     .pipe(cleanCSS())
     .pipe(concat('perlweb_bootstrap.min.css'))
     .pipe(header(banner))
-    .pipe(gulp.dest(paths.less.dest));
+    .pipe(gulp.dest(paths.scss.dest));
 }
 
 function scripts() {
@@ -60,7 +65,7 @@ function scripts() {
 }
 
 function watchFiles() {
-  gulp.watch(paths.less.watch, styles);
+  gulp.watch(paths.scss.watch, styles);
   gulp.watch(paths.js.watch, scripts);
 }
 

@@ -1,64 +1,73 @@
-@import "bootstrap/bootstrap.less";
-@import "same-size-columns.less";
-@import "tagcloud.less";
+@use "sass:math";
+@use "sass:color";
+@use "variables" as *;
+@use "same-size-columns" as *;
+@use "tagcloud" as *;
 
-@letter-spacing-base: 0.13em;
-@font-size-smaller: 10px;
+$letter-spacing-base: 0.13em;
+$font-size-smaller: 10px;
 
 html {
   height: 100%;
 }
 
 /* Text Styles */
+.text-hide {
+  font: 0/0 a;
+  color: transparent;
+  text-shadow: none;
+  background-color: transparent;
+  border: 0;
+}
 h1,
 .jumbotron h1 {
   font-weight: 300;
-  color: @brand-primary;
+  color: $brand-primary;
 }
 h2 {
   font-weight: 700;
-  color: @brand-primary;
+  color: $brand-primary;
 }
 h2.alternate {
   font-weight: 300;
-  color: @gray-darker;
-  font-size: @font-size-h3;
+  color: $gray-darker;
+  font-size: $font-size-h3;
 }
 h3 {
   font-weight: 700;
-  color: @brand-primary;
+  color: $brand-primary;
   display: inline-block;
-  padding: @padding-small-vertical;
-  border-bottom: 2px solid @brand-success;
+  padding: $padding-small-vertical;
+  border-bottom: 2px solid $brand-success;
   text-align: center;
 }
 h3.alternate {
   font-weight: 500;
-  color: @brand-primary-darker;
+  color: $brand-primary-darker;
   display: inline-block;
-  padding: @padding-small-vertical;
+  padding: $padding-small-vertical;
   border-bottom: none;
 }
 h4 {
   font-weight: 700;
-  color: @gray-darker;
+  color: $gray-darker;
 }
 
 /* UI items */
 .list-unstyled {
-  margin-top: @padding-base-vertical;
+  margin-top: $padding-base-vertical;
 }
 pre {
-  margin-top: @padding-large-vertical;
+  margin-top: $padding-large-vertical;
 }
 ul li {
-  margin-bottom: @padding-small-vertical;
+  margin-bottom: $padding-small-vertical;
 }
 
 /* Navbar */
 .navbar-inverse {
   margin-bottom: 0;
-  #gradient .vertical(@brand-primary; @brand-primary-darker; 0%; 100%);
+  background: linear-gradient($brand-primary, $brand-primary-darker);
 }
 .navbar-brand {
   padding: 15px;
@@ -78,11 +87,12 @@ ul li {
 .navbar-right {
   margin-right: 0;
 }
-.navbar-nav>li {
+.navbar-nav .nav-item {
   margin-right: 4px;
 }
-.navbar-nav>li>a.btn {
-  padding: @padding-large-vertical @padding-large-horizontal;
+.navbar-nav .nav-item .nav-link.btn {
+  padding: $padding-large-vertical $padding-large-horizontal;
+  color: white;
 }
 .nav .open>a,
 .nav .open>a:hover,
@@ -95,42 +105,32 @@ ul li {
     display: block;
     text-align: center;
     text-transform: uppercase;
-    letter-spacing: @letter-spacing-base;
-    font-size: @font-size-small;
+    letter-spacing: $letter-spacing-base;
+    font-size: $font-size-small;
     &:hover {
-      color: @brand-warning !important;
+      color: #f0ad4e !important; // @brand-warning
     }
   }
   &.selected a {
-    color: @brand-warning !important;
+    color: #f0ad4e !important;
   }
   .header-img-nav {
     display: block;
-    margin: @padding-small-vertical auto;
+    margin: $padding-small-vertical auto;
     height: 24px;
   }
   .perl-version {
     position: absolute;
     width: 100%;
     left: 0;
-    position: absolute;
     top: 10px;
-    font-size: @font-size-smaller;
+    font-size: $font-size-smaller;
     .version-highlight {
-      padding: @padding-xs-horizontal;
-      background: @brand-success;
-      color: @brand-primary;
-      border-radius: @border-radius-base;
+      padding: $padding-xs-horizontal;
+      background: $brand-success;
+      color: $brand-primary;
+      border-radius: $border-radius-base;
     }
-  }
-}
-.navbar-fixed-top {
-  .animation(moveFromTop .6s ease both);
-  .header-img-nav {
-    display: none;
-  }
-  .perl-version {
-    display: none;
   }
 }
 
@@ -144,9 +144,9 @@ ul li {
 /* Buttons and Dropdowns */
 .btn {
   text-transform: uppercase;
-  letter-spacing: @letter-spacing-base;
-  padding: @padding-large-vertical @padding-large-horizontal;
-  font-size: @font-size-small;
+  letter-spacing: $letter-spacing-base;
+  padding: $padding-large-vertical $padding-large-horizontal;
+  font-size: $font-size-small;
 }
 .btn-ic {
   margin-right: 20px;
@@ -162,10 +162,10 @@ ul li {
 }
 
 
-/* Jumbotron */
+/* Jumbotron - keeping class for transition */
 .jumbotron {
   position: relative;
-  #gradient .vertical(@gray-lighter; @gray-light; 0%; 100%);
+  background: linear-gradient($gray-lighter, $gray-light) !important;
   h1 {
     margin-top: 10px;
   }
@@ -176,7 +176,7 @@ ul li {
   margin: auto;
 }
 .jumbotron-internal {
-  padding: @jumbotron-padding/2;
+  padding: math.div($jumbotron-padding, 2);
 }
 .jumbotron .img-camel {
   position: relative;
@@ -189,16 +189,22 @@ ul li {
 
 /* Highlight module */
 .highlight-module {
-  background: @brand-primary;
-  padding: @padding-large-vertical @padding-large-horizontal;
-  margin-bottom: @grid-gutter-width;
-  border-radius: @border-radius-large;
+  position: relative;
+  background: $brand-primary;
+  padding: $padding-large-vertical $padding-large-horizontal;
+  margin-bottom: $grid-gutter-width;
+  border-radius: $border-radius-large;
   color: #fff;
-  display: block;
+  display: flex;
+  flex-direction: column;
   height: 100%;
+  text-decoration: none;
   &:hover {
     color: #fff;
-    background: fade(@brand-primary, 90%);
+    background: rgba($brand-primary, 0.9);
+  }
+  h3 {
+    margin-top: 0;
   }
   p {
     margin: 20px 0;
@@ -212,7 +218,7 @@ ul li {
 
 /* sidebar */
 .sidebar {
-  background: @gray-lighter;
+  background: $gray-lighter;
   overflow: scroll;
   ul + ul {
     margin-top: 40px;
@@ -242,34 +248,34 @@ ul li {
 
 a.highlight,
 span.highlight {
-  background: @gray-lighter;
-  border: 1px solid @gray-light;
-  font-family: @font-family-monospace;
-  border-radius: @border-radius-large;
-  padding: @padding-small-vertical;
-  font-size: @font-size-small;
+  background: $gray-lighter;
+  border: 1px solid $gray-light;
+  font-family: monospace;
+  border-radius: $border-radius-large;
+  padding: $padding-small-vertical;
+  font-size: $font-size-small;
 }
 
 /* Tips */
 .tip-module {
-  margin-top: @jumbotron-padding;
-  background: @brand-success;
-  padding: @padding-large-vertical*2;
-  color: @gray-lighter;
+  margin-top: $jumbotron-padding;
+  background: $brand-success;
+  padding: $padding-large-vertical*2;
+  color: $gray-lighter;
   a {
-    color: @brand-primary;
+    color: $brand-primary;
     text-decoration: underline;
     &:hover {
-      color: @brand-primary-darker;
+      color: $brand-primary-darker;
     }
   }
 }
 
 /* Quick links */
 .quicklinks {
-  border: 5px solid @gray-lighter;
+  border: 5px solid $gray-lighter;
   overflow: hidden;
-  padding: @padding-large-vertical @padding-large-horizontal;
+  padding: $padding-large-vertical $padding-large-horizontal;
 }
 
 /* Misc */
@@ -288,12 +294,12 @@ span.highlight {
 /* Footer */
 .footer {
   padding: 40px;
-  background-color: @gray-lighter;
+  background-color: $gray-lighter;
   overflow: hidden;
   .links {
-    color: @gray-base;
+    color: $gray-base;
     &:hover {
-      color: @brand-primary;
+      color: $brand-primary;
     }
   }
   .footer-info {
@@ -304,35 +310,27 @@ span.highlight {
 
 /* Spaces */
 .space-top-xl {
-  padding-top: @grid-gutter-width*3;
+  padding-top: $grid-gutter-width*3;
 }
 .space-top-large {
-  padding-top: @grid-gutter-width;
+  padding-top: $grid-gutter-width;
 }
 .space-top-small {
-  padding-top: @grid-gutter-width/2;
+  padding-top: math.div($grid-gutter-width, 2);
 }
 
 /* Animation */
-@-webkit-keyframes moveFromTop {
-  from { -webkit-transform: translateY(-100%); }
-}
-@-moz-keyframes moveFromTop {
-  from { -moz-transform: translateY(-100%); }
-}
 @keyframes moveFromTop {
   from { transform: translateY(-100%); }
 }
 
-
-
 /* Resonsive */
-@media (max-width: @screen-md-min) {
-  .navbar-nav>li, .navbar-nav>li a {
+@media (max-width: $screen-md-min) {
+  .navbar-nav .nav-item, .navbar-nav .nav-item .nav-link {
     margin-left: 0;
     margin-right: 0;
-    padding-left: @padding-xs-horizontal;
-    padding-right: @padding-xs-horizontal;
+    padding-left: $padding-xs-horizontal;
+    padding-right: $padding-xs-horizontal;
   }
   .jumbotron .img-camel {
     width: 200px;
@@ -340,7 +338,7 @@ span.highlight {
 }
 
 
-@media (max-width: @screen-sm-min) {
+@media (max-width: $screen-sm-min) {
   .page-www .page-logo, .page-www .navbar-fixed-top .page-logo {
     height: 60px;
   }
@@ -350,7 +348,7 @@ span.highlight {
   .footer {
     text-align: center;
     li {
-      padding: @padding-base-vertical @padding-base-horizontal;
+      padding: $padding-base-vertical $padding-base-horizontal;
     }
   }
   .highlight-module {
