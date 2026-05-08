@@ -17,38 +17,38 @@
 </ul>
 
 <ul class="instructions">
-    <li>
-        Install a <a href=
-        "http://en.wikipedia.org/wiki/Compiler">compiler</a>, such as
-        gcc through your system package management (e.g. apt, yum).
-    </li>
-    <li>Open a <em>Terminal</em>
-    and copy &amp; paste the command below
-        into it (then press the 'return' key).
-        [% WRAPPER code_snippet %]curl -L http://xrl.us/installperlnix | bash[% END %]
+    <li>Most Linux distributions either include Perl or make it
+    available through their package manager (<code>apt</code>,
+    <code>dnf</code>, <code>pacman</code>, <code>zypper</code>,
+    <code>apk</code>, etc.). Use your distribution's package manager
+    to install or update Perl. Open a <em>Terminal</em> and run
+    [% WRAPPER code_snippet %]perl -v[% END %]
+    to see the installed version.
     </li>
 </ul>
 
 <h3 id="explained">
-    If you are interested in the details of the setup above..
+    If you want a newer Perl, or to keep your Perl separate from the system...
 </h3>
 <ul class="explained">
-    <li>To build and install Perl and many of the thousands of useful
-        <a href="/modules/">Perl modules</a> you need to have a <a href=
-        "http://en.wikipedia.org/wiki/Compiler">compiler</a>.
+    <li>If you want a newer Perl than your distribution provides, or
+    you don't want your work affected by OS upgrades, install
+    <a href="https://perlbrew.pl/">Perlbrew</a>. It separates your
+    installation from the system Perl, lets you run multiple versions
+    side-by-side, and means upgrading your OS is much less likely to
+    cause issues with your own Perl setup.
     </li>
-    <li>To interact with the command line and run Perl commands, a terminal
-    application is needed.
-    </li>
-    <li>The <a href="https://perlbrew.pl/">Perlbrew</a> website lists many
-    of its advantages. We recommend it here because it separates your
-    installation from the system Perl, this makes upgrading your OS less likely
-    to cause issues with your own Perl setup. It also means you can use a newer
-    Perl than the default one which comes with your OS.
-    </li>
+</ul>
+
+<h3>
+    Installing CPAN modules
+</h3>
+<ul class="explained">
     <li>
         <a href="https://metacpan.org/release/App-cpanminus/">App-cpanminus</a>
         provides the <code>cpanm</code> tool, which makes <a href=
-        "/modules/">installing modules</a> very simple to do.
+        "/modules/">installing modules</a> very simple to do. Install it
+        by running:
+        [% WRAPPER code_snippet %]cpan App::cpanminus[% END %]
     </li>
 </ul>
