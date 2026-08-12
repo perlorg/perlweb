@@ -32,12 +32,6 @@ function styles() {
       includePaths: ['node_modules'],
       quietDeps: true
     }).on('error', sass.logError))
-    .pipe(purgecss({
-      content: ['**/*.html', '**/*.tpl', '**/*.pod', '!node_modules/**'],
-      safelist: {
-        standard: [/^nav-/, /^navbar-/, /^dropdown-/, /^collapse/, /^show/, /^btn-/, /^col-/, /^d-/, /^tagcloud/, /^sub/, /^selected/]
-      }
-    }))
     .pipe(cleanCSS())
     .pipe(concat('perlweb_bootstrap.min.css'))
     .pipe(header(banner))

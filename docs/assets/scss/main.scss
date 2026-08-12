@@ -67,7 +67,12 @@ ul li {
 /* Navbar */
 .navbar-inverse {
   margin-bottom: 0;
-  background: linear-gradient($brand-primary, $brand-primary-darker);
+  background: linear-gradient($brand-primary, $brand-primary-darker) !important;
+  --bs-navbar-color: rgba(255, 255, 255, 0.85);
+  --bs-navbar-hover-color: #f0ad4e;
+  --bs-navbar-active-color: #f0ad4e;
+  --bs-navbar-brand-color: #fff;
+  --bs-navbar-brand-hover-color: #fff;
 }
 .navbar-brand {
   padding: 15px;
@@ -79,7 +84,7 @@ ul li {
   height: 75px
 }
 .page-www .navbar-brand {
-  width: 25px;
+  width: auto;
 }
 .navbar-nav {
   margin: 0;
@@ -100,24 +105,27 @@ ul li {
   border-color: transparent;
 }
 .sub {
-  a {
+  a, .nav-link {
+    color: white !important;
     position: relative;
     display: block;
     text-align: center;
     text-transform: uppercase;
     letter-spacing: $letter-spacing-base;
     font-size: $font-size-small;
-    &:hover {
+    &:hover, &:focus {
       color: #f0ad4e !important; // @brand-warning
     }
   }
-  &.selected a {
+  &.selected a, &.selected .nav-link {
     color: #f0ad4e !important;
   }
   .header-img-nav {
     display: block;
     margin: $padding-small-vertical auto;
     height: 24px;
+    width: auto;
+    filter: brightness(0) invert(1);
   }
   .perl-version {
     position: absolute;
