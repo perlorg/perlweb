@@ -2,11 +2,8 @@ const gulp = require('gulp');
 const sass = require('gulp-sass')(require('sass'));
 const terser = require('gulp-terser');
 const concat = require('gulp-concat');
-const header = require('gulp-header');
 const gulpIf = require('gulp-if');
 const purgecss = require('gulp-purgecss');
-
-const banner = '/* Perl.org - http://www.perl.org */\n';
 
 const paths = {
   scss: {
@@ -33,7 +30,6 @@ function styles() {
       style: 'compressed'
     }).on('error', sass.logError))
     .pipe(concat('perlweb_bootstrap.min.css'))
-    .pipe(header(banner))
     .pipe(gulp.dest(paths.scss.dest));
 }
 
@@ -52,7 +48,6 @@ function scripts() {
       }
     })))
     .pipe(concat('perlweb_bootstrap.min.js'))
-    .pipe(header(banner))
     .pipe(gulp.dest(paths.js.dest));
 }
 
