@@ -2,7 +2,6 @@ const gulp = require('gulp');
 const sass = require('gulp-sass')(require('sass'));
 const terser = require('gulp-terser');
 const concat = require('gulp-concat');
-const cleanCSS = require('gulp-clean-css');
 const header = require('gulp-header');
 const gulpIf = require('gulp-if');
 const purgecss = require('gulp-purgecss');
@@ -30,9 +29,9 @@ function styles() {
   return gulp.src(paths.scss.src)
     .pipe(sass({
       includePaths: ['node_modules'],
-      quietDeps: true
+      quietDeps: true,
+      style: 'compressed'
     }).on('error', sass.logError))
-    .pipe(cleanCSS())
     .pipe(concat('perlweb_bootstrap.min.css'))
     .pipe(header(banner))
     .pipe(gulp.dest(paths.scss.dest));
