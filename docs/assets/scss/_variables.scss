@@ -1,37 +1,49 @@
 @use "sass:color";
 
-// Forward Bootstrap with our overrides
+// Forward Bootstrap with our overrides matching pre-BS5 variables.less
 @forward "../../../node_modules/bootstrap/scss/bootstrap" with (
   $primary: #0073A1,
   $success: #61C5BA,
+  $body-color: color.adjust(#7C8487, $lightness: -10%),
+  $link-color: #0073A1,
+  $link-decoration: none,
+  $link-hover-color: color.adjust(#0073A1, $lightness: -15%),
+  $link-hover-decoration: none,
   $font-family-sans-serif: (Lato, "Helvetica Neue", Helvetica, Arial, sans-serif),
+  $line-height-base: 1.428571429,
+  $h1-font-size: 54px,
+  $h2-font-size: 32px,
   $h3-font-size: 24px,
+  $h4-font-size: 14px,
+  $h5-font-size: 12px,
+  $h6-font-size: 10px,
+  $headings-font-weight: 500,
+  $headings-line-height: 1.1,
+  $enable-rfs: false,
   $grid-gutter-width: 30px
 );
 
-// Our custom variables that aren't in Bootstrap or we want to keep separate
+// Custom variables used in main.scss
 $gray-base:              #7C8487 !default;
 $gray-darker:            color.adjust($gray-base, $lightness: -20%) !default;
 $gray-dark:              color.adjust($gray-base, $lightness: -10%) !default;
-$gray:                   color.adjust($gray-base, $lightness: 15%) !default;
 $gray-light:             color.adjust($gray-base, $lightness: 35%) !default;
 $gray-lighter:           color.adjust($gray-base, $lightness: 45%) !default;
 
 $brand-primary:         #0073A1 !default;
 $brand-primary-darker:  color.adjust(#00456E, $lightness: -5%) !default;
 $brand-success:         #61C5BA !default;
-$brand-success-darker:  #55A89F !default;
 
 $padding-small-vertical: 5px !default;
 $padding-base-vertical: 6px !default;
 $padding-base-horizontal: 12px !default;
 $padding-large-vertical: 10px !default;
-$padding-large-horizontal: 16px !default;
+$padding-large-horizontal: 24px !default;
 $padding-xs-horizontal: 5px !default;
 $border-radius-base: 4px !default;
 $border-radius-large: 6px !default;
 $font-size-small: 12px !default;
 $font-size-h3: 24px !default;
-$jumbotron-padding: 30px !default;
+$jumbotron-padding: 50px !default;
 $screen-md-min: 992px !default;
 $screen-sm-min: 768px !default;

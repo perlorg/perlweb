@@ -20,6 +20,14 @@ html {
   background-color: transparent;
   border: 0;
 }
+h1, .h1, h2, .h2, h3, .h3 {
+  margin-top: 22px;
+  margin-bottom: 11px;
+}
+h4, .h4, h5, .h5, h6, .h6 {
+  margin-top: 11px;
+  margin-bottom: 11px;
+}
 h1,
 .jumbotron h1 {
   font-weight: 300;
@@ -90,20 +98,12 @@ ul li {
 .navbar-nav {
   margin: 0;
 }
-.navbar-right {
-  margin-right: 0;
-}
 .navbar-nav .nav-item {
   margin-right: 4px;
 }
 .navbar-nav .nav-item .nav-link.btn {
   padding: $padding-large-vertical $padding-large-horizontal;
   color: white;
-}
-.nav .open>a,
-.nav .open>a:hover,
-.nav .open>a:focus {
-  border-color: transparent;
 }
 .sub {
   a, .nav-link {
@@ -143,19 +143,18 @@ ul li {
   }
 }
 
-.page-www .navbar-fixed-top .page-logo {
-  height: 60px;
-}
-.page-www .navbar-fixed-top .navbar-brand {
-  padding: 8px 15px;
-}
-
 /* Buttons and Dropdowns */
 .btn {
   text-transform: uppercase;
   letter-spacing: $letter-spacing-base;
   padding: $padding-large-vertical $padding-large-horizontal;
   font-size: $font-size-small;
+}
+.btn-xs {
+  padding: 1px 5px;
+  font-size: $font-size-small;
+  line-height: 1.5;
+  border-radius: 1px;
 }
 .btn-ic {
   margin-right: 20px;
@@ -166,17 +165,33 @@ ul li {
 .dropdown-toggle {
   box-shadow: none !important;
 }
-.btn .caret {
-  margin-left: 6px;
-}
 
 
 /* Jumbotron - keeping class for transition */
 .jumbotron {
   position: relative;
+  padding-top: $jumbotron-padding;
+  padding-bottom: $jumbotron-padding;
+  margin-bottom: $jumbotron-padding;
+  color: inherit;
   background: linear-gradient($gray-lighter, $gray-light) !important;
-  h1 {
+  h1, .h1 {
     margin-top: 10px;
+  }
+  p {
+    margin-bottom: math.div($jumbotron-padding, 2);
+    font-size: 16px;
+    font-weight: 400;
+  }
+  .container {
+    max-width: 100%;
+  }
+  @media screen and (min-width: $screen-sm-min) {
+    padding-top: ($jumbotron-padding * 1.6);
+    padding-bottom: ($jumbotron-padding * 1.6);
+    h1, .h1 {
+      font-size: 40px;
+    }
   }
 }
 .over-image {
@@ -191,9 +206,6 @@ ul li {
   position: relative;
   float: right;
   margin: auto 0;
-}
-.jumbotron p {
-  font-weight: 400;
 }
 
 /* Highlight module */
@@ -350,7 +362,7 @@ span.highlight {
 
 
 @media (max-width: $screen-sm-min) {
-  .page-www .page-logo, .page-www .navbar-fixed-top .page-logo {
+  .page-www .page-logo {
     height: 60px;
   }
   .page-www .navbar-brand {

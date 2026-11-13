@@ -52,26 +52,26 @@
     </nav>
 
     [% IF page.section == 'home' %]
-    <div class="jumbotron p-5 mb-4">
+    <div class="jumbotron">
       <div class="container">
-        <img src="[% combust.static_url("/images/icons/header_camel.png") %]" class="img-camel float-end" alt="Perl5 Camel">
+        <img src="[% combust.static_url("/images/icons/header_camel.png") %]" class="img-camel" alt="Perl5 Camel">
         <div class="over-image">
-          <h2 class="h4">[% combust.site == 'www' ? 'That\'s why we love Perl' : page.title %]</h2>
-          <h1 class="display-4">[% headline || site.tag_line %]</h1>
-          <p class="lead">[% combust.site == 'www' ? 'Perl is a highly capable, feature-rich programming language with over ' _  perl_stats.perl_age _ ' years of development.' : page.description %]</p>
+          <h2>[% combust.site == 'www' ? 'That\'s why we love Perl' : page.title %]</h2>
+          <h1>[% headline || site.tag_line %]</h1>
+          <p>[% combust.site == 'www' ? 'Perl is a highly capable, feature-rich programming language with over ' _  perl_stats.perl_age _ ' years of development.' : page.description %]</p>
           <p>
-            <a class="btn btn-success btn-lg" href="[% site.url || 'http://www.perl.org/get.html' %]" role="button">
-              [% IF combust.site == 'www' || combust.site == 'learn' %]<img src="[% combust.static_url("/images/icons/ic_download.svg") %]" class="btn-ic d-none d-sm-inline">[% END %]<span class="d-none d-sm-inline">[% site.link || 'Download and Get Started' %]</span><span class="d-inline d-sm-none">Learn more »</span></a>
+            <a class="btn btn-success" href="[% site.url || 'http://www.perl.org/get.html' %]" role="button">
+              [% IF combust.site == 'www' || combust.site == 'learn' %]<img src="[% combust.static_url("/images/icons/ic_download.svg") %]" class="btn-ic d-none d-md-inline">[% END %]<span class="d-none d-md-inline">[% site.link || 'Download and Get Started' %]</span><span class="d-inline d-md-none">Learn more »</span></a>
             </a>
           </p>
         </div>
       </div>
     </div>
     [% ELSE %]
-    <div class="jumbotron jumbotron-internal p-5 mb-4 text-center">
-      <div class="container">
-          <h1 class="display-5 fw-bold">[% page.title %]</h1>
-          <p class="col-md-8 fs-4 mx-auto">[% page.description %]</p>
+    <div class="jumbotron jumbotron-internal">
+      <div class="container text-center">
+          <h1>[% page.title %]</h1>
+          <p>[% page.description %]</p>
       </div>
     </div>
     [% END %]
@@ -105,14 +105,14 @@
 
         <div class="row">
         [% IF combust.site == 'www' && error == '' %]
-          <ul class="col-12 col-sm-4 list-unstyled">
+          <ul class="col-12 col-md-4 list-unstyled">
             [% quicknews ("cpanrecent", '<h4>Latest Uploads to CPAN</h4>', 10) %]
           </ul>
-          <ul class="col-12 col-sm-4 list-unstyled">
+          <ul class="col-12 col-md-4 list-unstyled">
             [% quicknews ("perlnews", '<h4>Perl News</h4>', 5) %]
           </ul>
         [% END %]
-          <ul class="col-12 col-sm-2 list-unstyled">
+          <ul class="col-12 col-md-2 list-unstyled">
             <li><h4>Perl.org</h4></li>
             <li><a href="http://www.perl.org/">www</a></li>
             <li><a href="http://blogs.perl.org/">blogs</a></li>
@@ -120,7 +120,7 @@
             <li><a href="http://learn.perl.org/">learn</a></li>
             <li><a href="http://dev.perl.org/">dev</a></li>
           </ul>
-          <ul class="col-12 col-sm-2 list-unstyled">
+          <ul class="col-12 col-md-2 list-unstyled">
             <li><h4>Connect</h4></li>
             <li><a href="/siteinfo.html">Site Info</a></li>
           </ul>
